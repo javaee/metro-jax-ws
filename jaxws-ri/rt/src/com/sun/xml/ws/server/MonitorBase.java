@@ -38,35 +38,12 @@ package com.sun.xml.ws.server;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.BindingID;
-import com.sun.xml.ws.api.WSFeatureList;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.EndpointAddress;
-import com.sun.xml.ws.api.addressing.AddressingVersion;
-import com.sun.xml.ws.api.addressing.WSEndpointReference;
-import com.sun.xml.ws.api.message.Message;
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundPortType;
-import com.sun.xml.ws.api.model.wsdl.WSDLService;
-import com.sun.xml.ws.api.pipe.Codec;
-import com.sun.xml.ws.api.pipe.Engine;
-import com.sun.xml.ws.api.pipe.Fiber;
-import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
-import com.sun.xml.ws.api.pipe.ServerPipeAssemblerContext;
-import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
-import com.sun.xml.ws.api.pipe.Tube;
-import com.sun.xml.ws.api.pipe.TubeCloner;
-import com.sun.xml.ws.api.pipe.TubelineAssembler;
-import com.sun.xml.ws.api.pipe.TubelineAssemblerFactory;
-import com.sun.xml.ws.api.server.*;
-import com.sun.xml.ws.fault.SOAPFaultBuilder;
-import com.sun.xml.ws.model.wsdl.WSDLProperties;
-import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
-import com.sun.xml.ws.resources.HandlerMessages;
-import com.sun.xml.ws.util.RuntimeVersion;
+import com.sun.xml.ws.api.config.management.policy.ManagedServiceAssertion;
+import com.sun.xml.ws.api.server.BoundEndpoint;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.Module;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.client.Stub;
 import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
@@ -78,21 +55,23 @@ import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import java.net.URL;
-import javax.management.ObjectName;
-
-
-import javax.annotation.PreDestroy;
-import javax.xml.namespace.QName;
-import javax.xml.ws.EndpointReference;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.Handler;
-import javax.xml.stream.XMLStreamException;
-import javax.management.InstanceAlreadyExistsException;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.Executor;
+import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.management.ObjectName;
+import javax.xml.namespace.QName;
+
+// BEGIN IMPORTS FOR RewritingMOM
+import java.util.ResourceBundle ;
+import java.io.Closeable ;
+import java.lang.reflect.AnnotatedElement ;
+import java.lang.annotation.Annotation ;
+import javax.management.ObjectName ;
+import javax.management.MBeanServer ;
+import org.glassfish.gmbal.AMXClient;
+import org.glassfish.gmbal.GmbalMBean;
+// END IMPORTS FOR RewritingMOM
 
 /**
  * @author Harold Carr
@@ -108,21 +87,78 @@ public abstract class MonitorBase {
         "amx:pp=/mon,type=server-mon,name=server";
     private static final String standaloneName = "com.sun.metro";
 
-    //
-    // Service-side ManagedObjectManager creation
-    //
-
-    @NotNull public ManagedObjectManager createManagedObjectManager(final boolean isEndpoint, final String rootName) {
-        final String msg = " monitoring disabled. " + rootName + " will not be monitored";
-        if (isEndpoint && !endpointMonitoring) {
-            logger.log(Level.CONFIG, "Endpoint" + msg);
-            return ManagedObjectManagerFactory.createNOOP();
+    @NotNull public ManagedObjectManager createManagedObjectManager(final WSEndpoint endpoint) {
+        // serviceName + portName identifies the managed objects under it.
+        // There can be multiple services in the container.
+        // The same serviceName+portName can live in different apps at
+        // different endpoint addresses.
+        // We do not know the endpoint address until the first request
+        // comes in, which is after monitoring is setup.
+        // Monitoring will add -N, where N is unique integer in case of collisions.
+        String rootName = 
+            endpoint.getServiceName().getLocalPart()
+            + "-"
+            + endpoint.getPortName().getLocalPart();
+        if (rootName.equals("-")) {
+            rootName = "provider";
         }
-        if (!isEndpoint && !clientMonitoring) {
-            logger.log(Level.CONFIG, "Client" + msg);
-            return ManagedObjectManagerFactory.createNOOP();
+
+        final String x = getEndpointAddressPath(endpoint);
+        if (x != null) {
+            rootName = x;
+        }
+
+        final ManagedServiceAssertion assertion = ManagedServiceAssertion.getAssertion(endpoint);
+        if (assertion != null) {
+            final String id = assertion.getId();
+            if (! (id.equals(null) || id.equals(""))) {
+                rootName = id;
+            }
+            final String monitoring = assertion.getAttributeValue(new QName("monitoring"));
+            if (monitoring != null) {
+                if (! Boolean.parseBoolean(monitoring)) {
+                    return disabled("This endpoint", rootName);
+                }
+            }
+        }
+
+        if (!endpointMonitoring) {
+            return disabled("Global endpoint", rootName);
         }
         return createMOMLoop(rootName, 0);
+    }
+
+   private String getEndpointAddressPath(final WSEndpoint endpoint) {
+       //logger.log(Level.WARNING, "endpoint: " + endpoint.toString());
+       final Container container = endpoint.getContainer();
+       final Module module = container.getSPI(Module.class);
+       //logger.log(Level.WARNING, "module: " + module.toString());
+       if (module != null) {
+           final List<BoundEndpoint> beList = module.getBoundEndpoints();
+           //logger.log(Level.WARNING, "beList: " + beList.toString());
+           for (BoundEndpoint be : beList) {
+               final WSEndpoint wse = be.getEndpoint();
+               //logger.log(Level.WARNING, "wse: " + wse.toString());
+               if (endpoint == wse) {
+                   return be.getAddress().toString();
+               }
+           }
+       }
+       return null;
+   } 
+
+    @NotNull public ManagedObjectManager createManagedObjectManager(final Stub stub) {
+        final String rootName = stub.requestContext.getEndpointAddress().toString();
+        if (!clientMonitoring) {
+            return disabled("Global client", rootName);
+        }
+        return createMOMLoop(rootName, 0);
+    }
+
+    @NotNull private ManagedObjectManager disabled(final String x, final String rootName) {
+        final String msg = x + " monitoring disabled. " + rootName + " will not be monitored";
+        logger.log(Level.CONFIG, msg);
+        return ManagedObjectManagerFactory.createNOOP();
     }
 
     private @NotNull ManagedObjectManager createMOMLoop(final String rootName, final int unique) {
@@ -147,11 +183,10 @@ public abstract class MonitorBase {
     private @NotNull ManagedObjectManager createMOM(final ObjectName amxRoot) {
         final boolean isFederated = amxRoot != null;
         try {
-            return
-                isFederated ?
+            return new RewritingMOM(isFederated ?
                 ManagedObjectManagerFactory.createFederated(amxRoot)
                 :
-                ManagedObjectManagerFactory.createStandalone(standaloneName);
+                ManagedObjectManagerFactory.createStandalone(standaloneName));
         } catch (Throwable t) {
             if (isFederated) {
                 logger.log(Level.CONFIG, "Problem while attempting to federate with GlassFish AMX monitoring.  Trying standalone.", t);
@@ -175,6 +210,7 @@ public abstract class MonitorBase {
             } else {
                 mom.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.NONE);
             }
+
             mom.setRuntimeDebug(runtimeDebug);
 
             // Instead of GMBAL throwing an exception and logging
@@ -197,7 +233,7 @@ public abstract class MonitorBase {
         } catch (Throwable t) {
             try {
                 mom.close();
-            } catch (java.io.IOException e) {
+            } catch (IOException e) {
                 logger.log(Level.CONFIG, "Ignoring exception caught when closing unused ManagedObjectManager", e);
             }
             logger.log(Level.WARNING, "Ignoring exception - starting up without monitoring", t);
@@ -211,12 +247,12 @@ public abstract class MonitorBase {
         try {
             final Object ignored = mom.createRoot(this, name);
             if (ignored != null) {
-                logger.log(Level.INFO, "Monitoring rootname successfully set to: " + name);
+                logger.log(Level.INFO, "Monitoring rootname successfully set to: " + mom.getObjectName(mom.getRoot()));
                 return mom;
             }
             try {
                 mom.close();
-            } catch (java.io.IOException e) {
+            } catch (IOException e) {
                 logger.log(Level.CONFIG, "Ignoring exception caught when closing unused ManagedObjectManager", e);
             }
             final String basemsg ="duplicate monitoring rootname: " + name + " : ";
@@ -231,6 +267,19 @@ public abstract class MonitorBase {
         } catch (Throwable t) {
             logger.log(Level.WARNING, "Error while creating monitoring root with name: " + rootName, t);
             return ManagedObjectManagerFactory.createNOOP();
+        }
+    }
+
+    public static void closeMOM(ManagedObjectManager mom) {
+        try {
+            final ObjectName name = mom.getObjectName(mom.getRoot());
+            // The name is null when the MOM is a NOOP.
+            if (name != null) {
+                logger.log(Level.INFO, "Closing monitoring root: " + name);
+            }
+            mom.close();
+        } catch (java.io.IOException e) {
+            logger.log(Level.WARNING, "Ignoring error when closing Managed Object Manager", e);
         }
     }
 
@@ -293,5 +342,57 @@ public abstract class MonitorBase {
         @InheritedAttribute(methodName="isEnabled", description="true if this feature is enabled")
 })
 interface DummyWebServiceFeature {}
+
+class RewritingMOM implements ManagedObjectManager
+{
+    private final ManagedObjectManager mom;
+
+    private final String gmbalQuotingCharsRegex = "\n|\\|\"|\\*|\\?|:|=|,";
+    private final String jmxQuotingCharsRegex   = ",|=|:|\"";
+    private final String replacementChar        = "-";
+
+    RewritingMOM(final ManagedObjectManager mom) { this.mom = mom; }
+
+    private String rewrite(final String x) {
+        return x.replaceAll(gmbalQuotingCharsRegex, replacementChar);
+    }
+
+    // The interface
+
+    public void suspendJMXRegistration() { mom.suspendJMXRegistration(); }
+    public void resumeJMXRegistration()  { mom.resumeJMXRegistration(); }
+    public GmbalMBean createRoot()       { return mom.createRoot(); }
+    public GmbalMBean createRoot(Object root) { return mom.createRoot(root); }
+    public GmbalMBean createRoot(Object root, String name) {
+        return mom.createRoot(root, rewrite(name));
+    }
+    public Object getRoot() { return mom.getRoot(); }
+    public GmbalMBean register(Object parent, Object obj, String name) {
+        return mom.register(parent, obj, rewrite(name)); 
+    }
+    public GmbalMBean register(Object parent, Object obj) { return mom.register(parent, obj);}
+    public GmbalMBean registerAtRoot(Object obj, String name) {
+        return mom.registerAtRoot(obj, rewrite(name));
+    }
+    public GmbalMBean registerAtRoot(Object obj) { return mom.registerAtRoot(obj); }
+    public void unregister(Object obj)           { mom.unregister(obj); }
+    public ObjectName getObjectName(Object obj)  { return mom.getObjectName(obj); }
+    public AMXClient getAMXClient(Object obj)    { return mom.getAMXClient(obj); }
+    public Object getObject(ObjectName oname)    { return mom.getObject(oname); }
+    public void stripPrefix(String... str)       { mom.stripPrefix(str); }
+    public void stripPackagePrefix()             { mom.stripPackagePrefix(); }
+    public String getDomain()                    { return mom.getDomain(); }
+    public void setMBeanServer(MBeanServer server){mom.setMBeanServer(server); }
+    public MBeanServer getMBeanServer()          { return mom.getMBeanServer(); }
+    public void setResourceBundle(ResourceBundle rb) { mom.setResourceBundle(rb); }
+    public ResourceBundle getResourceBundle()    { return mom.getResourceBundle(); }
+    public void addAnnotation(AnnotatedElement element, Annotation annotation) { mom.addAnnotation(element, annotation); }
+    public void setRegistrationDebug(RegistrationDebugLevel level) { mom.setRegistrationDebug(level); }
+    public void setRuntimeDebug(boolean flag) { mom.setRuntimeDebug(flag); }
+    public void setTypelibDebug(int level)    { mom.setTypelibDebug(level); }
+    public String dumpSkeleton(Object obj)    { return mom.dumpSkeleton(obj); }
+    public void suppressDuplicateRootReport(boolean suppressReport) { mom.suppressDuplicateRootReport(suppressReport); }
+    public void close() throws IOException    { mom.close(); }
+}
 
 // End of file.

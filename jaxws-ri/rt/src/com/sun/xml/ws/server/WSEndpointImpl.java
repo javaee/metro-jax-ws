@@ -141,7 +141,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         this.endpointPolicy = endpointPolicy;
 
         this.managedObjectManager = 
-            createManagedObjectManager(serviceName, portName);
+            new MonitorRootService(this).createManagedObjectManager(this);
 
         if (serviceDef != null) {
             serviceDef.setOwner(this);
@@ -380,38 +380,18 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         return managedObjectManager;
     }
 
+    // This can be called independently of WSEndpoint.dispose.
+    // Example: the WSCM framework calls this before dispose.
     public void closeManagedObjectManager() {
         if (managedObjectManagerClosed == true) {
             return;
         }
-        try {
-            logger.log(Level.INFO, 
-                       "Closing monitoring root: " +
-                       managedObjectManager.getObjectName(managedObjectManager.getRoot()));
-            managedObjectManager.close();
-            managedObjectManagerClosed = true;
-        } catch (java.io.IOException e) {
-            logger.log(Level.WARNING, "Ignoring error when closing Managed Object Manager", e);
-        }
+        MonitorBase.closeMOM(managedObjectManager);
+        managedObjectManagerClosed = true;
     }
 
     public @NotNull ServerTubeAssemblerContext getAssemblerContext() {
         return context;
-    }
-
-    private @NotNull ManagedObjectManager createManagedObjectManager(final QName serviceName, final QName portName) {
-        // serviceName + portName identifies the managed objects under it.
-        // There can be multiple services in the container.
-        // The same serviceName+portName can live in different apps at
-        // different endpoint addresses.
-        // We do not know the endpoint address until the first request
-        // comes in, which is after monitoring is setup.
-        // Monitoring will add -N, where N is unique in case of collisions.
-        String rootName = serviceName.toString() + portName.toString();
-        if (rootName.equals("")) {
-            rootName = "provider";
-        }
-        return new MonitorRootService(this).createManagedObjectManager(true, rootName);
     }
 }
 
