@@ -141,6 +141,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     private final @Nullable WSDLProperties wsdlProperties;
     protected OperationDispatcher operationDispatcher = null;
     private final @NotNull ManagedObjectManager managedObjectManager;
+    private boolean managedObjectManagerClosed = false;
 
     /**
      * @param master                 The created stub will send messages to this pipe.
@@ -189,11 +190,10 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         this.endpointReference = epr;
         wsdlProperties = (wsdlPort==null) ? null : new WSDLProperties(wsdlPort);
 
-        // ManagedObjectManager must be created before the pipeline
+        // ManagedObjectManager MUST be created before the pipeline
         // is constructed.
-        final String rootName = 
-            (epr == null ? defaultEndPointAddress.toString() : epr.getAddress());
-        managedObjectManager = new MonitorRootClient(this).createManagedObjectManager(false, rootName);
+
+        managedObjectManager = new MonitorRootClient(this).createManagedObjectManager(this);
 
         if(master != null)
             this.tubes = new TubePool(master);
@@ -408,13 +408,13 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             tubes = null;
             p.preDestroy();
         }
-        if (managedObjectManager != null) {
-            try {
-                managedObjectManager.close();
-            } catch (java.io.IOException e) {
-                //logger.log(Level.WARNING, "TBD", e);
-            }
+        if (managedObjectManagerClosed) {
+            return;
+        } else {
+            com.sun.xml.ws.server.MonitorBase.closeMOM(managedObjectManager);
+            managedObjectManagerClosed = true;
         }
+        
     }
 
     public final WSBinding getBinding() {
