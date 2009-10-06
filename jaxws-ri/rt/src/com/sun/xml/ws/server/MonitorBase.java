@@ -111,45 +111,49 @@ public abstract class MonitorBase {
         final ManagedServiceAssertion assertion = ManagedServiceAssertion.getAssertion(endpoint);
         if (assertion != null) {
             final String id = assertion.getId();
-            if (! (id.equals(null) || id.equals(""))) {
+            if ( id != null) {
                 rootName = id;
             }
-            final String monitoring = assertion.getAttributeValue(new QName("monitoring"));
-            if (monitoring != null) {
-                if (! Boolean.parseBoolean(monitoring)) {
-                    return disabled("This endpoint", rootName);
-                }
+            if (! assertion.isMonitoringEnabled()) {
+                return disabled("This endpoint", rootName);
             }
         }
 
-        if (!endpointMonitoring) {
+        if (endpointMonitoring.equals(MonitorControl.OFF)) {
             return disabled("Global endpoint", rootName);
         }
         return createMOMLoop(rootName, 0);
     }
 
-   private String getEndpointAddressPath(final WSEndpoint endpoint) {
-       //logger.log(Level.WARNING, "endpoint: " + endpoint.toString());
-       final Container container = endpoint.getContainer();
-       final Module module = container.getSPI(Module.class);
-       //logger.log(Level.WARNING, "module: " + module.toString());
-       if (module != null) {
-           final List<BoundEndpoint> beList = module.getBoundEndpoints();
-           //logger.log(Level.WARNING, "beList: " + beList.toString());
-           for (BoundEndpoint be : beList) {
-               final WSEndpoint wse = be.getEndpoint();
-               //logger.log(Level.WARNING, "wse: " + wse.toString());
-               if (endpoint == wse) {
-                   return be.getAddress().toString();
-               }
-           }
-       }
-       return null;
-   } 
-
+    private String getEndpointAddressPath(final WSEndpoint endpoint) {
+        //logger.log(Level.WARNING, "endpoint: " + endpoint.toString());
+        final Container container = endpoint.getContainer();
+        final Module module = container.getSPI(Module.class);
+        //logger.log(Level.WARNING, "module: " + module.toString());
+        if (module != null) {
+            final List<BoundEndpoint> beList = module.getBoundEndpoints();
+            //logger.log(Level.WARNING, "beList: " + beList.toString());
+            for (BoundEndpoint be : beList) {
+                final WSEndpoint wse = be.getEndpoint();
+                //logger.log(Level.WARNING, "wse: " + wse.toString());
+                if (endpoint == wse) {
+                    return be.getAddress().toString();
+                }
+            }
+        }
+        return null;
+    } 
+    
     @NotNull public ManagedObjectManager createManagedObjectManager(final Stub stub) {
         final String rootName = stub.requestContext.getEndpointAddress().toString();
-        if (!clientMonitoring) {
+
+        // Client monitoring is OFF by default because there is
+        // no standard stub.close() method.  Therefore people do
+        // not typically close a stub when they are done with it
+        // (even though the RI does provide a .close).
+        if (clientMonitoring.equals(MonitorControl.NOT_SET) ||
+            clientMonitoring.equals(MonitorControl.OFF))
+        {
             return disabled("Global client", rootName);
         }
         return createMOMLoop(rootName, 0);
@@ -283,36 +287,41 @@ public abstract class MonitorBase {
         }
     }
 
-    private static boolean clientMonitoring                 = false;
-    private static boolean endpointMonitoring               = true;
+    private static enum MonitorControl { NOT_SET, OFF, ON }
+    private static MonitorControl clientMonitoring          = MonitorControl.NOT_SET;
+    private static MonitorControl endpointMonitoring        = MonitorControl.NOT_SET;
     private static int     typelibDebug                     = -1;
     private static String  registrationDebug                = "NONE";
     private static boolean runtimeDebug                     = false;
     private static int     maxUniqueEndpointRootNameRetries = 100;
     private static final String monitorProperty = "com.sun.xml.ws.monitoring.";
 
+    private static MonitorControl propertyToMonitorControl(String propName) {
+        String s = System.getProperty(propName);
+        if (s == null) {
+            return MonitorControl.NOT_SET;
+        }
+        s = s.toLowerCase();
+        if (s.equals("false") || s.equals("off")) {
+            return MonitorControl.OFF;
+        } else if (s.equals("true") || s.equals("on")) {
+            return MonitorControl.ON;
+        }
+        return MonitorControl.NOT_SET;
+    }
+
     static {
         try {
-            String s = System.getProperty(monitorProperty + "endpoint");
-            if (s != null && s.toLowerCase().equals("false")) {
-                endpointMonitoring = false;
-            }
+            endpointMonitoring = propertyToMonitorControl(monitorProperty + "endpoint");
 
-            // Client monitoring is OFF by default because there is
-            // no standard stub.close() method.  Therefore people do
-            // not typically close a stub when they are done with it
-            // (even though the RI does provide a .close).
-            s = System.getProperty(monitorProperty + "client");
-            if (s != null && s.toLowerCase().equals("true")) {
-                clientMonitoring = true;
-            }
+            clientMonitoring = propertyToMonitorControl(monitorProperty + "client");
 
             Integer i = Integer.getInteger(monitorProperty + "typelibDebug");
             if (i != null) {
                 typelibDebug = i;
             }
 
-            s = System.getProperty(monitorProperty + "registrationDebug");
+            String s = System.getProperty(monitorProperty + "registrationDebug");
             if (s != null) {
                 registrationDebug = s.toUpperCase();
             }
