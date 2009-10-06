@@ -1,4 +1,4 @@
-<descriptor since="2.2" transport="http" bugs="WSIT-1062,WSIT-1069">
+<descriptor since="2.2" transport="http" bugs="WSIT-1062 WSIT-1069">
     <description>Mtom Test for WSIT issue 1069, 1062</description>
     <service basedir="./server"/>
 </descriptor>
