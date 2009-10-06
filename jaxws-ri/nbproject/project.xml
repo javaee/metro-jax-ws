@@ -791,7 +791,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>rt/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar:rt/build/classes</classpath>
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
