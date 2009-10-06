@@ -347,7 +347,7 @@ public final class JavaMethodImpl implements JavaMethod {
         this.wsdlOperation = portType.getBinding().get(new QName(portType.getBinding().getPortType().getName().getNamespaceURI(),operationName));
         // TODO: replace this with proper error handling
         if(wsdlOperation ==null)
-            throw new Error("Undefined operation name "+operationName);
+            throw new Error("Method "+seiMethod.getName()+" is exposed as WebMethod, but there is no corresponding wsdl operation with name "+operationName+" in the wsdl definition");
 
         //so far, the inputAction, outputAction and fault actions are set from the @Action and @FaultAction
         //set the values from WSDLModel, if such annotations are not present or defaulted
@@ -355,7 +355,7 @@ public final class JavaMethodImpl implements JavaMethod {
                 inputAction = wsdlOperation.getOperation().getInput().getAction();                
         } else if(!inputAction.equals(wsdlOperation.getOperation().getInput().getAction()))
                 //TODO input action might be from @Action or WebMethod(action)
-                LOGGER.warning("Input Action on WSDL operation "+wsdlOperation.getName().getLocalPart() + "and @Action on its associated Web Method" + operationName +" did not match and will cause problems in dispatching the requests");
+                LOGGER.warning("Input Action on WSDL operation "+wsdlOperation.getName().getLocalPart() + " and @Action on its associated Web Method " + seiMethod.getName() +" did not match and will cause problems in dispatching the requests");
 
         if (!mep.isOneWay()) {
             if (outputAction.equals(""))
