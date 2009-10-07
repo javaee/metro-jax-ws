@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,14 +35,15 @@
  */
 package com.sun.xml.ws.policy;
 
+import com.sun.xml.ws.api.policy.ModelTranslator;
 import com.sun.xml.ws.policy.Policy;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMapExtender;
 import com.sun.xml.ws.policy.PolicySubject;
 import com.sun.xml.ws.resources.PolicyMessages;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
-import com.sun.xml.ws.policy.sourcemodel.PolicyModelTranslator;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -52,8 +53,9 @@ import java.util.Map;
  * @author Jakub Podlesak (jakub.podlesak at sun.com)
  */
 abstract class BuilderHandler{
+
     private static final PolicyLogger LOGGER = PolicyLogger.getLogger(BuilderHandler.class);
-    
+
     Map<String,PolicySourceModel> policyStore;
     Collection<String> policyURIs;
     Object policySubject;
@@ -92,7 +94,7 @@ abstract class BuilderHandler{
             if (sourceModel == null) {
                 throw LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1005_POLICY_REFERENCE_DOES_NOT_EXIST(policyURI)));
             } else {
-                result.add(PolicyModelTranslator.getTranslator().translate(sourceModel));
+                result.add(ModelTranslator.getTranslator().translate(sourceModel));
             }
         }
         

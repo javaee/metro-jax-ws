@@ -37,6 +37,7 @@
 package com.sun.xml.ws.api.policy;
 
 import com.sun.xml.ws.addressing.policy.AddressingPrefixMapper;
+import com.sun.xml.ws.config.management.policy.ManagementPrefixMapper;
 import com.sun.xml.ws.encoding.policy.EncodingPrefixMapper;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.NamespaceVersion;
@@ -55,7 +56,8 @@ public class SourceModel extends PolicySourceModel {
 
     private static final PrefixMapper[] JAXWS_PREFIX_MAPPERS = {
         new AddressingPrefixMapper(),
-        new EncodingPrefixMapper()
+        new EncodingPrefixMapper(),
+        new ManagementPrefixMapper()
     };
 
 

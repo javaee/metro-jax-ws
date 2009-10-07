@@ -34,49 +34,43 @@
  * holder.
  */
 
-package com.sun.xml.ws.api.policy;
+package com.sun.xml.ws.config.management.policy;
 
-import com.sun.xml.ws.addressing.policy.AddressingPolicyValidator;
-import com.sun.xml.ws.config.management.policy.ManagementPolicyValidator;
-import com.sun.xml.ws.encoding.policy.EncodingPolicyValidator;
-import com.sun.xml.ws.policy.AssertionValidationProcessor;
-import com.sun.xml.ws.policy.PolicyException;
-import com.sun.xml.ws.policy.spi.PolicyAssertionValidator;
+import com.sun.xml.ws.api.config.management.policy.ManagedClientAssertion;
+import com.sun.xml.ws.api.config.management.policy.ManagedServiceAssertion;
+import com.sun.xml.ws.policy.AssertionSet;
+import com.sun.xml.ws.policy.PolicyAssertion;
+import com.sun.xml.ws.policy.PolicyConstants;
+import com.sun.xml.ws.policy.sourcemodel.AssertionData;
+import com.sun.xml.ws.policy.spi.AssertionCreationException;
+import com.sun.xml.ws.policy.spi.PolicyAssertionCreator;
 
-import java.util.Arrays;
+import java.util.Collection;
+import javax.xml.namespace.QName;
 
 /**
- * Provides methods for assertion validation.
+ * Instantiates a PolicyAssertion of type ManagedServiceAssertion or ManagedClientAssertion.
  *
  * @author Fabian Ritzmann
  */
-public class ValidationProcessor extends AssertionValidationProcessor {
+public class ManagementAssertionCreator implements PolicyAssertionCreator {
 
-    private static final PolicyAssertionValidator[] JAXWS_ASSERTION_VALIDATORS = {
-        new AddressingPolicyValidator(),
-        new EncodingPolicyValidator(),
-        new ManagementPolicyValidator()
-    };
-
-    /**
-     * This constructor instantiates the object with a set of dynamically
-     * discovered PolicyAssertionValidators.
-     *
-     * @throws PolicyException Thrown if the set of dynamically discovered
-     *   PolicyAssertionValidators is empty.
-     */
-    private ValidationProcessor() throws PolicyException {
-        super(Arrays.asList(JAXWS_ASSERTION_VALIDATORS));
+    public String[] getSupportedDomainNamespaceURIs() {
+        return new String[] { PolicyConstants.SUN_MANAGEMENT_NAMESPACE };
     }
 
-    /**
-     * Factory method that returns singleton instance of the class.
-     *
-     * @return singleton An instance of the class.
-     * @throws PolicyException If instantiation failed.
-     */
-    public static ValidationProcessor getInstance() throws PolicyException {
-        return new ValidationProcessor();
+    public PolicyAssertion createAssertion(AssertionData data, Collection<PolicyAssertion> assertionParameters,
+            AssertionSet nestedAlternative, PolicyAssertionCreator defaultCreator) throws AssertionCreationException {
+        final QName name = data.getName();
+        if (ManagedServiceAssertion.MANAGED_SERVICE_QNAME.equals(name)) {
+            return new ManagedServiceAssertion(data, assertionParameters);
+        }
+        else if (ManagedClientAssertion.MANAGED_CLIENT_QNAME.equals(name)) {
+            return new ManagedClientAssertion(data, assertionParameters);
+        }
+        else {
+            return defaultCreator.createAssertion(data, assertionParameters, nestedAlternative, null);
+        }
     }
 
 }

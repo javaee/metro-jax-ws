@@ -37,16 +37,10 @@
 package com.sun.xml.ws.api.config.management.policy;
 
 import com.sun.istack.logging.Logger;
-import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.policy.AssertionSet;
-import com.sun.xml.ws.policy.Policy;
 import com.sun.xml.ws.policy.PolicyAssertion;
-import com.sun.xml.ws.policy.PolicyConstants;
-import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
-import com.sun.xml.ws.policy.PolicyMapKey;
-import com.sun.xml.ws.policy.SimpleAssertion;
+import com.sun.xml.ws.policy.PolicyConstants;
 import com.sun.xml.ws.policy.sourcemodel.AssertionData;
 import com.sun.xml.ws.policy.spi.AssertionCreationException;
 import com.sun.xml.ws.resources.ManagementMessages;
@@ -60,36 +54,14 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 
 /**
- * Provides convenience methods to directly access the ManagedService policy
- * assertion parameters.
+ * The server-side ManagedService policy assertion.
  *
  * @author Fabian Ritzmann
  */
-public class ManagedServiceAssertion extends SimpleAssertion {
-    /**
-     * The name of the ManagedService policy assertion.
-     */
+public class ManagedServiceAssertion extends ManagementAssertion {
+
     public static final QName MANAGED_SERVICE_QNAME =
             new QName(PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "ManagedService");
-
-    private static final Logger LOGGER = Logger.getLogger(ManagedServiceAssertion.class);
-
-    /**
-     * The name of the id attribute of the ManagedService policy assertion.
-     */
-    private static final QName ID_ATTRIBUTE_QNAME = new QName("id");
-    /**
-     * The name of the start attribute of the ManagedService policy assertion.
-     */
-    private static final QName START_ATTRIBUTE_QNAME = new QName("start");
-    /**
-     * The name of the management attribute of the ManagedService policy assertion.
-     */
-    private static final QName MANAGEMENT_ATTRIBUTE_QNAME = new QName("management");
-    /**
-     * The name of the monitoring attribute of the ManagedService policy assertion.
-     */
-    private static final QName MONITORING_ATTRIBUTE_QNAME = new QName("monitoring");
 
     private static final QName COMMUNICATION_SERVER_IMPLEMENTATIONS_PARAMETER_QNAME = new QName(
             PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "CommunicationServerImplementations");
@@ -101,9 +73,9 @@ public class ManagedServiceAssertion extends SimpleAssertion {
             PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "ConfigSaverImplementation");
     private static final QName CONFIG_READER_IMPLEMENTATION_PARAMETER_QNAME = new QName(
             PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "ConfigReaderImplementation");
-    private static final QName CLASS_NAME_ATTRIBUTE_QNAME = new QName(
-            PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "className");
+    private static final QName CLASS_NAME_ATTRIBUTE_QNAME = new QName("className");
 
+    private static final Logger LOGGER = Logger.getLogger(ManagedServiceAssertion.class);
 
     /**
      * Return ManagedService assertion if there is one associated with the endpoint.
@@ -118,100 +90,15 @@ public class ManagedServiceAssertion extends SimpleAssertion {
         // and not by other clients.
         @SuppressWarnings("deprecation")
         final PolicyMap policyMap = endpoint.getPolicyMap();
-        final ManagedServiceAssertion assertion = getAssertion(policyMap,
-                endpoint.getServiceName(), endpoint.getPortName());
+        final ManagedServiceAssertion assertion = ManagementAssertion.getAssertion(MANAGED_SERVICE_QNAME,
+                policyMap, endpoint.getServiceName(), endpoint.getPortName(), ManagedServiceAssertion.class);
         LOGGER.exiting(assertion);
         return assertion;
     }
 
-    /**
-     * Return ManagedService assertion if there is one associated with the client.
-     *
-     * @param portInfo The client PortInfo. Must not be null.
-     * @return The policy assertion if found. Null otherwise.
-     * @throws WebServiceException If computing the effective policy of the port failed.
-     */
-    public static ManagedServiceAssertion getAssertion(WSPortInfo portInfo) throws WebServiceException {
-        LOGGER.entering(portInfo);
-        // getPolicyMap is deprecated because it is only supposed to be used by Metro code
-        // and not by other clients.
-        @SuppressWarnings("deprecation")
-        final PolicyMap policyMap = portInfo.getPolicyMap();
-        final ManagedServiceAssertion assertion = getAssertion(policyMap,
-                portInfo.getServiceName(), portInfo.getPortName());
-        LOGGER.exiting(assertion);
-        return assertion;
-    }
-
-    /**
-     * Return ManagedService assertion if one can be found in the policy map under
-     * the given service and port name.
-     *
-     * @param policyMap The policy map. May be null.
-     * @param serviceName The WSDL service name. May not be null.
-     * @param portName The WSDL port name. May not be null.
-     * @return An instance of ManagedServiceAssertion or null.
-     * @throws WebServiceException If computing the effective policy of the endpoint scope failed.
-     */
-    public static ManagedServiceAssertion getAssertion(final PolicyMap policyMap, QName serviceName, QName portName)
-            throws WebServiceException {
-        try {
-            PolicyAssertion assertion = null;
-            if (policyMap != null) {
-                final PolicyMapKey key = PolicyMap.createWsdlEndpointScopeKey(serviceName, portName);
-                final Policy policy = policyMap.getEndpointEffectivePolicy(key);
-                if (policy != null) {
-                    final Iterator<AssertionSet> assertionSets = policy.iterator();
-                    if (assertionSets.hasNext()) {
-                        final AssertionSet assertionSet = assertionSets.next();
-                        final Iterator<PolicyAssertion> assertions = assertionSet.get
-                                (MANAGED_SERVICE_QNAME).iterator();
-                        if (assertions.hasNext()) {
-                            assertion = assertions.next();
-                        }
-                    }
-                }
-            }
-            return assertion == null ? null : assertion.getImplementation(ManagedServiceAssertion.class);
-        } catch (PolicyException ex) {
-            throw LOGGER.logSevereException(new WebServiceException(ManagementMessages.WSM_1001_FAILED_ASSERTION(), ex));
-        }
-    }
-
-    /**
-     * Create a new ManagedServiceAssertion instance.
-     *
-     * @param data The assertion data. Must not be null.
-     * @param assertionParameters Parameters of the assertion. May be null.
-     * @throws AssertionCreationException Thrown if the creation of the assertion failed.
-     */
     public ManagedServiceAssertion(AssertionData data, Collection<PolicyAssertion> assertionParameters)
             throws AssertionCreationException {
-        super(data, assertionParameters);
-        if (!MANAGED_SERVICE_QNAME.equals(data.getName())) {
-            throw new AssertionCreationException(data, ManagementMessages.WSM_1002_EXPECTED_MANAGED_SERVICE_ASSERTION());
-        }
-        if (isManagementEnabled() && !data.containsAttribute(ID_ATTRIBUTE_QNAME)) {
-            throw new AssertionCreationException(data, ManagementMessages.WSM_1003_MANAGED_SERVICE_MISSING_ID());
-        }
-    }
-
-    /**
-     * Returns the value of the id attribute. May not be null.
-     *
-     * @return The value of the id attribute.
-     */
-    public String getId() {
-        return this.getAttributeValue((ID_ATTRIBUTE_QNAME));
-    }
-
-    /**
-     * Returns the value of the start attribute. May be null.
-     *
-     * @return The value of the start attribute.
-     */
-    public String getStart() {
-        return this.getAttributeValue((START_ATTRIBUTE_QNAME));
+        super(MANAGED_SERVICE_QNAME, data, assertionParameters);
     }
 
     /**

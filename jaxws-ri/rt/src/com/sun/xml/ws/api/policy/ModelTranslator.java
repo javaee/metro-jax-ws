@@ -36,47 +36,64 @@
 
 package com.sun.xml.ws.api.policy;
 
-import com.sun.xml.ws.addressing.policy.AddressingPolicyValidator;
-import com.sun.xml.ws.config.management.policy.ManagementPolicyValidator;
-import com.sun.xml.ws.encoding.policy.EncodingPolicyValidator;
-import com.sun.xml.ws.policy.AssertionValidationProcessor;
+import com.sun.xml.ws.config.management.policy.ManagementAssertionCreator;
 import com.sun.xml.ws.policy.PolicyException;
-import com.sun.xml.ws.policy.spi.PolicyAssertionValidator;
+import com.sun.xml.ws.policy.privateutil.PolicyLogger;
+import com.sun.xml.ws.policy.sourcemodel.PolicyModelTranslator;
+import com.sun.xml.ws.policy.spi.PolicyAssertionCreator;
+import com.sun.xml.ws.resources.ManagementMessages;
 
 import java.util.Arrays;
 
 /**
- * Provides methods for assertion validation.
+ * This class provides a method for translating a PolicySourceModel structure to a
+ * normalized Policy expression. The resulting Policy is disconnected from its model,
+ * thus any additional changes in the model will have no effect on the Policy expression.
  *
  * @author Fabian Ritzmann
  */
-public class ValidationProcessor extends AssertionValidationProcessor {
+public class ModelTranslator extends PolicyModelTranslator {
 
-    private static final PolicyAssertionValidator[] JAXWS_ASSERTION_VALIDATORS = {
-        new AddressingPolicyValidator(),
-        new EncodingPolicyValidator(),
-        new ManagementPolicyValidator()
+    private static final PolicyLogger LOGGER = PolicyLogger.getLogger(ModelTranslator.class);
+    
+    private static final PolicyAssertionCreator[] JAXWS_ASSERTION_CREATORS = {
+        new ManagementAssertionCreator()
     };
 
-    /**
-     * This constructor instantiates the object with a set of dynamically
-     * discovered PolicyAssertionValidators.
-     *
-     * @throws PolicyException Thrown if the set of dynamically discovered
-     *   PolicyAssertionValidators is empty.
-     */
-    private ValidationProcessor() throws PolicyException {
-        super(Arrays.asList(JAXWS_ASSERTION_VALIDATORS));
+    private static final ModelTranslator translator;
+    private static final PolicyException creationException;
+
+    static {
+        ModelTranslator tempTranslator = null;
+        PolicyException tempException = null;
+        try {
+            tempTranslator = new ModelTranslator();
+        } catch (PolicyException e) {
+            tempException = e;
+            LOGGER.warning(ManagementMessages.WSM_1007_FAILED_MODEL_TRANSLATOR_INSTANTIATION(), e);
+        } finally {
+            translator = tempTranslator;
+            creationException = tempException;
+        }
+    }
+
+    private ModelTranslator() throws PolicyException {
+        super(Arrays.asList(JAXWS_ASSERTION_CREATORS));
     }
 
     /**
-     * Factory method that returns singleton instance of the class.
+     * Method returns thread-safe policy model translator instance.
      *
-     * @return singleton An instance of the class.
-     * @throws PolicyException If instantiation failed.
+     * @return A policy model translator instance.
+     * @throws PolicyException If instantiating a PolicyAssertionCreator failed.
      */
-    public static ValidationProcessor getInstance() throws PolicyException {
-        return new ValidationProcessor();
+    public static ModelTranslator getTranslator() throws PolicyException {
+        if (creationException != null) {
+            throw LOGGER.logSevereException(creationException);
+        }
+        else {
+            return translator;
+        }
     }
-
+    
 }

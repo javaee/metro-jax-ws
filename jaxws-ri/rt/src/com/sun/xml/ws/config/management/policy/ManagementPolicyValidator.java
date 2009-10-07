@@ -34,49 +34,52 @@
  * holder.
  */
 
-package com.sun.xml.ws.api.policy;
+package com.sun.xml.ws.config.management.policy;
 
-import com.sun.xml.ws.addressing.policy.AddressingPolicyValidator;
-import com.sun.xml.ws.config.management.policy.ManagementPolicyValidator;
-import com.sun.xml.ws.encoding.policy.EncodingPolicyValidator;
-import com.sun.xml.ws.policy.AssertionValidationProcessor;
-import com.sun.xml.ws.policy.PolicyException;
+import com.sun.xml.ws.api.config.management.policy.ManagedClientAssertion;
+import com.sun.xml.ws.api.config.management.policy.ManagedServiceAssertion;
+import com.sun.xml.ws.policy.PolicyAssertion;
+import com.sun.xml.ws.policy.PolicyConstants;
 import com.sun.xml.ws.policy.spi.PolicyAssertionValidator;
+import com.sun.xml.ws.policy.spi.PolicyAssertionValidator.Fitness;
 
-import java.util.Arrays;
+import javax.xml.namespace.QName;
 
 /**
- * Provides methods for assertion validation.
+ * Validate the ManagedService and ManagedClient policy assertions.
  *
  * @author Fabian Ritzmann
  */
-public class ValidationProcessor extends AssertionValidationProcessor {
+public class ManagementPolicyValidator implements PolicyAssertionValidator {
 
-    private static final PolicyAssertionValidator[] JAXWS_ASSERTION_VALIDATORS = {
-        new AddressingPolicyValidator(),
-        new EncodingPolicyValidator(),
-        new ManagementPolicyValidator()
-    };
-
-    /**
-     * This constructor instantiates the object with a set of dynamically
-     * discovered PolicyAssertionValidators.
-     *
-     * @throws PolicyException Thrown if the set of dynamically discovered
-     *   PolicyAssertionValidators is empty.
-     */
-    private ValidationProcessor() throws PolicyException {
-        super(Arrays.asList(JAXWS_ASSERTION_VALIDATORS));
+    public Fitness validateClientSide(PolicyAssertion assertion) {
+        final QName assertionName = assertion.getName();
+        if (ManagedClientAssertion.MANAGED_CLIENT_QNAME.equals(assertionName)) {
+            return Fitness.SUPPORTED;
+        }
+        else if (ManagedServiceAssertion.MANAGED_SERVICE_QNAME.equals(assertionName)) {
+            return Fitness.UNSUPPORTED;
+        }
+        else {
+            return Fitness.UNKNOWN;
+        }
     }
 
-    /**
-     * Factory method that returns singleton instance of the class.
-     *
-     * @return singleton An instance of the class.
-     * @throws PolicyException If instantiation failed.
-     */
-    public static ValidationProcessor getInstance() throws PolicyException {
-        return new ValidationProcessor();
+    public Fitness validateServerSide(PolicyAssertion assertion) {
+        final QName assertionName = assertion.getName();
+        if (ManagedServiceAssertion.MANAGED_SERVICE_QNAME.equals(assertionName)) {
+            return Fitness.SUPPORTED;
+        }
+        else if (ManagedClientAssertion.MANAGED_CLIENT_QNAME.equals(assertionName)) {
+            return Fitness.UNSUPPORTED;
+        }
+        else {
+            return Fitness.UNKNOWN;
+        }
+    }
+
+    public String[] declareSupportedDomains() {
+        return new String[] { PolicyConstants.SUN_MANAGEMENT_NAMESPACE };
     }
 
 }

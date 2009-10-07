@@ -37,9 +37,9 @@
 package com.sun.xml.ws.policy;
 
 import com.sun.xml.ws.api.policy.AlternativeSelector;
+import com.sun.xml.ws.api.policy.ModelTranslator;
 import com.sun.xml.ws.policy.sourcemodel.AssertionData;
 import com.sun.xml.ws.policy.sourcemodel.ModelNode;
-import com.sun.xml.ws.policy.sourcemodel.PolicyModelTranslator;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.NamespaceVersion;
 
@@ -78,7 +78,7 @@ public class AlternativeSelectorTest extends TestCase {
         alternative1.createChildAssertionNode(assertion1);
         final AssertionData assertion2 = AssertionData.createAssertionData(assertion2Name);
         alternative2.createChildAssertionNode(assertion2);
-        final PolicyModelTranslator translator = PolicyModelTranslator.getTranslator();
+        final ModelTranslator translator = ModelTranslator.getTranslator();
         this.multipleAlternativesPolicy = translator.translate(model);
     }
 

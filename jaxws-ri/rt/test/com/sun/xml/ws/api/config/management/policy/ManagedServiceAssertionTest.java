@@ -57,11 +57,6 @@ import junit.framework.TestCase;
  * @author Fabian Ritzmann
  */
 public class ManagedServiceAssertionTest extends TestCase {
-
-    /**
-     * The name of the ManagedService policy assertion.
-     */
-    private static final QName MANAGED_SERVICE_QNAME = new QName(PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "ManagedService");
     /**
      * The name of the id attribute of the ManagedService policy assertion.
      */
@@ -69,7 +64,7 @@ public class ManagedServiceAssertionTest extends TestCase {
     /**
      * The name of the start attribute of the ManagedService policy assertion.
      */
-    private static final QName START_ATTRIBUTE_QNAME = new QName("", "start");
+    private static final QName START_ATTRIBUTE_QNAME = new QName("start");
     private static final QName MANAGEMENT_ATTRIBUTE_QNAME = new QName("management");
     private static final QName MONITORING_ATTRIBUTE_QNAME = new QName("monitoring");
 
@@ -83,8 +78,7 @@ public class ManagedServiceAssertionTest extends TestCase {
             PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "ConfigSaverImplementation");
     private static final QName CONFIG_READER_IMPLEMENTATION_PARAMETER_QNAME = new QName(
             PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "ConfigReaderImplementation");
-    private static final QName CLASS_NAME_ATTRIBUTE_QNAME = new QName(
-            PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "className");
+    private static final QName CLASS_NAME_ATTRIBUTE_QNAME = new QName("className");
 
     public ManagedServiceAssertionTest(String testName) {
         super(testName);
@@ -107,7 +101,7 @@ public class ManagedServiceAssertionTest extends TestCase {
     public void testGetId() throws AssertionCreationException {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         String expResult = "id1";
@@ -120,11 +114,11 @@ public class ManagedServiceAssertionTest extends TestCase {
      */
     public void testNoId() {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         try {
             ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
-            fail("Expected AssertionCreationException because the ManagedServiceAssertion requires an id attribute.");
+            fail("Expected AssertionCreationException because the ServerManagedServiceAssertion requires an id attribute.");
         } catch (AssertionCreationException e) {
             // expected
         }
@@ -137,7 +131,7 @@ public class ManagedServiceAssertionTest extends TestCase {
     public void testNoIdManagementDisabled() throws AssertionCreationException {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(MANAGEMENT_ATTRIBUTE_QNAME, "false");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         String result = instance.getId();
@@ -152,7 +146,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(START_ATTRIBUTE_QNAME, "notify");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         String expResult = "notify";
@@ -163,7 +157,7 @@ public class ManagedServiceAssertionTest extends TestCase {
     public void testIsManagementEnabled() throws AssertionCreationException {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final boolean result = instance.isManagementEnabled();
@@ -174,7 +168,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MANAGEMENT_ATTRIBUTE_QNAME, "true");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final boolean result = instance.isManagementEnabled();
@@ -185,7 +179,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MANAGEMENT_ATTRIBUTE_QNAME, "on");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final boolean result = instance.isManagementEnabled();
@@ -196,7 +190,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MANAGEMENT_ATTRIBUTE_QNAME, "false");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final boolean result = instance.isManagementEnabled();
@@ -207,7 +201,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MANAGEMENT_ATTRIBUTE_QNAME, "off");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final boolean result = instance.isManagementEnabled();
@@ -217,7 +211,7 @@ public class ManagedServiceAssertionTest extends TestCase {
     public void testIsMonitoringEnabled() throws AssertionCreationException {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final boolean result = instance.isMonitoringEnabled();
@@ -228,7 +222,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MONITORING_ATTRIBUTE_QNAME, "true");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final boolean result = instance.isMonitoringEnabled();
@@ -239,7 +233,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MONITORING_ATTRIBUTE_QNAME, "on");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final boolean result = instance.isMonitoringEnabled();
@@ -250,7 +244,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MONITORING_ATTRIBUTE_QNAME, "false");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final boolean result = instance.isMonitoringEnabled();
@@ -261,7 +255,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MONITORING_ATTRIBUTE_QNAME, "off");
-        final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final boolean result = instance.isMonitoringEnabled();
@@ -290,7 +284,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> managedServiceAttributes = new HashMap<QName, String>();
         managedServiceAttributes.put(ID_ATTRIBUTE_QNAME, "id1");
         final AssertionData managedServiceData = AssertionData.createAssertionData(
-                MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
+                ManagedServiceAssertion.MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
 
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(managedServiceData, managedServiceParameters);
         final HashMap<QName, String> expMap = new HashMap<QName, String>();
@@ -318,7 +312,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> managedServiceAttributes = new HashMap<QName, String>();
         managedServiceAttributes.put(ID_ATTRIBUTE_QNAME, "id1");
         final AssertionData managedServiceData = AssertionData.createAssertionData(
-                MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
+                ManagedServiceAssertion.MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
 
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(managedServiceData, managedServiceParameters);
         final HashMap<QName, String> expMap = new HashMap<QName, String>();
@@ -344,7 +338,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> managedServiceAttributes = new HashMap<QName, String>();
         managedServiceAttributes.put(ID_ATTRIBUTE_QNAME, "id1");
         final AssertionData managedServiceData = AssertionData.createAssertionData(
-                MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
+                ManagedServiceAssertion.MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
 
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(managedServiceData, managedServiceParameters);
         final HashMap<QName, String> expMap = new HashMap<QName, String>();
@@ -370,7 +364,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> managedServiceAttributes = new HashMap<QName, String>();
         managedServiceAttributes.put(ID_ATTRIBUTE_QNAME, "id1");
         final AssertionData managedServiceData = AssertionData.createAssertionData(
-                MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
+                ManagedServiceAssertion.MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
 
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(managedServiceData, managedServiceParameters);
         final HashMap<QName, String> expMap = new HashMap<QName, String>();
@@ -395,7 +389,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> managedServiceAttributes = new HashMap<QName, String>();
         managedServiceAttributes.put(ID_ATTRIBUTE_QNAME, "id1");
         final AssertionData managedServiceData = AssertionData.createAssertionData(
-                MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
+                ManagedServiceAssertion.MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
 
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(managedServiceData, managedServiceParameters);
         final HashMap<String, String> expMap = new HashMap<String, String>();
@@ -426,7 +420,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> managedServiceAttributes = new HashMap<QName, String>();
         managedServiceAttributes.put(ID_ATTRIBUTE_QNAME, "id1");
         final AssertionData managedServiceData = AssertionData.createAssertionData(
-                MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
+                ManagedServiceAssertion.MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
 
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(managedServiceData, managedServiceParameters);
         final Collection<ImplementationRecord> implementations = instance.getCommunicationServerImplementations();
@@ -462,7 +456,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final HashMap<QName, String> managedServiceAttributes = new HashMap<QName, String>();
         managedServiceAttributes.put(ID_ATTRIBUTE_QNAME, "id1");
         final AssertionData managedServiceData = AssertionData.createAssertionData(
-                MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
+                ManagedServiceAssertion.MANAGED_SERVICE_QNAME, null, managedServiceAttributes, false, false);
 
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(managedServiceData, managedServiceParameters);
         final Collection<ImplementationRecord> implementations = instance.getCommunicationServerImplementations();
