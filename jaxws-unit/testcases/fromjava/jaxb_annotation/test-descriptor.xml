@@ -1,0 +1,13 @@
+<descriptor since="2.1" bugs="JAX-WS-557">
+  <description>
+    Test JAXB annotations on Web Params
+  </description>
+  <client name="fromjava.jaxb_annotation">
+      //assertEquals("test test", echoPort.normalize(" test    test  "));
+      NormalizedString normStr = new NormalizedString();
+      normStr.setNormalized(" test    test  ");
+      assertEquals("test test", echoPort.echo(normStr).getNormalized());
+
+  </client>
+  <service />
+</descriptor>
