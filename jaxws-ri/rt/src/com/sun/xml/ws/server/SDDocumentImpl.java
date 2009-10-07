@@ -194,7 +194,9 @@ public class SDDocumentImpl extends SDDocumentSource implements SDDocument {
     }
 
     protected SDDocumentImpl(QName rootName, URL url, SDDocumentSource source, Set<String> imports) {
-        assert url!=null;
+        if (url == null) {
+            throw new IllegalArgumentException("Cannot construct SDDocument with null URL.");
+        }
         this.rootName = rootName;
         this.source = source;
         this.url = url;
