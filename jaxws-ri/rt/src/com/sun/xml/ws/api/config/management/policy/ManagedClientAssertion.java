@@ -91,7 +91,7 @@ public class ManagedClientAssertion extends ManagementAssertion {
      * @return False.
      */
     public boolean isManagementEnabled() {
-        final String management = this.getAttributeValue(MONITORING_ATTRIBUTE_QNAME);
+        final String management = this.getAttributeValue(MANAGEMENT_ATTRIBUTE_QNAME);
         if (management != null) {
             if (management.trim().toLowerCase().equals("on") || Boolean.parseBoolean(management)) {
                 LOGGER.warning(ManagementMessages.WSM_1006_CLIENT_MANAGEMENT_ENABLED());
