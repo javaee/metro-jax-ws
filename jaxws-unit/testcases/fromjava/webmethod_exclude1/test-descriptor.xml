@@ -1,0 +1,9 @@
+<descriptor since="2.1.8" bugs="JAX-WS-789">
+  <description>
+    Tests @WebMethod(exclude="true") when other methods annotated are with @WebMethod
+  </description>
+  <client name="fromjava.webmethod_exclude">
+      assertEquals("test", echoPort.echoString("test"));
+  </client>
+  <service />
+</descriptor>
