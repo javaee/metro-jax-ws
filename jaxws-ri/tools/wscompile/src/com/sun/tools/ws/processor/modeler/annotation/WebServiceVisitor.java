@@ -613,10 +613,11 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         //SEI cannot have methods with @WebMethod(exclude=true)
         if (typeDecl instanceof InterfaceDeclaration && webMethod != null && webMethod.exclude())
             builder.onError(method.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_INVALID_SEI_ANNOTATION_ELEMENT_EXCLUDE("exclude=true", typeDecl.getQualifiedName(), method.toString()));
-        
-        if (hasWebMethods && (webMethod == null))
-            return true;
-        if (!hasWebMethods && (webMethod !=null) && webMethod.exclude()) {
+        // With https://jax-ws.dev.java.net/issues/show_bug.cgi?id=577, hasWebMethods has no effect
+        // if (hasWebMethods && (webMethod == null))
+        // return true;
+
+        if ((webMethod !=null) && webMethod.exclude()) {
             return true;
         }
         /*
