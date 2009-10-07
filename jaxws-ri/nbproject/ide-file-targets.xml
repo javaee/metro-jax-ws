@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." name="JAXWS-RI-2.2-IDE">
+
+    <import file="${basedir}/etc/build-bundle.xml"/>
+
+    <!-- TODO: edit the following target according to your needs -->
+    <!-- (more info: http://www.netbeans.org/kb/articles/freeform-config.html#runsingle) -->
+    <target name="debug-selected-file-in-test">
+        <fail unless="test.class">Must set property 'test.class'</fail>
+        <echoproperties />
+        <path id="cp">
+            <pathelement path="rt/build/classes:lib/junit.jar"/>
+            <pathelement path="${ant.home}/lib/ant.jar:${ant.home}/lib/ant-junit.jar"/>
+            <path refid="runtime.compile.classpath"/>
+            <pathelement location="rt/build/test-classes"/>
+        </path>
+        <nbjpdastart addressproperty="jpda.address" name="JAXWS-RI-2.2" transport="dt_socket">
+            <classpath refid="cp"/>
+        </nbjpdastart>
+        <java classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner" fork="true">
+            <classpath refid="cp"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+            <arg value="${test.class}"/>
+            <arg value="showoutput=true"/>
+            <arg value="formatter=org.apache.tools.ant.taskdefs.optional.junit.BriefJUnitResultFormatter"/>
+        </java>
+    </target>
+</project>
