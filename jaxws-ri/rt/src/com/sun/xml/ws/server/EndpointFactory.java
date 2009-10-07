@@ -464,7 +464,8 @@ public class EndpointFactory {
     private static void verifyPrimaryWSDL(@NotNull SDDocumentSource primaryWsdl, @NotNull QName serviceName) {
         SDDocumentImpl primaryDoc = SDDocumentImpl.create(primaryWsdl,serviceName,null);
         if (!(primaryDoc instanceof SDDocument.WSDL)) {
-            throw new WebServiceException("Not a primary WSDL="+primaryWsdl.getSystemId());
+            throw new WebServiceException(primaryWsdl.getSystemId()+
+                    " is not a WSDL. But it is passed as a primary WSDL");
         }
         SDDocument.WSDL wsdlDoc = (SDDocument.WSDL)primaryDoc;
         if (!wsdlDoc.hasService()) {
