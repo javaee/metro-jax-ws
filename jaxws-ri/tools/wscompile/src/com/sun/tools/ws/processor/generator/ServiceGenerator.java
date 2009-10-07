@@ -161,10 +161,12 @@ public class ServiceGenerator extends GeneratorBase {
 
         // Generating constructor
         // for e.g:  public ExampleService(URL wsdlLocation)
-        JMethod constructor3 = cls.constructor(JMod.PUBLIC);
-        constructor3.param(URL.class, "wsdlLocation");
-        String constructor3Str = String.format("super(wsdlLocation, %s);", serviceName);
-        constructor3.body().directStatement(constructor3Str);
+        if (options.target.isLaterThan(Options.Target.V2_2)) {
+            JMethod constructor3 = cls.constructor(JMod.PUBLIC);
+            constructor3.param(URL.class, "wsdlLocation");
+            String constructor3Str = String.format("super(wsdlLocation, %s);", serviceName);
+            constructor3.body().directStatement(constructor3Str);
+        }
 
         // Generating constructor
         // for e.g:  public ExampleService(URL wsdlLocation, WebServiceFeature ... features)
