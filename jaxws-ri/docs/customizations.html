@@ -64,145 +64,120 @@ exception class, etc. The other important thing you can do with these
 binding declarations is control certain features, such as asynchrony,
 provider, wrapper style, and additional headers. For example, a
 client application can enable asynchrony for a particular operation
-in a <CODE>portType</CODE> or all operations in a <CODE>portType</CODE>
-or all <CODE>portType</CODE> operations defined in the WSDL file.</P>
-<P>The JAX-RPC 1.1 specification did not define a standard
+in a <code>portType</code> or all operations in a <code>portType</code>
+or all <code>portType</code> operations defined in the WSDL file.</p>
+<p>The JAX-RPC 1.1 specification did not define a standard
 customization architecture. However JAX-RPC 1.x SI had limited WSDL
 to Java customization support. It allowed a JAX-RPC 1.x application
-to:</P>
-<UL>
-	<LI><P>Define a package where Java artifacts mapped from a WSDL file
-	will be generated.</P>
-	<LI><P>Customize the package for the value classes mapped from the
-	imported XML schema by the WSDL document.</P>
-	<LI><P>Customize handler chains.</P>
-</UL>
-<P>But these customizations were not portable and could not be used
+to:</p>
+<ul>
+	<li><p>Define a package where Java artifacts mapped from a WSDL file
+	will be generated.</p>
+	</li><li><p>Customize the package for the value classes mapped from the
+	imported XML schema by the WSDL document.</p>
+	</li><li><p>Customize handler chains.</p>
+</li></ul>
+<p>But these customizations were not portable and could not be used
 across other JAX-RPC implementations. ${PRODUCT_NAME}
 provides complete support for all the binding declarations defined by
-the specification.</P>
-<H2><A NAME="1._Declaring_customizations_"></A>1. Declaring
-Customizations</H2>
-<P>All the binding declaration elements live in
-<CODE>http://java.sun.com/xml/ns/jaxws</CODE> namespace. There are
+the specification.</p>
+<h2><a name="1._Declaring_customizations_"></a>1. Declaring
+Customizations</h2>
+<p>All the binding declaration elements live in
+<code>http://java.sun.com/xml/ns/jaxws</code> namespace. There are
 two ways to specify binding declarations. In the first approach, all
 binding declarations pertaining to a given WSDL document are grouped
-together in a standalone document, called an <I>external binding
-file</I>. The second approach consists of embedding binding
+together in a standalone document, called an <i>external binding
+file</i>. The second approach consists of embedding binding
 declarations directly inside a WSDL document. In either case, the
-<CODE>jaxws:bindings</CODE> element is used as a container for JAX-WS
-binding declarations. The <CODE>jaxws</CODE> prefix maps to the
-<CODE>http://java.sun.com/xml/ns/jaxws</CODE> namespace.</P>
-<H3><A NAME="1.1_External_binding_declaration"></A>1.1 External
-Binding Declaration</H3>
-<P>External binding files are semantically equivalent to embedded
-binding declarations. When <CODE>wsimport</CODE> processes the WSDL
+<code>jaxws:bindings</code> element is used as a container for JAX-WS
+binding declarations. The <code>jaxws</code> prefix maps to the
+<code>http://java.sun.com/xml/ns/jaxws</code> namespace.</p>
+<h3><a name="1.1_External_binding_declaration"></a>1.1 External
+Binding Declaration</h3>
+<p>External binding files are semantically equivalent to embedded
+binding declarations. When <code>wsimport</code> processes the WSDL
 document for which there is an external binding file, it internalizes
 the binding declarations defined in the external binding file on the
-nodes in the WSDL document they target using the <CODE>wsdlLocation</CODE>
+nodes in the WSDL document they target using the <code>wsdlLocation</code>
 attribute. The embedded binding declarations can exist in a WSDL file
-and an external binding file targeting that WSDL, but <CODE>wsimport</CODE>
+and an external binding file targeting that WSDL, but <code>wsimport</code>
 may give an error if, upon embedding the binding declarations defined
 in the external binding files, the resulting WSDL document contains
-conflicting binding declarations.</P>
-<H4><A NAME="1.1.1_Root_binding_element"></A>1.1.1 Root Binding
-Element</H4>
-<P>The <CODE>jaxws:bindings</CODE> declaration appears as the root of
-all other binding declarations. This top-level <CODE>jaxws:bindings</CODE>
+conflicting binding declarations.</p>
+<h4><a name="1.1.1_Root_binding_element"></a>1.1.1 Root Binding
+Element</h4>
+<p>The <code>jaxws:bindings</code> declaration appears as the root of
+all other binding declarations. This top-level <code>jaxws:bindings</code>
 element must specify the location of the WSDL file as a URI in the
-value of <CODE>wsdlLocation</CODE> attribute.</P>
-<P>Its important that the <CODE>wsdlLocation</CODE> attribute on the
-root <CODE>jaxws:bindings</CODE> declaration is same as the WSDL
-location URI given to <CODE>wsimport</CODE>.</P>
-<PRE>&lt;jaxws:bindings
-    wsdlLocation=&quot;http://localhost:8080/jaxws-external-customize/addnumbers?WSDL&quot;
-    jaxws:xmlns=&quot;http://java.sun.com/xml/ns/jaxws&quot;&gt;
-...
-&lt;/jaxws:bindings&gt;</PRE><H4>
-<A NAME="1.1.2_Child_binding_elements"></A>1.1.2 Child Binding
-Elements</H4>
-<P>The root <CODE>jaxws:bindings</CODE> element may contain child
-<CODE>jaxws:bindings</CODE> elements. In this case the child
-<CODE>jaxws:bindings</CODE> element must carry an XPath expression in
-the node attribute to refer to the WSDL node it customizes.</P>
-<P>Here is an excerpt from an external binding file <A HREF="../samples/external-customize/etc/custom-client.xml">custom-client.xml</A>
-in the <CODE>external-customize</CODE> sample:</P>
-<PRE>&lt;jaxws:bindings
-    wsdlLocation=&quot;http://localhost:8080/jaxws-external-customize/addnumbers?WSDL&quot;
-    jaxws:xmlns=&quot;http://java.sun.com/xml/ns/jaxws&quot;&gt;
-    &lt;jaxws:bindings node=&quot;wsdl:definitions&quot; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;&gt;
-        &lt;jaxws:package name=&quot;external_customize.client&quot;/&gt;
-        ...
-&lt;/jaxws:bindings&gt;</PRE><P>
-In this example the child <CODE>jaxws:bindings</CODE> applies package
+value of <code>wsdlLocation</code> attribute.</p>
+<p>Its important that the <code>wsdlLocation</code> attribute on the
+root <code>jaxws:bindings</code> declaration is same as the WSDL
+location URI given to <code>wsimport</code>.</p>
+<pre>&lt;jaxws:bindings<br>    wsdlLocation="http://localhost:8080/jaxws-external-customize/addnumbers?WSDL"<br>    jaxws:xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>...<br>&lt;/jaxws:bindings&gt;</pre><h4>
+<a name="1.1.2_Child_binding_elements"></a>1.1.2 Child Binding
+Elements</h4>
+<p>The root <code>jaxws:bindings</code> element may contain child
+<code>jaxws:bindings</code> elements. In this case the child
+<code>jaxws:bindings</code> element must carry an XPath expression in
+the <span style="font-style: italic;">node</span> attribute to refer to the WSDL node it customizes.</p>
+<p>Here is an excerpt from an external binding file <a href="../samples/external-customize/etc/custom-client.xml">custom-client.xml</a>
+in the <code>external-customize</code> sample:</p>
+<pre>&lt;jaxws:bindings<br>    wsdlLocation="http://localhost:8080/jaxws-external-customize/addnumbers?WSDL"<br>    jaxws:xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>    &lt;jaxws:bindings <span style="font-weight: bold;">node</span>="wsdl:definitions" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"&gt;<br>        &lt;jaxws:package name="external_customize.client"/&gt;<br>        ...<br>&lt;/jaxws:bindings&gt;</pre><p>
+In this example the child <code>jaxws:bindings</code> applies package
 customization. An XPath expression in the node attribute refers to
-the root node of the WSDL document, which is <CODE>wsdl:definitions</CODE>
-and declares the package <CODE>external_customize.client</CODE> for
-all the generated Java classes mapped from the WSDL file.</P>
-<H3><A NAME="1.2_Embedded_binding_declarations"></A>1.2 Embedded
-Binding Declarations</H3>
-<P>Embedded binding declarations follow different rules compared to
+the root node of the WSDL document, which is <code>wsdl:definitions</code>
+and declares the package <code>external_customize.client</code> for
+all the generated Java classes mapped from the WSDL file.</p>
+<h3><a name="1.2_Embedded_binding_declarations"></a>1.2 Embedded
+Binding Declarations</h3>
+<p>Embedded binding declarations directly inside the WSDL follow different rules compared to
 the binding declarations declared in the external binding file. Here
 are some important facts and rules as defined in the JAX-WS 2.0
-specification:</P>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in">An embedded binding declaration is
-	specified by using the <CODE>jaxws:bindings</CODE> element as a WSDL
-	extension.
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">When a <CODE>jaxws:bindings</CODE>
-	element is used as a WSDL extension, it must not have a node
-	attribute.
-	</P>
-	<LI><P STYLE="margin-bottom: 0in">The binding declaration must not
-	have a child element whose qualified name is <CODE>jaxws:bindings</CODE>.
-		</P>
-	<LI><P>A binding declaration embedded in a WSDL can only affect the
+specification:</p>
+<ul>
+	<li><p style="margin-bottom: 0in;">An embedded binding declaration is
+	specified by using the <code>jaxws:bindings</code> element as a WSDL
+	extension inside the wsdl node that is to be customized.
+	</p>
+	</li><li><p style="margin-bottom: 0in;">When a <code>jaxws:bindings</code>
+	element is used as a WSDL extension, the&nbsp; <code>jaxws:bindings </code>element should not have <span style="font-style: italic;">node</span>
+	attribute (the <span style="font-style: italic;">node</span> attribute is only used in external customization file to scope the custmization to a wsdl element).
+	</p>
+	</li><li><p>A binding declaration embedded in a WSDL can only affect the
 	WSDL element it extends.
-	</P>
-</UL>
-<P>Here's an example of embedded binding declarations in the WSDL
-<CODE><A HREF="../samples/inline-customize/etc/AddNumbers.wsdl">AddNumbers.wsdl</A></CODE>
-from the <CODE>inline-customize</CODE> sample:</P>
-<PRE>&lt;wsdl:portType name=&quot;AddNumbersImpl&quot;&gt;
-    &lt;!-- wsdl:portType customizations --&gt;
-    &lt;jaxws:bindings xmlns:jaxws=&quot;http://java.sun.com/xml/ns/jaxws&quot;&gt;
-        &lt;!-- rename the generated SEI from AddNumbersImpl to MathUtil --&gt;
-        &lt;jaxws:class name=&quot;MathUtil&quot;/&gt;
-        ...
-    &lt;/jaxws:bindings&gt;
-    &lt;wsdl:operation name=&quot;addNumber&quot;&gt;
-    ...
-&lt;/wsdl:portType&gt;</PRE><P>
-The above WSDL file excerpt shows the <CODE>wsdl:portType</CODE>
-customization. <CODE>jaxws:bindings</CODE> appears as extension
-element of <CODE>portType</CODE>. It customizes the class name of the
+	</p>
+</li></ul>
+<p>Here's an example of embedded binding declarations in the WSDL
+<code><a href="../samples/inline-customize/etc/AddNumbers.wsdl">AddNumbers.wsdl</a></code>
+from the <code>inline-customize</code> sample:</p>
+<pre>&lt;wsdl:portType name="AddNumbersImpl"&gt;<br>    &lt;!-- wsdl:portType customizations --&gt;<br>    &lt;jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"&gt;<br>        &lt;!-- rename the generated SEI from AddNumbersImpl to MathUtil --&gt;<br>        &lt;jaxws:class name="MathUtil"/&gt;<br>        ...<br>    &lt;/jaxws:bindings&gt;<br>    &lt;wsdl:operation name="addNumber"&gt;<br>    ...<br>&lt;/wsdl:portType&gt;</pre><p>
+The above WSDL file excerpt shows the <code>wsdl:portType</code>
+customization. <code>jaxws:bindings</code> appears as extension
+element of <code>portType</code>. It customizes the class name of the
 generated service endpoint interface. Without this customization, or
 by default, the service endpoint interface class is named after the
-<CODE>wsdl:portType</CODE> name. The binding declaration <CODE>jaxws:class</CODE>
-customizes the generated class to be named <CODE>MathUtil</CODE>
-instead of <CODE>AddNumberImpl</CODE>.</P>
-<H2><A NAME="2._Standard_customizations"></A>2. Standard
-Customizations</H2>
-<P>This section provides the details of all the possible WSDL binding
-declarations.</P>
-<H3><A NAME="2.1_Global_bindings"></A>2.1 Global bindings</H3>
-<P>the global customizations are the customizations that applies to
-the entire scope of wsdl:definition in the wsdl referenced by the roo
-jaxws:bindings@wsdlLocation.<BR><BR>Following customizations have the
-global scopes:<BR><BR>&lt;jaxws:package
-name=&quot;...&quot;/&gt;<BR>&lt;jaxws:enableWrapperStyle/&gt;<BR>&lt;jaxws:enableAsyncMapping/&gt;<BR><BR>These
-can appear as direct child of the <A HREF="#1.1.1_Root_binding_element">root
-binding</A> declarations in the external customization file.
-For example:</P>
-<PRE>&lt;bindings
-    xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;
-    wsdlLocation=&quot;http://localhost:8080/jaxws-external-customize/addnumbers?WSDL&quot;
-    xmlns=&quot;http://java.sun.com/xml/ns/jaxws&quot;&gt;
-        &lt;package name=&quot;external_customize.client&quot;/&gt;
-       &lt;enableWrapperStyle&gt;true&lt;/enableWrapperStyle&gt;
-        &lt;enableAsyncMapping&gt;false&lt;/enableAsyncMapping&gt;
-&lt;/bindings&gt;</PRE><H3>
+<code>wsdl:portType</code> name. The binding declaration <code>jaxws:class</code>
+customizes the generated class to be named <code>MathUtil</code>
+instead of <code>AddNumberImpl</code>.</p>In
+the following section, all the possible standard customizations and
+their scope is described. Global customizations can be specified under
+&lt;wsdl:definitions&gt; element and other customizations can be
+specified &nbsp;under&nbsp;the node of its scope.
+<h2><a name="2._Standard_customizations"></a>2. Standard
+Customizations</h2>
+<p>This section provides the details of all the possible WSDL binding
+declarations.</p>
+<h3><a name="2.1_Global_bindings"></a>2.1 Global bindings</h3>
+<p>The global customizations are the customizations that applies to
+the entire scope of wsdl:definition in the wsdl referenced by the root
+jaxws:bindings@wsdlLocation.<br><br>Following customizations have the
+global scopes:<br><br>&lt;jaxws:package
+name="..."/&gt;<br>&lt;jaxws:enableWrapperStyle/&gt;<br>&lt;jaxws:enableAsyncMapping/&gt;<br><br>These
+can appear as direct child of the <a href="#1.1.1_Root_binding_element">root
+binding</a> declarations in the external customization file.
+For example:</p>
+<pre>&lt;bindings<br>    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"<br>    wsdlLocation="http://localhost:8080/jaxws-external-customize/addnumbers?WSDL"<br>    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>        &lt;package name="external_customize.client"/&gt;<br>       &lt;enableWrapperStyle&gt;true&lt;/enableWrapperStyle&gt;<br>        &lt;enableAsyncMapping&gt;false&lt;/enableAsyncMapping&gt;<br>&lt;/bindings&gt;<br><br></pre><p>In embedded usage, the global customization can be specified under &lt;wsdl:definitions&gt; node of the wsdl.</p><h3>
 <A NAME="2.1_Package_customization"></A>2.2 Package Customization</H3>
 <P>By default <CODE>wscompile</CODE> generates WSDL artifacts in a
 package computed from the WSDL <CODE>targetNamespace</CODE>. For
@@ -475,11 +450,11 @@ handler chain configuration:
     xmlns:javaee=<A HREF="http://java.sun.com/xml/ns/j2ee">&quot;http://java.sun.com/xml/ns/javaee&quot;</A>&gt;
     &lt;jaxws:bindings node=&quot;wsdl:definitions&quot;&gt;
         &lt;javaee:handler-chain&gt;
-            &lt;javaee:handler-chain-name&gt;LoggingHandlers&lt;/javaee:handler-chain-name&gt;                    
+            &lt;javaee:handler-chain-name&gt;LoggingHandlers&lt;/javaee:handler-chain-name&gt;
             &lt;javaee:handler&gt;
                 &lt;javaee:handler-name&gt;Logger&lt;/javaee:handler-name&gt;
-                &lt;javaee:handler-class&gt;fromwsdlhandler.common.LoggingHandler&lt;/javaee:handler-class&gt;          
-            &lt;/javaee:handler&gt;                        
+                &lt;javaee:handler-class&gt;fromwsdlhandler.common.LoggingHandler&lt;/javaee:handler-class&gt;
+            &lt;/javaee:handler&gt;
         &lt;/javaee:handler-chain&gt;
     &lt;/jaxws:bindings&gt;
 &lt;/jaxws:bindings&gt;</PRE><P STYLE="margin-bottom: 0in">
