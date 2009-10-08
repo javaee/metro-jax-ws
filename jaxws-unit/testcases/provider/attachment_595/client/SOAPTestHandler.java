@@ -1,21 +1,21 @@
 package provider.attachment_595.client;
 
-import javax.xml.ws.handler.soap.SOAPMessageContext;
-import javax.xml.ws.handler.soap.SOAPHandler;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.ProtocolException;
-import javax.xml.ws.WebServiceException;
-import javax.xml.namespace.QName;
-import javax.xml.soap.*;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import java.util.Set;
+import javax.xml.namespace.QName;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.soap.SOAPHandler;
+import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Set;
 
 /**
+ * Handler adds an attachment on the outbound direction.
+ *
  * @author Jitendra Kotamraju
  */
 public class SOAPTestHandler implements SOAPHandler<SOAPMessageContext> {
@@ -25,8 +25,7 @@ public class SOAPTestHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     public boolean handleMessage(SOAPMessageContext smc) {
-        boolean outbound = (Boolean)smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-        if (!outbound)
+        if (!(Boolean)smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY))
             return true;
         try {
             SOAPMessage msg = smc.getMessage();
@@ -47,7 +46,6 @@ public class SOAPTestHandler implements SOAPHandler<SOAPMessageContext> {
 
     public void close(MessageContext context) {}
     
-
     private DataHandler getDataHandler(final String file) throws Exception {
         return new DataHandler(new DataSource() {
             public String getContentType() {
