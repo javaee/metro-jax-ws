@@ -42,6 +42,7 @@ import javax.xml.ws.Dispatch;
 import javax.xml.ws.Service;
 import javax.xml.ws.RespectBindingFeature;
 import javax.xml.ws.soap.AddressingFeature;
+import testutil.PortAllocator;
 
 /**
  * @author Rama Pulavarthi
@@ -91,7 +92,7 @@ public class BindingProviderUtil {
         return dispatch;
     }
 
-    private static final String NON_ANONYMOUS_CLIENT_ADDRESS = "http://localhost:9090/jaxws-crinterop-s11/nonanonymous";
+    private static final String NON_ANONYMOUS_CLIENT_ADDRESS = "http://localhost:"+PortAllocator.getFreePort()+"/jaxws-crinterop-s11/nonanonymous";
 
     private static final String NAMESPACE_URI = "http://example.org";
     private static final QName PORT_QNAME = new QName(NAMESPACE_URI, "wsaTestPort");
