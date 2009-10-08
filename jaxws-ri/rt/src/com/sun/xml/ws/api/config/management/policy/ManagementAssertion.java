@@ -90,6 +90,7 @@ public abstract class ManagementAssertion extends SimpleAssertion {
      * Return ManagementAssertion if one can be found in the policy map under
      * the given service and port name.
      *
+     * @param <T> The implementation class of the assertion.
      * @param name The fully qualified name of the server or client assertion.
      * @param policyMap The policy map. May be null.
      * @param serviceName The WSDL service name. May not be null.
@@ -170,11 +171,23 @@ public abstract class ManagementAssertion extends SimpleAssertion {
     public abstract boolean isManagementEnabled();
 
     /**
-     * Returns the value of the monitoring attribute depending on whether this is
-     * a client-side or server-side assertion.
+     * Returns the value of the monitoring attribute.
      *
      * @return The value of the monitoring attribute.
      */
-    public abstract boolean isMonitoringEnabled();
+    public Setting monitoringAttribute() {
+        final String monitoring = this.getAttributeValue(MONITORING_ATTRIBUTE_QNAME);
+        Setting result = Setting.NOT_SET;
+        if (monitoring != null) {
+            if (monitoring.trim().toLowerCase().equals("on")
+                || Boolean.parseBoolean(monitoring)) {
+                result = Setting.ON;
+            }
+            else {
+                result = Setting.OFF;
+            }
+        }
+        return result;
+    }
 
 }

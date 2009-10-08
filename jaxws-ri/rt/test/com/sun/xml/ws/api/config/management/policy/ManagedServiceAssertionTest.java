@@ -36,6 +36,7 @@
 
 package com.sun.xml.ws.api.config.management.policy;
 
+import com.sun.xml.ws.api.config.management.policy.ManagementAssertion.Setting;
 import com.sun.xml.ws.api.config.management.policy.ManagedServiceAssertion.ImplementationRecord;
 import com.sun.xml.ws.api.config.management.policy.ManagedServiceAssertion.NestedParameters;
 import com.sun.xml.ws.policy.PolicyAssertion;
@@ -208,58 +209,58 @@ public class ManagedServiceAssertionTest extends TestCase {
         assertFalse(result);
     }
 
-    public void testIsMonitoringEnabled() throws AssertionCreationException {
+    public void testMonitoringAttribute() throws AssertionCreationException {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
-        final boolean result = instance.isMonitoringEnabled();
-        assertTrue(result);
+        final Setting result = instance.monitoringAttribute();
+        assertSame(result, Setting.NOT_SET);
     }
 
-    public void testIsMonitoringEnabledTrue() throws AssertionCreationException {
+    public void testMonitoringAttributeTrue() throws AssertionCreationException {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MONITORING_ATTRIBUTE_QNAME, "true");
         final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
-        final boolean result = instance.isMonitoringEnabled();
-        assertTrue(result);
+        final Setting result = instance.monitoringAttribute();
+        assertSame(result, Setting.ON);
     }
 
-    public void testIsMonitoringEnabledOn() throws AssertionCreationException {
+    public void testMonitoringAttributeOn() throws AssertionCreationException {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MONITORING_ATTRIBUTE_QNAME, "on");
         final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
-        final boolean result = instance.isMonitoringEnabled();
-        assertTrue(result);
+        final Setting result = instance.monitoringAttribute();
+        assertSame(result, Setting.ON);
     }
 
-    public void testIsMonitoringEnabledFalse() throws AssertionCreationException {
+    public void testMonitoringAttributeFalse() throws AssertionCreationException {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MONITORING_ATTRIBUTE_QNAME, "false");
         final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
-        final boolean result = instance.isMonitoringEnabled();
-        assertFalse(result);
+        final Setting result = instance.monitoringAttribute();
+        assertSame(result, Setting.OFF);
     }
 
-    public void testIsMonitoringEnabledOff() throws AssertionCreationException {
+    public void testMonitoringAttributeOff() throws AssertionCreationException {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         attributes.put(MONITORING_ATTRIBUTE_QNAME, "off");
         final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
-        final boolean result = instance.isMonitoringEnabled();
-        assertFalse(result);
+        final Setting result = instance.monitoringAttribute();
+        assertSame(result, Setting.OFF);
     }
 
     /**
