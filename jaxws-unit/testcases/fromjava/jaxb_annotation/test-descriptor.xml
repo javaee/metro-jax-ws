@@ -3,10 +3,12 @@
     Test JAXB annotations on Web Params
   </description>
   <client name="fromjava.jaxb_annotation">
-      //assertEquals("test test", echoPort.normalize(" test    test  "));
+      String s = "\t\rtest test\t";
+      String exp = "  test test ";
+      assertEquals(exp, echoPort.normalize(s));
       NormalizedString normStr = new NormalizedString();
-      normStr.setNormalized(" test    test  ");
-      assertEquals("test test", echoPort.echo(normStr).getNormalized());
+      normStr.setNormalized(s);
+      assertEquals(exp, echoPort.echo(normStr).getNormalized());
 
   </client>
   <service />
