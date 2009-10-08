@@ -3,6 +3,7 @@
     Test JAXB annotations on Web Params
   </description>
   <client name="fromjava.jaxb_annotation">
+  //See https://jaxb.dev.java.net/issues/show_bug.cgi?id=696
       String s = "\t\rtest test\t";
       String exp = "  test test ";
       assertEquals(exp, echoPort.normalize(s));
