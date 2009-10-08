@@ -38,7 +38,9 @@ package com.sun.xml.ws.server;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.config.management.policy.ManagedClientAssertion;
 import com.sun.xml.ws.api.config.management.policy.ManagedServiceAssertion;
+import com.sun.xml.ws.api.config.management.policy.ManagementAssertion.Setting;
 import com.sun.xml.ws.api.server.BoundEndpoint;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.Module;
@@ -54,8 +56,9 @@ import org.glassfish.gmbal.ManagedData;
 import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
-import java.net.URL;
 import java.io.IOException;
+import java.lang.reflect.*;
+import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -81,78 +84,116 @@ public abstract class MonitorBase {
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".monitoring");
 
-    // FIX: get name from AMXGlassfish instead of hard-coded.
-    private static final String amxRootName =
-        // AMXGlassfish.DEFAULT.serverMon(AMXGlassfish.DEFAULT.dasName());
-        "amx:pp=/mon,type=server-mon,name=server";
-    private static final String standaloneName = "com.sun.metro";
-
+    /**
+     * Endpoint monitoring is ON by default.
+     *
+     * prop    |  no assert | assert/no mon | assert/mon off | assert/mon on
+     * -------------------------------------------------------------------
+     * not set |    on      |      on       |     off        |     on
+     * false   |    off     |      off      |     off        |     off
+     * true    |    on      |      on       |     off        |     on
+     */
     @NotNull public ManagedObjectManager createManagedObjectManager(final WSEndpoint endpoint) {
         // serviceName + portName identifies the managed objects under it.
         // There can be multiple services in the container.
         // The same serviceName+portName can live in different apps at
         // different endpoint addresses.
-        // We do not know the endpoint address until the first request
-        // comes in, which is after monitoring is setup.
-        // Monitoring will add -N, where N is unique integer in case of collisions.
+        //
+        // In general, monitoring will add -N, where N is unique integer,
+        // in case of collisions.
+        //
+        // The endpoint address would be unique, but we do not know
+        // the endpoint address until the first request comes in,
+        // which is after monitoring is setup.
+
         String rootName = 
             endpoint.getServiceName().getLocalPart()
             + "-"
             + endpoint.getPortName().getLocalPart();
+
         if (rootName.equals("-")) {
             rootName = "provider";
         }
 
-        final String x = getEndpointAddressPath(endpoint);
-        if (x != null) {
-            rootName = x;
+        // contextPath is not always available
+        final String contextPath = getContextPath(endpoint);
+        if (contextPath != null) {
+            rootName = contextPath + "-" + rootName;
         }
 
-        final ManagedServiceAssertion assertion = ManagedServiceAssertion.getAssertion(endpoint);
+        final ManagedServiceAssertion assertion =
+            ManagedServiceAssertion.getAssertion(endpoint);
         if (assertion != null) {
             final String id = assertion.getId();
-            if ( id != null) {
+            if (id != null) {
                 rootName = id;
             }
-            if (! assertion.isMonitoringEnabled()) {
+            if (assertion.monitoringAttribute() == Setting.OFF) {
                 return disabled("This endpoint", rootName);
             }
         }
 
-        if (endpointMonitoring.equals(MonitorControl.OFF)) {
+        if (endpointMonitoring.equals(Setting.OFF)) {
             return disabled("Global endpoint", rootName);
         }
         return createMOMLoop(rootName, 0);
     }
 
-    private String getEndpointAddressPath(final WSEndpoint endpoint) {
-        //logger.log(Level.WARNING, "endpoint: " + endpoint.toString());
-        final Container container = endpoint.getContainer();
-        final Module module = container.getSPI(Module.class);
-        //logger.log(Level.WARNING, "module: " + module.toString());
-        if (module != null) {
-            final List<BoundEndpoint> beList = module.getBoundEndpoints();
-            //logger.log(Level.WARNING, "beList: " + beList.toString());
-            for (BoundEndpoint be : beList) {
-                final WSEndpoint wse = be.getEndpoint();
-                //logger.log(Level.WARNING, "wse: " + wse.toString());
-                if (endpoint == wse) {
-                    return be.getAddress().toString();
-                }
+    private String getContextPath(final WSEndpoint endpoint) {
+        try {
+            Container container = endpoint.getContainer();
+            Method getSPI = 
+                container.getClass().getDeclaredMethod("getSPI", Class.class);
+            getSPI.setAccessible(true);
+            Class servletContextClass = 
+                Class.forName("javax.servlet.ServletContext");
+            Object servletContext =
+                getSPI.invoke(container, servletContextClass);
+            if (servletContext != null) {
+                Method getContextPath = servletContextClass.getDeclaredMethod("getContextPath");
+                getContextPath.setAccessible(true);
+                return (String) getContextPath.invoke(servletContext);
             }
+            return null;
+        } catch (Throwable t) {
+            logger.log(Level.FINEST, "getContextPath", t);
         }
         return null;
-    } 
-    
-    @NotNull public ManagedObjectManager createManagedObjectManager(final Stub stub) {
-        final String rootName = stub.requestContext.getEndpointAddress().toString();
+    }
 
-        // Client monitoring is OFF by default because there is
-        // no standard stub.close() method.  Therefore people do
-        // not typically close a stub when they are done with it
-        // (even though the RI does provide a .close).
-        if (clientMonitoring.equals(MonitorControl.NOT_SET) ||
-            clientMonitoring.equals(MonitorControl.OFF))
+    /**
+     * Client monitoring is OFF by default because there is
+     * no standard stub.close() method.  Therefore people do
+     * not typically close a stub when they are done with it
+     * (even though the RI does provide a .close).
+     * <pre>
+     * prop    |  no assert | assert/no mon | assert/mon off | assert/mon on
+     * -------------------------------------------------------------------
+     * not set |    off     |      off      |     off        |     on
+     * false   |    off     |      off      |     off        |     off
+     * true    |    on      |      on       |     off        |     on
+     * </pre>
+    */
+    @NotNull public ManagedObjectManager createManagedObjectManager(final Stub stub) {
+        String rootName = stub.requestContext.getEndpointAddress().toString();
+
+        final ManagedClientAssertion assertion = 
+            ManagedClientAssertion.getAssertion(stub.getPortInfo());
+        if (assertion != null) {
+            final String id = assertion.getId();
+            if (id != null) {
+                rootName = id;
+            }
+            if (assertion.monitoringAttribute() == Setting.OFF) {
+                return disabled("This client", rootName);
+            } else if (assertion.monitoringAttribute() == Setting.ON &&
+                       clientMonitoring != Setting.OFF) {
+                return createMOMLoop(rootName, 0);
+            }
+        }
+
+        if (clientMonitoring == Setting.NOT_SET ||
+            clientMonitoring == Setting.OFF)
         {
             return disabled("Global client", rootName);
         }
@@ -176,7 +217,9 @@ public abstract class MonitorBase {
         try {
             final javax.management.MBeanServer mbeanServer = 
                 java.lang.management.ManagementFactory.getPlatformMBeanServer();
-            final ObjectName amxRoot = new ObjectName(amxRootName);
+            final ObjectName amxRoot = 
+                //AMXGlassfish.DEFAULT.serverMon(AMXGlassfish.DEFAULT.dasName());
+                new ObjectName("amx:pp=/mon,type=server-mon,name=server");
             return mbeanServer.isRegistered(amxRoot) ? amxRoot : null;
         } catch (Throwable t) {
             logger.log(Level.CONFIG, "GlassFish AMX monitoring root not available.  Trying standalone.", t);
@@ -190,7 +233,7 @@ public abstract class MonitorBase {
             return new RewritingMOM(isFederated ?
                 ManagedObjectManagerFactory.createFederated(amxRoot)
                 :
-                ManagedObjectManagerFactory.createStandalone(standaloneName));
+                ManagedObjectManagerFactory.createStandalone("com.sun.metro"));
         } catch (Throwable t) {
             if (isFederated) {
                 logger.log(Level.CONFIG, "Problem while attempting to federate with GlassFish AMX monitoring.  Trying standalone.", t);
@@ -287,34 +330,33 @@ public abstract class MonitorBase {
         }
     }
 
-    private static enum MonitorControl { NOT_SET, OFF, ON }
-    private static MonitorControl clientMonitoring          = MonitorControl.NOT_SET;
-    private static MonitorControl endpointMonitoring        = MonitorControl.NOT_SET;
+    private static Setting clientMonitoring          = Setting.NOT_SET;
+    private static Setting endpointMonitoring        = Setting.NOT_SET;
     private static int     typelibDebug                     = -1;
     private static String  registrationDebug                = "NONE";
     private static boolean runtimeDebug                     = false;
     private static int     maxUniqueEndpointRootNameRetries = 100;
     private static final String monitorProperty = "com.sun.xml.ws.monitoring.";
 
-    private static MonitorControl propertyToMonitorControl(String propName) {
+    private static Setting propertyToSetting(String propName) {
         String s = System.getProperty(propName);
         if (s == null) {
-            return MonitorControl.NOT_SET;
+            return Setting.NOT_SET;
         }
         s = s.toLowerCase();
         if (s.equals("false") || s.equals("off")) {
-            return MonitorControl.OFF;
+            return Setting.OFF;
         } else if (s.equals("true") || s.equals("on")) {
-            return MonitorControl.ON;
+            return Setting.ON;
         }
-        return MonitorControl.NOT_SET;
+        return Setting.NOT_SET;
     }
 
     static {
         try {
-            endpointMonitoring = propertyToMonitorControl(monitorProperty + "endpoint");
+            endpointMonitoring = propertyToSetting(monitorProperty + "endpoint");
 
-            clientMonitoring = propertyToMonitorControl(monitorProperty + "client");
+            clientMonitoring = propertyToSetting(monitorProperty + "client");
 
             Integer i = Integer.getInteger(monitorProperty + "typelibDebug");
             if (i != null) {

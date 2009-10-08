@@ -120,4 +120,24 @@ public class ManagedClientAssertion extends ManagementAssertion {
         return result;
     }
 
+    /**
+     * Returns the value of the monitoring attribute.
+     *
+     * @return The value of the monitoring attribute.
+     */
+    public Setting monitoringAttribute() {
+        final String monitoring = this.getAttributeValue(MONITORING_ATTRIBUTE_QNAME);
+        Setting result = Setting.NOT_SET;
+        if (monitoring != null) {
+            if (monitoring.trim().toLowerCase().equals("on") 
+                || Boolean.parseBoolean(monitoring))
+            {
+                result = Setting.ON;
+            }
+            else {
+                result = Setting.OFF;
+            }
+        }
+        return result;
+    }
 }

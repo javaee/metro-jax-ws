@@ -59,7 +59,13 @@ import javax.xml.ws.WebServiceException;
  *
  * @author Fabian Ritzmann
  */
-abstract class ManagementAssertion extends SimpleAssertion {
+public abstract class ManagementAssertion extends SimpleAssertion {
+
+    /**
+     * To be able to distinguish between explicit settings and no setting.
+     */
+    public static enum Setting { NOT_SET, OFF, ON }
+
     /**
      * The name of the management attribute.
      */

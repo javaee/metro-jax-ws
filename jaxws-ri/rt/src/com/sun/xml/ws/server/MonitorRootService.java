@@ -100,7 +100,7 @@ import java.util.logging.Logger;
  */
 @ManagedObject
 @Description("Metro Web Service endpoint")
-@AMXMetadata(type="Service")
+@AMXMetadata(type="WSEndpoint")
 public final class MonitorRootService extends MonitorBase {
 
     private final WSEndpoint endpoint;

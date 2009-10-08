@@ -59,7 +59,7 @@ import java.net.URL;
  */
 @ManagedObject
 @Description("Metro Web Service client")
-@AMXMetadata(type="Client")
+@AMXMetadata(type="WSClient")
 public final class MonitorRootClient extends com.sun.xml.ws.server.MonitorBase {
 
     private final Stub stub;
