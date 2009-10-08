@@ -47,13 +47,10 @@ import com.sun.xml.ws.api.server.Module;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.client.Stub;
 import org.glassfish.external.amx.AMXGlassfish;
-import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.InheritedAttribute;
 import org.glassfish.gmbal.InheritedAttributes;
-import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedData;
-import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import java.io.IOException;
@@ -218,8 +215,8 @@ public abstract class MonitorBase {
             final javax.management.MBeanServer mbeanServer = 
                 java.lang.management.ManagementFactory.getPlatformMBeanServer();
             final ObjectName amxRoot = 
-                //AMXGlassfish.DEFAULT.serverMon(AMXGlassfish.DEFAULT.dasName());
-                new ObjectName("amx:pp=/mon,type=server-mon,name=server");
+                //new ObjectName("amx:pp=/mon,type=server-mon,name=server");
+                AMXGlassfish.DEFAULT.serverMon(AMXGlassfish.DEFAULT.dasName());
             return mbeanServer.isRegistered(amxRoot) ? amxRoot : null;
         } catch (Throwable t) {
             logger.log(Level.CONFIG, "GlassFish AMX monitoring root not available.  Trying standalone.", t);
@@ -294,7 +291,7 @@ public abstract class MonitorBase {
         try {
             final Object ignored = mom.createRoot(this, name);
             if (ignored != null) {
-                logger.log(Level.INFO, "Monitoring rootname successfully set to: " + mom.getObjectName(mom.getRoot()));
+                logger.log(Level.INFO, "Metro monitoring rootname successfully set to: " + mom.getObjectName(mom.getRoot()));
                 return mom;
             }
             try {
@@ -302,7 +299,7 @@ public abstract class MonitorBase {
             } catch (IOException e) {
                 logger.log(Level.CONFIG, "Ignoring exception caught when closing unused ManagedObjectManager", e);
             }
-            final String basemsg ="duplicate monitoring rootname: " + name + " : ";
+            final String basemsg ="Duplicate Metro monitoring rootname: " + name + " : ";
             if (unique > maxUniqueEndpointRootNameRetries) {
                 final String msg = basemsg + "Giving up.";
                 logger.log(Level.INFO, msg);
@@ -322,7 +319,7 @@ public abstract class MonitorBase {
             final ObjectName name = mom.getObjectName(mom.getRoot());
             // The name is null when the MOM is a NOOP.
             if (name != null) {
-                logger.log(Level.INFO, "Closing monitoring root: " + name);
+                logger.log(Level.INFO, "Closing Metro monitoring root: " + name);
             }
             mom.close();
         } catch (java.io.IOException e) {
