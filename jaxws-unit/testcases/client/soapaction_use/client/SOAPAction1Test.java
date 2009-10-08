@@ -41,7 +41,6 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.soap.AddressingFeature;
 import javax.xml.namespace.QName;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -51,45 +50,45 @@ import javax.xml.bind.JAXBElement;
 /**
  * @author Rama Pulavarthi
  */
-public class SOAPActionTest2 extends TestCase {
+public class SOAPAction1Test extends TestCase {
 
     private final String action = "\"http://example.com/action/echoSOAPAction\"";
     private final String empty_action = "\"\"";
     private final String dummy_action = "dummy";
 
-    public void testSOAPActionWithWSDL2() {
-        TestEndpoint2 port = new TestEndpointService2().getTestEndpointPort2();
+    public void testSOAPActionWithWSDL1() {
+        TestEndpoint1 port = new TestEndpointService1().getTestEndpointPort1();
         String response = port.echoSOAPAction("foo");
         assertEquals(action, response);
 
     }
 
     public void testSOAPActionWithDispatch_WithWSDL() throws JAXBException {
-        Dispatch<Object> d = new TestEndpointService2().createDispatch(new QName("http://client.soapaction_use.server/", "TestEndpointPort2"), JAXBContext.newInstance(ObjectFactory.class), Service.Mode.PAYLOAD);
+        Dispatch<Object> d = new TestEndpointService1().createDispatch(new QName("http://client.soapaction_use.server/", "TestEndpointPort1"), JAXBContext.newInstance(ObjectFactory.class), Service.Mode.PAYLOAD);
         ((BindingProvider) d).getRequestContext().put(BindingProvider.SOAPACTION_URI_PROPERTY, dummy_action);
         JAXBElement<String> r = (JAXBElement<String>) d.invoke(new ObjectFactory().createEchoSOAPAction("dummy"));
         assertEquals(action, r.getValue());
 
     }
 
-    public void testSOAPActionWithDispatch_WithoutUse_WithWSA() throws JAXBException {
-        TestEndpoint2 port = new TestEndpointService2().getTestEndpointPort2();
+    public void testSOAPActionWithDispatch_WithoutUse() throws JAXBException {
+        TestEndpoint1 port = new TestEndpointService1().getTestEndpointPort1();
         String address = (String) ((BindingProvider) port).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
-        Service s = Service.create(new QName("http://client.soapaction_use.server/", "TestEndpointService2"));
-        s.addPort(new QName("http://client.soapaction_use.server/", "TestEndpointPort2"), SOAPBinding.SOAP11HTTP_BINDING, address);
-        Dispatch<Object> d = s.createDispatch(new QName("http://client.soapaction_use.server/", "TestEndpointPort2"), JAXBContext.newInstance(ObjectFactory.class), Service.Mode.PAYLOAD, new AddressingFeature());
+        Service s = Service.create(new QName("http://client.soapaction_use.server/", "TestEndpointService1"));
+        s.addPort(new QName("http://client.soapaction_use.server/", "TestEndpointPort1"), SOAPBinding.SOAP11HTTP_BINDING, address);
+        Dispatch<Object> d = s.createDispatch(new QName("http://client.soapaction_use.server/", "TestEndpointPort1"), JAXBContext.newInstance(ObjectFactory.class), Service.Mode.PAYLOAD);
         ((BindingProvider) d).getRequestContext().put(BindingProvider.SOAPACTION_URI_PROPERTY, action);
         JAXBElement<String> r = (JAXBElement<String>) d.invoke(new ObjectFactory().createEchoSOAPAction("dummy"));
-        assertEquals(action, r.getValue());
+        assertEquals(empty_action, r.getValue());
 
     }
 
-    public void testSOAPActionWithDispatch_WithUse_true_WithWSA() throws JAXBException {
-        TestEndpoint2 port = new TestEndpointService2().getTestEndpointPort2();
+    public void testSOAPActionWithDispatch_WithUse_true() throws JAXBException {
+        TestEndpoint1 port = new TestEndpointService1().getTestEndpointPort1();
         String address = (String) ((BindingProvider) port).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
-        Service s = Service.create(new QName("http://client.soapaction_use.server/", "TestEndpointService2"));
-        s.addPort(new QName("http://client.soapaction_use.server/", "TestEndpointPort2"), SOAPBinding.SOAP11HTTP_BINDING, address);
-        Dispatch<Object> d = s.createDispatch(new QName("http://client.soapaction_use.server/", "TestEndpointPort2"), JAXBContext.newInstance(ObjectFactory.class), Service.Mode.PAYLOAD, new AddressingFeature());
+        Service s = Service.create(new QName("http://client.soapaction_use.server/", "TestEndpointService1"));
+        s.addPort(new QName("http://client.soapaction_use.server/", "TestEndpointPort1"), SOAPBinding.SOAP11HTTP_BINDING, address);
+        Dispatch<Object> d = s.createDispatch(new QName("http://client.soapaction_use.server/", "TestEndpointPort1"), JAXBContext.newInstance(ObjectFactory.class), Service.Mode.PAYLOAD);
         ((BindingProvider) d).getRequestContext().put(BindingProvider.SOAPACTION_URI_PROPERTY, action);
         ((BindingProvider) d).getRequestContext().put(BindingProvider.SOAPACTION_USE_PROPERTY, true);
         JAXBElement<String> r = (JAXBElement<String>) d.invoke(new ObjectFactory().createEchoSOAPAction("dummy"));
@@ -97,12 +96,12 @@ public class SOAPActionTest2 extends TestCase {
 
     }
 
-    public void testSOAPActionWithDispatch_WithUse_false_WithWSA() throws JAXBException {
-        TestEndpoint2 port = new TestEndpointService2().getTestEndpointPort2();
+    public void testSOAPActionWithDispatch_WithUse_false() throws JAXBException {
+        TestEndpoint1 port = new TestEndpointService1().getTestEndpointPort1();
         String address = (String) ((BindingProvider) port).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
-        Service s = Service.create(new QName("http://client.soapaction_use.server/", "TestEndpointService2"));
-        s.addPort(new QName("http://client.soapaction_use.server/", "TestEndpointPort2"), SOAPBinding.SOAP11HTTP_BINDING, address);
-        Dispatch<Object> d = s.createDispatch(new QName("http://client.soapaction_use.server/", "TestEndpointPort2"), JAXBContext.newInstance(ObjectFactory.class), Service.Mode.PAYLOAD, new AddressingFeature());
+        Service s = Service.create(new QName("http://client.soapaction_use.server/", "TestEndpointService1"));
+        s.addPort(new QName("http://client.soapaction_use.server/", "TestEndpointPort1"), SOAPBinding.SOAP11HTTP_BINDING, address);
+        Dispatch<Object> d = s.createDispatch(new QName("http://client.soapaction_use.server/", "TestEndpointPort1"), JAXBContext.newInstance(ObjectFactory.class), Service.Mode.PAYLOAD);
         ((BindingProvider) d).getRequestContext().put(BindingProvider.SOAPACTION_URI_PROPERTY, "http://example/action");
         ((BindingProvider) d).getRequestContext().put(BindingProvider.SOAPACTION_USE_PROPERTY, false);
         JAXBElement<String> r = (JAXBElement<String>) d.invoke(new ObjectFactory().createEchoSOAPAction("dummy"));
