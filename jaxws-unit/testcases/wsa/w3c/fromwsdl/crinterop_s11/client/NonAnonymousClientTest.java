@@ -68,7 +68,7 @@ public class NonAnonymousClientTest extends XMLTestCase {
     /**
      * Sets up a Endpoint for listenign to non-anonymous responses,
      * which uses the Exchanger to pass the request message.
-     * This in unncessaery for anonymous tests.Ê
+     * This in unncessaery for anonymous tests.
      *
      * @throws Exception
      */
