@@ -560,6 +560,10 @@ public abstract class Message {
      * <p>
      * This method provides an opportunity for implementations to reuse
      * any reusable resources needed for representing the payload.
+     *
+     * <p>
+     * This method may not be called more than once since it may have
+     * released the reusable resources.
      */
     public void consume() {}
 
