@@ -9,7 +9,7 @@
     <property name="docs.home" value="${basedir}/docs"/>
     <property name="logs.dir" value="${build.home}/junit-reports"/>
     <property name="test" value="testcases"/>
-    <property name="jaxws-hudson-project" value="jaxws-ri-21"/>
+    <property name="jaxws-hudson-project" value="jaxws-ri-22"/>
     <!-- Additional arguments to test harness -->
     <property name="args" value=""/>
 
