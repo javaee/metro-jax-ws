@@ -223,6 +223,21 @@ public final class RequestContext extends PropertySet {
         soapAction = sAction;
     }
 
+    /**
+     * This controls whether BindingProvider.SOAPACTION_URI_PROPERTY is used.
+     * See BindingProvider.SOAPACTION_USE_PROPERTY for details.
+     *
+     * This only control whether value of BindingProvider.SOAPACTION_URI_PROPERTY is used or not and not
+     * if it can be sent if it can be obtained by other means such as WSDL binding
+     */
+    private Boolean soapActionUse;
+    @Property(BindingProvider.SOAPACTION_USE_PROPERTY)
+    public Boolean getSoapActionUse(){
+        return soapActionUse;
+    }
+    public void setSoapActionUse(Boolean sActionUse){
+        soapActionUse = sActionUse;
+    }
 
     /**
      * {@link Map} exposed to the user application.
@@ -280,13 +295,21 @@ public final class RequestContext extends PropertySet {
     /**
      * Fill a {@link Packet} with values of this {@link RequestContext}.
      */
-    public void fill(Packet packet) {
+    public void fill(Packet packet, boolean isAddressingEnabled) {
         if(mapView.fallbackMap==null) {
             if (endpointAddress != null)
                 packet.endpointAddress = endpointAddress;
             packet.contentNegotiation = contentNegotiation;
-            if (soapAction != null) {
-                packet.soapAction = soapAction;
+
+            //JAX-WS-596: Check the semantics of SOAPACTION_USE_PROPERTY before using the SOAPACTION_URI_PROPERTY for
+            // SoapAction as specified in the javadoc of BindingProvider. The spec seems to be little contradicting with
+            //  javadoc and says that the use property effects the sending of SOAPAction property.
+            // Since the user has the capability to set the value as "" if needed, implement the javadoc behavior.
+            
+            if ((soapActionUse != null && soapActionUse) || (soapActionUse == null && isAddressingEnabled)) {
+                if (soapAction != null) {
+                    packet.soapAction = soapAction;
+                }
             }
             if(!others.isEmpty()) {
                 packet.invocationProperties.putAll(others);

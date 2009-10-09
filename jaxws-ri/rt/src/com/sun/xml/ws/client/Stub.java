@@ -335,7 +335,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         // fill in Packet
         packet.proxy = this;
         packet.handlerConfig = binding.getHandlerConfig();
-        requestContext.fill(packet);
+        requestContext.fill(packet,(binding.getAddressingVersion() != null));
         if (wsdlProperties != null) {
             packet.addSatellite(wsdlProperties);
         }
