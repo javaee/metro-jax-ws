@@ -239,6 +239,10 @@ final class HttpClientTransport {
     private void createHttpConnection() throws IOException {
 
         httpConnection = (HttpURLConnection) endpoint.openConnection();
+        String scheme = endpoint.getURI().getScheme();
+        if (scheme.equals("https")) {
+            https = true;
+        }
         if (httpConnection instanceof HttpsURLConnection) {
             https = true;
 
