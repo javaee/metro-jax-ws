@@ -18,7 +18,6 @@ import java.util.Map;
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 @WebService(portName = "TestEndpointPort2", targetNamespace = "http://client.soapaction_use.server/", serviceName="TestEndpointService2", name="TestEndpoint2")//,
         //endpointInterface = "client.soapaction_use.server.TestEndpoint")
-@Addressing
 public class TestEndpoint2Impl {
    @Resource
     WebServiceContext wsContext;
