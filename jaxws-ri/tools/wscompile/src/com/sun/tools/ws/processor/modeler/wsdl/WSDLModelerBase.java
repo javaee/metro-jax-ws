@@ -637,11 +637,11 @@ public abstract class WSDLModelerBase implements Modeler {
     // bug fix: 4857100
     protected static com.sun.tools.ws.wsdl.document.Message findMessage(
         QName messageName,
-        ProcessSOAPOperationInfo info) {
+        WSDLDocument document) {
         com.sun.tools.ws.wsdl.document.Message message = null;
         try {
             message =
-                (com.sun.tools.ws.wsdl.document.Message)info.document.find(
+                (com.sun.tools.ws.wsdl.document.Message)document.find(
                     Kinds.MESSAGE,
                     messageName);
         } catch (NoSuchEntityException e) {

@@ -201,6 +201,10 @@ public class PseudoSchemaBuilder {
             outputMessage = operation.getOutput().resolveMessage(wsdlDocument);
         if(outputMessage != null){
             List<MessagePart> allParts = new ArrayList<MessagePart>(outputMessage.getParts());
+            if(options.additionalHeaders) {
+                List<MessagePart> addtionalHeaderParts = wsdlModeler.getAdditionHeaderParts(bindingOperation, outputMessage, false);
+                allParts.addAll(addtionalHeaderParts);
+            }
             if(allParts.size() > 1)
                 build(getOperationName(operationName), allParts);
         }

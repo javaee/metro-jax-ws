@@ -856,7 +856,7 @@ public class WSDLModeler extends WSDLModelerBase {
         if (options.additionalHeaders) {
             List<Parameter> additionalHeaders = new ArrayList<Parameter>();
             if (inputMessage != null) {
-                for (MessagePart part : getAdditionHeaderParts(inputMessage, true)) {
+                for (MessagePart part : getAdditionHeaderParts(info.bindingOperation, inputMessage, true)) {
                     QName name = part.getDescriptor();
                     JAXBType jaxbType = getJAXBType(part);
                     Block block = new Block(name, jaxbType, part);
@@ -870,7 +870,7 @@ public class WSDLModeler extends WSDLModelerBase {
 
             if (isRequestResponse && outputMessage != null) {
                 List<Parameter> outParams = new ArrayList<Parameter>();
-                for (MessagePart part : getAdditionHeaderParts(outputMessage, false)) {
+                for (MessagePart part : getAdditionHeaderParts(info.bindingOperation,outputMessage, false)) {
                     QName name = part.getDescriptor();
                     JAXBType jaxbType = getJAXBType(part);
                     Block block = new Block(name, jaxbType, part);
@@ -1529,10 +1529,10 @@ public class WSDLModeler extends WSDLModelerBase {
         return null;
     }
 
-    private List<MessagePart> getAdditionHeaderParts(Message message, boolean isInput){
+    List<MessagePart> getAdditionHeaderParts(BindingOperation bindingOperation,Message message, boolean isInput){
         List<MessagePart> headerParts = new ArrayList<MessagePart>();
         List<MessagePart> parts = message.getParts();
-        List<MessagePart> headers = getHeaderParts(isInput);
+        List<MessagePart> headers = getHeaderParts(bindingOperation, isInput);
 
         for(MessagePart part: headers){
             if(parts.contains(part))
@@ -1545,7 +1545,7 @@ public class WSDLModeler extends WSDLModelerBase {
     private List<MessagePart> getHeaderPartsFromMessage(Message message, boolean isInput) {
         List<MessagePart> headerParts = new ArrayList<MessagePart>();
         Iterator<MessagePart> parts = message.parts();
-        List<MessagePart> headers = getHeaderParts(isInput);
+        List<MessagePart> headers = getHeaderParts(info.bindingOperation, isInput);
         while (parts.hasNext()) {
             MessagePart part = parts.next();
             if (headers.contains(part)) {
@@ -1561,7 +1561,7 @@ public class WSDLModeler extends WSDLModelerBase {
             SOAPHeader header = headers.next();
             if (!header.isLiteral())
                 continue;
-            com.sun.tools.ws.wsdl.document.Message headerMessage = findMessage(header.getMessage(), info);
+            com.sun.tools.ws.wsdl.document.Message headerMessage = findMessage(header.getMessage(), document);
             if (headerMessage == null)
                 continue;
 
@@ -1572,12 +1572,12 @@ public class WSDLModeler extends WSDLModelerBase {
         return null;
     }
 
-    private List<MessagePart> getHeaderParts(boolean isInput) {
+    private List<MessagePart> getHeaderParts(BindingOperation bindingOperation, boolean isInput) {
         TWSDLExtensible ext;
         if (isInput) {
-            ext = info.bindingOperation.getInput();
+            ext = bindingOperation.getInput();
         } else {
-            ext = info.bindingOperation.getOutput();
+            ext = bindingOperation.getOutput();
         }
 
         List<MessagePart> parts = new ArrayList<MessagePart>();
@@ -1585,23 +1585,23 @@ public class WSDLModeler extends WSDLModelerBase {
         while (headers.hasNext()) {
             SOAPHeader header = headers.next();
             if (!header.isLiteral()) {
-                error(header, ModelerMessages.WSDLMODELER_INVALID_HEADER_NOT_LITERAL(header.getPart(), info.bindingOperation.getName()));
+                error(header, ModelerMessages.WSDLMODELER_INVALID_HEADER_NOT_LITERAL(header.getPart(), bindingOperation.getName()));
             }
 
             if (header.getNamespace() != null) {
-                warning(header, ModelerMessages.WSDLMODELER_WARNING_R_2716_R_2726("soapbind:header", info.bindingOperation.getName()));
+                warning(header, ModelerMessages.WSDLMODELER_WARNING_R_2716_R_2726("soapbind:header", bindingOperation.getName()));
             }
-            com.sun.tools.ws.wsdl.document.Message headerMessage = findMessage(header.getMessage(), info);
+            com.sun.tools.ws.wsdl.document.Message headerMessage = findMessage(header.getMessage(),document);
             if (headerMessage == null) {
-                error(header, ModelerMessages.WSDLMODELER_INVALID_HEADER_CANT_RESOLVE_MESSAGE(header.getMessage(), info.bindingOperation.getName()));
+                error(header, ModelerMessages.WSDLMODELER_INVALID_HEADER_CANT_RESOLVE_MESSAGE(header.getMessage(), bindingOperation.getName()));
             }
 
             MessagePart part = headerMessage.getPart(header.getPart());
             if (part == null) {
-                error(header, ModelerMessages.WSDLMODELER_INVALID_HEADER_NOT_FOUND(header.getPart(), info.bindingOperation.getName()));
+                error(header, ModelerMessages.WSDLMODELER_INVALID_HEADER_NOT_FOUND(header.getPart(), bindingOperation.getName()));
             }
             if (part.getDescriptorKind() != SchemaKinds.XSD_ELEMENT) {
-                error(part, ModelerMessages.WSDLMODELER_INVALID_HEADER_MESSAGE_PART_MUST_HAVE_ELEMENT_DESCRIPTOR(part.getName(), info.bindingOperation.getName()));
+                error(part, ModelerMessages.WSDLMODELER_INVALID_HEADER_MESSAGE_PART_MUST_HAVE_ELEMENT_DESCRIPTOR(part.getName(), bindingOperation.getName()));
             }
             part.setBindingExtensibilityElementKind(MessagePart.SOAP_HEADER_BINDING);
             parts.add(part);
