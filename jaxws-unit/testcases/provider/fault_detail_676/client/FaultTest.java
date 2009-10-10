@@ -23,6 +23,10 @@ public class FaultTest extends TestCase {
             fail("Didn't receive an expected exception");
         } catch(SOAPFaultException se) {
             SOAPFault fault = se.getFault();
+            assertEquals(new QName("http://schemas.xmlsoap.org/soap/envelope/", "Server"),
+                    fault.getFaultCodeAsQName());
+            assertEquals("fault message", fault.getFaultString());
+            assertEquals("http://example.org/actor", fault.getFaultActor());
             Detail detail = fault.getDetail();
             Iterator it = detail.getDetailEntries();
             DetailEntry de1 = (DetailEntry)it.next();

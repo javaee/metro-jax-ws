@@ -18,8 +18,9 @@ public class HelloImpl implements Provider<Source> {
         String body  =
             "<soap:Fault xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>"+
                     "<faultcode>soap:Server</faultcode>"+
-                    "<faultstring>fault message</faultstring>" +
-                    "<detail>" +
+                    "<faultstring>fault message</faultstring>"+
+                    "<faultactor>http://example.org/actor</faultactor>"+
+                    "<detail>"+
                     "<entry1>entry1</entry1>"+
                     "<entry2>entry2</entry2>"+
                     "</detail>" +
