@@ -56,6 +56,8 @@ import javax.xml.transform.stream.StreamSource;
 import java.net.URL;
 import javax.xml.stream.*;
 
+import testutil.PortAllocator;
+
 /**
  * Tests xs:redefine schemaLocation patching
  *
@@ -64,7 +66,7 @@ import javax.xml.stream.*;
 public class SchemaRedefineTest extends TestCase {
 
     public void testSchemaRedefine() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/redefine";
         Endpoint e = Endpoint.create(new RedefineProvider());
 

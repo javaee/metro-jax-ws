@@ -38,7 +38,6 @@ package server.endpoint.client;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import testutil.ClientServerTestUtil;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
@@ -54,6 +53,7 @@ import java.io.*;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.soap.SOAPBinding;
 
+import testutil.PortAllocator;
 
 /**
  * @author Jitendra Kotamraju
@@ -63,7 +63,7 @@ public class EndpointWsdlLocationTest extends TestCase {
     // endpoint has wsdlLocation="...". It publishes the same wsdl, metadata
     // docs
     public void testWsdlLocation() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpointWsdlLocation());
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -93,7 +93,7 @@ public class EndpointWsdlLocationTest extends TestCase {
 
     // The published WSDL is wrong as we are not setting metadata
     public void testWsdlLocation1() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpointWsdlLocation());
         endpoint.publish(address);
@@ -105,7 +105,7 @@ public class EndpointWsdlLocationTest extends TestCase {
     }
 
     public void testHtmlPage() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpointWsdlLocation());
         endpoint.publish(address);

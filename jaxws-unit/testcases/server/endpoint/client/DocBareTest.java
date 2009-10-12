@@ -57,6 +57,7 @@ import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.Style;
 
 import junit.framework.TestCase;
+import testutil.PortAllocator;
 
 /**
  * @author Jitendra Kotamraju
@@ -67,7 +68,7 @@ public class DocBareTest extends TestCase
     private static final String NS = "http://echo.org/";
 
     public void testBare() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/bare";
         Endpoint endpoint = Endpoint.create(new BareService());
         endpoint.publish(address);

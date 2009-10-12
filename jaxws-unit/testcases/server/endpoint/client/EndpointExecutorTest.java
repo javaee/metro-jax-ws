@@ -46,13 +46,15 @@ import java.util.concurrent.Executor;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import testutil.PortAllocator;
+
 /**
  * @author Jitendra Kotamraju
  */
 public class EndpointExecutorTest extends TestCase {
 
     public void testExecutor() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://127.0.0.1:"+port+"/exe";
         Endpoint e = Endpoint.create(HTTPBinding.HTTP_BINDING, new MyProvider());
         MyExecutor executor = new MyExecutor();

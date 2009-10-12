@@ -65,6 +65,7 @@ import java.util.concurrent.ExecutorService;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.BindingProvider;
 
+import testutil.PortAllocator;
 
 /**
  * @author Jitendra Kotamraju
@@ -72,7 +73,7 @@ import javax.xml.ws.BindingProvider;
 public class HttpContextTest extends TestCase {
 
     public void testContext() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/hello";
 
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 5);
@@ -93,7 +94,7 @@ public class HttpContextTest extends TestCase {
     }
 
     public void testAuthentication() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/hello";
 
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 5);

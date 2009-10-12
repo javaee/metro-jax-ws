@@ -48,13 +48,15 @@ import javax.xml.transform.stream.StreamSource;
 import java.net.URL;
 import java.io.*;
 
+import testutil.PortAllocator;
+
 /**
  * @author Jitendra Kotamraju
  */
 public class R2001Test extends TestCase {
 
     public void testR2001() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/hello";
         Endpoint endpoint = Endpoint.create(new R2001Provider());
         List<Source> metadata = new ArrayList<Source>();

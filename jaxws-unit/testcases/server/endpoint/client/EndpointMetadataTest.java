@@ -45,6 +45,7 @@ import javax.xml.transform.stream.StreamSource;
 import java.net.URL;
 import java.io.*;
 
+import testutil.PortAllocator;
 
 /**
  * @author Jitendra Kotamraju
@@ -52,7 +53,7 @@ import java.io.*;
 public class EndpointMetadataTest extends TestCase {
 
     public void testMetadata() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         List<Source> metadata = new ArrayList<Source>();
@@ -81,7 +82,7 @@ public class EndpointMetadataTest extends TestCase {
     }
 
     public void testJCKMetadata() throws IOException {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/jck";
         Endpoint endpoint = Endpoint.create(new JCKEndpoint());
         List<Source> metadata = new ArrayList<Source>();
@@ -104,7 +105,7 @@ public class EndpointMetadataTest extends TestCase {
     }
 
     public void testBadMetadata() throws IOException {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         List<Source> metadata = new ArrayList<Source>();
@@ -130,7 +131,7 @@ public class EndpointMetadataTest extends TestCase {
 
 
     public void testAbstractWsdl() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         List<Source> metadata = new ArrayList<Source>();
@@ -158,7 +159,7 @@ public class EndpointMetadataTest extends TestCase {
     }
 
     public void testXsd() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         List<Source> metadata = new ArrayList<Source>();
@@ -185,7 +186,7 @@ public class EndpointMetadataTest extends TestCase {
     }
 
     public void testDuplicateConcreteWsdl() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         List<Source> metadata = new ArrayList<Source>();
@@ -212,7 +213,7 @@ public class EndpointMetadataTest extends TestCase {
     }
 
     public void testDuplicateAbstractWsdl() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         List<Source> metadata = new ArrayList<Source>();

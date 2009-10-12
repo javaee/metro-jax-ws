@@ -50,13 +50,15 @@ import javax.xml.ws.Service;
 import javax.xml.ws.Service.Mode;
 import javax.xml.ws.BindingType;
 
+import testutil.PortAllocator;
+
 /**
  * @author Jitendra Kotamraju
  */
 public class ProviderTest extends TestCase {
 
     public void testProviderEndpoint() {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://127.0.0.1:"+port+"/";
         Endpoint e = Endpoint.create(HTTPBinding.HTTP_BINDING, new MyProvider());
         e.publish(address);
@@ -65,7 +67,7 @@ public class ProviderTest extends TestCase {
     }
 
     public void testHttpProviderEndpoint() {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://127.0.0.1:"+port+"/";
         Endpoint e = Endpoint.create(new HttpProvider());
         e.publish(address);

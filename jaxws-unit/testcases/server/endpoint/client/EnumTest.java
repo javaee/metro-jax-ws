@@ -58,6 +58,8 @@ import javax.jws.soap.SOAPBinding.Style;
 
 import junit.framework.TestCase;
 
+import testutil.PortAllocator;
+
 /**
  * @author Jitendra Kotamraju
  */
@@ -67,7 +69,7 @@ public class EnumTest extends TestCase
     private static final String NS = "http://echo.org/";
 
     public void testEnum() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/enum";
         Endpoint endpoint = Endpoint.create(new EnumEndpoint());
         endpoint.publish(address);

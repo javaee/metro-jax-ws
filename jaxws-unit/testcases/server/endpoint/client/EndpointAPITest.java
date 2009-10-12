@@ -51,6 +51,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.InputStream;
 
+import testutil.PortAllocator;
 
 /**
  * @author Jitendra Kotamraju
@@ -62,7 +63,7 @@ public class EndpointAPITest extends TestCase {
     }
 
     public void testEndpoint() {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/hello";
         Endpoint endpoint = Endpoint.publish(address, new RpcLitEndpoint());
 
@@ -70,7 +71,7 @@ public class EndpointAPITest extends TestCase {
     }
 
     public void testHttpsAddress() {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "https://localhost:"+port+"/hello";
         // Doesn't support https scheme, so expect IllegalArgumentException
         try {
@@ -126,7 +127,7 @@ public class EndpointAPITest extends TestCase {
     }
 
     public void testEndpoint1() {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         endpoint.publish(address);
@@ -134,7 +135,7 @@ public class EndpointAPITest extends TestCase {
     }
 
     public void testNoPath() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port;
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         try {
@@ -146,7 +147,7 @@ public class EndpointAPITest extends TestCase {
     }
 
     public void testSlashPath() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         endpoint.publish(address);

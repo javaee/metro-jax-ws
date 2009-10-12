@@ -66,6 +66,7 @@ import java.util.concurrent.ExecutorService;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.BindingProvider;
 
+import testutil.PortAllocator;
 
 /**
  * @author Jitendra Kotamraju
@@ -73,7 +74,7 @@ import javax.xml.ws.BindingProvider;
 public class HttpStatusCodes extends TestCase {
 
     public void testUnsupportedMediaType() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/hello";
 
         Endpoint endpoint = Endpoint.publish(address, new RpcLitEndpoint());
@@ -88,7 +89,7 @@ public class HttpStatusCodes extends TestCase {
     }
 
     public void testUnsupportedMediaType1() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/hello";
 
         Endpoint endpoint = Endpoint.publish(address, new RpcLitEndpoint());

@@ -48,6 +48,7 @@ import javax.xml.stream.*;
 import java.net.URL;
 import java.io.*;
 
+import testutil.PortAllocator;
 
 /**
  * @author Jitendra Kotamraju
@@ -55,7 +56,7 @@ import java.io.*;
 public class UnicodeServiceNameTest extends TestCase {
 
     public void testUnicodeAddress() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/"+java.net.URLEncoder.encode("Hello\u00EEService", "UTF-8");
         Endpoint endpoint = Endpoint.create(new MyEndpoint());
         endpoint.publish(address);
