@@ -57,6 +57,7 @@ import java.io.InputStreamReader;
 
 import com.sun.xml.ws.developer.MemberSubmissionEndpointReference;
 import testutil.EprUtil;
+import testutil.PortAllocator;
 
 /**
  * @author WS Development Team
@@ -68,7 +69,7 @@ public class EndpointEPRTest extends TestCase {
     private static final QName portTypeName = new QName("http://echo.abstract.org/", "RpcLitIF");
 
     public void testDefaultEPRWithWSDL() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         List<Source> metadata = new ArrayList<Source>();
@@ -97,7 +98,7 @@ public class EndpointEPRTest extends TestCase {
     }
 
     public void testDefaultEPR() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         endpoint.publish(address);
@@ -108,7 +109,7 @@ public class EndpointEPRTest extends TestCase {
     }
 
     public void testW3CEPR() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         List<Source> metadata = new ArrayList<Source>();
@@ -131,7 +132,7 @@ public class EndpointEPRTest extends TestCase {
     }
 
     public void testMSEPR() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
         List<Source> metadata = new ArrayList<Source>();
@@ -154,7 +155,7 @@ public class EndpointEPRTest extends TestCase {
     }
 
     public void testProviderEndpointW3CEPR() {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://127.0.0.1:" + port + "/";
         Endpoint e = Endpoint.create(HTTPBinding.HTTP_BINDING, new MyProvider());
         e.publish(address);
@@ -166,7 +167,7 @@ public class EndpointEPRTest extends TestCase {
     }
 
     public void testProviderEndpointW3CEPR_WSDL() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://127.0.0.1:" + port + "/";
         Endpoint e = Endpoint.create(HTTPBinding.HTTP_BINDING, new MyProvider());
         List<Source> metadata = new ArrayList<Source>();
@@ -194,7 +195,7 @@ public class EndpointEPRTest extends TestCase {
     }
 
     public void testProviderEndpointMSCEPR_WSDL() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://127.0.0.1:" + port + "/";
         Endpoint e = Endpoint.create(HTTPBinding.HTTP_BINDING, new MyProvider());
         List<Source> metadata = new ArrayList<Source>();
@@ -221,7 +222,7 @@ public class EndpointEPRTest extends TestCase {
     }
 
     public void testProviderEndpointMSCEPR() {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://127.0.0.1:" + port + "/";
         Endpoint e = Endpoint.create(HTTPBinding.HTTP_BINDING, new MyProvider());
         e.publish(address);

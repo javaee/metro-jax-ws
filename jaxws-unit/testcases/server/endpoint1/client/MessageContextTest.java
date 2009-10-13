@@ -60,6 +60,7 @@ import javax.xml.ws.WebServiceException;
 
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.net.httpserver.HttpExchange;
+import testutil.PortAllocator;
 
 
 /**
@@ -87,7 +88,7 @@ public class MessageContextTest extends TestCase {
     }
 
     public void testHttpProperties() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://127.0.0.1:"+port+"/hello";
         Endpoint e = Endpoint.create(HTTPBinding.HTTP_BINDING, new MessageContextProvider());
         e.publish(address);

@@ -46,6 +46,7 @@ import javax.xml.ws.soap.AddressingFeature;
 import javax.xml.ws.soap.SOAPBinding;
 import java.io.InputStream;
 import java.net.URL;
+import testutil.PortAllocator;
 
 
 /**
@@ -60,7 +61,7 @@ public class EndpointFeaturesTest extends TestCase {
 
     // Tests Endpoint.create(impl, features)
     public void testCreateImplFeatures() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(new FeaturesEndpoint(),
                 new AddressingFeature(true, true, AddressingFeature.Responses.ANONYMOUS));
@@ -69,7 +70,7 @@ public class EndpointFeaturesTest extends TestCase {
 
     // Tests Endpoint.publish(address, impl, features)
     public void testPublish() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.publish(address, new FeaturesEndpoint(),
                 new AddressingFeature(true, true, AddressingFeature.Responses.ANONYMOUS));
@@ -79,7 +80,7 @@ public class EndpointFeaturesTest extends TestCase {
 
     // Tests Endpoint.create(bindingId, impl, features)
     public void testCreateBindingImplFeatures() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:" + port + "/hello";
         Endpoint endpoint = Endpoint.create(SOAPBinding.SOAP11HTTP_BINDING, new FeaturesEndpoint(),
                 new AddressingFeature(true, true, AddressingFeature.Responses.ANONYMOUS));

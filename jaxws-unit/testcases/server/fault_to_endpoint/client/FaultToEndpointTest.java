@@ -38,6 +38,7 @@ package server.endpoint1.client;
 import junit.framework.TestCase;
 import testutil.ClientServerTestUtil;
 import testutil.HTTPResponseInfo;
+import testutil.PortAllocator;
 
 import javax.annotation.Resource;
 import javax.xml.transform.Source;
@@ -67,7 +68,7 @@ public class FaultToEndpointTest extends TestCase {
     }
 
     public void testFaultToEndpoint() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/hello";
         Endpoint e = Endpoint.create(new MyProvider());
         e.publish(address);

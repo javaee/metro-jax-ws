@@ -67,7 +67,7 @@ import testutil.*;
 public class NamespaceTest extends TestCase {
 
     public void testNamespace() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://127.0.0.1:"+port+"/hello";
         Endpoint e = Endpoint.create(new MyProvider());
         e.publish(address);

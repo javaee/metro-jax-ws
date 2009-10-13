@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import testutil.PortAllocator;
 
 
 /**
@@ -59,7 +60,7 @@ import java.util.Set;
 public class EndpointContextTest extends TestCase {
 
     public void testEndpointContext() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
 
         String address1 = "http://localhost:"+port+"/foo";
         Endpoint endpoint1 = getEndpoint(new FooService());
