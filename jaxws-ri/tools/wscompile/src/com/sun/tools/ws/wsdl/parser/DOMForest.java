@@ -218,14 +218,17 @@ public class DOMForest {
                 boolean redirect;
                 URL url = JAXWSUtils.getFileOrURL(inputSource.getSystemId());
                 URLConnection conn = url.openConnection();
-                if (conn instanceof HttpsURLConnection) {
-                    if (options.disableSSLHostnameVerification) {
-                        ((HttpsURLConnection) conn).setHostnameVerifier(new HttpClientVerifier());
-                    }
-                }
-
                 do {
+                    if (conn instanceof HttpsURLConnection) {
+                        if (options.disableSSLHostnameVerification) {
+                            ((HttpsURLConnection) conn).setHostnameVerifier(new HttpClientVerifier());
+                        }
+                    }
                     redirect = false;
+                    if (conn instanceof HttpURLConnection) {
+                        ((HttpURLConnection) conn).setInstanceFollowRedirects(false);
+                    }
+
                     try {
                         is = conn.getInputStream();
                         //is = sun.net.www.protocol.http.HttpURLConnection.openConnectionCheckRedirects(conn);
@@ -261,6 +264,7 @@ public class DOMForest {
                                         throw new AbortException();
                                     }
                                     conn = url.openConnection();
+                                    inputSource.setSystemId(url.toExternalForm());
                                     redirects++;
                                     redirect = true;
                                 }                                
