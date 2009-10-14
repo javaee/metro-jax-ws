@@ -74,7 +74,8 @@ public class PseudoSchemaBuilder {
             "  version=\"2.1\">\n" +
             "  \n" +
             "  <bindings scd=\"x-schema::wsa\" if-exists=\"true\">\n" +
-            "    <schemaBindings map=\"false\" />\n" +
+   //comment the following, otw JAXB won't generate ObjectFactory, classes from wsa schema. See JAX-WS-804
+   //         "    <schemaBindings map=\"false\" />\n" +
             "    <bindings scd=\"wsa:EndpointReference\">\n" +
             "      <class ref=\"javax.xml.ws.wsaddressing.W3CEndpointReference\" xjc:recursive=\"true\"/>\n" +
             "    </bindings>\n" +
@@ -90,7 +91,8 @@ public class PseudoSchemaBuilder {
             "  version=\"2.1\">\n" +
             "  \n" +
             "  <bindings scd=\"x-schema::wsa\" if-exists=\"true\">\n" +
-            "    <schemaBindings map=\"false\" />\n" +
+//comment the following, otw JAXB won't generate ObjectFactory, classes from wsa schema. See JAX-WS-804
+//            "    <schemaBindings map=\"false\" />\n" +
             "    <bindings scd=\"wsa:EndpointReference\">\n" +
             "      <class ref=\"com.sun.xml.ws.developer.MemberSubmissionEndpointReference\"/>\n" +
             "    </bindings>\n" +
