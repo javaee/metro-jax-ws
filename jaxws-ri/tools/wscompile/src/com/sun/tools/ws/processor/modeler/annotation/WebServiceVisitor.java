@@ -308,6 +308,13 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         hasWebMethods = false;
         if (webService == null)
             builder.onError(intf.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_ENDPOINTINTERFACE_HAS_NO_WEBSERVICE_ANNOTATION(intf.getQualifiedName()));
+
+        SOAPBinding soapBinding = intf.getAnnotation(SOAPBinding.class);
+        if(soapBinding != null && soapBinding.style() == SOAPBinding.Style.RPC && soapBinding.parameterStyle() == SOAPBinding.ParameterStyle.BARE) {
+            builder.onError(intf.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_INVALID_SOAPBINDING_PARAMETERSTYLE(soapBinding, intf));
+            return false;
+        }
+
         if (isLegalSEI(intf))
             return true;
         return false;
@@ -317,6 +324,11 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         if (webService == null)
             return false;
         hasWebMethods = hasWebMethods(classDecl);
+        SOAPBinding soapBinding = classDecl.getAnnotation(SOAPBinding.class);
+                if(soapBinding != null && soapBinding.style() == SOAPBinding.Style.RPC && soapBinding.parameterStyle() == SOAPBinding.ParameterStyle.BARE) {
+                  builder.onError(classDecl.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_INVALID_SOAPBINDING_PARAMETERSTYLE(soapBinding, classDecl));
+                    return false;
+        }
         return isLegalImplementation(webService, classDecl);
     }
 
