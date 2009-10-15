@@ -375,6 +375,11 @@ public class RuntimeModeler {
 
         SOAPBinding soapBinding = getPrivClassAnnotation(clazz, SOAPBinding.class);
         if (soapBinding != null) {
+            if (soapBinding.style() == SOAPBinding.Style.RPC && soapBinding.parameterStyle() == SOAPBinding.ParameterStyle.BARE) {
+                throw new RuntimeModelerException("runtime.modeler.invalid.soapbinding.parameterstyle",
+                        soapBinding, clazz);
+
+            }
             isWrapped = soapBinding.parameterStyle()== WRAPPED;
         }
         defaultBinding = createBinding(soapBinding);
@@ -621,11 +626,21 @@ public class RuntimeModeler {
         javaMethod.setOperationName(operationName);
         SOAPBinding methodBinding =
             method.getAnnotation(SOAPBinding.class);
-        if (methodBinding == null && !method.getDeclaringClass().equals(portClass)) {
-            if (!method.getDeclaringClass().isInterface()) {
-                methodBinding = method.getDeclaringClass().getAnnotation(SOAPBinding.class);
+        if(methodBinding != null && methodBinding.style() == SOAPBinding.Style.RPC) {
+            logger.warning(ModelerMessages.RUNTIMEMODELER_INVALID_SOAPBINDING_ON_METHOD(methodBinding, method.getName(), method.getDeclaringClass().getName()));
+        } else if (methodBinding == null && !method.getDeclaringClass().equals(portClass)) {
+            methodBinding = method.getDeclaringClass().getAnnotation(SOAPBinding.class);
+            if (methodBinding != null && methodBinding.style() == SOAPBinding.Style.RPC && methodBinding.parameterStyle() == SOAPBinding.ParameterStyle.BARE) {
+                throw new RuntimeModelerException("runtime.modeler.invalid.soapbinding.parameterstyle",
+                        methodBinding, method.getDeclaringClass());
             }
         }
+
+        if(methodBinding!= null && defaultBinding.getStyle() != methodBinding.style()) {
+             throw new RuntimeModelerException("runtime.modeler.soapbinding.conflict",
+                    methodBinding.style(), method.getName(),defaultBinding.getStyle());
+        }
+
         boolean methodIsWrapped = isWrapped;
         Style style = defaultBinding.getStyle();
         if (methodBinding != null) {

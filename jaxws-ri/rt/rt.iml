@@ -226,6 +226,18 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/woodstox.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../lib/woodstox-src.zip!/src/java" />
+          <root url="jar://$MODULE_DIR$/../lib/woodstox-src.zip!/src/test" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
   <component name="org.mevenide.idea.module.ModuleSettings">
     <favoriteGoals>
