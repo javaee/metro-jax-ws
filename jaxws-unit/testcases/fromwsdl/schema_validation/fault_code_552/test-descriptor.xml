@@ -32,6 +32,18 @@
 	got = e.getFault().getFaultCodeAsQName();
 	exp = new QName("http://schemas.xmlsoap.org/soap/envelope/", "Client");
         assertEquals(exp, got);
+        
+        // want to make sure that correct stack trace is sent
+        // cvc-totalDigits-valid: Value '12345' has 5 total digits, but the number of total digits has been limited to 4.
+        sax = false;
+        while(e != null) {
+          if (e.getMessage() != null && e.getMessage().startsWith("cvc-totalDigits-valid")) {
+             sax = true;
+             break;
+          }
+          e = e.getCause();
+        }
+        assertEquals(true, sax);
       }
     ]]>
   </client>
