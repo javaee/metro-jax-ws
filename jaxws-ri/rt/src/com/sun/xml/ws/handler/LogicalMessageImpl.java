@@ -71,7 +71,9 @@ import javax.xml.ws.WebServiceException;
 */
 class LogicalMessageImpl implements LogicalMessage {
     private Packet packet;
-    // This holds the (modified)payload set by User
+
+    // This holds the (modified)payload set by User or DOMSource when accessed by User as it can allow
+    // direct modification without explicit call to setPayload()
     private Source payloadSrc = null;
     // Flag to check if the PayloadSrc is accessed/modified
     private boolean payloadModifed = false;
@@ -93,33 +95,15 @@ class LogicalMessageImpl implements LogicalMessage {
     }
     public Source getPayload() {                
         if(!payloadModifed) {
-            payloadSrc = packet.getMessage().readPayloadAsSource();
-            payloadModifed = true;
-        }
-        if (payloadSrc == null)
-            return null;
-        if(payloadSrc instanceof DOMSource){
-            return payloadSrc;
-        } else {
-            try {
-            Transformer transformer = XmlUtil.newTransformer();
-            DOMResult domResult = new DOMResult();
-            transformer.transform(payloadSrc, domResult);
-            payloadSrc = new DOMSource(domResult.getNode());
-            return payloadSrc;
-            } catch(TransformerException te) {
-                throw new WebServiceException(te);
+            Source payload = packet.getMessage().copy().readPayloadAsSource();
+            if(payload instanceof DOMSource) {
+                payloadSrc = payload;
+                payloadModifed = true;
+            } else {
+               return payload; 
             }
         }
-        /*
-        Source copySrc;
-        if(payloadSrc instanceof DOMSource){
-            copySrc = payloadSrc;
-        } else {
-            copySrc = copy(payloadSrc);
-        }
-        return copySrc;
-         */
+        return payloadSrc;      
     }
     
     public void setPayload(Source payload) {
