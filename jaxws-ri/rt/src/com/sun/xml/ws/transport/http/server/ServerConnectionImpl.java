@@ -75,8 +75,8 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
     private final HttpExchange httpExchange;
     private int status;
     private final HttpAdapter adapter;
-    private boolean outputWritten;
     private LWHSInputStream in;
+    private OutputStream out;
 
 
     public ServerConnectionImpl(@NotNull HttpAdapter adapter, @NotNull HttpExchange httpExchange) {
@@ -171,40 +171,39 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
 
 
     public @NotNull OutputStream getOutput() throws IOException {
-        assert !outputWritten;
-        outputWritten = true;
+        if (out == null) {
+            String lenHeader = httpExchange.getResponseHeaders().getFirst("Content-Length");
+            int length = (lenHeader != null) ? Integer.parseInt(lenHeader) : 0;
+            httpExchange.sendResponseHeaders(getStatus(), length);
 
-        String lenHeader = httpExchange.getResponseHeaders().getFirst("Content-Length");
-        int length = (lenHeader != null) ? Integer.parseInt(lenHeader) : 0;
-        httpExchange.sendResponseHeaders(getStatus(), length);
-
-        // Light weight http server's OutputStream.close() throws exception if
-        // all the bytes are not read on the client side(StreamMessage on the client
-        // side doesn't read all bytes.
-        return new FilterOutputStream(httpExchange.getResponseBody()) {
-            boolean closed;
-            @Override
-            public void close() throws IOException {
-                if (!closed) {
-                    closed = true;
-                    // lwhs closes input stream, when you close the output stream
-                    // This causes problems for streaming in one-way cases
-                    in.readAll();
-                    try {
-                        super.close();
-                    } catch(IOException ioe) {
-                        // Ignoring purposefully.
+            // Light weight http server's OutputStream.close() throws exception if
+            // all the bytes are not read on the client side(StreamMessage on the client
+            // side doesn't read all bytes.
+            out =  new FilterOutputStream(httpExchange.getResponseBody()) {
+                boolean closed;
+                @Override
+                public void close() throws IOException {
+                    if (!closed) {
+                        closed = true;
+                        // lwhs closes input stream, when you close the output stream
+                        // This causes problems for streaming in one-way cases
+                        in.readAll();
+                        try {
+                            super.close();
+                        } catch(IOException ioe) {
+                            // Ignoring purposefully.
+                        }
                     }
                 }
-            }
 
-            // Otherwise, FilterOutpuStream writes byte by byte
-            @Override
-            public void write(byte[] buf, int start, int len) throws IOException {
-                out.write(buf, start, len);
-            }
-        };
-
+                // Otherwise, FilterOutpuStream writes byte by byte
+                @Override
+                public void write(byte[] buf, int start, int len) throws IOException {
+                    out.write(buf, start, len);
+                }
+            };
+        }
+        return out;
     }
 
     public @NotNull WebServiceContextDelegate getWebServiceContextDelegate() {
