@@ -48,6 +48,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Request context implementation.
@@ -112,6 +113,7 @@ import java.util.Set;
  */
 @SuppressWarnings({"SuspiciousMethodCalls"})
 public final class RequestContext extends PropertySet {
+    private static final Logger LOGGER = Logger.getLogger(RequestContext.class.getName());
     /**
      * The default value to be use for {@link #contentNegotiation} obtained
      * from a system property.
@@ -310,6 +312,10 @@ public final class RequestContext extends PropertySet {
                 if (soapAction != null) {
                     packet.soapAction = soapAction;
                 }
+            }
+            if((!isAddressingEnabled && (soapActionUse == null || !soapActionUse)) && soapAction != null) {
+                LOGGER.warning("BindingProvider.SOAPACTION_URI_PROPERTY is set in the RequestContext but is ineffective," +
+                        " Either set BindingProvider.SOAPACTION_USE_PROPERTY to true or enable AddressingFeature"); 
             }
             if(!others.isEmpty()) {
                 packet.invocationProperties.putAll(others);
