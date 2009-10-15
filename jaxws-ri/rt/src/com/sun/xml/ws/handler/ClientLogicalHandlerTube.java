@@ -42,6 +42,7 @@ import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.binding.BindingImpl;
 
 import javax.xml.ws.handler.LogicalHandler;
@@ -57,14 +58,16 @@ import java.util.ArrayList;
  */
 public class ClientLogicalHandlerTube extends HandlerTube {
 
-    private WSBinding binding;    
+    private WSBinding binding;
+    private SEIModel seiModel;
 
     /**
      * Creates a new instance of LogicalHandlerTube
      */
-    public ClientLogicalHandlerTube(WSBinding binding, WSDLPort port, Tube next) {
+    public ClientLogicalHandlerTube(WSBinding binding, SEIModel seiModel, WSDLPort port, Tube next) {
         super(next, port);
         this.binding = binding;
+        this.seiModel = seiModel;
     }
 
     /**
@@ -74,9 +77,10 @@ public class ClientLogicalHandlerTube extends HandlerTube {
      * With this handle, LogicalHandlerTube can call
      * SOAPHandlerTube.closeHandlers()
      */
-    public ClientLogicalHandlerTube(WSBinding binding, Tube next, HandlerTube cousinTube) {
+    public ClientLogicalHandlerTube(WSBinding binding, SEIModel seiModel, Tube next, HandlerTube cousinTube) {
         super(next, cousinTube);
         this.binding = binding;
+        this.seiModel = seiModel;
     }
 
     /**
@@ -86,6 +90,7 @@ public class ClientLogicalHandlerTube extends HandlerTube {
     private ClientLogicalHandlerTube(ClientLogicalHandlerTube that, TubeCloner cloner) {
         super(that, cloner);
         this.binding = that.binding;
+        this.seiModel = that.seiModel;
     }
 
     //should be overridden by DriverHandlerTubes
@@ -118,7 +123,7 @@ public class ClientLogicalHandlerTube extends HandlerTube {
 
 
     MessageUpdatableContext getContext(Packet packet) {
-        return new LogicalMessageContextImpl(binding, packet);
+        return new LogicalMessageContextImpl(binding, (seiModel!= null?seiModel.getJAXBContext():null), packet);
     }
 
     boolean callHandlersOnRequest(MessageUpdatableContext context, boolean isOneWay) {

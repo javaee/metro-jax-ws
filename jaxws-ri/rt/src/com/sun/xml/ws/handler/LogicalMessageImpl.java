@@ -71,7 +71,7 @@ import javax.xml.ws.WebServiceException;
 */
 class LogicalMessageImpl implements LogicalMessage {
     private Packet packet;
-
+    private JAXBContext defaultJaxbContext;
     // This holds the (modified)payload set by User or DOMSource when accessed by User as it can allow
     // direct modification without explicit call to setPayload()
     private Source payloadSrc = null;
@@ -79,9 +79,10 @@ class LogicalMessageImpl implements LogicalMessage {
     private boolean payloadModifed = false;
         
     /** Creates a new instance of LogicalMessageImplRearch */
-    public LogicalMessageImpl(Packet packet) {
+    public LogicalMessageImpl(JAXBContext defaultJaxbContext, Packet packet) {
         // don't create extract payload until Users wants it.
         this.packet = packet;
+        this.defaultJaxbContext = defaultJaxbContext;
     }
     
     boolean isPayloadModifed(){
@@ -116,6 +117,11 @@ class LogicalMessageImpl implements LogicalMessage {
      * the object isn't set again.
      */
     public Object getPayload(JAXBContext context) {
+        if(context == null) {
+            context = defaultJaxbContext;
+        }
+        if(context == null)
+            throw new WebServiceException("JAXBContext parameter cannot be null");
         try {
             Source payloadSrc = getPayload();
             if(payloadSrc == null)
@@ -129,6 +135,9 @@ class LogicalMessageImpl implements LogicalMessage {
     
     public void setPayload(Object payload, JAXBContext context) {
         payloadModifed = true;
+        if(context == null) {
+            context = defaultJaxbContext;
+        }
         try {
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty("jaxb.fragment", true);

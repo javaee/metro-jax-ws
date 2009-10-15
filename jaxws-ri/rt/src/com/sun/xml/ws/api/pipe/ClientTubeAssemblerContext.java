@@ -274,7 +274,7 @@ public class ClientTubeAssemblerContext {
             HandlerTube soapHandlerTube = new ClientSOAPHandlerTube(binding, next, cousinHandlerTube);            
             next = cousinHandlerTube = soapHandlerTube;
         }
-        return new ClientLogicalHandlerTube(binding, next, cousinHandlerTube);
+        return new ClientLogicalHandlerTube(binding, seiModel, next, cousinHandlerTube);
     }
 
     /**

@@ -160,7 +160,7 @@ public class ServerTubeAssemblerContext {
      */
     public @NotNull Tube createHandlerTube(@NotNull Tube next) {
         if (!binding.getHandlerChain().isEmpty()) {
-            HandlerTube cousin = new ServerLogicalHandlerTube(binding, wsdlModel, next);
+            HandlerTube cousin = new ServerLogicalHandlerTube(binding, seiModel, wsdlModel, next);
             next = cousin;
             if (binding instanceof SOAPBinding) {
                 //Add SOAPHandlerTube

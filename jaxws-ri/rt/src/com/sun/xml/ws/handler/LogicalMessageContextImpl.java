@@ -40,12 +40,14 @@ import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.message.source.PayloadSourceMessage;
 import javax.xml.transform.Source;
 
 import javax.xml.ws.LogicalMessage;
 import javax.xml.ws.handler.LogicalMessageContext;
+import javax.xml.bind.JAXBContext;
 
 /**
  * Implementation of LogicalMessageContext. This class is used at runtime
@@ -60,15 +62,16 @@ import javax.xml.ws.handler.LogicalMessageContext;
 class LogicalMessageContextImpl extends MessageUpdatableContext implements LogicalMessageContext {
     private LogicalMessageImpl lm;
     private WSBinding binding;
-
-    public LogicalMessageContextImpl(WSBinding binding, Packet packet) {
+    private JAXBContext defaultJaxbContext;
+    public LogicalMessageContextImpl(WSBinding binding, JAXBContext defaultJAXBContext, Packet packet) {
         super(packet);
         this.binding = binding;
+        this.defaultJaxbContext = defaultJAXBContext;
     }
 
     public LogicalMessage getMessage() {
         if(lm == null)
-            lm = new LogicalMessageImpl(packet);
+            lm = new LogicalMessageImpl(defaultJaxbContext, packet);
         return lm;
     }
 
