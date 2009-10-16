@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions
+    name="MTOMTestService"
+    targetNamespace="http://example.org/mtom"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:tns="http://example.org/mtom"
+    xmlns:s="http://example.org/mtom"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+    <types>
+          <schema xmlns="http://www.w3.org/2001/XMLSchema"
+               targetNamespace="http://example.org/mtom"
+               xmlns:xmime="http://www.w3.org/2005/05/xmlmime" 
+               elementFormDefault="qualified">
+
+               <element name="doc1" type="xsd:base64Binary" xmime:expectedContentTypes="text/xml"/>
+               <element name="doc2" type="base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
+          </schema>
+    </types>
+
+
+    <message name="MTOMInOutRequest">
+        <part name="data" element="s:doc1"/>
+    </message>
+    <message name="MTOMInOutResponse">
+        <part name="result" element="s:doc2"/>
+    </message>
+
+     <portType name="Hello">
+          <operation name="MTOMInOut">
+               <input message="tns:MTOMInOutRequest"/>
+               <output message="tns:MTOMInOutResponse"/>
+          </operation>
+     </portType>
+
+     <binding name="MTOMBinding" type="tns:Hello">
+          <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+          <operation name="MTOMInOut">
+               <soap:operation soapAction=""/>
+               <input>
+                    <soap:body use="literal"/>
+               </input>
+               <output>
+                    <soap:body use="literal"/>
+               </output>
+          </operation>
+     </binding>
+
+  <service name="HelloService">
+    <port name="HelloPort" binding="tns:MTOMBinding">
+      <soap:address location="http://foo:9999/bar"/>
+    </port>
+  </service>
+</definitions>
