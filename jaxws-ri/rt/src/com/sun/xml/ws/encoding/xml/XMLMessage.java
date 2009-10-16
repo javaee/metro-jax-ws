@@ -128,7 +128,9 @@ public final class XMLMessage {
                     data = new UnknownContent(ct, in);
                 }
             } else {
-                data = Messages.createEmpty(SOAPVersion.SOAP_11);
+                // According to HTTP spec 7.2.1, if the media type remain
+                // unknown, treat as application/octet-stream
+                data = new UnknownContent("application/octet-stream", in);
             }
         } catch(Exception ex) {
             throw new WebServiceException(ex);
