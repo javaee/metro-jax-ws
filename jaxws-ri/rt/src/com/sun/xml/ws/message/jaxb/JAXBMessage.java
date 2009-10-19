@@ -87,7 +87,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
      */
     private final Object jaxbObject;
     
-    private final AttachmentSetImpl attachmentSet;
+    private final AttachmentSet attachmentSet;
 
     private final Bridge bridge;
 
@@ -101,6 +101,32 @@ public final class JAXBMessage extends AbstractMessageImpl {
      */
     private XMLStreamBuffer infoset;
 
+    public static Message create(JAXBRIContext context, Object jaxbObject, SOAPVersion soapVersion, HeaderList headers, AttachmentSet attachments) {
+        if(!context.hasSwaRef()) {
+            return new JAXBMessage(context,jaxbObject,soapVersion,headers,attachments);
+        }
+
+        // If we have swaRef, then that means we might have attachments.
+        // to comply with the packet API, we need to eagerly turn the JAXB object into infoset
+        // to correctly find out about attachments.
+
+        try {
+            MutableXMLStreamBuffer xsb = new MutableXMLStreamBuffer();
+
+            Marshaller m = context.createMarshaller();
+            AttachmentMarshallerImpl am = new AttachmentMarshallerImpl(attachments);
+            m.setAttachmentMarshaller(am);
+            am.cleanup();
+            m.marshal(jaxbObject,xsb.createFromXMLStreamWriter());
+
+            // any way to reuse this XMLStreamBuffer in StreamMessage?
+            return new StreamMessage(headers,attachments,xsb.readAsXMLStreamReader(),soapVersion);
+        } catch (JAXBException e) {
+            throw new WebServiceException(e);
+        } catch (XMLStreamException e) {
+            throw new WebServiceException(e);
+        }
+    }
     /**
      * Creates a {@link Message} backed by a JAXB bean.
      *
@@ -114,38 +140,15 @@ public final class JAXBMessage extends AbstractMessageImpl {
      *      The SOAP version of the message. Must not be null.
      */
     public static Message create(JAXBRIContext context, Object jaxbObject, SOAPVersion soapVersion) {
-        if(!context.hasSwaRef()) {
-            return new JAXBMessage(context,jaxbObject,soapVersion);
-        }
-
-        // If we have swaRef, then that means we might have attachments.
-        // to comply with the packet API, we need to eagerly turn the JAXB object into infoset
-        // to correctly find out about attachments.
-
-        try {
-            MutableXMLStreamBuffer xsb = new MutableXMLStreamBuffer();
-
-            Marshaller m = context.createMarshaller();
-            AttachmentSetImpl attachments = new AttachmentSetImpl();
-            AttachmentMarshallerImpl am = new AttachmentMarshallerImpl(attachments);
-            m.setAttachmentMarshaller(am);
-            am.cleanup();
-            m.marshal(jaxbObject,xsb.createFromXMLStreamWriter());
-
-            // any way to reuse this XMLStreamBuffer in StreamMessage?
-            return new StreamMessage(null,attachments,xsb.readAsXMLStreamReader(),soapVersion);
-        } catch (JAXBException e) {
-            throw new WebServiceException(e);
-        } catch (XMLStreamException e) {
-            throw new WebServiceException(e);
-        }
+        return create(context,jaxbObject,soapVersion,null,null);
     }
 
-    private JAXBMessage( JAXBRIContext context, Object jaxbObject, SOAPVersion soapVer ) {
+    private JAXBMessage( JAXBRIContext context, Object jaxbObject, SOAPVersion soapVer, HeaderList headers, AttachmentSet attachments ) {
         super(soapVer);
         this.bridge = new MarshallerBridge(context);
         this.jaxbObject = jaxbObject;
-        this.attachmentSet = new AttachmentSetImpl();
+        this.headers = headers;
+        this.attachmentSet = attachments;
     }
 
     /**

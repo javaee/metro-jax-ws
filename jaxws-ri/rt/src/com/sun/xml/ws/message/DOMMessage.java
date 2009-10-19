@@ -42,6 +42,7 @@ import com.sun.xml.bind.unmarshaller.DOMScanner;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.streaming.DOMStreamReader;
 import com.sun.xml.ws.util.DOMUtil;
 import org.w3c.dom.Element;
@@ -72,12 +73,16 @@ public final class DOMMessage extends AbstractMessageImpl {
     }
 
     public DOMMessage(SOAPVersion ver, HeaderList headers, Element payload) {
+        this(ver,headers,payload,null);        
+    }
+
+    public DOMMessage(SOAPVersion ver, HeaderList headers, Element payload, AttachmentSet attachments) {
         super(ver);
         this.headers = headers;
         this.payload = payload;
+        this.attachmentSet = attachments;
         assert payload!=null;
     }
-
     /**
      * This constructor is a convenience and called by the {@link #copy}
      */
