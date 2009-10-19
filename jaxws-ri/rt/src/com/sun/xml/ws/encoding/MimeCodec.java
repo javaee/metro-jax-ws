@@ -47,6 +47,7 @@ import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 
 import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
+import javax.activation.DataContentHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -121,7 +122,9 @@ abstract class MimeCodec implements Codec {
 
         if (hasAttachments) {
             writeln("--"+boundary, out);
-            writeln("Content-Type: " + rootCodec.getMimeType(), out);
+            ContentType ct = rootCodec.getStaticContentType(packet);
+            String ctStr = (ct != null) ? ct.getContentType() : rootCodec.getMimeType();
+            writeln("Content-Type: " + ctStr, out);
             writeln(out);
         }
         ContentType primaryCt = rootCodec.encode(packet, out);
