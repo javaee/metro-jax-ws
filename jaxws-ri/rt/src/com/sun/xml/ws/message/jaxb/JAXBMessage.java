@@ -87,8 +87,6 @@ public final class JAXBMessage extends AbstractMessageImpl {
      */
     private final Object jaxbObject;
     
-    private final AttachmentSet attachmentSet;
-
     private final Bridge bridge;
 
     /**
@@ -209,11 +207,6 @@ public final class JAXBMessage extends AbstractMessageImpl {
         this.bridge = that.bridge;
     }
     
-    @Override
-    public @NotNull AttachmentSet getAttachments() {
-        return attachmentSet;
-    }
-
     public boolean hasHeaders() {
         return headers!=null && !headers.isEmpty();
     }
