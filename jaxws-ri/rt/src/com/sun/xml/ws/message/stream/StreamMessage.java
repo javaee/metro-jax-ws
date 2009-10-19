@@ -182,11 +182,6 @@ public final class StreamMessage extends AbstractMessageImpl {
         return headers;
     }
     
-    @Override
-    public @NotNull AttachmentSet getAttachments() {
-        return attachmentSet;
-    }
-
     public String getPayloadLocalPart() {
         return payloadLocalName;
     }

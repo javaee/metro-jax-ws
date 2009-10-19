@@ -94,11 +94,6 @@ public class EmptyMessageImpl extends AbstractMessageImpl {
         return !headers.isEmpty();
     }
     
-    @Override
-    public @NotNull AttachmentSet getAttachments() {
-        return attachmentSet;
-    }
-
     public HeaderList getHeaders() {
         return headers;
     }
