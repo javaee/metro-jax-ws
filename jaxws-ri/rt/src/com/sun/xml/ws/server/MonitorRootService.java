@@ -142,7 +142,7 @@ public final class MonitorRootService extends MonitorBase {
     //
     // Items from assembler context
     //
-
+    /*  NOTE:  These are not ready when the AMX Validator runs so NPE.
     @ManagedAttribute
     @Description("The last tube in the dispatch chain")
     public @NotNull Tube terminalTube() {
@@ -160,7 +160,7 @@ public final class MonitorRootService extends MonitorBase {
     public String codecMimeType() {
         return endpoint.getAssemblerContext().getCodec().getMimeType();
     }
-
+    */
     //
     // Items from WSBinding
     //
