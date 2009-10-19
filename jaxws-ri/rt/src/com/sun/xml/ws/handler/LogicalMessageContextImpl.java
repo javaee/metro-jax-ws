@@ -87,18 +87,11 @@ class LogicalMessageContextImpl extends MessageUpdatableContext implements Logic
         //If LogicalMessage is not acccessed, its not modified.
         if(lm != null) {
             //Check if LogicalMessageImpl has changed, if so construct new one
-            //TODO: Attachments are not used
             // Packet are handled through MessageContext
             if(lm.isPayloadModifed()){
                 Message msg = packet.getMessage();
-                HeaderList headers = msg.getHeaders();
-                AttachmentSet attachments = msg.getAttachments();
-                Source modifiedPayload = lm.getModifiedPayload();
-                if(modifiedPayload == null){
-                    packet.setMessage(new EmptyMessageImpl(headers,attachments,binding.getSOAPVersion()));
-                } else {
-                    packet.setMessage(new PayloadSourceMessage(headers,modifiedPayload, attachments, binding.getSOAPVersion()));
-                }
+                Message updatedMsg = lm.getMessage(msg.getHeaders(),msg.getAttachments(),binding);
+                packet.setMessage(updatedMsg);
             }
             lm = null;
         }
