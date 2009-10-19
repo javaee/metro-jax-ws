@@ -83,7 +83,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
     private HeaderList headers;
 
     /**
-     * The JAXB object that represents the header.
+     * The JAXB object that represents the payload.
      */
     private final Object jaxbObject;
     
