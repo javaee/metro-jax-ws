@@ -1,0 +1,13 @@
+<xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified" xmlns:tns="http://duke.example.org"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://duke.example.org">
+
+    <complexType name="addNumbersResponse">
+        <sequence>
+            <element name="return" type="xsd:int"/>
+        </sequence>
+    </complexType>
+    <element name="addNumbersResponse" type="tns:addNumbersResponse"/>
+
+</xsd:schema>

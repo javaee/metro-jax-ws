@@ -1,0 +1,20 @@
+<xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified" xmlns:tns="http://duke.example.org"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://duke.example.org">
+
+    <simpleType name='myint'>
+        <restriction base='int'>
+            <totalDigits value='4'/>
+        </restriction>
+    </simpleType>
+
+    <complexType name="addNumbers">
+        <sequence>
+            <element name="arg0" type="tns:myint"/>
+            <element name="arg1" type="tns:myint"/>
+        </sequence>
+    </complexType>
+    <element name="addNumbers" type="tns:addNumbers"/>
+
+</xsd:schema>
