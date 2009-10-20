@@ -354,7 +354,7 @@ public final class XMLMessage {
         }
 
         public Message copy() {
-            throw new UnsupportedOperationException();
+            return getMessage().copy();
         }
 
         protected void writePayloadTo(ContentHandler contentHandler, ErrorHandler errorHandler, boolean fragment) throws SAXException {
