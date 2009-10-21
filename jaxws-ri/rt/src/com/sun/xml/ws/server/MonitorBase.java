@@ -441,6 +441,8 @@ class RewritingMOM implements ManagedObjectManager
     public String dumpSkeleton(Object obj)    { return mom.dumpSkeleton(obj); }
     public void suppressDuplicateRootReport(boolean suppressReport) { mom.suppressDuplicateRootReport(suppressReport); }
     public void close() throws IOException    { mom.close(); }
+    public void setJMXRegistrationDebug(boolean x) { mom.setJMXRegistrationDebug(x); }
+    public boolean isManagedObject(Object x)  { return mom.isManagedObject(x); }
 }
 
 // End of file.
