@@ -347,7 +347,7 @@ public final class JavaMethodImpl implements JavaMethod {
         this.wsdlOperation = portType.getBinding().get(new QName(portType.getBinding().getPortType().getName().getNamespaceURI(),operationName));
         // TODO: replace this with proper error handling
         if(wsdlOperation ==null)
-            throw new Error("Method "+seiMethod.getName()+" is exposed as WebMethod, but there is no corresponding wsdl operation with name "+operationName+" in the wsdl:portType" + portType.getBinding().getPortType().getName());
+            throw new WebServiceException("Method "+seiMethod.getName()+" is exposed as WebMethod, but there is no corresponding wsdl operation with name "+operationName+" in the wsdl:portType" + portType.getBinding().getPortType().getName());
 
         //so far, the inputAction, outputAction and fault actions are set from the @Action and @FaultAction
         //set the values from WSDLModel, if such annotations are not present or defaulted
