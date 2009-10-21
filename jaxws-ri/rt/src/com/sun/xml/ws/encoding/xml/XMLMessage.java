@@ -468,7 +468,9 @@ public final class XMLMessage {
         }
         
         public Message copy() {
-            throw new UnsupportedOperationException();
+            // TODO: need to do a copy and return. But is such a remote
+            // TODO case, returning the same message would work most of the time 
+            return this;
         }
 
         public boolean hasUnconsumedDataSource() {
