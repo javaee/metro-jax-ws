@@ -41,7 +41,6 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.pipe.NextAction;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
@@ -50,11 +49,12 @@ import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.developer.ValidationErrorHandler;
 import com.sun.xml.ws.util.ByteArrayBuffer;
+import com.sun.xml.ws.util.MetadataUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import org.w3c.dom.*;
-import org.xml.sax.helpers.NamespaceSupport;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.NamespaceSupport;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -68,8 +68,10 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -80,6 +82,7 @@ import java.util.logging.Logger;
 public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImpl {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractSchemaValidationTube.class.getName());
+    protected static final String HONOUR_ALL_SCHEMA_LOCATIONS_ID = "http://apache.org/xml/features/honour-all-schemaLocations";
 
     protected final WSBinding binding;
     protected final SchemaValidationFeature feature;
@@ -130,6 +133,44 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
         }
         return (Document)result.getNode();
     }
+
+    /**
+     * Constructs list of schema documents as follows:
+     *   - all <xsd:schema> fragements from all WSDL documents.
+     *   - all schema documents in the application(from WAR etc)
+     *
+     * @param primary wsdl/schema document
+     * @param mdresolver resolves metadata documents
+     * @return list of root schema documents
+     */
+    protected Source[] getSchemaSources(String primary, MetadataUtil.MetadataResolver mdresolver) {
+        Map<String, SDDocument> docs = MetadataUtil.getMetadataClosure(primary, mdresolver, true);
+
+        List<Source> list = new ArrayList<Source>();
+        List<Source> externalSchemas = new ArrayList<Source>();
+        for(Map.Entry<String, SDDocument> entry : docs.entrySet()) {
+            SDDocument doc = entry.getValue();
+            // Add all xsd:schema fragments from all WSDLs. That should form a closure of schemas.
+            if (doc.isWSDL()) {
+                Document dom = createDOM(doc);
+                // Get xsd:schema node from WSDL's DOM
+                addSchemaFragmentSource(dom, doc.getURL().toExternalForm(), list);
+            } else if (doc.isSchema()) {
+                // If there are multiple schemas with the same targetnamespace,
+                // JAXP works only with the first one. Above, all schema fragments may have the same targetnamespace,
+                // and that means it will not include all the schemas. Since we have a list of schemas, just add them.
+                Document dom = createDOM(doc);
+                externalSchemas.add(new DOMSource(dom, doc.getURL().toExternalForm()));
+            }
+        }
+        // "honour-all-schemaLocations" feature only applies today to multiple
+        // imports for the same namespace contained directly or indirectly from
+        // a root schema document. By adding wsdl schema fragments firs in the
+        // list may capture many root schema document.
+        list.addAll(externalSchemas);
+        return list.toArray(new Source[list.size()]) ;
+    }
+
 
 
     /**

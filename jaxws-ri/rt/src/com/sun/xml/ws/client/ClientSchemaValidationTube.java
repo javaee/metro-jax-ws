@@ -39,31 +39,27 @@ package com.sun.xml.ws.client;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.pipe.NextAction;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
-import com.sun.xml.ws.api.pipe.NextAction;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
 import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.util.MetadataUtil;
 import com.sun.xml.ws.util.pipe.AbstractSchemaValidationTube;
 import com.sun.xml.ws.util.xml.MetadataDocument;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import javax.xml.ws.WebServiceException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -97,11 +93,21 @@ public class ClientSchemaValidationTube extends AbstractSchemaValidationTube {
             noValidation = false;
             SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             try {
+                sf.setFeature(HONOUR_ALL_SCHEMA_LOCATIONS_ID, true);
+            } catch(Exception e) {
+                // xerces 2.7 supports this feature. So just ignore the exception.
+            }
+            try {
                 schema = sf.newSchema(sources);
             } catch(SAXException e) {
                 throw new WebServiceException(e);
             }
             validator = schema.newValidator();
+            try {
+                validator.setFeature(HONOUR_ALL_SCHEMA_LOCATIONS_ID, true);
+            } catch(Exception e) {
+                // xerces 2.7 supports this feature. So just ignore the exception.
+            }
         } else {
             noValidation = true;
             schema = null;
@@ -130,28 +136,8 @@ public class ClientSchemaValidationTube extends AbstractSchemaValidationTube {
     }
 
     private Source[] getSchemaSources(String primary) {
-
         MetadataUtil.MetadataResolver mdresolver = new MetadataResolverImpl();
-        Map<String, SDDocument> docs = MetadataUtil.getMetadataClosure(primary, mdresolver, true);
-
-        List<Source> list = new ArrayList<Source>();
-        for(Map.Entry<String, SDDocument> entry : docs.entrySet()) {
-            SDDocument doc = entry.getValue();
-            // Add all xsd:schema fragments from all WSDLs. That should form a closure of schemas.
-            if (doc.isWSDL()) {
-                Document dom = createDOM(doc);
-                // Get xsd:schema node from WSDL's DOM
-                addSchemaFragmentSource(dom, doc.getURL().toExternalForm(), list);
-            } else if (doc.isSchema()) {
-                // If there are multiple schemas with the same targetnamespace,
-                // JAXP works only with the first one. Above, all schema fragments may have the same targetnamespace,
-                // and that means it will not include all the schemas. Since we have a list of schemas, just add them.
-                Document dom = createDOM(doc);
-                list.add(new DOMSource(dom, doc.getURL().toExternalForm()));
-            }
-        }
-        //addSchemaSource(list);
-        return list.toArray(new Source[list.size()]) ;
+        return super.getSchemaSources(primary, mdresolver);
     }
 
     protected Validator getValidator() {

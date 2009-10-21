@@ -55,7 +55,6 @@ import com.sun.xml.ws.util.MetadataUtil;
 import com.sun.xml.ws.util.pipe.AbstractSchemaValidationTube;
 import com.sun.xml.ws.util.xml.MetadataDocument;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
-import org.w3c.dom.*;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXException;
@@ -63,7 +62,6 @@ import org.xml.sax.SAXException;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
@@ -101,6 +99,11 @@ public class ServerSchemaValidationTube extends AbstractSchemaValidationTube {
         this.wsdlPort = wsdlPort;
         //docs = endpoint.getServiceDefinition();
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        try {
+            sf.setFeature(HONOUR_ALL_SCHEMA_LOCATIONS_ID, true);
+       } catch(Exception e) {
+            // xerces 2.7 supports this feature. So just ignore the exception.
+        }
         Source[] sources = getSchemaSources(endpoint.getServiceDefinition());
         for(Source source : sources) {
             LOGGER.fine("Constructing validation Schema from = "+source.getSystemId());
@@ -115,6 +118,11 @@ public class ServerSchemaValidationTube extends AbstractSchemaValidationTube {
                 throw new WebServiceException(e);
             }
             validator = schema.newValidator();
+            try {
+                validator.setFeature(HONOUR_ALL_SCHEMA_LOCATIONS_ID, true);
+            } catch(Exception e) {
+                // xerces 2.7 supports this feature. So just ignore the exception.
+            }            
         } else {
             noValidation = true;
             schema = null;
@@ -133,26 +141,7 @@ public class ServerSchemaValidationTube extends AbstractSchemaValidationTube {
     private Source[] getSchemaSources(ServiceDefinition sd) {
         String primary = sd.getPrimary().getURL().toExternalForm();
         MetadataUtil.MetadataResolver mdresolver = new MetadataResolverImpl(sd);
-        Map<String, SDDocument> docs = MetadataUtil.getMetadataClosure(primary, mdresolver, true);
-
-        List<Source> list = new ArrayList<Source>();
-        for(Map.Entry<String, SDDocument> entry : docs.entrySet()) {
-            SDDocument doc = entry.getValue();
-            // Add all xsd:schema fragments from all WSDLs. That should form a closure of schemas.
-            if (doc.isWSDL()) {
-                Document dom = createDOM(doc);
-                // Get xsd:schema node from WSDL's DOM
-                addSchemaFragmentSource(dom, doc.getURL().toExternalForm(), list);
-            } else if (doc.isSchema()) {
-                // If there are multiple schemas with the same targetnamespace,
-                // JAXP works only with the first one. Above, all schema fragments may have the same targetnamespace,
-                // and that means it will not include all the schemas. Since we have a list of schemas, just add them.
-                Document dom = createDOM(doc);
-                list.add(new DOMSource(dom, doc.getURL().toExternalForm()));
-            }
-        }
-        //addSchemaSource(list);
-        return list.toArray(new Source[list.size()]) ;
+        return super.getSchemaSources(primary, mdresolver);
     }
 
     private class MetadataResolverImpl implements MetadataUtil.MetadataResolver, LSResourceResolver {
