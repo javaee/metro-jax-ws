@@ -204,7 +204,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
         if (contentType == null) {
             xmlCodec.decode(in, contentType, packet);
         } else if (isMultipartRelated(contentType)) {
-            packet.setMessage(new XMLMultiPart(contentType, in, binding.getFeature(StreamingAttachmentFeature.class)));
+            packet.setMessage(new XMLMultiPart(contentType, in, binding));
         } else if(isFastInfoset(contentType)) {
             if (fiCodec == null) {
                 throw new RuntimeException(StreamingMessages.FASTINFOSET_NO_IMPLEMENTATION());

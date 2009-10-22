@@ -37,39 +37,41 @@
 package com.sun.xml.ws.encoding.xml;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.*;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Codec;
-import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
+import com.sun.xml.ws.encoding.ContentType;
 import com.sun.xml.ws.encoding.MimeMultipartParser;
 import com.sun.xml.ws.encoding.XMLHTTPBindingCodec;
-import com.sun.xml.ws.encoding.ContentType;
 import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.message.MimeAttachmentSet;
-import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
+import com.sun.xml.ws.message.source.PayloadSourceMessage;
 import com.sun.xml.ws.util.ByteArrayBuffer;
-import com.sun.xml.bind.api.Bridge;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 import javax.activation.DataSource;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  *
@@ -88,18 +90,22 @@ public final class XMLMessage {
      * @return null if there is no data
      *         else stream to be used
      */
-    private static InputStream hasSomeData(InputStream in) throws IOException {
+    private static InputStream hasSomeData(InputStream in) {
         if (in != null) {
-            if (in.available() < 1) {
-                if (!in.markSupported()) {
-                    in = new BufferedInputStream(in);
+            try {
+                if (in.available() < 1) {
+                    if (!in.markSupported()) {
+                        in = new BufferedInputStream(in);
+                    }
+                    in.mark(1);
+                    if (in.read() != -1) {
+                        in.reset();
+                    } else {
+                        in = null;          // No data
+                    }
                 }
-                in.mark(1);
-                if (in.read() != -1) {
-                    in.reset();
-                } else {
-                    in = null;          // No data
-                }
+            } catch(IOException ioe) {
+                in = null;
             }
         }
         return in;
@@ -121,7 +127,7 @@ public final class XMLMessage {
                 final ContentType contentType = new ContentType(ct);
                 final int contentTypeId = identifyContentType(contentType);
                 if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
-                    data = new XMLMultiPart(ct, in, binding.getFeature(StreamingAttachmentFeature.class));
+                    data = new XMLMultiPart(ct, in, binding);
                 } else if ((contentTypeId & PLAIN_XML_FLAG) != 0) {
                     data = new XmlContent(ct, in, binding);
                 } else {
@@ -376,108 +382,118 @@ public final class XMLMessage {
      */
     public static final class XMLMultiPart extends AbstractMessageImpl implements MessageDataSource {
         private final DataSource dataSource;
-        private MimeMultipartParser mpp;
         private final StreamingAttachmentFeature feature;
+        private Message delegate;
+        private final HeaderList headerList = new HeaderList();
+        private final WSBinding binding;
 
-        public XMLMultiPart(final String contentType, final InputStream is, StreamingAttachmentFeature feature) {
+        public XMLMultiPart(final String contentType, final InputStream is, WSBinding binding) {
             super(SOAPVersion.SOAP_11);
             dataSource = createDataSource(contentType, is);
-            this.feature = feature;
-        }
-        
-        public XMLMultiPart(DataSource dataSource, StreamingAttachmentFeature feature) {
-            super(SOAPVersion.SOAP_11);
-            this.dataSource = dataSource;
-            this.feature = feature;
+            this.feature = binding.getFeature(StreamingAttachmentFeature.class);
+            this.binding = binding;
         }
 
-        public DataSource getDataSource() {
-            assert dataSource != null;
-            return dataSource;
-        }
-        
-        private void convertDataSourceToMessage() {
-            if (mpp == null) {
+        private Message getMessage() {
+            if (delegate == null) {
+                MimeMultipartParser mpp;
                 try {
-                    mpp = new MimeMultipartParser(
-                            dataSource.getInputStream(),
+                    mpp = new MimeMultipartParser(dataSource.getInputStream(),
                             dataSource.getContentType(), feature);
                 } catch(IOException ioe) {
                     throw new WebServiceException(ioe);
                 }
+                InputStream in = mpp.getRootPart().asInputStream();
+                assert in != null;
+                delegate = new PayloadSourceMessage(headerList, new StreamSource(in), new MimeAttachmentSet(mpp), SOAPVersion.SOAP_11);
             }
-        }
-        
-        @Override
-        public boolean isOneWay(@NotNull WSDLPort port) {
-            return false;
+            return delegate;
         }
 
-        public boolean isFault() {
-            return false;
+        public boolean hasUnconsumedDataSource() {
+            return delegate == null;
+        }
+
+        public DataSource getDataSource() {
+            return hasUnconsumedDataSource() ? dataSource :
+                XMLMessage.getDataSource(getMessage(), binding);
         }
 
         public boolean hasHeaders() {
             return false;
         }
 
-        public HeaderList getHeaders() {
-            return new HeaderList();
-        }
-        
-        @Override
-        public AttachmentSet getAttachments() {
-            convertDataSourceToMessage();
-            return new MimeAttachmentSet(mpp);
+        public @NotNull HeaderList getHeaders() {
+            return headerList;
         }
 
         public String getPayloadLocalPart() {
-            throw new UnsupportedOperationException();
+            return getMessage().getPayloadLocalPart();
         }
 
         public String getPayloadNamespaceURI() {
-            throw new UnsupportedOperationException();
+            return getMessage().getPayloadNamespaceURI();
         }
 
         public boolean hasPayload() {
             return true;
         }
 
+        public boolean isFault() {
+            return false;
+        }
+
+        public Source readEnvelopeAsSource() {
+            return getMessage().readEnvelopeAsSource();
+        }
+
         public Source readPayloadAsSource() {
-            convertDataSourceToMessage();
-            return mpp.getRootPart().asSource();
+            return getMessage().readPayloadAsSource();
+        }
+
+        public SOAPMessage readAsSOAPMessage() throws SOAPException {
+            return getMessage().readAsSOAPMessage();
+        }
+
+        public SOAPMessage readAsSOAPMessage(Packet packet, boolean inbound) throws SOAPException {
+            return getMessage().readAsSOAPMessage(packet, inbound);
+        }
+
+        public <T> T readPayloadAsJAXB(Unmarshaller unmarshaller) throws JAXBException {
+            return (T)getMessage().readPayloadAsJAXB(unmarshaller);
+        }
+
+        public <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException {
+            return getMessage().readPayloadAsJAXB(bridge);
         }
 
         public XMLStreamReader readPayload() throws XMLStreamException {
-            convertDataSourceToMessage();
-            return XMLStreamReaderFactory.create( null,
-                    mpp.getRootPart().asInputStream(), true);
+            return getMessage().readPayload();
         }
 
-        public void writePayloadTo(XMLStreamWriter sw) {
-            XMLStreamReaderToXMLStreamWriter c = new XMLStreamReaderToXMLStreamWriter();
-            try {
-                XMLStreamReader r = readPayload();
-                c.bridge(r, sw);
-                XMLStreamReaderFactory.recycle(r);
-            } catch(Exception e) {
-                throw new RuntimeException(e);
-            }
+        public void writePayloadTo(XMLStreamWriter sw) throws XMLStreamException {
+            getMessage().writePayloadTo(sw);
         }
 
-        protected void writePayloadTo(ContentHandler contentHandler, 
-                ErrorHandler errorHandler, boolean fragment){
+        public void writeTo(XMLStreamWriter sw) throws XMLStreamException {
+            getMessage().writeTo(sw);
+        }
+
+        public void writeTo(ContentHandler contentHandler, ErrorHandler errorHandler) throws SAXException {
+            getMessage().writeTo(contentHandler, errorHandler);
+        }
+
+        public Message copy() {
+            return getMessage().copy();
+        }
+
+        protected void writePayloadTo(ContentHandler contentHandler, ErrorHandler errorHandler, boolean fragment) throws SAXException {
             throw new UnsupportedOperationException();
         }
-        
-        public Message copy() {
-            // TODO: need to do a copy and return. But is such a remote
-            // TODO case, returning the same message would work most of the time 
-            return this;
-        }
 
-        public boolean hasUnconsumedDataSource() {
-            return mpp == null;
+        @Override
+        public boolean isOneWay(@NotNull WSDLPort port) {
+            return false;
         }
 
     }
