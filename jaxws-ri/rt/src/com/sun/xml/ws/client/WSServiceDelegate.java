@@ -575,8 +575,6 @@ public class WSServiceDelegate extends WSService {
     public Iterator<QName> getPorts() throws WebServiceException {
         // KK: the spec seems to be ambigous about whether
         // this returns ports that are dynamically added or not.
-        if (ports.isEmpty())
-            throw new WebServiceException("dii.service.no.wsdl.available");
         return ports.keySet().iterator();
     }
 
