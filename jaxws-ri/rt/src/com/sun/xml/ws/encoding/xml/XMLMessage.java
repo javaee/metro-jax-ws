@@ -123,7 +123,7 @@ public final class XMLMessage {
                 if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
                     data = new XMLMultiPart(ct, in, binding.getFeature(StreamingAttachmentFeature.class));
                 } else if ((contentTypeId & PLAIN_XML_FLAG) != 0) {
-                    data = new XmlContent(ct, in);
+                    data = new XmlContent(ct, in, binding);
                 } else {
                     data = new UnknownContent(ct, in);
                 }
@@ -263,11 +263,13 @@ public final class XMLMessage {
         private boolean consumed;
         private Message delegate;
         private final HeaderList headerList;
+        private final WSBinding binding;
 
-        public XmlContent(String ct, InputStream in) {
+        public XmlContent(String ct, InputStream in, WSBinding binding) {
             super(SOAPVersion.SOAP_11);
             dataSource = new XmlDataSource(ct, in);
             this.headerList = new HeaderList();
+            this.binding = binding;
         }
 
         private Message getMessage() {
@@ -285,7 +287,8 @@ public final class XMLMessage {
         }
 
         public DataSource getDataSource() {
-            return dataSource;
+            return hasUnconsumedDataSource() ? dataSource :
+                XMLMessage.getDataSource(getMessage(), binding);
         }
 
         public boolean hasHeaders() {
