@@ -1,7 +1,9 @@
 <descriptor since="2.1" uses="multi-endpoint">
-  <description>
-    Test stateful web service behavior.
-  </description>
-  <client href ="*.bsh" />
-  <service />
+    <description>
+        Test stateful web service behavior.
+    </description>
+    <!--wsimport-client>-B-npa</wsimport-client-->
+    <client href="*.bsh"/>
+    <service/>
+    <test-options>-noPackage</test-options>
 </descriptor>
