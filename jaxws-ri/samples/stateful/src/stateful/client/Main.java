@@ -35,7 +35,8 @@
  */
 
 package stateful.client;
-
+import stateful.client.book.*;
+import stateful.client.bookstore.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;

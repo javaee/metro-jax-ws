@@ -96,7 +96,7 @@
               verbose="${verbose}"
               keep="true"
               destdir="${build.classes.home}"
-              package="stateful.client"
+              package="stateful.client.book"
               wsdl="http://localhost:8080/jaxws-stateful/book?wsdl">
       </wsimport>
       <wsimport
@@ -104,7 +104,7 @@
               verbose="${verbose}"
               keep="true"
               destdir="${build.classes.home}"
-              package="stateful.client"
+              package="stateful.client.bookstore"
               wsdl="http://localhost:8080/jaxws-stateful/bookstore?wsdl">
       </wsimport>
   </target>
