@@ -237,7 +237,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
 
             for( int i=0; i<atts.getLength(); i++ ) {
                 Attr a = (Attr)atts.item(i);
-                if (!"xmlns".equals(a.getPrefix()) || !a.getLocalName().equals("prefix")) {
+                if (!"xmlns".equals(a.getPrefix()) || !a.getLocalName().equals(prefix)) {
                     LOGGER.fine("Patching with xmlns:"+prefix+"="+nss.getURI(prefix));
                     elem.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:"+prefix, nss.getURI(prefix));
                 }
