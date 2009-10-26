@@ -76,6 +76,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FilterInputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -832,7 +833,20 @@ public class RuntimeWSDLParser {
      * to parse a WSDL file.
      */
     private static XMLStreamReader createReader(URL wsdlLoc) throws IOException, XMLStreamException {
-        InputStream stream = wsdlLoc.openStream();
+        // Reads the complete stream so that connection can be reused
+        InputStream stream = new FilterInputStream(wsdlLoc.openStream()) {
+            boolean closed;
+
+            @Override
+            public void close() throws IOException {
+                if (!closed) {
+                    closed = true;
+                    byte[] buf = new byte[8192];
+                    while(read(buf) != -1);
+                    super.close();
+                }
+            }
+        };
         return new TidyXMLStreamReader(XMLStreamReaderFactory.create(wsdlLoc.toExternalForm(), stream, false), stream);
     }
 
