@@ -50,6 +50,8 @@ import com.sun.xml.ws.streaming.DOMStreamReader;
 import com.sun.xml.ws.util.DOMUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Attr;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -103,6 +105,10 @@ public class SAAJMessage extends Message {
     private String payloadNamespace;
     private SOAPVersion soapVersion;
 
+    //Collect the attrbutes on the enclosing elements so that the same message can be reproduced without loss of any
+    // valuable info
+    private NamedNodeMap bodyAttrs, headerAttrs, envelopeAttrs;
+
     public SAAJMessage(SOAPMessage sm) {
         this.sm = sm;
     }
@@ -130,6 +136,7 @@ public class SAAJMessage extends Message {
                     headers = new HeaderList();
                 SOAPHeader header = sm.getSOAPHeader();
                 if (header != null) {
+                    headerAttrs = header.getAttributes();
                     Iterator iter = header.examineAllHeaderElements();
                     while (iter.hasNext()) {
                         headers.add(new SAAJHeader((SOAPHeaderElement) iter.next()));
@@ -147,7 +154,9 @@ public class SAAJMessage extends Message {
     private void access() {
         if (!accessedMessage) {
             try {
+                envelopeAttrs = sm.getSOAPPart().getEnvelope().getAttributes();
                 Node body = sm.getSOAPBody();
+                bodyAttrs = body.getAttributes();
                 soapVersion = SOAPVersion.fromNsUri(body.getNamespaceURI());
                 //cature all the body elements
                 bodyParts = DOMUtil.getChildElements(body);
@@ -211,6 +220,28 @@ public class SAAJMessage extends Message {
         return payloadNamespace != null;
     }
 
+    private void addAttributes(Element e, NamedNodeMap attrs) {
+        if(attrs == null)
+            return;
+        String elPrefix = e.getPrefix();
+        for(int i=0; i < attrs.getLength();i++) {
+            Attr a = (Attr)attrs.item(i);
+            //check if attr is ns declaration
+            if("xmlns".equals(a.getPrefix()) || a.getLocalName().equals("xmlns")) {
+                if(elPrefix == null && a.getLocalName().equals("xmlns")) {
+                    // the target element has already default ns declaration, dont' override it
+                    continue;
+                } else if(elPrefix != null && "xmlns".equals(a.getPrefix()) && elPrefix.equals(a.getLocalName())) {
+                    //dont bind the prefix to ns again, its already in the target element.
+                    continue;
+                }
+                e.setAttributeNS(a.getNamespaceURI(),a.getName(),a.getValue());
+                continue;
+            }
+            e.setAttributeNS(a.getNamespaceURI(),a.getName(),a.getValue());
+        }
+    }
+
     public Source readEnvelopeAsSource() {
         try {
             if (!parsedMessage) {
@@ -219,11 +250,14 @@ public class SAAJMessage extends Message {
 
             } else {
                 SOAPMessage msg = soapVersion.saajMessageFactory.createMessage();
+                addAttributes(msg.getSOAPPart().getEnvelope(),envelopeAttrs);
                 SOAPBody newBody = msg.getSOAPPart().getEnvelope().getBody();
+                addAttributes(newBody, bodyAttrs);
                 for (Element part : bodyParts) {
                     Node n = newBody.getOwnerDocument().importNode(part, true);
                     newBody.appendChild(n);
                 }
+                addAttributes(msg.getSOAPHeader(),headerAttrs);
                 for (Header header : headers) {
                     header.writeTo(msg);
                 }
@@ -240,11 +274,14 @@ public class SAAJMessage extends Message {
             return sm;
         } else {
             SOAPMessage msg = soapVersion.saajMessageFactory.createMessage();
+            addAttributes(msg.getSOAPPart().getEnvelope(),envelopeAttrs);
             SOAPBody newBody = msg.getSOAPPart().getEnvelope().getBody();
+            addAttributes(newBody, bodyAttrs);
             for (Element part : bodyParts) {
                 Node n = newBody.getOwnerDocument().importNode(part, true);
                 newBody.appendChild(n);
             }
+            addAttributes(msg.getSOAPHeader(),headerAttrs);
             for (Header header : headers) {
                 header.writeTo(msg);
             }
@@ -313,7 +350,8 @@ public class SAAJMessage extends Message {
                 SOAPEnvelope env = sm.getSOAPPart().getEnvelope();
                 DOMUtil.writeTagWithAttributes(env, writer);
                 if (hasHeaders()) {
-                    writer.writeStartElement(env.getPrefix(), "Header", env.getNamespaceURI());
+                    DOMUtil.writeTagWithAttributes(env.getHeader(), writer);
+                    //writer.writeStartElement(env.getPrefix(), "Header", env.getNamespaceURI());
                     int len = headers.size();
                     for (int i = 0; i < len; i++) {
                         headers.get(i).writeTo(writer);
@@ -342,25 +380,91 @@ public class SAAJMessage extends Message {
             contentHandler.setDocumentLocator(NULL_LOCATOR);
             contentHandler.startDocument();
             contentHandler.startPrefixMapping("S", soapNsUri);
-            contentHandler.startElement(soapNsUri, "Envelope", "S:Envelope", EMPTY_ATTS);
+            startPrefixMapping(contentHandler, envelopeAttrs,"S");
+            contentHandler.startElement(soapNsUri, "Envelope", "S:Envelope", getAttributes(envelopeAttrs));
             if (hasHeaders()) {
-                contentHandler.startElement(soapNsUri, "Header", "S:Header", EMPTY_ATTS);
+                startPrefixMapping(contentHandler, headerAttrs,"S");
+                contentHandler.startElement(soapNsUri, "Header", "S:Header", getAttributes(headerAttrs));
                 HeaderList headers = getHeaders();
                 int len = headers.size();
                 for (int i = 0; i < len; i++) {
                     // shouldn't JDK be smart enough to use array-style indexing for this foreach!?
                     headers.get(i).writeTo(contentHandler, errorHandler);
                 }
+                endPrefixMapping(contentHandler, headerAttrs,"S");
                 contentHandler.endElement(soapNsUri, "Header", "S:Header");
+
             }
+            startPrefixMapping(contentHandler, bodyAttrs,"S");
             // write the body
-            contentHandler.startElement(soapNsUri, "Body", "S:Body", EMPTY_ATTS);
+            contentHandler.startElement(soapNsUri, "Body", "S:Body", getAttributes(bodyAttrs));
             writePayloadTo(contentHandler, errorHandler, true);
+            endPrefixMapping(contentHandler, bodyAttrs,"S");
             contentHandler.endElement(soapNsUri, "Body", "S:Body");
+            endPrefixMapping(contentHandler, envelopeAttrs,"S");
             contentHandler.endElement(soapNsUri, "Envelope", "S:Envelope");
         }
     }
+    /**
+     * Gets the Attributes that are not namesapce declarations
+     * @param attrs
+     * @return
+     */
+    private AttributesImpl getAttributes(NamedNodeMap attrs) {
+        AttributesImpl atts = new AttributesImpl();
+        if(attrs == null)
+            return EMPTY_ATTS;
+        for(int i=0; i < attrs.getLength();i++) {
+            Attr a = (Attr)attrs.item(i);
+            //check if attr is ns declaration
+            if("xmlns".equals(a.getPrefix()) || a.getLocalName().equals("xmlns")) {
+              continue;
+            }
+            atts.addAttribute(fixNull(a.getNamespaceURI()),a.getLocalName(),a.getName(),a.getSchemaTypeInfo().getTypeName(),a.getValue());
+        }
+        return atts;
+    }
 
+    /**
+     * Collects the ns declarations and starts the prefix mapping, consequently the associated endPrefixMapping needs to be called.
+     * @param contentHandler
+     * @param attrs
+     * @param excludePrefix , this is to excldue the global prefix mapping "S" used at the start
+     * @throws SAXException
+     */
+    private void startPrefixMapping(ContentHandler contentHandler, NamedNodeMap attrs, String excludePrefix) throws SAXException {
+        if(attrs == null)
+            return;
+        for(int i=0; i < attrs.getLength();i++) {
+            Attr a = (Attr)attrs.item(i);
+            //check if attr is ns declaration
+            if("xmlns".equals(a.getPrefix()) || a.getLocalName().equals("xmlns")) {
+                if(!fixNull(a.getPrefix()).equals(excludePrefix)) {
+                    contentHandler.startPrefixMapping(fixNull(a.getPrefix()), a.getNamespaceURI());
+                }
+            }
+        }
+    }
+
+    private void endPrefixMapping(ContentHandler contentHandler, NamedNodeMap attrs, String excludePrefix) throws SAXException {
+        if(attrs == null)
+            return;
+        for(int i=0; i < attrs.getLength();i++) {
+            Attr a = (Attr)attrs.item(i);
+            //check if attr is ns declaration
+            if("xmlns".equals(a.getPrefix()) || a.getLocalName().equals("xmlns")) {
+                if(!fixNull(a.getPrefix()).equals(excludePrefix)) {
+                    contentHandler.endPrefixMapping(fixNull(a.getPrefix()));
+                }
+            }
+        }
+    }
+
+    private static String fixNull(String s) {
+        if(s==null) return "";
+        else        return s;
+    }
+    
     private void writePayloadTo(ContentHandler contentHandler, ErrorHandler errorHandler, boolean fragment) throws SAXException {
         if(fragment)
             contentHandler = new FragmentContentHandler(contentHandler);
