@@ -56,7 +56,7 @@
         <pathelement path="../../tools/resourcegen/build/resourcegen.jar" />
       </classpath>
     </taskdef>
-    <resgen destdir="build/gen-src">
+    <resgen destdir="build/gen-src" license="../../etc/CDDL+GPLv2.xml">
       <resource dir="src" includes="com/sun/tools/ws/resources/*.properties" />
     </resgen>
   </target>

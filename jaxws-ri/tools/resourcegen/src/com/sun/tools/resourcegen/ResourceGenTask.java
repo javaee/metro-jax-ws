@@ -36,16 +36,9 @@
 
 package com.sun.tools.resourcegen;
 
-import com.sun.codemodel.JClass;
-import com.sun.codemodel.JClassAlreadyExistsException;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
-import com.sun.codemodel.JFieldVar;
-import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JMod;
-import com.sun.codemodel.JPackage;
+import com.sun.codemodel.*;
+import com.sun.codemodel.writer.FileCodeWriter;
+import com.sun.codemodel.writer.FilterCodeWriter;
 import com.sun.xml.bind.api.impl.NameConverter;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
@@ -53,9 +46,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,12 +68,18 @@ public class ResourceGenTask extends Task {
 
     private File destDir;
 
+    private File license;
+
     public void addConfiguredResource( FileSet fs ) {
         resources = fs;
     }
 
     public void setDestDir(File dir) {
         this.destDir = dir;
+    }
+
+    public void setLicense(File license) {
+        this.license = license;
     }
 
     public void execute() throws BuildException {
@@ -199,7 +196,13 @@ public class ResourceGenTask extends Task {
         }
 
         try {
-            cm.build(destDir);
+            if (license == null) {
+                cm.build(destDir);
+            } else {
+                CodeWriter core = new FileCodeWriter(destDir);
+                CodeWriter writer = new LicenseCodeWriter(core, license);
+                cm.build(writer);
+            }
         } catch (IOException e) {
             throw new BuildException("Failed to generate code",e);
         }
@@ -230,4 +233,51 @@ public class ResourceGenTask extends Task {
         name = name.substring(0,suffixIndex);
         return NameConverter.smart.toClassName(name)+"Messages";
     }
+
+    /**
+     * Writes all the source files under the specified file folder and
+     * inserts a license file each java source file.
+     *
+     * @author Jitendra Kotamraju
+     *
+     */
+    public static class LicenseCodeWriter extends FilterCodeWriter {
+        private final File license;
+
+        /**
+         * @param core
+         *      This CodeWriter will be used to actually create a storage for files.
+         *      LicenseCodeWriter simply decorates this underlying CodeWriter by
+         *      adding prolog comments.
+         * @param license license File
+         */
+        public LicenseCodeWriter( CodeWriter core, File license ) {
+            super(core);
+            this.license = license;
+        }
+
+
+        public Writer openSource(JPackage pkg, String fileName) throws IOException {
+            Writer w = super.openSource(pkg,fileName);
+
+            PrintWriter out = new PrintWriter(w);
+            FileInputStream fin = null;
+            try {
+                fin = new FileInputStream(license);
+                byte[] buf = new byte[8192];
+                int len;
+                while ((len=fin.read(buf)) != -1) {
+                    out.write(new String(buf, 0, len));
+                }
+            } finally {
+                if (fin != null) {
+                    fin.close();
+                }
+            }
+            out.flush();    // we can't close the stream for that would close the undelying stream.
+
+            return w;
+        }
+    }
+
 }
