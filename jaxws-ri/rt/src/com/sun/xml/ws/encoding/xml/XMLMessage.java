@@ -496,6 +496,10 @@ public final class XMLMessage {
             return false;
         }
 
+        public @NotNull AttachmentSet getAttachments() {
+            return getMessage().getAttachments();
+        }
+
     }
 
     private static class FaultMessage extends EmptyMessageImpl {
