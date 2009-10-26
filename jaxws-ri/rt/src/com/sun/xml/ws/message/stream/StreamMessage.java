@@ -340,7 +340,7 @@ public final class StreamMessage extends AbstractMessageImpl {
                 return; // no body
 
             XMLStreamReaderToContentHandler conv =
-                new XMLStreamReaderToContentHandler(reader,contentHandler,true,fragment);
+                new XMLStreamReaderToContentHandler(reader,contentHandler,true,fragment,getInscopeNamespaces());
 
             while(reader.getEventType() != XMLStreamConstants.END_DOCUMENT){
                 String name = reader.getLocalName();
