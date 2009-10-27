@@ -104,6 +104,8 @@ public class StringHeader extends AbstractHeaderImpl {
 
     public void writeTo(SOAPMessage saaj) throws SOAPException {
         SOAPHeader header = saaj.getSOAPHeader();
+        if(header == null)
+            header = saaj.getSOAPPart().getEnvelope().addHeader();
         SOAPHeaderElement she = header.addHeaderElement(name);
         she.addTextNode(value);
     }
