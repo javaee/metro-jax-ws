@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Test for issue 600
