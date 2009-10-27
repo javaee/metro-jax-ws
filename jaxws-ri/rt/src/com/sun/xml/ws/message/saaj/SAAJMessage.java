@@ -350,8 +350,11 @@ public class SAAJMessage extends Message {
                 SOAPEnvelope env = sm.getSOAPPart().getEnvelope();
                 DOMUtil.writeTagWithAttributes(env, writer);
                 if (hasHeaders()) {
-                    DOMUtil.writeTagWithAttributes(env.getHeader(), writer);
-                    //writer.writeStartElement(env.getPrefix(), "Header", env.getNamespaceURI());
+                    if(env.getHeader() != null) {
+                        DOMUtil.writeTagWithAttributes(env.getHeader(), writer);
+                    } else {
+                        writer.writeStartElement(env.getPrefix(), "Header", env.getNamespaceURI());
+                    }
                     int len = headers.size();
                     for (int i = 0; i < len; i++) {
                         headers.get(i).writeTo(writer);
