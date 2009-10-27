@@ -1,0 +1,27 @@
+serviceQName = new QName("urn:test", "FaultService");
+portQName = new QName("urn:test", "FaultPort");
+bindingIdString = SOAPBinding.SOAP11HTTP_BINDING;
+System.out.println(faultPortAddress);
+service = Service.create(serviceQName);
+service.addPort(portQName, bindingIdString, faultPortAddress.toString());
+jaxbContext = createJAXBContext();
+dispatch = service.createDispatch(portQName, jaxbContext, Service.Mode.PAYLOAD);
+
+try {
+    in = "Fault4";
+    echoElement = new ObjectFactory().createEchoElement(in);
+    Object ret = dispatch.invoke(echoElement);
+    fail("did not receive an exception");
+} catch (SOAPFaultException e) {
+    System.out.println("Expected exception received: " + e.getMessage());
+    Detail detail = e.getFault().getDetail();
+    assertNotNull(detail);
+    i = detail.getDetailEntries();
+    assertTrue(i.hasNext());
+    detail1 = (DetailEntry) i.next();
+    assertEquals(detail1.getElementQName(),
+            new QName(
+                    "urn:test:types", "fault4Element"));
+}
+
+
