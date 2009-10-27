@@ -426,7 +426,7 @@
         <loadresource property="last.sucessful.jaxb.build">
           <url url="http://hudson.sfbay/job/jaxb-ri-2.2/lastSuccessfulBuild/buildNumber"/>
         </loadresource>
-
+      <echo message="Integrating jaxb artifacts from http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}"/>
       <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
            dest="${build.home}/jaxb-ri.zip" />
       <mkdir dir="${build.home}/jaxb" />
