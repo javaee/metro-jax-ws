@@ -204,37 +204,24 @@ public abstract class MonitorBase {
     }
 
     private @NotNull ManagedObjectManager createMOMLoop(final String rootName, final int unique) {
-        ManagedObjectManager mom = createMOM(isFederated());
+        final boolean isFederated = AMXGlassfish.getGlassfishVersion() != null;
+        ManagedObjectManager mom = createMOM(isFederated);
         mom = initMOM(mom);
         mom = createRoot(mom, rootName, unique);
         return mom;
     }
 
-    private ObjectName isFederated() {
-        try {
-            final javax.management.MBeanServer mbeanServer = 
-                java.lang.management.ManagementFactory.getPlatformMBeanServer();
-            final ObjectName amxRoot = 
-                //new ObjectName("amx:pp=/mon,type=server-mon,name=server");
-                AMXGlassfish.DEFAULT.serverMon(AMXGlassfish.DEFAULT.dasName());
-            return mbeanServer.isRegistered(amxRoot) ? amxRoot : null;
-        } catch (Throwable t) {
-            logger.log(Level.CONFIG, "GlassFish AMX monitoring root not available.  Trying standalone.", t);
-            return null;
-        }
-    }
-
-    private @NotNull ManagedObjectManager createMOM(final ObjectName amxRoot) {
-        final boolean isFederated = amxRoot != null;
+    private @NotNull ManagedObjectManager createMOM(final boolean isFederated) {
         try {
             return new RewritingMOM(isFederated ?
-                ManagedObjectManagerFactory.createFederated(amxRoot)
+                ManagedObjectManagerFactory.createFederated(
+                    AMXGlassfish.DEFAULT.serverMon(AMXGlassfish.DEFAULT.dasName()))
                 :
                 ManagedObjectManagerFactory.createStandalone("com.sun.metro"));
         } catch (Throwable t) {
             if (isFederated) {
                 logger.log(Level.CONFIG, "Problem while attempting to federate with GlassFish AMX monitoring.  Trying standalone.", t);
-                return createMOM(null);
+                return createMOM(false);
             } else {
                 logger.log(Level.WARNING, "Ignoring exception - starting up without monitoring", t);
                 return ManagedObjectManagerFactory.createNOOP();
