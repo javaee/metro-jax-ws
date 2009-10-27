@@ -48,6 +48,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPHeader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -132,7 +133,10 @@ public final class OutboundStreamHeader extends AbstractHeaderImpl {
 
     public void writeTo(SOAPMessage saaj) throws SOAPException {
         try {
-            infoset.writeTo(saaj.getSOAPHeader());
+            SOAPHeader header = saaj.getSOAPHeader();
+            if (header == null)
+                header = saaj.getSOAPPart().getEnvelope().addHeader();
+            infoset.writeTo(header);
         } catch (XMLStreamBufferException e) {
             throw new SOAPException(e);
         }

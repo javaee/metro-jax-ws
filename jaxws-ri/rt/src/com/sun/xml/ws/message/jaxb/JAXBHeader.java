@@ -58,6 +58,7 @@ import javax.xml.bind.util.JAXBResult;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPHeader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -193,7 +194,10 @@ public final class JAXBHeader extends AbstractHeaderImpl {
 
     public void writeTo(SOAPMessage saaj) throws SOAPException {
         try {
-            bridge.marshal(jaxbObject,saaj.getSOAPHeader());
+            SOAPHeader header = saaj.getSOAPHeader();
+            if (header == null)
+                header = saaj.getSOAPPart().getEnvelope().addHeader();
+            bridge.marshal(jaxbObject,header);
         } catch (JAXBException e) {
             throw new SOAPException(e);
         }

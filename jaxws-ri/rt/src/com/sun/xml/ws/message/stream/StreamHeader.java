@@ -212,6 +212,8 @@ public abstract class StreamHeader extends AbstractHeaderImpl {
             if(d.getNodeType() == Node.DOCUMENT_NODE)
                 d = d.getFirstChild();
             SOAPHeader header = saaj.getSOAPHeader();
+            if(header == null)
+                header = saaj.getSOAPPart().getEnvelope().addHeader();
             Node node = header.getOwnerDocument().importNode(d, true);
             header.appendChild(node);
         } catch (Exception e) {

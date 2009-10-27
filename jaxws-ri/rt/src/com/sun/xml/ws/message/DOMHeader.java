@@ -119,6 +119,8 @@ public class DOMHeader<N extends Element> extends AbstractHeaderImpl {
 
     public void writeTo(SOAPMessage saaj) throws SOAPException {
         SOAPHeader header = saaj.getSOAPHeader();
+        if(header == null)
+            header = saaj.getSOAPPart().getEnvelope().addHeader();
         Node clone = header.getOwnerDocument().importNode(node,true);
         header.appendChild(clone);
     }

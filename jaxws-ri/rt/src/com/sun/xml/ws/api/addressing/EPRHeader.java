@@ -47,6 +47,7 @@ import org.xml.sax.SAXException;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPHeader;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -109,7 +110,10 @@ final class EPRHeader extends AbstractHeaderImpl {
             // Not very efficient consider implementing a stream buffer
             // processor that produces a DOM node from the buffer.
             Transformer t = XmlUtil.newTransformer();
-            t.transform(epr.asSource(localName), new DOMResult(saaj.getSOAPHeader()));
+            SOAPHeader header = saaj.getSOAPHeader();
+            if (header == null)
+                header = saaj.getSOAPPart().getEnvelope().addHeader();
+            t.transform(epr.asSource(localName), new DOMResult(header));
         } catch (Exception e) {
             throw new SOAPException(e);
         }

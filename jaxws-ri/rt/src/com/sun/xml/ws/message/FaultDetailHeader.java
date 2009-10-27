@@ -109,6 +109,8 @@ public class FaultDetailHeader extends AbstractHeaderImpl {
 
     public void writeTo(SOAPMessage saaj) throws SOAPException {
         SOAPHeader header = saaj.getSOAPHeader();
+        if (header == null)
+                header = saaj.getSOAPPart().getEnvelope().addHeader();
         SOAPHeaderElement she = header.addHeaderElement(av.faultDetailTag);
         she = header.addHeaderElement(new QName(av.nsUri, wrapper));
         she.addTextNode(problemValue);

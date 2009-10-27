@@ -54,6 +54,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPHeader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -284,7 +285,10 @@ final class OutboundReferenceParameterHeader extends AbstractHeaderImpl {
         // when there is no SOAPHeader in the message,
         // which leads to NPE.
         try {
-            Element node = (Element)infoset.writeTo(saaj.getSOAPHeader());
+            SOAPHeader header = saaj.getSOAPHeader();
+            if (header == null)
+                header = saaj.getSOAPPart().getEnvelope().addHeader();
+            Element node = (Element)infoset.writeTo(header);
             node.setAttributeNS(AddressingVersion.W3C.nsUri,AddressingVersion.W3C.getPrefix()+":"+IS_REFERENCE_PARAMETER,TRUE_VALUE);
         } catch (XMLStreamBufferException e) {
             throw new SOAPException(e);
