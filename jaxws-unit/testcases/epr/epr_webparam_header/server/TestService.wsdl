@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tns="http://test" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsa="http://www.w3.org/2005/08/addressing"
+	targetNamespace="http://test" name="GDBService">
+	<types>
+		<xsd:schema>
+			<xsd:import namespace="http://www.w3.org/2005/08/addressing"
+				schemaLocation="http://www.w3.org/2006/03/addressing/ws-addr.xsd" />
+		</xsd:schema>
+		<xsd:schema targetNamespace="http://test">
+			<xsd:element name="test" type="xsd:string" />
+		</xsd:schema>
+	</types>
+
+	<message name="test">
+		<part name="parameters" element="wsa:From" />
+	</message>
+    <message name="testResponse">
+		<part name="ReplyTo" element="wsa:ReplyTo" />
+	</message>
+	<portType name="Test">
+		<operation name="test">
+			<input message="tns:test" />
+			<output message="tns:testResponse" />
+		</operation>
+	</portType>
+	<binding name="TestPortBinding" type="tns:Test">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+			style="document" />
+		<operation name="test">
+			<soap:operation soapAction="http://test#test" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+	</binding>
+	<service name="TestService">
+		<port name="TestPort" binding="tns:TestPortBinding">
+			<soap:address location="http://FILLED_IN_BY_DEPLOYER" />
+		</port>
+	</service>
+</definitions>
