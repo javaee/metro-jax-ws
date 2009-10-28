@@ -155,7 +155,7 @@ public final class DeferredTransportPipe extends AbstractTubeImpl {
         // copied pipeline is still likely to work with the same endpoint address,
         // so also copy the cached transport pipe, if any
         if(transport!=null) {
-            copy.transport = ((PipeCloner)cloner).copy(this.transport);
+            copy.transport = cloner.copy(this.transport);
             copy.address = this.address;
         }
 
