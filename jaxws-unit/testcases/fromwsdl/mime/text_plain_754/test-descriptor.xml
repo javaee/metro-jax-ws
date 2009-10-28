@@ -1,0 +1,7 @@
+<descriptor since="2.1.8">
+    <description>MIME binding text/plain test</description>
+
+    <service basedir="./server">
+        <wsdl href="Catalog.wsdl"/>
+    </service>
+</descriptor>
