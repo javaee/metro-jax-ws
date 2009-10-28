@@ -32,7 +32,7 @@ public class HelloLiteralTest extends TestCase {
     public void testEchoString() throws Exception {
         Holder<String> outStr = new Holder<String>("output");
         Holder<String> att = new Holder<String>();
-        port.echoString("input", outStr, att);
+        port.echoString("input", "attInput", outStr, att);
         assertEquals("output", outStr.value);
         assertEquals("att", att.value);
     }

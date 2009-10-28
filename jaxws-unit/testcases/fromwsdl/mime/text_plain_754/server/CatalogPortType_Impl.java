@@ -18,9 +18,12 @@ import javax.xml.ws.WebServiceException;
 @WebService(endpointInterface = "fromwsdl.mime.text_plain_754.server.CatalogPortType")
 public class CatalogPortType_Impl {
 
-    public void echoString(String input, Holder<String> output, Holder<String> att) {
+    public void echoString(String input, String attInput, Holder<String> output, Holder<String> att) {
         if (!input.equals("input")) {
             throw new WebServiceException("Expected input=input, got="+input);
+        }
+        if (!attInput.equals("attInput")) {
+            throw new WebServiceException("Expected attInput=attInput, got="+attInput);
         }
         output.value = "output";
         att.value = "att";

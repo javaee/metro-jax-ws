@@ -29,11 +29,12 @@ schemaLocation="Catalog.xsd"/>
 
   <wsdl:message name="echoStringRequest">
         <wsdl:part name="input" element="cat:SpecSheet"/>
+        <wsdl:part name="attInput" type="xs:string"/>
   </wsdl:message>
 
     <wsdl:message name="echoStringResponse">
         <wsdl:part name="output" element="cat:SpecSheet"/>
-        <wsdl:part name="att" type="xs:string"/>
+        <wsdl:part name="attOutput" type="xs:string"/>
     </wsdl:message>
 
   <wsdl:portType name="CatalogPortType">
@@ -53,6 +54,9 @@ schemaLocation="Catalog.xsd"/>
             <mime:part>
               <soap:body parts="input" use="literal"/>
             </mime:part>
+              <mime:part>
+              <mime:content part="attInput" type="text/plain"/>
+            </mime:part>
           </mime:multipartRelated>
         </wsdl:input>
 
@@ -62,7 +66,7 @@ schemaLocation="Catalog.xsd"/>
               <soap:body parts="output" use="literal"/>
             </mime:part>
             <mime:part>
-              <mime:content part="att" type="text/plain"/>
+              <mime:content part="attOutput" type="text/plain"/>
             </mime:part>
           </mime:multipartRelated>
         </wsdl:output>
