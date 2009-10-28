@@ -89,8 +89,10 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
     private QName portName;
     private String portAddress;
 
-    private enum EPR_ADDRESS_STATE {IN, OUT, DONE}
-    private EPR_ADDRESS_STATE eprAddressState = EPR_ADDRESS_STATE.OUT;
+    // true inside <wsdl:service>/<wsdl:part>/<wsa:EndpointReference>
+    private boolean inEpr;
+    // true inside <wsdl:service>/<wsdl:part>/<wsa:EndpointReference>/<wsa:Address>
+    private boolean inEprAddress;
 
     /**
      * Creates a {@link WSDLPatcher} for patching WSDL.
@@ -174,25 +176,28 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
         QName name = in.getName();
 
         if (name.equals(WSDLConstants.QNAME_DEFINITIONS)) {
-            //String value = in.getAttributeValue("","targetNamespace");
             String value = in.getAttributeValue(null,"targetNamespace");
             if (value != null) {
                 targetNamespace = value;
             }
         } else if (name.equals(WSDLConstants.QNAME_SERVICE)) {
-            //String value = in.getAttributeValue("","name");
             String value = in.getAttributeValue(null,"name");
             if (value != null) {
                 serviceName = new QName(targetNamespace, value);
             }
         } else if (name.equals(WSDLConstants.QNAME_PORT)) {
-            //String value = in.getAttributeValue("","name");
             String value = in.getAttributeValue(null,"name");
             if (value != null) {
                 portName = new QName(targetNamespace,value);
             }
+        } else if (name.equals(W3CAddressingConstants.WSA_EPR_QNAME)) {
+            if (serviceName != null && portName != null) {
+                inEpr = true;
+            }
         } else if (name.equals(W3CAddressingConstants.WSA_ADDRESS_QNAME)) {
-            eprAddressState = EPR_ADDRESS_STATE.IN;
+            if (inEpr) {
+                inEprAddress = true;
+            }
         }
         super.handleStartElement();
     }
@@ -200,28 +205,39 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
     @Override
     protected void handleEndElement() throws XMLStreamException {
         QName name = in.getName();
-        if (name.equals(W3CAddressingConstants.WSA_ADDRESS_QNAME)) {
-            eprAddressState = EPR_ADDRESS_STATE.OUT;
+        if (name.equals(WSDLConstants.QNAME_SERVICE)) {
+            serviceName = null;
+        } else if (name.equals(WSDLConstants.QNAME_PORT)) {
+            portName = null;
+        } else if (name.equals(W3CAddressingConstants.WSA_EPR_QNAME)) {
+            if (inEpr) {
+                inEpr = false;
+            }
+        } else if (name.equals(W3CAddressingConstants.WSA_ADDRESS_QNAME)) {
+            if (inEprAddress) {
+                String value = getAddressLocation();
+                if (value != null) {
+                    logger.fine("Fixing EPR Address for service:"+serviceName+ " port:"+portName
+                                + " address with "+value);
+                    out.writeCharacters(value);
+                }
+                inEprAddress = false;
+            }
         }
         super.handleEndElement();
     }
 
     @Override
     protected void handleCharacters() throws XMLStreamException {
-        // handleCharacters() may be called multiple times. To take care of this,
-        // EPR_ADDRESS_STATE is used.
-        if (eprAddressState == EPR_ADDRESS_STATE.IN) {
+        // handleCharacters() may be called multiple times.
+        if (inEprAddress) {
             String value = getAddressLocation();
             if (value != null) {
-                logger.fine("Fixing EPR Address for service:"+serviceName+ " port:"+portName
-                            + " address with "+value);
-                out.writeCharacters(value);
-                eprAddressState = EPR_ADDRESS_STATE.DONE;
+                // will write the address with <wsa:Address> end element
+                return;
             }
         }
-        if (eprAddressState != EPR_ADDRESS_STATE.DONE) {
-            super.handleCharacters();
-        }
+        super.handleCharacters();
     }
 
     /**
