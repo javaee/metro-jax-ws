@@ -71,7 +71,7 @@ public interface W3CAddressingConstants {
     public static final String WSA_DEFAULT_FAULT_ACTION = WSA_NAMESPACE_NAME + "/fault";
 
     public static final String WSA_EPR_NAME = "EndpointReference";
-    public static final QName WSA_EPR_QNAME = new QName(WSA_NAMESPACE_WSDL_NAME, WSA_EPR_NAME);
+    public static final QName WSA_EPR_QNAME = new QName(WSA_NAMESPACE_NAME, WSA_EPR_NAME);
 
 
     public static final String WSAW_USING_ADDRESSING_NAME = "UsingAddressing";
