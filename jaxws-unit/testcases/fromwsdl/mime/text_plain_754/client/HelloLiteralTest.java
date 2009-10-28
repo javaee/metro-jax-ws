@@ -6,38 +6,35 @@
 package fromwsdl.mime.text_plain_754.client;
 
 import junit.framework.TestCase;
-import testutil.AttachmentHelper;
 
-import javax.activation.DataHandler;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.Holder;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
-import java.awt.Image;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
-import java.io.InputStream;
 
 
+/**
+ * Test case for issue: 754 - tests text/plain in mime binding
+ *
+ * @author Jitendra Kotamraju
+ */
 public class HelloLiteralTest extends TestCase {
 
     private static CatalogPortType port;
-    private AttachmentHelper helper = new AttachmentHelper();
 
     public HelloLiteralTest(String name) throws Exception {
         super(name);
+    }
+
+    @Override
+    public void setUp() {
         CatalogService service = new CatalogService();
         port = service.getCatalogPort();
     }
 
     public void testEchoString() throws Exception {
         Holder<String> outStr = new Holder<String>("output");
-        Holder<DataHandler> att = new Holder<DataHandler>(); 
-        port.echoString("testing", outStr, att);
+        Holder<String> att = new Holder<String>();
+        port.echoString("input", outStr, att);
+        assertEquals("output", outStr.value);
+        assertEquals("att", att.value);
     }
 
 }

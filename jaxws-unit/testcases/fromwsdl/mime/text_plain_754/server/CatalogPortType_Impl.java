@@ -5,24 +5,25 @@
 
 package fromwsdl.mime.text_plain_754.server;
 
-import javax.activation.DataHandler;
-import javax.annotation.Resource;
 import javax.jws.WebService;
-import javax.xml.transform.Source;
 import javax.xml.ws.Holder;
-import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
-import java.math.BigDecimal;
-import java.awt.Image;
-import java.util.List;
 
 
+/**
+ * Test case for issue: 754 - tests text/plain in mime binding
+ *
+ * @author Jitendra Kotamraju
+ */
 @WebService(endpointInterface = "fromwsdl.mime.text_plain_754.server.CatalogPortType")
 public class CatalogPortType_Impl {
 
-    public void echoString(String input, Holder<String> output, Holder<DataHandler>att) {
-        output.value = "testing";
-        //att.value = "value";
+    public void echoString(String input, Holder<String> output, Holder<String> att) {
+        if (!input.equals("input")) {
+            throw new WebServiceException("Expected input=input, got="+input);
+        }
+        output.value = "output";
+        att.value = "att";
     }
 
 }
