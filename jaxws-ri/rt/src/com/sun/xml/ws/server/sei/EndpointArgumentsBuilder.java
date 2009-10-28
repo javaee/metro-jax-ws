@@ -50,6 +50,8 @@ import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.encoding.StringDataContentHandler;
+import com.sun.xml.ws.encoding.DataHandlerDataSource;
 
 import javax.activation.DataHandler;
 import javax.imageio.ImageIO;
@@ -230,6 +232,8 @@ abstract class EndpointArgumentsBuilder {
                 return new InputStreamBuilder(param, setter);
             } else if(isXMLMimeType(param.getBinding().getMimeType())) {
                 return new JAXBBuilder(param, setter);
+            } else if(String.class.isAssignableFrom(type)) {
+                return new StringBuilder(param, setter);
             } else {
                 throw new UnsupportedOperationException("Unknown Type="+type+" Attachment is not mapped.");
             }
@@ -331,6 +335,23 @@ abstract class EndpointArgumentsBuilder {
         void mapAttachment(Attachment att, Object[] args) throws JAXBException {
             Object obj = param.getBridge().unmarshal(att.asInputStream());
             setter.put(obj, args);
+        }
+    }
+
+    private static final class StringBuilder extends AttachmentBuilder {
+        StringBuilder(ParameterImpl param, EndpointValueSetter setter) {
+            super(param, setter);
+        }
+
+        void mapAttachment(Attachment att, Object[] args) {
+            att.getContentType();
+            StringDataContentHandler sdh = new StringDataContentHandler();
+            try {
+                String str = (String)sdh.getContent(new DataHandlerDataSource(att.asDataHandler()));
+                setter.put(str, args);
+            } catch(Exception e) {
+                throw new WebServiceException(e);
+            }
         }
     }
 

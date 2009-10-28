@@ -52,9 +52,9 @@ import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.encoding.StringDataContentHandler;
+import com.sun.xml.ws.encoding.DataHandlerDataSource;
 
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
 import javax.imageio.ImageIO;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -71,7 +71,6 @@ import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -294,50 +293,6 @@ abstract class ResponseBuilder {
 
         }
     }
-
-class DataHandlerDataSource implements DataSource {
-    DataHandler dataHandler = null;
-
-    /**
-     * The constructor.
-     */
-    public DataHandlerDataSource(DataHandler dh) {
-	this.dataHandler = dh;
-    }
-
-    /**
-     * Returns an <code>InputStream</code> representing this object.
-     * @return	the <code>InputStream</code>
-     */
-    public InputStream getInputStream() throws IOException {
-	return dataHandler.getInputStream();
-    }
-
-    /**
-     * Returns the <code>OutputStream</code> for this object.
-     * @return	the <code>OutputStream</code>
-     */
-    public OutputStream getOutputStream() throws IOException {
-	return dataHandler.getOutputStream();
-    }
-
-    /**
-     * Returns the MIME type of the data represented by this object.
-     * @return	the MIME type
-     */
-    public String getContentType() {
-	return dataHandler.getContentType();
-    }
-
-    /**
-     * Returns the name of this object.
-     * @return	the name of this object
-     */
-    public String getName() {
-	return dataHandler.getName(); // what else would it be?
-    }
-}
-
 
     private static final class ByteArrayBuilder extends AttachmentBuilder {
         ByteArrayBuilder(ParameterImpl param, ValueSetter setter) {
