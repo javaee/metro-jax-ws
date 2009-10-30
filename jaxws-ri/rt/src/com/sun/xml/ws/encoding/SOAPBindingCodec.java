@@ -81,11 +81,6 @@ import java.util.StringTokenizer;
  * @author Kohsuke Kawaguchi
  */
 public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pipe.SOAPBindingCodec {
-    /**
-     * Base HTTP Accept request-header.
-     */
-    private static final String BASE_ACCEPT_VALUE =
-            "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2";
 
     /**
      * Based on request's Accept header this is set.
@@ -215,8 +210,7 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
         xmlSwaCodec = new SwACodec(version, binding, xmlSoapCodec);
         
         String clientAcceptedContentTypes = xmlSoapCodec.getMimeType() + ", " +
-                xmlMtomCodec.getMimeType() + ", " +
-                BASE_ACCEPT_VALUE;
+                xmlMtomCodec.getMimeType();
         
         WebServiceFeature fi = binding.getFeature(FastInfosetFeature.class);
         isFastInfosetDisabled = (fi != null && !fi.isEnabled());
