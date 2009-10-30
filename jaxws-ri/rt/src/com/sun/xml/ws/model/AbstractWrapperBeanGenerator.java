@@ -342,16 +342,14 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
         Collection<? extends M> methods = nav.getDeclaredMethods(exception);
 
         for (M method : methods) {
-/*
-            2.1 is doing the following:
-            TODO implement these in Navigator
 
-             if (!nav.isPublicMethod(method)
-                 || (nav.isStaticMethod(method) && nav.isFinalMethod(method))
-                 || nav.isTransientMethod(method) ) { // no final static, transient, non-public
+            // 2.1.x is doing the following: no final static, transient, non-public
+            // transient cannot used as modifier for method, so not doing it now
+            if (!nav.isPublicMethod(method)
+                || (nav.isStaticMethod(method) && nav.isFinalMethod(method))) { 
                  continue;
-             }
-*/
+            }
+
             if (!nav.isPublicMethod(method)) {
                 continue;
             }
