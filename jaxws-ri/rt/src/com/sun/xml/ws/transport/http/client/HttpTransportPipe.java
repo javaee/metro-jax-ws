@@ -179,10 +179,12 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             checkStatusCode(response, con); // throws ClientTransportException
 
             String contentType = con.getContentType();
+            if (contentType != null && contentType.contains("text/html") && binding instanceof SOAPBinding) {
+                throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(con.statusCode, con.statusMessage));
+            }
             // TODO check if returned MIME type is the same as that which was sent
             // or is acceptable if an Accept header was used
             Packet reply = request.createClientResponse(null);
-            //reply.addSatellite(new HttpResponseProperties(con));
             reply.wasTransportSecure = con.isSecure();
             codec.decode(response, contentType, reply);
             return reply;
