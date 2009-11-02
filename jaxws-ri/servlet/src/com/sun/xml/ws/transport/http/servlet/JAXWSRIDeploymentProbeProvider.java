@@ -13,12 +13,12 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
 @ProbeProvider(moduleProviderName="glassfish", moduleName="webservices", probeProviderName="deployment-ri")
 public class JAXWSRIDeploymentProbeProvider {
 
-    @Probe(name="deploy")
+    @Probe(name="deploy", hidden=true)
     public void deploy(@ProbeParam("adapter")ServletAdapter adpater) {
         // intentionally left empty.
     }
 
-    @Probe(name="undeploy")
+    @Probe(name="undeploy", hidden=true)
     public void undeploy(@ProbeParam("adapter")ServletAdapter adapter) {
         // intentionally left empty.
     }
