@@ -82,7 +82,9 @@ public class SeiGenerator extends GeneratorBase{
         // register handlers for default extensions
 
         // 2.2 Spec requires generation of @Action when wsam:Action is explicitly stated in wsdl
-        register(new W3CAddressingJavaGeneratorExtension());
+        if (options.target.isLaterThan(Options.Target.V2_2)) {
+           register(new W3CAddressingJavaGeneratorExtension());
+        }
         
         for (TJavaGeneratorExtension j : extensions)
             register(j);
