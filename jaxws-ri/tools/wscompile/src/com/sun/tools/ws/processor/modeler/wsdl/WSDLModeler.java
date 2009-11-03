@@ -1816,7 +1816,7 @@ public class WSDLModeler extends WSDLModelerBase {
                         if (inElementName.getLocalPart().equals(outElementName.getLocalPart()) &&
                                 inJavaType.equals(outJavaType) &&
                                 (inTa == null || outTa == null || inTa.equals(outTa)) &&
-                                (inRawTypeName != null && outRawTypeName !=null && inRawTypeName.equals(outRawTypeName))) {
+                                (inRawTypeName == null || outRawTypeName == null || inRawTypeName.equals(outRawTypeName))) {
                             inParam.setMode(Mode.INOUT);
                             continue;
                         }
