@@ -185,7 +185,7 @@ public abstract class InstanceResolver<T> {
      * Checks for {@link InstanceResolverAnnotation} and creates an instance resolver from it if any.
      * Otherwise null.
      */
-    private static <T> InstanceResolver<T> createFromInstanceResolverAnnotation(@NotNull Class<T> clazz) {
+    public static <T> InstanceResolver<T> createFromInstanceResolverAnnotation(@NotNull Class<T> clazz) {
         for( Annotation a : clazz.getAnnotations() ) {
             InstanceResolverAnnotation ira = a.annotationType().getAnnotation(InstanceResolverAnnotation.class);
             if(ira==null)   continue;
