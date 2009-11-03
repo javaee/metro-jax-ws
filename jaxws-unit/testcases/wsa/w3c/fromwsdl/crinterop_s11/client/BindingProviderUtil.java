@@ -58,7 +58,7 @@ public class BindingProviderUtil {
     }
 
     public static String getNonAnonymousClientAddress() {
-		return NON_ANONYMOUS_CLIENT_ADDRESS;
+	return "http://localhost:"+PortAllocator.getFreePort()+"/jaxws-crinterop-s11/nonanonymous";
     }
 
     public static WsaTestPortType createStub() {
@@ -92,7 +92,6 @@ public class BindingProviderUtil {
         return dispatch;
     }
 
-    private static final String NON_ANONYMOUS_CLIENT_ADDRESS = "http://localhost:"+PortAllocator.getFreePort()+"/jaxws-crinterop-s11/nonanonymous";
 
     private static final String NAMESPACE_URI = "http://example.org";
     private static final QName PORT_QNAME = new QName(NAMESPACE_URI, "wsaTestPort");

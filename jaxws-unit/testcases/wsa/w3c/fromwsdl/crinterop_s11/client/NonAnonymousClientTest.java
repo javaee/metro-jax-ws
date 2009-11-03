@@ -60,6 +60,7 @@ import static wsa.w3c.fromwsdl.crinterop_s11.client.TestConstants.*;
 public class NonAnonymousClientTest extends XMLTestCase {
     private static Endpoint responseProcessor;
     private static Exchanger<SOAPMessage> respMsgExchanger = new Exchanger<SOAPMessage>();
+    private String clientAddress;
 
     public NonAnonymousClientTest(String name) {
         super(name);
@@ -74,9 +75,9 @@ public class NonAnonymousClientTest extends XMLTestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        String address = getNonAnonymousClientAddress();
+        clientAddress = getNonAnonymousClientAddress();
         responseProcessor = Endpoint.create(new NonAnonymousRespProcessor(respMsgExchanger));
-        responseProcessor.publish(address);
+        responseProcessor.publish(clientAddress);
     }
 
     protected void tearDown() throws Exception {
@@ -93,7 +94,7 @@ public class NonAnonymousClientTest extends XMLTestCase {
                 MESSAGES.getNonAnonymousReplyToMessage(),
                 S11_NS,
                 getNonAnonymousEndpointAddress(),
-                getNonAnonymousClientAddress(),
+                clientAddress,
                 ECHO_IN_ACTION,
                 "test1150");
         //Lets see we get a response in 60 s
@@ -115,7 +116,7 @@ public class NonAnonymousClientTest extends XMLTestCase {
                     MESSAGES.getNonAnonymousReplyToNoneFaultToMessage(),
                     S11_NS,
                     getNonAnonymousEndpointAddress(),
-                    getNonAnonymousClientAddress(),
+                    clientAddress,
                     ECHO_IN_ACTION,
                     "fault-test1152");
             fail("WebServiceException must be thrown");
@@ -132,7 +133,7 @@ public class NonAnonymousClientTest extends XMLTestCase {
                     MESSAGES.getNonAnonymousReplyToMessage(),
                     S11_NS,
                     getNonAnonymousEndpointAddress(),
-                    getNonAnonymousClientAddress(),
+                    clientAddress,
                     ECHO_IN_ACTION,
                     "fault-test1194");
         //Lets see we get a response in 60 s
