@@ -81,16 +81,9 @@ public class DataSourceDispatch extends DispatchImpl<DataSource> {
     }
 
     DataSource toReturnValue(Packet response) {
-
         Message message = response.getMessage();
-
-        if (message instanceof MessageDataSource) {
-            MessageDataSource hasDS = (MessageDataSource)message;
-            // TODO Need to call hasUnconsumedDataSource()
-            return hasDS.getDataSource();
-        } else if (message instanceof PayloadSourceMessage) {
-            return XMLMessage.getDataSource(message, binding);
-        }
-        return null;
+        return (message instanceof MessageDataSource)
+                ? ((MessageDataSource)message).getDataSource()
+                : XMLMessage.getDataSource(message, binding);
     }
 }
