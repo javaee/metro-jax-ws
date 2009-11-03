@@ -236,6 +236,23 @@ class ModelerUtils {
         return false;
     }
 
+    public static QName getRawTypeName(Parameter parameter) {
+        String name = parameter.getName();
+
+        if (parameter.getType() instanceof JAXBType) {
+            JAXBType jt = (JAXBType)parameter.getType();
+            if (jt.isUnwrappable()) {
+                List<JAXBProperty> props = jt.getWrapperChildren();
+                for(JAXBProperty prop: props) {
+                    if (prop.getName().equals(name)) {
+                        return prop.getRawTypeName();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * @param part
      * @return true if part is bound to Mime content

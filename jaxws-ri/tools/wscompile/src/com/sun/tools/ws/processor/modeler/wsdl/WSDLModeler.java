@@ -1811,8 +1811,12 @@ public class WSDLModeler extends WSDLModelerBase {
                         String outJavaType = param.getTypeName();
                         TypeAndAnnotation inTa = inParam.getType().getJavaType().getType().getTypeAnn();
                         TypeAndAnnotation outTa = param.getType().getJavaType().getType().getTypeAnn();
-                        if (inElementName.getLocalPart().equals(outElementName.getLocalPart()) && inJavaType.equals(outJavaType) &&
-                                (inTa == null || outTa == null || inTa.equals(outTa))) {
+                        QName inRawTypeName = ModelerUtils.getRawTypeName(inParam);
+                        QName outRawTypeName = ModelerUtils.getRawTypeName(param);
+                        if (inElementName.getLocalPart().equals(outElementName.getLocalPart()) &&
+                                inJavaType.equals(outJavaType) &&
+                                (inTa == null || outTa == null || inTa.equals(outTa)) &&
+                                (inRawTypeName != null && outRawTypeName !=null && inRawTypeName.equals(outRawTypeName))) {
                             inParam.setMode(Mode.INOUT);
                             continue;
                         }
