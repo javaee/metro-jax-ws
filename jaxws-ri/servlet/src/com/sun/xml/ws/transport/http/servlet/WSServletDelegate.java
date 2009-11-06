@@ -80,6 +80,7 @@ public class WSServletDelegate {
     private final Map<String, ServletAdapter> fixedUrlPatternEndpoints = new HashMap<String, ServletAdapter>();
     private final List<ServletAdapter> pathUrlPatternEndpoints = new ArrayList<ServletAdapter>();
     private final Map<Locale,Localizer> localizerMap = new HashMap<Locale,Localizer>();
+    private final JAXWSRIServletProbeProvider probe = new JAXWSRIServletProbeProvider();
 
     public WSServletDelegate(List<ServletAdapter> adapters, ServletContext context) {
         this.adapters = adapters;
@@ -148,7 +149,13 @@ public class WSServletDelegate {
                     logger.finest(
                         WsservletMessages.SERVLET_TRACE_GOT_REQUEST_FOR_ENDPOINT(target.name));
                 }
-                target.handle(context, request, response);
+                String path = request.getContextPath()+target.getValidPath();
+                probe.startedEvent(path);
+                try {
+                    target.handle(context, request, response);
+                } finally {
+                    probe.endedEvent(path);
+                }
             } else {
                 Localizer localizer = getLocalizerFor(request);
                 writeNotFoundErrorPage(localizer, response, "Invalid Request");
