@@ -41,7 +41,7 @@
 
 
 
-<project name="JAXWS-RI" default="main" basedir=".">
+<project name="JAXWS-RI" default="main" basedir="." xmlns:artifact="urn:maven-artifact-ant">
   <import file="etc/build-bundle.xml"/>
   <import file="build-taskdefs.xml" />  
   <property name="v3-osgi.dir" value="${basedir}/v3-osgi"/>
@@ -458,6 +458,49 @@
              dest="lib/policy.jar"/>
         <get src="http://kohsuke.sfbay.sun.com/hudson/job/policy-core/lastSuccessfulBuild/artifact/target/policy-src.zip"
              dest="lib/policy-src.zip"/>
+
+    </target>
+
+    <property name="maven.ant.task.jar" value="maven-ant-tasks-2.0.10.jar"/>
+    <property name="java.net.maven2.repo" value="http://download.java.net/maven/2"/>
+    <target name="check-maven-ant-task">
+        <available property="maven.ant.task.available" value="true" file="${lib.home}/${maven.ant.task.jar}"
+                   type="file"/>
+    </target>
+
+    <target name="init-maven-ant" depends="check-maven-ant-task" unless="maven.ant.task.available">
+        <echo message="Fetching Maven ant task..."/>
+        <get src="http://archive.apache.org/dist/maven/binaries/${maven.ant.task.jar}"
+             dest="${lib.home}/${maven.ant.task.jar}" verbose="true"/>
+    </target>
+
+    <target name="mavenize" depends="init-maven-ant">
+        <path id="maven-ant-tasks.classpath" path="${lib.home}/${maven.ant.task.jar}"/>
+        <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
+                 classpathref="maven-ant-tasks.classpath"/>
+
+    </target>
+
+
+    <target name="integrate-gmbal" depends="mavenize" if="gmbal.version">
+        <artifact:dependencies filesetId="dependency.fileset"
+                               sourcesFilesetId="sources.dependency.fileset"
+                               versionsId="dependency.versions" useScope="runtime">
+            <dependency groupId="org.glassfish.gmbal" artifactId="gmbal-api-only" version="${gmbal.version}"/>
+            <remoteRepository url="${java.net.maven2.repo}"/>
+        </artifact:dependencies>
+        <copy todir="${lib.home}">
+            <fileset refid="dependency.fileset"/>
+            <mapper classpathref="maven-ant-tasks.classpath"
+                    classname="org.apache.maven.artifact.ant.VersionMapper"
+                    from="${dependency.versions}" to="flatten"/>
+        </copy>
+        <copy todir="${lib.home}">
+            <fileset refid="sources.dependency.fileset"/>
+            <mapper classpathref="maven-ant-tasks.classpath"
+                    classname="org.apache.maven.artifact.ant.VersionMapper"
+                    from="${dependency.versions}" to="flatten"/>
+        </copy>
 
     </target>
 
