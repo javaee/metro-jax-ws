@@ -64,7 +64,7 @@
     <dependency>
       <groupId>com.sun.xml.stream.buffer</groupId>
       <artifactId>streambuffer</artifactId>
-      <version>0.8</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.woodstox</groupId>
@@ -93,6 +93,11 @@
       <groupId>org.jvnet</groupId>
       <artifactId>mimepull</artifactId>
       <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.gmbal</groupId>
+      <artifactId>gmbal-api-only</artifactId>
+      <version>3.0.0-b022</version>
     </dependency>
   </dependencies>
 </project>
