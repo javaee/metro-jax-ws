@@ -481,14 +481,18 @@
 
     </target>
 
+    <target name="warn-gmbal-version-param" unless="gmbal.version">
+        <echo message="gmbal.version propery must be specified for running integrate-gmbal target"/>
+    </target>
 
-    <target name="integrate-gmbal" depends="mavenize" if="gmbal.version">
+    <target name="integrate-gmbal" depends="mavenize, warn-gmbal-version-param" if="gmbal.version">
         <artifact:dependencies filesetId="dependency.fileset"
                                sourcesFilesetId="sources.dependency.fileset"
-                               versionsId="dependency.versions" useScope="runtime">
+                               versionsId="dependency.versions" useScope="runtime" addArtifactFileSetRefs="true">
             <dependency groupId="org.glassfish.gmbal" artifactId="gmbal-api-only" version="${gmbal.version}"/>
             <remoteRepository url="${java.net.maven2.repo}"/>
         </artifact:dependencies>
+
         <copy todir="${lib.home}">
             <fileset refid="dependency.fileset"/>
             <mapper classpathref="maven-ant-tasks.classpath"
@@ -501,6 +505,35 @@
                     classname="org.apache.maven.artifact.ant.VersionMapper"
                     from="${dependency.versions}" to="flatten"/>
         </copy>
+        
+        <!-- Ugly Workaround for Gmbal source bundle inconsistency -->
+                <!--
+                <echo message="${org.glassfish.external:management-api:jar}"/>
+                <echo message="${dependency.versions}"/>
+                -->
+
+        <get src="${java.net.maven2.repo}/org/glassfish/gmbal/gmbal-api-only-source/${gmbal.version}/gmbal-api-only-source-${gmbal.version}.jar"
+             dest="${lib.home}/gmbal-api-only-src.jar" verbose="true"/>
+        <zip destfile="${lib.home}/gmbal-api-only-src.zip">
+                    <zipfileset src="${lib.home}/gmbal-api-only-src.jar"/>
+                </zip>
+                <delete file="${lib.home}/gmbal-api-only-src.jar"/>
+
+        <!-- Now get the management-api version from the gmbal-api pom -->
+        <pathconvert pathsep="," property="management-api.version">
+            <path location="${dependency.versions}"/>
+            <chainedmapper>
+                <flattenmapper/>
+                <mapper type="regexp" from="^(.*):(.*)$$" to="\2"/>
+            </chainedmapper>
+        </pathconvert>
+
+        <get src="${java.net.maven2.repo}/org/glassfish/external/management-api-sources/${management-api.version}/management-api-sources-${management-api.version}.jar"
+                     dest="${lib.home}/management-api-src.jar" verbose="true"/>
+        <zip destfile="${lib.home}/management-api-src.zip">
+            <zipfileset src="${lib.home}/management-api-src.jar"/>
+        </zip>
+        <delete file="${lib.home}/management-api-src.jar"/>
 
     </target>
 
