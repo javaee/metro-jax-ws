@@ -348,6 +348,43 @@
 
     <target name="hudson" depends="clean, dist.zip, src.zip,javadocs, doc-src-zip" />
 
+    <macrodef name="prepare-pom">
+        <attribute name="module"/>
+        <sequential>
+            <copy file="etc/poms/@{module}.pom" tofile="build/maven2-repo/@{module}.pom" overwrite="true">
+                <filterset>
+                    <filter token="API_VERSION" value="${release.spec.version}-SNAPSHOT"/>
+                    <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
+                    <filter token="VERSION" value="${jar.suffix}"/>
+                </filterset>
+            </copy>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="push-to-m2">
+        <attribute name="module"/>
+        <attribute name="module-src"/>
+        <sequential>
+            <prepare-pom module="@{module}"/>
+            <artifact:install file="${dist20.home}/lib/@{module}.jar">
+                <!--remoteRepository url="${java.net.maven2.repo}"/-->
+                <localRepository path="build/maven2-repo/test"/>
+                <pom file="build/maven2-repo/@{module}.pom"/>
+                <attach file="@{module-src}" classifier="sources" />
+            </artifact:install>            
+        </sequential>
+    </macrodef>
+
+
+    <target name="push-to-maven2" depends="mavenize">
+        <delete dir="build/maven2-repo"/>
+        <mkdir dir="build/maven2-repo"/>
+        <push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
+        <push-to-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
+        <push-to-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
+
+    </target>
+
     <target name="push-to-maven-prepare"
     description="prepare a repository image for the push-to-maven target">
     <taskdef resource="maven-repository-importer.properties">
@@ -419,6 +456,11 @@
       <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
   </target>
 
+    <target name="push-snapshot-to-maven2" depends="src.zip"
+      description="publish snapshot jars into the maven repository">
+      <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT" />
+      <antcall target="push-to-maven2"/>      
+  </target>
 
   
     <target name="integrate-jaxb-hudson" depends="prepare"
@@ -478,7 +520,11 @@
         <path id="maven-ant-tasks.classpath" path="${lib.home}/${maven.ant.task.jar}"/>
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
                  classpathref="maven-ant-tasks.classpath"/>
-
+        <mkdir dir="build/maven2-repo/test"/>
+        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.7">
+            <artifact:remoteRepository id="java.net.maven2.repository" url="${java.net.maven2.repo}"/>
+            <!-- artifact:localRepository path="build/maven2-repo/test"/> -->
+        </artifact:install-provider>
     </target>
 
     <target name="warn-gmbal-version-param" unless="gmbal.version">
