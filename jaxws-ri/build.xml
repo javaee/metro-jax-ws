@@ -522,8 +522,8 @@
                  classpathref="maven-ant-tasks.classpath"/>
         <mkdir dir="build/maven2-repo/test"/>
         <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.7">
-            <artifact:remoteRepository id="java.net.maven2.repository" url="${java.net.maven2.repo}"/>
-            <!-- artifact:localRepository path="build/maven2-repo/test"/> -->
+            <remoteRepository id="java.net.maven2.repository" url="${java.net.maven2.repo}"/>
+            <!-- localRepository path="build/maven2-repo/test"/> -->
         </artifact:install-provider>
     </target>
 
