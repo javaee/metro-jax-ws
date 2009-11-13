@@ -366,12 +366,12 @@
         <attribute name="module-src"/>
         <sequential>
             <prepare-pom module="@{module}"/>
-            <artifact:install file="${dist20.home}/lib/@{module}.jar">
-                <!--remoteRepository url="${java.net.maven2.repo}"/-->
+            <artifact:deploy file="${dist20.home}/lib/@{module}.jar">
+                <remoteRepository url="${java.net.maven2.repo.push.url}"/>
                 <localRepository path="build/maven2-repo/test"/>
                 <pom file="build/maven2-repo/@{module}.pom"/>
                 <attach file="@{module-src}" classifier="sources" />
-            </artifact:install>            
+            </artifact:deploy>            
         </sequential>
     </macrodef>
 
@@ -383,6 +383,12 @@
         <push-to-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <push-to-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
 
+    </target>
+
+    <target name="push-snapshot-to-maven2" depends="src.zip"
+            description="publish snapshot jars into the maven repository">
+        <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
+        <antcall target="push-to-maven2"/>
     </target>
 
     <target name="push-to-maven-prepare"
@@ -456,13 +462,7 @@
       <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
   </target>
 
-    <target name="push-snapshot-to-maven2" depends="src.zip"
-      description="publish snapshot jars into the maven repository">
-      <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT" />
-      <antcall target="push-to-maven2"/>      
-  </target>
 
-  
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
         <loadresource property="last.sucessful.jaxb.build">
@@ -505,6 +505,8 @@
 
     <property name="maven.ant.task.jar" value="maven-ant-tasks-2.0.10.jar"/>
     <property name="java.net.maven2.repo" value="http://download.java.net/maven/2"/>
+    <property name="java.net.maven2.repo.push.url" value="java-net:/maven2-repository/trunk/repository"/>
+
     <target name="check-maven-ant-task">
         <available property="maven.ant.task.available" value="true" file="${lib.home}/${maven.ant.task.jar}"
                    type="file"/>
