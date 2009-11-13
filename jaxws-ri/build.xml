@@ -521,10 +521,8 @@
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
                  classpathref="maven-ant-tasks.classpath"/>
         <mkdir dir="build/maven2-repo/test"/>
-        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.7">
-            <remoteRepository id="java.net.maven2.repository" url="${java.net.maven2.repo}"/>
-            <!-- localRepository path="build/maven2-repo/test"/> -->
-        </artifact:install-provider>
+        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.9"/>
+
     </target>
 
     <target name="warn-gmbal-version-param" unless="gmbal.version">
