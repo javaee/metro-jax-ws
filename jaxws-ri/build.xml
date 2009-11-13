@@ -366,7 +366,7 @@
         <attribute name="module-src"/>
         <sequential>
             <prepare-pom module="@{module}"/>
-            <artifact:deploy file="${dist20.home}/lib/@{module}.jar">
+            <artifact:deploy file="${dist20.home}/lib/@{module}.jar" uniqueVersion="false">
                 <remoteRepository url="${java.net.maven2.repo.push.url}"/>
                 <localRepository path="build/maven2-repo/test"/>
                 <pom file="build/maven2-repo/@{module}.pom"/>
