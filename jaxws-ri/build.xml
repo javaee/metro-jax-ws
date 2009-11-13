@@ -524,6 +524,12 @@
                  classpathref="maven-ant-tasks.classpath"/>
         <mkdir dir="build/maven2-repo/test"/>
         <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.9"/>
+        <!--
+        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.11-SNAPSHOT">
+            <artifact:remoteRepository url="${java.net.maven2.repo}"></artifact:remoteRepository>        
+        </artifact:install-provider>
+        -->
+
 
     </target>
 
