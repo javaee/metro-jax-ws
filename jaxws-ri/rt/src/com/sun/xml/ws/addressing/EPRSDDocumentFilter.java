@@ -54,6 +54,8 @@ import javax.xml.namespace.NamespaceContext;
 import java.io.IOException;
 import java.util.List;
 import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * This class acts as a filter for the Extension elements in the wsa:EndpointReference in the wsdl.
@@ -64,30 +66,35 @@ import java.util.Collection;
  */
 public class EPRSDDocumentFilter implements SDDocumentFilter {
     private final WSEndpointImpl<?> endpoint;
+    //initialize lazily
     List<BoundEndpoint> beList;
     public EPRSDDocumentFilter(@NotNull WSEndpointImpl<?> endpoint) {
         this.endpoint = endpoint;
-        //check if it is run in a Java EE Container and get hold of other endpoints in the application
-        Module module = endpoint.getContainer().getSPI(Module.class);
-        if (module != null) {
-            beList = module.getBoundEndpoints();
-        }
     }
 
     private @Nullable WSEndpointImpl<?> getEndpoint(String serviceName, String portName) {
         if (serviceName == null || portName == null)
             return null;
-        if (endpoint.getServiceName().equals(serviceName) && endpoint.getPortName().equals(portName))
+        if (endpoint.getServiceName().getLocalPart().equals(serviceName) && endpoint.getPortName().getLocalPart().equals(portName))
             return endpoint;
 
-        if (beList != null) {
-            for (BoundEndpoint be : beList) {
-                WSEndpoint wse = be.getEndpoint();
-                if (wse.getServiceName().getLocalPart().equals(serviceName) && wse.getPortName().getLocalPart().equals(portName)) {
-                    return (WSEndpointImpl) wse;
-                }
+        if(beList == null) {
+            //check if it is run in a Java EE Container and get hold of other endpoints in the application
+            Module module = endpoint.getContainer().getSPI(Module.class);
+            if (module != null) {
+                beList = module.getBoundEndpoints();
+            } else {
+                beList = Collections.<BoundEndpoint>emptyList();
             }
         }
+
+        for (BoundEndpoint be : beList) {
+            WSEndpoint wse = be.getEndpoint();
+            if (wse.getServiceName().getLocalPart().equals(serviceName) && wse.getPortName().getLocalPart().equals(portName)) {
+                return (WSEndpointImpl) wse;
+            }
+        }
+
         return null;
 
     }
