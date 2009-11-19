@@ -361,6 +361,20 @@
         </sequential>
     </macrodef>
 
+    <macrodef name="install-local-m2">
+            <attribute name="module"/>
+            <attribute name="module-src"/>
+            <sequential>
+                <prepare-pom module="@{module}"/>
+                <artifact:install file="${dist20.home}/lib/@{module}.jar">
+                    <localRepository path="build/maven2-repo/test"/>
+                    <pom file="build/maven2-repo/@{module}.pom"/>
+                    <attach file="@{module-src}" classifier="sources" />
+                </artifact:install>
+            </sequential>
+    </macrodef>
+
+
     <macrodef name="push-to-m2">
         <attribute name="module"/>
         <attribute name="module-src"/>
@@ -374,8 +388,24 @@
             </artifact:deploy>            
         </sequential>
     </macrodef>
+    <!--
+    <target name="install-jaxws-deps-locally" depends="mavenize">
+        <delete dir="build/maven2-repo"/>
+        <mkdir dir="build/maven2-repo"/>
+        <install-local-m2 module="jsr181-api" module-src="lib/jsr181-api.src.zip"/>
+        <install-local-m2 module="jsr250-api" module-src="lib/jsr250-api.src.zip"/>
+        <install-local-m2 module="resolver" module-src="lib/resolver-src.zip"/>
+    </target>
 
-
+    <target name="push-jaxws-deps-to-m2" depends="mavenize">
+        <delete dir="build/maven2-repo"/>
+        <mkdir dir="build/maven2-repo"/>
+        <push-to-m2 module="jsr181-api" module-src="lib/jsr181-api.src.zip"/>
+        <push-to-m2 module="jsr250-api" module-src="lib/jsr250-api.src.zip"/>
+        <push-to-m2 module="resolver" module-src="lib/resolver-src.zip"/>
+    </target>
+    -->
+    
     <target name="push-to-maven2" depends="mavenize">
         <delete dir="build/maven2-repo"/>
         <mkdir dir="build/maven2-repo"/>
