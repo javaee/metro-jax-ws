@@ -102,7 +102,7 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
 
     private static ClientTubeAssemblerContext recreateClientContext(ClientTubeAssemblerContext context) {
         return new ClientTubeAssemblerContext(
-                context.getAddress(), context.getWsdlModel(), context.getPortInfo(),
+                context.getAddress(), context.getWsdlModel(), context.getBindingProvider(),
                 recreateBinding(context.getBinding()),
                 context.getContainer(), context.getCodec(), context.getSEIModel());
     }
