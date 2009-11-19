@@ -405,7 +405,14 @@
         <push-to-m2 module="resolver" module-src="lib/resolver-src.zip"/>
     </target>
     -->
-    
+    <target name="install-locally" depends="mavenize">
+        <delete dir="build/maven2-repo"/>
+        <mkdir dir="build/maven2-repo"/>
+        <install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
+        <install-local-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
+        <install-local-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
+    </target>
+
     <target name="push-to-maven2" depends="mavenize">
         <delete dir="build/maven2-repo"/>
         <mkdir dir="build/maven2-repo"/>
