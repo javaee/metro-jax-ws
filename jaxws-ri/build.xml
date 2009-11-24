@@ -732,6 +732,10 @@
          file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_${DSTAMP}.jar"/>
       <move tofile="${build.home}/jaxws${release.jar.version}-src.jar"
          file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.jar"/>
+      <copy tofile="${build.home}/jaxws${release.jar.version}.zip"
+         file="${build.home}/jaxws-ri.zip"/>
+      <move tofile="${build.home}/jaxws${release.jar.version}-src.zip"
+         file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.zip"/>
     </target>
 
     <target name="generate-binary"
@@ -827,6 +831,7 @@
         <zipfileset file="${source.drop.dir}/jaxws-src.zip"/>
       </zip>
 
+      <copy file="${source.drop.dir}/jaxws-src.zip" tofile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.zip"/>  
       <!-- generate the installer -->
       <installerBuilder classFile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.jar"
           licenseFile="${basedir}/CDDL+GPLv2.txt"
