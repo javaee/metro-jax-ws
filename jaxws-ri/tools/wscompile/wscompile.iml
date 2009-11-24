@@ -10,7 +10,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="rt" exported="" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -22,6 +21,7 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="rt" exported="" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -41,7 +41,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="resourcegen" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>

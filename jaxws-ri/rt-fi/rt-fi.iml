@@ -21,7 +21,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="APT" level="application" />
-    <orderEntryProperties />
   </component>
   <component name="org.mevenide.idea.module.ModuleSettings">
     <favoriteGoals>
