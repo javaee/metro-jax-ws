@@ -102,7 +102,7 @@
     <dependency>
       <groupId>org.glassfish.gmbal</groupId>
       <artifactId>gmbal-api-only</artifactId>
-      <version>3.0.0-b022</version>
+      <version>3.0.0-b023</version>
     </dependency>
   </dependencies>
 </project>
