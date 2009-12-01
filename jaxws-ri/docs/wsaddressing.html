@@ -6,8 +6,7 @@
 
   
 </head><body>
-<content><section title="WS-Addressing in JAX-WS 2.1">
-</section></content>
+<content><section title="WS-Addressing in ${PRODUCT_NAME}">
 <p><a href="http://www.w3.org/2002/ws/addr/">Web Services Addressing</a>
 provides transport-neutral mechanisms to address Web services and
 messages.
@@ -24,14 +23,12 @@ ${PRODUCT_NAME} also supports wsdls conforming to <a href="http://www.w3.org/TR/
 specification. The subsequent sections describe how the two
 WS-Addressing
 versions can be enabled/disabled on client and server side .</p>
-
-<section title="Why WS-Addressing ?">
 </section>
+<section title="Why WS-Addressing ?">
 <p>This <a href="why-wsaddressing.html"> document</a> explains what is
 WS-Addressing and why it is required.</p>
-
-<section title="Describing WS-Addressing in WSDL">
 </section>
+<section title="Describing WS-Addressing in WSDL">
 <p>WS Addressing 1.0- Metadata defines standard ways to describe
 message addressing properties like Action, Destination in wsdl and also
 indicate the use of Addressing in wsdl. WS-Addressing Metadata
@@ -50,8 +47,8 @@ understands such assertion.
 </p>
 
 <section title="WS-Addressing 1.0 - Metadata">
-</section>
-<p>Addressing 1.0 - Metadata specification uses Web Services Policy
+<p><a href="http://www.w3.org/TR/2007/REC-ws-addr-metadata-20070904/">Addressing
+1.0 - Metadata</a> specification uses Web Services Policy
 Framework (<a href="http://www.w3.org/TR/2007/REC-ws-policy-20070904">WS
 Policy 1.5</a>)
 and Web Services Policy - Attachment [<a href="http://www.w3.org/TR/2007/REC-ws-policy-attach-20070904">WS
@@ -112,8 +109,10 @@ the anonymous URI ("http://www.w3.org/2005/08/addressing/anonymous") or
 None URI ("http://www.w3.org/2005/08/addressing/none") as the value of
 address.<br>
 
-<section title="WS-Addressing WSDL Binding">
+<br>
+
 </section>
+<section title="WS-Addressing WSDL Binding">
 <p>W3C WS-Addressing WSDL Binding defines an extensibility
 element, <a href="http://www.w3.org/TR/2006/CR-ws-addr-wsdl-20060529/#uaee">wsaw:UsingAddressing</a>,
 that can be used to indicate that an endpoint conforms to the
@@ -148,19 +147,23 @@ or FaultTo EPR will result in a fault message returned back to the
 client with <code><a href="http://www.w3.org/TR/2006/REC-ws-addr-soap-20060509/#id2270777">wsa:OnlyAnonymousAddressSupported</a></code>
 fault code. <br>
 There is no such equivalent feature in Member Submission
-WS-Addressing.
-<section title="Configuring Addressing on Endpoint"></section></p>
+WS-Addressing.<br>
+
+</section>
+</section>
+<section title="Configuring Addressing on Endpoint"></p>
 
 <p>This section describes how W3C and Member Submission WS-Addressing
 can be
 enabled/disabled on the server-side.</p>
 
-<section title="Starting from WSDL">
-</section>Starting from WSDL, If the wsdl contains the above described
+<section title=" Starting from WSDL">
+Starting from WSDL, If the wsdl contains the above described
 metadata to indicate use addressing at endpoint scope, Addressing is
 enabled on the server-side.&nbsp; See&nbsp; <a href="#Describing_WS_Addressing_in_WSDL">Describing WS-Addressing in
-WSDL</a> section for more details.<section title="Starting from Java">
+WSDL</a> section for more details.
 </section>
+<section title=" Starting from Java">
 <p>This section describes how WS-Addressing can be enabled/disabled if
 you
 develop an endpoint starting from a Java SEI.</p>
@@ -169,10 +172,10 @@ develop an endpoint starting from a Java SEI.</p>
 Java. If
 that is the expected behavior, then nothing else needs to be done. In
 that case
-any WS-Addressing headers received at the endpoint are treated like SOAP headers targeted for the appliaction and are ignored.</p>
+any WS-Addressing headers received at the endpoint are treated like
+SOAP headers targeted for the appliaction and are ignored.</p>
 
-<section title="Addressing annotations">
-</section>
+<section title=" Addressing annotations">
 <p>If WS-Addressing support needs to be enabled on an endpoint, then
 along with <code>javax.jws.WebService</code>
 annotation, <code>javax.xml.ws.soap.Addressing</code> annotation need
@@ -197,8 +200,9 @@ changed to:</p>
 
 <ul>
 
-  <li>In the generated WSDL, corresponding metadata as described in section Describing Addressing in WSDL is generated.<br>
-</li>
+  <li>In the generated WSDL, corresponding metadata as described in
+section Describing Addressing in WSDL is generated.<br>
+  </li>
   <li>All WS-Addressing headers are understood, i.e. if any
 WS-Addressing header is received with a <code>mustUnderstand="1"</code>,
 then a mustUnderstand fault is not thrown back.</li>
@@ -214,9 +218,8 @@ client.</li>
   <li>Any response message sent back to the client contains the
 required WS-Addressing headers.&nbsp;</li>
 </ul>
-
-<p><b>Is Addressing Optional or Required ?<br>
-</b></p>
+</section>
+<section title="Is Addressing Optional or Required ?">
 
 <p>Both <code>javax.xml.ws.soap.Addressing</code> and <code>com.sun.xml.ws.developer.MemberSubmissionAddressing</code>
 annotations take two optional Boolean parameters, <code>enabled</code>
@@ -227,19 +230,25 @@ specified true, then WS-Addressing rules are enforced. Otherwise the
 inbound
 message is inspected to find out if WS-A is engaged and then the rules
 are
-enforced. See <a href="wsaddressing.html#When_is_WS_Addressing_engaged_">When is WS-Addressing engaged?</a> section for more details on enforcement furing runtime.</p>
+enforced. See <a href="wsaddressing.html#When_is_WS_Addressing_engaged_">When is
+WS-Addressing engaged?</a> section for more details on enforcement
+furing runtime.</p>
+
 <p>For example, to enforce Member Submission WS-Addressing rules on the
 server
 side, the above code sample will change to:</p>
 
 <pre style="margin-top: 16px; height: 74px;">@com.sun.xml.ws.developer.MemberSubmissionAddressing<b>(enabled=true, required=true)</b><br>@javax.jws.WebService<br>public class AddNumbersImpl {<br>...<br>}</pre>
-
-<section title="On the client side">
 </section>
+</section>
+</section>
+<section title="On the client side">
 <p>This section describes how WS-Addressing
 can be
-enabled/disabled on the client-side. ${PRODUCT_SHORT_NAME} follows the standard
-extensibility elements in WSDL to enable WS-Addressing support on the client
+enabled/disabled on the client-side. ${PRODUCT_SHORT_NAME} follows the
+standard
+extensibility elements in WSDL to enable WS-Addressing support on the
+client
 side. In
 addition, it also allows the client to instruct ${PRODUCT_SHORT_NAME}
 to disable
@@ -250,28 +259,28 @@ client
 in MESSAGE mode may be used to perform non-anonymous ReplyTo/FaultTo
 processing.</p>
 
-<section title="Implicit behavior">
-</section>
-<p>As defined in <a href="#Describing_WS_Addressing_in_WSDL">Describing WS-Addressing in WSDL</a>, If the
+<section title=" Implicit behavior">
+<p>As defined in <a href="#Describing_WS_Addressing_in_WSDL">Describing
+WS-Addressing in WSDL</a>, If the
 WSDL
-contains metadata about the support or requirement of WS-Addressing,  ${PRODUCT_SHORT_NAME} runtime enables Addressing feature on the client-side. <br>
+contains metadata about the support or requirement of WS-Addressing,
+${PRODUCT_SHORT_NAME} runtime enables Addressing feature on the
+client-side. <br>
 </p>
 
 <ul>
 
-
-<li>Generates <code>Action</code>, <code>To</code>, <code>MessageID</code>
+  <li>Generates <code>Action</code>, <code>To</code>, <code>MessageID</code>
 and anonymous <code>ReplyTo</code> headers on the outbound request.</li>
-<li>Any WS-Addressing headers received on the client are processed.</li>
+  <li>Any WS-Addressing headers received on the client are processed.</li>
 </ul>
 
 <p>There is no standard extensibility element for Member Submission
 WS-Addressing and so there is no implicit behavior defined. It can only
 be
 explicitly enabled as described in the next section.&nbsp;</p>
-
-<section title="Explicit enabling">
 </section>
+<section title=" Explicit enabling">
 <p>If a WSDL does not contain WS-Addressing standard extensibility
 element, then
 either W3C WS-Addressing or Member Submission WS-Addressing can be
@@ -282,18 +291,18 @@ The following new APIs are added in JAX-WS 2.1:</p>
 
 <ul>
 
-<li><code>&lt;T&gt; Dispatch&lt;T&gt;
+  <li><code>&lt;T&gt; Dispatch&lt;T&gt;
 createDispatch(javax.xml.namespace.QName&nbsp;portName,
 java.lang.Class&lt;T&gt;&nbsp;type, Service.Mode&nbsp;mode,
 WebServiceFeature...&nbsp;features)</code></li>
-<li><code>Dispatch&lt;java.lang.Object&gt;
+  <li><code>Dispatch&lt;java.lang.Object&gt;
 createDispatch(javax.xml.namespace.QName&nbsp;portName,
 javax.xml.bind.JAXBContext&nbsp;context, Service.Mode&nbsp;mode,
 WebServiceFeature...&nbsp;features)</code></li>
-<li><code>&lt;T&gt; T
+  <li><code>&lt;T&gt; T
 getPort(java.lang.Class&lt;T&gt;&nbsp;serviceEndpointInterface,
 WebServiceFeature...&nbsp;features)</code></li>
-<li><code>&lt;T&gt; T
+  <li><code>&lt;T&gt; T
 getPort(javax.xml.namespace.QName&nbsp;portName,
 java.lang.Class&lt;T&gt;&nbsp;serviceEndpointInterface,
 WebServiceFeature...&nbsp;features)</code></li>
@@ -357,9 +366,8 @@ client
 side, the above code sample will change to:</p>
 
 <pre><code>new AddNumbersImplService().getAddNumbersImplPort(new com.sun.xml.ws.developer.MemberSubmissionAddressingFeature(true, true));</code></pre>
-
-<section title="Explicit disabling">
 </section>
+<section title=" Explicit disabling">
 <p>A client may like to instruct ${PRODUCT_SHORT_NAME} to disable
 WS-Addressing processing.
 The assumption is that in this case the client has it's own
@@ -376,10 +384,9 @@ WS-Addressing processing can be disabled using the following code:</p>
 
 <p><code>new AddNumbersImplService().getAddNumbersImplPort(new
 javax.xml.ws.AddressingFeature(false));</code></p>
-
-
-<section title="When is WS-Addressing engaged?">
 </section>
+</section>
+<section title="When is WS-Addressing engaged?">
 <p>W3C WS-Addressing SOAP Binding <a href="http://www.w3.org/TR/2006/REC-ws-addr-soap-20060509/#conformance">defines</a>
 that if a receiver processes a message containing a <code>wsa:Action</code>
 header, then SOAP Binding is engaged, and the rules of the
@@ -394,8 +401,8 @@ upon the presence of <code>wsa:Action</code> header.
 ${PRODUCT_SHORT_NAME} follows same rule for Member Submission version
 as well.</p>
 
-<p>In effect, if an endpoint advertises WS-Addressing in
-the WSDL with <code>wsdl:required="false"</code> and a client does not
+<p>In effect, if an endpoint advertises WS-Addressing is required in
+the WSDL and a client does not
 send any WS-Addressing header then no WS-Addressing fault is returned
 back to
 the client. However if the client send <code>wsa:Action</code> header
@@ -406,10 +413,12 @@ request/response MEP then a fault with appropriate code and sub-code is
 thrown back to the
 client.</p>
 
-<section title="Implicit Action">
 </section>
-<p>In most common cases, an implicit Action association, as defined by <a href="http://www.w3.org/TR/2006/CR-ws-addr-wsdl-20060529/#defactionwsdl11">W3C
-WS-Addressing WSDL Binding</a> and <a href="http://www.w3.org/Submission/ws-addressing/#_Toc77464327">Member
+<section title="Associating Action with an operation">
+<section title="Implicit Action">
+
+<p>In most common cases, an implicit Action association, as defined by <a href="http://www.w3.org/TR/2007/REC-ws-addr-metadata-20070904/#actioninwsdl">W3C
+WS-Addressing 1.0 - Metadata</a> and <a href="http://www.w3.org/Submission/ws-addressing/#_Toc77464327">Member
 Submission</a>, will be sufficient. For such cases, only using the
 correct
 annotation to enable Addressing is required. The client looking at such
@@ -417,15 +426,15 @@ a WSDL
 will send the implicit <code>wsa:Action</code> header. If only
 Addressing is
 enabled by using the appropriate annotation at the SEI,&nbsp;</p>
-
-<section title="Explicit Action">
 </section>
+<section title="Explicit Action">
 <p>This section describes how an explicit Action Message Addressing
 Property can
 be associated with an operation in the SEI.</p>
 
-<p>W3C WS-Addressing <a href="http://www.w3.org/TR/2006/CR-ws-addr-wsdl-20060529/#actioninwsdl">WSDL
-Binding</a> and <a href="http://www.w3.org/Submission/ws-addressing/#_Toc77464325">Member
+<p>W3C WS-Addressing<a href="http://www.w3.org/TR/2007/REC-ws-addr-metadata-20070904/#actioninwsdl">
+W3C
+WS-Addressing 1.0 - Metadata</a> and <a href="http://www.w3.org/Submission/ws-addressing/#_Toc77464325">Member
 Submission WS-Addressing</a> define mechanisms to associate Action
 Message
 Addressing Property with an operation. JAX-WS 2.1 defines <code>javax.xml.ws.Action</code>
@@ -440,11 +449,14 @@ sample looks like:</p>
 
 <p>The generated WSDL fragment looks like:</p>
 
-<pre>&lt;operation name="addNumbers3"&gt;<br>  &lt;input <b>wsaw:Action="http://example.com/input3"</b> message="tns:addNumbers3"/&gt;<br>  &lt;output <b>wsaw:Action="http://example.com/output3"</b> message="tns:addNumbers3Response"/&gt;<br>  &lt;fault message="tns:AddNumbersException" name="AddNumbersException" <b>wsaw:Action="http://example.com/fault3"</b>/&gt;<br>&lt;/operation&gt;</pre>
+<pre>&lt;operation name="addNumbers3"&gt;<br>  &lt;input <b>wsam:Action="http://example.com/input3"</b> message="tns:addNumbers3"/&gt;<br>  &lt;output <b>wsam:Action="http://example.com/output3"</b> message="tns:addNumbers3Response"/&gt;<br>  &lt;fault message="tns:AddNumbersException" name="AddNumbersException" <b>wsam:Action="http://example.com/fault3"</b>/&gt;<br>&lt;/operation&gt;</pre>
 
-<p>where <code>wsaw</code> is bound to W3C WSDL Binding namespace or
+<p>where <code>wsam</code> is bound to W3C WS-Addressing 1.0 -
+Metadata namespace or
 Member
 Submission namespace depending upon the annotation used to enable
 Addressing.&nbsp;</p>
-
+</section>
+</section>
+</content>
 </body></html>
