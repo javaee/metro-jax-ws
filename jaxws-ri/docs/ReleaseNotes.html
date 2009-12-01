@@ -89,7 +89,7 @@ end users and middleware developers. </p>
 		<a href="https://open-jbi-components.dev.java.net/">Open JBI component</a></li>
 	</ul>
 	</li>
-	<li>Data binding - <a href="https://jaxb.dev.java.net/2.1.7/">JAXB 2.1.7 RI</a> 
+	<li>Data binding - <a href="https://jaxb.dev.java.net/2.2/">JAXB 2.2 RI</a> 
 	</li>
 	<li>Server Side Asynchrony -
 	<a href="https://jax-ws.dev.java.net/nonav/21/docs/asyncprovider.html">
@@ -142,10 +142,10 @@ and WS-Security.</p>
 <p>
 If you
 wish to use ${PRODUCT_NAME} in a Java EE container in a Java EE portable manner you need to use the
-standard Java EE 5 deployment descriptor; please refer to the
-<a href="http://java.sun.com/javaee/index.jsp">Java EE 5</a> or <a href="https://glassfish.dev.java.net/">Glassfish</a>
+standard Java EE 6 deployment descriptor; please refer to the
+<a href="http://java.sun.com/javaee/index.jsp">Java EE 6</a> or <a href="https://glassfish.dev.java.net/">Glassfish</a>
 documentation/samples. The majority of the documentation included with JAX-WS is
-valid with Java EE 5 as well.
+valid with Java EE 6 as well.
 </p>
 </section>
 
@@ -185,29 +185,24 @@ valid with Java EE 5 as well.
 
     <ul>
         <li>Extract ${PRODUCT_NAME} bundle</li>
-        <li>Install on Glassfish v2
+        <li>To install on Glassfish v2
             <ul>
                 <li>If you want to use the ${PRODUCT_NAME}
-                    overriding the one with Glassfish v2, Download Metro bundle from https://metro.dev.java.net and
+                    overriding the one with Glassfish v2, Download Metro 2.x bundle from https://metro.dev.java.net and
                     follow the instructions in that bundle
                 </li>
             </ul>
-
         </li>
-	</ul>
-	</li>
-    <li>Install on Tomcat
+        <li>To install on Tomcat
         <ul>
             <li>Set CATALINA_HOME to your Tomcat installation.</li>
             <li>Run 'ant install', This essentially copies lib/*.jar from the root of ${PRODUCT_SHORT_NAME} extracted bundle
                 to $CATALINA_HOME/shared/lib</li>
-            <li>
-                If you are running on top of JDK6, run 'ant install-api' or use ant -help fopr detailed information.
+            <li>If you are running on top of JDK6, run 'ant install-api' or use ant -help for detailed information.
             </li>
-
         </ul>
-    </li>
-</ul>
+        </li>
+    </ul>
 
 <p>If you intend to only invoke an already existing Web service, then
     alternatively you can use the <code>wsimport</code> and <code>wsgen</code>
@@ -247,9 +242,6 @@ valid with Java EE 5 as well.
 	<li>
 	<a href="https://jax-ws.dev.java.net/issues/buglist.cgi?issue_type=DEFECT&issue_type=ENHANCEMENT&issue_type=FEATURE&issue_type=TASK&issue_type=PATCH&component=jax-ws&issue_status=RESOLVED&issue_status=VERIFIED&issue_status=CLOSED&resolution=FIXED&target_milestone=2.2&email1=&emailtype1=exact&emailassigned_to1=1&email2=&emailtype2=exact&emailreporter2=1&issueidtype=include&issue_id=&changedin=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&short_desc=&short_desc_type=fulltext&long_desc=&long_desc_type=fulltext&issue_file_loc=&issue_file_loc_type=fulltext&status_whiteboard=&status_whiteboard_type=fulltext&keywords=&keywords_type=anytokens&field0-0-0=noop&type0-0-0=noop&value0-0-0=&cmdtype=doit&newqueryname=&order=Reuse+same+sort+as+last+time&Submit+query=Submit+query">Bug fixes</a></li>
 </ul>
-</section>
-<section title="Changes from JAX-WS 2.1.4 RI">
-<p><a href="changelog.html">Changes from JAX-WS 2.1.4 RI</a></p>
 </section>
 
 <section title="Known Bugs/Issues">
