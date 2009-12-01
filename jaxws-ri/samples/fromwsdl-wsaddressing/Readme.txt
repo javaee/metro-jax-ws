@@ -1,3 +1,6 @@
+Note: This sample uses non-standard wsdl extension to enable WS-Addressing. See standards based
+fromwsdl-wsaddressing-policy sample that shows the recommended usage.
+
 fromwsdl-wsaddressing sample demonstrates the use of WS-Addressing in Web Services starting from wsdl.
 In etc/AddNumbers.wsdl, Notice <wsaw:UsingAddressing wsdl:required="false" /> to specify use of addressing
 in wsdl in the binding section. JAX-WS Runtime takes care putting WS-Addressing headers in the SOAP messages
