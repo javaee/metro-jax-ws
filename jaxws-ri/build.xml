@@ -839,10 +839,16 @@
       <delete dir="${source.drop.dir}"/>
     </target>
 
+    <target name="check-tlda-license">
+        <available property="tlda.license.available" file="${basedir}/TLDA_SCSL_Licensees_License_Notice.txt" type="file"/>
+    </target>
+
     <target name="generate-bundle-for-licensee"
-            depends="prepare"
+            depends="prepare, check-tlda-license"
             description="generate sources bundle for licensees">
         <tstamp/>
+
+        <fail unless="tlda.license.available">${basedir}/TLDA_SCSL_Licensees_License_Notice.txt is not found</fail>
 
         <!-- create the zip file contents -->
         <property name="source.drop.dir" value="${build.home}/source-bundle"/>
@@ -868,7 +874,7 @@
 
             <!-- license files -->
             <zipfileset dir="."
-                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties"
+                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties, TLDA_SCSL_Licensees_License_Notice.txt"
                         prefix="${source.dist.dir.name}"/>
         </zip>        
     </target>
