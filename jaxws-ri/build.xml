@@ -811,7 +811,7 @@
             <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/>
 
             <!-- license files -->
-            <zipfileset dir="." includes="ThirdPartyLicense.txt"
+            <zipfileset dir="." includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt"
                         prefix="${source.dist.dir.name}"/>
 
         </zip>
