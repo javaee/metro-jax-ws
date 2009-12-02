@@ -35,12 +35,16 @@
 </div>
 
 <div style="margin-left:2em">
-	<A HREF="#2.6_JAXB_2.0">2.6 JAXB 2.1</A>
+	<A HREF="#2.6_JAXB_2.0">2.6 JAXB 2.2</A>
 </div>
 
 <div style="margin-left:3em">
 <a href="#2.6.1_Type_Substitution">2.6.1 Type Substitution using @XmlSeeAlso </a>
 </div>
+<div style="margin-left:3em">
+<a href="2.6.2_XmlElement_on_SEI_parameters">2.6.2 @XmlElement on web service SEI parameters</a>
+</div>
+
 
 <div style="margin-left:2em">
 	<A HREF="#2.7_WS-Addressing">2.7 WS-Addresssing</A>
@@ -245,9 +249,9 @@ performance. This implementation was released as part of JAX-WS 2.0.1 M1 release
     refer to restful sample.
 </P>
 
-<H4><a name="2.6_JAXB_2.0">2.6 JAXB 2.1</a></H4>
+<H4><a name="2.6_JAXB_2.0">2.6 JAXB 2.2</a></H4>
 
-<P>${PRODUCT_NAME} uses JAXB 2.1
+<P>${PRODUCT_NAME} uses JAXB 2.2
     for data-binding between Java and XML which enables features such as 
 separate compilation, type substitution and other improvements. </P>
 
@@ -265,6 +269,14 @@ with this annotation. This allows type substitution to takes place. See the
 directly referenced by the WSDL operations. To capture all such classes wsimport 
 generates <code>@XmlSeeAlso(ObjectFactory.class)</code> on the generated Service Endpoint 
 Interface.</p>
+
+<h5>
+<a name="2.6.2_XmlElement_on_SEI_parameters">2.6.2 @XmlElement on web service SEI parameters</a>
+</h5>
+<p>
+    JAX-WS 2.2 spec allows @XmlElement on web service SEI parameters,
+which enables better control of XML representation. For this support, JAX-WS relies on JAXB 2.2 API which
+allows the @XmlElement annotation on parameters.</p>
 
 
 <H4><a name="2.7_WS-Addressing">2.7 WS-Addressing</a> </H4>
