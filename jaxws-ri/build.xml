@@ -853,11 +853,10 @@
         <mkdir dir="${source.drop.dir}/jaxws-ri/lib"/>
 
         <zip destfile="${build.home}/jaxws-src.zip"  duplicate="fail" whenempty="fail">
-            <zipfileset dir="rt" prefix="${source.dist.dir.name}/rt" defaultexcludes="true" excludes="test/**"/>
-            <zipfileset dir="rt-fi" prefix="${source.dist.dir.name}/rt-fi" defaultexcludes="true"/>
-            <zipfileset dir="tools" prefix="${source.dist.dir.name}/tools" defaultexcludes="true"
-                    excludes="**/*.iml,javadoc-link/**,lib/**,scripts/**,in-cvs.sh"/>
-            <zipfileset dir="servlet" prefix="${source.dist.dir.name}/servlet" defaultexcludes="true"/>
+            <zipfileset dir="rt" prefix="${source.dist.dir.name}/rt" defaultexcludes="true" includes="build.xml, src/**, build/gen-src/**, etc/**" />
+            <zipfileset dir="rt-fi" prefix="${source.dist.dir.name}/rt-fi" defaultexcludes="true" includes="build.xml, src/**"/>
+            <zipfileset dir="tools" prefix="${source.dist.dir.name}/tools" defaultexcludes="true" includes="etc/**, wscompile/build.xml, wscompile/src/**, wscompile/build/gen-src/**"/>
+            <zipfileset dir="servlet" prefix="${source.dist.dir.name}/servlet" defaultexcludes="true" includes="build.xml, src/**, lib/**"/>
             <zipfileset dir="${basedir}/etc" includes="build-bundle.xml"
                         fullpath="${source.dist.dir.name}/build.xml"/>
             <zipfileset dir="${basedir}/etc" includes="src-build-readme.txt"
