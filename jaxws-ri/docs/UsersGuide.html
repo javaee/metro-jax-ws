@@ -16,7 +16,7 @@
 </div>
 
 <div style="margin-left:2em">
-	<A HREF="#2.1_JAX-WS_2.0_API">2.1 JAX-WS 2.1 API</A>
+	<A HREF="#2.1_JAX-WS_${SPEC_VERSION}_API">2.1 JAX-WS ${SPEC_VERSION} API</A>
 </div>
 
 <div style="margin-left:2em">
@@ -149,13 +149,24 @@
 <h2 style="text-align: left"><a name="2.0_Features">2.
     Features</a></h2>
 
-<H4><a name="2.1_JAX-WS_2.0_API">2.1 JAX-WS </a>${SPEC_VERSION}<a name="2.1_JAX-WS_2.0_API"> API</a></H4>
+<H4><a name="2.1_JAX-WS_${SPEC_VERSION}_API">2.1 JAX-WS ${SPEC_VERSION} API</a></H4>
 
-<P>JAX-WS ${SPEC_VERSION} is a Maintainence Release of JAXWS 2.0 API. JAX-WS ${SPEC_VERSION} has 
-the following new features from JAX-WS 2.0 specification:</P>
+<P>JAX-WS ${SPEC_VERSION} is a Maintainence Release of JAXWS 2.0 API.</P>
+
+    <p>JAX-WS ${SPEC_VERSION} has
+the following new features from JAX-WS 2.1 specification:</P>
 <ul>
 	<li>Support for JAXB 2.2 APIs (JSR 222)</li>
-	<li>WS-Addressing support</li>
+    <li>Support for WS-Addressing 1.0 - Metadata specification</li>    
+    <li>Support for @XmlElement on SEI's wrapper parameter</li>
+    <li>Support for @XmlType on exception classes</li>
+    <li>HTTP SPI</li>
+    <li>Provide API to create Endpoint with features </li>
+    </ul></p>
+<p>JAX-WS 2.1 has
+the following new features from JAX-WS 2.0 specification:</P>
+<ul>
+<li>WS-Addressing support</li>
 	<li>APIs for EndpointReference<ul>
 		<li>Creation<ul>
 			<li>BindingProvider.getEndpointReference()</li>
@@ -172,7 +183,7 @@ the following new features from JAX-WS 2.0 specification:</P>
 	</li>
 	<li>User friendly APIs to enable/disable features, such as MTOM and 
 	Addressing</li>
-</ul>
+</ul></p>
 <p>JAX-RPC users should note that JAX-WS is a completely different technology 
 than JAX-RPC and thus cannot run JAX-RPC
     applications on top of JAX-WS. If you have an existing JAX-RPC application it must be
