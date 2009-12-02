@@ -280,55 +280,28 @@ allows the @XmlElement annotation on parameters.</p>
 
 
 <H4><a name="2.7_WS-Addressing">2.7 WS-Addressing</a> </H4>
-<p>${PRODUCT_NAME} brings in native support for 
-WS-Addressing for both W3C and MemberSubmission specification. Applications 
-built on top of JAX-WS can enable/disable WS-Addressing in JAX-WS runtime using 
-JAX-WS 2.1 defined standard APIs and Annotations. See WS-Addressing samples <b>
-fromjava-wsaddressing</b> and <b>fromwsdl-wsaddressing</b> with the ${PRODUCT_NAME}
-for details on the WS-Addressing programming model.</p>
-<p><b>Starting from Java class</b> </p>
-<P>
-@BindingType(value = SOAPBinding.SOAP11HTTP_BINDING, features = {@Feature(value = AddressingFeature.ID)})
-is used to enable addressing. With this annotation the generated WSDL for this service contains
-<wsaw:UsingAddressing/> in the binding section. At the minimal, this should be specified on an endpoint
-implementation to enable W3C WS-Addressing starting from Java.
-</P>
 <p>
-@Action and @FaultAction annotations are used to specify explicit wsa:Action values and notice how
-these are reflected the in the portType definitions of the generated wsdl. Without any explicit action
-values, default values are used as per WS-Addressing specification. Observe the SOAP request and response
-messages to see how wsa:Action is derived from these associations.
-</p>
-<b>Starting from WSDL</b> 
+${PRODUCT_NAME} supports for W3C
+      <a href="http://www.w3.org/TR/ws-addr-core">Core</a>,
 
-<p>&lt;wsaw:UsingAddressing/&gt;
-extensibility element should be used inside <wsd::binding> element to enable
-addressing. 
+      <a href="http://www.w3.org/TR/ws-addr-soap">SOAP Binding</a> and
+      <a href="http://www.w3.org/TR/2007/REC-ws-addr-metadata-20070904">Addressing
+1.0 - Metadata</a> specifications and defines standard API and annotations to
+enable/disable W3C WS-Addressing on the client and
+service endpoint. In addition to that, JAX-WS RI also
+supports
+      <a href="http://www.w3.org/Submission/ws-addressing/">Member
+Submission</a> version of WS-Addressing. The member submission version
+is supported in an implementation
+specific way.&nbsp; For compatility with JAX-WS 2.1 behavior,
+JAX-WS RI 2.2 also supports wsdls conforming to
+      <a href="http://www.w3.org/TR/ws-addr-wsdl">WSDL Binding</a>
 
-</p>
-
-<p><code>&lt;wsdl:portType name=&quot;AddNumbersPortType&quot;&gt;<br>
-&nbsp;&nbsp;&nbsp;
-&lt;wsdl:operation name=&quot;addNumbers3&quot;&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&lt;wsdl:input message=&quot;tns:addNumbers3&quot; wsaw:Action=&quot;3in&quot;/&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&lt;wsdl:output message=&quot;tns:addNumbers3Response&quot; wsaw:Action=&quot;3out&quot;/&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&lt;wsdl:fault name=&quot;addNumbersFault&quot; message=&quot;tns:addNumbersFault&quot; wsaw:Action=&quot;3fault&quot;/&gt;<br>
-&nbsp;&nbsp;&nbsp;
-&lt;/wsdl:operation&gt;<br>
-&lt;/wsdl:portType&gt;<br>
-<br>
-&lt;wsdl:binding name=&quot;AddNumbersBinding&quot; type=&quot;tns:AddNumbersPortType&quot;&gt;<br>
-&nbsp;&nbsp;&nbsp;
-&lt;wsaw:UsingAddressing/&gt;<br>
-&lt;/wsdl:binding&gt; </code></p>
-
-&lt;operation name=&quot;addNumbers2&quot;&gt;
-
-shows usage of explicit wsa:Action values on the input, output and fault message.
-
+specification.</p>
+<p>Refer to <a href="wsaddressing.html">WS-Addressing in JAX-WS</a> for more details.
+ See WS-Addressing samples <b>
+fromjava-wsaddressing</b>, <b>fromwsdl-wsaddressing-policy</b> and <b>fromwsdl-wsaddressing</b> with the ${PRODUCT_NAME}
+for details on the WS-Addressing programming model.</p>
 <H4><a name="2.7_Annotations_">2.8
     Annotations</a></H4>
 
