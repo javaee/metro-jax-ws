@@ -853,7 +853,7 @@
         <mkdir dir="${source.drop.dir}/jaxws-ri/lib"/>
 
         <zip destfile="${build.home}/jaxws-src.zip"  duplicate="fail" whenempty="fail">
-            <zipfileset dir="rt" prefix="${source.dist.dir.name}/rt" defaultexcludes="true"/>
+            <zipfileset dir="rt" prefix="${source.dist.dir.name}/rt" defaultexcludes="true" excludes="test/**"/>
             <zipfileset dir="rt-fi" prefix="${source.dist.dir.name}/rt-fi" defaultexcludes="true"/>
             <zipfileset dir="tools" prefix="${source.dist.dir.name}/tools" defaultexcludes="true"
                     excludes="**/*.iml,javadoc-link/**,lib/**,scripts/**,in-cvs.sh"/>
@@ -863,7 +863,7 @@
             <zipfileset dir="${basedir}/etc" includes="src-build-readme.txt"
                         fullpath="${source.dist.dir.name}/README"/>
             <!-- additional jar files -->
-            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.* junit.jar"
+            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.*, junit.jar, commons-jelly-tags-jsl-1.0.jar, sjsxp.jar, maven-ant-tasks-2.0.10.jar,package-rename-task.jar"
                         prefix="${source.dist.dir.name}/lib"/>
           <!--  <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/> -->
 
