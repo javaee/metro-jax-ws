@@ -69,6 +69,8 @@
         <pattern from="com.sun.tools.ws" to="com.sun.tools.internal.ws" />
         <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc" />
         <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" />
+        <pattern from="org.glassfish.external" to="com.sun.org.glassfish.external"/>
+        <pattern from="org.glassfish.gmbal" to="com.sun.org.glassfish.gmbal"/>  
       </prename>
     </sequential>
   </macrodef>
@@ -150,6 +152,8 @@
             <pattern from="org.jvnet.fastinfoset" to="com.sun.xml.internal.org.jvnet.fastinfoset"/>
             <pattern from="org.jvnet.staxex" to="com.sun.xml.internal.org.jvnet.staxex"/>
             <pattern from="com.sun.tools.ws" to="com.sun.tools.internal.ws" excludes="com.sun.tools.ws.ant"/>
+            <pattern from="org.glassfish.external" to="com.sun.org.glassfish.external"/>
+            <pattern from="org.glassfish.gmbal" to="com.sun.org.glassfish.gmbal"/>
             <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc"
                      excludes="com.sun.tools.xjc.XJCTask,com.sun.tools.xjc.XJC2Task, com.sun.tools.xjc.Messages,
                      com.sun.tools.xjc.XJCFacade, com.sun.tools.xjc.ClassLoaderBuilder"/>
@@ -189,6 +193,8 @@ import com.sun.istack.internal.tools.*;]]></replacevalue>
             <pattern from="org.jvnet.fastinfoset" to="com.sun.xml.internal.org.jvnet.fastinfoset"/>
             <pattern from="org.jvnet.staxex" to="com.sun.xml.internal.org.jvnet.staxex"/>
             <pattern from="com.sun.tools.ws" to="com.sun.tools.internal.ws" excludes="com.sun.tools.ws.ant"/>
+            <pattern from="org.glassfish.external" to="com.sun.org.glassfish.external"/>
+            <pattern from="org.glassfish.gmbal" to="com.sun.org.glassfish.gmbal"/>
             <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc"
                      excludes="com.sun.tools.xjc.XJCTask,com.sun.tools.xjc.XJC2Task, com.sun.tools.xjc.Messages,
                      com.sun.tools.xjc.XJCFacade, com.sun.tools.xjc.ClassLoaderBuilder"/>
