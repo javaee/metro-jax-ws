@@ -873,7 +873,7 @@
 
             <!-- license files -->
             <zipfileset dir="."
-                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties"
+                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties, build-j2se.xml"
                         prefix="${source.dist.dir.name}"/>
             <zipfileset dir="${build.home}"
                         includes="TLDA_SCSL_Licensees_License_Notice.txt"
