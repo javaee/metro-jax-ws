@@ -728,6 +728,7 @@
       <antcall target="generate-weekly-source">
         <param name="compile.debug" value="true"/>
       </antcall>
+      <antcall target="generate-bundle-for-licensee" />
       <move tofile="${build.home}/jaxws-${release.jar.version}.jar"
          file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_${DSTAMP}.jar"/>
       <move tofile="${build.home}/jaxws-${release.jar.version}-src.jar"
@@ -839,17 +840,13 @@
       <delete dir="${source.drop.dir}"/>
     </target>
 
-    <target name="check-tlda-license">
-        <available property="tlda.license.available" file="${basedir}/TLDA_SCSL_Licensees_License_Notice.txt" type="file"/>
-    </target>
-
     <target name="generate-bundle-for-licensee"
-            depends="prepare, check-tlda-license"
+            depends="prepare"
             description="generate sources bundle for licensees">
         <tstamp/>
 
-        <fail unless="tlda.license.available">${basedir}/TLDA_SCSL_Licensees_License_Notice.txt is not found</fail>
-
+        <get src="http://hudson.sfbay.sun.com/job/tlda-license/lastSuccessfulBuild/artifact/TLDA_SCSL_Licensees_License_Notice.txt" dest="${build.home}/TLDA_SCSL_Licensees_License_Notice.txt"/>
+                  
         <!-- create the zip file contents -->
         <property name="source.drop.dir" value="${build.home}/source-bundle"/>
         <property name="source.dist.dir.name" value="jaxws-ri-${DSTAMP}"/>
@@ -858,7 +855,7 @@
         <mkdir dir="${source.drop.dir}"/>
         <mkdir dir="${source.drop.dir}/jaxws-ri/lib"/>
 
-        <zip destfile="${build.home}/jaxws-src.zip"  duplicate="fail" whenempty="fail">
+        <zip destfile="${build.home}/jaxws-${release.jar.version}-src-licensee.zip"  duplicate="fail" whenempty="fail">
             <zipfileset dir="rt" prefix="${source.dist.dir.name}/rt" defaultexcludes="true" includes="build.xml, src/**, build/gen-src/**, etc/**" />
             <zipfileset dir="rt-fi" prefix="${source.dist.dir.name}/rt-fi" defaultexcludes="true" includes="build.xml, src/**"/>
             <zipfileset dir="tools" prefix="${source.dist.dir.name}/tools" defaultexcludes="true" includes="etc/**, wscompile/build.xml, wscompile/src/**, wscompile/build/gen-src/**"/>
@@ -874,7 +871,10 @@
 
             <!-- license files -->
             <zipfileset dir="."
-                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties, TLDA_SCSL_Licensees_License_Notice.txt"
+                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties"
+                        prefix="${source.dist.dir.name}"/>
+            <zipfileset dir="${build.home}"
+                        includes="TLDA_SCSL_Licensees_License_Notice.txt"
                         prefix="${source.dist.dir.name}"/>
         </zip>        
     </target>
