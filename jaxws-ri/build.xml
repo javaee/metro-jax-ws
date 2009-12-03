@@ -340,7 +340,7 @@
             <fileset dir="${dist20.home}/lib" includes="jaxws-tools.src.zip"/>
             <fileset dir="${basedir}/lib" includes="FastInfoset.src.zip,jaxb-impl.src.zip, jaxb-xjc.src.zip,
                 saaj-impl.src.zip, stax-ex-src.zip, streambuffer.src.zip,
-                jaxws-api-src.zip, jaxb-api-src.zip, jsr181-api.src.zip, saaj-api-src.zip, jsr250-api.src.zip, mimepull-src.zip, jaxws-asm-src.zip, policy-src.zip,gmbal-api-only-src.zip"/>
+                jaxws-api-src.zip, jaxb-api-src.zip, jsr181-api.src.zip, saaj-api-src.zip, jsr250-api.src.zip, mimepull-src.zip, jaxws-asm-src.zip, policy-src.zip,gmbal-api-only-src.zip,management-api-src.zip"/>
         </zip>
         <delete file="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <delete file="${dist20.home}/lib/jaxws-tools.src.zip"/>
