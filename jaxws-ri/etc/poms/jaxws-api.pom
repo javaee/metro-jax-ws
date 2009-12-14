@@ -52,7 +52,7 @@
     <dependency>
       <groupId>javax.xml.soap</groupId>
       <artifactId>saaj-api</artifactId>
-      <version>1.3</version>
+      <version>1.3.1</version>
     </dependency>
     <dependency>
       <groupId>javax.annotation</groupId>
