@@ -59,6 +59,7 @@ import javax.jws.soap.SOAPBinding.Style;
 
 import testutil.ClientServerTestUtil;
 import testutil.HTTPResponseInfo;
+import testutil.PortAllocator;
 
 import junit.framework.TestCase;
 
@@ -99,7 +100,7 @@ public class DTDTest extends TestCase
 */
 
     public void testEntity() throws Exception {
-        int port = Util.getFreePort();
+        int port = PortAllocator.getFreePort();
         String address = "http://localhost:"+port+"/entity";
         Endpoint endpoint = Endpoint.create(new MyEndpoint());
         endpoint.publish(address);
