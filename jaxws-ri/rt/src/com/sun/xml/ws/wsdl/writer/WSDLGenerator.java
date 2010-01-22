@@ -42,6 +42,7 @@ import com.sun.xml.txw2.TXW;
 import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.txw2.output.ResultFactory;
 import com.sun.xml.txw2.output.XmlSerializer;
+import com.sun.xml.txw2.output.TXWResult;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.model.JavaMethod;
@@ -193,6 +194,8 @@ public class WSDLGenerator {
     private String endpointAddress = REPLACE_WITH_ACTUAL_URL;
     private Container container;
     private final Class implType;
+
+    private boolean inlineSchemas;      // TODO
 
     /**
      * Creates the WSDLGenerator
@@ -1015,6 +1018,27 @@ public class WSDLGenerator {
         return result;
     }
 
+    private Result createInlineSchema(String namespaceUri, String suggestedFileName) throws IOException {
+        Result result;
+        if (namespaceUri.equals("")) {
+            return null;
+        }
+
+//        Holder<String> fileNameHolder = new Holder<String>();
+//        fileNameHolder.value = schemaPrefix+suggestedFileName;
+//        result = wsdlResolver.getSchemaOutput(namespaceUri, fileNameHolder);
+//        if (result == null) {
+//            // JAXB doesn't have to generate it, a schema is already available
+//            com.sun.xml.ws.wsdl.writer.document.xsd.Import _import = types.schema()._import().namespace(namespaceUri);
+//            _import.schemaLocation(fileNameHolder.value);
+//        } else {
+            // Let JAXB write the schema directly into wsdl's TypedXmlWriter
+            result = new TXWResult(types);
+            result.setSystemId("");
+//        }
+        return result;
+    }
+
    /**
      * Relativizes a URI by using another URI (base URI.)
      * 
@@ -1104,7 +1128,9 @@ public class WSDLGenerator {
          * @throws java.io.IOException thrown if on IO error occurs
          */        
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
-            return createOutputFile(namespaceUri, suggestedFileName);
+            return inlineSchemas
+                    ? createInlineSchema(namespaceUri, suggestedFileName)
+                    : createOutputFile(namespaceUri, suggestedFileName);
         }
     }
 
