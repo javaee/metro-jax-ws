@@ -568,13 +568,13 @@ public final class Packet extends DistributedPropertySet {
      *
      *
      * <p>
-     * When this property is {@link Boolean#TRUE}, it means that
+     * When this property is {@link Boolean#FALSE}, it means that
      * the pipeline does not expect a reply from a server (and therefore
      * the correlator should not block for a reply message
      * -- if such a reply does arrive, it can be just ignored.)
      *
      * <p>
-     * When this property is {@link Boolean#FALSE}, it means that
+     * When this property is {@link Boolean#TRUE}, it means that
      * the pipeline expects a reply from a server (and therefore
      * the correlator should block to see if a reply message is received,
      *
