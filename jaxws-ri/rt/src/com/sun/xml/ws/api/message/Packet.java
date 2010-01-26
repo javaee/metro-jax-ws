@@ -195,6 +195,7 @@ public final class Packet extends DistributedPropertySet {
         this.proxy = that.proxy;
         this.webServiceContextDelegate = that.webServiceContextDelegate;
         this.soapAction = that.soapAction;
+        this.expectReply = that.expectReply;
         // copy other properties that need to be copied. is there any?
     }
 
@@ -274,7 +275,8 @@ public final class Packet extends DistributedPropertySet {
 
     /**
      * Set the wsdl operation to avoid lookup from other data.
-     * This is useful in SEI based clients, where the WSDL operation can be known from the associated JavaMethod
+     * This is useful in SEI based clients, where the WSDL operation can be known
+     * from the associated {@link JavaMethod}
      *
      * @param wsdlOp QName
      */
