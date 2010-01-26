@@ -171,9 +171,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                 response = buf.newInputStream();
             }
             
-            if (con.statusCode== WSHTTPConnection.ONEWAY || (request.expectReply != null && !request.expectReply)) {
-                checkStatusCodeOneway(response, con.statusCode, con.statusMessage);   // throws ClientTransportException
-                return request.createClientResponse(null);    // one way. no response given.
+            if (con.statusCode == WSHTTPConnection.ONEWAY) {
+                // TODO: Should we throw an exception in case content length is not equal to 0 ?
+                return request.createClientResponse(null);    // one way, no response given
             }
 
             checkStatusCode(response, con); // throws ClientTransportException
@@ -234,14 +234,14 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         return false;
     }
 
-    private void checkStatusCodeOneway(InputStream in, int statusCode, String statusMessage) throws IOException {
-        if (statusCode != WSHTTPConnection.ONEWAY && statusCode != WSHTTPConnection.OK) {
-            if (in != null) {
-                in.close();
-            }
-            throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(statusCode,statusMessage));
-        }
-    }
+//    private void checkStatusCodeOneway(InputStream in, int statusCode, String statusMessage) throws IOException {
+//        if (statusCode != WSHTTPConnection.ONEWAY && statusCode != WSHTTPConnection.OK) {
+//            if (in != null) {
+//                in.close();
+//            }
+//            throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(statusCode,statusMessage));
+//        }
+//    }
 
     /**
      * write SOAPAction header if the soapAction parameter is non-null or BindingProvider properties set.
