@@ -206,7 +206,7 @@ public class WSDLGenerator {
      * be invoked to generate WSDL extensions
      */
     public WSDLGenerator(AbstractSEIModelImpl model, WSDLResolver wsdlResolver, WSBinding binding, Container container,
-                         Class implType, WSDLGeneratorExtension... extensions) {
+                         Class implType, boolean inlineSchemas, WSDLGeneratorExtension... extensions) {
         this.model = model;
         resolver = new JAXWSOutputSchemaResolver();
         this.wsdlResolver = wsdlResolver;
@@ -214,6 +214,7 @@ public class WSDLGenerator {
         this.container = container;
         this.implType = implType;
         extensionHandlers = new ArrayList<WSDLGeneratorExtension>();
+        this.inlineSchemas = inlineSchemas;
 
         // register handlers for default extensions
         register(new W3CAddressingWSDLGeneratorExtension());

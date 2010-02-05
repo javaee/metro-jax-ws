@@ -282,7 +282,8 @@ public class WsgenTool implements AnnotationProcessorFactory {
                             return getSchemaOutput(namespace, filename.value);
                         }
                         // TODO pass correct impl's class name
-                    }, bindingID.createBinding(wsfeatures.toArray()), container, endpointClass, ServiceFinder.find(WSDLGeneratorExtension.class).toArray());
+                    }, bindingID.createBinding(wsfeatures.toArray()), container,
+                    endpointClass, options.inlineSchemas, ServiceFinder.find(WSDLGeneratorExtension.class).toArray());
             wsdlGenerator.doGeneration();
 
             if(options.wsgenReport!=null)

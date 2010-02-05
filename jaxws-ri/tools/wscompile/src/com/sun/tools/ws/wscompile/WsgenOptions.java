@@ -76,6 +76,11 @@ public class WsgenOptions extends Options {
     public boolean genWsdl;
 
     /**
+     * -inlineSchemas
+     */
+    public boolean inlineSchemas;
+
+    /**
      * protocol value
      */
     public String protocol = "soap1.1";
@@ -174,7 +179,11 @@ public class WsgenOptions extends Options {
         } else if (args[i].equals("-Xdonotoverwrite")) {
             doNotOverWrite = true;
             return 1;
+        } else if (args[i].equals("-inlineSchemas")) {
+            inlineSchemas = true;
+            return 1;
         }
+
         return j;
     }
 
@@ -209,6 +218,9 @@ public class WsgenOptions extends Options {
         
         if (nonstdProtocols.containsKey(protocol) && !isExtensionMode()) {
             throw new BadCommandLineException(WscompileMessages.WSGEN_PROTOCOL_WITHOUT_EXTENSION(protocol));            
+        }
+        if (inlineSchemas && !genWsdl) {
+            throw new BadCommandLineException(WscompileMessages.WSGEN_INLINE_SCHEMAS_ONLY_WITH_WSDL());                        
         }
 
         validateEndpointClass();

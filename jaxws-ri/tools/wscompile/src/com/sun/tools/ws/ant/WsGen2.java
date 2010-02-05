@@ -175,7 +175,20 @@ public class WsGen2 extends MatchingTask {
     /** Sets the "extension" flag. **/
     public void setExtension(boolean extension) {
         this.extension = extension;
-    }    
+    }
+
+    /********************  -inlineSchemas option **********************/
+    protected boolean inlineSchemas;
+
+    /** Gets the "inlineSchemas" flag. **/
+    public boolean getInlineSchemas() {
+        return inlineSchemas;
+    }
+
+    /** Sets the "inlineSchemas" flag. **/
+    public void setInlineSchemas(boolean inlineSchemas) {
+        this.inlineSchemas = inlineSchemas;
+    }
     
     /*************************  -keep option *************************/
     private boolean keep = false;
@@ -456,7 +469,10 @@ public class WsGen2 extends MatchingTask {
             if (portName != null && portName.length() > 0) {
                 cmd.createArgument().setValue("-portname");
                 cmd.createArgument().setValue(portName);
-            }                
+            }
+            if (getInlineSchemas()) {
+                cmd.createArgument().setValue("-inlineSchemas");
+            }
         }
         
         
