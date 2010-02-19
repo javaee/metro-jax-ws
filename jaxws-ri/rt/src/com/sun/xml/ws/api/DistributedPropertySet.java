@@ -38,6 +38,7 @@ package com.sun.xml.ws.api;
 
 import com.sun.istack.FinalArrayList;
 import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.ResponseContext;
@@ -98,6 +99,23 @@ public abstract class DistributedPropertySet extends PropertySet {
 
     public void copySatelliteInto(@NotNull DistributedPropertySet r) {
         r.satellites.addAll(this.satellites);
+    }
+
+    public @Nullable <T extends PropertySet> T getSatellite(Class<T> satelliteClass) {
+        for (PropertySet child : satellites) {
+            if (satelliteClass.isInstance(child)) {
+                return satelliteClass.cast(child);
+            }
+
+            if (DistributedPropertySet.class.isInstance(child)) {
+                T satellite = DistributedPropertySet.class.cast(child).getSatellite(satelliteClass);
+                if (satellite != null) {
+                    return satellite;
+                }
+            }
+        }
+
+        return null;
     }
 
     @Override
