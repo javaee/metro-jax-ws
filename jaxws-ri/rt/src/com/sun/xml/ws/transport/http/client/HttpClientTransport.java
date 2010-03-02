@@ -77,6 +77,8 @@ import java.util.zip.GZIPInputStream;
  * @author WS Development Team
  */
 final class HttpClientTransport {
+
+    private static final byte[] THROW_AWAY_BUFFER = new byte[8192];
     
     // Need to use JAXB first to register DatatypeConverter
     static {
@@ -197,8 +199,7 @@ final class HttpClientTransport {
             public void close() throws IOException {                
                 if (!closed) {
                     closed = true;
-                    byte[] buf = new byte[8192];
-                    while(temp.read(buf) != -1);
+                    while(temp.read(THROW_AWAY_BUFFER) != -1);
                     super.close();
                 }
             }

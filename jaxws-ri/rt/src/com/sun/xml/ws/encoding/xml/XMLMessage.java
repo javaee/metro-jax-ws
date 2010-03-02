@@ -53,6 +53,7 @@ import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.message.MimeAttachmentSet;
 import com.sun.xml.ws.message.source.PayloadSourceMessage;
 import com.sun.xml.ws.util.ByteArrayBuffer;
+import com.sun.xml.ws.util.StreamUtils;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -68,7 +69,6 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -83,42 +83,13 @@ public final class XMLMessage {
     private static final int MIME_MULTIPART_FLAG = 2;       // 00010
     private static final int FI_ENCODED_FLAG     = 16;      // 10000
 
-
-    /*
-     * Finds if the stream has some content or not
-     *
-     * @return null if there is no data
-     *         else stream to be used
-     */
-    private static InputStream hasSomeData(InputStream in) {
-        if (in != null) {
-            try {
-                if (in.available() < 1) {
-                    if (!in.markSupported()) {
-                        in = new BufferedInputStream(in);
-                    }
-                    in.mark(1);
-                    if (in.read() != -1) {
-                        in.reset();
-                    } else {
-                        in = null;          // No data
-                    }
-                }
-            } catch(IOException ioe) {
-                in = null;
-            }
-        }
-        return in;
-    }
-
-
     /*
      * Construct a message given a content type and an input stream.
      */
     public static Message create(final String ct, InputStream in, WSBinding binding) {
         Message data;
         try {
-            in = hasSomeData(in);
+            in = StreamUtils.hasSomeData(in);
             if (in == null) {
                 return Messages.createEmpty(SOAPVersion.SOAP_11);
             }
@@ -601,6 +572,8 @@ public final class XMLMessage {
     }
 
     public static DataSource getDataSource(Message msg, WSBinding binding) {
+        if (msg == null)
+            return null;
         if (msg instanceof MessageDataSource) {
             return ((MessageDataSource)msg).getDataSource();
         } else {
