@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,9 +36,9 @@
 
 package com.sun.xml.ws.api.server;
 
+import com.sun.xml.ws.api.config.management.Reconfigurable;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.server.WSEndpoint.PipeHead;
 import com.sun.xml.ws.util.Pool;
 
@@ -81,7 +81,8 @@ import com.sun.xml.ws.util.Pool;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class Adapter<TK extends Adapter.Toolkit> {
+public abstract class Adapter<TK extends Adapter.Toolkit>
+        implements Reconfigurable, EndpointComponent {
 
     protected final WSEndpoint<?> endpoint;
 
@@ -106,8 +107,12 @@ public abstract class Adapter<TK extends Adapter.Toolkit> {
 
     /**
      * Pool of {@link Toolkit}s.
+     *
+     * Instances of this pool may be replaced at runtime. Therefore, when you take
+     * an object out of the pool, you must make sure that it is recycled by the
+     * same instance of the pool.
      */
-    protected final Pool<TK> pool = new Pool<TK>() {
+    private volatile Pool<TK> pool = new Pool<TK>() {
         protected TK create() {
             return createToolkit();
         }
@@ -120,6 +125,28 @@ public abstract class Adapter<TK extends Adapter.Toolkit> {
     protected Adapter(WSEndpoint endpoint) {
         assert endpoint!=null;
         this.endpoint = endpoint;
+        // Enables other components to reconfigure this adapter
+        endpoint.getComponentRegistry().add(this);
+    }
+
+    /**
+     * The pool instance needs to be recreated to prevent reuse of old Toolkit instances.
+     */
+    public void reconfigure() {
+        this.pool = new Pool<TK>() {
+            protected TK create() {
+                return createToolkit();
+            }
+        };
+    }
+
+    public <T> T getSPI(Class<T> spiType) {
+        if (spiType.isAssignableFrom(Reconfigurable.class)) {
+            return spiType.cast(this);
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -133,6 +160,20 @@ public abstract class Adapter<TK extends Adapter.Toolkit> {
     }
 
     /**
+     * Returns a reference to the pool of Toolkits for this adapter.
+     *
+     * The pool may be recreated during runtime reconfiguration and this method
+     * will then return a reference to a new instance. When you recycle a toolkit,
+     * you must make sure that you return it to the same pool instance that you
+     * took it from.
+     *
+     * @return
+     */
+    protected Pool<TK> getPool() {
+        return pool;
+    }
+
+    /**
      * Creates a {@link Toolkit} instance.
      *
      * <p>
@@ -140,4 +181,5 @@ public abstract class Adapter<TK extends Adapter.Toolkit> {
      * to {@link Toolkit}, simply implement this as {@code new Toolkit()}.
      */
     protected abstract TK createToolkit();
+
 }

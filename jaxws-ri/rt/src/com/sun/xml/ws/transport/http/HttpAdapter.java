@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,6 +60,7 @@ import com.sun.xml.ws.api.server.WebServiceContextDelegate;
 import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.server.UnsupportedMediaException;
 import com.sun.xml.ws.util.ByteArrayBuffer;
+import com.sun.xml.ws.util.Pool;
 
 import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceException;
@@ -279,12 +280,14 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             // Let the endpoint handle for HTTPBinding
         }
 
+        // Make sure the Toolkit is recycled by the same pool instance from which it was taken
+        final Pool<HttpToolkit> currentPool = getPool();
         // normal request handling
-        HttpToolkit tk = pool.take();
+        final HttpToolkit tk = currentPool.take();
         try {
             tk.handle(connection);
         } finally {
-            pool.recycle(tk);
+            currentPool.recycle(tk);
         }
     }
 
@@ -395,7 +398,8 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     }
 
     public void invokeAsync(final WSHTTPConnection con) throws IOException {
-        final HttpToolkit tk = pool.take();
+        final Pool<HttpToolkit> currentPool = getPool();
+        final HttpToolkit tk = currentPool.take();
         final Packet request;
         try {
             request = decodePacket(con, tk.codec);
@@ -404,7 +408,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             Packet response = new Packet();
             response.setMessage(e.getFaultMessage());
             encodePacket(response, con, tk.codec);
-            pool.recycle(tk);
+            currentPool.recycle(tk);
             con.close();
             return;
         } catch(UnsupportedMediaException e) {
@@ -412,7 +416,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             Packet response = new Packet();
             con.setStatus(WSHTTPConnection.UNSUPPORTED_MEDIA);
             encodePacket(response, con, tk.codec);
-            pool.recycle(tk);
+            currentPool.recycle(tk);
             con.close();
             return;
         }
@@ -425,7 +429,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                     } catch(IOException ioe) {
                         LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
                     }
-                    pool.recycle(tk);
+                    currentPool.recycle(tk);
                 } finally{
                     con.close();
                 }
