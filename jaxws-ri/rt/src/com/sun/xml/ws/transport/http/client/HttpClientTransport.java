@@ -322,7 +322,6 @@ final class HttpClientTransport {
         for (Map.Entry<String, List<String>> entry : reqHeaders.entrySet()) {
             httpConnection.addRequestProperty(entry.getKey(), entry.getValue().get(0));
         }
-        httpConnection.addRequestProperty("User-Agent", RuntimeVersion.VERSION.toString());
     }
 
     public boolean isSecure() {

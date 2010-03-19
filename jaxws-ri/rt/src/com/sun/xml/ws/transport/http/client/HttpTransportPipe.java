@@ -45,6 +45,7 @@ import com.sun.xml.ws.transport.Headers;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.resources.ClientMessages;
+import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.util.StreamUtils;
 
 import javax.xml.ws.WebServiceException;
@@ -71,6 +72,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
 
     private final Codec codec;
     private final WSBinding binding;
+    private static final List<String> USER_AGENT = Collections.singletonList(RuntimeVersion.VERSION.toString());
 
     public HttpTransportPipe(Codec codec, WSBinding binding) {
         this.codec = codec;
@@ -104,9 +106,17 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             // get transport headers from message
             Map<String, List<String>> reqHeaders = new Headers();
             Map<String, List<String>> userHeaders = (Map<String, List<String>>) request.invocationProperties.get(MessageContext.HTTP_REQUEST_HEADERS);
+            boolean addUserAgent = true;
             if (userHeaders != null) {
                 // userHeaders may not be modifiable like SingletonMap, just copy them
                 reqHeaders.putAll(userHeaders);
+                // application wants to use its own User-Agent header
+                if (userHeaders.get("User-Agent") != null) {
+                    addUserAgent = false;
+                }
+            }
+            if (addUserAgent) {
+                reqHeaders.put("User-Agent", USER_AGENT);
             }
 
             con = new HttpClientTransport(request,reqHeaders);
