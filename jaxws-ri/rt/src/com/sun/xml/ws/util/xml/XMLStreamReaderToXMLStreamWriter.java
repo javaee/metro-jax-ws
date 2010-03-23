@@ -59,6 +59,8 @@ public class XMLStreamReaderToXMLStreamWriter {
     protected XMLStreamReader in;
     protected XMLStreamWriter out;
 
+    private char[] buf;
+
     /**
      * Reads one subtree and writes it out.
      *
@@ -73,6 +75,8 @@ public class XMLStreamReaderToXMLStreamWriter {
 
         // remembers the nest level of elements to know when we are done.
         int depth=0;
+
+        buf = new char[BUF_SIZE];
 
         // if the parser is at the start tag, proceed to the first element
         int event = in.getEventType();
@@ -141,7 +145,6 @@ public class XMLStreamReaderToXMLStreamWriter {
 
 
     protected void handleCharacters() throws XMLStreamException {
-        char[] buf = new char[BUF_SIZE];
         for (int start=0,read=buf.length; read == buf.length; start+=buf.length) {
             read = in.getTextCharacters(start, buf, 0, buf.length);
             out.writeCharacters(buf, 0, read);
