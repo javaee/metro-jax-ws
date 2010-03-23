@@ -44,22 +44,14 @@ import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
 import com.sun.xml.ws.api.server.SDDocument;
-import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.util.MetadataUtil;
 import com.sun.xml.ws.util.pipe.AbstractSchemaValidationTube;
-import com.sun.xml.ws.util.xml.MetadataDocument;
 import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import javax.xml.ws.WebServiceException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -80,64 +72,31 @@ public class ClientSchemaValidationTube extends AbstractSchemaValidationTube {
     public ClientSchemaValidationTube(WSBinding binding, WSDLPort port, Tube next) {
         super(binding, next);
         this.port = port;
-        Source[] sources = null;
         if (port != null) {
             String primaryWsdl = port.getOwner().getParent().getLocation().getSystemId();
-            sources = getSchemaSources(primaryWsdl);
+            MetadataResolverImpl mdresolver = new MetadataResolverImpl();
+            Map<String, SDDocument> docs = MetadataUtil.getMetadataClosure(primaryWsdl, mdresolver, true);
+            mdresolver = new MetadataResolverImpl(docs.values());
+            Source[] sources = getSchemaSources(docs.values(), mdresolver);
             for(Source source : sources) {
-                LOGGER.fine("Constructing validation Schema from = "+source.getSystemId());
+                LOGGER.fine("Constructing client validation schema from = "+source.getSystemId());
                 //printDOM((DOMSource)source);
             }
-        }
-        if (sources != null) {
-            noValidation = false;
-            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            try {
-                sf.setFeature(HONOUR_ALL_SCHEMA_LOCATIONS_ID, true);
-            } catch(Exception e) {
-                // xerces 2.7 supports this feature. So just ignore the exception.
-            }
-            try {
-                schema = sf.newSchema(sources);
-            } catch(SAXException e) {
-                throw new WebServiceException(e);
-            }
-            validator = schema.newValidator();
-            try {
-                validator.setFeature(HONOUR_ALL_SCHEMA_LOCATIONS_ID, true);
-            } catch(Exception e) {
-                // xerces 2.7 supports this feature. So just ignore the exception.
-            }
-        } else {
-            noValidation = true;
-            schema = null;
-            validator = null;
-        }
-    }
-
-    private class MetadataResolverImpl implements MetadataUtil.MetadataResolver{
-
-        Map<String, SDDocument> docs = new HashMap<String, SDDocument>();
-
-        public SDDocument resolveEntity(String systemId) {
-            SDDocument sdi = docs.get(systemId);
-            if (sdi == null) {
-                SDDocumentSource sds;
+            if (sources.length != 0) {
+                noValidation = false;
+                sf.setResourceResolver(mdresolver);
                 try {
-                    sds = SDDocumentSource.create(new URL(systemId));
-                } catch(MalformedURLException e) {
+                    schema = sf.newSchema(sources);
+                } catch(SAXException e) {
                     throw new WebServiceException(e);
                 }
-                sdi = MetadataDocument.create(sds, new QName(""), new QName(""));
-                docs.put(systemId, sdi);
+                validator = schema.newValidator();
+                return;
             }
-            return sdi;
         }
-    }
-
-    private Source[] getSchemaSources(String primary) {
-        MetadataUtil.MetadataResolver mdresolver = new MetadataResolverImpl();
-        return super.getSchemaSources(primary, mdresolver);
+        noValidation = true;
+        schema = null;
+        validator = null;
     }
 
     protected Validator getValidator() {
