@@ -1,4 +1,4 @@
-package fromjava.stateful.bank;
+package fromjava.stateful.bank.server;
 
 import com.sun.xml.ws.developer.Stateful;
 import com.sun.xml.ws.developer.StatefulWebServiceManager;

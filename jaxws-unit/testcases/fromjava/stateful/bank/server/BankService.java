@@ -1,4 +1,4 @@
-package fromjava.stateful.bank;
+package fromjava.stateful.bank.server;
 
 import javax.jws.WebService;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
