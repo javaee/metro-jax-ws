@@ -66,10 +66,8 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
@@ -79,6 +77,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
@@ -92,28 +91,17 @@ import java.util.logging.Logger;
 public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImpl {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractSchemaValidationTube.class.getName());
-    protected static final String HONOUR_ALL_SCHEMA_LOCATIONS_ID = "http://apache.org/xml/features/honour-all-schemaLocations";
 
     protected final WSBinding binding;
     protected final SchemaValidationFeature feature;
     protected final DocumentAddressResolver resolver = new ValidationDocumentAddressResolver();
     protected final SchemaFactory sf;
-    protected final boolean honorAllSchemaLocations;
 
     public AbstractSchemaValidationTube(WSBinding binding, Tube next) {
         super(next);
         this.binding = binding;
         feature = binding.getFeature(SchemaValidationFeature.class);
         sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        boolean allLocations = false;
-        try {
-            sf.setFeature(HONOUR_ALL_SCHEMA_LOCATIONS_ID, true);
-            allLocations = true;
-       } catch(Exception e) {
-            // This features is supported only xerces 2.7 onwards.
-            // So just ignore the exception.
-        }
-        honorAllSchemaLocations = allLocations;
     }
 
     protected AbstractSchemaValidationTube(AbstractSchemaValidationTube that, TubeCloner cloner) {
@@ -121,7 +109,6 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
         this.binding = that.binding;
         this.feature = that.feature;
         this.sf = that.sf;
-        this.honorAllSchemaLocations = that.honorAllSchemaLocations;
     }
 
     protected abstract Validator getValidator();
@@ -137,7 +124,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
         }
     }
 
-    protected Document createDOM(SDDocument doc) {
+    private Document createDOM(SDDocument doc) {
         // Get infoset
         ByteArrayBuffer bab = new ByteArrayBuffer();
         try {
@@ -178,18 +165,25 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
             }
         }
 
-        public void addInlinedSchemas(Map<String, DOMSource> inlineSchemas) {
-            for(Map.Entry<String, DOMSource>e : inlineSchemas.entrySet()) {
-                try {
-                    XMLStreamBufferResult xsbr = XmlUtil.identityTransform(e.getValue(), new XMLStreamBufferResult());
-                    String systemId = e.getKey();
-                    SDDocumentSource sds = SDDocumentSource.create(new URL(systemId), xsbr.getXMLStreamBuffer());
-                    SDDocument sdoc = MetadataDocument.create(sds, new QName(""), new QName(""));
-                    docs.put(systemId, sdoc);
-                    nsMapping.put(((SDDocument.Schema)sdoc).getTargetNamespace(), sdoc);
-                } catch(Exception ex) {
-                    LOGGER.log(Level.WARNING, "Exception in adding inlined schemas to resolver", e);
-                }
+        void addSchema(Source schema) {
+            assert schema.getSystemId() != null;
+
+            String systemId = schema.getSystemId();
+            try {
+                XMLStreamBufferResult xsbr = XmlUtil.identityTransform(schema, new XMLStreamBufferResult());
+                SDDocumentSource sds = SDDocumentSource.create(new URL(systemId), xsbr.getXMLStreamBuffer());
+                SDDocument sdoc = MetadataDocument.create(sds, new QName(""), new QName(""));
+                docs.put(systemId, sdoc);
+                nsMapping.put(((SDDocument.Schema)sdoc).getTargetNamespace(), sdoc);
+            } catch(Exception ex) {
+                LOGGER.log(Level.WARNING, "Exception in adding schemas to resolver", ex);
+            }
+
+        }
+
+        void addSchemas(Collection<? extends Source> schemas) {
+            for(Source src :  schemas) {
+                addSchema(src);
             }
         }
 
@@ -212,14 +206,14 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
             LOGGER.fine("type="+type+ " namespaceURI="+namespaceURI+" publicId="+publicId+" systemId="+systemId+" baseURI="+baseURI);
             try {
                 final SDDocument doc;
-                final URL rel;
                 if (systemId == null) {
                     doc = nsMapping.get(namespaceURI);
-                    rel = null;
                 } else {
-                    URL base = baseURI == null ? null : new URL(baseURI);
-                    rel = new URL(base, systemId);
-                    doc = docs.get(rel.toExternalForm());
+                    URI rel = (baseURI == null)
+                        ? new URI(baseURI).resolve(systemId)
+                        : new URI(systemId);
+
+                    doc = docs.get(rel.toString());
                 }
                 if (doc != null) {
                     return new LSInput() {
@@ -304,8 +298,22 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
 
     }
 
+    /*
+     * Using the following algorithm described in the xerces discussion thread:
+     *
+     * "If you're synthesizing schema documents to glue together the ones in
+     * the WSDL then you may not even need to use "honour-all-schemaLocations".
+     * Create a schema document for each namespace with <xs:include>s
+     * (for each schema document in the WSDL with that target namespace)
+     * and then combine those together with <xs:import>s for each of those
+     * namespaces in a "master" schema document.
+     *
+     * That should work with any schema processor, not just those which
+     * honour multiple imports for the same namespace."
+     */
     protected Source[] getSchemaSources(Iterable<SDDocument> docs, MetadataResolverImpl mdresolver) {
-        // All schema fragments in WSDLs are used to create inlinedSchemas schema
+        // All schema fragments in WSDLs are put inlinedSchemas oneSchemaForTns
+        // systemID --> DOMSource
         Map<String, DOMSource> inlinedSchemas = new HashMap<String, DOMSource>();
 
         for(SDDocument sdoc: docs) {
@@ -318,42 +326,56 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
         LOGGER.fine("WSDL inlined schema fragment documents(these are used to create a pseudo schema) = "+ inlinedSchemas.keySet());
         if (inlinedSchemas.isEmpty()) {
             return new Source[0];   // WSDL doesn't have any schema fragments
-        }else if (inlinedSchemas.size() == 1) {
+        } else if (inlinedSchemas.size() == 1) {
             // Every type definition is traversable from this inlined schema
             return new Source[] {inlinedSchemas.values().iterator().next()};
         }
 
-        Source pseudoSchema = getPseudoSchemaSources(inlinedSchemas);
-        List<Source> sources = new ArrayList<Source>();
-        sources.add(pseudoSchema);
-        mdresolver.addInlinedSchemas(inlinedSchemas);
-        if (honorAllSchemaLocations) {
-            // Just return pseudo schema since every other type definition
-            // is traversable from this pseudo schema.
-            return new Source[] {pseudoSchema};
+        // need to resolve these schema fragments
+        mdresolver.addSchemas(inlinedSchemas.values());
+
+        // If there are multiple schema fragments for the same tns, create a
+        // pseudo schema for that tns by using <xsd:include> of those.
+
+        // tns --> list of DOMSource
+        Map<String, List<DOMSource>> multiSchemaForTns = new HashMap<String, List<DOMSource>>();
+        // tns --> one schema document (consolidated for that tns)
+        Map<String, Source> oneSchemaForTns = new HashMap<String, Source>();
+        for(DOMSource src: inlinedSchemas.values()) {
+            String tns = getTargetNamespace(src);
+            List<DOMSource> sameTnsSchemas = multiSchemaForTns.get(tns);
+            if (sameTnsSchemas == null) {
+                sameTnsSchemas = new ArrayList<DOMSource>();
+                multiSchemaForTns.put(tns, sameTnsSchemas);
+            }
+            sameTnsSchemas.add(src);
+        }
+        int i = 0;
+        for(Map.Entry<String, List<DOMSource>> e: multiSchemaForTns.entrySet()) {
+            Source src;
+            List<DOMSource> sameTnsSchemas = e.getValue();
+            if (sameTnsSchemas.size() > 1) {
+                // SDDocumentSource should be changed to take String systemId
+                // String pseudoSystemId = "urn:x-jax-ws-include-"+i++;
+                String pseudoSystemId = "file:x-jax-ws-include-"+i++;
+                src = createSameTnsPseudoSchema(e.getKey(), sameTnsSchemas, pseudoSystemId);
+                mdresolver.addSchema(src);
+            } else {
+                src = sameTnsSchemas.get(0);
+            }
+            oneSchemaForTns.put(e.getKey(), src);
         }
 
-        // If multiple schemas have the same namespace, JAXP in JDK5 considers
-        // only one of those schemas. So some type definitions cannot be reached
-        // The only thing we can do is to add all the schemas and hope for best
-        for(SDDocument sdoc: docs) {
-            if (sdoc.isSchema()) {
-                Document dom = createDOM(sdoc);
-                sources.add(new DOMSource(dom, sdoc.getURL().toExternalForm()));
-            }
+        // create a master pseudo schema with all the different tns
+        if (oneSchemaForTns.size() > 1) {
+            Source pseudoSchema = createMasterPseudoSchema(oneSchemaForTns);
+            return new Source[] { pseudoSchema };
         }
-        return sources.toArray(new Source[sources.size()]);
+
+        return new Source[] {oneSchemaForTns.values().iterator().next()};
     }
 
-    /**
-     * Locates xsd:schema elements in the WSDL and creates DOMSource and adds them to the list
-     *
-     * @param doc WSDL document
-     * @param systemId systemId for WSDL document
-     * @param list xsd:schema DOMSource list
-     */
-    protected @Nullable void addSchemaFragmentSource(Document doc, String systemId, List<Source> list) {
-
+    private @Nullable void addSchemaFragmentSource(Document doc, String systemId, Map<String, DOMSource> map) {
         Element e = doc.getDocumentElement();
         assert e.getNamespaceURI().equals(WSDLConstants.NS_WSDL);
         assert e.getLocalName().equals("definitions");
@@ -364,24 +386,8 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
             for(int j=0; j < schemaList.getLength(); j++) {
                 Element elem = (Element)schemaList.item(j);
                 NamespaceSupport nss = new NamespaceSupport();
-                buildNamespaceSupport(nss, elem);
-                patchDOMFragment(nss, elem);
-                list.add(new DOMSource(elem, systemId+"#schema"+j));
-            }
-        }
-    }
-
-    protected @Nullable void addSchemaFragmentSource(Document doc, String systemId, Map<String, DOMSource> map) {
-        Element e = doc.getDocumentElement();
-        assert e.getNamespaceURI().equals(WSDLConstants.NS_WSDL);
-        assert e.getLocalName().equals("definitions");
-
-        NodeList typesList = e.getElementsByTagNameNS(WSDLConstants.NS_WSDL, "types");
-        for(int i=0; i < typesList.getLength(); i++) {
-            NodeList schemaList = ((Element)typesList.item(i)).getElementsByTagNameNS(WSDLConstants.NS_XMLNS, "schema");
-            for(int j=0; j < schemaList.getLength(); j++) {
-                Element elem = (Element)schemaList.item(j);
-                NamespaceSupport nss = new NamespaceSupport();
+                // Doing this because transformer is not picking up inscope namespaces
+                // why doesn't transformer pickup the inscope namespaces ??
                 buildNamespaceSupport(nss, elem);
                 patchDOMFragment(nss, elem);
                 String docId = systemId+"#schema"+j;
@@ -392,7 +398,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
     
 
     /*
-     * Recursively visit ancestors and build up {@link org.xml.sax.helpers.NamespaceSupport} oject.
+     * Recursively visit ancestors and build up {@link org.xml.sax.helpers.NamespaceSupport} object.
      */
     private void buildNamespaceSupport(NamespaceSupport nss, Node node) {
         if(node==null || node.getNodeType()!=Node.ELEMENT_NODE)
@@ -410,7 +416,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
             }
             if( "xmlns".equals(a.getName()) ) {
                 nss.declarePrefix( "", a.getValue() );
-                continue;
+                //continue;
             }
         }
     }
@@ -436,23 +442,79 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
         }
     }
 
-    protected @Nullable Source getPseudoSchemaSources(Map<String, DOMSource> pseudo) {
-        assert pseudo.size() > 1;
-        StringBuilder sb = new StringBuilder("<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:x-jax-ws'>");
-        for(Map.Entry<String, DOMSource> e : pseudo.entrySet()) {
-            DOMSource src = e.getValue();
-            Element elem = (Element)src.getNode();
-            String ns = elem.getAttribute("targetNamespace");
-            sb.append("<xsd:import schemaLocation='").append(e.getKey()).append("'");
+    /*
+     * Creates a pseudo schema for the WSDL schema fragments that have the same
+     * targetNamespace.
+     *
+     * <xsd:schema targetNamespace="X">
+     *   <xsd:include schemaLocation="Y1"/>
+     *   <xsd:include schemaLocation="Y2"/>
+     * </xsd:schema>
+     *
+     * @param tns targetNamespace of the the schema documents
+     * @param docs collection of schema documents that have the same tns, the
+     *        collection must have more than one document
+     * @param psuedoSystemId for the created pseudo schema
+     * @return Source of pseudo schema that can be used multiple times
+     */
+    private @Nullable Source createSameTnsPseudoSchema(String tns, Collection<? extends Source> docs, String pseudoSystemId) {
+        assert docs.size() > 1;
+
+        final StringBuilder sb = new StringBuilder("<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'");
+        if (!tns.equals("")) {
+            sb.append(" targetNamespace='").append(tns).append("'");
+        }
+        sb.append(">\n");
+        for(Source src : docs) {
+            sb.append("<xsd:include schemaLocation='").append(src.getSystemId()).append("'/>\n");
+        }
+        sb.append("</xsd:schema>\n");
+        LOGGER.fine("Pseudo Schema for the same tns="+tns+"is "+sb);
+
+        // override getReader() so that the same source can be used multiple times
+        return new StreamSource(pseudoSystemId) {
+            @Override
+            public Reader getReader() {
+                return new StringReader(sb.toString());
+            }
+        };
+    }
+
+    /*
+     * Creates a master pseudo schema importing all WSDL schema fragments with
+     * different tns+pseudo schema for same tns.
+     * <xsd:schema targetNamespace="urn:x-jax-ws-master">
+     *   <xsd:import schemaLocation="Y1" namespace="X1"/>
+     *   <xsd:import schemaLocation="Y2" namespace="X2"/>
+     * </xsd:schema>
+     *
+     * @param pseudo a map(tns-->source) of schema documents, the map must have
+     *        more than one document
+     * @return Source of pseudo schema that can be used multiple times
+     */
+    private Source createMasterPseudoSchema(Map<String, Source> docs) {
+        assert docs.size() > 1;
+        
+        final StringBuilder sb = new StringBuilder("<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:x-jax-ws-master'>");
+        for(Map.Entry<String, Source> e : docs.entrySet()) {
+            String systemId = e.getValue().getSystemId();
+            String ns = e.getKey();
+            sb.append("<xsd:import schemaLocation='").append(systemId).append("'");
             if (!ns.equals("")) {
                 sb.append(" namespace='").append(ns).append("'");
             }
             sb.append("/>");
         }
         sb.append("</xsd:schema>");
-        LOGGER.fine("Pseudo Schema="+sb);
+        LOGGER.fine("Master Pseudo Schema="+sb);
 
-        return new StreamSource(new StringReader(sb.toString()), "http://pseudo");
+        // override getReader() so that the same source can be used multiple times
+        return new StreamSource("file:x-jax-ws-master-doc") {
+            @Override
+            public Reader getReader() {
+                return new StringReader(sb.toString());
+            }
+        };
     }
 
     protected void doProcess(Packet packet) throws SAXException {
@@ -477,17 +539,22 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
         }
     }
 
-    protected static void printSource(Source src) {
-        try {
-            ByteArrayBuffer bos = new ByteArrayBuffer();
-            StreamResult sr = new StreamResult(bos );
-            Transformer trans = TransformerFactory.newInstance().newTransformer();
-            trans.transform(src, sr);
-            LOGGER.info("**** src ******"+bos.toString());
-            bos.close();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+    private String getTargetNamespace(DOMSource src) {
+        Element elem = (Element)src.getNode();
+        return elem.getAttribute("targetNamespace");
     }
+
+//    protected static void printSource(Source src) {
+//        try {
+//            ByteArrayBuffer bos = new ByteArrayBuffer();
+//            StreamResult sr = new StreamResult(bos );
+//            Transformer trans = TransformerFactory.newInstance().newTransformer();
+//            trans.transform(src, sr);
+//            LOGGER.info("**** src ******"+bos.toString());
+//            bos.close();
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }
