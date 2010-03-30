@@ -178,7 +178,6 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
             } catch(Exception ex) {
                 LOGGER.log(Level.WARNING, "Exception in adding schemas to resolver", ex);
             }
-
         }
 
         void addSchemas(Collection<? extends Source> schemas) {
@@ -209,10 +208,9 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
                 if (systemId == null) {
                     doc = nsMapping.get(namespaceURI);
                 } else {
-                    URI rel = (baseURI == null)
+                    URI rel = (baseURI != null)
                         ? new URI(baseURI).resolve(systemId)
                         : new URI(systemId);
-
                     doc = docs.get(rel.toString());
                 }
                 if (doc != null) {
@@ -298,6 +296,15 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
 
     }
 
+    private void updateMultiSchemaForTns(String tns, String systemId, Map<String, List<String>> schemas) {
+        List<String> docIdList = schemas.get(tns);
+        if (docIdList == null) {
+            docIdList = new ArrayList<String>();
+            schemas.put(tns, docIdList);
+        }
+        docIdList.add(systemId);
+    }
+
     /*
      * Using the following algorithm described in the xerces discussion thread:
      *
@@ -312,67 +319,63 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
      * honour multiple imports for the same namespace."
      */
     protected Source[] getSchemaSources(Iterable<SDDocument> docs, MetadataResolverImpl mdresolver) {
-        // All schema fragments in WSDLs are put inlinedSchemas oneSchemaForTns
+        // All schema fragments in WSDLs are put inlinedSchemas
         // systemID --> DOMSource
         Map<String, DOMSource> inlinedSchemas = new HashMap<String, DOMSource>();
+
+        // Consolidates all the schemas(inlined and external) for a tns
+        // tns --> list of systemId
+        Map<String, List<String>> multiSchemaForTns = new HashMap<String, List<String>>();
 
         for(SDDocument sdoc: docs) {
             if (sdoc.isWSDL()) {
                 Document dom = createDOM(sdoc);
                 // Get xsd:schema node from WSDL's DOM
                 addSchemaFragmentSource(dom, sdoc.getURL().toExternalForm(), inlinedSchemas);
+            } else if (sdoc.isSchema()) {
+                updateMultiSchemaForTns(((SDDocument.Schema)sdoc).getTargetNamespace(), sdoc.getURL().toExternalForm(), multiSchemaForTns);
             }
         }
         LOGGER.fine("WSDL inlined schema fragment documents(these are used to create a pseudo schema) = "+ inlinedSchemas.keySet());
-        if (inlinedSchemas.isEmpty()) {
-            return new Source[0];   // WSDL doesn't have any schema fragments
-        } else if (inlinedSchemas.size() == 1) {
-            // Every type definition is traversable from this inlined schema
-            return new Source[] {inlinedSchemas.values().iterator().next()};
+        for(DOMSource src: inlinedSchemas.values()) {
+            String tns = getTargetNamespace(src);
+            updateMultiSchemaForTns(tns, src.getSystemId(), multiSchemaForTns);
         }
 
-        // need to resolve these schema fragments
+        if (multiSchemaForTns.isEmpty()) {
+            return new Source[0];   // WSDL doesn't have any schema fragments
+        } else if (multiSchemaForTns.size() == 1 && multiSchemaForTns.values().iterator().next().size() == 1) {
+            // It must be a inlined schema, otherwise there would be at least two schemas
+            String systemId = multiSchemaForTns.values().iterator().next().get(0);
+            return new Source[] {inlinedSchemas.get(systemId)};
+        }
+
+        // need to resolve these inlined schema fragments
         mdresolver.addSchemas(inlinedSchemas.values());
 
         // If there are multiple schema fragments for the same tns, create a
         // pseudo schema for that tns by using <xsd:include> of those.
-
-        // tns --> list of DOMSource
-        Map<String, List<DOMSource>> multiSchemaForTns = new HashMap<String, List<DOMSource>>();
-        // tns --> one schema document (consolidated for that tns)
-        Map<String, Source> oneSchemaForTns = new HashMap<String, Source>();
-        for(DOMSource src: inlinedSchemas.values()) {
-            String tns = getTargetNamespace(src);
-            List<DOMSource> sameTnsSchemas = multiSchemaForTns.get(tns);
-            if (sameTnsSchemas == null) {
-                sameTnsSchemas = new ArrayList<DOMSource>();
-                multiSchemaForTns.put(tns, sameTnsSchemas);
-            }
-            sameTnsSchemas.add(src);
-        }
+        // tns --> systemId of a pseudo schema document (consolidated for that tns)
+        Map<String, String> oneSchemaForTns = new HashMap<String, String>();
         int i = 0;
-        for(Map.Entry<String, List<DOMSource>> e: multiSchemaForTns.entrySet()) {
-            Source src;
-            List<DOMSource> sameTnsSchemas = e.getValue();
+        for(Map.Entry<String, List<String>> e: multiSchemaForTns.entrySet()) {
+            String systemId;
+            List<String> sameTnsSchemas = e.getValue();
             if (sameTnsSchemas.size() > 1) {
                 // SDDocumentSource should be changed to take String systemId
                 // String pseudoSystemId = "urn:x-jax-ws-include-"+i++;
-                String pseudoSystemId = "file:x-jax-ws-include-"+i++;
-                src = createSameTnsPseudoSchema(e.getKey(), sameTnsSchemas, pseudoSystemId);
+                systemId = "file:x-jax-ws-include-"+i++;
+                Source src = createSameTnsPseudoSchema(e.getKey(), sameTnsSchemas, systemId);
                 mdresolver.addSchema(src);
             } else {
-                src = sameTnsSchemas.get(0);
+                systemId = sameTnsSchemas.get(0);
             }
-            oneSchemaForTns.put(e.getKey(), src);
+            oneSchemaForTns.put(e.getKey(), systemId);
         }
 
         // create a master pseudo schema with all the different tns
-        if (oneSchemaForTns.size() > 1) {
-            Source pseudoSchema = createMasterPseudoSchema(oneSchemaForTns);
-            return new Source[] { pseudoSchema };
-        }
-
-        return new Source[] {oneSchemaForTns.values().iterator().next()};
+        Source pseudoSchema = createMasterPseudoSchema(oneSchemaForTns);
+        return new Source[] { pseudoSchema };
     }
 
     private @Nullable void addSchemaFragmentSource(Document doc, String systemId, Map<String, DOMSource> map) {
@@ -452,12 +455,12 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
      * </xsd:schema>
      *
      * @param tns targetNamespace of the the schema documents
-     * @param docs collection of schema documents that have the same tns, the
-     *        collection must have more than one document
+     * @param docs collection of systemId for the schema documents that have the
+     *        same tns, the collection must have more than one document
      * @param psuedoSystemId for the created pseudo schema
      * @return Source of pseudo schema that can be used multiple times
      */
-    private @Nullable Source createSameTnsPseudoSchema(String tns, Collection<? extends Source> docs, String pseudoSystemId) {
+    private @Nullable Source createSameTnsPseudoSchema(String tns, Collection<String> docs, String pseudoSystemId) {
         assert docs.size() > 1;
 
         final StringBuilder sb = new StringBuilder("<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'");
@@ -465,8 +468,8 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
             sb.append(" targetNamespace='").append(tns).append("'");
         }
         sb.append(">\n");
-        for(Source src : docs) {
-            sb.append("<xsd:include schemaLocation='").append(src.getSystemId()).append("'/>\n");
+        for(String systemId : docs) {
+            sb.append("<xsd:include schemaLocation='").append(systemId).append("'/>\n");
         }
         sb.append("</xsd:schema>\n");
         LOGGER.fine("Pseudo Schema for the same tns="+tns+"is "+sb);
@@ -488,25 +491,22 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
      *   <xsd:import schemaLocation="Y2" namespace="X2"/>
      * </xsd:schema>
      *
-     * @param pseudo a map(tns-->source) of schema documents, the map must have
-     *        more than one document
+     * @param pseudo a map(tns-->systemId) of schema documents
      * @return Source of pseudo schema that can be used multiple times
      */
-    private Source createMasterPseudoSchema(Map<String, Source> docs) {
-        assert docs.size() > 1;
-        
-        final StringBuilder sb = new StringBuilder("<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:x-jax-ws-master'>");
-        for(Map.Entry<String, Source> e : docs.entrySet()) {
-            String systemId = e.getValue().getSystemId();
+    private Source createMasterPseudoSchema(Map<String, String> docs) {
+        final StringBuilder sb = new StringBuilder("<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:x-jax-ws-master'>\n");
+        for(Map.Entry<String, String> e : docs.entrySet()) {
+            String systemId = e.getValue();
             String ns = e.getKey();
             sb.append("<xsd:import schemaLocation='").append(systemId).append("'");
             if (!ns.equals("")) {
                 sb.append(" namespace='").append(ns).append("'");
             }
-            sb.append("/>");
+            sb.append("/>\n");
         }
         sb.append("</xsd:schema>");
-        LOGGER.fine("Master Pseudo Schema="+sb);
+        LOGGER.fine("Master Pseudo Schema = "+sb);
 
         // override getReader() so that the same source can be used multiple times
         return new StreamSource("file:x-jax-ws-master-doc") {
