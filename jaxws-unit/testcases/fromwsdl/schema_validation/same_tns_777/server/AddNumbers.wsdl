@@ -2,25 +2,35 @@
 
 <definitions name="AddNumbers" targetNamespace="http://duke.example.org"
              xmlns:tns="http://duke.example.org"
+             xmlns:types="urn:ns:2"
              xmlns="http://schemas.xmlsoap.org/wsdl/"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
              xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
 
     <types>
-        <xsd:schema>
-            <xsd:import namespace="http://duke.example.org"
-                        schemaLocation="add.xsd"/>
+        <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified" xmlns:tns="urn:ns:2"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="urn:ns:2">
+
+          <simpleType name='myint'>
+            <restriction base='int'>
+              <totalDigits value='4'/>
+            </restriction>
+          </simpleType>
         </xsd:schema>
-        <xsd:schema>
-            <xsd:import namespace="http://duke.example.org"
-                        schemaLocation="add1.xsd"/>
+        <xsd:schema targetNamespace="urn:ns:1">
+            <xsd:import namespace="urn:ns:2" schemaLocation="add.xsd"/>
+        </xsd:schema>
+        <xsd:schema targetNamespace="urn:ns:1">
+            <xsd:import namespace="urn:ns:2" schemaLocation="add1.xsd"/>
         </xsd:schema>
     </types>
     <message name="addNumbers">
-        <part name="parameters" element="tns:addNumbers"/>
+        <part name="parameters" element="types:addNumbers"/>
     </message>
     <message name="addNumbersResponse">
-        <part name="result" element="tns:addNumbersResponse"/>
+        <part name="result" element="types:addNumbersResponse"/>
     </message>
     <portType name="AddNumbersPortType">
         <operation name="addNumbers">
