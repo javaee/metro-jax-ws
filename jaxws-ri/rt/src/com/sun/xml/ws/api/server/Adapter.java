@@ -112,7 +112,7 @@ public abstract class Adapter<TK extends Adapter.Toolkit>
      * an object out of the pool, you must make sure that it is recycled by the
      * same instance of the pool.
      */
-    private volatile Pool<TK> pool = new Pool<TK>() {
+    protected volatile Pool<TK> pool = new Pool<TK>() {
         protected TK create() {
             return createToolkit();
         }
