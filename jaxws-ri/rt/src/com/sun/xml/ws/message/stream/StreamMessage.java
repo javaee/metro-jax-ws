@@ -406,6 +406,9 @@ public final class StreamMessage extends AbstractMessageImpl {
                         XMLStreamReaderUtil.nextElementContent(reader);
                     }
                 }
+                c.storeEndElement();        // create structure element for </Body>
+                c.storeEndElement();        // create structure element for </Envelope>
+
                 XMLStreamReaderUtil.readRest(reader);
                 XMLStreamReaderUtil.close(reader);
                 XMLStreamReaderFactory.recycle(reader);
