@@ -408,6 +408,7 @@ public final class StreamMessage extends AbstractMessageImpl {
                 }
                 c.storeEndElement();        // create structure element for </Body>
                 c.storeEndElement();        // create structure element for </Envelope>
+                c.storeEndElement();        // create structure element for END_DOCUMENT
 
                 XMLStreamReaderUtil.readRest(reader);
                 XMLStreamReaderUtil.close(reader);
