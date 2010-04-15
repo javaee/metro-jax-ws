@@ -351,9 +351,10 @@
     <macrodef name="prepare-pom">
         <attribute name="module"/>
         <sequential>
+            <fail unless="jar.suffix">jar.suffix property needs to be defined</fail>
             <copy file="etc/poms/@{module}.pom" tofile="build/maven2-repo/@{module}.pom" overwrite="true">
                 <filterset>
-                    <filter token="API_VERSION" value="${release.spec.version}-SNAPSHOT"/>
+                    <filter token="API_VERSION" value="${release.spec.version}"/>
                     <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
                     <filter token="VERSION" value="${jar.suffix}"/>
                 </filterset>
@@ -408,6 +409,7 @@
     <target name="install-locally" depends="mavenize">
         <delete dir="build/maven2-repo"/>
         <mkdir dir="build/maven2-repo"/>
+        <!--property name="jar.suffix" value="${release.impl.version}"/-->
         <install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
         <install-local-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <install-local-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
@@ -416,7 +418,8 @@
     <target name="push-to-maven2" depends="mavenize">
         <delete dir="build/maven2-repo"/>
         <mkdir dir="build/maven2-repo"/>
-        <push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
+        <!--property name="jar.suffix" value="${release.impl.version}"/-->
+        <!--push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/-->
         <push-to-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <push-to-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
 
