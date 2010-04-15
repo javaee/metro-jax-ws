@@ -1,4 +1,4 @@
-package whitebox.message.stream.client;
+package whitebox.message.stream.basic.client;
 
 import junit.framework.TestCase;
 import com.sun.xml.ws.api.message.Message;
