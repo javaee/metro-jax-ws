@@ -1,4 +1,4 @@
-<descriptor since="2.0">
+<descriptor since="2.2">
   <description>bare_710</description>
 
   <service basedir="./server">
