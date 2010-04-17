@@ -281,10 +281,6 @@ public class WSServiceDelegate extends WSService {
 
 
     public Executor getExecutor() {
-        if (executor != null) {
-            return executor;
-        } else
-            executor = Executors.newCachedThreadPool(new DaemonThreadFactory());
         return executor;
     }
 

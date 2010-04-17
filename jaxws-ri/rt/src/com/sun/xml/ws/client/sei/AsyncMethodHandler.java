@@ -139,8 +139,7 @@ abstract class AsyncMethodHandler extends SEIMethodHandler {
         AsyncInvoker invoker = new SEIAsyncInvoker(proxy, args);
         AsyncResponseImpl<Object> ft = new AsyncResponseImpl<Object>(invoker,handler);
         invoker.setReceiver(ft);
-        // TODO: Do we set this executor on Engine and run the AsyncInvoker in this thread ?
-        owner.getExecutor().execute(ft);
+        ft.run();
         return ft;
     }
 

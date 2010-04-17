@@ -149,8 +149,7 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
         AsyncInvoker invoker = new DispatchAsyncInvoker(param);
         AsyncResponseImpl<T> ft = new AsyncResponseImpl<T>(invoker,null);
         invoker.setReceiver(ft);
-        // TODO: Do we set this executor on Engine and run the AsyncInvoker in this thread ?
-        owner.getExecutor().execute(ft);
+        ft.run();
         return ft;
     }
 
@@ -162,13 +161,13 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
         // temp needed so that unit tests run and complete otherwise they may
         //not. Need a way to put this in the test harness or other way to do this
         //todo: as above
-        ExecutorService exec = (ExecutorService) owner.getExecutor();
-        try {
-            exec.awaitTermination(AWAIT_TERMINATION_TIME, TimeUnit.MICROSECONDS);
-        } catch (InterruptedException e) {
-            throw new WebServiceException(e);
-        }
-        exec.execute(ft);
+//        ExecutorService exec = (ExecutorService) owner.getExecutor();
+//        try {
+//            exec.awaitTermination(AWAIT_TERMINATION_TIME, TimeUnit.MICROSECONDS);
+//        } catch (InterruptedException e) {
+//            throw new WebServiceException(e);
+//        }
+        ft.run();
         return ft;
     }
 

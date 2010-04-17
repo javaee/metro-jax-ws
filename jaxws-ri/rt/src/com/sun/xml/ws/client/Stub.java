@@ -186,7 +186,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             this.requestContext.setEndPointAddressString(epr.getAddress());
         else
             this.requestContext.setEndpointAddress(defaultEndPointAddress);
-        this.engine = new Engine(toString());
+        this.engine = new Engine(toString(), owner.getExecutor());
         this.endpointReference = epr;
         wsdlProperties = (wsdlPort==null) ? null : new WSDLProperties(wsdlPort);
 
