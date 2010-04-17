@@ -156,7 +156,11 @@ public class WSServiceDelegate extends WSService {
      */
    // private final Map<Class,SEIPortInfo> seiContext = new HashMap<Class,SEIPortInfo>();
    private final Map<QName,SEIPortInfo> seiContext = new HashMap<QName,SEIPortInfo>();
-    private Executor executor;
+
+    // This executor is used for all the async invocations for all proxies
+    // created from this service. But once the proxy is created, then changing
+    // this executor doesn't affect the already created proxies.
+    private volatile Executor executor;
 
     /**
      * The WSDL service that this {@link Service} object represents.
