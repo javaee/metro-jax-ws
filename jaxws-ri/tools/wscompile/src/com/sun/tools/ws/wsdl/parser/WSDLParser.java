@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,7 +69,7 @@ import com.sun.tools.ws.wsdl.framework.Entity;
 import com.sun.tools.ws.wsdl.framework.ParserListener;
 import com.sun.tools.ws.wsdl.framework.TWSDLParserContextImpl;
 import com.sun.xml.ws.util.ServiceFinder;
-import com.sun.xml.ws.policy.PolicyWSDLParserExtension;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -120,7 +120,8 @@ public class WSDLParser {
         register(new MemberSubmissionAddressingExtensionHandler(extensionHandlers, errReceiver));
         register(new W3CAddressingExtensionHandler(extensionHandlers, errReceiver));
         register(new W3CAddressingMetadataExtensionHandler(extensionHandlers, errReceiver));
-        register(new PolicyExtensionHandler());
+        register(new Policy12ExtensionHandler());
+        register(new Policy15ExtensionHandler());
         for (TWSDLExtensionHandler te : ServiceFinder.find(TWSDLExtensionHandler.class)) {
             register(te);
         }

@@ -82,6 +82,11 @@
                     <type>java</type>
                     <location>rt/test</location>
                 </source-folder>
+                <source-folder>
+                    <label>tools/wscompile/test</label>
+                    <type>java</type>
+                    <location>tools/wscompile/test</location>
+                </source-folder>
             </folders>
             <ide-actions>
                 <action name="build">
@@ -103,12 +108,25 @@
                 <action name="test">
                     <target>test</target>
                 </action>
+                <action name="test.single">
+                    <script>nbproject/ide-file-targets.xml</script>
+                    <target>run-selected-file-in-test</target>
+                    <context>
+                        <property>test.class</property>
+                        <folder>tools/wscompile/test</folder>
+                        <pattern>\.java$</pattern>
+                        <format>java-name</format>
+                        <arity>
+                            <one-file-only/>
+                        </arity>
+                    </context>
+                </action>
                 <action name="debug.test.single">
                     <script>nbproject/ide-file-targets.xml</script>
                     <target>debug-selected-file-in-test</target>
                     <context>
-                        <property>test.class</property>
-                        <folder>rt/test</folder>
+                        <property>debug.class</property>
+                        <folder>tools/wscompile/test</folder>
                         <pattern>\.java$</pattern>
                         <format>java-name</format>
                         <arity>
@@ -786,6 +804,10 @@
                         <label>rt/test</label>
                         <location>rt/test</location>
                     </source-folder>
+                    <source-folder style="packages">
+                        <label>tools/wscompile/test</label>
+                        <location>tools/wscompile/test</location>
+                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -827,7 +849,7 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>tools/wscompile/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar:rt/build/classes</classpath>
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
@@ -942,7 +964,7 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>tools/wscompile/build/gen-src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar:rt/build/classes</classpath>
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
@@ -968,6 +990,12 @@
                 <unit-tests/>
                 <classpath mode="compile">rt/build/classes:lib/junit.jar:lib/saaj-api.jar:lib/jsr173_api.jar:lib/policy.jar</classpath>
                 <built-to>rt/build/test-classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>tools/wscompile/test</package-root>
+                <unit-tests/>
+                <classpath mode="compile">tools/wscompile/build/classes:lib/junit.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
