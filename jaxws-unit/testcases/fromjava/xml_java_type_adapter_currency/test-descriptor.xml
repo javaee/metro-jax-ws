@@ -1,0 +1,7 @@
+<descriptor>
+  <description>xml_java_type_adapter_currency</description>
+
+  <service basedir="./server">
+  </service>
+
+</descriptor>
