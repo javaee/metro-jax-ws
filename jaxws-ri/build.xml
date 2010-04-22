@@ -506,10 +506,10 @@
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
         <loadresource property="last.sucessful.jaxb.build">
-          <url url="http://hudson.sfbay/job/jaxb-ri-2.2/lastSuccessfulBuild/buildNumber"/>
+          <url url="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/lastSuccessfulBuild/buildNumber"/>
         </loadresource>
-      <echo message="Integrating jaxb artifacts from http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}"/>
-      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
+      <echo message="Integrating jaxb artifacts from http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}"/>
+      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/jaxb-ri.zip"
            dest="${build.home}/jaxb-ri.zip" />
       <mkdir dir="${build.home}/jaxb" />
       <unzip src="${build.home}/jaxb-ri.zip" dest="${build.home}/jaxb"/>
@@ -517,11 +517,11 @@
         <fileset dir="${build.home}/jaxb/jaxb-ri/lib" includes="*.zip,*.jar"
                  excludes="activation.jar, jsr173_1.0_api.jar, jaxb1-impl.jar" />
       </copy>
-      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/jaxb2-sources/jaxb-ri/osgi/build/jaxb-osgi.jar"
+      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-osgi.jar"
            dest="${v3-osgi.dir}/jaxb-osgi.jar" />
-      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/jaxb2-sources/jaxb-ri/osgi/build/jaxb-api-osgi.jar"
+      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-api-osgi.jar"
            dest="${v3-osgi.dir}/jaxb-api-osgi.jar" />
-      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/jaxb2-sources/jaxb-ri/osgi/build/jaxb-api-osgi-sources.jar"
+      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-api-osgi-sources.jar"
            dest="${v3-osgi.dir}/jaxb-api-osgi-sources.jar" />
   <!--<delete dir="${build.home}/jaxb" /> -->
     </target>
