@@ -1,4 +1,4 @@
-<descriptor since="2.0" >
+<descriptor since="2.1.7" >
     <description>This is a fromwsdl SOAP 1.2 very basic doclit tests tests</description>
     <service basedir="./server">
         <wsdl href="hello.wsdl"/>
