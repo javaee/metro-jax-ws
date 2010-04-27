@@ -40,7 +40,7 @@
 
     <target name="integrate-ws-test-harness" depends="prepare"
             description="integrate the last successful ws-test-harness Hudson build">
-        <get src="http://hudson.sfbay.sun.com/hudson/job/jaxws-test-harness/lastSuccessfulBuild/artifact/build/test-harness.zip"
+        <get src="http://hudson.sfbay.sun.com/job/jaxws-test-harness/lastSuccessfulBuild/artifact/build/test-harness.zip"
              dest="${build.home}/test-harness.zip"/>
         <unzip src="${build.home}/test-harness.zip" dest="${build.home}"/>
         <copy todir="lib" overwrite="true">
@@ -52,14 +52,14 @@
     </target>
 
     <target name="get-jaxws-image" unless="jaxwsdir">
-        <get src="http://hudson.sfbay.sun.com/hudson/job/${jaxws-hudson-project}/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/build/jaxws-ri.zip"
+        <get src="http://hudson.sfbay.sun.com/job/${jaxws-hudson-project}/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/build/jaxws-ri.zip"
              dest="build/jaxws-ri.zip"/>
         <unzip src="build/jaxws-ri.zip" dest="build"/>
         <!-- for JDK6 endorsed dir -->
         <mkdir dir="build/jaxws-ri/lib1"/>
         <copydir src="build/jaxws-ri/lib" dest="build/jaxws-ri/lib1" includes="*-api.jar,activation.jar"/>
 
-        <get src="http://hudson.sfbay.sun.com/hudson/job/${jaxws-hudson-project}/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/transports/local/build/jaxws-local-transport.jar"
+        <get src="http://hudson.sfbay.sun.com/job/${jaxws-hudson-project}/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/transports/local/build/jaxws-local-transport.jar"
              dest="build/jaxws-local-transport.jar"/>
     </target>
 
