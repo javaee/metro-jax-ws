@@ -1,4 +1,4 @@
-<descriptor since="2.1" bugs="JAX-WS-557">
+<descriptor since="2.1.7" bugs="JAX-WS-557">
   <description>
     Test JAXB annotations on Web Params
   </description>
