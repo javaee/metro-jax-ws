@@ -69,8 +69,7 @@
         <pattern from="com.sun.tools.ws" to="com.sun.tools.internal.ws" />
         <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc" />
         <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" />
-        <pattern from="org.glassfish.external" to="com.sun.org.glassfish.external"/>
-        <pattern from="org.glassfish.gmbal" to="com.sun.org.glassfish.gmbal"/>  
+        <pattern from="org.glassfish" to="com.sun.org.glassfish"/>          
       </prename>
     </sequential>
   </macrodef>
@@ -111,11 +110,15 @@
     <!-- target to rename everything in the servlet except classes in com.sun.xml.ws.transport.http.servlet.
     This is to allow tests to deploy run on tomcat on top of jdk6u3, which has JAXWS/JAXB 2.1 -->
    <target name="build-j2se-servlet">
-        <!--package-rename srcdir="servlet/src" destdir="build/j2se-servlet/src" /-->
+       <!--
+        <package-rename srcdir="servlet/src" destdir="build/j2se-servlet/src" />
+        -->
        <prename srcdir="servlet/src" destdir="build/j2se-servlet/src">
            <pattern from="com.sun.xml.ws" to="com.sun.xml.internal.ws" excludes="com.sun.xml.ws.transport.http.servlet" />
            <pattern from="com.sun.istack" to="com.sun.istack.internal" />
+           <pattern from="org.glassfish" to="com.sun.org.glassfish"/>  
        </prename>
+       
        <mkdir dir="build/j2se-servlet/classes"/>
        <!-- JAVA_HOME must be set to JDK 6 to compile -->
        <javac bootclasspathref="jdk.classpath" srcdir="build/j2se-servlet/src"
@@ -126,7 +129,7 @@
            </classpath>
         </javac>
 
-        <jar destfile="build/j2se-servlet/jdk6-jaxws-http-transport.jar"
+        <jar destfile="build/j2se-servlet/jdk7-jaxws-http-transport.jar"
             basedir="build/j2se-servlet/classes"/>
 
     </target>
@@ -211,7 +214,7 @@ import com.sun.istack.internal.tools.*;]]></replacevalue>
             destdir="build/ant-j2se/classes" >
         </javac>
 
-        <jar destfile="build/ant-j2se/jdk6-jaxws-ant-tasks.jar"
+        <jar destfile="build/ant-j2se/jdk7-jaxws-ant-tasks.jar"
             basedir="build/ant-j2se/classes"/>
     
     </target>
