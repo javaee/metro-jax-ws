@@ -114,7 +114,8 @@
         <package-rename srcdir="servlet/src" destdir="build/j2se-servlet/src" />
         -->
        <prename srcdir="servlet/src" destdir="build/j2se-servlet/src">
-           <pattern from="com.sun.xml.ws" to="com.sun.xml.internal.ws" excludes="com.sun.xml.ws.transport.http.servlet" />
+           <pattern from="com.sun.xml.ws" to="com.sun.xml.internal.ws"
+                    excludes="com.sun.xml.ws.transport.http.servlet, com.sun.xml.ws.server.servlet, com.sun.xml.ws.developer.servlet"/>
            <pattern from="com.sun.istack" to="com.sun.istack.internal" />
            <pattern from="org.glassfish" to="com.sun.org.glassfish"/>  
        </prename>
