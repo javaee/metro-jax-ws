@@ -4,7 +4,7 @@
   </description>
 
     <!-- Not fixed in 2.2 -->
-    <client name="testAddMimeHeadersInSOAPMessage" since="2.2.1"><![CDATA[
+    <client name="testAddMimeHeadersInSOAPMessage" since="2.2.2"><![CDATA[
     import handler.handler_processing.common.*;
     HandlerTracker tracker = HandlerTracker.getClientInstance();
     try {
