@@ -442,12 +442,12 @@
     <!-- Integrates 181 -->
     <target name="integrate-181-hudson" depends="prepare"
             description="integrate the last successful 181 Hudson build">
-      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.jar" dest="lib/jsr181-api.jar"/>
-      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.src.zip" dest="lib/jsr181-api.src.zip"/>
+      <get src="http://hudson.sfbay.sun.com/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.jar" dest="lib/jsr181-api.jar"/>
+      <get src="http://hudson.sfbay.sun.com/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.src.zip" dest="lib/jsr181-api.src.zip"/>
     </target>
 
   <target name="integrate-maven-repository-importer">
-    <get src="http://kohsuke.sfbay/hudson/job/maven-repository-importer/lastSuccessfulBuild/artifact/build/maven-repository-importer.jar"
+    <get src="http://hudson.sfbay/job/maven-repository-importer/lastSuccessfulBuild/artifact/build/maven-repository-importer.jar"
          dest="tools/lib/maven-repository-importer.jar" />
   </target>
 
@@ -465,33 +465,33 @@
 
     <target name="integrate-xmlstreambuffer-hudson" depends="prepare"
             description="integrate the last successful XmlStreamBuffer Hudson build">
-    <get src="http://kohsuke.sfbay/hudson/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/package/streambuffer.src.zip"
+    <get src="http://hudson.sfbay/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/package/streambuffer.src.zip"
          dest="lib/streambuffer.src.zip" />
-    <get src="http://kohsuke.sfbay/hudson/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/streambuffer/dist/streambuffer.jar"
+    <get src="http://hudson.sfbay/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/streambuffer/dist/streambuffer.jar"
          dest="lib/streambuffer.jar" />
   </target>
   
   <target name="integrate-stax-ex-hudson" depends="prepare"
           description="integrate the last successful stax-ex Hudson build">
-    <get src="http://kohsuke.sfbay/hudson/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex.jar"
+    <get src="http://hudson.sfbay/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex.jar"
          dest="lib/stax-ex.jar" />
-    <get src="http://kohsuke.sfbay/hudson/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex-src.zip"
+    <get src="http://hudson.sfbay/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex-src.zip"
          dest="lib/stax-ex-src.zip" />
   </target>
 
   <target name="integrate-mimepull" depends="prepare"
           description="integrate the last successful mimepull Hudson build">
-    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT.jar"
+    <get src="http://hudson.sfbay/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT.jar"
          dest="lib/mimepull.jar" />
-    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT-sources.jar"
+    <get src="http://hudson.sfbay/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT-sources.jar"
          dest="lib/mimepull-src.zip" />
   </target>
 
     <target name="integrate-wom" depends="prepare"
             description="integrate the last successful wom Hudson build">
-      <get src="http://kohsuke.sfbay/hudson/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT.jar"
+      <get src="http://hudson.sfbay/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT.jar"
            dest="lib/wom.jar" />
-      <get src="http://kohsuke.sfbay/hudson/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT-sources.jar"
+      <get src="http://hudson.sfbay/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT-sources.jar"
            dest="lib/wom-src.zip" />
     </target>
 
@@ -513,9 +513,9 @@
 
   <target name="integrate-FastInfoset-hudson" depends="prepare"
           description="integrate the last successful FastInfoset 1.2 Hudson build">
-    <get src="http://kohsuke.sfbay/hudson/job/fi-1.2/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.jar"
+    <get src="http://hudson.sfbay/job/fi-1.2/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.jar"
          dest="lib/FastInfoset.jar" />
-    <get src="http://kohsuke.sfbay/hudson/job/fi-1.2/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.src.zip"
+    <get src="http://hudson.sfbay/job/fi-1.2/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.src.zip"
          dest="lib/FastInfoset.src.zip" />
   </target>
 
