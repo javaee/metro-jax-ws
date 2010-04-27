@@ -1,4 +1,4 @@
-<descriptor since="2.0">
+<descriptor since="2.2">
     <description>Randon fromwsdl tests</description>
     <service basedir="./server">
         <wsdl href="HelloService.wsdl"/>
