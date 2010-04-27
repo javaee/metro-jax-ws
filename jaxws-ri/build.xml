@@ -430,6 +430,14 @@
         <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
         <antcall target="push-to-maven2"/>
     </target>
+    <target name="install-snapshot-locally" depends="mavenize">
+            <delete dir="build/maven2-repo"/>
+            <mkdir dir="build/maven2-repo"/>
+            <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
+            <!--install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/-->
+            <install-local-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
+            <install-local-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
+        </target>
 
     <target name="push-to-maven-prepare"
     description="prepare a repository image for the push-to-maven target">
