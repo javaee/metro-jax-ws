@@ -1,4 +1,4 @@
-<descriptor since="2.0">
+<descriptor since="2.2">
     <description>XMIME test </description>
     <service basedir="./server">
         <wsdl href="hello.wsdl"/>
