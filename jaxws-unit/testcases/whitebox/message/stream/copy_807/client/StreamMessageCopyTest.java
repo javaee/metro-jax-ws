@@ -6,7 +6,6 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Codecs;
 import com.sun.xml.ws.message.stream.StreamMessage;
-import com.sun.xml.ws.test.VersionRequirement;
 import junit.framework.TestCase;
 
 import java.io.ByteArrayInputStream;
@@ -27,13 +26,12 @@ public class StreamMessageCopyTest extends TestCase {
         return (StreamMessage) packet.getMessage();
     }
 
-    public void testMessageForestCopy() throws Exception {
+    public void testMessageForestCopy() throws Throwable {
         for (int i = 0; i < 2500; i++) {
             try {
                 testMessageForestCopy(i);
-            } catch (Exception e) {
-                System.out.println("Failed for i " + i);
-                throw e;
+            } catch (Throwable t) {
+                throw new Throwable("Failed for i " + i, t);
             }
         }
     }
@@ -51,13 +49,12 @@ public class StreamMessageCopyTest extends TestCase {
         msg1.copy();
     }
 
-    public void testMessageCopy() throws Exception {
+    public void testMessageCopy() throws Throwable {
         for (int i = 0; i < 2500; i++) {
             try {
                 testMessageCopy(i);
-            } catch (Exception e) {
-                System.out.println("Failed for i " + i);
-                throw e;
+            } catch (Throwable t) {
+                throw new Throwable("Failed for i " + i, t);
             }
         }
     }
@@ -79,4 +76,14 @@ public class StreamMessageCopyTest extends TestCase {
         Message msg1 = msg.copy();
         msg1.copy();
     }
+
+    public void testEmptyPayload() throws Exception {
+        String soapMsg = "<S:Envelope xmlns:S='http://schemas.xmlsoap.org/soap/envelope/'><S:Body/></S:Envelope>";
+        StringBuilder sb = new StringBuilder(soapMsg);
+        StreamMessage msg = createSOAP11StreamMessage(sb.toString());
+        Message msg1 = msg.copy();
+        msg.consume();
+        msg1.consume();
+    }
+
 }
