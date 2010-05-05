@@ -222,7 +222,7 @@ public class ProviderImpl extends Provider {
 
                 URL wsdlLoc = new URL(wsdlDocumentLocation);
                 WSDLModelImpl wsdlDoc = RuntimeWSDLParser.parse(wsdlLoc, new StreamSource(wsdlLoc.toExternalForm()), er,
-                        false, container, ServiceFinder.find(WSDLParserExtension.class).toArray());
+                        true, container, ServiceFinder.find(WSDLParserExtension.class).toArray());
                 if (serviceName != null) {
                     WSDLService wsdlService = wsdlDoc.getService(serviceName);
                     if (wsdlService == null)
