@@ -1,4 +1,6 @@
 response = helloPort.hello0Async(54321, new Hello0CallbackHandler());
 System.out.print("\nWaiting for CallbackHandler to complete...");
-while(!response.isDone())
+while(!response.isDone()) {
+  Thread.sleep(1000);
   System.out.print(".");
+}

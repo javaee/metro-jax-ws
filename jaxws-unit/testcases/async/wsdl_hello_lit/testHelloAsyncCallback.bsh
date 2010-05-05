@@ -8,5 +8,7 @@ response = helloPort.helloAsync(req, new HelloCallbackHandler());
 
 System.out.print("\nWaiting for CallbackHandler to complete...");
 
-while(!response.isDone())
+while(!response.isDone()) {
   System.out.print(".");
+  Thread.sleep(1000);
+}
