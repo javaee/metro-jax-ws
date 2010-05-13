@@ -65,8 +65,7 @@ public abstract class JAXWSExceptionBase
 
 
     protected JAXWSExceptionBase(String message) {
-        super(message);
-        msg=null;        
+        this(new NullLocalizable(message));                
     }
 
     private static Object[] fixNull(Object[] x) {
