@@ -294,6 +294,37 @@ public final class Fiber implements Runnable {
 
 
     /**
+     * Wakes up a suspended fiber with an exception.
+     *
+     * <p>
+     * The execution of the suspended fiber will be resumed in the response
+     * processing direction, by calling the {@link Tube#processException(Throwable)} method
+     * on the next/first {@link Tube} in the {@link Fiber}'s processing stack with
+     * the specified exception as the parameter.
+     *
+     * <p>
+     * This method is implemented in a race-free way. Another thread can invoke
+     * this method even before this fiber goes into the suspension mode. So the caller
+     * need not worry about synchronizing {@link NextAction#suspend()} and this method.
+     *
+     * @param throwable exception that is used in the resumed processing
+     */
+    public synchronized void resume(@NotNull Throwable throwable) {
+        if(isTraceEnabled()) {
+            LOGGER.fine(getName()+" resumed");
+        }
+
+        this.throwable = throwable;
+        if( --suspendedCount == 0 ) {
+            if(synchronous) {
+                notifyAll();
+            } else {
+                owner.addRunnable(this);
+            }
+        }
+    }
+
+    /**
      * Suspends this fiber's execution until the resume method is invoked.
      *
      * The call returns immediately, and when the fiber is resumed
