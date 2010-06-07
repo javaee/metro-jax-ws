@@ -1,4 +1,4 @@
-<descriptor since="2.1.8" bugs="jax-ws-736">
+<descriptor since="2.2" bugs="jax-ws-736">
     <description>This is a from wsdl fault test where portType and binding faults does not match</description>
     <client name="fromwsdl.portType_fault1">
         <description>

@@ -1,4 +1,4 @@
-<descriptor since="2.1.8" bugs="jax-ws-681">
+<descriptor since="2.2" bugs="jax-ws-681">
   <description>This tests mapping of exceptions from Java to WSDL. This does not validate the bean generation but only 
       the rules relating to calculation of service specific exception </description>
 

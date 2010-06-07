@@ -1,4 +1,4 @@
-<descriptor since="2.1.8" bugs="JAX-WS-789">
+<descriptor since="2.2" bugs="JAX-WS-789">
   <description>
     Tests @WebMethod(exclude="true") when other methods annotated are with @WebMethod
   </description>

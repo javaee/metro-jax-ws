@@ -1,5 +1,4 @@
-<!-- Not yet fixed in 2.2 -->
-<descriptor since="2.1.8" excludeFrom="2.2">
+<descriptor since="2.2.1">
   <description>test</description>
   <service basedir="./pak2">
   </service>

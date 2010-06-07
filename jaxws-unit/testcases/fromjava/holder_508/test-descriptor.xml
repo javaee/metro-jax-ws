@@ -1,4 +1,4 @@
-<descriptor since="2.1.8">
+<descriptor since="2.2">
   <description>holder_508</description>
 
   <client name="holder_508_test" sideEffectFree="true">

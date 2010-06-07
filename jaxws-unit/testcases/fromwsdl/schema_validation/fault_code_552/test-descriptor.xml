@@ -1,4 +1,4 @@
-<descriptor since="2.1.8" uses="ri">
+<descriptor since="2.2" uses="ri">
   <description>Schema Validaiton fromwsdl tests</description>
   <service basedir="./server">
     <wsdl href="AddNumbers.wsdl"/>

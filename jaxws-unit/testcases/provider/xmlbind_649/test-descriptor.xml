@@ -1,4 +1,4 @@
-<descriptor since="2.1.8" transport="http">
+<descriptor since="2.2" transport="http">
   <description>HTTP PUT client</description>
 
   <service basedir="./server">
