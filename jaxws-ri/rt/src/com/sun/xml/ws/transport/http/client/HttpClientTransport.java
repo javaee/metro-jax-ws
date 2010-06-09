@@ -77,6 +77,8 @@ import java.util.zip.GZIPInputStream;
  * @author WS Development Team
  */
 final class HttpClientTransport {
+
+    private static final byte[] THROW_AWAY_BUFFER = new byte[8192];
     
     // Need to use JAXB first to register DatatypeConverter
     static {
@@ -89,6 +91,7 @@ final class HttpClientTransport {
 
     /*package*/ int statusCode;
     /*package*/ String statusMessage;
+    /*package*/ int contentLength;
     private final Map<String, List<String>> reqHeaders;
     private Map<String, List<String>> respHeaders = null;
 
@@ -196,8 +199,7 @@ final class HttpClientTransport {
             public void close() throws IOException {                
                 if (!closed) {
                     closed = true;
-                    byte[] buf = new byte[8192];
-                    while(temp.read(buf) != -1);
+                    while(temp.read(THROW_AWAY_BUFFER) != -1);
                     super.close();
                 }
             }
@@ -208,6 +210,7 @@ final class HttpClientTransport {
         try {
             statusCode = httpConnection.getResponseCode();
             statusMessage = httpConnection.getResponseMessage();
+            contentLength = httpConnection.getContentLength();
         } catch(IOException ioe) {
             throw new WebServiceException(ioe);
         }
@@ -237,6 +240,10 @@ final class HttpClientTransport {
     private void createHttpConnection() throws IOException {
 
         httpConnection = (HttpURLConnection) endpoint.openConnection();
+        String scheme = endpoint.getURI().getScheme();
+        if (scheme.equals("https")) {
+            https = true;
+        }
         if (httpConnection instanceof HttpsURLConnection) {
             https = true;
 
@@ -315,7 +322,6 @@ final class HttpClientTransport {
         for (Map.Entry<String, List<String>> entry : reqHeaders.entrySet()) {
             httpConnection.addRequestProperty(entry.getKey(), entry.getValue().get(0));
         }
-        httpConnection.addRequestProperty("User-Agent", RuntimeVersion.VERSION.toString());
     }
 
     public boolean isSecure() {
