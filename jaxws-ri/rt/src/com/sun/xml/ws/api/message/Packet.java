@@ -82,6 +82,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Represents a container of a {@link Message}.
@@ -175,7 +176,7 @@ public final class Packet extends DistributedPropertySet {
     }
 
     /**
-     * Used by {@link #createResponse(Message)}.
+     * Used by {@link #createResponse(Message)} and {@link #copy(boolean)}.
      */
     private Packet(Packet that) {
         that.copySatelliteInto(this);
@@ -185,6 +186,14 @@ public final class Packet extends DistributedPropertySet {
         this.contentNegotiation = that.contentNegotiation;
         this.wasTransportSecure = that.wasTransportSecure;
         this.endpointAddress = that.endpointAddress;
+        //this.wsdlOperation = that.wsdlOperation;
+
+        this.acceptableMimeTypes = that.acceptableMimeTypes;
+        this.endpoint = that.endpoint;
+        this.proxy = that.proxy;
+        this.webServiceContextDelegate = that.webServiceContextDelegate;
+        this.soapAction = that.soapAction;
+        this.expectReply = that.expectReply;
         // copy other properties that need to be copied. is there any?
     }
 
@@ -200,7 +209,7 @@ public final class Packet extends DistributedPropertySet {
         // but so far the implementation is usable for this purpose as well, so calling the copy constructor
         // to avoid code dupliation.
         Packet copy = new Packet(this);
-        if (copyMessage) {
+        if (copyMessage && this.message != null) {
             copy.message = this.message.copy(); 
         }
        
@@ -515,13 +524,13 @@ public final class Packet extends DistributedPropertySet {
      *
      *
      * <p>
-     * When this property is {@link Boolean#TRUE}, it means that
+     * When this property is {@link Boolean#FALSE}, it means that
      * the pipeline does not expect a reply from a server (and therefore
      * the correlator should not block for a reply message
      * -- if such a reply does arrive, it can be just ignored.)
      *
      * <p>
-     * When this property is {@link Boolean#FALSE}, it means that
+     * When this property is {@link Boolean#TRUE}, it means that
      * the pipeline expects a reply from a server (and therefore
      * the correlator should block to see if a reply message is received,
      *
@@ -651,6 +660,7 @@ public final class Packet extends DistributedPropertySet {
      */
     public Packet createClientResponse(Message msg) {
         Packet response = new Packet(this);
+        response.soapAction = null; // de-initializing
         response.setMessage(msg);
         return response;
     }
@@ -802,7 +812,10 @@ public final class Packet extends DistributedPropertySet {
         String action = responsePacket.message.isFault() ?
                 wsaHelper.getFaultAction(this, responsePacket) :
                 wsaHelper.getOutputAction(this);
-
+        if(action == null) {
+            LOGGER.info("WSA headers are not added as value for wsa:Action cannot be resolved for this message");
+            return;
+        }
         populateAddressingHeaders(responsePacket, addressingVersion, binding.getSOAPVersion(), action);
     }
 
@@ -816,4 +829,6 @@ public final class Packet extends DistributedPropertySet {
     protected PropertyMap getPropertyMap() {
         return model;
     }
+
+    private static final Logger LOGGER = Logger.getLogger(Packet.class.getName());
 }
