@@ -30,6 +30,7 @@ The attributes and elements supported by the Ant task are listed below:</p>
     servicename="..."
     portname="..."&gt;
     extension="true|false"
+    includeSchemas="true|false"
     &lt;classpath refid="..."/&gt;
     &lt;/wsgen&gt;<br>&nbsp;</pre>
 
@@ -211,6 +212,20 @@ The attributes and elements supported by the Ant task are listed below:</p>
     </td>
     <td width="15%">
         <p><code>-extension</code></p>
+    </td>
+</tr>
+<tr valign="top">
+    <td width="15%">
+        <p><code>includeSchemas<br>
+        </code></p>
+    </td>
+    <td width="70%">
+        <p>Used to inline schemas in a generated wsdl. Must be used in conjunction with the <code>wsdl</code> option.
+            <br>
+        </p>
+    </td>
+    <td width="15%">
+        <p><code>-includeSchemas</code></p>
     </td>
 </tr>
 </tbody>

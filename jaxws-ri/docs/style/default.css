@@ -86,8 +86,8 @@ a:hover {
 DIV.footer {/* header on each HTML file that shows the revision */
 	text-align: right;
 	font-size: 0.8em;
-	padding-right: 80px;
-	background: url("sunlogo.gif") no-repeat right bottom;
+	padding-right: 140px;
+	background: url("sunlogo.gif") no-repeat right center;
 }
 
 
