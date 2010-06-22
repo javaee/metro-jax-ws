@@ -126,7 +126,7 @@ public class ServiceGenerator extends GeneratorBase {
         inv.arg("namespace");
         inv.arg("localpart");
 
-        if (wsdlLocation.startsWith("http://") || wsdlLocation.startsWith("file:/")) {
+        if (wsdlLocation.startsWith("http://") || wsdlLocation.startsWith("https://") || wsdlLocation.startsWith("file:/")) {
             writeAbsWSDLLocation(cls, urlField, exField);
         } else {
             writeResourceWSDLLocation(className, cls, urlField, exField);
