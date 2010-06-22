@@ -128,6 +128,8 @@ public class ServiceGenerator extends GeneratorBase {
 
         if (wsdlLocation.startsWith("http://") || wsdlLocation.startsWith("https://") || wsdlLocation.startsWith("file:/")) {
             writeAbsWSDLLocation(cls, urlField, exField);
+        } else if (wsdlLocation.startsWith("META-INF/")) {
+            writeClassLoaderResourceWSDLLocation(className, cls, urlField, exField);
         } else {
             writeResourceWSDLLocation(className, cls, urlField, exField);
         }
@@ -313,13 +315,37 @@ public class ServiceGenerator extends GeneratorBase {
     }
 
     /*
+       Generates the code to create URL for WSDL location as classloader resource
+
+       for e.g.:
+       static {
+           EXAMPLESERVICE_WSDL_LOCATION = ExampleService.class.getClassLoader().getResource(...);
+           Exception e = null;
+           if (EXAMPLESERVICE_WSDL_LOCATION == null) {
+               e = new WebServiceException("...");
+           }
+           EXAMPLESERVICE_EXCEPTION = e;
+       }
+     */
+    private void writeClassLoaderResourceWSDLLocation(String className, JDefinedClass cls, JFieldVar urlField, JFieldVar exField) {
+        JBlock staticBlock = cls.init();
+        staticBlock.assign(urlField, JExpr.dotclass(cm.ref(className)).invoke("getClassLoader").invoke("getResource").arg(wsdlLocation));
+        JVar exVar = staticBlock.decl(cm.ref(WebServiceException.class), "e", JExpr._null());
+        JConditional ifBlock = staticBlock._if(urlField.eq(JExpr._null()));
+        ifBlock._then().assign(exVar, JExpr._new(cm.ref(WebServiceException.class)).arg(
+                "Cannot find "+JExpr.quotify('\'', wsdlLocation)+" wsdl. Place the resource correctly in the classpath."));
+        staticBlock.assign(exField, exVar);
+    }
+
+
+    /*
        Generates code that gives wsdl URL. If there is an exception in
        creating the URL, it throws an exception.
 
        for example:
 
        private URL __getWsdlLocation() {
-           if (EXAMPLESERVICE_EXCEPTION!= null) {
+           if (EXAMPLESERVICE_EXCEPTION != null) {
                throw EXAMPLESERVICE_EXCEPTION;
            }
            return EXAMPLESERVICE_WSDL_LOCATION;
