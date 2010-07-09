@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,23 +36,27 @@
 
 package com.sun.xml.ws.util.exception;
 
-import com.sun.xml.ws.util.localization.Localizable;
-import com.sun.xml.ws.util.localization.LocalizableImpl;
-import com.sun.xml.ws.util.localization.Localizer;
-import com.sun.xml.ws.util.localization.NullLocalizable;
+import com.sun.xml.ws.util.localization.*;
 
 import javax.xml.ws.WebServiceException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 /**
  * Represents a {@link WebServiceException} with
  * localizable message.
- * 
+ *
  * @author WS Development Team
  */
 public abstract class JAXWSExceptionBase
     extends WebServiceException implements Localizable {
 
-    private final Localizable msg;
+    //Don't worry about previous  serialVersionUID = 4818235090198755494L;, this class was not serializable before.
+    private static final long serialVersionUID = 1L;
+
+    private transient Localizable msg;
 
     /**
      * @deprecated
@@ -65,7 +69,7 @@ public abstract class JAXWSExceptionBase
 
 
     protected JAXWSExceptionBase(String message) {
-        this(new NullLocalizable(message));                
+        this(new NullLocalizable(message));
     }
 
     private static Object[] fixNull(Object[] x) {
@@ -87,6 +91,54 @@ public abstract class JAXWSExceptionBase
     protected JAXWSExceptionBase(Localizable msg, Throwable cause) {
         super(cause);
         this.msg = msg;
+    }
+
+    /**
+     * @serialData Default fields,  followed by information in Localizable which comprises of.
+     *  ResourceBundle name, then key and followed by arguments array.
+     *  If there is no arguments array, then -1 is written.  If there is a argument array (possible of zero
+     * length) then the array length is written as an integer, followed by each argument (Object).
+     * If the Object is serializable, the argument is written. Otherwise the output of Object.toString()
+     * is written.
+     */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        // We have to call defaultWriteObject first.
+        out.defaultWriteObject();
+
+        out.writeObject(msg.getResourceBundleName());
+        out.writeObject(msg.getKey());
+        Object[] args = msg.getArguments();
+        if (args == null) {
+            out.writeInt(-1);
+            return;
+        }
+        out.writeInt(args.length);
+        // Write Object values for the parameters, if it is serializable otherwise write String form of it..
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] == null || args[i] instanceof Serializable) {
+                out.writeObject(args[i]);
+            } else {
+                out.writeObject(args[i].toString());
+            }
+        }
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        // We have to call defaultReadObject first.
+        in.defaultReadObject();
+        Object[] args;
+        String resourceBundleName = (String) in.readObject();
+        String key = (String) in.readObject();
+        int len = in.readInt();
+        if (len == -1) {
+            args = null;
+        } else {
+            args = new Object[len];
+            for (int i = 0; i < args.length; i++) {
+                args[i] = in.readObject();
+            }
+        }
+        msg = new LocalizableMessageFactory(resourceBundleName).getMessage(key,args);
     }
 
     private static Throwable findNestedException(Object[] args) {
