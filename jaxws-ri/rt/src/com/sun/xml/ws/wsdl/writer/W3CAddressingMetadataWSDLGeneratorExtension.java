@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,7 @@ import com.sun.xml.txw2.TypedXmlWriter;
 import static com.sun.xml.ws.addressing.W3CAddressingMetadataConstants.*;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.CheckedExceptionImpl;
-
+import com.sun.xml.ws.addressing.WsaActionUtil;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Logger;
@@ -154,17 +154,7 @@ public class W3CAddressingMetadataWSDLGeneratorExtension extends
     }
 
     protected static final String getDefaultFaultAction(JavaMethod method, CheckedException ce) {
-        String tns = method.getOwner().getTargetNamespace();
-        String delim = getDelimiter(tns);
-        if (tns.endsWith(delim))
-            tns = tns.substring(0, tns.length() - 1);
-
-        //this assumes that fromjava case there won't be a standard fault name.
-        String name = method.getOperationName() + delim + "Fault" + delim + ce.getExceptionClass();
-
-        return new StringBuilder(tns).append(delim).append(
-                method.getOwner().getPortTypeName().getLocalPart()).append(
-                delim).append(method.getOperationName()).append(delim).append("Fault").append(delim).append(ce.getExceptionClass().getSimpleName()).toString();
+        return WsaActionUtil.getDefaultFaultAction(method,ce);
     }
 
     private static final Logger LOGGER =

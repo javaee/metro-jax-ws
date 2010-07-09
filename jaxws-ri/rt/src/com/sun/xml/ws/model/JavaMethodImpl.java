@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.model.soap.SOAPBindingImpl;
 import com.sun.xml.ws.model.wsdl.WSDLBoundOperationImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
+import com.sun.xml.ws.api.model.wsdl.WSDLFault;
 import com.sun.istack.Nullable;
 
 import javax.xml.namespace.QName;
@@ -364,7 +365,16 @@ public final class JavaMethodImpl implements JavaMethod {
             for (CheckedExceptionImpl ce : exceptions) {
                 if (ce.getFaultAction().equals("")) {
                     QName detailQName = ce.getDetailType().tagName;
-                    ce.setFaultAction(wsdlOperation.getOperation().getFault(detailQName).getAction());
+                    WSDLFault wsdlfault = wsdlOperation.getOperation().getFault(detailQName);
+                    if(wsdlfault == null) {
+                        // mismatch between wsdl model and SEI model, log a warning and use  SEI model for Action determination
+                        LOGGER.warning("Mismatch between Java model and WSDL model found, For wsdl operation " +
+                                wsdlOperation.getName() + ",There is no matching wsdl fault with detail QName " +
+                                ce.getDetailType().tagName);
+                        ce.setFaultAction(ce.getDefaultFaultAction());
+                    } else {
+                        ce.setFaultAction(wsdlfault.getAction());
+                    }
                 }
             }
         }

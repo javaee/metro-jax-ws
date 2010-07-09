@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,11 @@ import com.sun.xml.ws.api.model.CheckedException;
 import com.sun.xml.ws.api.model.ExceptionType;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.JavaMethod;
+import com.sun.xml.ws.addressing.WsaActionUtil;
+import javax.xml.ws.WebServiceException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Logger;
 
 /**
  * CheckedException class. Holds the exception class - class that has public
@@ -127,4 +132,10 @@ public final class CheckedExceptionImpl implements CheckedException {
     public void setFaultAction(String faultAction) {
         this.faultAction = faultAction;
     }
+
+    public String getDefaultFaultAction() {
+        return WsaActionUtil.getDefaultFaultAction(javaMethod,this);  
+    }
+
+
 }
