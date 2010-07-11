@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -129,18 +129,43 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
         else            return port.getName();
     }
 
+    public void handle(ServletContext context, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        handle(context,request,response,NO_OP_COMPLETION_CALLBACK);
+    }
+    
     /**
      * Version of {@link #handle(WSHTTPConnection)}
      * that takes convenient parameters for servlet.
      *
-     * @param context Servlet Context
      * @param request Servlet Request
      * @param response Servlet Response
      * @throws IOException when there is i/o error in handling request
      */
-    public void handle(ServletContext context, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        WSHTTPConnection connection = new ServletConnectionImpl(this,context,request,response);
-        super.handle(connection);
+    public void handle(ServletContext context, HttpServletRequest request, HttpServletResponse response, final CompletionCallback callback) throws IOException {
+        boolean asyncStarted = false;
+        try {
+            WSHTTPConnection connection = new ServletConnectionImpl(this, context, request, response);
+            if (handleGet(connection)) {
+                return;
+            }
+            if (isServlet30 && request.isAsyncSupported() && !request.isAsyncStarted()) {
+                final javax.servlet.AsyncContext asyncContext = request.startAsync(request, response);
+                new WSAsyncListener(connection, callback).addListenerTo(asyncContext);
+                //asyncContext.setTimeout(10000L);// TODO get it from @ or config file 
+                super.invokeAsync(connection, new CompletionCallback() {
+                    public void onCompletion() {
+                        asyncContext.complete();
+                    }
+                });
+                asyncStarted = true;
+            } else {
+                super.handle(connection);
+            }
+        } finally {
+            if (!asyncStarted) {
+                callback.onCompletion();
+            }
+        }
     }
 
     /**
@@ -162,4 +187,6 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
     }
 
     private static final Logger LOGGER = Logger.getLogger(ServletAdapter.class.getName());
+
+    private static final boolean isServlet30 = ServletUtil.isServlet30Based();
 }

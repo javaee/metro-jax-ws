@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -42,14 +42,11 @@ import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
 import com.sun.xml.ws.transport.http.HttpAdapter;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeEvent;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import javax.servlet.*;
+import javax.servlet.annotation.WebListener;
 import javax.xml.ws.WebServiceException;
 import java.net.URL;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,12 +62,26 @@ import java.util.logging.Logger;
  *
  * @author WS Development Team
  */
+@WebListener
 public final class WSServletContextListener
     implements ServletContextAttributeListener, ServletContextListener {
 
     private WSServletDelegate delegate;
     private List<ServletAdapter> adapters;
     private final JAXWSRIDeploymentProbeProvider probe = new JAXWSRIDeploymentProbeProvider();
+
+    private static final String WSSERVLET_CONTEXT_LISTENER_INVOKED="com.sun.xml.ws.transport.http.servlet.WSServletContextListener.Invoked";
+
+    //if configured in web.xml,, then sun-jaxws.xml must be bundled.
+    private final boolean explicitlyConfigured;
+
+    public WSServletContextListener(boolean invokedViaWebXml) {
+        this.explicitlyConfigured = invokedViaWebXml;
+    }
+
+    public WSServletContextListener() {
+        this.explicitlyConfigured = true;
+    }
 
     public void attributeAdded(ServletContextAttributeEvent event) {
     }
@@ -110,19 +121,39 @@ public final class WSServletContextListener
             logger.info(WsservletMessages.LISTENER_INFO_INITIALIZE());
         }
         ServletContext context = event.getServletContext();
+
+        //The same class can be invoked via @WebListener discovery or explicit configuration in deployment descriptor
+        // avoid redoing the processing of web services.
+        String alreadyInvoked = (String) context.getAttribute(WSSERVLET_CONTEXT_LISTENER_INVOKED);
+        if(Boolean.valueOf(alreadyInvoked)) {
+            return;
+        }
+        context.setAttribute(WSSERVLET_CONTEXT_LISTENER_INVOKED,"true");
+
+
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader == null) {
             classLoader = getClass().getClassLoader();
         }
         try {
+            URL sunJaxWsXml = context.getResource(JAXWS_RI_RUNTIME);
+            if(sunJaxWsXml==null) {
+                if(explicitlyConfigured)  {
+                    throw new WebServiceException(WsservletMessages.NO_SUNJAXWS_XML(JAXWS_RI_RUNTIME));
+                } else {
+                    //TODO process @WebService without DD, utilizing servlet 3.0 capabilities
+                    //for now, let 109 runtime process the classes with @WebService
+                    return;
+                }
+            }
+
+
             // Parse the descriptor file and build endpoint infos
             DeploymentDescriptorParser<ServletAdapter> parser = new DeploymentDescriptorParser<ServletAdapter>(
                 classLoader,new ServletResourceLoader(context), createContainer(context), new ServletAdapterList(context));
-            URL sunJaxWsXml = context.getResource(JAXWS_RI_RUNTIME);
-            if(sunJaxWsXml==null)
-                throw new WebServiceException(WsservletMessages.NO_SUNJAXWS_XML(JAXWS_RI_RUNTIME));
             adapters = parser.parse(sunJaxWsXml.toExternalForm(), sunJaxWsXml.openStream());
 
+            registerWSServlet(adapters, context);
             delegate = createDelegate(adapters, context);
 
             context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO,delegate);
@@ -131,13 +162,44 @@ public final class WSServletContextListener
             for(ServletAdapter adapter : adapters) {
                 probe.deploy(adapter);
             }
-            
+
         } catch (Throwable e) {
             logger.log(Level.SEVERE,
                 WsservletMessages.LISTENER_PARSING_FAILED(e),e);
             context.removeAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO);
             throw new WSServletException("listener.parsingFailed", e);
         }
+    }
+
+    private void registerWSServlet(List<ServletAdapter> adapters, ServletContext context) {
+        if (!ServletUtil.isServlet30Based())
+            return;
+        Set<String> unregisteredUrlPatterns = new HashSet<String>();
+        try {
+            for (ServletAdapter adapter : adapters) {
+                if (!existsServletForUrlPattern(adapter.urlPattern, context)) {
+                    unregisteredUrlPatterns.add(adapter.urlPattern);
+                }
+            }
+            if (!unregisteredUrlPatterns.isEmpty()) {
+                //register WSServlet Dynamically
+                ServletRegistration.Dynamic registration = context.addServlet("Dynamic JAXWS Servlet", WSServlet.class);
+                registration.addMapping(unregisteredUrlPatterns.toArray(new String[]{}));
+                registration.setAsyncSupported(true);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean existsServletForUrlPattern(String urlpattern, ServletContext context) {
+        Map<String, ? extends ServletRegistration> registrations = context.getServletRegistrations();
+        for (Map.Entry<String, ? extends ServletRegistration> e : registrations.entrySet()) {
+            if (e.getValue().getMappings().contains(urlpattern))
+                return true;
+        }
+        return false;
     }
 
     /**

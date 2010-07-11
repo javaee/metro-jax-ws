@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -253,6 +253,42 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         }
         final Tube tube = tubePool.take();
         fiber.start(tube, request, new Fiber.CompletionCallback() {
+            public void onCompletion(@NotNull Packet response) {
+                tubePool.recycle(tube);
+                if (callback!=null) {
+                    callback.onCompletion(response);
+                }
+            }
+
+            public void onCompletion(@NotNull Throwable error) {
+                // let's not reuse tubes as they might be in a wrong state, so not
+                // calling tubePool.recycle()
+                error.printStackTrace();
+                // Convert all runtime exceptions to Packet so that transport doesn't
+                // have to worry about converting to wire message
+                // TODO XML/HTTP binding
+                Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
+                        soapVersion, null, error);
+                Packet response = request.createServerResponse(faultMsg, request.endpoint.getPort(), null,
+                        request.endpoint.getBinding());
+                if (callback!=null) {
+                    callback.onCompletion(response);
+                }
+            }
+        });
+    }
+
+    public void process(final Packet request, final CompletionCallback callback, FiberContextSwitchInterceptor interceptor) {
+        request.endpoint = WSEndpointImpl.this;
+        if (wsdlProperties != null) {
+            request.addSatellite(wsdlProperties);
+        }
+        Fiber fiber = engine.createFiber();
+        if (interceptor != null) {
+            fiber.addInterceptor(interceptor);
+        }
+        final Tube tube = tubePool.take();
+        fiber.runAsync(tube, request, new Fiber.CompletionCallback() {
             public void onCompletion(@NotNull Packet response) {
                 tubePool.recycle(tube);
                 if (callback!=null) {

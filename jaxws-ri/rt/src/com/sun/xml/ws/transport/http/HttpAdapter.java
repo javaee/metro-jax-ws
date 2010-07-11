@@ -240,46 +240,10 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * @throws IOException when I/O errors happen
      */
     public void handle(@NotNull WSHTTPConnection connection) throws IOException {
-        if(connection.getRequestMethod().equals("GET")) {
-            // metadata query. let the interceptor run
-            for( EndpointComponent c : endpoint.getComponentRegistry() ) {
-                HttpMetadataPublisher spi = c.getSPI(HttpMetadataPublisher.class);
-                if(spi!=null && spi.handleMetadataRequest(this,connection))
-                    return; // handled
-            }
-
-            if (isMetadataQuery(connection.getQueryString())) {
-                // Sends published WSDL and schema documents as the default action.
-                publishWSDL(connection);
-                return;
-            }
-
-            Binding binding = getEndpoint().getBinding();
-            if (!(binding instanceof HTTPBinding)) {
-                // Writes HTML page with all the endpoint descriptions
-                writeWebServicesHtmlPage(connection);
-                return;
-            }
-        } else if (connection.getRequestMethod().equals("HEAD")) {
-            connection.getInput().close();
-            Binding binding = getEndpoint().getBinding();
-            if (isMetadataQuery(connection.getQueryString())) {
-                SDDocument doc = wsdls.get(connection.getQueryString());
-                connection.setStatus(doc!=null
-                        ? HttpURLConnection.HTTP_OK
-                        : HttpURLConnection.HTTP_NOT_FOUND);
-                connection.getOutput().close();
-                connection.close();
-                return;
-            } else if (!(binding instanceof HTTPBinding)) {
-                connection.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
-                connection.getOutput().close();
-                connection.close();
-                return;
-            }
-            // Let the endpoint handle for HTTPBinding
+        if (handleGet(connection)) {
+            return;
         }
-
+        
         // Make sure the Toolkit is recycled by the same pool instance from which it was taken
         final Pool<HttpToolkit> currentPool = getPool();
         // normal request handling
@@ -291,6 +255,50 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         }
     }
 
+    public boolean handleGet(@NotNull WSHTTPConnection connection) throws IOException {
+        if (connection.getRequestMethod().equals("GET")) {
+            // metadata query. let the interceptor run
+            for (EndpointComponent c : endpoint.getComponentRegistry()) {
+                HttpMetadataPublisher spi = c.getSPI(HttpMetadataPublisher.class);
+                if (spi != null && spi.handleMetadataRequest(this, connection))
+                    return true; // handled
+            }
+
+            if (isMetadataQuery(connection.getQueryString())) {
+                // Sends published WSDL and schema documents as the default action.
+                publishWSDL(connection);
+                return true;
+            }
+
+            Binding binding = getEndpoint().getBinding();
+            if (!(binding instanceof HTTPBinding)) {
+                // Writes HTML page with all the endpoint descriptions
+                writeWebServicesHtmlPage(connection);
+                return true;
+            }
+        } else if (connection.getRequestMethod().equals("HEAD")) {
+            connection.getInput().close();
+            Binding binding = getEndpoint().getBinding();
+            if (isMetadataQuery(connection.getQueryString())) {
+                SDDocument doc = wsdls.get(connection.getQueryString());
+                connection.setStatus(doc != null
+                        ? HttpURLConnection.HTTP_OK
+                        : HttpURLConnection.HTTP_NOT_FOUND);
+                connection.getOutput().close();
+                connection.close();
+                return true;
+            } else if (!(binding instanceof HTTPBinding)) {
+                connection.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
+                connection.getOutput().close();
+                connection.close();
+                return true;
+            }
+            // Let the endpoint handle for HTTPBinding
+        }
+
+        return false;
+
+    }
     /**
      *
      * @param con
@@ -398,43 +406,70 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     }
 
     public void invokeAsync(final WSHTTPConnection con) throws IOException {
-        final Pool<HttpToolkit> currentPool = getPool();
-        final HttpToolkit tk = currentPool.take();
-        final Packet request;
-        try {
-            request = decodePacket(con, tk.codec);
-        } catch(ExceptionHasMessage e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            Packet response = new Packet();
-            response.setMessage(e.getFaultMessage());
-            encodePacket(response, con, tk.codec);
-            currentPool.recycle(tk);
-            con.close();
-            return;
-        } catch(UnsupportedMediaException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            Packet response = new Packet();
-            con.setStatus(WSHTTPConnection.UNSUPPORTED_MEDIA);
-            encodePacket(response, con, tk.codec);
-            currentPool.recycle(tk);
-            con.close();
-            return;
-        }
+        invokeAsync(con, NO_OP_COMPLETION_CALLBACK);
+    }
 
-        endpoint.schedule(request, new WSEndpoint.CompletionCallback() {
-            public void onCompletion(@NotNull Packet response) {
-                try {
-                    try {
-                        encodePacket(response, con, tk.codec);
-                    } catch(IOException ioe) {
-                        LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
-                    }
-                    currentPool.recycle(tk);
-                } finally{
-                    con.close();
-                }
+    public void invokeAsync(final WSHTTPConnection con, final CompletionCallback callback) throws IOException {
+        
+            if (handleGet(con)) {
+                callback.onCompletion();
+                return;
             }
-        });
+            final Pool<HttpToolkit> currentPool = getPool();
+            final HttpToolkit tk = currentPool.take();
+            final Packet request;
+
+            try {
+
+                request = decodePacket(con, tk.codec);
+            } catch (ExceptionHasMessage e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                Packet response = new Packet();
+                response.setMessage(e.getFaultMessage());
+                encodePacket(response, con, tk.codec);
+                currentPool.recycle(tk);
+                con.close();
+                callback.onCompletion();
+                return;
+            } catch (UnsupportedMediaException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                Packet response = new Packet();
+                con.setStatus(WSHTTPConnection.UNSUPPORTED_MEDIA);
+                encodePacket(response, con, tk.codec);
+                currentPool.recycle(tk);
+                con.close();
+                callback.onCompletion();
+                return;
+            }
+
+            endpoint.process(request, new WSEndpoint.CompletionCallback() {
+                public void onCompletion(@NotNull Packet response) {
+                    try {
+                        try {
+                            encodePacket(response, con, tk.codec);                            
+                        } catch (IOException ioe) {
+                            LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
+                        }
+                        currentPool.recycle(tk);
+                    } finally {
+                        con.close();
+                        callback.onCompletion();
+
+                    }
+                }
+            },null);
+
+    }
+
+    public static  CompletionCallback NO_OP_COMPLETION_CALLBACK = new CompletionCallback() {
+
+        public void onCompletion() {
+            //NO-OP
+        }
+    };
+
+    public interface CompletionCallback{
+        void onCompletion();
     }
 
     final class AsyncTransport extends AbstractServerAsyncTransport<WSHTTPConnection> {

@@ -52,10 +52,17 @@
         source="1.5">
       <classpath>
         <path refid="runtime.compile.classpath"/>
-        <fileset dir="lib" includes="*.jar" />
+        <fileset dir="lib" includes="javax.servlet.jar" />
         <pathelement path="../rt/build/classes" />
       </classpath>
     </javac>
+
+    <!-- Copy WSServletContainerInitializer -->
+
+    <copy todir="${build.dir}/classes/META-INF/services">
+      <fileset dir="${basedir}/etc/" includes="javax.servlet.ServletContainerInitializer"/>
+    </copy>
+    
   </target>
 
   <target name="clean">
