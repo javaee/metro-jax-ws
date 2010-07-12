@@ -246,7 +246,9 @@ public abstract class WSEndpoint<T> {
      */
     public abstract void schedule(@NotNull Packet request, @NotNull CompletionCallback callback, @Nullable FiberContextSwitchInterceptor interceptor );
 
-    public abstract void process(@NotNull Packet request, @NotNull CompletionCallback callback, @Nullable FiberContextSwitchInterceptor interceptor );
+    public void process(@NotNull Packet request, @NotNull CompletionCallback callback, @Nullable FiberContextSwitchInterceptor interceptor ) {
+       schedule(request,callback,interceptor);
+    }
 
     /**
      * Callback to notify that jax-ws runtime has finished execution of a request
