@@ -278,6 +278,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         });
     }
 
+    @Override
     public void process(final Packet request, final CompletionCallback callback, FiberContextSwitchInterceptor interceptor) {
         request.endpoint = WSEndpointImpl.this;
         if (wsdlProperties != null) {
