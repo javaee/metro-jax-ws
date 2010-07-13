@@ -75,8 +75,9 @@ public final class WSServletContextListener
     //if configured in web.xml,, then sun-jaxws.xml must be bundled.
     private final boolean explicitlyConfigured;
 
-    public WSServletContextListener(boolean invokedViaWebXml) {
-        this.explicitlyConfigured = invokedViaWebXml;
+    public WSServletContextListener(ServletContext context) {
+        this.explicitlyConfigured = false;
+        parseAdaptersAndCreateDelegate(context);
     }
 
     public WSServletContextListener() {
@@ -116,21 +117,14 @@ public final class WSServletContextListener
         }
     }
 
-    public void contextInitialized(ServletContextEvent event) {
-        if (logger.isLoggable(Level.INFO)) {
-            logger.info(WsservletMessages.LISTENER_INFO_INITIALIZE());
-        }
-        ServletContext context = event.getServletContext();
-
+    void parseAdaptersAndCreateDelegate(ServletContext context){
         //The same class can be invoked via @WebListener discovery or explicit configuration in deployment descriptor
         // avoid redoing the processing of web services.
         String alreadyInvoked = (String) context.getAttribute(WSSERVLET_CONTEXT_LISTENER_INVOKED);
         if(Boolean.valueOf(alreadyInvoked)) {
             return;
         }
-        context.setAttribute(WSSERVLET_CONTEXT_LISTENER_INVOKED,"true");
-
-
+        context.setAttribute(WSSERVLET_CONTEXT_LISTENER_INVOKED, "true");
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader == null) {
             classLoader = getClass().getClassLoader();
@@ -152,16 +146,10 @@ public final class WSServletContextListener
             DeploymentDescriptorParser<ServletAdapter> parser = new DeploymentDescriptorParser<ServletAdapter>(
                 classLoader,new ServletResourceLoader(context), createContainer(context), new ServletAdapterList(context));
             adapters = parser.parse(sunJaxWsXml.toExternalForm(), sunJaxWsXml.openStream());
-
             registerWSServlet(adapters, context);
             delegate = createDelegate(adapters, context);
 
             context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO,delegate);
-
-            // Emit deployment probe event for each endpoint
-            for(ServletAdapter adapter : adapters) {
-                probe.deploy(adapter);
-            }
 
         } catch (Throwable e) {
             logger.log(Level.SEVERE,
@@ -169,15 +157,32 @@ public final class WSServletContextListener
             context.removeAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO);
             throw new WSServletException("listener.parsingFailed", e);
         }
+
+    }
+
+    public void contextInitialized(ServletContextEvent event) {
+        if (logger.isLoggable(Level.INFO)) {
+            logger.info(WsservletMessages.LISTENER_INFO_INITIALIZE());
+        }
+        ServletContext context = event.getServletContext();
+
+        parseAdaptersAndCreateDelegate(context);
+        if(adapters != null)  {
+            // Emit deployment probe event for each endpoint
+            for (ServletAdapter adapter : adapters) {
+                probe.deploy(adapter);
+            }
+        }
     }
 
     private void registerWSServlet(List<ServletAdapter> adapters, ServletContext context) {
-        if (!ServletUtil.isServlet30Based())
+        if ( !ServletUtil.isServlet30Based())
             return;
         Set<String> unregisteredUrlPatterns = new HashSet<String>();
         try {
+            Collection<? extends ServletRegistration> registrations = context.getServletRegistrations().values();
             for (ServletAdapter adapter : adapters) {
-                if (!existsServletForUrlPattern(adapter.urlPattern, context)) {
+                if (!existsServletForUrlPattern(adapter.urlPattern, registrations)) {
                     unregisteredUrlPatterns.add(adapter.urlPattern);
                 }
             }
@@ -193,11 +198,11 @@ public final class WSServletContextListener
         }
     }
 
-    private boolean existsServletForUrlPattern(String urlpattern, ServletContext context) {
-        Map<String, ? extends ServletRegistration> registrations = context.getServletRegistrations();
-        for (Map.Entry<String, ? extends ServletRegistration> e : registrations.entrySet()) {
-            if (e.getValue().getMappings().contains(urlpattern))
+    private boolean existsServletForUrlPattern(String urlpattern, Collection<? extends ServletRegistration> registrations) {
+        for (ServletRegistration r : registrations) {
+            if (r.getMappings().contains(urlpattern)) {
                 return true;
+            }
         }
         return false;
     }

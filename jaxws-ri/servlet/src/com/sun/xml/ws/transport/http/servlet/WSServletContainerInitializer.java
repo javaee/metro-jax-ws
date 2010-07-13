@@ -50,7 +50,7 @@ import java.util.Set;
 @HandlesTypes({WebService.class, WebServiceProvider.class})
 public class WSServletContainerInitializer implements ServletContainerInitializer {
     public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
-        WSServletContextListener listener = new WSServletContextListener(false);
+        WSServletContextListener listener = new WSServletContextListener(ctx);
         ctx.addListener(listener);
     }
 }

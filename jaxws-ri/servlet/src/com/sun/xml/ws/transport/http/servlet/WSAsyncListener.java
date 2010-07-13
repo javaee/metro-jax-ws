@@ -40,6 +40,7 @@ import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
 import javax.servlet.AsyncContext;
@@ -60,24 +61,25 @@ public class WSAsyncListener {
         context.addListener(new AsyncListener() {
 
             public void onComplete(AsyncEvent event) throws IOException {
-                System.out.println("WSAsyncListener completed");
+                LOGGER.fine("WSAsyncListener completed");
                 callback.onCompletion();
 
             }
 
             public void onTimeout(AsyncEvent event) throws IOException {
-                System.out.println("WSAsyncListener timed out");
+                LOGGER.fine("WSAsyncListener timed out");
                 con.close();
             }
 
             public void onError(AsyncEvent event) throws IOException {
-                System.out.println("WSAsyncListener on error");
+                LOGGER.fine("WSAsyncListener on error");
                 con.close();
             }
 
             public void onStartAsync(AsyncEvent event) throws IOException {
-                System.out.println("WSAsyncListener on start async");
+                LOGGER.fine("WSAsyncListener on start async");
             }
         });
     }
+    private static final Logger LOGGER = Logger.getLogger(WSAsyncListener.class.getName());
 }
