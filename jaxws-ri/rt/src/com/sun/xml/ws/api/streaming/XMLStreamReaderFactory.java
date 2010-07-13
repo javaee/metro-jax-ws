@@ -185,6 +185,9 @@ public abstract class XMLStreamReaderFactory {
      */
     public static void recycle(XMLStreamReader r) {
         get().doRecycle(r);
+        if (r instanceof RecycleAware) {
+            ((RecycleAware)r).onRecycled();
+        }
     }
 
     // implementations
@@ -289,8 +292,6 @@ public abstract class XMLStreamReaderFactory {
         public void doRecycle(XMLStreamReader r) {
             if(zephyrClass.isInstance(r))
                 pool.set(r);
-            if(r instanceof RecycleAware)
-                ((RecycleAware)r).onRecycled();
         }
 
         public XMLStreamReader doCreate(String systemId, InputStream in, boolean rejectDTDs) {
