@@ -43,7 +43,6 @@ import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
 import com.sun.xml.ws.transport.http.HttpAdapter;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebListener;
 import javax.xml.ws.WebServiceException;
 import java.net.URL;
 import java.util.*;
@@ -62,7 +61,6 @@ import java.util.logging.Logger;
  *
  * @author WS Development Team
  */
-@WebListener
 public final class WSServletContextListener
     implements ServletContextAttributeListener, ServletContextListener {
 
