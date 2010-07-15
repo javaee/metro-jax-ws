@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -120,7 +120,8 @@ public abstract class ManagementAssertion extends SimpleAssertion {
             }
             return assertion == null ? null : assertion.getImplementation(type);
         } catch (PolicyException ex) {
-            throw LOGGER.logSevereException(new WebServiceException(ManagementMessages.WSM_1001_FAILED_ASSERTION(name), ex));
+            throw LOGGER.logSevereException(new WebServiceException(
+                    ManagementMessages.WSM_1001_FAILED_ASSERTION(name), ex));
         }
     }
 
@@ -137,10 +138,12 @@ public abstract class ManagementAssertion extends SimpleAssertion {
             throws AssertionCreationException {
         super(data, assertionParameters);
         if (!name.equals(data.getName())) {
-            throw new AssertionCreationException(data, ManagementMessages.WSM_1002_EXPECTED_MANAGEMENT_ASSERTION(name));
+            throw LOGGER.logSevereException(new AssertionCreationException(data,
+                    ManagementMessages.WSM_1002_EXPECTED_MANAGEMENT_ASSERTION(name)));
         }
         if (isManagementEnabled() && !data.containsAttribute(ID_ATTRIBUTE_QNAME)) {
-            throw new AssertionCreationException(data, ManagementMessages.WSM_1003_MANAGEMENT_ASSERTION_MISSING_ID(name));
+            throw LOGGER.logSevereException(new AssertionCreationException(data,
+                    ManagementMessages.WSM_1003_MANAGEMENT_ASSERTION_MISSING_ID(name)));
         }
     }
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import javax.xml.namespace.QName;
+import javax.xml.ws.WebServiceException;
 
 import junit.framework.TestCase;
 
@@ -68,6 +69,7 @@ public class ManagedServiceAssertionTest extends TestCase {
     private static final QName START_ATTRIBUTE_QNAME = new QName("start");
     private static final QName MANAGEMENT_ATTRIBUTE_QNAME = new QName("management");
     private static final QName MONITORING_ATTRIBUTE_QNAME = new QName("monitoring");
+    private static final QName ENDPOINT_DISPOSE_DELAY_ATTRIBUTE_QNAME = new QName("endpointDisposeDelay");
 
     private static final QName COMMUNICATION_SERVER_IMPLEMENTATIONS_PARAMETER_QNAME = new QName(
             PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "CommunicationServerImplementations");
@@ -216,7 +218,7 @@ public class ManagedServiceAssertionTest extends TestCase {
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final Setting result = instance.monitoringAttribute();
-        assertSame(result, Setting.NOT_SET);
+        assertSame(Setting.NOT_SET, result);
     }
 
     public void testMonitoringAttributeTrue() throws AssertionCreationException {
@@ -227,7 +229,7 @@ public class ManagedServiceAssertionTest extends TestCase {
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final Setting result = instance.monitoringAttribute();
-        assertSame(result, Setting.ON);
+        assertSame(Setting.ON, result);
     }
 
     public void testMonitoringAttributeOn() throws AssertionCreationException {
@@ -238,7 +240,7 @@ public class ManagedServiceAssertionTest extends TestCase {
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final Setting result = instance.monitoringAttribute();
-        assertSame(result, Setting.ON);
+        assertSame(Setting.ON, result);
     }
 
     public void testMonitoringAttributeFalse() throws AssertionCreationException {
@@ -249,7 +251,7 @@ public class ManagedServiceAssertionTest extends TestCase {
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final Setting result = instance.monitoringAttribute();
-        assertSame(result, Setting.OFF);
+        assertSame(Setting.OFF, result);
     }
 
     public void testMonitoringAttributeOff() throws AssertionCreationException {
@@ -260,7 +262,43 @@ public class ManagedServiceAssertionTest extends TestCase {
                 null, attributes, false, false);
         final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         final Setting result = instance.monitoringAttribute();
-        assertSame(result, Setting.OFF);
+        assertSame( Setting.OFF, result);
+    }
+
+    public void testEndpointDisposeDelayDefault() throws AssertionCreationException {
+        final HashMap<QName, String> attributes = new HashMap<QName, String>();
+        attributes.put(ID_ATTRIBUTE_QNAME, "id1");
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
+                null, attributes, false, false);
+        final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
+        final long result = instance.getEndpointDisposeDelay(2000l);
+        assertEquals(2000l, result);
+    }
+
+    public void testEndpointDisposeDelayValue() throws AssertionCreationException {
+        final HashMap<QName, String> attributes = new HashMap<QName, String>();
+        attributes.put(ID_ATTRIBUTE_QNAME, "id1");
+        attributes.put(ENDPOINT_DISPOSE_DELAY_ATTRIBUTE_QNAME, "4500");
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
+                null, attributes, false, false);
+        final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
+        final long result = instance.getEndpointDisposeDelay(2000l);
+        assertEquals(4500l, result);
+    }
+
+    public void testEndpointDisposeDelayInvalid() throws AssertionCreationException {
+        final HashMap<QName, String> attributes = new HashMap<QName, String>();
+        attributes.put(ID_ATTRIBUTE_QNAME, "id1");
+        attributes.put(ENDPOINT_DISPOSE_DELAY_ATTRIBUTE_QNAME, "not an integer");
+        final AssertionData data = AssertionData.createAssertionData(ManagedServiceAssertion.MANAGED_SERVICE_QNAME,
+                null, attributes, false, false);
+        final ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
+        try {
+            final long result = instance.getEndpointDisposeDelay(2000l);
+            fail("Expected a WebserviceException, instead got this value: \"" + result + '"');
+        } catch (WebServiceException e) {
+            // Expected this exception
+        }
     }
 
     /**

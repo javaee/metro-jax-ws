@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,6 +74,10 @@ public class ManagedServiceAssertion extends ManagementAssertion {
     private static final QName CONFIG_READER_IMPLEMENTATION_PARAMETER_QNAME = new QName(
             PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "ConfigReaderImplementation");
     private static final QName CLASS_NAME_ATTRIBUTE_QNAME = new QName("className");
+    /**
+     * The name of the endpointDisposeDelay attribute.
+     */
+    private static final QName ENDPOINT_DISPOSE_DELAY_ATTRIBUTE_QNAME = new QName("endpointDisposeDelay");
 
     private static final Logger LOGGER = Logger.getLogger(ManagedServiceAssertion.class);
 
@@ -102,10 +106,10 @@ public class ManagedServiceAssertion extends ManagementAssertion {
     }
 
     /**
-     * Returns the value of the managment attribute. True if unset or set to "true"
+     * Returns the value of the management attribute. True if unset or set to "true"
      * or "on". False otherwise.
      *
-     * @return The value of the managment attribute.
+     * @return The value of the management attribute.
      */
     public boolean isManagementEnabled() {
         final String management = this.getAttributeValue(MANAGEMENT_ATTRIBUTE_QNAME);
@@ -116,6 +120,29 @@ public class ManagedServiceAssertion extends ManagementAssertion {
             }
             else {
                 result = Boolean.parseBoolean(management);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the value of the endpointDisposeDelay attribute or the default value
+     * otherwise.
+     *
+     * @param defaultDelay The default value that is returned if this attribute is
+     *   not set
+     * @return The value of the endpointDisposeDelay attribute or the default value
+     *   otherwise.
+     */
+    public long getEndpointDisposeDelay(final long defaultDelay) throws WebServiceException {
+        long result = defaultDelay;
+        final String delayText = getAttributeValue(ENDPOINT_DISPOSE_DELAY_ATTRIBUTE_QNAME);
+        if (delayText != null) {
+            try {
+                result = Long.parseLong(delayText);
+            } catch (NumberFormatException e) {
+                throw LOGGER.logSevereException(new WebServiceException(
+                        ManagementMessages.WSM_1008_EXPECTED_INTEGER_DISPOSE_DELAY_VALUE(delayText), e));
             }
         }
         return result;
