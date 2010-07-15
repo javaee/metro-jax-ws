@@ -148,7 +148,17 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
             if (handleGet(connection)) {
                 return;
             }
-            if (isServlet30 && request.isAsyncSupported() && !request.isAsyncStarted()) {
+
+            boolean asyncRequest = false;
+            try {
+                asyncRequest = isServlet30 && request.isAsyncSupported() && !request.isAsyncStarted();
+            } catch (Throwable t) {
+                LOGGER.info("ServletRequest does not support Async API, Continuing with synchronous processing");
+                LOGGER.fine(t.getMessage());
+                //continue with synchronous processing
+            }
+           
+            if (asyncRequest) {
                 final javax.servlet.AsyncContext asyncContext = request.startAsync(request, response);
                 new WSAsyncListener(connection, callback).addListenerTo(asyncContext);
                 //asyncContext.setTimeout(10000L);// TODO get it from @ or config file 
