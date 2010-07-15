@@ -53,6 +53,7 @@ import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -151,11 +152,12 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
 
             boolean asyncRequest = false;
             try {
-                asyncRequest = isServlet30 && request.isAsyncSupported() && !request.isAsyncStarted();
+                asyncRequest = isServlet30Based && request.isAsyncSupported() && !request.isAsyncStarted();
             } catch (Throwable t) {
-                LOGGER.info("ServletRequest does not support Async API, Continuing with synchronous processing");
-                LOGGER.fine(t.getMessage());
-                //continue with synchronous processing
+                //this happens when the loaded Servlet API is 3.0, but the impl is not, ending up as AbstractMethodError
+                LOGGER.log(Level.INFO,request.getClass().getName()+ " does not support Async API, Continuing with synchronous processing",t);
+                //Continue with synchronous processing and don't repeat the check for processing further requests
+                isServlet30Based = false;
             }
            
             if (asyncRequest) {
@@ -198,5 +200,6 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
 
     private static final Logger LOGGER = Logger.getLogger(ServletAdapter.class.getName());
 
-    private static final boolean isServlet30 = ServletUtil.isServlet30Based();
+    private boolean isServlet30Based = ServletUtil.isServlet30Based();
+
 }
