@@ -130,19 +130,34 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
         else            return port.getName();
     }
 
-    public void handle(ServletContext context, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        handle(context,request,response,NO_OP_COMPLETION_CALLBACK);
-    }
-    
     /**
      * Version of {@link #handle(WSHTTPConnection)}
      * that takes convenient parameters for servlet.
      *
+     * @param context Servlet Context
      * @param request Servlet Request
      * @param response Servlet Response
      * @throws IOException when there is i/o error in handling request
      */
-    public void handle(ServletContext context, HttpServletRequest request, HttpServletResponse response, final CompletionCallback callback) throws IOException {
+    public void handle(ServletContext context, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        WSHTTPConnection connection = new ServletConnectionImpl(this,context,request,response);
+        super.handle(connection);
+    }
+
+    /**
+     * Version of {@link #handle(WSHTTPConnection)}  that takes convenient parameters for servlet.
+     *
+     * Based on the async capabilities of the request and the application processing it, the method may run in asynchronous mode.
+     * When run in async mode, this method returns immediately. The response is delayed until the application is ready with the response or
+     *  the corresponding asynchronous operation times out. The CompletionCallback is guaranteed to run after response is committed..
+     *
+     * @param context Servlet Context
+     * @param request Servlet Request
+     * @param response Servlet Response
+     * @param callback CompletionCallback
+     * @throws IOException when there is i/o error in handling request
+     */
+    public void invokeAsync(ServletContext context, HttpServletRequest request, HttpServletResponse response, final CompletionCallback callback) throws IOException {
         boolean asyncStarted = false;
         try {
             WSHTTPConnection connection = new ServletConnectionImpl(this, context, request, response);
@@ -155,15 +170,15 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
                 asyncRequest = isServlet30Based && request.isAsyncSupported() && !request.isAsyncStarted();
             } catch (Throwable t) {
                 //this happens when the loaded Servlet API is 3.0, but the impl is not, ending up as AbstractMethodError
-                LOGGER.log(Level.INFO,request.getClass().getName()+ " does not support Async API, Continuing with synchronous processing",t);
+                LOGGER.log(Level.INFO, request.getClass().getName() + " does not support Async API, Continuing with synchronous processing", t);
                 //Continue with synchronous processing and don't repeat the check for processing further requests
                 isServlet30Based = false;
             }
-           
+
             if (asyncRequest) {
                 final javax.servlet.AsyncContext asyncContext = request.startAsync(request, response);
                 new WSAsyncListener(connection, callback).addListenerTo(asyncContext);
-                //asyncContext.setTimeout(10000L);// TODO get it from @ or config file 
+                //asyncContext.setTimeout(10000L);// TODO get it from @ or config file
                 super.invokeAsync(connection, new CompletionCallback() {
                     public void onCompletion() {
                         asyncContext.complete();

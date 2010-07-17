@@ -152,7 +152,7 @@ public class WSServletDelegate {
                 final String path = request.getContextPath()+target.getValidPath();
                 probe.startedEvent(path);
 
-                target.handle(context, request, response, new HttpAdapter.CompletionCallback() {
+                target.invokeAsync(context, request, response, new HttpAdapter.CompletionCallback() {
                     public void onCompletion() {
                         probe.endedEvent(path);
                     }
