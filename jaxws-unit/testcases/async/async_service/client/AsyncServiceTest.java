@@ -28,7 +28,7 @@ public class AsyncServiceTest extends TestCase {
       invoke("Hello","Duke");  
     }
     
-    public void xtestAsyncWithCachedThreadPool() throws Exception {
+    public void testAsyncWithCachedThreadPool() throws Exception {
         ExecutorService service = new ThreadPoolExecutor(NO_THREADS/2, NO_THREADS,
             30L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
         synchronized(this) {
