@@ -38,7 +38,7 @@
   </head> 
   <body>         
     <h1>JAX-WS/Tango Test Harness User Guide</h1> 
-    <div align="right">$Id: index.html,v 1.84 2010-07-15 16:33:26 ramapulavarthi Exp $</div>      
+    <div align="right">$Id: index.html,v 1.85 2010-07-21 18:40:13 ramapulavarthi Exp $</div>      
     <h2>Table of contents</h2> 
     <ol>             
       <li>
@@ -158,6 +158,10 @@
         <ol>   
           <li>
             <a href="#Linking_to_Relevant_Bugs">Linking to Relevant Bugs</a>
+          </li> 
+          <ol> </ol>    
+          <li>
+            <a href="#Specifying_test_requirements_from_the_Container">Specifying test requirements from the Container</a>
           </li> 
           <ol> </ol>    
           <li>
@@ -612,6 +616,7 @@ testdir/
  |   +- mascot.jpeg
  +- AddNumbers.wsdl         (optional WSDL that represents service)
  +- **/*.java               (Java code that implements service)
+ +- web.xml                 (optional web.xml file, if specified used for packaging the war)     
 </pre>              
     <a name="Test_Descriptor"></a>
     <h3>
@@ -646,10 +651,24 @@ testdir/
   ...
 &lt;/descriptor&gt;
 </pre>              
+    <a name="Specifying_test_requirements_from_the_Container"></a>
+    <h4>
+      <a name="Specifying_test_requirements_from_the_Container">
+        <a href="#Specifying_test_requirements_from_the_Container">2.2.2.</a>  Specifying test requirements from the Container
+      </a>
+    </h4>   
+    <p>If your test relies on a certain capability from the container, Specify such requirements in "uses" attribute. Harness checks the capabilities of the container to continue with running the test or skipping it. Supported values are "servlet30", "servlet","ri","multi-endpoint","skip-lwhs". 
+    <p>Please use this option with caution, so that tests can retain its generality. 
+    <pre>
+&lt;descriptor uses="servlet30"&gt;
+    &lt;description&gt;this test runs only on servlet 3.0 based container&lt;/description&gt;
+    ....
+&lt;/despcriptor&gt;
+      </pre>              
     <a name="Specifying_verbatim_wsimport_options"></a>
     <h4>
       <a name="Specifying_verbatim_wsimport_options">
-        <a href="#Specifying_verbatim_wsimport_options">2.2.2.</a>  Specifying verbatim wsimport options
+        <a href="#Specifying_verbatim_wsimport_options">2.2.3.</a>  Specifying verbatim wsimport options
       </a>
     </h4>   
     <p>If your test requires a certain wsimport command line options, you can specify verbatim by using the nested
@@ -666,7 +685,7 @@ testdir/
     <a name="Specifying_test_specific_options"></a>
     <h4>
       <a name="Specifying_test_specific_options">
-        <a href="#Specifying_test_specific_options">2.2.3.</a>  Specifying test specific options
+        <a href="#Specifying_test_specific_options">2.2.4.</a>  Specifying test specific options
       </a>
     </h4>   
     <p>If your test special configuration from the default harness behavior,
