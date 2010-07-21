@@ -1,4 +1,4 @@
-<descriptor since="2.2.2" uses="multi-endpoint">
+<descriptor since="2.2.2" uses="multi-endpoint servlet30">
     <description>Partial web.xml deployment with only WSServlet specified for some endpoints </description>
     <service basedir="./server">
     </service>

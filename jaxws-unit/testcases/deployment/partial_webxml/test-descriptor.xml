@@ -1,4 +1,4 @@
-<descriptor since="2.2.2">
+<descriptor since="2.2.2" uses="servlet30">
     <description>Partial web.xml deployment with no WSServletContextListener specified</description>
     <service basedir="./server">
         <wsdl href="service.wsdl"/>
