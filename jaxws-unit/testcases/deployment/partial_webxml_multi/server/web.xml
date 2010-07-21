@@ -1,0 +1,21 @@
+<web-app version="3.0">
+    <display-name>deployment.partial_webxml</display-name>
+    <description>WSDL Rpclit tests</description>
+  
+    <servlet>
+        <servlet-name>deployment.no_webxml</servlet-name>
+        <display-name>deployment.no_webxml</display-name>
+        <description>WSDL Rpclit tests</description>
+        <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>deployment.no_webxml</servlet-name>
+        <url-pattern>/HelloImpl</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+        <session-timeout>60</session-timeout>
+    </session-config>
+</web-app>
