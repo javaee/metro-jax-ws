@@ -38,7 +38,7 @@ package deployment.no_webxml.server;
 import javax.xml.ws.Holder;
 import java.math.BigDecimal;
 
-@javax.jws.WebService(endpointInterface="fromwsdl.wsdl_rpclit.server.RetailerPortType")
+@javax.jws.WebService(endpointInterface="deployment.no_webxml.server.RetailerPortType")
 public class RetailerImpl implements RetailerPortType {
     public CatalogType getCatalog() {
              try{

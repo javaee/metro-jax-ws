@@ -1,4 +1,4 @@
-<descriptor since="2.2.2">
+<descriptor since="2.2.2" uses="servlet30">
     <description>Empty web.xml test</description>
     <service basedir="./server">
         <wsdl href="service.wsdl"/>
