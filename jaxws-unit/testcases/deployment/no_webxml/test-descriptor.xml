@@ -1,5 +1,5 @@
 <descriptor since="2.2.2" uses="servlet30">
-    <description>Empty web.xml test</description>
+    <description>Empty web.xml test to simulate no web.xml packaged in war</description>
     <service basedir="./server">
         <wsdl href="service.wsdl"/>
     </service>
