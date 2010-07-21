@@ -1,4 +1,4 @@
-<descriptor uses="servlet30">
+<descriptor uses="servlet30" since="2.2.2">
   <description>This is a AsyncProvider test</description>
 
   <service basedir="./server">

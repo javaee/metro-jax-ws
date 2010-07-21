@@ -4,7 +4,6 @@
  */
 
 package async.async_service.server;
-
 import com.sun.xml.ws.api.server.AsyncProvider;
 import com.sun.xml.ws.api.server.AsyncProviderCallback;
 
@@ -20,88 +19,45 @@ import java.io.ByteArrayOutputStream;
 @WebServiceProvider(
     wsdlLocation="WEB-INF/wsdl/hello_literal.wsdl",
     targetNamespace="urn:test",
-    serviceName="Hello",
-    portName="HelloPort")
+    serviceName="Hello")
 
 public class HelloAsyncImpl implements AsyncProvider<Source> {
-
+    static String body  = "<HelloResponse xmlns=\"urn:test:types\"><argument xmlns=\"\">%s</argument><extra xmlns=\"\">%s</extra></HelloResponse>";
     private static final JAXBContext jaxbContext = createJAXBContext();
     private int bodyIndex;
 
-    public javax.xml.bind.JAXBContext getJAXBContext(){
-        return jaxbContext;
-    }
-    
-    private static javax.xml.bind.JAXBContext createJAXBContext(){
-        try{
-            return javax.xml.bind.JAXBContext.newInstance(ObjectFactory.class);
-        }catch(javax.xml.bind.JAXBException e){
-            throw new WebServiceException(e.getMessage(), e);
-        }
-    }
-
-    private Source sendSource() {
-        System.out.println("**** sendSource ******");
-
-        String[] body  = {
-            "<HelloResponse xmlns=\"urn:test:types\"><argument xmlns=\"\">foo</argument><extra xmlns=\"\">bar</extra></HelloResponse>",
-            "<ans1:HelloResponse xmlns:ans1=\"urn:test:types\"><argument>foo</argument><extra>bar</extra></ans1:HelloResponse>",
-        };
-        int i = (++bodyIndex)%body.length;
-        return new StreamSource(
-            new ByteArrayInputStream(body[i].getBytes()));
-    }
-
-    private Source sendFaultSource() {
-        System.out.println("**** sendFaultSource ******");
-
-        String body  = 
-            "<soap:Fault xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><faultcode>soap:Server</faultcode><faultstring>Server was unable to process request. ---> Not a valid accountnumber.</faultstring><detail /></soap:Fault>";
-
-        return new StreamSource(
-            new ByteArrayInputStream(body.getBytes()));
-    }
-
-    private Hello_Type recvBean(Source source) throws Exception {
-        System.out.println("**** recvBean ******");
-        return (Hello_Type)jaxbContext.createUnmarshaller().unmarshal(source);
-    }
-
-    private Source sendBean() throws Exception {
-        System.out.println("**** sendBean ******");
-        HelloResponse resp = new HelloResponse();
-        resp.setArgument("foo");
-        resp.setExtra("bar");
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        jaxbContext.createMarshaller().marshal(resp, bout);
-        return new StreamSource(new ByteArrayInputStream(bout.toByteArray()));
-    }
-
     public void invoke(Source source, AsyncProviderCallback<Source> cbak, WebServiceContext ctxt) {
-        System.out.println("**** Received in AsyncProvider Impl ******");
+        System.out.println("**** Received in AsyncService Impl ******");
 		try {
 			Hello_Type hello = recvBean(source);
 			String arg = hello.getArgument();
-			if (arg.equals("sync")) {
-				String extra = hello.getExtra();
-				if (extra.equals("source")) {
-					cbak.send(sendSource());
-				} else if (extra.equals("bean")) {
-					cbak.send(sendBean());
-				} else if (extra.equals("fault")) {
-					cbak.send(sendFaultSource());
-				} else {
-					throw new WebServiceException("Expected extra = (source|bean|fault), Got="+extra);
-				}
-			} else if (arg.equals("async")) {
-				new Thread(new RequestHandler(cbak, hello)).start();
-			} else {
-				throw new WebServiceException("Expected Argument = (sync|async), Got="+arg);
-			}
+			new Thread(new RequestHandler(cbak, hello)).start();
+
 		} catch(Exception e) {
             throw new WebServiceException("Endpoint failed", e);
 		}
     }
+
+    private static javax.xml.bind.JAXBContext createJAXBContext(){
+            try{
+                return javax.xml.bind.JAXBContext.newInstance(ObjectFactory.class);
+            }catch(javax.xml.bind.JAXBException e){
+                throw new WebServiceException(e.getMessage(), e);
+            }
+        }
+
+        private Hello_Type recvBean(Source source) throws Exception {
+            System.out.println("**** recvBean ******");
+            return (Hello_Type)jaxbContext.createUnmarshaller().unmarshal(source);
+        }
+
+        private Source sendSource(String arg, String extra) {
+            System.out.println("**** sendSource ******");
+            String response = String.format(body,arg,extra);
+            return new StreamSource(
+                new ByteArrayInputStream(response.getBytes()));
+        }
+
 
 	private class RequestHandler implements Runnable {
 		final AsyncProviderCallback<Source> cbak;
@@ -114,22 +70,13 @@ public class HelloAsyncImpl implements AsyncProvider<Source> {
 
 		public void run() {
 			try {
-				Thread.sleep(15000);
+				Thread.sleep(10000);
 			} catch(InterruptedException ie) {
 				cbak.sendError(new WebServiceException("Interrupted..."));
 				return;
 			}
 			try {
-				String extra = hello.getExtra();
-				if (extra.equals("source")) {
-					cbak.send(sendSource());
-				} else if (extra.equals("bean")) {
-					cbak.send(sendBean());
-				} else if (extra.equals("fault")) {
-					cbak.send(sendFaultSource());
-				} else {
-					cbak.sendError(new WebServiceException("Expected extra = (source|bean|fault), Got="+extra));
-				}
+				cbak.send(sendSource(hello.getArgument(),hello.getExtra()));
 			} catch(Exception e) {
 				cbak.sendError(new WebServiceException(e));
 			}
