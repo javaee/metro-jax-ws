@@ -70,18 +70,6 @@ public final class WSServletContextListener
 
     private static final String WSSERVLET_CONTEXT_LISTENER_INVOKED="com.sun.xml.ws.transport.http.servlet.WSServletContextListener.Invoked";
 
-    //if configured in web.xml,, then sun-jaxws.xml must be bundled.
-    private final boolean explicitlyConfigured;
-
-    public WSServletContextListener(ServletContext context) {
-        this.explicitlyConfigured = false;
-        parseAdaptersAndCreateDelegate(context);
-    }
-
-    public WSServletContextListener() {
-        this.explicitlyConfigured = true;
-    }
-
     public void attributeAdded(ServletContextAttributeEvent event) {
     }
 
@@ -130,15 +118,8 @@ public final class WSServletContextListener
         try {
             URL sunJaxWsXml = context.getResource(JAXWS_RI_RUNTIME);
             if(sunJaxWsXml==null) {
-                if(explicitlyConfigured)  {
-                    throw new WebServiceException(WsservletMessages.NO_SUNJAXWS_XML(JAXWS_RI_RUNTIME));
-                } else {
-                    //TODO process @WebService without DD, utilizing servlet 3.0 capabilities
-                    //for now, let 109 runtime process the classes with @WebService
-                    return;
-                }
+                    throw new WebServiceException(WsservletMessages.NO_SUNJAXWS_XML(JAXWS_RI_RUNTIME));                 
             }
-
 
             // Parse the descriptor file and build endpoint infos
             DeploymentDescriptorParser<ServletAdapter> parser = new DeploymentDescriptorParser<ServletAdapter>(
@@ -219,7 +200,7 @@ public final class WSServletContextListener
         return new WSServletDelegate(adapters,context);
     }
 
-    private static final String JAXWS_RI_RUNTIME = "/WEB-INF/sun-jaxws.xml";
+    static final String JAXWS_RI_RUNTIME = "/WEB-INF/sun-jaxws.xml";
 
     private static final Logger logger =
         Logger.getLogger(
