@@ -356,6 +356,7 @@
                 <filterset>
                     <filter token="API_VERSION" value="${release.spec.version}"/>
                     <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
+                    <filter token="JAXB_API_VERSION" value="${jaxb.api.version}"/>
                     <filter token="VERSION" value="${jar.suffix}"/>
                 </filterset>
             </copy>
@@ -419,7 +420,7 @@
         <delete dir="build/maven2-repo"/>
         <mkdir dir="build/maven2-repo"/>
         <!--property name="jar.suffix" value="${release.impl.version}"/-->
-        <!--push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/-->
+        <push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
         <push-to-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <push-to-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
 
@@ -430,11 +431,11 @@
         <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
         <antcall target="push-to-maven2"/>
     </target>
-    <target name="install-snapshot-locally" depends="mavenize">
+    <target name="install-snapshot-locally" depends="mavenize,src.zip">
             <delete dir="build/maven2-repo"/>
             <mkdir dir="build/maven2-repo"/>
             <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
-            <!--install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/-->
+            <install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
             <install-local-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
             <install-local-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
         </target>
@@ -458,10 +459,10 @@
     <maven-repository-importer
         destdir="build/maven-repo" version="${jar.suffix}">
       <!-- only push API at certain key points, and do so with new version number -->
-      <!--artifact
+      <artifact
         jar="${dist20.home}/lib/jaxws-api.jar"
         pom="etc/poms/jaxws-api.pom"
-        srczip="lib/jaxws-api-src.zip" /-->
+        srczip="lib/jaxws-api-src.zip" />
       <artifact
         jar="${dist20.home}/lib/jaxws-rt.jar"
         pom="etc/poms/jaxws-rt.pom"
@@ -480,6 +481,7 @@
       <filterset>
         <filter token="API_VERSION" value="${release.spec.version}"/>
         <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
+        <filter token="JAXB_API_VERSION" value="${jaxb.api.version}"/>  
       </filterset>
     </maven-repository-importer>
   </target>
@@ -502,14 +504,15 @@
     <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
   </target>
 
-  <target name="push-snapshot-to-maven" depends="src.zip"
+  <target name="push-snapshot-to-maven1" depends="src.zip"
       description="publish snapshot jars into the maven repository">
       <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT" />
       <antcall target="push-to-maven-prepare"/>
       <echo>importing to CVS...</echo>
-      <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
+      <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver;proxy=www-proxy.us.oracle.com;proxyport=80:ramapulavarthi@cvs.dev.java.net:/cvs" />
   </target>
 
+  <target  name="push-snapshot-to-maven" depends="push-snapshot-to-maven1, push-snapshot-to-maven2"/>
 
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
@@ -560,7 +563,14 @@
                    type="file"/>
     </target>
 
-    <target name="init-maven-ant" depends="check-maven-ant-task" unless="maven.ant.task.available">
+    <target name="setproxy">
+        <property  name="proxy.host" value="www-proxy.us.oracle.com"/>
+        <property name="proxy.port" value="80"/>
+
+      <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"/>
+    </target>
+
+    <target name="init-maven-ant" depends="check-maven-ant-task,setproxy" unless="maven.ant.task.available">
         <echo message="Fetching Maven ant task..."/>
         <get src="http://archive.apache.org/dist/maven/binaries/${maven.ant.task.jar}"
              dest="${lib.home}/${maven.ant.task.jar}" verbose="true"/>
@@ -571,7 +581,9 @@
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
                  classpathref="maven-ant-tasks.classpath"/>
         <mkdir dir="build/maven2-repo/test"/>
-        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.9"/>
+        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.11">
+            <artifact:remoteRepository url="${java.net.maven2.repo}"></artifact:remoteRepository>        
+        </artifact:install-provider>
         <!--
         <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.11-SNAPSHOT">
             <artifact:remoteRepository url="${java.net.maven2.repo}"></artifact:remoteRepository>        
