@@ -292,7 +292,7 @@ public class SDDocumentImpl extends SDDocumentSource implements SDDocument {
         XMLStreamReader xsr = source.read();
         try {
             out.writeComment(VERSION_COMMENT);
-            new WSDLPatcher(owner.owner,this,portAddressResolver,resolver).bridge(xsr,out);
+            new WSDLPatcher(this,portAddressResolver,resolver, owner.owner.getServiceDefinition()).bridge(xsr,out);
         } finally {
             xsr.close();
         }

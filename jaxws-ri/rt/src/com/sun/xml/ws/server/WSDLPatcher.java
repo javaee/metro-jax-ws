@@ -35,10 +35,11 @@
  */
 package com.sun.xml.ws.server;
 
+import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.PortAddressResolver;
-import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.DocumentAddressResolver;
 import com.sun.xml.ws.api.server.SDDocument;
+import com.sun.xml.ws.util.MetadataUtil.MetadataResolver;
 import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import com.sun.xml.ws.addressing.W3CAddressingConstants;
@@ -68,18 +69,13 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
             com.sun.xml.ws.util.Constants.LoggingDomain + ".wsdl.patcher");
 
     /**
-     * {@link WSEndpoint} that owns the WSDL we are patching right now.
-     */
-    private final WSEndpointImpl<?> endpoint;
-
-    /**
      * Document that is being patched.
      */
     private final SDDocumentImpl current;
 
     private final DocumentAddressResolver resolver;
     private final PortAddressResolver portAddressResolver;
-
+    private final MetadataResolver metadataResolver;
 
     //
     // fields accumulated as we parse through documents
@@ -97,23 +93,24 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
     /**
      * Creates a {@link WSDLPatcher} for patching WSDL.
      *
-     * @param endpoint
-     *      The endpoint that we are patchinig WSDL for. This object is consulted
-     *      to check other {@link SDDocument}s. Must not be null.
      * @param current
      *      The document that we are patching. Must not be null.
      * @param portAddressResolver
      *      address of the endpoint is resolved using this resolver.
-     * @param resolver
+     * @param docResolver
      *      Consulted to generate references among  {@link SDDocument}s.
      *      Must not be null.
+     * @param metadataResolver
+     *      Consulted to get {@link SDDocument} for a systemId
      */
-    public WSDLPatcher(WSEndpointImpl<?> endpoint, SDDocumentImpl current,
-            PortAddressResolver portAddressResolver, DocumentAddressResolver resolver) {
-        this.endpoint = endpoint;
+    public WSDLPatcher(@NotNull SDDocumentImpl current,
+            @NotNull PortAddressResolver portAddressResolver,
+            @NotNull DocumentAddressResolver docResolver,
+            @NotNull MetadataResolver metadataResolver) {
         this.current = current;
         this.portAddressResolver = portAddressResolver;
-        this.resolver = resolver;
+        this.resolver = docResolver;
+        this.metadataResolver = metadataResolver;
     }
 
     @Override
@@ -249,12 +246,9 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
      */
     private @Nullable String getPatchedImportLocation(String relPath) {
         try {
-            ServiceDefinitionImpl def = endpoint.getServiceDefinition();
-            assert def !=null; // this code is only used by ServieDefinitionImpl, so this must not be null.
-
             URL ref = new URL(current.getURL(), relPath);
-            SDDocument refDoc = def.getBySystemId(ref);
-            if(refDoc==null)
+            SDDocument refDoc = metadataResolver.resolveEntity(ref.toExternalForm());
+            if (refDoc==null)
                 return relPath;  // not something we know. just leave it as is.
 
             return resolver.getRelativeAddressFor(current,refDoc);
