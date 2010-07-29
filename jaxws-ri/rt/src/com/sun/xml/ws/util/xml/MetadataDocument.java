@@ -73,6 +73,38 @@ public class MetadataDocument extends SDDocumentSource implements SDDocument {
     private static final String VERSION_COMMENT =
         " Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is "+RuntimeVersion.VERSION+". ";
 
+    public static abstract class MetadataDocumentFactory<T extends MetadataDocument> {
+        public abstract T createWSDL(QName rootName, URL url, SDDocumentSource source, String targetNamespace, boolean hasPortType,
+            boolean hasService, Set<String> imports, Set<QName> allServices);
+        public abstract T createSchema(QName rootName, URL url,
+            SDDocumentSource source, String targetNamespace, Set<String> imports);
+        public abstract T createOther(QName rootName, URL url,
+            SDDocumentSource source);
+    }
+
+    private static final MetadataDocumentFactory<MetadataDocument> FACTORY = new MetadataDocumentFactory<MetadataDocument>() {
+
+        @Override
+        public MetadataDocument createWSDL(QName rootName, URL url, SDDocumentSource source, String targetNamespace, boolean hasPortType,
+                        boolean hasService, Set<String> imports, Set<QName> allServices) {
+            return new WSDLImpl(rootName, url, source, targetNamespace, hasPortType, hasService, imports, allServices);
+        }
+
+        @Override
+        public MetadataDocument createSchema(QName rootName, URL url, SDDocumentSource source, String targetNamespace, Set<String> imports) {
+            return new SchemaImpl(rootName, url, source, targetNamespace, imports);
+        }
+
+        @Override
+        public MetadataDocument createOther(QName rootName, URL url, SDDocumentSource source) {
+            return new MetadataDocument(rootName, url, source);
+        }
+    };
+
+    public static MetadataDocument create(SDDocumentSource src, QName serviceName, QName portTypeName) {
+        return create(FACTORY, src, serviceName, portTypeName);
+    }
+
     /**
      * Creates {@link com.sun.xml.ws.api.server.SDDocument} from {@link com.sun.xml.ws.api.server.SDDocumentSource}.
      * @param src WSDL document infoset
@@ -85,7 +117,7 @@ public class MetadataDocument extends SDDocumentSource implements SDDocument {
      * @return null
      *      Always non-null.
      */
-    public static SDDocument create(SDDocumentSource src, QName serviceName, QName portTypeName) {
+    public static<T extends MetadataDocument> T create(MetadataDocumentFactory<T> factory, SDDocumentSource src, QName serviceName, QName portTypeName) {
         URL systemId = src.getSystemId();
 
         try {
@@ -110,7 +142,7 @@ public class MetadataDocument extends SDDocumentSource implements SDDocument {
                             }
                         }
                     }
-                    return new SchemaImpl(rootName,systemId,src,tns,importedDocs);
+                    return factory.createSchema(rootName,systemId,src,tns,importedDocs);
                 } else if (rootName.equals(WSDLConstants.QNAME_DEFINITIONS)) {
                     String tns = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_TNS);
 
@@ -152,10 +184,10 @@ public class MetadataDocument extends SDDocumentSource implements SDDocument {
                             }
                         }
                     }
-                    return new WSDLImpl(
+                    return factory.createWSDL(
                         rootName,systemId,src,tns,hasPortType,hasService,importedDocs,allServices);
                 } else {
-                    return new MetadataDocument(rootName,systemId,src);
+                    return factory.createOther(rootName,systemId,src);
                 }
             } finally {
                 reader.close();
@@ -171,7 +203,7 @@ public class MetadataDocument extends SDDocumentSource implements SDDocument {
 
 
     private final QName rootName;
-    private final SDDocumentSource source;
+    protected final SDDocumentSource source;
 
     /**
      * The original system ID of this document.
