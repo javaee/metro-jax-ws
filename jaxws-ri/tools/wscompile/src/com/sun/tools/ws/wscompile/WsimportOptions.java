@@ -89,6 +89,11 @@ public class WsimportOptions extends Options {
     public String defaultPackage = null;
 
     /**
+     * The -clientJar option to package client artifacts as jar
+     */
+    public String clientJar = null;
+
+    /**
      * -XadditionalHeaders
      */
     public boolean additionalHeaders;
@@ -253,6 +258,9 @@ public class WsimportOptions extends Options {
         } else if (args[i].equals("-Xauthfile")) {
             String authfile = requireArgument("-Xauthfile", args, ++i);
             authFile = new File(authfile);
+            return 2;
+        } else if (args[i].equals("-clientJar")) {
+            clientJar = requireArgument("-clientJar", args, ++i);
             return 2;
         }
 

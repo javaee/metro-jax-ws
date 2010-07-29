@@ -141,6 +141,19 @@ public class WsImport2 extends MatchingTask {
         this.destDir = base;
     }
 
+    /** -clientJar option. */
+    private String clientJar = null;
+
+    /** Gets the clientJar to output generated artifacts into a jar. **/
+    public String getClientJar() {
+        return this.clientJar;
+    }
+
+    /** Sets the base directory to output generated class. **/
+    public void setClientJar(String clientJar) {
+        this.clientJar = clientJar;
+    }
+
     /** wsdllocation - set @WebService.wsdlLocation and @WebServiceClient.wsdlLocation values */
 
     private String wsdlLocation;
@@ -606,6 +619,12 @@ public class WsImport2 extends MatchingTask {
         if((getPackage() != null) && (getPackage().length() > 0)){
             cmd.createArgument().setValue("-p");
             cmd.createArgument().setValue(getPackage());
+        }
+
+        //clientJar
+        if(getClientJar() != null){
+            cmd.createArgument().setValue("-XclientJar");
+            cmd.createArgument().setValue(getClientJar());
         }
 
         for( String a : xjcCmdLine.getArguments() ) {

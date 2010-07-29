@@ -99,18 +99,23 @@ import java.util.Map;
 public class WSDLParser {
     private final ErrorReceiverFilter errReceiver;
     private WsimportOptions options;
-    private MetadataFinder forest;
 
     //wsdl extension handlers
     private final Map extensionHandlers;
-
+    private MetadataFinder forest;
     private ArrayList<ParserListener> listeners;
 
-    public WSDLParser(WsimportOptions options, ErrorReceiverFilter errReceiver) {
+    public WSDLParser(WsimportOptions options, ErrorReceiverFilter errReceiver, MetadataFinder forest) {
         this.extensionHandlers = new HashMap();
         this.options = options;
         this.errReceiver = errReceiver;
-
+        if (forest == null) {
+            forest = new MetadataFinder(new WSDLInternalizationLogic(), options, errReceiver);
+            forest.parseWSDL();
+            if (forest.isMexMetadata)
+                errReceiver.reset();
+        }
+        this.forest = forest;
         // register handlers for default extensions
         register(new SOAPExtensionHandler(extensionHandlers));
         register(new HTTPExtensionHandler(extensionHandlers));
@@ -128,6 +133,10 @@ public class WSDLParser {
 
     }
 
+    //TODO RK remove this after tests are fixed.
+    WSDLParser(WsimportOptions options, ErrorReceiverFilter errReceiver) {
+        this(options,errReceiver,null);
+    }
     private void register(TWSDLExtensionHandler h) {
         extensionHandlers.put(h.getNamespaceURI(), h);
     }
@@ -140,11 +149,6 @@ public class WSDLParser {
     }
 
     public WSDLDocument parse() throws SAXException, IOException {
-        forest = new MetadataFinder(new WSDLInternalizationLogic(), options, errReceiver);
-        forest.parseWSDL();
-        if(forest.isMexMetadata)
-            errReceiver.reset();
-
         // parse external binding files
         for (InputSource value : options.getWSDLBindings()) {
             errReceiver.pollAbort();

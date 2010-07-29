@@ -82,9 +82,10 @@ public abstract class WSDLModelerBase implements Modeler {
     protected MetadataFinder forest;
 
 
-    public WSDLModelerBase(WsimportOptions options, ErrorReceiver receiver) {
+    public WSDLModelerBase(WsimportOptions options, ErrorReceiver receiver, MetadataFinder forest) {
         this.options = options;
-        this.errReceiver = new ErrorReceiverFilter(receiver);;
+        this.errReceiver = new ErrorReceiverFilter(receiver);
+        this.forest = forest;
     }
 
     /**

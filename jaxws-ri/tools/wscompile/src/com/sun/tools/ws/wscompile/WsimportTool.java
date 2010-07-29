@@ -49,6 +49,8 @@ import com.sun.tools.ws.processor.modeler.wsdl.ConsoleErrorReporter;
 import com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler;
 import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.resources.WsdlMessages;
+import com.sun.tools.ws.wsdl.parser.MetadataFinder;
+import com.sun.tools.ws.wsdl.parser.WSDLInternalizationLogic;
 import com.sun.tools.xjc.util.NullStream;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.util.ServiceFinder;
@@ -180,12 +182,20 @@ public class WsimportTool {
                 //if(options.authFile != null)
                     Authenticator.setDefault(new DefaultAuthenticator(receiver, options.authFile));
 
+                MetadataFinder forest = new MetadataFinder(new WSDLInternalizationLogic(), options, receiver);
+                forest.parseWSDL();
+                if (forest.isMexMetadata)
+                    receiver.reset();
 
-                WSDLModeler wsdlModeler = new WSDLModeler(options, receiver);
+                WSDLModeler wsdlModeler = new WSDLModeler(options, receiver,forest);
                 Model wsdlModel = wsdlModeler.buildModel();
                 if (wsdlModel == null) {
                     listener.message(WsdlMessages.PARSING_PARSE_FAILED());
                     return false;
+                }
+
+                if(options.clientJar != null) {
+                    fetchWsdls(forest);
                 }
 
                 //generated code
@@ -231,6 +241,23 @@ public class WsimportTool {
             }
         }
         return true;
+    }
+    // Dummy impl, print SystemIDS for now.
+    // Imports from inlined schemas are not fetched now.
+    private void fetchWsdls(MetadataFinder forest) {
+        System.out.println("*************************************");
+        System.out.println("*************************************");
+        System.out.println("*************************************");
+        for(String root: forest.getRootDocuments()) {
+            System.out.println(forest.get(root).getDocumentURI());
+        }
+        for(String reference: forest.getExternalReferences()) {
+            System.out.println(forest.get(reference).getDocumentURI());
+        }
+        System.out.println("*************************************");
+        System.out.println("*************************************");
+        System.out.println("*************************************");
+                                
     }
 
     public void setEntityResolver(EntityResolver resolver){

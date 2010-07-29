@@ -61,8 +61,8 @@ public class WSDLParserTest extends TestCase {
     }
 
     public void testParseNull() throws Exception {
-        final WSDLParser instance = new WSDLParser(null, null);
         try {
+            final WSDLParser instance = new WSDLParser(null, null);
             instance.parse();
             fail("Expected NullPointerException");
         } catch (NullPointerException e) {
@@ -87,8 +87,8 @@ public class WSDLParserTest extends TestCase {
         source.setSystemId(null);
         final WsimportOptions options = new WsimportOptions();
         options.addWSDL(source);
-        final WSDLParser instance = new WSDLParser(options, errorReceiver);
-        try {
+        try {   
+            final WSDLParser instance = new WSDLParser(options, errorReceiver);
             final WSDLDocument wsdl = instance.parse();
             fail("Expected IllegalArgumentException, instead got " + wsdl);
         } catch (IllegalArgumentException e) {

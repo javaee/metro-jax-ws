@@ -59,6 +59,7 @@ import com.sun.tools.ws.wsdl.document.mime.MIMEContent;
 import com.sun.tools.ws.wsdl.document.schema.SchemaKinds;
 import com.sun.tools.ws.wsdl.document.soap.*;
 import com.sun.tools.ws.wsdl.framework.*;
+import com.sun.tools.ws.wsdl.parser.MetadataFinder;
 import com.sun.tools.ws.wsdl.parser.WSDLParser;
 import com.sun.tools.xjc.api.S2JJAXBModel;
 import com.sun.tools.xjc.api.TypeAndAnnotation;
@@ -90,8 +91,8 @@ public class WSDLModeler extends WSDLModelerBase {
     private ClassNameCollector classNameCollector;
     private final String explicitDefaultPackage;
 
-    public WSDLModeler(WsimportOptions options, ErrorReceiver receiver) {
-        super(options, receiver);
+    public WSDLModeler(WsimportOptions options, ErrorReceiver receiver, MetadataFinder forest) {
+        super(options, receiver,forest);
         this.classNameCollector = new ClassNameCollector();
         this.explicitDefaultPackage = options.defaultPackage;
     }
@@ -105,8 +106,7 @@ public class WSDLModeler extends WSDLModelerBase {
 
     public Model buildModel() {
         try {
-
-            parser = new WSDLParser(options, errReceiver);
+            parser = new WSDLParser(options, errReceiver, forest);
             parser.addParserListener(new ParserListener() {
                 public void ignoringExtension(Entity entity, QName name, QName parent) {
                     if (parent.equals(WSDLConstants.QNAME_TYPES)) {
@@ -128,8 +128,6 @@ public class WSDLModeler extends WSDLModelerBase {
                 return null;
 
             document.validateLocally();
-            forest = parser.getDOMForest();
-
             Model model = internalBuildModel(document);
             if(model == null || errReceiver.hadError())
                 return null;                    
