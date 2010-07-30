@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,13 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.xml.ws.server;
+package com.sun.xml.ws.wsdl.writer;
 
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.PortAddressResolver;
-import com.sun.xml.ws.api.server.DocumentAddressResolver;
-import com.sun.xml.ws.api.server.SDDocument;
-import com.sun.xml.ws.util.MetadataUtil.MetadataResolver;
 import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import com.sun.xml.ws.addressing.W3CAddressingConstants;
@@ -47,8 +44,6 @@ import com.sun.istack.Nullable;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.logging.Logger;
 
 /**
@@ -58,7 +53,7 @@ import java.util.logging.Logger;
  * @author Jitendra Kotamraju
  * @author Kohsuke Kawaguchi
  */
-final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
+public final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
     
     private static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
     private static final QName SCHEMA_INCLUDE_QNAME = new QName(NS_XSD, "include");
@@ -68,14 +63,8 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
     private static final Logger logger = Logger.getLogger(
             com.sun.xml.ws.util.Constants.LoggingDomain + ".wsdl.patcher");
 
-    /**
-     * Document that is being patched.
-     */
-    private final SDDocumentImpl current;
-
-    private final DocumentAddressResolver resolver;
+    private final DocumentLocationResolver docResolver;
     private final PortAddressResolver portAddressResolver;
-    private final MetadataResolver metadataResolver;
 
     //
     // fields accumulated as we parse through documents
@@ -93,24 +82,16 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
     /**
      * Creates a {@link WSDLPatcher} for patching WSDL.
      *
-     * @param current
-     *      The document that we are patching. Must not be null.
      * @param portAddressResolver
-     *      address of the endpoint is resolved using this resolver.
+     *      address of the endpoint is resolved using this docResolver.
      * @param docResolver
-     *      Consulted to generate references among  {@link SDDocument}s.
+     *      Consulted to get the import/include document locations.
      *      Must not be null.
-     * @param metadataResolver
-     *      Consulted to get {@link SDDocument} for a systemId
      */
-    public WSDLPatcher(@NotNull SDDocumentImpl current,
-            @NotNull PortAddressResolver portAddressResolver,
-            @NotNull DocumentAddressResolver docResolver,
-            @NotNull MetadataResolver metadataResolver) {
-        this.current = current;
+    public WSDLPatcher(@NotNull PortAddressResolver portAddressResolver,
+            @NotNull DocumentLocationResolver docResolver) {
         this.portAddressResolver = portAddressResolver;
-        this.resolver = docResolver;
-        this.metadataResolver = metadataResolver;
+        this.docResolver = docResolver;
     }
 
     @Override
@@ -245,16 +226,7 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
      *      null to leave it to the "implicit reference".
      */
     private @Nullable String getPatchedImportLocation(String relPath) {
-        try {
-            URL ref = new URL(current.getURL(), relPath);
-            SDDocument refDoc = metadataResolver.resolveEntity(ref.toExternalForm());
-            if (refDoc==null)
-                return relPath;  // not something we know. just leave it as is.
-
-            return resolver.getRelativeAddressFor(current,refDoc);
-        } catch(MalformedURLException mue) {
-            return null;
-        }
+        return docResolver.getLocationFor(null, relPath);
     }
 
     /**

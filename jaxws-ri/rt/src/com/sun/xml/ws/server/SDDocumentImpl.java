@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,21 +37,18 @@
 package com.sun.xml.ws.server;
 
 import com.sun.xml.ws.api.server.*;
-import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
-import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.util.xml.MetadataDocument;
-import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
-import com.sun.xml.ws.wsdl.parser.ParserUtil;
-import com.sun.xml.ws.wsdl.parser.WSDLConstants;
+import com.sun.xml.ws.wsdl.writer.DocumentLocationResolver;
+import com.sun.xml.ws.wsdl.writer.WSDLPatcher;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.*;
-import javax.xml.ws.WebServiceException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -93,7 +90,7 @@ public class SDDocumentImpl extends MetadataDocument {
 
         try {
             out.writeComment(VERSION_COMMENT);
-            new WSDLPatcher(this,portAddressResolver,resolver, owner.owner.getServiceDefinition()).bridge(xsr,out);
+            new WSDLPatcher(portAddressResolver, new DocumentAddressResolverImpl(resolver)).bridge(xsr,out);
         } finally {
             xsr.close();
         }
@@ -174,6 +171,27 @@ public class SDDocumentImpl extends MetadataDocument {
 
         public boolean isWSDL() {
             return true;
+        }
+    }
+
+    private class DocumentAddressResolverImpl implements DocumentLocationResolver {
+        private DocumentAddressResolver delegate;
+
+        DocumentAddressResolverImpl(DocumentAddressResolver delegate) {
+            this.delegate = delegate;
+        }
+
+        public String getLocationFor(String namespaceURI, String systemId) {
+            try {
+                URL ref = new URL(getURL(), systemId);
+                SDDocument refDoc = owner.resolveEntity(ref.toExternalForm());
+                if (refDoc==null)
+                    return systemId;  // not something we know. just leave it as is.
+
+                return delegate.getRelativeAddressFor(SDDocumentImpl.this, refDoc);
+            } catch(MalformedURLException mue) {
+                return null;
+            }
         }
     }
 
