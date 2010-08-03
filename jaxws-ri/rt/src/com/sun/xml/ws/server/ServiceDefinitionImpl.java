@@ -84,9 +84,8 @@ public final class ServiceDefinitionImpl implements ServiceDefinition, MetadataR
         this.bySystemId = new HashMap<String, SDDocumentImpl>(docs.size());
         for (SDDocumentImpl doc : docs) {
             bySystemId.put(doc.getURL().toExternalForm(),doc);
-
-            assert doc.owner==null;
-            doc.owner = this;
+            doc.setFilters(filters);
+            doc.setResolver(this);
         }
     }
 

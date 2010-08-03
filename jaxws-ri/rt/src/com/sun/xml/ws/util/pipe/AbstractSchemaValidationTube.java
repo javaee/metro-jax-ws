@@ -50,9 +50,9 @@ import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.developer.ValidationErrorHandler;
+import com.sun.xml.ws.server.SDDocumentImpl;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.MetadataUtil;
-import com.sun.xml.ws.util.xml.MetadataDocument;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import org.w3c.dom.*;
@@ -172,7 +172,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
             try {
                 XMLStreamBufferResult xsbr = XmlUtil.identityTransform(schema, new XMLStreamBufferResult());
                 SDDocumentSource sds = SDDocumentSource.create(new URL(systemId), xsbr.getXMLStreamBuffer());
-                SDDocument sdoc = MetadataDocument.create(sds, new QName(""), new QName(""));
+                SDDocument sdoc = SDDocumentImpl.create(sds, new QName(""), new QName(""));
                 docs.put(systemId, sdoc);
                 nsMapping.put(((SDDocument.Schema)sdoc).getTargetNamespace(), sdoc);
             } catch(Exception ex) {
@@ -195,7 +195,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
                 } catch(MalformedURLException e) {
                     throw new WebServiceException(e);
                 }
-                sdi = MetadataDocument.create(sds, new QName(""), new QName(""));
+                sdi = SDDocumentImpl.create(sds, new QName(""), new QName(""));
                 docs.put(systemId, sdi);
             }
             return sdi;
