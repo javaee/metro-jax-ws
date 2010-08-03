@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,6 +49,7 @@ import com.sun.tools.ws.processor.modeler.wsdl.ConsoleErrorReporter;
 import com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler;
 import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.resources.WsdlMessages;
+import com.sun.tools.ws.util.WSDLFetcher;
 import com.sun.tools.ws.wsdl.parser.MetadataFinder;
 import com.sun.tools.ws.wsdl.parser.WSDLInternalizationLogic;
 import com.sun.tools.xjc.util.NullStream;
@@ -58,17 +59,14 @@ import com.sun.istack.tools.ParallelWorldClassLoader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXParseException;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.JAXBPermission;
-import javax.xml.ws.EndpointReference;
+import javax.xml.stream.*;
 import javax.xml.ws.EndpointContext;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 import java.net.Authenticator;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 
 /**
  * @author Vivek Pandey
@@ -195,7 +193,7 @@ public class WsimportTool {
                 }
 
                 if(options.clientJar != null) {
-                    fetchWsdls(forest);
+                    options.wsdlLocation = new WSDLFetcher(options).fetchWsdls(forest);
                 }
 
                 //generated code
@@ -217,6 +215,8 @@ public class WsimportTool {
                 //error might have been reported
             }catch (IOException e) {
                 receiver.error(e);
+            }catch (XMLStreamException e) {
+                receiver.error(e);
             }
 
             if (!options.nocompile){
@@ -225,7 +225,13 @@ public class WsimportTool {
                     return false;
                 }
             }
-
+            try {
+                if (options.clientJar != null) {
+                    jarArtifacts();
+                }
+            } catch (IOException e) {
+                receiver.error(e);
+            }
         } catch (Options.WeAreDone done) {
             usage(done.getOptions());
         } catch (BadCommandLineException e) {
@@ -242,22 +248,41 @@ public class WsimportTool {
         }
         return true;
     }
-    // Dummy impl, print SystemIDS for now.
-    // Imports from inlined schemas are not fetched now.
-    private void fetchWsdls(MetadataFinder forest) {
-        System.out.println("*************************************");
-        System.out.println("*************************************");
-        System.out.println("*************************************");
-        for(String root: forest.getRootDocuments()) {
-            System.out.println(forest.get(root).getDocumentURI());
+
+    private void jarArtifacts() throws IOException {
+        File zipFile = new File(options.destDir, options.clientJar);
+        if (zipFile.exists()) {
+            //TODO
         }
-        for(String reference: forest.getExternalReferences()) {
-            System.out.println(forest.get(reference).getDocumentURI());
+        FileOutputStream fos = null;
+
+        fos = new FileOutputStream(zipFile);
+        JarOutputStream jos = new JarOutputStream(fos);
+        addFileToJar(jos, options.destDir, "");
+        jos.close();
+    }
+
+    private void addFileToJar(JarOutputStream jos, File file, String name) throws IOException {
+        if(file.isDirectory()) {
+           for(File f: file.listFiles()) {
+               name = name.equals("")?f.getName():name+"/"+f.getName();
+               addFileToJar(jos,f,name);
+           }
+        } else {
+            if(name.equals(options.clientJar)) {
+                return;
+            }
+            BufferedInputStream bis = new BufferedInputStream(
+                            new FileInputStream(file));
+            JarEntry entry = new JarEntry(name);
+            jos.putNextEntry(entry);
+            int bytesRead;
+            byte[] buffer = new byte[1024];
+            while ((bytesRead = bis.read(buffer)) != -1) {
+                jos.write(buffer, 0, bytesRead);
+            }
+            bis.close();
         }
-        System.out.println("*************************************");
-        System.out.println("*************************************");
-        System.out.println("*************************************");
-                                
     }
 
     public void setEntityResolver(EntityResolver resolver){
