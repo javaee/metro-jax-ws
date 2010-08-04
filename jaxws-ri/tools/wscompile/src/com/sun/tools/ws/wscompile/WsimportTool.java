@@ -265,8 +265,8 @@ public class WsimportTool {
     private void addFileToJar(JarOutputStream jos, File file, String name) throws IOException {
         if(file.isDirectory()) {
            for(File f: file.listFiles()) {
-               name = name.equals("")?f.getName():name+"/"+f.getName();
-               addFileToJar(jos,f,name);
+               String entryName = name.equals("")?f.getName():name+"/"+f.getName();
+               addFileToJar(jos,f,entryName);
            }
         } else {
             if(name.equals(options.clientJar)) {
