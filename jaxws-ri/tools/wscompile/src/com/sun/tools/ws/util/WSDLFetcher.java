@@ -88,7 +88,7 @@ public class WSDLFetcher {
         for(String reference: forest.getExternalReferences()) {
             fetchFile(reference,forest,documentMap,getWSDLDownloadDir());
         }
-        return WSDL_PATH + fetchFile(rootWsdl,forest, documentMap,getWSDLDownloadDir());
+        return WSDL_PATH +"/" + fetchFile(rootWsdl,forest, documentMap,getWSDLDownloadDir());
     }
 
     private String fetchFile(final String doc, DOMForest forest, final Map<String, String> documentMap, File destDir) throws IOException, XMLStreamException {
