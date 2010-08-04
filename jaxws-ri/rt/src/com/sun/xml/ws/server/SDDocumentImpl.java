@@ -40,7 +40,7 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.server.*;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.util.MetadataUtil.MetadataResolver;
+import com.sun.xml.ws.wsdl.SDDocumentResolver;
 import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
 import com.sun.xml.ws.wsdl.parser.ParserUtil;
@@ -86,7 +86,7 @@ public class SDDocumentImpl extends SDDocumentSource implements SDDocument {
      * Set when {@link ServiceDefinitionImpl} is constructed.
      */
     @Nullable List<SDDocumentFilter> filters;
-    @Nullable MetadataResolver metadataResolver;
+    @Nullable SDDocumentResolver sddocResolver;
 
 
     /**
@@ -214,8 +214,8 @@ public class SDDocumentImpl extends SDDocumentSource implements SDDocument {
         this.filters = filters;
     }
 
-    void setResolver(MetadataResolver metadataResolver) {
-        this.metadataResolver = metadataResolver;
+    void setResolver(SDDocumentResolver sddocResolver) {
+        this.sddocResolver = sddocResolver;
     }
 
     public QName getRootName() {
@@ -384,12 +384,12 @@ public class SDDocumentImpl extends SDDocumentSource implements SDDocument {
         }
 
         public String getLocationFor(String namespaceURI, String systemId) {
-            if (metadataResolver == null) {
+            if (sddocResolver == null) {
                 return systemId;
             }
             try {
                 URL ref = new URL(getURL(), systemId);
-                SDDocument refDoc = metadataResolver.resolveEntity(ref.toExternalForm());
+                SDDocument refDoc = sddocResolver.resolve(ref.toExternalForm());
                 if (refDoc == null)
                     return systemId;  // not something we know. just leave it as is.
 

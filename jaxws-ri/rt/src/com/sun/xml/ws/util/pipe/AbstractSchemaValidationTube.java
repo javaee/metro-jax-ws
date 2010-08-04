@@ -52,8 +52,8 @@ import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.developer.ValidationErrorHandler;
 import com.sun.xml.ws.server.SDDocumentImpl;
 import com.sun.xml.ws.util.ByteArrayBuffer;
-import com.sun.xml.ws.util.MetadataUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.wsdl.SDDocumentResolver;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import org.w3c.dom.*;
 import org.w3c.dom.ls.LSInput;
@@ -145,7 +145,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
         return (Document)result.getNode();
     }
 
-    protected class MetadataResolverImpl implements MetadataUtil.MetadataResolver, LSResourceResolver {
+    protected class MetadataResolverImpl implements SDDocumentResolver, LSResourceResolver {
 
         // systemID --> SDDocument
         final Map<String, SDDocument> docs = new HashMap<String, SDDocument>();
@@ -186,7 +186,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
             }
         }
 
-        public SDDocument resolveEntity(String systemId) {
+        public SDDocument resolve(String systemId) {
             SDDocument sdi = docs.get(systemId);
             if (sdi == null) {
                 SDDocumentSource sds;

@@ -40,7 +40,7 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.api.server.SDDocumentFilter;
 import com.sun.xml.ws.api.server.ServiceDefinition;
-import com.sun.xml.ws.util.MetadataUtil.MetadataResolver;
+import com.sun.xml.ws.wsdl.SDDocumentResolver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +57,7 @@ import java.util.Map;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class ServiceDefinitionImpl implements ServiceDefinition, MetadataResolver {
+public final class ServiceDefinitionImpl implements ServiceDefinition, SDDocumentResolver {
     private final List<SDDocumentImpl> docs;
 
     private final Map<String,SDDocumentImpl> bySystemId;
@@ -116,7 +116,7 @@ public final class ServiceDefinitionImpl implements ServiceDefinition, MetadataR
      * @return
      *      null if none is found.
      */
-    public SDDocument resolveEntity(String systemId) {
+    public SDDocument resolve(String systemId) {
         return bySystemId.get(systemId);
     }
 }

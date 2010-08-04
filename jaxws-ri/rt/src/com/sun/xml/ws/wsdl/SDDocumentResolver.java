@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,58 +33,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.xml.ws.wsdl;
 
-package com.sun.xml.ws.util;
-
-import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.server.SDDocument;
-import com.sun.xml.ws.wsdl.SDDocumentResolver;
-
-import java.util.*;
 
 /**
- * WSDL, schema document metadata utility class.
+ * Resolves a systemId to {@link SDDocument}
  *
  * @author Jitendra Kotamraju
  */
-public class MetadataUtil {
-
+public interface SDDocumentResolver {
     /**
-     * Gets closure of all the referenced documents from the primary document(typically
-     * the service WSDL). It traverses the WSDL and schema imports and builds a closure
-     * set of documents.
+     * returns {@link SDDocument} for the give systemId.
      *
-     * @param systemId primary wsdl or the any root document
-     * @param resolver used to get SDDocumentImpl for a document
-     * @param onlyTopLevelSchemas if true, the imported schemas from a schema would be ignored
-     * @return all the documents
+     * @param systemId document's systemId
+     * @return document for the systemId, null if it cannot resolve.
      */
-    public static Map<String, SDDocument> getMetadataClosure(@NotNull String systemId,
-            @NotNull SDDocumentResolver resolver, boolean onlyTopLevelSchemas) {
-        Map <String, SDDocument> closureDocs = new HashMap<String, SDDocument>();
-        Set<String> remaining = new HashSet<String>();
-        remaining.add(systemId);
-
-        while(!remaining.isEmpty()) {
-            Iterator<String> it = remaining.iterator();
-            String current = it.next();
-            remaining.remove(current);
-
-            SDDocument currentDoc = resolver.resolve(current);
-            SDDocument old = closureDocs.put(currentDoc.getURL().toExternalForm(), currentDoc);
-            assert old == null;
-
-            Set<String> imports =  currentDoc.getImports();
-            if (!currentDoc.isSchema() || !onlyTopLevelSchemas) {
-                for(String importedDoc : imports) {
-                    if (closureDocs.get(importedDoc) == null) {
-                        remaining.add(importedDoc);
-                    }
-                }
-            }
-        }
-
-        return closureDocs;
-    }
+    @Nullable SDDocument resolve(String systemId);
 
 }
