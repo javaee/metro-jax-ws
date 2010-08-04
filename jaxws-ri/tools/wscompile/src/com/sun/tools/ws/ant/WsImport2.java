@@ -623,7 +623,7 @@ public class WsImport2 extends MatchingTask {
 
         //clientJar
         if(getClientJar() != null){
-            cmd.createArgument().setValue("-XclientJar");
+            cmd.createArgument().setValue("-clientJar");
             cmd.createArgument().setValue(getClientJar());
         }
 
