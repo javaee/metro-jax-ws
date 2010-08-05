@@ -201,8 +201,11 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             }
         }
         if (cl == 0 || (cl == -1 && tempIn == null)) {
-            responseStream.close();         // No data, so close the stream
-            responseStream = null;
+            if(responseStream != null) {
+                responseStream.close();         // No data, so close the stream
+                responseStream = null;
+            }
+
         }
 
         // Allows only certain http status codes for a binding. For all
