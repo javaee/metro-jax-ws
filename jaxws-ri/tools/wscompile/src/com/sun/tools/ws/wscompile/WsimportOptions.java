@@ -272,9 +272,14 @@ public class WsimportOptions extends Options {
             throw new BadCommandLineException(WscompileMessages.WSIMPORT_MISSING_FILE());
         }
 
+        if(wsdlLocation !=null && clientJar != null) {
+           throw new BadCommandLineException(WscompileMessages.WSIMPORT_WSDLLOCATION_CLIENTJAR());
+        }
         if(wsdlLocation == null){
             wsdlLocation = wsdls.get(0).getSystemId();
         }
+
+
     }
 
     @Override
