@@ -47,6 +47,7 @@ import com.sun.tools.ws.processor.generator.ServiceGenerator;
 import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.modeler.wsdl.ConsoleErrorReporter;
 import com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler;
+import com.sun.tools.ws.processor.util.DirectoryUtil;
 import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.resources.WsdlMessages;
 import com.sun.tools.ws.util.WSDLFetcher;
@@ -228,6 +229,8 @@ public class WsimportTool {
             try {
                 if (options.clientJar != null) {
                     jarArtifacts();
+                    //add all the generated class files to the list of generated files so that they can be cleaned up at the end.
+                    addClassesToGeneratedFiles();
                 }
             } catch (IOException e) {
                 receiver.error(e);
@@ -242,15 +245,77 @@ public class WsimportTool {
             usage(e.getOptions());
             return false;
         } finally{
-            if(!options.keep){
-                options.removeGeneratedFiles();
-            }
+            deleteGeneratedFiles();
+
         }
         return true;
     }
 
+    private void deleteGeneratedFiles() {
+        Set<File> trackedRootPackages = new HashSet<File>();
+
+        if (options.clientJar != null) {
+            //remove all non-java artifacts as they will packaged in jar.
+            Iterable<File> generatedFiles = options.getGeneratedFiles();
+            synchronized (generatedFiles) {
+                for (File file : generatedFiles) {
+                    if (!file.getName().endsWith(".java")) {
+                        file.delete();
+                        trackedRootPackages.add(file.getParentFile());
+
+                    }
+
+                }
+            }
+            //remove empty package dirs 
+            for(File pkg:trackedRootPackages) {
+
+                while(pkg.list() != null && pkg.list().length ==0 && !pkg.equals(options.destDir)) {
+                    File parentPkg = pkg.getParentFile();
+                    pkg.delete();
+                    pkg = parentPkg;
+                }
+            }
+        }
+        if(!options.keep) {
+            options.removeGeneratedFiles();
+        }
+
+    }
+
+    private void addClassesToGeneratedFiles() throws IOException {
+        Iterable<File> generatedFiles = options.getGeneratedFiles();
+        final List<File> trackedClassFiles = new ArrayList<File>();
+        for(File f: generatedFiles) {
+            if(f.getName().endsWith(".java")) {
+                String relativeDir = DirectoryUtil.getRelativePathfromCommonBase(f.getParentFile(),options.sourceDir);
+                final String className = f.getName().substring(0,f.getName().indexOf(".java"));
+                File classDir = new File(options.destDir,relativeDir);
+                if(classDir.exists()) {
+                    classDir.listFiles(new FilenameFilter() {
+
+                        public boolean accept(File dir, String name) {
+                            if(name.equals(className+".class") || (name.startsWith(className+"$") && name.endsWith(".class"))) {
+                                trackedClassFiles.add(new File(dir,name));
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
+        for(File f: trackedClassFiles) {
+            options.addGeneratedFile(f);
+        }
+    }
+
     private void jarArtifacts() throws IOException {
-        File zipFile = new File(options.destDir, options.clientJar);
+        File zipFile = new File(options.clientJar);
+        if(!zipFile.isAbsolute()) {
+            zipFile = new File(options.destDir, options.clientJar);
+        }
+
         if (zipFile.exists()) {
             //TODO
         }

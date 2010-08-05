@@ -114,6 +114,7 @@ public class WSDLFetcher {
         xsr.close();
         xsw.close();
         os.close();
+        options.addGeneratedFile(outFile);
         return resolvedRootWsdl;
 
     }
