@@ -40,6 +40,7 @@ import com.sun.tools.ws.processor.generator.GeneratorException;
 import com.sun.tools.ws.util.ClassNameInfo;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Util provides static utility methods used by other wscompile classes.
@@ -97,6 +98,13 @@ public class DirectoryUtil  {
 
         // Finally, return the directory...
         return outputDir;
+    }
+
+    public static String getRelativePathfromCommonBase(File file, File base) throws IOException {
+        String basePath = base.getCanonicalPath();
+        String filePath = file.getCanonicalPath();
+        return filePath.substring(basePath.length());       
+
     }
 
     private static void ensureDirectory(File dir)
