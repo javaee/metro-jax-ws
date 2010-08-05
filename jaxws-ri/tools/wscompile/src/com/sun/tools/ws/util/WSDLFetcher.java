@@ -42,8 +42,13 @@ import com.sun.tools.ws.wsdl.parser.DOMForest;
 import com.sun.tools.ws.wsdl.parser.MetadataFinder;
 import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
+import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import com.sun.xml.ws.wsdl.writer.DocumentLocationResolver;
 import com.sun.xml.ws.wsdl.writer.WSDLPatcher;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
@@ -84,7 +89,7 @@ public class WSDLFetcher {
         }
         // TODO Imports from inlined schemas are not fetched now.
         Set<String> externalRefs = forest.getExternalReferences();
-        Map<String,String> documentMap = createDocumentMap(getWSDLDownloadDir(), rootWsdl, externalRefs);
+        Map<String,String> documentMap = createDocumentMap(forest, getWSDLDownloadDir(), rootWsdl, externalRefs);
         for(String reference: forest.getExternalReferences()) {
             fetchFile(reference,forest,documentMap,getWSDLDownloadDir());
         }
@@ -117,17 +122,25 @@ public class WSDLFetcher {
         options.addGeneratedFile(outFile);
         return resolvedRootWsdl;
 
+
     }
-    private Map<String,String> createDocumentMap(File baseDir, final String rootWsdl, Set<String> externalReferences) {
+    private Map<String,String> createDocumentMap(MetadataFinder forest, File baseDir, final String rootWsdl, Set<String> externalReferences) {
         Map<String,String> map = new HashMap<String,String>();
         String rootWsdlFileName = rootWsdl;
         int slashIndex = rootWsdl.lastIndexOf("/");
         if( slashIndex >= 0) {
             rootWsdlFileName = rootWsdl.substring(slashIndex+1);
         }
-        if(!rootWsdlFileName.endsWith(".wsdl")) {
-            //TODO guess from service name
-            rootWsdlFileName = "Service"+".wsdl";
+        if(!rootWsdlFileName.endsWith(WSDL_FILE_EXTENSION)) {
+            Document rootWsdlDoc =  forest.get(rootWsdl);
+            NodeList serviceNodes = rootWsdlDoc.getElementsByTagNameNS(WSDLConstants.QNAME_SERVICE.getNamespaceURI(),WSDLConstants.QNAME_SERVICE.getLocalPart());
+            if(serviceNodes.getLength() == 0)
+                rootWsdlFileName = "Service"+WSDL_FILE_EXTENSION;
+            else {
+                Node serviceNode = serviceNodes.item(0);
+                String serviceName = ((Element)serviceNode).getAttribute( WSDLConstants.ATTR_NAME);
+                rootWsdlFileName = serviceName+WSDL_FILE_EXTENSION;
+            }
         }
 
         map.put(rootWsdl,sanitize(rootWsdlFileName));
@@ -182,4 +195,5 @@ public class WSDLFetcher {
     }
 
     private static String WSDL_PATH="META-INF/wsdl";
+    private static String WSDL_FILE_EXTENSION=".wsdl";
 }
