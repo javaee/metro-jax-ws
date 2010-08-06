@@ -834,6 +834,7 @@ public class RuntimeWSDLParser {
      */
     private static XMLStreamReader createReader(URL wsdlLoc) throws IOException, XMLStreamException {
         // Reads the complete stream so that connection can be reused
+        try {
         InputStream stream = new FilterInputStream(wsdlLoc.openStream()) {
             boolean closed;
 
@@ -848,6 +849,9 @@ public class RuntimeWSDLParser {
             }
         };
         return new TidyXMLStreamReader(XMLStreamReaderFactory.create(wsdlLoc.toExternalForm(), stream, false), stream);
+        } catch (IOException e) {
+         throw (IOException) new IOException("Got "+ e.getMessage()+ " while opening stream from " + wsdlLoc).initCause(e);   
+        }
     }
 
     private void register(WSDLParserExtension e) {
