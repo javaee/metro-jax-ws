@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -97,7 +97,6 @@ public class DOMForest {
      * actual data storage map&lt;SystemId,Document>.
      */
     protected final Map<String, Document> core = new HashMap<String, Document>();
-    protected final WsimportOptions options;
     protected final ErrorReceiver errorReceiver;
 
     private final DocumentBuilder documentBuilder;
@@ -114,6 +113,7 @@ public class DOMForest {
      */
     public final LocatorTable locatorTable = new LocatorTable();
 
+    protected final EntityResolver entityResolver;
     /**
      * Stores all the outer-most &lt;jaxb:bindings> customizations.
      */
@@ -123,9 +123,11 @@ public class DOMForest {
      * Schema language dependent part of the processing.
      */
     protected final InternalizationLogic logic;
+    protected final WsimportOptions options;
 
-    public DOMForest(InternalizationLogic logic, WsimportOptions options, ErrorReceiver errReceiver) {
+    public DOMForest(InternalizationLogic logic, @NotNull EntityResolver entityResolver, WsimportOptions options, ErrorReceiver errReceiver) {
         this.options = options;
+        this.entityResolver = entityResolver;
         this.errorReceiver = errReceiver;
         this.logic = logic;
         try {
@@ -164,12 +166,13 @@ public class DOMForest {
         InputSource is = null;
 
         // allow entity resolver to find the actual byte stream.
-        if (options.entityResolver != null)
-            is = options.entityResolver.resolveEntity(null, systemId);
+        is = entityResolver.resolveEntity(null, systemId);
         if (is == null)
             is = new InputSource(systemId);
-        else
+        else {
+            resolvedCache.put(systemId, is.getSystemId());
             systemId=is.getSystemId();
+        }
 
         if (core.containsKey(systemId)) {
             // this document has already been parsed. Just ignore.
@@ -182,13 +185,17 @@ public class DOMForest {
         // but we still use the original system Id as the key.
         return parse(systemId, is, root);
     }
+    protected Map<String,String> resolvedCache = new HashMap<String,String>();
 
+    public Map<String,String> getReferencedEntityMap() {
+        return resolvedCache;
+    }
     /**
      * Parses the given document and add it to the DOM forest.
      *
      * @return null if there was a parse error. otherwise non-null.
      */
-    public @NotNull Document parse(String systemId, InputSource inputSource, boolean root) throws SAXException, IOException{
+    private @NotNull Document parse(String systemId, InputSource inputSource, boolean root) throws SAXException, IOException{
         Document dom = documentBuilder.newDocument();
 
         systemId = normalizeSystemId(systemId);
@@ -206,74 +213,12 @@ public class DOMForest {
             reader.setContentHandler(getParserHandler(dom));
             if (errorReceiver != null)
                 reader.setErrorHandler(errorReceiver);
-            if (options.entityResolver != null)
-                reader.setEntityResolver(options.entityResolver);
+            reader.setEntityResolver(entityResolver);
 
             InputStream is = null;
-            if(inputSource.getByteStream() != null){
-                is = inputSource.getByteStream();
+            if(inputSource.getByteStream() == null){
+                inputSource = entityResolver.resolveEntity(null, systemId);
             }
-            if(is == null){
-                int redirects=0;
-                boolean redirect;
-                URL url = JAXWSUtils.getFileOrURL(inputSource.getSystemId());
-                URLConnection conn = url.openConnection();
-                do {
-                    if (conn instanceof HttpsURLConnection) {
-                        if (options.disableSSLHostnameVerification) {
-                            ((HttpsURLConnection) conn).setHostnameVerifier(new HttpClientVerifier());
-                        }
-                    }
-                    redirect = false;
-                    if (conn instanceof HttpURLConnection) {
-                        ((HttpURLConnection) conn).setInstanceFollowRedirects(false);
-                    }
-
-                    try {
-                        is = conn.getInputStream();
-                        //is = sun.net.www.protocol.http.HttpURLConnection.openConnectionCheckRedirects(conn);
-                    } catch (IOException e) {
-                        if (conn instanceof HttpURLConnection) {
-                            HttpURLConnection httpConn = ((HttpURLConnection) conn);
-                            int code = httpConn.getResponseCode();
-                            if (code == 401) {
-                                errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_INFO_NEEDED(e.getMessage(), systemId, DefaultAuthenticator.defaultAuthfile), null, e));
-                                throw new AbortException();
-                            }
-                            //FOR other code we will retry with MEX
-                        }
-                        throw e;
-                    }
-
-                    //handle 302 or 303, JDK does not seem to handle 302 very well.
-                    //Need to redesign this a bit as we need to throw better error message for IOException in this case
-                    if (conn instanceof HttpURLConnection) {
-                        HttpURLConnection httpConn = ((HttpURLConnection) conn);
-                        int code = httpConn.getResponseCode();
-                        if (code == 302 || code == 303) {
-                            //retry with the value in Location header
-                            List<String> seeOther = httpConn.getHeaderFields().get("Location");
-                            if (seeOther != null && seeOther.size() > 0) {
-                                URL newurl = new URL(url, seeOther.get(0));
-                                if (!newurl.equals(url)){
-                                    errorReceiver.info(new SAXParseException(WscompileMessages.WSIMPORT_HTTP_REDIRECT(code, seeOther.get(0)), null));
-                                    url = newurl;
-                                    httpConn.disconnect();
-                                    if(redirects >= 5){
-                                        errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_MAX_REDIRECT_ATTEMPT(), null));
-                                        throw new AbortException();
-                                    }
-                                    conn = url.openConnection();
-                                    inputSource.setSystemId(url.toExternalForm());
-                                    redirects++;
-                                    redirect = true;
-                                }                                
-                            }
-                        }
-                    }
-                } while (redirect);
-            }
-            inputSource.setByteStream(is);
             reader.parse(inputSource);
             Element doc = dom.getDocumentElement();
             if (doc == null) {
@@ -287,7 +232,7 @@ public class DOMForest {
             errorReceiver.error(e);
             throw new SAXException(e.getMessage());
         }
-
+        resolvedCache.put(systemId, dom.getDocumentURI());
         return dom;
     }
 
@@ -301,13 +246,7 @@ public class DOMForest {
         return externalReferences;
     }
 
-    // overide default SSL HttpClientVerifier to always return true
-    // effectively overiding Hostname client verification when using SSL
-    private static class HttpClientVerifier implements HostnameVerifier {
-        public boolean verify(String s, SSLSession sslSession) {
-            return true;
-        }
-    }
+
 
     public interface Handler extends ContentHandler {
         /**
@@ -358,8 +297,8 @@ public class DOMForest {
      */
     private ContentHandler getParserHandler(Document dom) {
         ContentHandler handler = new DOMBuilder(dom, locatorTable, outerMostBindings);
-        handler = new WhitespaceStripper(handler, errorReceiver, options.entityResolver);
-        handler = new VersionChecker(handler, errorReceiver, options.entityResolver);
+        handler = new WhitespaceStripper(handler, errorReceiver,entityResolver);
+        handler = new VersionChecker(handler, errorReceiver, entityResolver);
 
         // insert the reference finder so that
         // included/imported schemas will be also parsed
@@ -368,8 +307,7 @@ public class DOMForest {
 
         if (errorReceiver != null)
             f.setErrorHandler(errorReceiver);
-        if (options.entityResolver != null)
-            f.setEntityResolver(options.entityResolver);
+        f.setEntityResolver(entityResolver);
 
         return f;
     }

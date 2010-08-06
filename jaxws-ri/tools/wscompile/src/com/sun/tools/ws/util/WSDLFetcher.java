@@ -98,7 +98,7 @@ public class WSDLFetcher {
 
     private String fetchFile(final String doc, DOMForest forest, final Map<String, String> documentMap, File destDir) throws IOException, XMLStreamException {
 
-        DocumentLocationResolver docLocator = createDocResolver(doc, documentMap);
+        DocumentLocationResolver docLocator = createDocResolver(doc, forest, documentMap);
         WSDLPatcher wsdlPatcher = new WSDLPatcher(new PortAddressResolver() {
             @Override
             public String getAddressFor(@NotNull QName serviceName, @NotNull String portName) {
@@ -168,7 +168,7 @@ public class WSDLFetcher {
         return map;
     }
 
-    private DocumentLocationResolver createDocResolver(final String baseWsdl, final Map<String,String> documentMap) {
+    private DocumentLocationResolver createDocResolver(final String baseWsdl, final DOMForest forest, final Map<String,String> documentMap) {
 
         return new DocumentLocationResolver() {
             public String getLocationFor(String namespaceURI, String systemId) {
@@ -178,7 +178,12 @@ public class WSDLFetcher {
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e);
                 }
-                return documentMap.get(systemId);
+                if(documentMap.get(systemId) != null) {
+                    return documentMap.get(systemId);
+                } else {
+                    String parsedEntity = forest.getReferencedEntityMap().get(systemId);
+                    return documentMap.get(parsedEntity);
+                }
             }
         };
     }
