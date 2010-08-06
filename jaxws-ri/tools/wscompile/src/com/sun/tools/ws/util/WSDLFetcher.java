@@ -127,6 +127,8 @@ public class WSDLFetcher {
     private Map<String,String> createDocumentMap(MetadataFinder forest, File baseDir, final String rootWsdl, Set<String> externalReferences) {
         Map<String,String> map = new HashMap<String,String>();
         String rootWsdlFileName = rootWsdl;
+        String rootWsdlName;
+
         int slashIndex = rootWsdl.lastIndexOf("/");
         if( slashIndex >= 0) {
             rootWsdlFileName = rootWsdl.substring(slashIndex+1);
@@ -135,19 +137,33 @@ public class WSDLFetcher {
             Document rootWsdlDoc =  forest.get(rootWsdl);
             NodeList serviceNodes = rootWsdlDoc.getElementsByTagNameNS(WSDLConstants.QNAME_SERVICE.getNamespaceURI(),WSDLConstants.QNAME_SERVICE.getLocalPart());
             if(serviceNodes.getLength() == 0)
-                rootWsdlFileName = "Service"+WSDL_FILE_EXTENSION;
+                rootWsdlName = "Service";
             else {
                 Node serviceNode = serviceNodes.item(0);
                 String serviceName = ((Element)serviceNode).getAttribute( WSDLConstants.ATTR_NAME);
-                rootWsdlFileName = serviceName+WSDL_FILE_EXTENSION;
+                rootWsdlName = serviceName;
             }
+            rootWsdlFileName = rootWsdlName+ WSDL_FILE_EXTENSION;
+        } else {
+            rootWsdlName = rootWsdlFileName.substring(0,rootWsdlFileName.length()-5);
         }
 
         map.put(rootWsdl,sanitize(rootWsdlFileName));
 
         int i =1;
         for(String ref: externalReferences) {
-            map.put(ref,"metadata"+ (i++) +".xml");
+            Document refDoc =  forest.get(ref);
+            Element rootEl = refDoc.getDocumentElement();
+            String fileExtn;
+            if(rootEl.getLocalName().equals(WSDLConstants.QNAME_DEFINITIONS.getLocalPart()) && rootEl.getNamespaceURI().equals(WSDLConstants.NS_WSDL)) {
+              fileExtn = WSDL_FILE_EXTENSION;
+            } else if(rootEl.getLocalName().equals(WSDLConstants.QNAME_SCHEMA.getLocalPart()) && rootEl.getNamespaceURI().equals(WSDLConstants.NS_XMLNS)) {
+              fileExtn = ".xsd";      
+            } else {
+                fileExtn = ".xml";
+            }
+
+            map.put(ref, rootWsdlName+"_metadata"+ (i++) + fileExtn);
         }
         return map;
     }
