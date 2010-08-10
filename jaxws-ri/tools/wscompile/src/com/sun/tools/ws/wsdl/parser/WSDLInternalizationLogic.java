@@ -71,7 +71,7 @@ public class WSDLInternalizationLogic implements InternalizationLogic{
 
             // We don't need to do this anymore, JAXB handles the schema imports, includes etc., but this is useful for the clientJar option in
             // fetching  the imported schemas to package in the jar..
-            if (parent.options.clientJar != null) {
+            if (parent.options.clientjar != null) {
                 if (SchemaConstants.NS_XSD.equals(nsURI) && "import".equals(localName)) {
                     return atts.getValue("schemaLocation");
                 }

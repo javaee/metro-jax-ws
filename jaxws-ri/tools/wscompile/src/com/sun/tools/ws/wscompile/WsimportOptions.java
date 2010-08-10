@@ -89,9 +89,9 @@ public class WsimportOptions extends Options {
     public String defaultPackage = null;
 
     /**
-     * The -clientJar option to package client artifacts as jar
+     * The -clientjar option to package client artifacts as jar
      */
-    public String clientJar = null;
+    public String clientjar = null;
 
     /**
      * -XadditionalHeaders
@@ -259,8 +259,8 @@ public class WsimportOptions extends Options {
             String authfile = requireArgument("-Xauthfile", args, ++i);
             authFile = new File(authfile);
             return 2;
-        } else if (args[i].equals("-clientJar")) {
-            clientJar = requireArgument("-clientJar", args, ++i);
+        } else if (args[i].equals("-clientjar")) {
+            clientjar = requireArgument("-clientjar", args, ++i);
             return 2;
         }
 
@@ -272,7 +272,7 @@ public class WsimportOptions extends Options {
             throw new BadCommandLineException(WscompileMessages.WSIMPORT_MISSING_FILE());
         }
 
-        if(wsdlLocation !=null && clientJar != null) {
+        if(wsdlLocation !=null && clientjar != null) {
            throw new BadCommandLineException(WscompileMessages.WSIMPORT_WSDLLOCATION_CLIENTJAR());
         }
         if(wsdlLocation == null){

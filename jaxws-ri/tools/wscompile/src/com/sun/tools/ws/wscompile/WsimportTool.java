@@ -193,7 +193,7 @@ public class WsimportTool {
                     return false;
                 }
 
-                if(options.clientJar != null) {
+                if(options.clientjar != null) {
                     options.wsdlLocation = new WSDLFetcher(options).fetchWsdls(forest);
                 }
 
@@ -227,7 +227,7 @@ public class WsimportTool {
                 }
             }
             try {
-                if (options.clientJar != null) {
+                if (options.clientjar != null) {
                     jarArtifacts();
                     //add all the generated class files to the list of generated files so that they can be cleaned up at the end.
                     addClassesToGeneratedFiles();
@@ -254,7 +254,7 @@ public class WsimportTool {
     private void deleteGeneratedFiles() {
         Set<File> trackedRootPackages = new HashSet<File>();
 
-        if (options.clientJar != null) {
+        if (options.clientjar != null) {
             //remove all non-java artifacts as they will packaged in jar.
             Iterable<File> generatedFiles = options.getGeneratedFiles();
             synchronized (generatedFiles) {
@@ -311,9 +311,9 @@ public class WsimportTool {
     }
 
     private void jarArtifacts() throws IOException {
-        File zipFile = new File(options.clientJar);
+        File zipFile = new File(options.clientjar);
         if(!zipFile.isAbsolute()) {
-            zipFile = new File(options.destDir, options.clientJar);
+            zipFile = new File(options.destDir, options.clientjar);
         }
 
         if (zipFile.exists()) {
@@ -334,7 +334,7 @@ public class WsimportTool {
                addFileToJar(jos,f,entryName);
            }
         } else {
-            if(name.equals(options.clientJar)) {
+            if(name.equals(options.clientjar)) {
                 return;
             }
             BufferedInputStream bis = new BufferedInputStream(

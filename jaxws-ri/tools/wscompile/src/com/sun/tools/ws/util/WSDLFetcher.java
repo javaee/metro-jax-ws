@@ -208,8 +208,6 @@ public class WSDLFetcher {
     }
 
     private File getWSDLDownloadDir() {
-        int dotIndex = options.clientJar.indexOf(".");
-        String clientJarName = dotIndex < 0 ?options.clientJar: options.clientJar.substring(0,dotIndex);
         File wsdlDir = new File(options.destDir,WSDL_PATH);
         wsdlDir.mkdirs();
         return wsdlDir;
