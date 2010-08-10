@@ -228,9 +228,10 @@ public class WsimportTool {
             }
             try {
                 if (options.clientjar != null) {
-                    jarArtifacts();
-                    //add all the generated class files to the list of generated files so that they can be cleaned up at the end.
+                    //add all the generated class files to the list of generated files
                     addClassesToGeneratedFiles();
+                    jarArtifacts();
+
                 }
             } catch (IOException e) {
                 receiver.error(e);
@@ -323,6 +324,45 @@ public class WsimportTool {
 
         fos = new FileOutputStream(zipFile);
         JarOutputStream jos = new JarOutputStream(fos);
+
+        String base = options.destDir.getCanonicalPath();
+        for(File f: options.getGeneratedFiles()) {
+            //exclude packaging the java files in the jar
+            if(f.getName().endsWith(".java")) {
+                continue;
+            }
+            String entry = f.getCanonicalPath().substring(base.length()+1);
+            BufferedInputStream bis = new BufferedInputStream(
+                            new FileInputStream(f));
+            JarEntry jarEntry = new JarEntry(entry);
+            jos.putNextEntry(jarEntry);
+            int bytesRead;
+            byte[] buffer = new byte[1024];
+            while ((bytesRead = bis.read(buffer)) != -1) {
+                jos.write(buffer, 0, bytesRead);
+            }
+            bis.close();
+
+        }
+
+        jos.close();
+
+    }
+
+    /*
+    private void jarArtifacts() throws IOException {
+        File zipFile = new File(options.clientjar);
+        if(!zipFile.isAbsolute()) {
+            zipFile = new File(options.destDir, options.clientjar);
+        }
+
+        if (zipFile.exists()) {
+            //TODO
+        }
+        FileOutputStream fos = null;
+
+        fos = new FileOutputStream(zipFile);
+        JarOutputStream jos = new JarOutputStream(fos);
         addFileToJar(jos, options.destDir, "");
         jos.close();
     }
@@ -349,7 +389,7 @@ public class WsimportTool {
             bis.close();
         }
     }
-
+    */
     public void setEntityResolver(EntityResolver resolver){
         this.options.entityResolver = resolver;
     }
