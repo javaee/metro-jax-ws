@@ -40,6 +40,7 @@ import com.sun.istack.NotNull;
 import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.parser.DOMForest;
 import com.sun.tools.ws.wsdl.parser.MetadataFinder;
+import com.sun.xml.txw2.output.IndentingXMLStreamWriter;
 import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
@@ -115,7 +116,10 @@ public class WSDLFetcher {
         File outFile = new File(destDir, resolvedRootWsdl);
         OutputStream os = new FileOutputStream(outFile);
         XMLStreamWriter xsw = writerfactory.createXMLStreamWriter(os);
-        wsdlPatcher.bridge(xsr, xsw);
+        //DOMForest eats away the whitespace loosing all the indentation, so write it through
+        // indenting writer for better readability of fetched documents 
+        IndentingXMLStreamWriter indentingWriter = new IndentingXMLStreamWriter(xsw);
+        wsdlPatcher.bridge(xsr, indentingWriter);
         xsr.close();
         xsw.close();
         os.close();
