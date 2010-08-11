@@ -166,15 +166,23 @@ public class WSDLFetcher {
             Document refDoc =  forest.get(ref);
             Element rootEl = refDoc.getDocumentElement();
             String fileExtn;
+            String fileName = null;
+            int index = ref.lastIndexOf("/");
+            if (index >= 0) {
+                fileName = ref.substring(index + 1);
+            }
             if(rootEl.getLocalName().equals(WSDLConstants.QNAME_DEFINITIONS.getLocalPart()) && rootEl.getNamespaceURI().equals(WSDLConstants.NS_WSDL)) {
               fileExtn = WSDL_FILE_EXTENSION;
             } else if(rootEl.getLocalName().equals(WSDLConstants.QNAME_SCHEMA.getLocalPart()) && rootEl.getNamespaceURI().equals(WSDLConstants.NS_XMLNS)) {
-              fileExtn = ".xsd";      
+              fileExtn = SCHEMA_FILE_EXTENSION;
             } else {
                 fileExtn = ".xml";
             }
-
-            map.put(ref, rootWsdlName+"_metadata"+ (i++) + fileExtn);
+            if(fileName != null && (fileName.endsWith(WSDL_FILE_EXTENSION) || fileName.endsWith(SCHEMA_FILE_EXTENSION))) {
+                map.put(ref, rootWsdlName+"_"+fileName);                
+            } else {
+                map.put(ref, rootWsdlName+"_metadata"+ (i++) + fileExtn);
+            }
         }
         return map;
     }
@@ -226,4 +234,5 @@ public class WSDLFetcher {
 
     private static String WSDL_PATH="META-INF/wsdl";
     private static String WSDL_FILE_EXTENSION=".wsdl";
+    private static String SCHEMA_FILE_EXTENSION=".xsd";
 }
