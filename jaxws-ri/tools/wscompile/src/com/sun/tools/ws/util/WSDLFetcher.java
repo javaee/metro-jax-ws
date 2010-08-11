@@ -37,6 +37,8 @@
 package com.sun.tools.ws.util;
 
 import com.sun.istack.NotNull;
+import com.sun.tools.ws.resources.WscompileMessages;
+import com.sun.tools.ws.wscompile.WsimportListener;
 import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.parser.DOMForest;
 import com.sun.tools.ws.wsdl.parser.MetadataFinder;
@@ -69,9 +71,10 @@ import java.util.Set;
  */
 public class WSDLFetcher {
     private WsimportOptions options;
-
-    public WSDLFetcher(WsimportOptions options) {
+    private WsimportListener listener;
+    public WSDLFetcher(WsimportOptions options, WsimportListener listener) {
         this.options = options;
+        this.listener = listener;
     }
 
 
@@ -88,13 +91,14 @@ public class WSDLFetcher {
         for(String root: forest.getRootDocuments()) {
             rootWsdl = root;
         }
-        // TODO Imports from inlined schemas are not fetched now.
+
         Set<String> externalRefs = forest.getExternalReferences();
         Map<String,String> documentMap = createDocumentMap(forest, getWSDLDownloadDir(), rootWsdl, externalRefs);
+        String rootWsdlName = fetchFile(rootWsdl,forest, documentMap,getWSDLDownloadDir());
         for(String reference: forest.getExternalReferences()) {
             fetchFile(reference,forest,documentMap,getWSDLDownloadDir());
         }
-        return WSDL_PATH +"/" + fetchFile(rootWsdl,forest, documentMap,getWSDLDownloadDir());
+        return WSDL_PATH +"/" + rootWsdlName;
     }
 
     private String fetchFile(final String doc, DOMForest forest, final Map<String, String> documentMap, File destDir) throws IOException, XMLStreamException {
@@ -115,6 +119,9 @@ public class WSDLFetcher {
         String resolvedRootWsdl = docLocator.getLocationFor(null, doc);
         File outFile = new File(destDir, resolvedRootWsdl);
         OutputStream os = new FileOutputStream(outFile);
+        if(options.verbose) {
+            listener.message(WscompileMessages.WSIMPORT_DOCUMENT_DOWNLOAD(doc,outFile));
+        }
         XMLStreamWriter xsw = writerfactory.createXMLStreamWriter(os);
         //DOMForest eats away the whitespace loosing all the indentation, so write it through
         // indenting writer for better readability of fetched documents 

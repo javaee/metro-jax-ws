@@ -194,7 +194,9 @@ public class WsimportTool {
                 }
 
                 if(options.clientjar != null) {
-                    options.wsdlLocation = new WSDLFetcher(options).fetchWsdls(forest);
+                    if( !options.quiet )
+                        listener.message(WscompileMessages.WSIMPORT_FETCHING_METADATA());
+                    options.wsdlLocation = new WSDLFetcher(options,listener).fetchWsdls(forest);
                 }
 
                 //generated code
@@ -230,7 +232,7 @@ public class WsimportTool {
                 if (options.clientjar != null) {
                     //add all the generated class files to the list of generated files
                     addClassesToGeneratedFiles();
-                    jarArtifacts();
+                    jarArtifacts(listener);
 
                 }
             } catch (IOException e) {
@@ -311,7 +313,7 @@ public class WsimportTool {
         }
     }
 
-    private void jarArtifacts() throws IOException {
+    private void jarArtifacts(WsimportListener listener) throws IOException {
         File zipFile = new File(options.clientjar);
         if(!zipFile.isAbsolute()) {
             zipFile = new File(options.destDir, options.clientjar);
@@ -321,6 +323,9 @@ public class WsimportTool {
             //TODO
         }
         FileOutputStream fos = null;
+        if( !options.quiet )
+            listener.message(WscompileMessages.WSIMPORT_ARCHIVING_ARTIFACTS(zipFile));
+
 
         fos = new FileOutputStream(zipFile);
         JarOutputStream jos = new JarOutputStream(fos);
@@ -330,6 +335,9 @@ public class WsimportTool {
             //exclude packaging the java files in the jar
             if(f.getName().endsWith(".java")) {
                 continue;
+            }
+            if(options.verbose) {
+                listener.message(WscompileMessages.WSIMPORT_ARCHIVE_ARTIFACT(f, options.clientjar));    
             }
             String entry = f.getCanonicalPath().substring(base.length()+1);
             BufferedInputStream bis = new BufferedInputStream(
