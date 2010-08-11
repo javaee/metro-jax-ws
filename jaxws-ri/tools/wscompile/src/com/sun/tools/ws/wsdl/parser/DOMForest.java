@@ -209,11 +209,7 @@ public class DOMForest {
             rootDocuments.add(systemId);
 
         try {
-            XMLReader reader = parserFactory.newSAXParser().getXMLReader();
-            reader.setContentHandler(getParserHandler(dom));
-            if (errorReceiver != null)
-                reader.setErrorHandler(errorReceiver);
-            reader.setEntityResolver(entityResolver);
+            XMLReader reader = createReader(dom);
 
             InputStream is = null;
             if(inputSource.getByteStream() == null){
@@ -255,61 +251,37 @@ public class DOMForest {
         public Document getDocument();
     }
 
-    private static abstract class HandlerImpl extends XMLFilterImpl implements Handler {
-    }
-
     /**
-     * Returns a {@link ContentHandler} to feed SAX events into.
-     * <p/>
-     * The client of this class can feed SAX events into the handler
-     * to parse a document into this DOM forest.
-     */
-    public Handler getParserHandler(String systemId, boolean root) {
-        final Document dom = documentBuilder.newDocument();
-        core.put(systemId, dom);
-        if (root)
-            rootDocuments.add(systemId);
+         * Returns a {@link org.xml.sax.XMLReader} to parse a document into this DOM forest.
+         * <p/>
+         * This version requires that the DOM object to be created and registered
+         * to the map beforehand.
+         */
+    private XMLReader createReader(Document dom) throws SAXException, ParserConfigurationException {
+        XMLReader reader = parserFactory.newSAXParser().getXMLReader();
+        DOMBuilder dombuilder = new DOMBuilder(dom, locatorTable, outerMostBindings);
+        try {
+            reader.setProperty("http://xml.org/sax/properties/lexical-handler", dombuilder);
+        } catch(SAXException e) {
+            errorReceiver.debug(e.getMessage());
+        }
 
-        ContentHandler handler = getParserHandler(dom);
-
-        // we will register the DOM to the map once the system ID becomes available.
-        // but the SAX allows the event source to not to provide that information,
-        // so be prepared for such case.
-        HandlerImpl x = new HandlerImpl() {
-            public Document getDocument() {
-                return dom;
-            }
-        };
-        x.setContentHandler(handler);
-
-        return x;
-    }
-
-    /**
-     * Returns a {@link org.xml.sax.ContentHandler} to feed SAX events into.
-     * <p/>
-     * <p/>
-     * The client of this class can feed SAX events into the handler
-     * to parse a document into this DOM forest.
-     * <p/>
-     * This version requires that the DOM object to be created and registered
-     * to the map beforehand.
-     */
-    private ContentHandler getParserHandler(Document dom) {
-        ContentHandler handler = new DOMBuilder(dom, locatorTable, outerMostBindings);
-        handler = new WhitespaceStripper(handler, errorReceiver,entityResolver);
+        ContentHandler handler = new WhitespaceStripper(dombuilder, errorReceiver, entityResolver);
         handler = new VersionChecker(handler, errorReceiver, entityResolver);
 
         // insert the reference finder so that
         // included/imported schemas will be also parsed
         XMLFilterImpl f = logic.createExternalReferenceFinder(this);
         f.setContentHandler(handler);
-
         if (errorReceiver != null)
             f.setErrorHandler(errorReceiver);
         f.setEntityResolver(entityResolver);
 
-        return f;
+        reader.setContentHandler(f);
+        if (errorReceiver != null)
+            reader.setErrorHandler(errorReceiver);
+        reader.setEntityResolver(entityResolver);
+        return reader;
     }
 
     private String normalizeSystemId(String systemId) {
