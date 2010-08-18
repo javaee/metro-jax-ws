@@ -79,11 +79,15 @@
         <antcall target="test" inheritrefs="true"/>
     </target>
 
+    <target name="check-tests">
+            <available file="${basedir}/test" property="tests.exist"/>
+    </target>
+
     <target name="clean">
         <delete dir="${build.dir}"/>
     </target>
 
-    <target name="test" description="tools-whitebox-tests">
+    <target name="test" depends="check-tests" description="tools-whitebox-tests">
         <path id="test.classpath">
         <path refid="tools.compile.classpath"/>
             <pathelement path="${build.dir}/classes"/>
