@@ -36,12 +36,10 @@
 
 package com.sun.xml.ws.server;
 
-import com.sun.istack.FragmentContentHandler;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.stream.buffer.XMLStreamBufferSource;
-import com.sun.xml.stream.buffer.stax.StreamWriterBufferCreator;
-import com.sun.xml.ws.api.addressing.AddressingVersion;
+import com.sun.xml.bind.marshaller.SAX2DOMEx;
+import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Packet;
@@ -51,19 +49,16 @@ import com.sun.xml.ws.api.server.WSWebServiceContext;
 import com.sun.xml.ws.developer.EPRRecipe;
 import com.sun.xml.ws.developer.StatefulWebServiceManager;
 import com.sun.xml.ws.resources.ServerMessages;
-import com.sun.xml.ws.spi.ProviderImpl;
-import com.sun.xml.ws.util.xml.ContentHandlerToXMLStreamWriter;
-import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.util.DOMUtil;
-import com.sun.xml.bind.marshaller.SAX2DOMEx;
+import com.sun.xml.ws.util.xml.XmlUtil;
+import org.glassfish.ha.store.api.BackingStore;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import org.w3c.dom.Element;
-import org.w3c.dom.Document;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -73,6 +68,7 @@ import javax.xml.ws.EndpointReference;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -88,6 +84,7 @@ import java.util.logging.Logger;
  * See {@link StatefulWebServiceManager} for more about user-level semantics.
  *
  * @author Kohsuke Kawaguchi
+ * @author Jitendra Kotamraju (added high availability)
  */
 public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceResolver<T> implements StatefulWebServiceManager<T> {
     /**
@@ -95,6 +92,59 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
      * or cookie value that the server doesn't recognize.
      */
     private volatile @Nullable T fallback;
+
+    private final HAMap haMap;
+
+    // time out control. 0=disabled
+    private volatile long timeoutMilliseconds = 0;
+    private volatile Callback<T> timeoutCallback;
+    /**
+     * Timer that controls the instance time out. Lazily created.
+     */
+    private volatile Timer timer;
+
+    private final ClassLoader appCL;
+
+    // Used for {@link BackingStore#load()} and {@link BackingStore#save()}
+    private static final class HAInstance<T> implements Serializable {
+        transient @NotNull T instance;
+        private byte[] buf;
+
+        public HAInstance(T instance) {
+            this.instance = instance;
+        }
+
+        public T getInstance(final ClassLoader cl) {
+            if (instance == null) {
+                try {
+                    ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(buf)) {
+                        @Override
+                        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+                            Class<?> clazz = cl.loadClass(desc.getName());
+                            if (clazz == null) {
+                                clazz = super.resolveClass(desc);
+                            }
+                            return clazz;
+                        }
+                    };
+                    instance = (T)in.readObject();
+                } catch(Exception ioe) {
+                    throw new WebServiceException(ioe);
+                }
+            }
+            return instance;
+        }
+
+        private void writeObject(ObjectOutputStream out) throws IOException {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(instance);
+            oos.close();
+            this.buf = bos.toByteArray();        // convert instance to byte[]
+            out.defaultWriteObject();
+        }
+
+    }
 
     /**
      * Maintains the stateful service instance and its time-out timer.
@@ -119,7 +169,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                     try {
                         Callback<T> cb = timeoutCallback;
                         if(cb!=null) {
-                            cb.onTimeout(instance,StatefulInstanceResolver.this);
+                            cb.onTimeout(instance, StatefulInstanceResolver.this);
                             return;
                         }
                         // default operation is to unexport it.
@@ -130,7 +180,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                     }
                 }
             };
-            timer.schedule(task,timeoutMilliseconds);
+            timer.schedule(task, timeoutMilliseconds);
         }
 
         /**
@@ -141,34 +191,35 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                 task.cancel();
             task = null;
         }
+
     }
 
-    /**
-     * Maps object ID to instances.
-     */
-    private final Map<String,Instance> instances = Collections.synchronizedMap(new HashMap<String,Instance>());
-    /**
-     * Reverse look up for {@link #instances}.
-     */
-    private final Map<T,String> reverseInstances = Collections.synchronizedMap(new HashMap<T,String>());
 
-    // time out control. 0=disabled
-    private volatile long timeoutMilliseconds = 0;
-    private volatile Callback<T> timeoutCallback;
-
+    @SuppressWarnings("unchecked")
     public StatefulInstanceResolver(Class<T> clazz) {
         super(clazz);
+
+        appCL = clazz.getClassLoader();
+        if (HighAvailabilityProvider.INSTANCE.isHaEnvironmentConfigured()) {
+            if (!Serializable.class.isAssignableFrom(clazz)) {
+                logger.warning(clazz+" doesn't implement Serializable. High availibility is disabled i.e."+
+                "if a failover happens, stateful instance state is not failed over.");
+            }
+        }
+
+        haMap = new HAMap();
     }
 
     @Override
     public @NotNull T resolve(Packet request) {
+
         HeaderList headers = request.getMessage().getHeaders();
         Header header = headers.get(COOKIE_TAG, true);
         String id=null;
         if(header!=null) {
             // find the instance
             id = header.getStringContent();
-            Instance o = instances.get(id);
+            Instance o = haMap.get(id);
             if(o!=null) {
                 o.restartTimer();
                 return o.instance;
@@ -189,6 +240,15 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             throw new WebServiceException(ServerMessages.STATEFUL_COOKIE_HEADER_INCORRECT(COOKIE_TAG,id));
     }
 
+    /*
+     * Changed stateful web service instance is pushed to backing store
+     * after the invocation of service.
+     */
+    @Override
+    public void postInvoke(@NotNull Packet request, @NotNull T servant) {
+        haMap.put(servant);
+    }
+
     @Override
     public void start(WSWebServiceContext wsc, WSEndpoint endpoint) {
         super.start(wsc,endpoint);
@@ -197,7 +257,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             // addressing is not enabled.
             throw new WebServiceException(ServerMessages.STATEFUL_REQURES_ADDRESSING(clazz));
 
-            // inject StatefulWebServiceManager.
+        // inject StatefulWebServiceManager.
         for(Field field: clazz.getDeclaredFields()) {
             if(field.getType()==StatefulWebServiceManager.class) {
                 if(!Modifier.isStatic(field.getModifiers()))
@@ -222,13 +282,12 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
     @Override
     public void dispose() {
-        reverseInstances.clear();
-        synchronized(instances) {
-            for (Instance t : instances.values()) {
+        synchronized(haMap) {
+            for (Instance t : haMap.values()) {
                 t.cancel();
                 dispose(t.instance);
             }
-            instances.clear();
+            haMap.destroy();
         }
         if(fallback!=null)
             dispose(fallback);
@@ -279,7 +338,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         if(endpointAddress==null)
             throw new IllegalArgumentException("No address available");
 
-        String key = reverseInstances.get(o);
+        String key = haMap.get(o);
 
         if(key!=null) return createEPR(key, adrsVer, endpointAddress,wsdlAddress, recipe);
 
@@ -287,15 +346,14 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         synchronized(this) {
             // double check now in the synchronization block to
             // really make sure that we can export.
-            key = reverseInstances.get(o);
+            key = haMap.get(o);
             if(key!=null) return createEPR(key, adrsVer, endpointAddress,wsdlAddress, recipe);
 
             if(o!=null)
                 prepare(o);
             key = UUID.randomUUID().toString();
             Instance instance = new Instance(o);
-            instances.put(key, instance);
-            reverseInstances.put(o,key);
+            haMap.put(key, instance);
             if(timeoutMilliseconds!=0)
                 instance.restartTimer();
         }
@@ -303,7 +361,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         return createEPR(key, adrsVer, endpointAddress, wsdlAddress,recipe);
     }
 
-    /**
+    /*
      * Creates an EPR that has the right key.
      */
 
@@ -408,10 +466,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     */
     public void unexport(@Nullable T o) {
         if(o==null)     return;
-        String key = reverseInstances.get(o);
-        if(key==null)   return; // already unexported
-        instances.remove(key);
-        reverseInstances.remove(o);
+        haMap.remove(o);
     }
 
     public T resolve(EndpointReference epr) {
@@ -433,7 +488,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         CookieSniffer sniffer = new CookieSniffer();
         epr.writeTo(new SAXResult(sniffer));
 
-        Instance o = instances.get(sniffer.buf.toString());
+        Instance o = haMap.get(sniffer.buf.toString());
         if(o!=null)
             return o.instance;
         return null;
@@ -455,21 +510,99 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     }
 
     public void touch(T o) {
-        String key = reverseInstances.get(o);
+        String key = haMap.get(o);
         if(key==null)   return; // already unexported.
-        Instance inst = instances.get(key);
+        Instance inst = haMap.get(key);
         if(inst==null)  return;
         inst.restartTimer();
     }
 
-    /**
-     * Timer that controls the instance time out. Lazily created.
-     */
-    private volatile Timer timer;
 
     private synchronized void startTimer() {
         if(timer==null)
             timer = new Timer("JAX-WS stateful web service timeout timer");
+    }
+
+    private class HAMap {
+        final Map<String, Instance> instances = new HashMap<String, Instance>();
+        final Map<T, String> reverseInstances = new HashMap<T, String>();
+        final BackingStore<String, HAInstance> bs;
+
+        HAMap() {
+            // TODO backing store name
+            bs = HighAvailabilityProvider.INSTANCE.createBackingStore(
+                HighAvailabilityProvider.INSTANCE.getBackingStoreFactory(HighAvailabilityProvider.StoreType.IN_MEMORY),
+                "JAXWS_STATEFUL_INSTANCE_RESOLVER",
+                String.class,
+                HAInstance.class);
+        }
+
+        synchronized String get(T t) {
+            return reverseInstances.get(t);
+        }
+
+        synchronized Instance get(String id) {
+            Instance i = instances.get(id);
+            if (i == null) {
+                HAInstance<T> hai = HighAvailabilityProvider.loadFrom(bs, id, null);
+                if (hai != null) {
+                    T t = hai.getInstance(appCL);
+                    i = new Instance(t);
+                    instances.put(id, i);
+                    reverseInstances.put(t, id);
+                }
+            }
+            return i;
+        }
+
+        synchronized void put(String id, Instance newi) {
+            Instance oldi = instances.get(id);
+            boolean isNew = oldi == null;
+            if (oldi != null) {
+                reverseInstances.remove(oldi.instance);
+            }
+
+            instances.put(id, newi);
+            reverseInstances.put(newi.instance, id);
+            HAInstance<T> hai = new HAInstance<T>(newi.instance);
+            HighAvailabilityProvider.saveTo(bs,id, hai, isNew);
+        }
+
+        synchronized void put(T t) {
+            String id = reverseInstances.get(t);
+            if (id != null) {
+                put(id, new Instance(t));
+            }
+        }
+
+        synchronized void remove(String id) {
+            Instance i = instances.get(id);
+            if (i != null) {
+                instances.remove(id);
+                reverseInstances.remove(i);
+                HighAvailabilityProvider.removeFrom(bs, id);
+            }
+        }
+
+        synchronized void remove(T t) {
+            String id = reverseInstances.get(t);
+            if (id != null) {
+                reverseInstances.remove(t);
+                instances.remove(id);
+                HighAvailabilityProvider.removeFrom(bs, id);
+            }
+        }
+
+        synchronized void destroy() {
+            instances.clear();
+            reverseInstances.clear();
+            HighAvailabilityProvider.destroy(bs);
+        }
+
+        Collection<Instance> values() {
+            return instances.values();
+        }
+
     }
 
 
