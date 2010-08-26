@@ -111,5 +111,10 @@
       <artifactId>gmbal-api-only</artifactId>
       <version>3.0.0-b023</version>
     </dependency>
+    <dependency>
+      <groupId>org.glassfish.ha</groupId>
+      <artifactId>ha-api</artifactId>
+      <version>3.1-SNAPSHOT</version>
+    </dependency> 
   </dependencies>
 </project>
