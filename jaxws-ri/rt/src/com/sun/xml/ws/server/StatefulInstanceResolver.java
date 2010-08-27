@@ -40,6 +40,7 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.bind.marshaller.SAX2DOMEx;
 import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
+import com.sun.xml.ws.api.ha.HighAvailabilityProvider.StoreType;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Packet;
@@ -52,6 +53,7 @@ import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.glassfish.ha.store.api.BackingStore;
+import org.glassfish.ha.store.api.Storeable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
@@ -93,7 +95,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
      */
     private volatile @Nullable T fallback;
 
-    private final HAMap haMap;
+    private HAMap haMap;
 
     // time out control. 0=disabled
     private volatile long timeoutMilliseconds = 0;
@@ -103,12 +105,24 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
      */
     private volatile Timer timer;
 
+    // Application classloader(typically web app classloader), needed for
+    // deserialization of web service class
     private final ClassLoader appCL;
 
+    private final boolean haEnabled;
+
     // Used for {@link BackingStore#load()} and {@link BackingStore#save()}
-    private static final class HAInstance<T> implements Serializable {
+    private static final class HAInstance<T> implements Storeable {
         transient @NotNull T instance;
         private byte[] buf;
+        
+        private long lastAccess = 0L;
+
+        private boolean isNew = false;
+
+        private long version = -1;
+
+        private long maxIdleTime;
 
         public HAInstance(T instance) {
             this.instance = instance;
@@ -128,6 +142,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                         }
                     };
                     instance = (T)in.readObject();
+                    in.close();
                 } catch(Exception ioe) {
                     throw new WebServiceException(ioe);
                 }
@@ -135,15 +150,75 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             return instance;
         }
 
-        private void writeObject(ObjectOutputStream out) throws IOException {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            oos.writeObject(instance);
-            oos.close();
-            this.buf = bos.toByteArray();        // convert instance to byte[]
-            out.defaultWriteObject();
+//        private void writeObject(ObjectOutputStream out) throws IOException {
+//            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//            ObjectOutputStream oos = new ObjectOutputStream(bos);
+//            oos.writeObject(instance);
+//            oos.close();
+//            this.buf = bos.toByteArray();        // convert instance to byte[]
+//            out.defaultWriteObject();
+//        }
+
+        public long _storeable_getVersion() {
+            return version;
         }
 
+        public void _storeable_setVersion(long version) {
+            this.version = version;
+        }
+
+        public long _storeable_getLastAccessTime() {
+            return lastAccess;
+        }
+
+        public void _storeable_setLastAccessTime(long time) {
+            lastAccess = time;
+        }
+
+        public long _storeable_getMaxIdleTime() {
+            return maxIdleTime;
+        }
+
+        public void _storeable_setMaxIdleTime(long time) {
+            maxIdleTime = time;
+        }
+
+        public String[] _storeable_getAttributeNames() {
+            return new String[0];
+        }
+
+        public boolean[] _storeable_getDirtyStatus() {
+            return new boolean[0];
+        }
+
+        public void _storeable_writeState(OutputStream os) throws IOException {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream boos = new ObjectOutputStream(bos);
+            boos.writeObject(instance);
+            boos.close();
+            this.buf = bos.toByteArray();        // convert instance to byte[]
+
+            ObjectOutputStream oos = new ObjectOutputStream(os);
+            oos.writeLong(version);
+            oos.writeLong(lastAccess);
+            oos.writeLong(maxIdleTime);
+            oos.writeBoolean(isNew);
+            oos.writeInt(buf.length);
+            oos.write(buf);
+            oos.close();
+        }
+
+        public void _storeable_readState(InputStream is) throws IOException {
+            ObjectInputStream ois = new ObjectInputStream(is);
+            version = ois.readLong();
+            lastAccess = ois.readLong();
+            maxIdleTime = ois.readLong();
+            isNew = ois.readBoolean();
+            int len = ois.readInt();
+            buf = new byte[len];
+            ois.read(buf);
+            ois.close();
+        }
     }
 
     /**
@@ -171,7 +246,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                         if(cb!=null) {
                             cb.onTimeout(instance, StatefulInstanceResolver.this);
                             return;
-                        }
+                        }                        
                         // default operation is to unexport it.
                         unexport(instance);
                     } catch (Throwable e) {
@@ -198,16 +273,18 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     @SuppressWarnings("unchecked")
     public StatefulInstanceResolver(Class<T> clazz) {
         super(clazz);
-
         appCL = clazz.getClassLoader();
+
+        boolean ha = false;
         if (HighAvailabilityProvider.INSTANCE.isHaEnvironmentConfigured()) {
-            if (!Serializable.class.isAssignableFrom(clazz)) {
+            if (Serializable.class.isAssignableFrom(clazz)) {
                 logger.warning(clazz+" doesn't implement Serializable. High availibility is disabled i.e."+
-                "if a failover happens, stateful instance state is not failed over.");
+                    "if a failover happens, stateful instance state is not failed over.");
+                ha = true;
             }
         }
+        haEnabled = ha;
 
-        haMap = new HAMap();
     }
 
     @Override
@@ -252,6 +329,8 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     @Override
     public void start(WSWebServiceContext wsc, WSEndpoint endpoint) {
         super.start(wsc,endpoint);
+
+        haMap = new HAMap();
 
         if(endpoint.getBinding().getAddressingVersion()==null)
             // addressing is not enabled.
@@ -510,11 +589,10 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     }
 
     public void touch(T o) {
-        String key = haMap.get(o);
-        if(key==null)   return; // already unexported.
-        Instance inst = haMap.get(key);
-        if(inst==null)  return;
-        inst.restartTimer();
+        Instance i = haMap.touch(o);
+        if (i != null) {
+            i.restartTimer();
+        }
     }
 
 
@@ -529,16 +607,25 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         final BackingStore<String, HAInstance> bs;
 
         HAMap() {
-            // TODO backing store name
+            StoreType type = haEnabled ? StoreType.IN_MEMORY : StoreType.NOOP;
             bs = HighAvailabilityProvider.INSTANCE.createBackingStore(
-                HighAvailabilityProvider.INSTANCE.getBackingStoreFactory(HighAvailabilityProvider.StoreType.IN_MEMORY),
-                "JAXWS_STATEFUL_INSTANCE_RESOLVER",
-                String.class,
-                HAInstance.class);
+                    HighAvailabilityProvider.INSTANCE.getBackingStoreFactory(type),
+                    owner.getServiceName()+":"+owner.getPortName()+":STATEFUL_WEB_SERVICE",
+                    String.class,
+                    HAInstance.class);
         }
 
         synchronized String get(T t) {
             return reverseInstances.get(t);
+        }
+
+        synchronized Instance touch(T t) {
+            String id = get(t);
+            if (id != null) {
+//                HighAvailabilityProvider.touch(bs, id, System.currentTimeMillis());
+                return get(id);
+            }
+            return null;
         }
 
         synchronized Instance get(String id) {
@@ -579,7 +666,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             Instance i = instances.get(id);
             if (i != null) {
                 instances.remove(id);
-                reverseInstances.remove(i);
+                reverseInstances.remove(i.instance);
                 HighAvailabilityProvider.removeFrom(bs, id);
             }
         }
