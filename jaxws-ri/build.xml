@@ -554,6 +554,15 @@
 
     </target>
 
+    <target name="integrate-ha-api" description="integrate the latest GF HA API">
+        <property name="ha-api-version" value="3.1.1" />
+        <get src="http://download.java.net/maven/glassfish/org/glassfish/ha/ha-api/${ha-api-version}/ha-api-${ha-api-version}.jar"
+             dest="lib/ha-api.jar" />
+        <get src="http://download.java.net/maven/glassfish/org/glassfish/ha/ha-api/${ha-api-version}/ha-api-${ha-api-version}-sources.jar"
+             dest="lib/ha-api.src.zip" />
+    </target>
+
+
     <property name="maven.ant.task.jar" value="maven-ant-tasks-2.0.10.jar"/>
     <property name="java.net.maven2.repo" value="http://download.java.net/maven/2"/>
     <property name="java.net.maven2.repo.push.url" value="java-net:/maven2-repository/trunk/repository"/>
