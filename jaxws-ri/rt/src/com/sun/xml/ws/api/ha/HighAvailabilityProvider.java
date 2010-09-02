@@ -349,4 +349,20 @@ public enum HighAvailabilityProvider {
             throw LOGGER.logSevereException(new HighAvailabilityProviderException("", ex)); // TODO exception message
         }
     }
+
+    /**
+     * Helper method that avoids the need for exception handling boilerplate code
+     * when destroying a {@link BackingStore} instance.
+     * The original checked {@link BackingStoreException} is wrapped into a new
+     * unchecked {@link HighAvailabilityProviderException}.
+     *
+     * @param backingStore {@link BackingStore} instance
+     */
+    public static <K extends Serializable> void removeExpired(BackingStore<K, ?> backingStore) {
+        try {
+            backingStore.removeExpired();
+        } catch (BackingStoreException ex) {
+            throw LOGGER.logSevereException(new HighAvailabilityProviderException("", ex)); // TODO exception message
+        }
+    }
 }

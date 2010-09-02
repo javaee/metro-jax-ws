@@ -112,6 +112,8 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     private final boolean haEnabled;
 
     // Used for {@link BackingStore#load()} and {@link BackingStore#save()}
+    // Keep this a static class, otherwise enclosed object will be pulled in
+    // during serialization
     private static final class HAInstance<T> implements Storeable {
         transient @NotNull T instance;
         private byte[] buf;
@@ -120,12 +122,16 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
         private boolean isNew = false;
 
+        // unless the request gives a version somehow, this cannot be used
+        // to find out the dirty active cache entry
         private long version = -1;
 
         private long maxIdleTime;
 
-        public HAInstance(T instance) {
+        public HAInstance(T instance, long timeout) {
             this.instance = instance;
+            lastAccess = System.currentTimeMillis();
+            maxIdleTime = timeout;
         }
 
         public T getInstance(final ClassLoader cl) {
@@ -149,15 +155,6 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             }
             return instance;
         }
-
-//        private void writeObject(ObjectOutputStream out) throws IOException {
-//            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//            ObjectOutputStream oos = new ObjectOutputStream(bos);
-//            oos.writeObject(instance);
-//            oos.close();
-//            this.buf = bos.toByteArray();        // convert instance to byte[]
-//            out.defaultWriteObject();
-//        }
 
         public long _storeable_getVersion() {
             return version;
@@ -371,6 +368,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         if(fallback!=null)
             dispose(fallback);
         fallback = null;
+        stopTimer();
     }
 
     @NotNull
@@ -545,7 +543,10 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     */
     public void unexport(@Nullable T o) {
         if(o==null)     return;
-        haMap.remove(o);
+        Instance i = haMap.remove(o);
+        if (i != null) {
+            i.cancel();
+        }
     }
 
     public T resolve(EndpointReference epr) {
@@ -584,8 +585,13 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             throw new IllegalArgumentException();
         this.timeoutMilliseconds = milliseconds;
         this.timeoutCallback = callback;
-        if(timeoutMilliseconds>0)
+        haMap.getExpiredTask().cancel();
+        if (timeoutMilliseconds>0) {
             startTimer();
+            timer.schedule(haMap.newExpiredTask(), timeoutMilliseconds, timeoutMilliseconds);
+        } else {
+            stopTimer();
+        }
     }
 
     public void touch(T o) {
@@ -597,14 +603,26 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
 
     private synchronized void startTimer() {
-        if(timer==null)
+        if (timer==null) {
             timer = new Timer("JAX-WS stateful web service timeout timer");
+        }
+    }
+
+    private synchronized void stopTimer() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
     }
 
     private class HAMap {
+        // cookie --> Instance
         final Map<String, Instance> instances = new HashMap<String, Instance>();
+        // object --> cookie
         final Map<T, String> reverseInstances = new HashMap<T, String>();
         final BackingStore<String, HAInstance> bs;
+        // Removes expired entrees from BackingStore
+        TimerTask expiredTask;
 
         HAMap() {
             StoreType type = haEnabled ? StoreType.IN_MEMORY : StoreType.NOOP;
@@ -613,6 +631,20 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                     owner.getServiceName()+":"+owner.getPortName()+":STATEFUL_WEB_SERVICE",
                     String.class,
                     HAInstance.class);
+            expiredTask = newExpiredTask();
+        }
+
+        TimerTask getExpiredTask() {
+            return expiredTask;
+        }
+
+        TimerTask newExpiredTask() {
+            expiredTask = new TimerTask() {
+                public void run() {
+                    HighAvailabilityProvider.removeExpired(bs);
+                }
+            };
+            return expiredTask;
         }
 
         synchronized String get(T t) {
@@ -622,8 +654,11 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         synchronized Instance touch(T t) {
             String id = get(t);
             if (id != null) {
-//                HighAvailabilityProvider.touch(bs, id, System.currentTimeMillis());
-                return get(id);
+                Instance i = get(id);
+                if (i != null) {
+                    put(id, i);
+                    return i;
+                }
             }
             return null;
         }
@@ -651,7 +686,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
             instances.put(id, newi);
             reverseInstances.put(newi.instance, id);
-            HAInstance<T> hai = new HAInstance<T>(newi.instance);
+            HAInstance<T> hai = new HAInstance<T>(newi.instance, timeoutMilliseconds);
             HighAvailabilityProvider.saveTo(bs,id, hai, isNew);
         }
 
@@ -671,13 +706,15 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             }
         }
 
-        synchronized void remove(T t) {
+        synchronized Instance remove(T t) {
             String id = reverseInstances.get(t);
             if (id != null) {
                 reverseInstances.remove(t);
-                instances.remove(id);
+                Instance i = instances.remove(id);
                 HighAvailabilityProvider.removeFrom(bs, id);
+                return i;
             }
+            return null;
         }
 
         synchronized void destroy() {
