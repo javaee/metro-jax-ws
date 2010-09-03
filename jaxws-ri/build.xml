@@ -4,7 +4,7 @@
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
  Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- 
+
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
  and Distribution License("CDDL") (collectively, the "License").  You
@@ -420,7 +420,7 @@
         <delete dir="build/maven2-repo"/>
         <mkdir dir="build/maven2-repo"/>
         <!--property name="jar.suffix" value="${release.impl.version}"/-->
-        <push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
+        <!-- <push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/> -->
         <push-to-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <push-to-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
 
@@ -459,10 +459,12 @@
     <maven-repository-importer
         destdir="build/maven-repo" version="${jar.suffix}">
       <!-- only push API at certain key points, and do so with new version number -->
-      <artifact
+      <!--
+        <artifact
         jar="${dist20.home}/lib/jaxws-api.jar"
         pom="etc/poms/jaxws-api.pom"
         srczip="lib/jaxws-api-src.zip" />
+        -->
       <artifact
         jar="${dist20.home}/lib/jaxws-rt.jar"
         pom="etc/poms/jaxws-rt.pom"
