@@ -213,7 +213,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             isNew = ois.readBoolean();
             int len = ois.readInt();
             buf = new byte[len];
-            ois.read(buf);
+            ois.readFully(buf);
             ois.close();
         }
     }
