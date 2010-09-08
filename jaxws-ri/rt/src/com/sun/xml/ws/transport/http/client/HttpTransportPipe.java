@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -201,8 +201,11 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             }
         }
         if (cl == 0 || (cl == -1 && tempIn == null)) {
-            responseStream.close();         // No data, so close the stream
-            responseStream = null;
+            if(responseStream != null) {
+                responseStream.close();         // No data, so close the stream
+                responseStream = null;
+            }
+
         }
 
         // Allows only certain http status codes for a binding. For all
