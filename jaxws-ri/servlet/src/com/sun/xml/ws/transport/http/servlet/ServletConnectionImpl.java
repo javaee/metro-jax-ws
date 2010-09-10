@@ -37,6 +37,8 @@
 package com.sun.xml.ws.transport.http.servlet;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
+import com.sun.xml.ws.api.ha.StickyFeature;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.api.server.WSEndpoint;
@@ -52,6 +54,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.handler.MessageContext;
 import java.io.IOException;
 import java.io.InputStream;
@@ -159,6 +162,20 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
 
     @Override
     public @NotNull OutputStream getOutput() throws IOException {
+        if (HighAvailabilityProvider.INSTANCE.isHaEnvironmentConfigured()) {
+            boolean sticky = false;
+            WebServiceFeature[] features = adapter.getEndpoint().getBinding().getFeatures().toArray();
+            for(WebServiceFeature f : features) {
+                if (f instanceof StickyFeature) {
+                    sticky = true;
+                    break;
+                }
+            }
+            if (sticky) {
+                request.getSession();
+            }
+        }
+
         response.setStatus(status);
         return response.getOutputStream();
     }
