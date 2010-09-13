@@ -109,30 +109,12 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
      */
     @Override
     public void setResponseHeaders(Map<String,List<String>> headers) {
-        response.reset();       // clear the status code & headers
-        if (status != 0) {
-            response.setStatus(status);
-        }
-        if (headers == null) {
-            responseHeaders = null;
-            return;
+        if (responseHeaders == null) {
+            responseHeaders = new Headers();
         } else {
-            if (responseHeaders == null) {
-                responseHeaders = new Headers();
-            } else {
-                responseHeaders.clear();
-            }
+            responseHeaders.clear();
         }
-
-        for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
-            String name = entry.getKey();
-            if(name.equalsIgnoreCase("Content-Type") || name.equalsIgnoreCase("Content-Length"))
-                continue;   // ignore headers that interfere with the operation
-            for (String value : entry.getValue()) {
-                response.addHeader(name, value);
-            }
-        }
-
+        responseHeaders.putAll(headers);
     }
     @Override
     @Property({MessageContext.HTTP_RESPONSE_HEADERS, Packet.OUTBOUND_TRANSPORT_HEADERS})
@@ -167,6 +149,16 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
     @Override
     public @NotNull OutputStream getOutput() throws IOException {
         response.setStatus(status);
+        if (responseHeaders != null) {
+            for (Map.Entry<String, List<String>> entry : responseHeaders.entrySet()) {
+                String name = entry.getKey();
+                if(name.equalsIgnoreCase("Content-Type") || name.equalsIgnoreCase("Content-Length"))
+                    continue;   // ignore headers that interfere with the operation
+                for (String value : entry.getValue()) {
+                    response.addHeader(name, value);
+                }
+            }
+        }
         return response.getOutputStream();
     }
 
