@@ -37,8 +37,6 @@
 package com.sun.xml.ws.transport.http.servlet;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
-import com.sun.xml.ws.api.ha.StickyFeature;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.api.server.WSEndpoint;
@@ -54,7 +52,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.handler.MessageContext;
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,6 +75,7 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
     private int status;
     private Headers requestHeaders;
     private final HttpAdapter adapter;
+    private Headers responseHeaders;
 
     public ServletConnectionImpl(@NotNull HttpAdapter adapter, ServletContext context, HttpServletRequest request, HttpServletResponse response) {
         this.adapter = adapter;
@@ -106,19 +104,25 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
         return requestHeaders;
     }
 
-
-    private Map<String,List<String>> responseHeaders;
     /**
      * sets response headers.
      */
     @Override
     public void setResponseHeaders(Map<String,List<String>> headers) {
-        this.responseHeaders = headers;
-        if (headers == null)
-            return;
-        if (status != 0)
+        response.reset();       // clear the status code & headers
+        if (status != 0) {
             response.setStatus(status);
-        response.reset();   // clear all the headers
+        }
+        if (headers == null) {
+            responseHeaders = null;
+            return;
+        } else {
+            if (responseHeaders == null) {
+                responseHeaders = new Headers();
+            } else {
+                responseHeaders.clear();
+            }
+        }
 
         for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
             String name = entry.getKey();
@@ -162,20 +166,6 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
 
     @Override
     public @NotNull OutputStream getOutput() throws IOException {
-        if (HighAvailabilityProvider.INSTANCE.isHaEnvironmentConfigured()) {
-            boolean sticky = false;
-            WebServiceFeature[] features = adapter.getEndpoint().getBinding().getFeatures().toArray();
-            for(WebServiceFeature f : features) {
-                if (f instanceof StickyFeature) {
-                    sticky = true;
-                    break;
-                }
-            }
-            if (sticky) {
-                request.getSession();
-            }
-        }
-
         response.setStatus(status);
         return response.getOutputStream();
     }

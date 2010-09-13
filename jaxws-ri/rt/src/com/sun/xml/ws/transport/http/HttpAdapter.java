@@ -40,6 +40,8 @@ package com.sun.xml.ws.transport.http;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.PropertySet;
+import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
+import com.sun.xml.ws.api.ha.StickyFeature;
 import com.sun.xml.ws.api.message.ExceptionHasMessage;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
@@ -64,6 +66,7 @@ import com.sun.xml.ws.util.Pool;
 
 import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.http.HTTPBinding;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,12 +74,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -120,6 +119,8 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      */
     public final String urlPattern;
 
+    public final boolean stickyCookie;
+
 
     /**
      * Creates a lone {@link HttpAdapter} that does not know of any other
@@ -149,6 +150,17 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         this.urlPattern = urlPattern;
 
         initWSDLMap(endpoint.getServiceDefinition());
+        boolean sticky = false;
+        if (HighAvailabilityProvider.INSTANCE.isHaEnvironmentConfigured()) {
+            WebServiceFeature[] features = endpoint.getBinding().getFeatures().toArray();
+            for(WebServiceFeature f : features) {
+                if (f instanceof StickyFeature) {
+                    sticky = true;
+                    break;
+                }
+            }
+        }
+        stickyCookie = sticky;
     }
 
     /**
@@ -356,6 +368,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             return;                 // Connection is already closed
         }
         Message responseMessage = packet.getMessage();
+        addStickyCookie(con, packet);
         if (responseMessage == null) {
             if (!con.isClosed()) {
                 // set the response code if not already set
@@ -392,6 +405,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 }
                 os.close();
             } else {
+
                 ByteArrayBuffer buf = new ByteArrayBuffer();
                 contentType = codec.encode(packet, buf);
                 con.setContentTypeResponseHeader(contentType.getContentType());
@@ -401,6 +415,41 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 OutputStream os = con.getOutput();
                 buf.writeTo(os);
                 os.close();
+            }
+        }
+    }
+
+    private void addStickyCookie(WSHTTPConnection con, Packet packet) {
+        if (stickyCookie) {
+            String key = Packet.INBOUND_TRANSPORT_HEADERS;
+            if (packet.supports(key)) {
+                Map<String, List<String>> headers = (Map<String, List<String>>)packet.get(key);
+                List<String> hdr = headers.get("Cookie");
+                if (hdr != null && !hdr.isEmpty()) {
+                    for(String cookie : hdr) {
+                        if (cookie.contains("JSESSIONID=JAXWS-")) {
+                            return;     // already has a cookie, no need to add the cookie
+                        }
+                    }
+                }
+            }
+
+            key = Packet.OUTBOUND_TRANSPORT_HEADERS;
+            if (packet.supports(key)) {
+                Map<String, List<String>> headers = (Map<String, List<String>>)packet.get(key);
+                if (headers == null) {
+                    headers = new HashMap<String, List<String>>();
+                }
+                String cookie = "JSESSIONID=JAXWS-"+UUID.randomUUID().toString();
+                String addr = con.getWebServiceContextDelegate().getEPRAddress(packet, endpoint);
+                int index = addr.indexOf('/', 8);       // Get path from http(s)://../path
+                if (index != -1) {
+                    String path = addr.substring(index);
+                    cookie += "; Path="+path;
+                }
+                List<String> jsessionCookie = Collections.singletonList(cookie);
+                headers.put("Set-Cookie", jsessionCookie);
+                packet.put(key, headers);
             }
         }
     }
