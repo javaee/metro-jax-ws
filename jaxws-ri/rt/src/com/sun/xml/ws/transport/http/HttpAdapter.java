@@ -421,35 +421,32 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     private void addStickyCookie(WSHTTPConnection con, Packet packet) {
         if (stickyCookie) {
-            String key = Packet.INBOUND_TRANSPORT_HEADERS;
-            if (packet.supports(key)) {
-                Map<String, List<String>> headers = (Map<String, List<String>>)packet.get(key);
-                List<String> hdr = headers.get("Cookie");
-                if (hdr != null && !hdr.isEmpty()) {
-                    for(String cookie : hdr) {
-                        if (cookie.contains("JSESSIONID=JAXWS-")) {
-                            return;     // already has a cookie, no need to add the cookie
-                        }
-                    }
-                }
+            String proxyJroute = con.getRequestHeader("proxy-jroute");
+            if (proxyJroute == null) {
+                // Load-balancer plugin is not front-ending this instance
+                return;
             }
 
-            key = Packet.OUTBOUND_TRANSPORT_HEADERS;
-            if (packet.supports(key)) {
-                Map<String, List<String>> headers = (Map<String, List<String>>)packet.get(key);
-                if (headers == null) {
-                    headers = new HashMap<String, List<String>>();
+            String jrouteId = con.getRequestHeader("JROUTE");
+            if (jrouteId == null || !jrouteId.equals(proxyJroute)) {
+                // Initial request or failover
+                String key = Packet.OUTBOUND_TRANSPORT_HEADERS;
+                if (packet.supports(key)) {
+                    Map<String, List<String>> headers = (Map<String, List<String>>)packet.get(key);
+                    if (headers == null) {
+                        headers = new HashMap<String, List<String>>();
+                    }
+                    String cookie = "JROUTE="+proxyJroute;
+                    String addr = con.getWebServiceContextDelegate().getEPRAddress(packet, endpoint);
+                    int index = addr.indexOf('/', 8);       // Get path from http(s)://../path
+                    if (index != -1) {
+                        String path = addr.substring(index);
+                        cookie += "; Path="+path;
+                    }
+                    List<String> jsessionCookie = Collections.singletonList(cookie);
+                    headers.put("Set-Cookie", jsessionCookie);
+                    packet.put(key, headers);
                 }
-                String cookie = "JSESSIONID=JAXWS-"+UUID.randomUUID().toString();
-                String addr = con.getWebServiceContextDelegate().getEPRAddress(packet, endpoint);
-                int index = addr.indexOf('/', 8);       // Get path from http(s)://../path
-                if (index != -1) {
-                    String path = addr.substring(index);
-                    cookie += "; Path="+path;
-                }
-                List<String> jsessionCookie = Collections.singletonList(cookie);
-                headers.put("Set-Cookie", jsessionCookie);
-                packet.put(key, headers);
             }
         }
     }
