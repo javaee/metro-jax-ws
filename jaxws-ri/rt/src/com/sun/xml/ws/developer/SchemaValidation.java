@@ -85,6 +85,21 @@ public @interface SchemaValidation {
     Class<? extends ValidationErrorHandler> handler() default DraconianValidationErrorHandler.class;
 
     /**
+     * Turns validation on/off for inbound messages
+     *
+     * @since JAX-WS RI 2.2.2
+     */
+    boolean inbound() default true;
+
+
+    /**
+     * Turns validation on/off for outbound messages
+     * 
+     * @since JAX-WS RI 2.2.2
+     */
+    boolean outbound() default true;
+
+    /**
      * Does validation for bound headers in a SOAP message.
      *
     boolean headers() default false;

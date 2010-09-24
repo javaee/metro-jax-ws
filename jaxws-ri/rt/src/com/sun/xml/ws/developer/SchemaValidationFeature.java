@@ -58,19 +58,37 @@ public class SchemaValidationFeature extends WebServiceFeature {
      */
     public static final String ID = "http://jax-ws.dev.java.net/features/schema-validation";
 
-    private Class<? extends ValidationErrorHandler> clazz;
+    private final Class<? extends ValidationErrorHandler> clazz;
+    private final boolean inbound;
+    private final boolean outbound;
 
     public SchemaValidationFeature() {
-        this(DraconianValidationErrorHandler.class);
+        this(true, true, DraconianValidationErrorHandler.class);
     }
 
     /**
      * Create an <code>SchemaValidationFeature</code>.
      * The instance created will be enabled.
      */
-    @FeatureConstructor({"handler"})
     public SchemaValidationFeature(Class<? extends ValidationErrorHandler> clazz) {
+        this(true, true, clazz);
+    }
+
+    /**
+     * @since JAX-WS RI 2.2.2
+     */
+    public SchemaValidationFeature(boolean inbound, boolean outbound) {
+        this(inbound, outbound, DraconianValidationErrorHandler.class);
+    }
+
+    /**
+     * @since JAX-WS RI 2.2.2
+     */
+    @FeatureConstructor({"inbound", "outbound", "handler"})
+    public SchemaValidationFeature(boolean inbound, boolean outbound, Class<? extends ValidationErrorHandler> clazz) {
         this.enabled = true;
+        this.inbound = inbound;
+        this.outbound = outbound;
         this.clazz = clazz;
     }
 
@@ -87,5 +105,23 @@ public class SchemaValidationFeature extends WebServiceFeature {
     @ManagedAttribute
     public Class<? extends ValidationErrorHandler> getErrorHandler() {
         return clazz;
+    }
+
+    /**
+     * Turns validation on/off for inbound messages
+     *
+     * @since JAX-WS RI 2.2.2
+     */
+    public boolean isInbound() {
+        return inbound;
+    }
+
+    /**
+     * Turns validation on/off for outbound messages
+     *
+     * @since JAX-WS RI 2.2.2
+     */
+    public boolean isOutbound() {
+        return outbound;
     }
 }

@@ -121,7 +121,7 @@ public class ClientSchemaValidationTube extends AbstractSchemaValidationTube {
 
     @Override
     public NextAction processRequest(Packet request) {
-        if (isNoValidation() || !request.getMessage().hasPayload() || request.getMessage().isFault()) {
+        if (isNoValidation() || !feature.isOutbound() || !request.getMessage().hasPayload() || request.getMessage().isFault()) {
             return super.processRequest(request);
         }
         try {
@@ -134,7 +134,7 @@ public class ClientSchemaValidationTube extends AbstractSchemaValidationTube {
 
     @Override
     public NextAction processResponse(Packet response) {
-        if (isNoValidation() || response.getMessage() == null || !response.getMessage().hasPayload() || response.getMessage().isFault()) {
+        if (isNoValidation() || !feature.isInbound() || response.getMessage() == null || !response.getMessage().hasPayload() || response.getMessage().isFault()) {
             return super.processResponse(response);
         }
         try {
