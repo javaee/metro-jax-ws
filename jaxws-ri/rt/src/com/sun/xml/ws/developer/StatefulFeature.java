@@ -41,6 +41,7 @@ import com.sun.xml.ws.api.FeatureConstructor;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceFeature;
 
+import com.sun.xml.ws.api.ha.StickyFeature;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedData;
 
@@ -53,7 +54,7 @@ import org.glassfish.gmbal.ManagedData;
  * @see StatefulWebServiceManager
  */
 @ManagedData
-public class StatefulFeature extends WebServiceFeature {
+public class StatefulFeature extends WebServiceFeature implements StickyFeature {
     /**
      * Constant value identifying the StatefulFeature
      */
