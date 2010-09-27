@@ -88,7 +88,7 @@ public class WSDLModeler extends WSDLModelerBase {
     //map of wsdl:operation QName to <soapenv:Body> child, as per BP it must be unique in a port
     private final Map<QName, Operation> uniqueBodyBlocks = new HashMap<QName, Operation>();
     private final QName VOID_BODYBLOCK = new QName("");
-    private ClassNameCollector classNameCollector;
+    private final ClassNameCollector classNameCollector;
     private final String explicitDefaultPackage;
 
     public WSDLModeler(WsimportOptions options, ErrorReceiver receiver, MetadataFinder forest) {
@@ -1310,7 +1310,6 @@ public class WSDLModeler extends WSDLModelerBase {
             for(BindingFault bFault: info.bindingOperation.faults()) {
                 if (bFault.getName().equals(portTypeFault.getName())) {
                     bindingFault = bFault;
-                    continue;
                 }
             }
 
@@ -2595,7 +2594,6 @@ public class WSDLModeler extends WSDLModelerBase {
                         MessagePart outPart = outputMessage.getPart(param);
                         if (outPart != null) {
                             params.add(outPart);
-                            continue;
                         }
                     }
                 }
