@@ -791,7 +791,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         TypeDeclaration typeDecl = ((DeclaredType)type).getDeclaration();
         if(typeDecl == null) {
             // can be null, if this type's declaration is unknown. This may be the result of a processing error, such as a missing class file.
-            builder.onError(WebserviceapMessages.WEBSERVICEAP_COULD_NOT_FIND_TYPEDECL(typeDecl.toString(), context.getRound()));
+            builder.onError(WebserviceapMessages.WEBSERVICEAP_COULD_NOT_FIND_TYPEDECL(type.toString(), context.getRound()));
         }
         return !builder.isRemote(typeDecl);
     }
