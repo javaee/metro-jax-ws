@@ -2316,7 +2316,7 @@ public class WSDLModeler extends WSDLModelerBase {
         JAXWSBinding jaxwsCust = (JAXWSBinding) getExtensionOfType(wsdlService, JAXWSBinding.class);
         if (jaxwsCust != null && jaxwsCust.getClassName() != null) {
             CustomName name = jaxwsCust.getClassName();
-            if (name != null && !name.equals(""))
+            if (name != null && !name.getName().equals(""))
                 return makePackageQualified(name.getName());
         }
         return makePackageQualified(JAXBRIContext.mangleNameToClassName(serviceName));
