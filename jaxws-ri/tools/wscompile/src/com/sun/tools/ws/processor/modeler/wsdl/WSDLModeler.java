@@ -232,9 +232,8 @@ public class WSDLModeler extends WSDLModelerBase {
      * @see WSDLModelerBase#processService(Service, Model, WSDLDocument)
      */
     protected void processService(com.sun.tools.ws.wsdl.document.Service wsdlService, Model model, WSDLDocument document) {
-        String serviceInterface = "";
         QName serviceQName = getQNameOf(wsdlService);
-        serviceInterface = getServiceInterfaceName(serviceQName, wsdlService);
+        String serviceInterface = getServiceInterfaceName(serviceQName, wsdlService);
         if (isConflictingServiceClassName(serviceInterface)) {
             serviceInterface += "_Service";
         }
@@ -532,7 +531,7 @@ public class WSDLModeler extends WSDLModelerBase {
         info.operation = operation;
         info.operation.setWSDLPortTypeOperation(info.portTypeOperation);
 
-        Response response = null;
+        Response response;
 
         Message outputMessage = null;
         if (isRequestResponse) {
@@ -549,10 +548,9 @@ public class WSDLModeler extends WSDLModelerBase {
         // Process parameterOrder and get the parameterList
         List<MessagePart> parameterList = getParameterOrder();
 
-        List<Parameter> params = null;
         boolean unwrappable = isUnwrappable();
         info.operation.setWrapped(unwrappable);
-            params = getDoclitParameters(request, response, parameterList);
+        List<Parameter> params = getDoclitParameters(request, response, parameterList);
         if (!validateParameterName(params)) {
             return null;
         }
@@ -719,7 +717,7 @@ public class WSDLModeler extends WSDLModelerBase {
         }
 
 
-        Response response = null;
+        Response response;
 
         SOAPBody soapResponseBody = null;
         Message outputMessage = null;
@@ -827,9 +825,7 @@ public class WSDLModeler extends WSDLModelerBase {
         }
 
         Iterator<Block> bb = request.getBodyBlocks();
-        QName body = VOID_BODYBLOCK;
-        QName opName = null;
-
+        QName body;
         Operation thatOp;
         if (bb.hasNext()) {
             body = bb.next().getName();
@@ -1076,15 +1072,10 @@ public class WSDLModeler extends WSDLModelerBase {
 
         Message inputMessage = getInputMessage();
         Request request = new Request(inputMessage, errReceiver);
-        Response response = new Response(null, errReceiver);
 
-        SOAPBody soapResponseBody = null;
-        Message outputMessage = null;
-        if (isRequestResponse) {
-            soapResponseBody = getSOAPResponseBody();
-            outputMessage = getOutputMessage();
-            response = new Response(outputMessage, errReceiver);
-        }
+        SOAPBody soapResponseBody = getSOAPResponseBody();
+        Message outputMessage = getOutputMessage();
+        Response response = new Response(outputMessage, errReceiver);
 
         // Process parameterOrder and get the parameterList
         java.util.List<String> parameterList = getAsynParameterOrder();
@@ -1150,35 +1141,31 @@ public class WSDLModeler extends WSDLModelerBase {
         // handle headers
         int numOfOutMsgParts = outputParts.size();
 
-        if (isRequestResponse) {
-            if (numOfOutMsgParts == 1) {
-                MessagePart part = outputParts.get(0);
-                if (isOperationDocumentLiteral(styleAndUse)) {
-                    JAXBType type = getJAXBType(part);
-                    operation.setResponseBean(type);
-                } else if (isOperationRpcLiteral(styleAndUse)) {
-                    String operationName = info.bindingOperation.getName();
-                    Block resBlock = null;
-                    if (isRequestResponse && outputMessage != null) {
-                        resBlock = info.operation.getResponse().getBodyBlocksMap().get(new QName(getResponseNamespaceURI(soapResponseBody),
-                                operationName + "Response"));
-                    }
-                    RpcLitStructure resBean = (resBlock == null) ? null : (RpcLitStructure) resBlock.getType();
-                    List<RpcLitMember> members = resBean.getRpcLitMembers();
+        if (numOfOutMsgParts == 1) {
+            MessagePart part = outputParts.get(0);
+            if (isOperationDocumentLiteral(styleAndUse)) {
+                JAXBType type = getJAXBType(part);
+                operation.setResponseBean(type);
+            } else if (isOperationRpcLiteral(styleAndUse)) {
+                String operationName = info.bindingOperation.getName();
+                Block resBlock = info.operation.getResponse().getBodyBlocksMap().get(new QName(getResponseNamespaceURI(soapResponseBody),
+                        operationName + "Response"));
 
-                    operation.setResponseBean(members.get(0));
-                }
-            } else {
-                //create response bean
-                String nspace = "";
-                QName responseBeanName = new QName(nspace, getAsyncOperationName(info.operation) + "Response");
-                JAXBType responseBeanType = jaxbModelBuilder.getJAXBType(responseBeanName);
-                if(responseBeanType == null){
-                    error(info.operation.getEntity(), ModelerMessages.WSDLMODELER_RESPONSEBEAN_NOTFOUND(info.operation.getName()));
-                }                
-                operation.setResponseBean(responseBeanType);
+                RpcLitStructure resBean = (RpcLitStructure) resBlock.getType();
+                List<RpcLitMember> members = resBean.getRpcLitMembers();
+                operation.setResponseBean(members.get(0));
             }
+        } else {
+            //create response bean
+            String nspace = "";
+            QName responseBeanName = new QName(nspace, getAsyncOperationName(info.operation) + "Response");
+            JAXBType responseBeanType = jaxbModelBuilder.getJAXBType(responseBeanName);
+            if (responseBeanType == null) {
+                error(info.operation.getEntity(), ModelerMessages.WSDLMODELER_RESPONSEBEAN_NOTFOUND(info.operation.getName()));
+            }
+            operation.setResponseBean(responseBeanType);
         }
+
         QName respBeanName = new QName(soapResponseBody.getNamespace(), getAsyncOperationName(info.operation) + "Response");
         Block block = new Block(respBeanName, operation.getResponseBeanType(), outputMessage);
         JavaType respJavaType = operation.getResponseBeanJavaType();
@@ -1192,9 +1179,7 @@ public class WSDLModeler extends WSDLModelerBase {
         List<String> definitiveParameterList = new ArrayList<String>();
         int parameterOrderPosition = 0;
         for (String name : parameterList) {
-            Parameter inParameter = null;
-
-            inParameter = ModelerUtils.getParameter(name, inParameters);
+            Parameter inParameter = ModelerUtils.getParameter(name, inParameters);
             if (inParameter == null) {
                 if (options.isExtensionMode())
                     warning(info.operation.getEntity(), ModelerMessages.WSDLMODELER_WARNING_IGNORING_OPERATION_PART_NOT_FOUND(info.operation.getName().getLocalPart(), name));
@@ -1208,9 +1193,7 @@ public class WSDLModeler extends WSDLModelerBase {
             parameterOrderPosition++;
         }
 
-        if (isRequestResponse) {
-            operation.setResponse(response);
-        }
+        operation.setResponse(response);
 
         //  add callback handlerb Parameter to request
         if (operation.getAsyncType().equals(AsyncOperationType.CALLBACK)) {
@@ -1235,12 +1218,10 @@ public class WSDLModeler extends WSDLModelerBase {
 
         // then into wsdl:portType
         QName portTypeName = new QName(portType.getDefining().getTargetNamespaceURI(), portType.getName());
-        if (portTypeName != null) {
-            jaxwsCustomization = (JAXWSBinding) getExtensionOfType(portType, JAXWSBinding.class);
-            isAsync = (jaxwsCustomization != null) ? jaxwsCustomization.isEnableAsyncMapping() : null;
-            if (isAsync != null)
-                return isAsync;
-        }
+        jaxwsCustomization = (JAXWSBinding) getExtensionOfType(portType, JAXWSBinding.class);
+        isAsync = (jaxwsCustomization != null) ? jaxwsCustomization.isEnableAsyncMapping() : null;
+        if (isAsync != null)
+            return isAsync;
 
         //then wsdl:definitions
         jaxwsCustomization = (JAXWSBinding) getExtensionOfType(document.getDefinitions(), JAXWSBinding.class);
@@ -1251,9 +1232,9 @@ public class WSDLModeler extends WSDLModelerBase {
     }
 
     protected void handleLiteralSOAPHeaders(Request request, Response response, Iterator headerParts, Set duplicateNames, List<String> definitiveParameterList, boolean processRequest) {
-        QName headerName = null;
-        Block headerBlock = null;
-        JAXBType jaxbType = null;
+        QName headerName;
+        Block headerBlock;
+        JAXBType jaxbType;
         int parameterOrderPosition = definitiveParameterList.size();
         while (headerParts.hasNext()) {
             MessagePart part = (MessagePart) headerParts.next();
@@ -1450,8 +1431,8 @@ public class WSDLModeler extends WSDLModelerBase {
         List<MessagePart> parts = new ArrayList<MessagePart>();
 
         //get Mime parts
-        List<MessagePart> mimeParts = null;
-        List<MessagePart> headerParts = null;
+        List<MessagePart> mimeParts;
+        List<MessagePart> headerParts;
         List<MessagePart> bodyParts = getBodyParts(body, message);
 
         if (isInput) {
@@ -1635,7 +1616,7 @@ public class WSDLModeler extends WSDLModelerBase {
      * @return Returns a JAXBType object
      */
     private JAXBType getJAXBType(MessagePart part) {
-        JAXBType type = null;
+        JAXBType type;
         QName name = part.getDescriptor();
         if (part.getDescriptorKind().equals(SchemaKinds.XSD_ELEMENT)) {
             type = jaxbModelBuilder.getJAXBType(name);
@@ -1727,7 +1708,7 @@ public class WSDLModeler extends WSDLModelerBase {
                         res.addHeaderBlock(block);
                     }
                 } else if (ModelerUtils.isBoundToMimeContent(part)) {
-                    List<MIMEContent> mimeContents = null;
+                    List<MIMEContent> mimeContents;
 
                     if (part.isIN()) {
                         mimeContents = getMimeContents(info.bindingOperation.getInput(),
@@ -1761,10 +1742,9 @@ public class WSDLModeler extends WSDLModelerBase {
                         if ((((inTa != null) && (outTa != null) && inTa.equals(outTa))) && !inType.equals(outType)) {
                             String javaType = "javax.activation.DataHandler";
 
-                            S2JJAXBModel jaxbModel = getJAXBModelBuilder().getJAXBModel().getS2JJAXBModel();
+                            //S2JJAXBModel jaxbModel = getJAXBModelBuilder().getJAXBModel().getS2JJAXBModel();
                             //JCodeModel cm = jaxbModel.generateCode(null, errReceiver);
-                            JType jt = null;
-                            jt = options.getCodeModel().ref(javaType);
+                            JType jt = options.getCodeModel().ref(javaType);
                             JAXBTypeAndAnnotation jaxbTa = jaxbType.getJavaType().getType();
                             jaxbTa.setType(jt);
                         }
@@ -1865,7 +1845,7 @@ public class WSDLModeler extends WSDLModelerBase {
                     res.addHeaderBlock(headerBlock);
                 }
             } else if (ModelerUtils.isBoundToMimeContent(part)) {
-                List<MIMEContent> mimeContents = null;
+                List<MIMEContent> mimeContents;
                 if (part.isIN() || part.isINOUT())
                     mimeContents = getMimeContents(info.bindingOperation.getInput(),
                             getInputMessage(), part.getName());
@@ -1891,8 +1871,7 @@ public class WSDLModeler extends WSDLModelerBase {
                     String outType = outJaxbType.getJavaType().getType().getName();
                     if (!inType.equals(outType)) {
                         String javaType = "javax.activation.DataHandler";
-                        JType jt = null;
-                        jt = options.getCodeModel().ref(javaType);
+                        JType jt = options.getCodeModel().ref(javaType);
                         JAXBTypeAndAnnotation jaxbTa = type.getJavaType().getType();
                         jaxbTa.setType(jt);
                     }
@@ -1939,9 +1918,9 @@ public class WSDLModeler extends WSDLModelerBase {
             return new ArrayList<Parameter>();
 
         List<Parameter> inParameters = null;
-        QName reqBodyName = null;
-        Block reqBlock = null;
-        JAXBType jaxbReqType = null;
+        QName reqBodyName;
+        Block reqBlock;
+        JAXBType jaxbReqType;
         boolean unwrappable = isUnwrappable();
         boolean doneSOAPBody = false;
         //setup request parameters
@@ -2197,7 +2176,7 @@ public class WSDLModeler extends WSDLModelerBase {
         if (!enableMimeContent()) {
             return getJAXBType(part);
         }
-        String javaType = null;
+        String javaType;
         List<String> mimeTypes = getAlternateMimeTypes(mimeContents);
         if (mimeTypes.size() > 1) {
             javaType = "javax.activation.DataHandler";
@@ -2206,8 +2185,7 @@ public class WSDLModeler extends WSDLModelerBase {
         }
 
         S2JJAXBModel jaxbModel = getJAXBModelBuilder().getJAXBModel().getS2JJAXBModel();
-        JType jt = null;
-        jt = options.getCodeModel().ref(javaType);
+        JType jt = options.getCodeModel().ref(javaType);
         QName desc = part.getDescriptor();
         TypeAndAnnotation typeAnno = null;
 
@@ -2339,7 +2317,7 @@ public class WSDLModeler extends WSDLModelerBase {
             }
         }
 
-        String interfaceName = null;
+        String interfaceName;
         if (portTypeName != null) {
             // got portType information from WSDL, use it to name the interface
             interfaceName =
@@ -2360,7 +2338,7 @@ public class WSDLModeler extends WSDLModelerBase {
         Iterator requestBodyBlocks = request.getBodyBlocks();
         Block requestBlock =
                 (requestBodyBlocks.hasNext()
-                        ? (Block) request.getBodyBlocks().next()
+                        ? request.getBodyBlocks().next()
                         : null);
 
         Response response = operation.getResponse();
@@ -2370,7 +2348,7 @@ public class WSDLModeler extends WSDLModelerBase {
             responseBodyBlocks = response.getBodyBlocks();
             responseBlock =
                     responseBodyBlocks.hasNext()
-                            ? (Block) response.getBodyBlocks().next()
+                            ? response.getBodyBlocks().next()
                             : null;
         }
 
@@ -2504,7 +2482,7 @@ public class WSDLModeler extends WSDLModelerBase {
             exceptionName += "_Exception";
         }
 
-        JavaException existingJavaException = (JavaException) _javaExceptions.get(exceptionName);
+        JavaException existingJavaException = _javaExceptions.get(exceptionName);
         if (existingJavaException != null) {
             if (existingJavaException.getName().equals(exceptionName)) {
                 if (((JAXBType) existingJavaException.getOwner()).getName().equals(jaxbStruct.getName())
