@@ -507,7 +507,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     }
 
-    public static  CompletionCallback NO_OP_COMPLETION_CALLBACK = new CompletionCallback() {
+    public static  final CompletionCallback NO_OP_COMPLETION_CALLBACK = new CompletionCallback() {
 
         public void onCompletion() {
             //NO-OP
