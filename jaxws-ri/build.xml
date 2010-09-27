@@ -968,12 +968,13 @@
             <auxclasspath>
                 <fileset dir="${build.home}/lib" includes="*.jar" excludes="jaxws-rt.jar, jaxws-tools.jar"/>
                 <fileset file="${java.home}/../lib/tools.jar"/>
-                <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
+                <fileset dir="${basedir}/servlet/lib" includes="javax.servlet.jar"/>
                 <fileset dir="${basedir}/lib" includes="ant.jar"/>
             </auxclasspath>
             <sourcepath>
                 <pathelement location="${basedir}/rt/src"/>
-                <pathelement location="${basedir}/wscompile/src"/>                
+                <pathelement location="${basedir}/tools/wscompile/src"/>
+                <pathelement location="${basedir}/servlet/src"/>
             </sourcepath>
             <class location="${build.home}/lib/jaxws-rt.jar"/>
             <class location="${build.home}/lib/jaxws-tools.jar"/>
@@ -989,12 +990,13 @@
             <auxclasspath>
                 <fileset dir="${build.home}/lib" includes="*.jar" excludes="jaxws-rt.jar, jaxws-tools.jar"/>
                 <fileset file="${java.home}/../lib/tools.jar"/>
-                <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
+                <fileset dir="${basedir}/servlet/lib" includes="javax.servlet.jar"/>
                 <fileset dir="${basedir}/lib" includes="ant.jar"/>
             </auxclasspath>
             <sourcepath>
                 <pathelement location="${basedir}/rt/src"/>
-                <pathelement location="${basedir}/wscompile/src"/>
+                <pathelement location="${basedir}/tools/wscompile/src"/>
+                <pathelement location="${basedir}/servlet/src"/>
             </sourcepath>
             <class location="${build.home}/lib/jaxws-rt.jar"/>
             <class location="${build.home}/lib/jaxws-tools.jar"/>
