@@ -216,10 +216,13 @@ public class WsimportTool {
                 options.getCodeModel().build(cw);
             } catch(AbortException e){
                 //error might have been reported
+                return false;
             }catch (IOException e) {
                 receiver.error(e);
+                return false;
             }catch (XMLStreamException e) {
                 receiver.error(e);
+                return false;
             }
 
             if (!options.nocompile){
@@ -237,6 +240,7 @@ public class WsimportTool {
                 }
             } catch (IOException e) {
                 receiver.error(e);
+                return false;
             }
         } catch (Options.WeAreDone done) {
             usage(done.getOptions());
@@ -250,6 +254,9 @@ public class WsimportTool {
         } finally{
             deleteGeneratedFiles();
 
+        }
+        if(receiver.hadError()) {
+            return false;
         }
         return true;
     }
