@@ -116,7 +116,7 @@ abstract class AbstractExtensibleImpl extends AbstractObjectImpl implements WSDL
         notUnderstoodExtensions.add(new UnknownWSDLExtension(extnEl, locator));
     }
 
-    protected class UnknownWSDLExtension implements WSDLExtension, WSDLObject {
+    protected static class UnknownWSDLExtension implements WSDLExtension, WSDLObject {
         private final QName extnEl;
         private final Locator locator;
         public UnknownWSDLExtension(QName extnEl, Locator locator) {
