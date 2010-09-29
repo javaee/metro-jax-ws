@@ -382,9 +382,9 @@ class RewritingMOM implements ManagedObjectManager
 {
     private final ManagedObjectManager mom;
 
-    private final String gmbalQuotingCharsRegex = "\n|\\|\"|\\*|\\?|:|=|,";
-    private final String jmxQuotingCharsRegex   = ",|=|:|\"";
-    private final String replacementChar        = "-";
+    private final static String gmbalQuotingCharsRegex = "\n|\\|\"|\\*|\\?|:|=|,";
+    private final static String jmxQuotingCharsRegex   = ",|=|:|\"";
+    private final static String replacementChar        = "-";
 
     RewritingMOM(final ManagedObjectManager mom) { this.mom = mom; }
 
