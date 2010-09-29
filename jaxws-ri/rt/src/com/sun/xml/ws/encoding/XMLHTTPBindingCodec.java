@@ -99,12 +99,12 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
     /**
      * The Accept header for XML encodings
      */
-    private final String xmlAccept;
+    private static final String xmlAccept = null;
     
     /**
      * The Accept header for Fast Infoset and XML encodings
      */
-    private final String fiXmlAccept;
+    private static final String fiXmlAccept = APPLICATION_FAST_INFOSET_MIME_TYPE + ", " + BASE_ACCEPT_VALUE;
     
     private class AcceptContentType implements ContentType {
         private ContentType _c;
@@ -143,11 +143,6 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
         xmlCodec = new XMLCodec(binding);
         
         fiCodec = getFICodec();
-        
-        xmlAccept = null;
-        
-        fiXmlAccept = APPLICATION_FAST_INFOSET_MIME_TYPE + ", " +
-                BASE_ACCEPT_VALUE;
     }
     
     public String getMimeType() {
