@@ -1535,15 +1535,14 @@ public class RuntimeModeler {
     }
 
     private static Boolean getProperty(final String prop) {
-        Boolean b = AccessController.doPrivileged(
+        return AccessController.doPrivileged(
             new java.security.PrivilegedAction<Boolean>() {
                 public Boolean run() {
                     String value = System.getProperty(prop);
                     return value != null ? Boolean.valueOf(value) : Boolean.FALSE;
                 }
             }
-        );
-        return Boolean.FALSE;
+        );        
     }
 
     private static QName getReturnQName(Method method, WebResult webResult, XmlElement xmlElem) {
