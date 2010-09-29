@@ -1,7 +1,7 @@
 @echo off  
 
 REM
-REM $Id: build.bat,v 1.8 2007-05-30 00:58:16 ofung Exp $
+REM $Id: build.bat,v 1.8.4.1 2010-09-29 01:26:51 jitu Exp $
 REM
 REM This script is optional and for convenience only.
 
@@ -54,7 +54,7 @@ shift
 goto setArgs
 :doneSetArgs
 
-set LOCALCLASSPATH=%JAVA_HOME%\lib\tools.jar;.\lib\ant.jar;.\lib\ant-junit.jar;.\lib\ant-launcher.jar;.\lib\ant-nodeps.jar;.\lib\ant-trax.jar
+set LOCALCLASSPATH=%JAVA_HOME%\lib\tools.jar;.\lib\ant.jar;.\lib\ant-junit.jar;.\lib\ant-launcher.jar;.\lib\ant-nodeps.jar;.\lib\ant-trax.jar;.\lib\junit.jar
 set ANT_HOME=./lib
 
 echo Building with classpath %LOCALCLASSPATH%
