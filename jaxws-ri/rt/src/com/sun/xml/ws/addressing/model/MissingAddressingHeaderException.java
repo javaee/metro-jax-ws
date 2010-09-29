@@ -51,7 +51,7 @@ import javax.xml.namespace.QName;
  */
 public class MissingAddressingHeaderException extends WebServiceException {
     private final QName name;
-    private final Packet packet;
+    private transient final Packet packet;
 
     /**
      *
