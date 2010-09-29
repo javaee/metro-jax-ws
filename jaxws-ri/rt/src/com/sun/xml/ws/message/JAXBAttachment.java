@@ -82,11 +82,13 @@ public final class JAXBAttachment implements Attachment, DataSource {
     }
 
     public byte[] asByteArray() {
+        ByteArrayBuffer bab = new ByteArrayBuffer();
         try {
-            return ASCIIUtility.getBytes(asInputStream());
+            writeTo(bab);
         } catch (IOException e) {
             throw new WebServiceException(e);
         }
+        return bab.getRawData();
     }
 
     public DataHandler asDataHandler() {
