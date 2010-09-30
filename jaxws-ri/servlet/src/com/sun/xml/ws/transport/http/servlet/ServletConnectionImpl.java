@@ -37,6 +37,7 @@
 package com.sun.xml.ws.transport.http.servlet;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.ha.ReplicaInfo;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.api.server.WSEndpoint;
@@ -77,6 +78,7 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
     private Headers requestHeaders;
     private final HttpAdapter adapter;
     private Headers responseHeaders;
+    private ReplicaInfo replicaInfo;
 
     public ServletConnectionImpl(@NotNull HttpAdapter adapter, ServletContext context, HttpServletRequest request, HttpServletResponse response) {
         this.adapter = adapter;
@@ -277,6 +279,39 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
             }
         }
         return null;
+    }
+
+    @Override
+    public void setCookie(String name, String value) {
+        Cookie cookie = new Cookie(name, value);
+        response.addCookie(cookie);
+    }
+
+    @Property(Packet.REPLICA_INFO)
+    public ReplicaInfo getReplicaInfo() {
+        if (replicaInfo == null) {
+            String replicaInstance = null;
+            String key = null;
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for(Cookie cookie : cookies) {
+                    if (replicaInstance == null && cookie.getName().equals("JREPLICA")) {
+                        replicaInstance = cookie.getValue();
+                    }
+                    if (key == null && cookie.getName().equals("METRO_KEY")) {
+                        key = cookie.getValue();
+                    }
+                    if (replicaInstance != null && key != null) {
+                        break;
+                    }
+                }
+            }
+        }
+        return replicaInfo;
+    }
+
+    public void setReplicaInfo(ReplicaInfo replicaInfo) {
+        this.replicaInfo = replicaInfo;
     }
 
     protected PropertyMap getPropertyMap() {

@@ -270,10 +270,20 @@ public abstract class WSHTTPConnection extends PropertySet {
     /**
      * Subclasses are expected to override
      *
+     * @since JAX-WS RI 2.2.2
      * @return
      */
     public String getCookie(String name) {
         return null;
+    }
+
+    /**
+     * Subclasses are expected to override
+     *
+     *
+     * @since JAX-WS RI 2.2.2
+     */
+    public void setCookie(String name, String value) {
     }
 
     /**

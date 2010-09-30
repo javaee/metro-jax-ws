@@ -41,6 +41,7 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
+import com.sun.xml.ws.api.ha.ReplicaInfo;
 import com.sun.xml.ws.api.ha.StickyFeature;
 import com.sun.xml.ws.api.message.ExceptionHasMessage;
 import com.sun.xml.ws.api.message.Message;
@@ -369,6 +370,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         }
         Message responseMessage = packet.getMessage();
         addStickyCookie(con, packet);
+        addReplicaCookie(con, packet);
         if (responseMessage == null) {
             if (!con.isClosed()) {
                 // set the response code if not already set
@@ -442,23 +444,20 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             String jrouteId = con.getCookie("JROUTE");
             if (jrouteId == null || !jrouteId.equals(proxyJroute)) {
                 // Initial request or failover
-                String key = Packet.OUTBOUND_TRANSPORT_HEADERS;
-                if (packet.supports(key)) {
-                    Map<String, List<String>> headers = (Map<String, List<String>>)packet.get(key);
-                    if (headers == null) {
-                        headers = new HashMap<String, List<String>>();
-                    }
-                    String cookie = "JROUTE="+proxyJroute;
-                    String addr = con.getWebServiceContextDelegate().getEPRAddress(packet, endpoint);
-                    int index = addr.indexOf('/', 8);       // Get path from http(s)://../path
-                    if (index != -1) {
-                        String path = addr.substring(index);
-                        cookie += "; Path="+path;
-                    }
-                    List<String> jsessionCookie = Collections.singletonList(cookie);
-                    headers.put("Set-Cookie", jsessionCookie);
-                    packet.put(key, headers);
-                }
+                con.setCookie("JROUTE", proxyJroute);
+            }
+        }
+    }
+
+    private void addReplicaCookie(WSHTTPConnection con, Packet packet) {
+        if (stickyCookie) {
+            ReplicaInfo replicaInfo = null;
+            if (packet.supports(Packet.REPLICA_INFO)) {
+                replicaInfo = (ReplicaInfo)packet.get(Packet.REPLICA_INFO);
+            }
+            if (replicaInfo != null) {
+                con.setCookie("METRO_KEY", replicaInfo.getKey());
+                con.setCookie("JEPLICA", replicaInfo.getReplicaInstance());
             }
         }
     }

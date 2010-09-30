@@ -314,6 +314,11 @@ public final class Packet extends DistributedPropertySet {
      */
     public static final String OUTBOUND_TRANSPORT_HEADERS = "com.sun.xml.ws.api.message.packet.outbound.transport.headers";
 
+    /**
+     * 
+     */
+     public static final String REPLICA_INFO = "com.sun.xml.ws.api.message.packet.replica";
+
 
     /**
      * This property holds the snapshot of HandlerConfiguration
