@@ -419,6 +419,18 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         }
     }
 
+    /**
+     * GlassFish Load-balancer plugin always add a header proxy-jroute on
+     * request being send from load-balancer plugin to server
+     *
+     * JROUTE cookie need to be stamped in two cases
+     * 1 : At the time of session creation. In this case, request will not have
+     * any JROUTE cookie.
+     * 2 : At the time of fail-over. In this case, value of proxy-jroute
+     * header(will point to current instance) and JROUTE cookie(will point to
+     * previous failed instance) will be different. This logic can be used
+     * to determine fail-over scenario.
+     */
     private void addStickyCookie(WSHTTPConnection con, Packet packet) {
         if (stickyCookie) {
             String proxyJroute = con.getRequestHeader("proxy-jroute");
@@ -427,7 +439,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 return;
             }
 
-            String jrouteId = con.getRequestHeader("JROUTE");
+            String jrouteId = con.getCookie("JROUTE");
             if (jrouteId == null || !jrouteId.equals(proxyJroute)) {
                 // Initial request or failover
                 String key = Packet.OUTBOUND_TRANSPORT_HEADERS;

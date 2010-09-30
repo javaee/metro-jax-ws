@@ -112,7 +112,7 @@ public abstract class WSHTTPConnection extends PropertySet {
      * the previously set value. If not, this method adds it.
      *
      * <p>
-     * Note that this method and {@link #setResponseHeaders(Map<String,List<String>>)}
+     * Note that this method and {@link #setResponseHeaders(Map&lt;String,List&lt;String>>)}
      * may be invoked in any arbitrary order.
      *
      * @param value
@@ -265,6 +265,15 @@ public abstract class WSHTTPConnection extends PropertySet {
      */
     public String getProtocol() {
         return "HTTP/1.1";
+    }
+
+    /**
+     * Subclasses are expected to override
+     *
+     * @return
+     */
+    public String getCookie(String name) {
+        return null;
     }
 
     /**

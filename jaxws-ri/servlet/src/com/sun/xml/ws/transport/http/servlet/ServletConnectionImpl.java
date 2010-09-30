@@ -48,6 +48,7 @@ import com.sun.xml.ws.transport.http.WSHTTPConnection;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -263,7 +264,20 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
     @Override
     public void setContentLengthResponseHeader(int value) {
         response.setContentLength(value);
-    }    
+    }
+
+    @Override
+    public String getCookie(String name) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for(Cookie cookie : cookies) {
+                if (cookie.getName().equals(name)) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
 
     protected PropertyMap getPropertyMap() {
         return model;
