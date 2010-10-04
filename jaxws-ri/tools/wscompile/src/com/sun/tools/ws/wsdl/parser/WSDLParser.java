@@ -369,10 +369,12 @@ public class WSDLParser {
                 MessagePart part = parseMessagePart(context, e2);
                 message.add(part);
             } else {
-                Util.fail(
+                //Ignore any extensibility elements, WS-I BP 1.1 Profiled WSDL 1.1 schema allows extension elements here.
+                /*Util.fail(
                     "parsing.invalidElement",
                     e2.getTagName(),
                     e2.getNamespaceURI());
+                    */
             }
         }
 
