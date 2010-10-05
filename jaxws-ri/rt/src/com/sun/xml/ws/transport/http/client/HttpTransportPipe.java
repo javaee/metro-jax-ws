@@ -48,6 +48,10 @@ import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.util.StreamUtils;
 
+import javax.xml.bind.DatatypeConverter;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.handler.MessageContext;
@@ -59,6 +63,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.net.HttpURLConnection;
+
+import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
+import static javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY;
 
 /**
  * {@link Pipe} and {@link Tube} that sends a request to a remote HTTP server.
@@ -73,6 +80,14 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     private final Codec codec;
     private final WSBinding binding;
     private static final List<String> USER_AGENT = Collections.singletonList(RuntimeVersion.VERSION.toString());
+    // Need to use JAXB first to register DatatypeConverter
+    static {
+        try {
+            JAXBContext.newInstance().createUnmarshaller();
+        } catch(JAXBException je) {
+            // Nothing much can be done. Intentionally left empty
+        }
+    }
 
     public HttpTransportPipe(Codec codec, WSBinding binding) {
         this.codec = codec;
@@ -118,6 +133,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             if (addUserAgent) {
                 reqHeaders.put("User-Agent", USER_AGENT);
             }
+
+            addBasicAuth(request, reqHeaders);
+            addCookies(request, reqHeaders);
 
             con = new HttpClientTransport(request,reqHeaders);
             request.addSatellite(new HttpResponseProperties(con));
@@ -179,6 +197,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
 
     private Packet createResponsePacket(Packet request, HttpClientTransport con) throws IOException {
         con.readResponseCodeAndMessage();   // throws IOE
+        recordCookies(request, con);
 
         InputStream responseStream = con.getInput();
         if (dump) {
@@ -272,6 +291,42 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             return true;
         }
         return false;
+    }
+
+    private void addCookies(Packet context, Map<String, List<String>> reqHeaders) {
+        Boolean shouldMaintainSessionProperty =
+            (Boolean) context.invocationProperties.get(SESSION_MAINTAIN_PROPERTY);
+        if (shouldMaintainSessionProperty != null && shouldMaintainSessionProperty) {
+            CookieJar cookieJar = (CookieJar) context.invocationProperties.get(HTTP_COOKIE_JAR);
+            if (cookieJar == null) {
+                cookieJar = new CookieJar();
+                context.invocationProperties.put(HTTP_COOKIE_JAR, cookieJar);
+                // need to store in binding's context so it is not lost
+                context.proxy.getRequestContext().put(HTTP_COOKIE_JAR, cookieJar);
+            }
+            cookieJar.applyRelevantCookies(context.endpointAddress.getURL(), reqHeaders);
+        }
+    }
+
+    private void recordCookies(Packet context, HttpClientTransport con) {
+        CookieJar cookieJar = (CookieJar)context.invocationProperties.get(HTTP_COOKIE_JAR);
+        if (cookieJar != null) {
+            cookieJar.recordAnyCookies(context.endpointAddress.getURL(), con.getHeaders());
+        }
+    }
+
+    private void addBasicAuth(Packet context, Map<String, List<String>> reqHeaders) {
+        String user = (String) context.invocationProperties.get(BindingProvider.USERNAME_PROPERTY);
+        if (user != null) {
+            String pw = (String) context.invocationProperties.get(BindingProvider.PASSWORD_PROPERTY);
+            if (pw != null) {
+                StringBuffer buf = new StringBuffer(user);
+                buf.append(":");
+                buf.append(pw);
+                String creds = DatatypeConverter.printBase64Binary(buf.toString().getBytes());
+                reqHeaders.put("Authorization", Collections.singletonList("Basic "+creds));
+            }
+        }
     }
 
 //    private void checkStatusCodeOneway(InputStream in, int statusCode, String statusMessage) throws IOException {

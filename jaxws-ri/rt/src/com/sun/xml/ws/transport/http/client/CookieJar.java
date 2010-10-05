@@ -36,12 +36,8 @@
 
 package com.sun.xml.ws.transport.http.client;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Generic class to hold onto HTTP cookies.  Can record, retrieve, and
@@ -71,18 +67,11 @@ public class CookieJar {
      */
 
 
-    public synchronized void recordAnyCookies(URLConnection connection) {
-
-        HttpURLConnection httpConn = (HttpURLConnection) connection;
-        String headerKey;
-
-        for (int hi = 1;
-            (headerKey = httpConn.getHeaderFieldKey(hi)) != null;
-            hi++) {
-            if (headerKey.equalsIgnoreCase("set-cookie")) {
-                String cookieValue = httpConn.getHeaderField(hi);
-
-                recordCookie(httpConn, cookieValue);
+    public synchronized void recordAnyCookies(URL url, Map<String, List<String>> resHeaders) {
+        List<String> cookies = resHeaders.get("Set-Cookie");
+        if (cookies != null) {
+            for(String cookie : cookies) {
+                recordCookie(url, cookie);
             }
         }
     }
@@ -91,9 +80,9 @@ public class CookieJar {
      * Create a cookie from the cookie, and use the HttpURLConnection to
      * fill in unspecified values in the cookie with defaults.
      */
-    private void recordCookie(HttpURLConnection httpConn, String cookieValue) {
+    private void recordCookie(URL url, String cookieValue) {
 
-        HttpCookie cookie = new HttpCookie(httpConn.getURL(), cookieValue);
+        HttpCookie cookie = new HttpCookie(url, cookieValue);
 
         // First, check to make sure the cookie's domain matches the
         // server's, and has the required number of '.'s
@@ -106,7 +95,7 @@ public class CookieJar {
 
         domain = domain.toLowerCase();
 
-        String host = httpConn.getURL().getHost();
+        String host = url.getHost();
 
         host = host.toLowerCase();
 
@@ -266,17 +255,10 @@ public class CookieJar {
         return false;
     }
 
-    // ab oct/17/01 - added synchronized
-    public synchronized void applyRelevantCookies(URLConnection connection) {
-        this.applyRelevantCookies(connection.getURL(), connection);
-    }
-
-    private void applyRelevantCookies(URL url, URLConnection connection) {
-
-        HttpURLConnection httpConn = (HttpURLConnection) connection;
+    public synchronized void applyRelevantCookies(URL url, Map<String, List<String>> reqHeaders) {
         String host = url.getHost();
 
-        applyCookiesForHost(host, url, httpConn);
+        applyCookiesForHost(host, url, reqHeaders);
 
         // REMIND: should be careful about IP addresses here.
         int index;
@@ -286,7 +268,7 @@ public class CookieJar {
             // trim off everything up to, and including the dot.
             host = host.substring(index + 1);
 
-            applyCookiesForHost(host, url, httpConn);
+            applyCookiesForHost(host, url, reqHeaders);
         }
     }
 
@@ -298,7 +280,7 @@ public class CookieJar {
     private void applyCookiesForHost(
         String host,
         URL url,
-        HttpURLConnection httpConn) {
+        Map<String, List<String>> reqHeaders) {
 
         //System.out.println("X0"+cookieJar.size());
         Vector<HttpCookie> cookieList = cookieJar.get(host);
@@ -421,7 +403,7 @@ public class CookieJar {
         }
 
         if (cookieStr != null) {
-            httpConn.setRequestProperty("Cookie", cookieStr);
+            reqHeaders.put("Cookie", Collections.singletonList(cookieStr));
         }
     }
 }
