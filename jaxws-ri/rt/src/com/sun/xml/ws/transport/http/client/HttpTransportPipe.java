@@ -38,6 +38,7 @@ package com.sun.xml.ws.transport.http.client;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.ha.StickyFeature;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
@@ -53,6 +54,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.handler.MessageContext;
 import java.io.IOException;
@@ -64,11 +66,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.net.HttpURLConnection;
 
-import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
-import static javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY;
-
 /**
- * {@link Pipe} and {@link Tube} that sends a request to a remote HTTP server.
+ * {@link Tube} that sends a request to a remote HTTP server.
  *
  * TODO: need to create separate HTTP transport pipes for binding. SOAP1.1, SOAP1.2,
  * TODO: XML/HTTP differ in handling status codes.
@@ -80,6 +79,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     private final Codec codec;
     private final WSBinding binding;
     private static final List<String> USER_AGENT = Collections.singletonList(RuntimeVersion.VERSION.toString());
+    private final CookieJar cookieJar;      // shared object among the tubes
+    private final boolean sticky;
+
     // Need to use JAXB first to register DatatypeConverter
     static {
         try {
@@ -90,15 +92,36 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     }
 
     public HttpTransportPipe(Codec codec, WSBinding binding) {
-        this.codec = codec;
-        this.binding = binding;
+        // TODO Rather than creating a new instance, CookieJar should be got
+        // TODO from a feature ideally. That way CookieJar can be shared across
+        // TODO multiple proxies
+        this(codec, binding, new CookieJar(), isSticky(binding));
     }
 
-    /**
+    private HttpTransportPipe(Codec codec, WSBinding binding, CookieJar cookieJar, boolean sticky) {
+        this.codec = codec;
+        this.binding = binding;
+        this.sticky = sticky;
+        this.cookieJar = cookieJar;
+    }
+
+    private static boolean isSticky(WSBinding binding) {
+        boolean tSticky = false;
+        WebServiceFeature[] features = binding.getFeatures().toArray();
+        for(WebServiceFeature f : features) {
+            if (f instanceof StickyFeature) {
+                tSticky = true;
+                break;
+            }
+        }
+        return tSticky;
+    }
+
+    /*
      * Copy constructor for {@link Tube#copy(TubeCloner)}.
      */
     private HttpTransportPipe(HttpTransportPipe that, TubeCloner cloner) {
-        this( that.codec.copy(), that.binding);
+        this(that.codec.copy(), that.binding, that.cookieJar, that.sticky);
         cloner.add(that,this);
     }
 
@@ -120,6 +143,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         try {
             // get transport headers from message
             Map<String, List<String>> reqHeaders = new Headers();
+            @SuppressWarnings("unchecked")
             Map<String, List<String>> userHeaders = (Map<String, List<String>>) request.invocationProperties.get(MessageContext.HTTP_REQUEST_HEADERS);
             boolean addUserAgent = true;
             if (userHeaders != null) {
@@ -152,7 +176,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                     reqHeaders.put("Accept", Collections.singletonList(ct.getAcceptHeader()));
                 }
                 if (binding instanceof SOAPBinding) {
-                    writeSOAPAction(reqHeaders, ct.getSOAPActionHeader(),request);
+                    writeSOAPAction(reqHeaders, ct.getSOAPActionHeader());
                 }
                 
                 if(dump)
@@ -166,7 +190,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                     reqHeaders.put("Accept", Collections.singletonList(ct.getAcceptHeader()));
                 }
                 if (binding instanceof SOAPBinding) {
-                    writeSOAPAction(reqHeaders, ct.getSOAPActionHeader(), request);
+                    writeSOAPAction(reqHeaders, ct.getSOAPActionHeader());
                 }
                 
                 if(dump) {
@@ -287,30 +311,27 @@ public class HttpTransportPipe extends AbstractTubeImpl {
 
     private boolean isErrorCode(int code) {              
         //if(code/100 == 5/*Server-side error*/ || code/100 == 4 /*client error*/ ) {
-        if(code == 500|| code == 400 ) {
-            return true;
-        }
-        return false;
+        return code == 500 || code == 400;
     }
 
     private void addCookies(Packet context, Map<String, List<String>> reqHeaders) {
         Boolean shouldMaintainSessionProperty =
-            (Boolean) context.invocationProperties.get(SESSION_MAINTAIN_PROPERTY);
-        if (shouldMaintainSessionProperty != null && shouldMaintainSessionProperty) {
-            CookieJar cookieJar = (CookieJar) context.invocationProperties.get(HTTP_COOKIE_JAR);
-            if (cookieJar == null) {
-                cookieJar = new CookieJar();
-                context.invocationProperties.put(HTTP_COOKIE_JAR, cookieJar);
-                // need to store in binding's context so it is not lost
-                context.proxy.getRequestContext().put(HTTP_COOKIE_JAR, cookieJar);
-            }
+            (Boolean) context.invocationProperties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
+        if (shouldMaintainSessionProperty != null && !shouldMaintainSessionProperty) {
+            return;         // explicitly turned off
+        }
+        if (sticky || (shouldMaintainSessionProperty != null && shouldMaintainSessionProperty)) {
             cookieJar.applyRelevantCookies(context.endpointAddress.getURL(), reqHeaders);
         }
     }
 
     private void recordCookies(Packet context, HttpClientTransport con) {
-        CookieJar cookieJar = (CookieJar)context.invocationProperties.get(HTTP_COOKIE_JAR);
-        if (cookieJar != null) {
+        Boolean shouldMaintainSessionProperty =
+            (Boolean) context.invocationProperties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
+        if (shouldMaintainSessionProperty != null && !shouldMaintainSessionProperty) {
+            return;         // explicitly turned off
+        }
+        if (sticky || (shouldMaintainSessionProperty != null && shouldMaintainSessionProperty)) {
             cookieJar.recordAnyCookies(context.endpointAddress.getURL(), con.getHeaders());
         }
     }
@@ -329,20 +350,11 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         }
     }
 
-//    private void checkStatusCodeOneway(InputStream in, int statusCode, String statusMessage) throws IOException {
-//        if (statusCode != WSHTTPConnection.ONEWAY && statusCode != WSHTTPConnection.OK) {
-//            if (in != null) {
-//                in.close();
-//            }
-//            throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(statusCode,statusMessage));
-//        }
-//    }
-
-    /**
+    /*
      * write SOAPAction header if the soapAction parameter is non-null or BindingProvider properties set.
      * BindingProvider properties take precedence.
      */
-    private void writeSOAPAction(Map<String, List<String>> reqHeaders, String soapAction, Packet packet) {
+    private void writeSOAPAction(Map<String, List<String>> reqHeaders, String soapAction) {
         //dont write SOAPAction HTTP header for SOAP 1.2 messages.
         if(SOAPVersion.SOAP_12.equals(binding.getSOAPVersion()))
             return;
