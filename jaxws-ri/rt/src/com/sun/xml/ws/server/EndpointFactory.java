@@ -334,6 +334,7 @@ public class EndpointFactory {
             //now we got the Binding so lets build the model
             rap = new RuntimeModeler(implType, serviceName, (WSDLPortImpl)wsdlPort, binding.getFeatures().toArray());
         }
+        rap.setClassLoader(implType.getClassLoader());
         rap.setPortName(portName);
         return rap.buildRuntimeModel();
     }
