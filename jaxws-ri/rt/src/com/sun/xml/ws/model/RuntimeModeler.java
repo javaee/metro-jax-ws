@@ -75,7 +75,6 @@ import java.lang.reflect.Type;
 import java.rmi.RemoteException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -89,21 +88,18 @@ import java.util.logging.Logger;
  */
 public class RuntimeModeler {
     private final WebServiceFeature[] features;
-    private BindingID bindingId;
-    private Class portClass;
+    private final BindingID bindingId;
+    private final Class portClass;
     private AbstractSEIModelImpl model;
     private SOAPBindingImpl defaultBinding;
     // can be empty but never null
     private String packageName;
     private String targetNamespace;
     private boolean isWrapped = true;
-    private boolean usesWebMethod = false;
-    private ClassLoader classLoader = null;
-    //private Object implementor;
+    private ClassLoader classLoader;
     private final WSDLPortImpl binding;
     private QName serviceName;
     private QName portName;
-    private Map<Class, Boolean> classUsesWebMethod = new HashMap<Class, Boolean>();
 
     /**
      *
@@ -123,36 +119,27 @@ public class RuntimeModeler {
     public static final Class<RuntimeException> RUNTIME_EXCEPTION_CLASS = RuntimeException.class;
     public static final Class<Exception> EXCEPTION_CLASS = Exception.class;
 
-    /**
-     * creates an instance of RunTimeModeler given a <code>portClass</code> and <code>bindingId</code>
-     * @param portClass The SEI class to be modeled.
-     * @param serviceName The ServiceName to use instead of one calculated from the implementation class
-     * @param bindingId The binding identifier to be used when modeling the <code>portClass</code>.
-     */
-    public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull BindingID bindingId) {
-        this(portClass, serviceName, bindingId, new WebServiceFeature[0]);
-    }
-
     public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull BindingID bindingId, @NotNull WebServiceFeature... features) {
-        this.portClass = portClass;
-        this.serviceName = serviceName;
-        this.binding = null;
-        this.bindingId = bindingId;
-        this.features = features;
+        this(portClass, serviceName, null, bindingId, features);
     }
 
     /**
      *
      * creates an instance of RunTimeModeler given a <code>sei</code> and <code>binding</code>
-     * @param sei The SEI class to be modeled.
+     * @param portClass The SEI class to be modeled.
      * @param serviceName The ServiceName to use instead of one calculated from the implementation class
      * @param wsdlPort {@link com.sun.xml.ws.api.model.wsdl.WSDLPort}
+     * @param features web service features
      */
-    public RuntimeModeler(@NotNull Class sei, @NotNull QName serviceName, @NotNull WSDLPortImpl wsdlPort, @NotNull WebServiceFeature... features){
-        this.portClass = sei;
+    public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull WSDLPortImpl wsdlPort, @NotNull WebServiceFeature... features){
+        this(portClass, serviceName, wsdlPort, wsdlPort.getBinding().getBindingId(), features);
+    }
+
+    private RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, WSDLPortImpl binding, BindingID bindingId, @NotNull WebServiceFeature... features) {
+        this.portClass = portClass;
         this.serviceName = serviceName;
-        this.bindingId = wsdlPort.getBinding().getBindingId();
-        this.binding = wsdlPort;
+        this.binding = binding;
+        this.bindingId = bindingId;
         this.features = features;
     }
 
@@ -289,11 +276,8 @@ public class RuntimeModeler {
         try {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            if (generateWrapperBeans) {
-                logger.fine("Dynamically creating request wrapper Class " + className);
-                return WrapperBeanGenerator.createRequestWrapperBean(className, method, reqElemName, loader);
-            }
-            throw new RuntimeModelerException(e);
+            logger.fine("Dynamically creating request wrapper Class " + className);
+            return WrapperBeanGenerator.createRequestWrapperBean(className, method, reqElemName, loader);
         }
     }
 
@@ -302,11 +286,8 @@ public class RuntimeModeler {
         try {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            if (generateWrapperBeans) {
-                logger.fine("Dynamically creating response wrapper bean Class " + className);
-                return WrapperBeanGenerator.createResponseWrapperBean(className, method, resElemName, loader);
-            }
-            throw new RuntimeModelerException(e);
+            logger.fine("Dynamically creating response wrapper bean Class " + className);
+            return WrapperBeanGenerator.createResponseWrapperBean(className, method, resElemName, loader);
         }
     }
 
@@ -316,45 +297,12 @@ public class RuntimeModeler {
         try {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            if (generateWrapperBeans) {
-                logger.fine("Dynamically creating exception bean Class " + className);
-                return WrapperBeanGenerator.createExceptionBean(className, exception, targetNamespace, name, namespace, loader);
-            }
-            throw new RuntimeModelerException(e);
+            logger.fine("Dynamically creating exception bean Class " + className);
+            return WrapperBeanGenerator.createExceptionBean(className, exception, targetNamespace, name, namespace, loader);
         }
-    }
-
-    protected void setUsesWebMethod(Class clazz, Boolean usesWebMethod) {
-//        System.out.println("class: "+clazz.getName()+" uses WebMethod: "+usesWebMethod);
-        classUsesWebMethod.put(clazz, usesWebMethod);
-    }
-
-    protected void determineWebMethodUse(Class clazz) {
-        if (clazz == null)
-            return;
-        if (clazz.isInterface()) {
-            setUsesWebMethod(clazz, false);
-        }
-        else {
-            WebMethod webMethod;
-            boolean hasWebMethod = false;
-            for (Method method : clazz.getMethods()) {
-                if (method.getDeclaringClass()!=clazz)
-                    continue;
-                webMethod = getPrivMethodAnnotation(method, WebMethod.class);
-                if (webMethod != null &&
-                    !webMethod.exclude()) {
-                    hasWebMethod = true;
-                    break;
-                }
-            }
-            setUsesWebMethod(clazz, hasWebMethod);
-        }
-        determineWebMethodUse(clazz.getSuperclass());
     }
 
     void processClass(Class clazz) {
-        determineWebMethodUse(clazz);
         WebService webService = getPrivClassAnnotation(clazz, WebService.class);
         String portTypeLocalName  = clazz.getSimpleName();
         if (webService.name().length() >0)
@@ -404,20 +352,13 @@ public class RuntimeModeler {
 
         for (Method method : clazz.getMethods()) {
             if (!clazz.isInterface()) {     // if clazz is SEI, then all methods are web methods
-                if (!legacyWebMethod) {
-                    if (!isWebMethodBySpec(method, clazz)) {
-                        continue;
-                    }
-                } else {
-                    if (method.getDeclaringClass()==Object.class ||
-                        !isWebMethod(method, clazz)) {
-                        continue;
-                    }
+                if (!isWebMethodBySpec(method, clazz)) {
+                    continue;
                 }
             }
             // TODO: binding can be null. We need to figure out how to post-process
             // RuntimeModel to link to WSDLModel
-            processMethod(method, webService);
+            processMethod(method);
         }
         //Add additional jaxb classes referenced by {@link XmlSeeAlso}
         XmlSeeAlso xmlSeeAlso = getPrivClassAnnotation(clazz, XmlSeeAlso.class);
@@ -461,22 +402,6 @@ public class RuntimeModeler {
 
         Class declClass = method.getDeclaringClass();
         return getPrivClassAnnotation(declClass, WebService.class) != null;
-    }
-
-
-    protected boolean isWebMethod(Method method, Class clazz) {
-        if (clazz.isInterface()) {
-            return true;
-        }
-        Class declClass = method.getDeclaringClass();        
-        boolean declHasWebService = getPrivClassAnnotation(declClass, WebService.class) != null;
-        WebMethod webMethod = getPrivMethodAnnotation(method, WebMethod.class);
-        if (webMethod != null && !webMethod.exclude() &&
-            declHasWebService) {
-            return true;
-        }
-        return declHasWebService &&
-                !classUsesWebMethod.get(declClass);
     }
 
     /**
@@ -524,25 +449,21 @@ public class RuntimeModeler {
         return namespace.toString();
     }
 
-    /**
+    /*
      * Returns true if an exception is service specific exception as per JAX-WS rules.
      * @param exception
      * @return
      */
     private boolean isServiceException(Class<?> exception) {
-        if (!EXCEPTION_CLASS.isAssignableFrom(exception))
-            return false;
-        if (RUNTIME_EXCEPTION_CLASS.isAssignableFrom(exception) || REMOTE_EXCEPTION_CLASS.isAssignableFrom(exception))
-            return false;
-        return true;
+        return EXCEPTION_CLASS.isAssignableFrom(exception) &&
+                !(RUNTIME_EXCEPTION_CLASS.isAssignableFrom(exception) || REMOTE_EXCEPTION_CLASS.isAssignableFrom(exception));
     }
 
     /**
      * creates the runtime model for a method on the <code>portClass</code>
      * @param method the method to model
-     * @param webService the instance of the <code>WebService</code> annotation on the <code>portClass</code>
      */
-    protected void processMethod(Method method, WebService webService) {
+    protected void processMethod(Method method) {
         int mods = method.getModifiers();
         if (!Modifier.isPublic(mods) || Modifier.isStatic(mods)) {
             if(method.getAnnotation(WebMethod.class)!=null) {
@@ -560,11 +481,6 @@ public class RuntimeModeler {
         if (webMethod != null && webMethod.exclude())
             return;
 
-        // If one WebMethod is used, then only methods with WebMethod will be
-        // processed.
-        if (usesWebMethod && webMethod == null) {
-            return;
-        }
         String methodName = method.getName();
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
 
@@ -660,14 +576,12 @@ public class RuntimeModeler {
             javaMethod.setBinding(sb);
         }
         if (!methodIsWrapped) {
-            processDocBareMethod(javaMethod, methodName, webMethod, operationName,
-                method, webService);
+            processDocBareMethod(javaMethod, operationName, method);
         } else if (style.equals(Style.DOCUMENT)) {
-            processDocWrappedMethod(javaMethod, methodName, webMethod, operationName,
-                method, webService);
+            processDocWrappedMethod(javaMethod, methodName, operationName,
+                method);
         } else {
-            processRpcMethod(javaMethod, methodName, webMethod, operationName,
-                method, webService);
+            processRpcMethod(javaMethod, methodName, operationName, method);
         }
         model.addJavaMethod(javaMethod);
     }
@@ -688,13 +602,11 @@ public class RuntimeModeler {
      * models a document/literal wrapped method
      * @param javaMethod the runtime model <code>JavaMethod</code> instance being created
      * @param methodName the runtime model <code>JavaMethod</code> instance being created
-     * @param webMethod the runtime model <code>JavaMethod</code> instance being created
      * @param operationName the runtime model <code>JavaMethod</code> instance being created
      * @param method the <code>method</code> to model
-     * @param webService The <code>WebService</code> annotation instance on the <code>portClass</code>
      */
     protected void processDocWrappedMethod(JavaMethodImpl javaMethod, String methodName,
-                                           WebMethod webMethod, String operationName, Method method, WebService webService) {
+                                           String operationName, Method method) {
         boolean methodHasHeaderParams = false;
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
         RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
@@ -903,13 +815,11 @@ public class RuntimeModeler {
      * models a rpc/literal method
      * @param javaMethod the runtime model <code>JavaMethod</code> instance being created
      * @param methodName the name of the <code>method</code> being modeled.
-     * @param webMethod the <code>WebMethod</code> annotations instance on the <code>method</code>
      * @param operationName the WSDL operation name for this <code>method</code>
      * @param method the runtime model <code>JavaMethod</code> instance being created
-     * @param webService the runtime model <code>JavaMethod</code> instance being created
      */
     protected void processRpcMethod(JavaMethodImpl javaMethod, String methodName,
-                                    WebMethod webMethod, String operationName, Method method, WebService webService) {
+                                    String operationName, Method method) {
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
 
         // use Map to build parameters in the part order when they are known.
@@ -1205,14 +1115,11 @@ public class RuntimeModeler {
     /**
      * models a document/literal bare method
      * @param javaMethod the runtime model <code>JavaMethod</code> instance being created
-     * @param methodName the runtime model <code>JavaMethod</code> instance being created
-     * @param webMethod the runtime model <code>JavaMethod</code> instance being created
      * @param operationName the runtime model <code>JavaMethod</code> instance being created
      * @param method the runtime model <code>JavaMethod</code> instance being created
-     * @param webService the runtime model <code>JavaMethod</code> instance being created
      */
-    protected void processDocBareMethod(JavaMethodImpl javaMethod, String methodName,
-                                        WebMethod webMethod, String operationName, Method method, WebService webService) {
+    protected void processDocBareMethod(JavaMethodImpl javaMethod,
+                                       String operationName, Method method) {
 
         String resultName = operationName+RESPONSE;
         String resultTNS = targetNamespace;
@@ -1534,17 +1441,6 @@ public class RuntimeModeler {
         return null;
     }
 
-    private static Boolean getProperty(final String prop) {
-        return AccessController.doPrivileged(
-            new java.security.PrivilegedAction<Boolean>() {
-                public Boolean run() {
-                    String value = System.getProperty(prop);
-                    return value != null ? Boolean.valueOf(value) : Boolean.FALSE;
-                }
-            }
-        );        
-    }
-
     private static QName getReturnQName(Method method, WebResult webResult, XmlElement xmlElem) {
         String webResultName = null;
         if (webResult != null && webResult.name().length() > 0) {
@@ -1625,28 +1521,5 @@ public class RuntimeModeler {
         return new QName(ns, localPart);
     }
 
-
-    /**
-     * Support for legacy WebMethod computation.
-     */
-    public static final boolean legacyWebMethod = getProperty(RuntimeModeler.class.getName()+".legacyWebMethod");
-
-
-    /**
-     * Controls whether wrapper beans should be generated dynamically.
-     *
-     * By default in JDK, they are not generated.
-     */
-    public static final boolean generateWrapperBeans;
-    static {
-        boolean wrapperGeneratorExists = false;
-        try {
-            Class.forName("com.sun.xml." + "ws.model.WrapperBeanGenerator");
-            wrapperGeneratorExists = true;
-        } catch (ClassNotFoundException cnfe) {
-            wrapperGeneratorExists = getProperty(RuntimeModeler.class.getName()+".generateWrappers");
-        }
-        generateWrapperBeans = wrapperGeneratorExists;
-    }
 
 }
