@@ -37,7 +37,7 @@
 package com.sun.xml.ws.transport.http.servlet;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.ha.ReplicaInfo;
+import com.sun.xml.ws.api.ha.HaInfo;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.api.server.WSEndpoint;
@@ -78,7 +78,7 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
     private Headers requestHeaders;
     private final HttpAdapter adapter;
     private Headers responseHeaders;
-    private ReplicaInfo replicaInfo;
+    private HaInfo haInfo;
 
     public ServletConnectionImpl(@NotNull HttpAdapter adapter, ServletContext context, HttpServletRequest request, HttpServletResponse response) {
         this.adapter = adapter;
@@ -287,11 +287,12 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
         response.addCookie(cookie);
     }
 
-    @Property(Packet.REPLICA_INFO)
-    public ReplicaInfo getReplicaInfo() {
-        if (replicaInfo == null) {
+    @Property(Packet.HA_INFO)
+    public HaInfo getHaInfo() {
+        if (haInfo == null) {
             String replicaInstance = null;
             String key = null;
+            String jrouteId = null;
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for(Cookie cookie : cookies) {
@@ -301,17 +302,23 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
                     if (key == null && cookie.getName().equals("METRO_KEY")) {
                         key = cookie.getValue();
                     }
+                    if (jrouteId == null && cookie.getName().equals("JROUTE")) {
+                        jrouteId = cookie.getValue();
+                    }
                     if (replicaInstance != null && key != null) {
+                        String proxyJroute = request.getHeader("proxy-jroute");
+                        boolean failOver = jrouteId != null && proxyJroute != null && !jrouteId.equals(proxyJroute);
+                        haInfo = new HaInfo(key, replicaInstance, failOver);
                         break;
                     }
                 }
             }
         }
-        return replicaInfo;
+        return haInfo;
     }
 
-    public void setReplicaInfo(ReplicaInfo replicaInfo) {
-        this.replicaInfo = replicaInfo;
+    public void setHaInfo(HaInfo replicaInfo) {
+        this.haInfo = replicaInfo;
     }
 
     protected PropertyMap getPropertyMap() {

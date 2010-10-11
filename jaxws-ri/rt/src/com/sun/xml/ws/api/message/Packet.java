@@ -317,7 +317,7 @@ public final class Packet extends DistributedPropertySet {
     /**
      * 
      */
-     public static final String REPLICA_INFO = "com.sun.xml.ws.api.message.packet.replica";
+     public static final String HA_INFO = "com.sun.xml.ws.api.message.packet.hainfo";
 
 
     /**

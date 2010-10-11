@@ -40,11 +40,15 @@ import org.glassfish.ha.store.api.BackingStore;
 import com.sun.xml.ws.api.message.Packet;
 
 /**
- * ReplicaInfo helps in storing related data to the same {@link BackingStore}.
+ * This class has HA information
+ * <p>
+ *
  * This would help a loadbalancer to put the request(in case of a fail-over)
  * on a replica instance that has all the related data. Even if there is no
  * loadbalancer, a backing store could locate the information by directly
- * going to the correct replica instance.
+ * going to the correct replica instance. This would also help any part of
+ * the runtime to know about failover case(and in-turn may invalidate
+ * local caches).
  *
  * <p>
  * To achieve this functionality, it carries two pieces of information:
@@ -56,7 +60,7 @@ import com.sun.xml.ws.api.message.Packet;
  * </ol>
  *
  * <p>
- * This can be accessed from {@link Packet} using {@link Packet#REPLICA_INFO}
+ * This can be accessed from {@link Packet} using {@link Packet#HA_INFO}
  * property by the runtime. This object is created typically
  * <ul>
  * <li> When a store happens for the first time
@@ -67,13 +71,15 @@ import com.sun.xml.ws.api.message.Packet;
  * @author Jitendra Kotamraju
  * @since JAX-WS RI 2.2.2
  */
-public class ReplicaInfo {
+public class HaInfo {
     private final String replicaInstance;
     private final String key;
+    private final boolean failOver;
 
-    public ReplicaInfo(String key, String replicaInstance) {
+    public HaInfo(String key, String replicaInstance, boolean failOver) {
         this.key = key;
         this.replicaInstance = replicaInstance;
+        this.failOver = failOver;
     }
 
     public String getReplicaInstance() {
@@ -82,5 +88,9 @@ public class ReplicaInfo {
 
     public String getKey() {
         return key;
+    }
+
+    public boolean isFailOver() {
+        return failOver;
     }
 }

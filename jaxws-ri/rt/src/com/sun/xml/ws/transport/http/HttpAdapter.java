@@ -41,7 +41,7 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
-import com.sun.xml.ws.api.ha.ReplicaInfo;
+import com.sun.xml.ws.api.ha.HaInfo;
 import com.sun.xml.ws.api.ha.StickyFeature;
 import com.sun.xml.ws.api.message.ExceptionHasMessage;
 import com.sun.xml.ws.api.message.Message;
@@ -451,13 +451,13 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     private void addReplicaCookie(WSHTTPConnection con, Packet packet) {
         if (stickyCookie) {
-            ReplicaInfo replicaInfo = null;
-            if (packet.supports(Packet.REPLICA_INFO)) {
-                replicaInfo = (ReplicaInfo)packet.get(Packet.REPLICA_INFO);
+            HaInfo haInfo = null;
+            if (packet.supports(Packet.HA_INFO)) {
+                haInfo = (HaInfo)packet.get(Packet.HA_INFO);
             }
-            if (replicaInfo != null) {
-                con.setCookie("METRO_KEY", replicaInfo.getKey());
-                con.setCookie("JEPLICA", replicaInfo.getReplicaInstance());
+            if (haInfo != null) {
+                con.setCookie("METRO_KEY", haInfo.getKey());
+                con.setCookie("JEPLICA", haInfo.getReplicaInstance());
             }
         }
     }
