@@ -51,22 +51,14 @@ public class CookieJar {
     // a hash table with key being the domain and the value being
     // a vector of cookies for that domain.
     // REMIND: create this on demand in the future
-    private transient Hashtable<String,Vector<HttpCookie>> cookieJar = new Hashtable<String, Vector<HttpCookie>>();
+    private transient Map<String, List<HttpCookie>> cookieJar = new HashMap<String, List<HttpCookie>>();
 
-    /**
-     * Create a new, empty cookie jar.
-     */
-    public CookieJar() {
-    }
-
-    /**
+    /*
      * Records any cookies which have been sent as part of an HTTP response.
      * The connection parameter must be already have been opened, so that
      * the response headers are available.  It's ok to pass a non-HTTP
      * URL connection, or one which does not have any set-cookie headers.
      */
-
-
     public synchronized void recordAnyCookies(URL url, Map<String, List<String>> resHeaders) {
         List<String> cookies = resHeaders.get("Set-Cookie");
         if (cookies != null) {
@@ -76,7 +68,7 @@ public class CookieJar {
         }
     }
 
-    /**
+    /*
      * Create a cookie from the cookie, and use the HttpURLConnection to
      * fill in unspecified values in the cookie with defaults.
      */
@@ -104,8 +96,8 @@ public class CookieJar {
         if (!domainOK && host.endsWith(domain)) {
             int dotsNeeded = 2;
 
-            for (int i = 0; i < twodot.length; i++) {
-                if (domain.endsWith(twodot[i])) {
+            for (String aTwodot : twodot) {
+                if (domain.endsWith(aTwodot)) {
                     dotsNeeded = 1;
                 }
             }
@@ -126,42 +118,13 @@ public class CookieJar {
         }
     }
 
-    /**
+    /*
      * Record the cookie in the in-memory container of cookies.  If there
      * is already a cookie which is in the exact same domain with the
      * exact same
      */
     private void recordCookie(HttpCookie cookie) {
-        recordCookieToJar(cookie, cookieJar, true);
-    }
-
-
-    /**
-     * Adds a Cookie for a given URL to the Cookie Jar.
-     * <P>
-     * New connections to the given URL will include the Cookie.
-     * <P>
-     * It allows to add Cookie information, to the Cookie jar, received
-     * by other mean.
-     * <P>
-     *
-     * @param url the URL to bind the Cookie to.
-     *
-     * @param cookieHeader String defining the Cookie:
-     *        <P>
-     *        &lt;name&gt;=&lt;value&gt;[;expires=<WHEN>]
-     *        [;path=<PATH>][;domain=<DOMAIN>][;secure]
-     *        <P>
-     *        Refer to <A HREF=
-     *          "http://home.netscape.com/newsref/std/cookie_spec.htm">
-     *        Netscape Cookie specification</A> for the complete documentation.
-     *
-     */
-    private void setCookie(URL url, String cookieHeader) {
-
-        HttpCookie cookie = new HttpCookie(url, cookieHeader);
-
-        this.recordCookie(cookie);
+        recordCookieToJar(cookie, cookieJar);
     }
 
     //
@@ -170,28 +133,23 @@ public class CookieJar {
     // doNotify to be true if jar is the static jar (i.e. Cookies.cookieJar).
     //
     //
-    private void recordCookieToJar(
+    private static void recordCookieToJar(
         HttpCookie cookie,
-        Hashtable<String,Vector<HttpCookie>> jar,
-        boolean doNotify) {
-
-        if (shouldRejectCookie(cookie)) {
-            return;
-        }
+        Map<String, List<HttpCookie>> jar) {
 
         String domain = cookie.getDomain().toLowerCase();
-        Vector<HttpCookie> cookieList = jar.get(domain);
+        List<HttpCookie> cookieList = jar.get(domain);
 
         if (cookieList == null) {
             cookieList = new Vector<HttpCookie>();
         }
 
-        if (addOrReplaceCookie(cookieList, cookie, doNotify)) {
+        if (addOrReplaceCookie(cookieList, cookie)) {
             jar.put(domain, cookieList);
         }
     }
 
-    /**
+    /*
      * Scans the vector of cookies looking for an exact match with the
      * given cookie.  Replaces it if there is one, otherwise adds
      * one at the end.  The vector is presumed to have cookies which all
@@ -206,10 +164,9 @@ public class CookieJar {
      *
      * @return true if the cookie is actually set
      */
-    private boolean addOrReplaceCookie(
-        Vector<HttpCookie> cookies,
-        final HttpCookie cookie,
-        boolean doNotify) {
+    private static boolean addOrReplaceCookie(
+        List<HttpCookie> cookies,
+        final HttpCookie cookie) {
 
         int numCookies = cookies.size();
         String path = cookie.getPath();
@@ -218,7 +175,7 @@ public class CookieJar {
         int replacedIndex = -1;
 
         for (int i = 0; i < numCookies; i++) {
-            HttpCookie existingCookie = cookies.elementAt(i);
+            HttpCookie existingCookie = cookies.get(i);
             String existingPath = existingCookie.getPath();
 
             if (path.equals(existingPath)) {
@@ -237,22 +194,12 @@ public class CookieJar {
 
         // Do the replace
         if (replaced != null) {
-            cookies.setElementAt(cookie, replacedIndex);
+            cookies.set(replacedIndex, cookie);
         } else {
-            cookies.addElement(cookie);
+            cookies.add(cookie);
         }
 
         return true;
-    }
-
-    /**
-     * Predicate function which returns true if the cookie appears to be
-     * invalid somehow and should not be added to the cookie set.
-     */
-    private boolean shouldRejectCookie(HttpCookie cookie) {
-
-        // REMIND: implement per http-state-mgmt Internet Draft
-        return false;
     }
 
     public synchronized void applyRelevantCookies(URL url, Map<String, List<String>> reqHeaders) {
@@ -272,7 +219,7 @@ public class CookieJar {
         }
     }
 
-    /**
+    /*
      * Host may be a FQDN, or a partial domain name starting with a dot.
      * Adds any cookies which match the host and path to the
      * cookie set on the URL connection.
@@ -282,8 +229,8 @@ public class CookieJar {
         URL url,
         Map<String, List<String>> reqHeaders) {
 
-        //System.out.println("X0"+cookieJar.size());
-        Vector<HttpCookie> cookieList = cookieJar.get(host);
+        host = host.toLowerCase();
+        List<HttpCookie> cookieList = cookieJar.get(host);
 
         if (cookieList == null) {
 
@@ -301,11 +248,9 @@ public class CookieJar {
             path = path.substring(0, queryInd);
         }
 
-        Enumeration<HttpCookie> cookies = cookieList.elements();
-        Vector<HttpCookie> cookiesToSend = new Vector<HttpCookie>(10);
+        List<HttpCookie> cookiesToSend = new ArrayList<HttpCookie>(10);
 
-        while (cookies.hasMoreElements()) {
-            HttpCookie cookie = cookies.nextElement();
+        for(HttpCookie cookie : cookieList) {
             String cookiePath = cookie.getPath();
 
             if (path.startsWith(cookiePath)) {
@@ -314,7 +259,7 @@ public class CookieJar {
                 // says that /foo should
                 // match /foobar and /foo/bar.  Yuck!!!
                 if (!cookie.hasExpired()) {
-                    cookiesToSend.addElement(cookie);
+                    cookiesToSend.add(cookie);
                 }
 
                 /*
@@ -344,7 +289,7 @@ public class CookieJar {
         // (it should be a small vector, so perf is not an issue...)
         if (cookiesToSend.size() > 1) {
             for (int i = 0; i < cookiesToSend.size() - 1; i++) {
-                HttpCookie headC = cookiesToSend.elementAt(i);
+                HttpCookie headC = cookiesToSend.get(i);
                 String head = headC.getPath();
 
                 // This little excercise is a cheap way to get
@@ -354,7 +299,7 @@ public class CookieJar {
                 }
 
                 for (int j = i + 1; j < cookiesToSend.size(); j++) {
-                    HttpCookie scanC = cookiesToSend.elementAt(j);
+                    HttpCookie scanC = cookiesToSend.get(j);
                     String scan = scanC.getPath();
 
                     if (!scan.endsWith("/")) {
@@ -377,8 +322,8 @@ public class CookieJar {
                     }
 
                     if (scanCount > headCount) {
-                        cookiesToSend.setElementAt(headC, j);
-                        cookiesToSend.setElementAt(scanC, i);
+                        cookiesToSend.set(j, headC);
+                        cookiesToSend.set(i, scanC);
 
                         headC = scanC;
                         head = scan;
@@ -388,13 +333,9 @@ public class CookieJar {
         }
 
         // And send the sorted cookies...
-        cookies = cookiesToSend.elements();
-
         String cookieStr = null;
 
-        while (cookies.hasMoreElements()) {
-            HttpCookie cookie = cookies.nextElement();
-
+        for(HttpCookie cookie: cookiesToSend) {
             if (cookieStr == null) {
                 cookieStr = cookie.getNameValue();
             } else {
