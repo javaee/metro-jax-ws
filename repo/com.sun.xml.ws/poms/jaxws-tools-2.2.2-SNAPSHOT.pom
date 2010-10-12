@@ -63,7 +63,7 @@
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-xjc</artifactId>
-      <version>2.2.2-SNAPSHOT</version>
+      <version>2.2.2-promoted-b94</version>
     </dependency>
   </dependencies>
 </project>
