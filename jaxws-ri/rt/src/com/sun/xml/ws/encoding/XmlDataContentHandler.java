@@ -104,9 +104,13 @@ public class XmlDataContentHandler implements DataContentHandler {
      */
     public void writeTo(Object obj, String mimeType, OutputStream os)
         throws IOException {
-        if (!mimeType.equals("text/xml") && !mimeType.equals("application/xml"))
+        if (!isXmlType(mimeType))
             throw new IOException(
                 "Invalid content type \"" + mimeType + "\" for XmlDCH");
+        if (!(obj instanceof DataSource || obj instanceof Source)) {
+             throw new IOException("Invalid Object type = "+obj.getClass()+
+                ". XmlDCH can only convert DataSource or Source to XML.");
+        }
 
         try {
             Transformer transformer = XmlUtil.newTransformer();
@@ -121,6 +125,17 @@ public class XmlDataContentHandler implements DataContentHandler {
             throw new IOException(
                 "Unable to run the JAXP transformer on a stream "
                     + ex.getMessage());
+        }
+    }
+
+
+    private boolean isXmlType(String type) {
+        try {
+            ContentType ct = new ContentType(type);
+            return ct.getSubType().equals("xml") &&
+                    (ct.getPrimaryType().equals("text") || ct.getPrimaryType().equals("application"));
+        } catch (Exception ex) {
+            return false;
         }
     }
 }
