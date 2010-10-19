@@ -265,6 +265,9 @@ public class XmlUtil {
         // set up a manager
         CatalogManager manager = new CatalogManager();
         manager.setIgnoreMissingProperties(true);
+        // Using static catalog may  result in to sharing of the catalog by multiple apps running in a container    
+        manager.setUseStaticCatalog(false);
+
         try {
             if (catalogUrl != null) {
                 manager.getCatalog().parseCatalog(catalogUrl);
@@ -283,7 +286,8 @@ public class XmlUtil {
         // set up a manager
         CatalogManager manager = new CatalogManager();
         manager.setIgnoreMissingProperties(true);
-
+        // Using static catalog may  result in to sharing of the catalog by multiple apps running in a container    
+        manager.setUseStaticCatalog(false);
         // parse the catalog
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Enumeration<URL> catalogEnum;
