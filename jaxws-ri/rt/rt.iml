@@ -207,11 +207,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/gmbal.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/gmbal-api-only.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/gmbal-source.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/gmbal-api-only-src.zip!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -222,7 +222,29 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/management-api-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/management-api-src.zip!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/ha-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../lib/ha-api.src.zip!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/jaxws-asm.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../lib/jaxws-asm-src.zip!/" />
         </SOURCES>
       </library>
     </orderEntry>
