@@ -461,7 +461,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             }
             if (haInfo != null) {
                 con.setCookie("METRO_KEY", haInfo.getKey());
-                con.setCookie("JEPLICA", haInfo.getReplicaInstance());
+                con.setCookie("JREPLICA", haInfo.getReplicaInstance());
             }
         }
     }
