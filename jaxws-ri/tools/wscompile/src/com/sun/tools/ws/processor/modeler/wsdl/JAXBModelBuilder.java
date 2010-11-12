@@ -87,7 +87,10 @@ public class JAXBModelBuilder {
         try {
             schemaCompiler =  options.getSchemaCompiler();
             schemaCompiler.resetSchema();
-            schemaCompiler.setEntityResolver(options.entityResolver);
+            if(options.entityResolver != null) {
+                //set if its not null so as not to override catalog option specified via xjc args
+                schemaCompiler.setEntityResolver(options.entityResolver);
+            }
             schemaCompiler.setClassNameAllocator(_classNameAllocator);
             schemaCompiler.setErrorListener(errReceiver);
             int schemaElementCount = 1;
