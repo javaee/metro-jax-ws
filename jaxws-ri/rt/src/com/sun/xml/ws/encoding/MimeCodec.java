@@ -84,14 +84,12 @@ abstract class MimeCodec implements Codec {
             if (map instanceof MailcapCommandMap) {
                 MailcapCommandMap mailMap = (MailcapCommandMap) map;
                 String hndlrStr = ";;x-java-content-handler=";
-                if (map.createDataContentHandler("text/xml") == null) {
-                    mailMap.addMailcap(
-                        "text/xml" + hndlrStr + XmlDataContentHandler.class.getName());
-                }
-                if (map.createDataContentHandler("application/xml") == null) {
-                    mailMap.addMailcap(
-                        "application/xml" + hndlrStr + XmlDataContentHandler.class.getName());
-                }
+                // registering our DCH since javamail's DCH doesn't handle
+                // Source
+                mailMap.addMailcap(
+                    "text/xml" + hndlrStr + XmlDataContentHandler.class.getName());
+                mailMap.addMailcap(
+                    "application/xml" + hndlrStr + XmlDataContentHandler.class.getName());
                 if (map.createDataContentHandler("image/*") == null) {
                     mailMap.addMailcap(
                         "image/*" + hndlrStr + ImageDataContentHandler.class.getName());
