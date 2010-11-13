@@ -45,44 +45,36 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 import javax.activation.ActivationDataFlavor;
 import javax.activation.DataContentHandler;
 import javax.activation.DataSource;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
-
 
 /**
  * JAF data handler for XML content
  *
- * @author Anil Vijendran
+ * @author Jitendra Kotamraju
  */
 public class XmlDataContentHandler implements DataContentHandler {
 
     private final DataFlavor[] flavors;
 
     public XmlDataContentHandler() throws ClassNotFoundException {
-        flavors = new DataFlavor[2];
+        flavors = new DataFlavor[3];
         flavors[0] = new ActivationDataFlavor(StreamSource.class, "text/xml", "XML");
         flavors[1] = new ActivationDataFlavor(StreamSource.class, "application/xml", "XML");
+        flavors[2] = new ActivationDataFlavor(String.class, "text/xml", "XML String");
     }
 
-    /**
-     * return the DataFlavors for this <code>DataContentHandler</code>
-     * @return The DataFlavors.
-     */
-    public DataFlavor[] getTransferDataFlavors() { // throws Exception;
+    public DataFlavor[] getTransferDataFlavors() {
         return flavors;
     }
 
-    /**
-     * return the Transfer Data of type DataFlavor from InputStream
-     * @param df The DataFlavor.
-     * @param ds The InputStream corresponding to the data.
-     * @return The constructed Object.
-     */
     public Object getTransferData(DataFlavor df, DataSource ds)
         throws IOException {
 
@@ -95,52 +87,68 @@ public class XmlDataContentHandler implements DataContentHandler {
     }
 
     /**
-     *
+     * Create an object from the input stream
      */
-    public Object getContent(DataSource dataSource) throws IOException {
-        return new StreamSource(dataSource.getInputStream());
+    public Object getContent(DataSource ds) throws IOException {
+        String ctStr = ds.getContentType();
+        String charset = null;
+        if (ctStr != null) {
+            ContentType ct = new ContentType(ctStr);
+            if (!isXml(ct)) {
+                throw new IOException(
+                    "Cannot convert DataSource with content type \""
+                            + ctStr + "\" to object in XmlDataContentHandler");
+            }
+            charset = ct.getParameter("charset");
+        }
+        return (charset != null)
+                ? new StreamSource(new InputStreamReader(ds.getInputStream()), charset)
+                : new StreamSource(ds.getInputStream());
     }
 
     /**
-     * construct an object from a byte stream
-     * (similar semantically to previous method, we are deciding
-     *  which one to support)
+     * Convert the object to a byte stream
      */
     public void writeTo(Object obj, String mimeType, OutputStream os)
         throws IOException {
-        if (!isXmlType(mimeType))
-            throw new IOException(
-                "Invalid content type \"" + mimeType + "\" for XmlDCH");
-        if (!(obj instanceof DataSource || obj instanceof Source)) {
+
+        if (!(obj instanceof DataSource || obj instanceof Source || obj instanceof String)) {
              throw new IOException("Invalid Object type = "+obj.getClass()+
-                ". XmlDCH can only convert DataSource or Source to XML.");
+                ". XmlDataContentHandler can only convert DataSource|Source|String to XML.");
         }
 
+        ContentType ct = new ContentType(mimeType);
+        if (!isXml(ct)) {
+            throw new IOException(
+                "Invalid content type \"" + mimeType + "\" for XmlDataContentHandler");
+        }
+
+        if (obj instanceof String) {
+            new StringDataContentHandler().writeTo(obj, mimeType, os);
+            return;
+        }
+
+        Source source = (obj instanceof DataSource)
+                ? (Source)getContent((DataSource)obj) : (Source)obj;
+        String charset = ct.getParameter("charset");
         try {
             Transformer transformer = XmlUtil.newTransformer();
-            StreamResult result = new StreamResult(os);
-            if (obj instanceof DataSource) {
-                // Streaming transform applies only to javax.xml.transform.StreamSource
-                transformer.transform((Source) getContent((DataSource)obj), result);
-            } else {
-                transformer.transform((Source) obj, result);
+            if (charset != null) {
+                transformer.setOutputProperty(OutputKeys.ENCODING, charset);
             }
+            StreamResult result = new StreamResult(os);
+            transformer.transform(source, result);
         } catch (Exception ex) {
             throw new IOException(
-                "Unable to run the JAXP transformer on a stream "
+                "Unable to run the JAXP transformer in XmlDataContentHandler "
                     + ex.getMessage());
         }
     }
 
-
-    private boolean isXmlType(String type) {
-        try {
-            ContentType ct = new ContentType(type);
-            return ct.getSubType().equals("xml") &&
+    private boolean isXml(ContentType ct) {
+        return ct.getSubType().equals("xml") &&
                     (ct.getPrimaryType().equals("text") || ct.getPrimaryType().equals("application"));
-        } catch (Exception ex) {
-            return false;
-        }
     }
+
 }
 
