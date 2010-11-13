@@ -132,7 +132,7 @@ public final class StreamingAttachmentFeature extends WebServiceFeature {
      * After this threshold(no of bytes), large attachments are
      * written to file system
      */
-    public void setMemoryThreshold(int memoryThreshold) {
+    public void setMemoryThreshold(long memoryThreshold) {
         this.memoryThreshold = memoryThreshold;
     }
 
