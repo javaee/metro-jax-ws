@@ -54,6 +54,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 /**
  * JAF data handler for XML content
@@ -123,14 +124,20 @@ public class XmlDataContentHandler implements DataContentHandler {
                 "Invalid content type \"" + mimeType + "\" for XmlDataContentHandler");
         }
 
+        String charset = ct.getParameter("charset");
         if (obj instanceof String) {
-            new StringDataContentHandler().writeTo(obj, mimeType, os);
+            String s = (String) obj;
+            if (charset == null) {
+                charset = "utf-8";
+            }
+            OutputStreamWriter osw = new OutputStreamWriter(os, charset);
+            osw.write(s, 0, s.length());
+            osw.flush();
             return;
         }
 
         Source source = (obj instanceof DataSource)
                 ? (Source)getContent((DataSource)obj) : (Source)obj;
-        String charset = ct.getParameter("charset");
         try {
             Transformer transformer = XmlUtil.newTransformer();
             if (charset != null) {
