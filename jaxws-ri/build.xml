@@ -775,14 +775,15 @@
         <delete file="${lib.home}/htmlmacro.zip"/>
      </target>
 
-
+    <!--
     <taskdef name="installerBuilder"
         classname="com.sun.tools.xjc.installer.builder.BuilderTask">
       <classpath>
         <fileset dir="${basedir}/tools/lib" includes="installer-builder.jar, sfx4j-1.0.jar"/>
       </classpath>
     </taskdef>
-
+    -->
+    
     <target name="re-build"
         description="RE build target">
       <antcall target="generate-binary">
@@ -792,10 +793,13 @@
         <param name="compile.debug" value="true"/>
       </antcall>
       <antcall target="generate-bundle-for-licensee" />
-      <move tofile="${build.home}/jaxws-${release.jar.version}.jar"
+      <!--
+        This is no longer needed as we dont need to create a click thru license jar
+        <move tofile="${build.home}/jaxws-${release.jar.version}.jar"
          file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_${DSTAMP}.jar"/>
       <move tofile="${build.home}/jaxws-${release.jar.version}-src.jar"
          file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.jar"/>
+      -->
       <copy tofile="${build.home}/jaxws-${release.jar.version}.zip"
          file="${build.home}/jaxws-ri.zip"/>
       <move tofile="${build.home}/jaxws-${release.jar.version}-src.zip"
@@ -809,9 +813,13 @@
       </antcall>
       <tstamp/>
       <!-- generate the class -->
-      <installerBuilder classFile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_${DSTAMP}.jar"
+      <!--
+        This is no longer needed as we dont need to create a click thru license jar
+
+        <installerBuilder classFile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_${DSTAMP}.jar"
           licenseFile="${basedir}/CDDL+GPLv2.txt"
           zipFile="${build.home}/jaxws-ri.zip" />
+      -->
     </target>
     
     <target name="generate-weekly-binary"
@@ -897,9 +905,12 @@
 
       <copy file="${source.drop.dir}/jaxws-src.zip" tofile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.zip"/>  
       <!-- generate the installer -->
-      <installerBuilder classFile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.jar"
+      <!--
+        This is no longer needed as we dont need to create a click thru license jar
+        <installerBuilder classFile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.jar"
           licenseFile="${basedir}/CDDL+GPLv2.txt"
           zipFile="${source.drop.dir}/jaxws-src-installer.zip"/>
+          -->
       <delete dir="${source.drop.dir}"/>
     </target>
 
