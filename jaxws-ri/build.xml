@@ -380,6 +380,16 @@
             </sequential>
     </macrodef>
 
+    <macrodef name="install-local-m2-zip">
+            <attribute name="module"/>
+            <sequential>
+                <prepare-pom module="@{module}"/>
+                <artifact:install file="${build.home}/@{module}.zip">
+                    <localRepository path="build/maven2-repo/test"/>
+                    <pom file="build/maven2-repo/@{module}.pom"/>
+                </artifact:install>
+            </sequential>
+    </macrodef>
 
     <macrodef name="push-to-m2">
         <attribute name="module"/>
@@ -391,9 +401,22 @@
                 <localRepository path="build/maven2-repo/test"/>
                 <pom file="build/maven2-repo/@{module}.pom"/>
                 <attach file="@{module-src}" classifier="sources" />
-            </artifact:deploy>            
+            </artifact:deploy>
         </sequential>
     </macrodef>
+
+    <macrodef name="push-to-m2-zip">
+            <attribute name="module"/>
+            <sequential>
+                <prepare-pom module="@{module}"/>
+                <artifact:deploy file="${build.home}/@{module}.zip" uniqueVersion="false">
+                    <remoteRepository url="${java.net.maven2.repo.push.url}"/>
+                    <localRepository path="build/maven2-repo/test"/>
+                    <pom file="build/maven2-repo/@{module}.pom"/>
+                </artifact:deploy>
+            </sequential>
+        </macrodef>
+
     <!--
     <target name="install-jaxws-deps-locally" depends="mavenize">
         <delete dir="build/maven2-repo"/>
@@ -418,6 +441,7 @@
         <install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
         <install-local-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <install-local-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
+        <install-local-m2-zip module="jaxws-ri"/>
     </target>
 
     <target name="push-to-maven2" depends="mavenize">
@@ -427,21 +451,22 @@
         <!-- <push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/> -->
         <push-to-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <push-to-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
-
+        <push-to-m2-zip module="jaxws-ri"/>
     </target>
 
-    <target name="push-snapshot-to-maven2" depends="src.zip"
+    <target name="push-snapshot-to-maven2" depends="dist-zip-with-src"
             description="publish snapshot jars into the maven repository">
         <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
         <antcall target="push-to-maven2"/>
     </target>
-    <target name="install-snapshot-locally" depends="mavenize,src.zip">
+    <target name="install-snapshot-locally" depends="mavenize,dist-zip-with-src">
             <delete dir="build/maven2-repo"/>
             <mkdir dir="build/maven2-repo"/>
             <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
             <install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
             <install-local-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
             <install-local-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
+            <install-local-m2-zip module="jaxws-ri"/>
         </target>
 
     <target name="push-to-maven-prepare"
