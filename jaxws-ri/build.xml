@@ -502,7 +502,11 @@
         jar="${dist20.home}/lib/jaxws-tools.jar"
         pom="etc/poms/jaxws-tools.pom"
         srczip="${dist20.home}/lib/jaxws-tools.src.zip" />
-        <!--
+      <artifact
+                jar="${build.home}/jaxws-ri.zip"
+                pom="etc/poms/jaxws-ri.pom"/>
+
+      <!--
         Don't push unless there is some change in 181 api, moreover this is not snapshot for it to be pushed daily.
         <artifact
         jar="lib/jsr181-api.jar"
@@ -527,7 +531,7 @@
       <get src="${JAXWS_RE_BUILD}/jsr181-api.jar" dest="${dist20.home}/lib/jsr181-api.jar"/>
   </target>
 
-  <target name="push-to-maven" depends="src.zip, replace-binaries-with-re-build"
+  <target name="push-to-maven" depends="dist-zip-with-src, replace-binaries-with-re-build"
     description="publish artifacts into the maven repository">
     <property name="jar.suffix" value="${release.impl.version}" />
     <antcall target="push-to-maven-prepare"/>
@@ -535,7 +539,7 @@
     <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
   </target>
 
-  <target name="push-snapshot-to-maven1" depends="src.zip"
+  <target name="push-snapshot-to-maven1" depends="dist-zip-with-src"
       description="publish snapshot jars into the maven repository">
       <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT" />
       <antcall target="push-to-maven-prepare"/>
