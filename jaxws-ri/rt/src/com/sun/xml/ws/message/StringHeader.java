@@ -43,10 +43,12 @@ package com.sun.xml.ws.message;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.MutableXMLStreamBuffer;
+import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Header;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
@@ -61,6 +63,7 @@ import javax.xml.stream.XMLStreamWriter;
  * {@link Header} that has a single text value in it
  * (IOW, of the form &lt;foo>text&lt;/foo>.)
  *
+ * @author Rama Pulavarthi
  * @author Arun Gupta
  */
 public class StringHeader extends AbstractHeaderImpl {
@@ -73,11 +76,21 @@ public class StringHeader extends AbstractHeaderImpl {
      */
     protected final String value;
 
+    protected boolean mustUnderstand = false;
+    protected SOAPVersion soapVersion;
+
     public StringHeader(@NotNull QName name, @NotNull String value) {
         assert name != null;
         assert value != null;
         this.name = name;
         this.value = value;
+    }
+
+    public StringHeader(@NotNull QName name, @NotNull String value, @NotNull SOAPVersion soapVersion, boolean mustUnderstand ) {
+        this.name = name;
+        this.value = value;
+        this.soapVersion = soapVersion;
+        this.mustUnderstand = mustUnderstand;
     }
 
     public @NotNull String getNamespaceURI() {
@@ -89,6 +102,9 @@ public class StringHeader extends AbstractHeaderImpl {
     }
 
     @Nullable public String getAttribute(@NotNull String nsUri, @NotNull String localName) {
+        if(mustUnderstand && soapVersion.nsUri.equals(nsUri) && MUST_UNDERSTAND.equals(localName)) {
+            return getMustUnderstandLiteral(soapVersion);
+        }
         return null;
     }
 
@@ -102,6 +118,9 @@ public class StringHeader extends AbstractHeaderImpl {
     public void writeTo(XMLStreamWriter w) throws XMLStreamException {
         w.writeStartElement("", name.getLocalPart(), name.getNamespaceURI());
         w.writeDefaultNamespace(name.getNamespaceURI());
+        if(mustUnderstand) {
+            w.writeAttribute(soapVersion.nsUri,MUST_UNDERSTAND, getMustUnderstandLiteral(soapVersion));
+        }
         w.writeCharacters(value);
         w.writeEndElement();
     }
@@ -111,6 +130,9 @@ public class StringHeader extends AbstractHeaderImpl {
         if(header == null)
             header = saaj.getSOAPPart().getEnvelope().addHeader();
         SOAPHeaderElement she = header.addHeaderElement(name);
+        if(mustUnderstand) {
+            she.setMustUnderstand(true);
+        }
         she.addTextNode(value);
     }
 
@@ -119,8 +141,27 @@ public class StringHeader extends AbstractHeaderImpl {
         String ln = name.getLocalPart();
 
         h.startPrefixMapping("",nsUri);
-        h.startElement(nsUri,ln,ln,EMPTY_ATTS);
+        if(mustUnderstand) {
+            AttributesImpl attributes = new AttributesImpl();
+            attributes.addAttribute(soapVersion.nsUri,MUST_UNDERSTAND,"S:"+MUST_UNDERSTAND,"CDATA", getMustUnderstandLiteral(soapVersion));
+            h.startElement(nsUri,ln,ln,attributes);
+        } else {
+            h.startElement(nsUri,ln,ln,EMPTY_ATTS);
+        }
         h.characters(value.toCharArray(),0,value.length());
         h.endElement(nsUri,ln,ln);
     }
+
+    private static String getMustUnderstandLiteral(SOAPVersion sv) {
+        if(sv == SOAPVersion.SOAP_12) {
+            return S12_MUST_UNDERSTAND_TRUE;
+        } else {
+            return S11_MUST_UNDERSTAND_TRUE;
+        }
+
+    }
+
+    protected static final String MUST_UNDERSTAND = "mustUnderstand";
+    protected static final String S12_MUST_UNDERSTAND_TRUE ="true";
+    protected static final String S11_MUST_UNDERSTAND_TRUE ="1";
 }

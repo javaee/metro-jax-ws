@@ -62,6 +62,7 @@ import com.sun.xml.ws.resources.ClientMessages;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.AddressingFeature;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
@@ -691,9 +692,10 @@ public final class HeaderList extends ArrayList<Header> {
      * @param sv SOAP version
      * @param oneway Indicates if the message exchange pattern is oneway
      * @param action Action Message Addressing Property value
+     * @param mustUnderstand to indicate if the addressing headers are set with mustUnderstand attribute
      */
-    public void fillRequestAddressingHeaders(Packet packet, AddressingVersion av, SOAPVersion sv, boolean oneway, String action) {
-        fillCommonAddressingHeaders(packet, av, sv, action);
+    public void fillRequestAddressingHeaders(Packet packet, AddressingVersion av, SOAPVersion sv, boolean oneway, String action, boolean mustUnderstand)  {
+        fillCommonAddressingHeaders(packet, av, sv, action, mustUnderstand);
 
         // wsa:ReplyTo
         // null or "true" is equivalent to request/response MEP
@@ -706,6 +708,10 @@ public final class HeaderList extends ArrayList<Header> {
             add(h);
         }
     }
+
+    public void fillRequestAddressingHeaders(Packet packet, AddressingVersion av, SOAPVersion sv, boolean oneway, String action) {
+            fillRequestAddressingHeaders(packet,av,sv,oneway,action,false);
+        }
 
     /**
      * Creates a set of outbound WS-Addressing headers on the client with the
@@ -762,7 +768,7 @@ public final class HeaderList extends ArrayList<Header> {
         }
         if (!binding.isFeatureEnabled(OneWayFeature.class)) {
             // standard oneway
-            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), oneway, effectiveInputAction);
+            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), oneway, effectiveInputAction,binding.getFeature(AddressingFeature.class).isRequired());
         } else {
             // custom oneway
             fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), binding.getFeature(OneWayFeature.class), effectiveInputAction);
@@ -770,7 +776,7 @@ public final class HeaderList extends ArrayList<Header> {
     }
 
     private void fillRequestAddressingHeaders(@NotNull Packet packet, @NotNull AddressingVersion av, @NotNull SOAPVersion sv, @NotNull OneWayFeature of, @NotNull String action) {
-        fillCommonAddressingHeaders(packet, av, sv, action);
+        fillCommonAddressingHeaders(packet, av, sv, action, false);
 
         // wsa:ReplyTo
         if (of.getReplyTo() != null) {
@@ -801,7 +807,7 @@ public final class HeaderList extends ArrayList<Header> {
      * @param action Action Message Addressing Property value
      * @throws IllegalArgumentException if any of the parameters is null.
      */
-    private void fillCommonAddressingHeaders(Packet packet, @NotNull AddressingVersion av, @NotNull SOAPVersion sv, @NotNull String action) {
+    private void fillCommonAddressingHeaders(Packet packet, @NotNull AddressingVersion av, @NotNull SOAPVersion sv, @NotNull String action, boolean mustUnderstand) {
         if (packet == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_PACKET());
         }
@@ -824,7 +830,9 @@ public final class HeaderList extends ArrayList<Header> {
 
         // wsa:Action
         packet.soapAction = action;
-        h = new StringHeader(av.actionTag, action);
+        //As per WS-I BP 1.2/2.0, if one of the WSA headers is MU, then all WSA headers should be treated as MU.,
+        // so just set MU on action header
+        h = new StringHeader(av.actionTag, action, sv, mustUnderstand);
         add(h);
     }
 

@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.api.message;
 
+import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.v2.runtime.MarshallerImpl;
@@ -170,5 +171,16 @@ public abstract class Headers {
      */
     public static Header create(QName name, String value) {
         return new StringHeader(name, value);
-    }    
+    }
+
+    /**
+     * Creates a new {@link Header} that that has a single text value in it
+     * (IOW, of the form &lt;foo>text&lt;/foo>.)
+     *
+     * @param name QName of the header element
+     * @param value text value of the header
+     */
+    public static Header createMustUnderstand(@NotNull SOAPVersion soapVersion, @NotNull QName name,@NotNull String value) {
+        return new StringHeader(name, value,soapVersion,true);
+    }
 }

@@ -82,6 +82,7 @@ import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.namespace.QName;
+import javax.xml.ws.soap.AddressingFeature;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -786,7 +787,7 @@ public final class Packet extends DistributedPropertySet {
             return responsePacket;
         }
 
-        populateAddressingHeaders(responsePacket, addressingVersion, soapVersion, action);
+        populateAddressingHeaders(responsePacket, addressingVersion, soapVersion, action, false);
         return responsePacket;
     }
 
@@ -805,7 +806,7 @@ public final class Packet extends DistributedPropertySet {
        setMessage(temp.getMessage());
     }
 
-    private void populateAddressingHeaders(Packet responsePacket, AddressingVersion av, SOAPVersion sv, String action) {
+    private void populateAddressingHeaders(Packet responsePacket, AddressingVersion av, SOAPVersion sv, String action, boolean mustUnderstand) {
         // populate WS-A headers only if WS-A is enabled
         if (av == null) return;
 
@@ -830,7 +831,7 @@ public final class Packet extends DistributedPropertySet {
         //           false for Provider with no wsdl, Expects User to set the coresponding header on the Message.
         if(responsePacket.getMessage().getHeaders().getAction(av,sv) == null) {
             //wsa:Action header is not set in the message, so use the wsa:Action  passed as the parameter.
-            hl.add(new StringHeader(av.actionTag, action));
+            hl.add(new StringHeader(av.actionTag, action, sv, mustUnderstand));
         }
 
         // wsa:MessageID
@@ -872,7 +873,7 @@ public final class Packet extends DistributedPropertySet {
             LOGGER.info("WSA headers are not added as value for wsa:Action cannot be resolved for this message");
             return;
         }
-        populateAddressingHeaders(responsePacket, addressingVersion, binding.getSOAPVersion(), action);
+        populateAddressingHeaders(responsePacket, addressingVersion, binding.getSOAPVersion(), action, binding.getFeature(AddressingFeature.class).isRequired());
     }
 
     // completes TypedMap
