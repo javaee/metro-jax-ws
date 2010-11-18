@@ -296,7 +296,7 @@
 
     <!-- add a copy of the license and README files to the top level -->
     <copy todir="${dist20.home}">
-        <fileset dir="." includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, distributionREADME_WMforJava2.0.txt" />
+        <fileset dir="." includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, distributionREADME_WMforJava2.0.txt, LICENSE.txt" />
     </copy>
 
     <copy todir="${dist20.home}"
@@ -887,7 +887,7 @@
             <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/>
 
             <!-- license files -->
-            <zipfileset dir="." includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt"
+            <zipfileset dir="." includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, LICENSE.txt"
                         prefix="${source.dist.dir.name}"/>
 
         </zip>
