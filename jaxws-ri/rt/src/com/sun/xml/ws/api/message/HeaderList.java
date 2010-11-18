@@ -768,7 +768,7 @@ public final class HeaderList extends ArrayList<Header> {
         }
         if (!binding.isFeatureEnabled(OneWayFeature.class)) {
             // standard oneway
-            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), oneway, effectiveInputAction,binding.getFeature(AddressingFeature.class).isRequired());
+            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), oneway, effectiveInputAction,addressingVersion.isRequired(binding));
         } else {
             // custom oneway
             fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), binding.getFeature(OneWayFeature.class), effectiveInputAction);
