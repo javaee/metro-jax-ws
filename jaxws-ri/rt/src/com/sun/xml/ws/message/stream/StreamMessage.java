@@ -170,7 +170,12 @@ public final class StreamMessage extends AbstractMessageImpl {
      */
     public StreamMessage(@NotNull TagInfoset envelopeTag, @Nullable TagInfoset headerTag, @NotNull AttachmentSet attachmentSet, @Nullable HeaderList headers, @NotNull TagInfoset bodyTag, @NotNull XMLStreamReader reader, @NotNull SOAPVersion soapVersion) {
         this(headers,attachmentSet,reader,soapVersion);
-        assert envelopeTag!=null && bodyTag!=null;
+        if(envelopeTag == null ) {
+            throw new IllegalArgumentException("EnvelopeTag TagInfoset cannot be null");
+        }
+        if(bodyTag == null ) {
+            throw new IllegalArgumentException("BodyTag TagInfoset cannot be null");
+        }
         this.envelopeTag = envelopeTag;
         this.headerTag = headerTag!=null ? headerTag : 
             new TagInfoset(envelopeTag.nsUri,"Header",envelopeTag.prefix,EMPTY_ATTS);
