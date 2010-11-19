@@ -51,7 +51,7 @@
       </target>
 
 
-    <target name="init">
+    <target name="init" depends="proxy">
         <echo message="-------- ${name} ${build.id} --------"/>
     </target>
 
