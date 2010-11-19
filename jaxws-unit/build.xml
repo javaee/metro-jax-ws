@@ -8,7 +8,7 @@
     <property name="lib.home" value="${basedir}/lib"/>
     <property name="docs.home" value="${basedir}/docs"/>
     <property name="logs.dir" value="${build.home}/junit-reports"/>
-    <property name="test" value="testcases"/>
+    <property name="test" value="testcases/epr/epr_subtypes"/>
     <property name="jaxws-hudson-project" value="jaxws-ri-2.2.1"/>
     <property name="hudson-relative-artifact-location" value="jax-ws-sources/jaxws-ri"/> 
     <!-- Additional arguments to test harness -->
@@ -31,31 +31,30 @@
     </path>
 
     <property name="proxy.host" value="www-proxy.us.oracle.com"/>
-    <property name="proxy.port" value="80"/>
-
     <target name="probe-proxy">
-        <condition property="proxy.enabled">
+        <condition property="proxy.not.needed">
           <and>
             <isset property="proxy.host"/>
-            <isreachable host="${proxy.host}"/>
+            <!-- <isreachable host="${proxy.host}"/> -->
+            <isreachable url="http://www.oracle.com" timeout="10"/> 
           </and>
         </condition>
       </target>
 
-      <target name="proxy" depends="probe-proxy" if="proxy.enabled">
+      <target name="set-proxy" depends="probe-proxy" unless="proxy.not.needed">
+        <echo message="Setting proxy"/>
         <property name="proxy.port" value="80"/>
         <property name="proxy.user" value=""/>
         <property name="proxy.pass" value=""/>
-        <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"
-          proxyuser="${proxy.user}" proxypassword="${proxy.pass}"/>
+        <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"/>
       </target>
 
 
-    <target name="init" depends="proxy">
+    <target name="init">
         <echo message="-------- ${name} ${build.id} --------"/>
     </target>
 
-    <target name="prepare" depends="init">
+    <target name="prepare" depends="init,set-proxy">
         <mkdir dir="build"/>
     </target>
 
@@ -155,7 +154,14 @@
     </target>
 
     <property name="skip" value="false"/>
-    
+
+    <propertyset id="proxy.properties">
+        <propertyref prefix="java.net.useSystemProxies"/>
+        <propertyref prefix="http."/>
+        <propertyref prefix="https."/>
+        <propertyref prefix="ftp."/>
+        <propertyref prefix="socksProxy"/>
+    </propertyset>
     <!-- invokes Unit test-->
     <macrodef name="run-tests">
         <element name="arguments"/>
@@ -173,13 +179,7 @@
             <java jar="${lib.home}/harness.jar" fork="true">
                 <sysproperty key="com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump" value="${log}"/>
                 <sysproperty key="com.sun.xml.ws.transport.local.LocalTransportTube.dump" value="${log}"/>
-                <syspropertyset id="proxy.properties">
-                  <propertyref prefix="java.net.useSystemProxies"/>
-                  <propertyref prefix="http."/>
-                  <propertyref prefix="https."/>
-                  <propertyref prefix="ftp."/>
-                  <propertyref prefix="socksProxy"/>
-                </syspropertyset>
+                <syspropertyset refid="proxy.properties"/>
 
 
                 <arg value="-report"/>
