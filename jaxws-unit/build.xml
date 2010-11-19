@@ -33,7 +33,7 @@
     <property name="proxy.host" value="www-proxy.us.oracle.com"/>
     <property name="proxy.port" value="80"/>
 
-    <target name="probe-proxy" depends="init">
+    <target name="probe-proxy">
         <condition property="proxy.enabled">
           <and>
             <isset property="proxy.host"/>
