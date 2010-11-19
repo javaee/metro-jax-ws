@@ -873,7 +873,7 @@ public final class Packet extends DistributedPropertySet {
             LOGGER.info("WSA headers are not added as value for wsa:Action cannot be resolved for this message");
             return;
         }
-        populateAddressingHeaders(responsePacket, addressingVersion, binding.getSOAPVersion(), action, binding.getFeature(AddressingFeature.class).isRequired());
+        populateAddressingHeaders(responsePacket, addressingVersion, binding.getSOAPVersion(), action, addressingVersion.isRequired(binding));
     }
 
     // completes TypedMap
