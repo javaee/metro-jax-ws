@@ -30,6 +30,27 @@
         <pathelement location="${java.home}/../lib/tools.jar"/>
     </path>
 
+    <property name="proxy.host" value="www-proxy.us.oracle.com"/>
+    <property name="proxy.port" value="80"/>
+
+    <target name="probe-proxy" depends="init">
+        <condition property="proxy.enabled">
+          <and>
+            <isset property="proxy.host"/>
+            <isreachable host="${proxy.host}"/>
+          </and>
+        </condition>
+      </target>
+
+      <target name="proxy" depends="probe-proxy" if="proxy.enabled">
+        <property name="proxy.port" value="80"/>
+        <property name="proxy.user" value=""/>
+        <property name="proxy.pass" value=""/>
+        <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"
+          proxyuser="${proxy.user}" proxypassword="${proxy.pass}"/>
+      </target>
+
+
     <target name="init">
         <echo message="-------- ${name} ${build.id} --------"/>
     </target>
@@ -152,6 +173,14 @@
             <java jar="${lib.home}/harness.jar" fork="true">
                 <sysproperty key="com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump" value="${log}"/>
                 <sysproperty key="com.sun.xml.ws.transport.local.LocalTransportTube.dump" value="${log}"/>
+                <syspropertyset id="proxy.properties">
+                  <propertyref prefix="java.net.useSystemProxies"/>
+                  <propertyref prefix="http."/>
+                  <propertyref prefix="https."/>
+                  <propertyref prefix="ftp."/>
+                  <propertyref prefix="socksProxy"/>
+                </syspropertyset>
+
 
                 <arg value="-report"/>
                 <arg path="${logs.dir}"/>
