@@ -302,19 +302,16 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
                 for(Cookie cookie : cookies) {
                     if (replicaInstance == null && cookie.getName().equals("JREPLICA")) {
                         replicaInstance = cookie.getValue();
-                    }
-                    if (key == null && cookie.getName().equals("METRO_KEY")) {
+                    } else if (key == null && cookie.getName().equals("METRO_KEY")) {
                         key = cookie.getValue();
-                    }
-                    if (jrouteId == null && cookie.getName().equals("JROUTE")) {
+                    } else if (jrouteId == null && cookie.getName().equals("JROUTE")) {
                         jrouteId = cookie.getValue();
                     }
-                    if (replicaInstance != null && key != null) {
-                        String proxyJroute = request.getHeader("proxy-jroute");
-                        boolean failOver = jrouteId != null && proxyJroute != null && !jrouteId.equals(proxyJroute);
-                        haInfo = new HaInfo(key, replicaInstance, failOver);
-                        break;
-                    }
+                }
+                if (replicaInstance != null && key != null) {
+                    String proxyJroute = request.getHeader("proxy-jroute");
+                    boolean failOver = jrouteId != null && proxyJroute != null && !jrouteId.equals(proxyJroute);
+                    haInfo = new HaInfo(key, replicaInstance, failOver);
                 }
             }
         }
