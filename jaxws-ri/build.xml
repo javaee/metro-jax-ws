@@ -575,16 +575,16 @@
     <!-- Integrates 181 -->
     <target name="integrate-181-hudson" depends="prepare"
             description="integrate the last successful 181 Hudson build">
-      <get src="http://hudson.sfbay.sun.com/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.jar" dest="lib/jsr181-api.jar"/>
-      <get src="http://hudson.sfbay.sun.com/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.src.zip" dest="lib/jsr181-api.src.zip"/>
+      <get src="http://hudson-sca.us.oracle.com/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.jar" dest="lib/jsr181-api.jar"/>
+      <get src="http://hudson-sca.us.oracle.com/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.src.zip" dest="lib/jsr181-api.src.zip"/>
     </target>
 
     <target name="integrate-policy-hudson"
             description="integrate the last successful policy-core Hudson build">
 
-        <get src="http://hudson.sfbay.sun.com/job/policy-core/lastSuccessfulBuild/artifact/target/policy.jar"
+        <get src="http://hudson-sca.us.oracle.com/job/policy-core/lastSuccessfulBuild/artifact/target/policy.jar"
              dest="lib/policy.jar"/>
-        <get src="http://hudson.sfbay.sun.com/job/policy-core/lastSuccessfulBuild/artifact/target/policy-src.zip"
+        <get src="http://hudson-sca.us.oracle.com/job/policy-core/lastSuccessfulBuild/artifact/target/policy-src.zip"
              dest="lib/policy-src.zip"/>
 
     </target>
@@ -694,81 +694,81 @@
     </target>
 
     <target name="integrate-maven-repository-importer">
-    <get src="http://hudson.sfbay.sun.com/job/maven-repository-importer/lastSuccessfulBuild/artifact/build/maven-repository-importer.jar"
+    <get src="http://hudson-sca.us.oracle.com/job/maven-repository-importer/lastSuccessfulBuild/artifact/build/maven-repository-importer.jar"
          dest="tools/lib/maven-repository-importer.jar" />
   </target>
 
     <target name="integrate-saaj-hudson" depends="prepare"
             description="integrate the last successful SAAJ RI Hudson build">
-        <get src="http://hudson.sfbay/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/build/lib/saaj-impl.jar"
+        <get src="http://hudson-sca.us.oracle.com/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/build/lib/saaj-impl.jar"
              dest="lib/saaj-impl.jar"/>
-        <get src="http://hudson.sfbay/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.4-SNAPSHOT.src.zip"
+        <get src="http://hudson-sca.us.oracle.com/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.4-SNAPSHOT.src.zip"
              dest="lib/saaj-impl.src.zip"/>
-        <get src="http://hudson.sfbay/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
+        <get src="http://hudson-sca.us.oracle.com/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
              dest="lib/saaj-api.jar"/>
-        <get src="http://hudson.sfbay/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/zip-dist/saaj-api-src.zip"
+        <get src="http://hudson-sca.us.oracle.com/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/zip-dist/saaj-api-src.zip"
              dest="lib/saaj-api-src.zip"/>
     </target>
 
     <target name="integrate-xmlstreambuffer-hudson" depends="prepare"
             description="integrate the last successful XmlStreamBuffer Hudson build">
-    <get src="http://hudson.sfbay.sun.com/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/package/streambuffer.src.zip"
+    <get src="http://hudson-sca.us.oracle.com/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/package/streambuffer.src.zip"
          dest="lib/streambuffer.src.zip" />
-    <get src="http://hudson.sfbay.sun.com/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/streambuffer/dist/streambuffer.jar"
+    <get src="http://hudson-sca.us.oracle.com/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/streambuffer/dist/streambuffer.jar"
          dest="lib/streambuffer.jar" />
   </target>
   
   <target name="integrate-stax-ex-hudson" depends="prepare"
           description="integrate the last successful stax-ex Hudson build">
-    <get src="http://hudson.sfbay.sun.com/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex.jar"
+    <get src="http://hudson-sca.us.oracle.com/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex.jar"
          dest="lib/stax-ex.jar" />
-    <get src="http://hudson.sfbay.sun.com/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex-src.zip"
+    <get src="http://hudson-sca.us.oracle.com/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex-src.zip"
          dest="lib/stax-ex-src.zip" />
   </target>
 
   <target name="integrate-mimepull" depends="prepare"
           description="integrate the last successful mimepull Hudson build">
-    <get src="http://hudson.sfbay.sun.com/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT.jar"
+    <get src="http://hudson-sca.us.oracle.com/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT.jar"
          dest="lib/mimepull.jar" />
-    <get src="http://hudson.sfbay.sun.com/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT-sources.jar"
+    <get src="http://hudson-sca.us.oracle.com/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT-sources.jar"
          dest="lib/mimepull-src.zip" />
   </target>
 
     <target name="integrate-wom" depends="prepare"
             description="integrate the last successful wom Hudson build">
-      <get src="http://hudson.sfbay.sun.com/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT.jar"
+      <get src="http://hudson-sca.us.oracle.com/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT.jar"
            dest="lib/wom.jar" />
-      <get src="http://hudson.sfbay.sun.com/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT-sources.jar"
+      <get src="http://hudson-sca.us.oracle.com/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT-sources.jar"
            dest="lib/wom-src.zip" />
     </target>
 
   <target name="integrate-sjsxp-hudson" depends="prepare"
           description="integrate the last successful sjsxp Hudson build">
-    <get src="http://hudson.sfbay.sun.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_1/sjsxp.jar"
+    <get src="http://hudson-sca.us.oracle.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_1/sjsxp.jar"
          dest="lib/sjsxp.jar" />
-    <get src="http://hudson.sfbay.sun.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_1.zip"
+    <get src="http://hudson-sca.us.oracle.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_1.zip"
          dest="lib/sjsxp-src.zip" />
   </target>
 
   <target name="integrate-jaxws22-api-hudson" depends="prepare"
           description="integrate the last successful jaxws 2.2 API from Hudson build">
-    <get src="http://hudson.sfbay/view/JAX-WS%202.2/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
+    <get src="http://hudson-sca.us.oracle.com/view/JAX-WS%202.2/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
          dest="lib/jaxws-api.jar" />
-    <get src="http://hudson.sfbay/view/JAX-WS%202.2/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
+    <get src="http://hudson-sca.us.oracle.com/view/JAX-WS%202.2/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
          dest="lib/jaxws-api-src.zip" />
   </target>
 
   <target name="integrate-FastInfoset-hudson" depends="prepare"
           description="integrate the last successful FastInfoset 1.2 Hudson build">
-    <get src="http://hudson.sfbay.sun.com/job/fi-1.2/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.jar"
+    <get src="http://hudson-sca.us.oracle.com/job/fi-1.2/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.jar"
          dest="lib/FastInfoset.jar" />
-    <get src="http://hudson.sfbay.sun.com/job/fi-1.2/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.src.zip"
+    <get src="http://hudson-sca.us.oracle.com/job/fi-1.2/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.src.zip"
          dest="lib/FastInfoset.src.zip" />
   </target>
 
     <target name="integrate-htmlmacro-hudson" depends="prepare"
              description="integrate the last successful htmlmacro Hudson build">
-       <get src="http://hudson.sfbay.sun.com/job/htmlmacro/lastSuccessfulBuild/artifact/htmlmacro/build/htmlmacro.zip"
+       <get src="http://hudson-sca.us.oracle.com/job/htmlmacro/lastSuccessfulBuild/artifact/htmlmacro/build/htmlmacro.zip"
             dest="${lib.home}/htmlmacro.zip" />
        <mkdir dir="${lib.home}/htmlmacro" />
        <unzip src="${lib.home}/htmlmacro.zip" dest="${lib.home}/htmlmacro"/>
@@ -923,7 +923,7 @@
             description="generate sources bundle for licensees">
         <tstamp/>
 
-        <get src="http://hudson.sfbay.sun.com/job/tlda-license/lastSuccessfulBuild/artifact/TLDA_SCSL_Licensees_License_Notice.txt" dest="${build.home}/TLDA_SCSL_Licensees_License_Notice.txt"/>
+        <get src="http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/TLDA_SCSL_Licensees_License_Notice.txt" dest="${build.home}/TLDA_SCSL_Licensees_License_Notice.txt"/>
                   
         <!-- create the zip file contents -->
         <property name="source.drop.dir" value="${build.home}/source-bundle"/>
