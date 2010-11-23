@@ -38,39 +38,44 @@
  * holder.
  */
 
-package com.sun.xml.ws.policy;
+package com.sun.xml.ws.policy.jaxws;
 
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundFault;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
-import com.sun.xml.ws.api.model.wsdl.WSDLObject;
-import org.xml.sax.Locator;
+import com.sun.xml.ws.policy.PolicyException;
+import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.policy.PolicyMapExtender;
+import com.sun.xml.ws.policy.PolicyMapKey;
+import com.sun.xml.ws.policy.PolicySubject;
+import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
+
+import java.util.Collection;
+import java.util.Map;
+import javax.xml.namespace.QName;
 
 /**
- * We need data from the WSDL operation that the default WSDLBoundFault does not
- * give us. This class holds all the necessary data.
  *
- * @author Fabian Ritzmann
+ * @author Jakub Podlesak (jakub.podlesak at sun.com)
  */
-class WSDLBoundFaultContainer implements WSDLObject {
+final class BuilderHandlerEndpointScope extends BuilderHandler{
+    private final QName service;
+    private final QName port;
     
-    private final WSDLBoundFault boundFault;
-    private final WSDLBoundOperation boundOperation;
-    
-    public WSDLBoundFaultContainer(final WSDLBoundFault fault, final WSDLBoundOperation operation) {
-        this.boundFault = fault;
-        this.boundOperation = operation;
+    /** Creates a new instance of WSDLServiceScopeBuilderHandler */
+    BuilderHandlerEndpointScope(Collection<String> policyURIs, Map<String,PolicySourceModel> policyStore, Object policySubject, QName service, QName port) {
+        
+        super(policyURIs, policyStore, policySubject);
+        this.service = service;
+        this.port = port;
     }
     
-    public Locator getLocation() {
-        return null;
-    }
-
-    public WSDLBoundFault getBoundFault() {
-        return this.boundFault;
-    }
-
-    public WSDLBoundOperation getBoundOperation() {
-        return this.boundOperation;
+    protected void doPopulate(final PolicyMapExtender policyMapExtender) throws PolicyException {
+        final PolicyMapKey mapKey = PolicyMap.createWsdlEndpointScopeKey(service, port);
+        for (PolicySubject subject : getPolicySubjects()) {
+            policyMapExtender.putEndpointSubject(mapKey, subject);
+        }
     }
     
+    @Override
+    public String toString() {
+        return (new StringBuffer(service.toString())).append(":").append(port.toString()).toString();
+    }
 }

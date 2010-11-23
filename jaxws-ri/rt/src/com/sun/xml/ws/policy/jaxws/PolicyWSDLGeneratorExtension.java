@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.xml.ws.policy;
+package com.sun.xml.ws.policy.jaxws;
 
 import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.ws.addressing.policy.AddressingPolicyMapConfigurator;
@@ -63,6 +63,14 @@ import com.sun.xml.ws.api.policy.ModelGenerator;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGenExtnContext;
 import com.sun.xml.ws.encoding.policy.MtomPolicyMapConfigurator;
+import com.sun.xml.ws.policy.Policy;
+import com.sun.xml.ws.policy.PolicyConstants;
+import com.sun.xml.ws.policy.PolicyException;
+import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.policy.PolicyMapExtender;
+import com.sun.xml.ws.policy.PolicyMapUtil;
+import com.sun.xml.ws.policy.PolicyMerger;
+import com.sun.xml.ws.policy.PolicySubject;
 import com.sun.xml.ws.policy.jaxws.spi.PolicyMapConfigurator;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.policy.sourcemodel.PolicyModelGenerator;
@@ -134,7 +142,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
                     policySubjects.addAll(policyMapConfigurators[i].update(policyMap, seiModel, binding));
                     extenders[i].disconnect();
                 }
-                PolicyUtil.insertPolicies(policyMap, policySubjects, this.seiModel.getServiceQName(), this.seiModel.getPortName());
+                PolicyMapUtil.insertPolicies(policyMap, policySubjects, this.seiModel.getServiceQName(), this.seiModel.getPortName());
             } catch (PolicyException e) {
                 throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1017_MAP_UPDATE_FAILED(), e));
             }
@@ -406,7 +414,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
         LOGGER.exiting();
     }
 
-    private static final boolean isCorrectType(final PolicyMap map, final PolicySubject subject, final ScopeType type) {
+    private static boolean isCorrectType(final PolicyMap map, final PolicySubject subject, final ScopeType type) {
         switch (type) {
             case OPERATION:
                 return !(map.isInputMessageSubject(subject) || map.isOutputMessageSubject(subject) || map.isFaultMessageSubject(subject));

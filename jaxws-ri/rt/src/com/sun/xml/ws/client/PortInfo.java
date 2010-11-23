@@ -54,7 +54,7 @@ import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
 import com.sun.xml.ws.policy.PolicyMap;
-import com.sun.xml.ws.policy.PolicyUtil;
+import com.sun.xml.ws.policy.jaxws.PolicyUtil;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;

@@ -71,7 +71,7 @@ import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 import com.sun.xml.ws.policy.PolicyMap;
-import com.sun.xml.ws.policy.PolicyUtil;
+import com.sun.xml.ws.policy.jaxws.PolicyUtil;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 

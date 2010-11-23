@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.xml.ws.policy;
+package com.sun.xml.ws.policy.jaxws;
 
 import com.sun.xml.ws.api.policy.ModelUnmarshaller;
 import com.sun.xml.ws.policy.PolicyException;

@@ -84,7 +84,7 @@ import com.sun.xml.ws.wsdl.writer.document.soap.Header;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPAddress;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPFault;
 import com.sun.xml.ws.util.RuntimeVersion;
-import com.sun.xml.ws.policy.PolicyWSDLGeneratorExtension;
+import com.sun.xml.ws.policy.jaxws.PolicyWSDLGeneratorExtension;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 
 import javax.jws.soap.SOAPBinding.Style;

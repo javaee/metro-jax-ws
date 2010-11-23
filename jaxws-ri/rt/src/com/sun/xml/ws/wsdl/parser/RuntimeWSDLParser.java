@@ -66,7 +66,7 @@ import com.sun.xml.ws.streaming.TidyXMLStreamReader;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.xml.XmlUtil;
-import com.sun.xml.ws.policy.PolicyWSDLParserExtension;
+import com.sun.xml.ws.policy.jaxws.PolicyWSDLParserExtension;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 

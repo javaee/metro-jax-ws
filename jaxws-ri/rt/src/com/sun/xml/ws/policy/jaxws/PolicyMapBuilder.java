@@ -38,12 +38,13 @@
  * holder.
  */
 
-package com.sun.xml.ws.policy;
+package com.sun.xml.ws.policy.jaxws;
 
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicyMapExtender;
 import com.sun.xml.ws.policy.PolicyMapMutator;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;

@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.xml.ws.policy;
+package com.sun.xml.ws.policy.jaxws;
 
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
@@ -46,6 +46,7 @@ import com.sun.xml.ws.policy.PolicyMapExtender;
 import com.sun.xml.ws.policy.PolicyMapKey;
 import com.sun.xml.ws.policy.PolicySubject;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
+
 import java.util.Collection;
 import java.util.Map;
 import javax.xml.namespace.QName;
@@ -74,6 +75,7 @@ final class BuilderHandlerServiceScope extends BuilderHandler{
         }
     }
     
+    @Override
     public String toString() {
         return service.toString();
     }

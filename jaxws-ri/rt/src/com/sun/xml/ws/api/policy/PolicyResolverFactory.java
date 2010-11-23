@@ -41,7 +41,7 @@
 package com.sun.xml.ws.api.policy;
 
 import com.sun.xml.ws.util.ServiceFinder;
-import com.sun.xml.ws.policy.DefaultPolicyResolver;
+import com.sun.xml.ws.policy.jaxws.DefaultPolicyResolver;
 
 /**
  * PolicyResolverFactory provides a way to override Effective Policy Resolution for a Service or Client.

@@ -38,44 +38,40 @@
  * holder.
  */
 
-package com.sun.xml.ws.policy;
+package com.sun.xml.ws.policy.jaxws;
 
-import com.sun.xml.ws.policy.PolicyException;
-import com.sun.xml.ws.policy.PolicyMap;
-import com.sun.xml.ws.policy.PolicyMapExtender;
-import com.sun.xml.ws.policy.PolicyMapKey;
-import com.sun.xml.ws.policy.PolicySubject;
-import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
-import java.util.Collection;
-import java.util.Map;
-import javax.xml.namespace.QName;
+import com.sun.xml.ws.api.model.wsdl.WSDLBoundFault;
+import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
+import com.sun.xml.ws.api.model.wsdl.WSDLObject;
+
+import org.xml.sax.Locator;
 
 /**
+ * We need data from the WSDL operation that the default WSDLBoundFault does not
+ * give us. This class holds all the necessary data.
  *
- * @author Jakub Podlesak (jakub.podlesak at sun.com)
+ * @author Fabian Ritzmann
  */
-final class BuilderHandlerOperationScope extends BuilderHandler{
-    private final QName service;
-    private final QName port;
-    private final QName operation;
+class WSDLBoundFaultContainer implements WSDLObject {
     
-    /** Creates a new instance of WSDLServiceScopeBuilderHandler */
-    BuilderHandlerOperationScope(
-            Collection<String> policyURIs
-            , Map<String,PolicySourceModel> policyStore
-            , Object policySubject
-            , QName service, QName port, QName operation) {
-        
-        super(policyURIs, policyStore, policySubject);
-        this.service = service;
-        this.port = port;
-        this.operation = operation;
+    private final WSDLBoundFault boundFault;
+    private final WSDLBoundOperation boundOperation;
+    
+    public WSDLBoundFaultContainer(final WSDLBoundFault fault, final WSDLBoundOperation operation) {
+        this.boundFault = fault;
+        this.boundOperation = operation;
     }
     
-    protected void doPopulate(final PolicyMapExtender policyMapExtender) throws PolicyException{
-        final PolicyMapKey mapKey = PolicyMap.createWsdlOperationScopeKey(service, port, operation);
-        for (PolicySubject subject : getPolicySubjects()) {
-            policyMapExtender.putOperationSubject(mapKey, subject);
-        }
+    public Locator getLocation() {
+        return null;
     }
+
+    public WSDLBoundFault getBoundFault() {
+        return this.boundFault;
+    }
+
+    public WSDLBoundOperation getBoundOperation() {
+        return this.boundOperation;
+    }
+    
 }

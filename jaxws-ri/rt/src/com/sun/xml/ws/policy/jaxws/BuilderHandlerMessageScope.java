@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.xml.ws.policy;
+package com.sun.xml.ws.policy.jaxws;
 
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
@@ -46,6 +46,7 @@ import com.sun.xml.ws.policy.PolicyMapExtender;
 import com.sun.xml.ws.policy.PolicyMapKey;
 import com.sun.xml.ws.policy.PolicySubject;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
+
 import java.util.Collection;
 import java.util.Map;
 import javax.xml.namespace.QName;
@@ -89,6 +90,7 @@ final class BuilderHandlerMessageScope extends BuilderHandler{
      * in multiple builder handlers referring to the same policies. This method allows
      * to sort out these duplicate handlers.
      */
+    @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
@@ -113,6 +115,7 @@ final class BuilderHandlerMessageScope extends BuilderHandler{
         return result;
     }
 
+    @Override
     public int hashCode() {
         int hashCode = 19;
         hashCode = 31 * hashCode + (policySubject == null ? 0 : policySubject.hashCode());

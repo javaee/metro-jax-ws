@@ -38,11 +38,17 @@
  * holder.
  */
 
-package com.sun.xml.ws.policy;
+package com.sun.xml.ws.policy.jaxws;
 
 import com.sun.xml.ws.api.policy.AlternativeSelector;
 import com.sun.xml.ws.api.policy.PolicyResolver;
 import com.sun.xml.ws.api.policy.ValidationProcessor;
+import com.sun.xml.ws.policy.AssertionSet;
+import com.sun.xml.ws.policy.EffectivePolicyModifier;
+import com.sun.xml.ws.policy.Policy;
+import com.sun.xml.ws.policy.PolicyAssertion;
+import com.sun.xml.ws.policy.PolicyException;
+import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.spi.PolicyAssertionValidator.Fitness;
 import com.sun.xml.ws.resources.PolicyMessages;
 

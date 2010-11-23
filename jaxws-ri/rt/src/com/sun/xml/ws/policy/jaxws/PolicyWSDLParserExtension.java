@@ -38,14 +38,14 @@
  * holder.
  */
 
-package com.sun.xml.ws.policy;
+package com.sun.xml.ws.policy.jaxws;
 
 import com.sun.xml.ws.api.model.wsdl.*;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtensionContext;
 import com.sun.xml.ws.api.policy.PolicyResolver;
 import com.sun.xml.ws.resources.PolicyMessages;
-import com.sun.xml.ws.policy.SafePolicyReader.PolicyRecord;
+import com.sun.xml.ws.policy.jaxws.SafePolicyReader.PolicyRecord;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.policy.privateutil.PolicyUtils;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
@@ -53,6 +53,8 @@ import com.sun.xml.ws.policy.sourcemodel.PolicySourceModelContext;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.NamespaceVersion;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.XmlToken;
 import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
+import com.sun.xml.ws.policy.PolicyException;
+import com.sun.xml.ws.policy.PolicyMap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -981,7 +983,7 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
      * PolicyURIs attribute version.
      */
     private String[] getPolicyURIsFromAttr(final XMLStreamReader reader) {
-        StringBuffer policyUriBuffer = new StringBuffer();
+        final StringBuilder policyUriBuffer = new StringBuilder();
         for (NamespaceVersion version : NamespaceVersion.values()) {
             final String value = reader.getAttributeValue(version.toString(), XmlToken.PolicyUris.toString());
             if (value != null) {
