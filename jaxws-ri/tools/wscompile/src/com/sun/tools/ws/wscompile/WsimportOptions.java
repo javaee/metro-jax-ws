@@ -290,7 +290,7 @@ public class WsimportOptions extends Options {
 
     @Override
     protected void addFile(String arg) throws BadCommandLineException {
-        addFile(arg, wsdls, "*.wsdl");
+        addFile(arg, wsdls, ".wsdl");
     }
 
     private final List<InputSource> wsdls = new ArrayList<InputSource>();
