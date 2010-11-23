@@ -114,6 +114,8 @@ public class StreamMessageCopyTest extends TestCase {
         XMLStreamReader rdr1 = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(str1));
         XMLStreamReader rdr2 = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(str2));
         compareReaders(rdr1, rdr2, prefixes);
+        rdr1.close();
+        rdr2.close();
     }
 
     private void compareReaders(XMLStreamReader rdr, XMLStreamReader xsbrdr, String... prefixes) throws XMLStreamException {
