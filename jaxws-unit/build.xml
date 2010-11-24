@@ -47,6 +47,8 @@
         <property name="proxy.user" value=""/>
         <property name="proxy.pass" value=""/>
         <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"/>
+        <property name="http.proxyHost" value="${proxy.host}"/>
+        <property name="http.proxyPort" value="${proxy.port}"/>  
       </target>
 
 
