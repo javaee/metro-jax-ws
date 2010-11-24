@@ -144,6 +144,8 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     /**
      * @deprecated
      *      remove as soon as we can update the test util.
+     * @param endpoint web service endpoint
+     * @param owner list of related adapters
      */
     protected HttpAdapter(WSEndpoint endpoint, HttpAdapterList<? extends HttpAdapter> owner) {
         this(endpoint,owner,null);
@@ -180,7 +182,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     /**
      * Fill in WSDL map.
      *
-     * @param sdef
+     * @param sdef service definition
      */
     public void initWSDLMap(ServiceDefinition sdef) {
         this.serviceDefinition = sdef;
@@ -316,7 +318,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         return false;
 
     }
-    /**
+    /*
      *
      * @param con
      * @param codec
@@ -352,7 +354,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * Make sure SOAPAction is quoted as {@link Packet#soapAction} expectsa quoted soapAction value.
      *  
      * @param soapAction SoapAction HTTP Header
-     * @return
+     * @return quoted SOAPAction value
      */
     private String fixQuotesAroundSoapAction(String soapAction) {
         if(soapAction != null && (!soapAction.startsWith("\"") || !soapAction.endsWith("\"")) ) {
@@ -373,7 +375,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             return;                 // Connection is already closed
         }
         Message responseMessage = packet.getMessage();
-        addStickyCookie(con, packet);
+        addStickyCookie(con);
         addReplicaCookie(con, packet);
         if (responseMessage == null) {
             if (!con.isClosed()) {
@@ -425,7 +427,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         }
     }
 
-    /**
+    /*
      * GlassFish Load-balancer plugin always add a header proxy-jroute on
      * request being send from load-balancer plugin to server
      *
@@ -437,7 +439,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * previous failed instance) will be different. This logic can be used
      * to determine fail-over scenario.
      */
-    private void addStickyCookie(WSHTTPConnection con, Packet packet) {
+    private void addStickyCookie(WSHTTPConnection con) {
         if (stickyCookie) {
             String proxyJroute = con.getRequestHeader("proxy-jroute");
             if (proxyJroute == null) {
@@ -594,21 +596,24 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     final class HttpToolkit extends Adapter.Toolkit {
         public void handle(WSHTTPConnection con) throws IOException {
-            boolean invoke = false;
             try {
-                Packet packet = new Packet();
+                boolean invoke = false;
+                Packet packet;
                 try {
                     packet = decodePacket(con, codec);
                     invoke = true;
-                } catch(ExceptionHasMessage e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                    packet.setMessage(e.getFaultMessage());
-                } catch(UnsupportedMediaException e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                    con.setStatus(WSHTTPConnection.UNSUPPORTED_MEDIA);
                 } catch(Exception e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                    con.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                    packet = new Packet();
+                    if (e instanceof ExceptionHasMessage) {
+                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                        packet.setMessage(((ExceptionHasMessage)e).getFaultMessage());
+                    } else if (e instanceof UnsupportedMediaException) {
+                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                        con.setStatus(WSHTTPConnection.UNSUPPORTED_MEDIA);
+                    } else {
+                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                        con.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                    }
                 }
                 if (invoke) {
                     try {
@@ -622,7 +627,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                         return;
                     }
                 }
-               encodePacket(packet, con, codec);
+                encodePacket(packet, con, codec);
             } finally {
                 if (!con.isClosed()) {
                     con.close();
@@ -752,7 +757,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         System.out.println("--------------------");
     }
 
-    /**
+    /*
      * Generates the listing of all services.
      */
     private void writeWebServicesHtmlPage(WSHTTPConnection con) throws IOException {
@@ -838,10 +843,12 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         try {
             dump = Boolean.getBoolean(HttpAdapter.class.getName()+".dump");
         } catch( Throwable t ) {
+            // OK to ignore this
         }
         try {
             publishStatusPage = System.getProperty(HttpAdapter.class.getName()+".publishStatusPage").equals("true");
         } catch( Throwable t ) {
+            // OK to ignore this
         }
     }
 
