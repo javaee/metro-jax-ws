@@ -118,8 +118,17 @@ public class StringHeader extends AbstractHeaderImpl {
     public void writeTo(XMLStreamWriter w) throws XMLStreamException {
         w.writeStartElement("", name.getLocalPart(), name.getNamespaceURI());
         w.writeDefaultNamespace(name.getNamespaceURI());
-        if(mustUnderstand) {
-            w.writeAttribute(soapVersion.nsUri,MUST_UNDERSTAND, getMustUnderstandLiteral(soapVersion));
+        if (mustUnderstand) {
+            //Writing the ns declaration conditionally checking in the NSContext breaks XWSS. as readHeader() adds ns declaration,
+            // where as writing alonf with the soap envelope does n't add it.
+            //Looks like they expect the readHeader() and writeTo() produce the same infoset, Need to understand their usage
+
+            //if(w.getNamespaceContext().getPrefix(soapVersion.nsUri) == null) {
+            w.writeNamespace("S", soapVersion.nsUri);
+            w.writeAttribute("S", soapVersion.nsUri, MUST_UNDERSTAND, getMustUnderstandLiteral(soapVersion));
+            // } else {
+            // w.writeAttribute(soapVersion.nsUri,MUST_UNDERSTAND, getMustUnderstandLiteral(soapVersion));
+            // }
         }
         w.writeCharacters(value);
         w.writeEndElement();
