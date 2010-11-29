@@ -137,7 +137,7 @@
         <dependency>
             <groupId>org.jvnet.staxex</groupId>
             <artifactId>stax-ex</artifactId>
-            <version>1.2</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>com.sun.org.apache.xml.internal</groupId>
@@ -147,7 +147,7 @@
         <dependency>
             <groupId>org.jvnet</groupId>
             <artifactId>mimepull</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
