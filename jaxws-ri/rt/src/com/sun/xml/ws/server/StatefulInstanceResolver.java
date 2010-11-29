@@ -132,6 +132,10 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
         private long maxIdleTime;
 
+        public HAInstance() {
+            // Storeable objects require public no-arg constructor
+        }
+
         public HAInstance(T instance, long timeout) {
             this.instance = instance;
             lastAccess = System.currentTimeMillis();
