@@ -744,9 +744,9 @@
 
   <target name="integrate-sjsxp-hudson" depends="prepare"
           description="integrate the last successful sjsxp Hudson build">
-    <get src="http://hudson-sca.us.oracle.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_1/sjsxp.jar"
+    <get src="http://hudson-sca.us.oracle.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_2/sjsxp.jar"
          dest="lib/sjsxp.jar" />
-    <get src="http://hudson-sca.us.oracle.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_1.zip"
+    <get src="http://hudson-sca.us.oracle.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_2.zip"
          dest="lib/sjsxp-src.zip" />
   </target>
 
