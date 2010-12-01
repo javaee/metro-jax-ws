@@ -206,7 +206,7 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
 
     @Override
     public boolean isSecure() {
-        return request.getScheme().equals("https");
+        return request.isSecure();
     }
 
     @Override
