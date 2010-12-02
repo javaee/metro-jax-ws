@@ -474,22 +474,29 @@
         <delete dir="build/maven2-repo"/>
         <mkdir dir="build/maven2-repo"/>
         <!--property name="jar.suffix" value="${release.impl.version}"/-->
-        <!-- <push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/> -->
+        <!--property  name="release.api.version" value="${release.spec.version}"/-->s                
+        <antcall target="push-api-to-maven2"/>
         <push-to-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <push-to-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
         <push-to-m2-zip module="jaxws-ri"/>
+    </target>
+
+    <target  name="push-api-to-maven2" if="push.api.set" depends="mavenize">
+        <push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
     </target>
 
     <target name="push-snapshot-to-maven2" depends="dist-zip-with-src"
             description="publish snapshot jars into the maven repository">
         <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
         <property name="release.api.version" value="${release.spec.version}-SNAPSHOT"/>
+        <property name="push.api.set" value="true"/>
         <antcall target="push-to-maven2"/>
     </target>
 
     <target  name="push-promoted-to-maven2" depends="dist-zip-with-src">
         <property  name="jar.suffix" value="${release.impl.version}-promoted-b${promoted.version}"/>
         <property  name="release.api.version" value="${release.spec.version}-promoted-b${promoted.version}"/>
+        <property name="push.api.set" value="true"/>
         <antcall target="push-to-maven2"/>
         <propertyfile file="project.properties">
             <entry key="promoted.version" type="int" operation="+" value="1" pattern="00"/>
