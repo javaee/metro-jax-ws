@@ -393,7 +393,7 @@
             <fail unless="jar.suffix">jar.suffix property needs to be defined</fail>
             <copy file="etc/poms/@{module}.pom" tofile="build/maven2-repo/@{module}.pom" overwrite="true">
                 <filterset>
-                    <filter token="API_VERSION" value="${release.spec.version}"/>
+                    <filter token="API_VERSION" value="${release.api.version}"/>
                     <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
                     <filter token="JAXB_API_VERSION" value="${jaxb.api.version}"/>
                     <filter token="VERSION" value="${jar.suffix}"/>
@@ -469,15 +469,6 @@
         <push-to-m2 module="resolver" module-src="lib/resolver-src.zip"/>
     </target>
     -->
-    <target name="install-locally" depends="mavenize">
-        <delete dir="build/maven2-repo"/>
-        <mkdir dir="build/maven2-repo"/>
-        <!--property name="jar.suffix" value="${release.impl.version}"/-->
-        <install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
-        <install-local-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
-        <install-local-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
-        <install-local-m2-zip module="jaxws-ri"/>
-    </target>
 
     <target name="push-to-maven2" depends="mavenize">
         <delete dir="build/maven2-repo"/>
@@ -489,20 +480,47 @@
         <push-to-m2-zip module="jaxws-ri"/>
     </target>
 
-    <target name="push-snapshot-to-maven2" depends="dist-zip-with-src"
+    <target name="push-snapshot-to-maven2"
             description="publish snapshot jars into the maven repository">
         <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
+        <property name="release.api.version" value="${release.spec.version}-SNAPSHOT"/>
         <antcall target="push-to-maven2"/>
     </target>
-    <target name="install-snapshot-locally" depends="mavenize,dist-zip-with-src">
+
+    <target  name="push-promoted-to-maven2">
+        <property  name="jar.suffix" value="${release.impl.version}-promoted-b${promoted.version}"/>
+        <property  name="release.api.version" value="${release.spec.version}-promoted-b${promoted.version}"/>
+        <antcall target="push-to-maven2"/>
+        <propertyfile file="project.properties">
+            <entry key="promoted.version" type="int" operation="+" value="1" pattern="00"/>
+        </propertyfile>
+    </target>
+
+    <target name="install-locally" depends="mavenize,dist-zip-with-src">
+        <delete dir="build/maven2-repo"/>
+        <mkdir dir="build/maven2-repo"/>
+        <!--property name="jar.suffix" value="${release.impl.version}"/-->
+        <!--property  name="release.api.version" value="${release.spec.version}"/-->
+
+        <install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
+        <install-local-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
+        <install-local-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
+        <install-local-m2-zip module="jaxws-ri"/>
+    </target>
+
+    <target name="install-snapshot-locally">
             <delete dir="build/maven2-repo"/>
             <mkdir dir="build/maven2-repo"/>
             <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
-            <install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
-            <install-local-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
-            <install-local-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
-            <install-local-m2-zip module="jaxws-ri"/>
-        </target>
+            <property name="release.api.version" value="${release.spec.version}-SNAPSHOT"/>
+            <antcall target="install-locally"/>
+    </target>
+
+    <target  name="install-promoted-locally">
+            <property  name="jar.suffix" value="${release.impl.version}-promoted-b${promoted.version}"/>
+            <property  name="release.api.version" value="${release.spec.version}-promoted-b${promoted.version}"/>
+            <antcall target="install-locally"/>
+    </target>
 
     <target name="push-to-maven-prepare"
     description="prepare a repository image for the push-to-maven target">
