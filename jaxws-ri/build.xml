@@ -494,6 +494,13 @@
         <propertyfile file="project.properties">
             <entry key="promoted.version" type="int" operation="+" value="1" pattern="00"/>
         </propertyfile>
+        <exec executable="svn">
+            <arg value="commit"/>
+            <arg  value="-m"/>
+            <arg  value="Updating promoted.version"/>
+            <arg  value="project.properties"/>
+        </exec>
+
     </target>
 
     <target name="install-locally" depends="mavenize,dist-zip-with-src">
