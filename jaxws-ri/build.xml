@@ -480,14 +480,14 @@
         <push-to-m2-zip module="jaxws-ri"/>
     </target>
 
-    <target name="push-snapshot-to-maven2"
+    <target name="push-snapshot-to-maven2" depends="dist-zip-with-src"
             description="publish snapshot jars into the maven repository">
         <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
         <property name="release.api.version" value="${release.spec.version}-SNAPSHOT"/>
         <antcall target="push-to-maven2"/>
     </target>
 
-    <target  name="push-promoted-to-maven2">
+    <target  name="push-promoted-to-maven2" depends="dist-zip-with-src">
         <property  name="jar.suffix" value="${release.impl.version}-promoted-b${promoted.version}"/>
         <property  name="release.api.version" value="${release.spec.version}-promoted-b${promoted.version}"/>
         <antcall target="push-to-maven2"/>
