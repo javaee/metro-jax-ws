@@ -350,6 +350,41 @@
         <delete file="${dist20.home}/lib/jaxws-tools.src.zip"/>
     </target>
 
+    <target name="repkg-jaxb-srczip" description="generates 'old-fashioned' src zip files used for JDK integration">
+
+      <property name="btmp" value="${build.home}/xjc-src"/>
+      <property name="jaxb.impl.src.zip" value="${lib.home}/jaxb-impl.src.zip"/>
+      <property name="jaxb.xjc.src.zip" value="${lib.home}/jaxb-xjc.src.zip"/>
+
+      <unzip src="${jaxb.impl.src.zip}" dest="${btmp}"/>
+      <delete file="${jaxb.impl.src.zip}"/>
+      <zip zipfile="${jaxb.impl.src.zip}" >
+          <zipfileset dir="${btmp}/impl"/>
+          <zipfileset dir="${btmp}/istack-commons/src/main/java"/>
+          <zipfileset dir="${btmp}/txw2/src/runtime"/>
+      </zip>
+
+      <delete dir="${btmp}"/>
+
+      <unzip src="${jaxb.xjc.src.zip}" dest="${btmp}"/>
+      <delete file="${jaxb.xjc.src.zip}"/>  
+      <zip zipfile="${jaxb.xjc.src.zip}" >
+          <zipfileset dir="${btmp}/codemodel/codemodel/src/main/java"/>
+          <zipfileset dir="${btmp}/dtd-parser"/>
+          <zipfileset dir="${btmp}/istack-commons/src"/>
+          <zipfileset dir="${btmp}/istack-commons/src14"/>
+          <zipfileset dir="${btmp}/xsom/src/com" prefix="com"/>
+          <zipfileset dir="${btmp}/xjc"/>
+          <zipfileset dir="${btmp}/rngom/src"/>
+          <zipfileset dir="${btmp}/relaxng-datatype/java/src"/>
+          <zipfileset dir="${btmp}/resolver-comsun/src"/>
+      </zip>
+
+      <delete dir="${btmp}"/>
+
+    </target>
+
+
     <target name="hudson" depends="clean, dist.zip, src.zip,javadocs, doc-src-zip" />
 
     <macrodef name="prepare-pom">
@@ -563,6 +598,7 @@
         <fileset dir="${build.home}/jaxb/jaxb-ri/lib" includes="*.zip,*.jar"
                  excludes="activation.jar, jsr173_1.0_api.jar, jaxb1-impl.jar" />
       </copy>
+      <antcall target="repkg-jaxb-srczip"/>  
       <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-osgi.jar"
            dest="${v3-osgi.dir}/jaxb-osgi.jar" />
       <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-api-osgi.jar"
