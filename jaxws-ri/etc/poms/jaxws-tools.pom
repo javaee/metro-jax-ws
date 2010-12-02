@@ -59,10 +59,11 @@
         <url>http://www.oracle.com/</url>
     </organization>
     <scm>
-        <connection>scm:cvs:pserver:cvs.dev.java.net:/cvs:jax-ws-sources</connection>
-        <developerConnection>scm:cvs:pserver:cvs.dev.java.net:/cvs:jax-ws-sources</developerConnection>
-        <url>https://jax-ws-sources.dev.java.net/source/browse/jax-ws-sources/jaxws-ri/</url>
+        <connection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri</developerConnection>
+        <url>http://java.net/projects/jax-ws/sources/sources/show/branches/jaxws22</url>
     </scm>
+
     <issueManagement>
         <system>jira</system>
         <url>http://java.net/jira/browse/JAX_WS</url>
