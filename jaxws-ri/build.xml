@@ -717,6 +717,14 @@
     <get src="http://hudson-sca.us.oracle.com/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/streambuffer/dist/streambuffer.jar"
          dest="lib/streambuffer.jar" />
   </target>
+
+  <target name="integrate-stax-ex-maven" description="integrate stax-ex from maven">
+    <property name="stax-ex.version" value="1.4" />
+    <get src="http://download.java.net/maven/2/org/jvnet/staxex/stax-ex/1.4/stax-ex-${stax-ex.version}.jar"
+             dest="lib/stax-ex.jar" />
+    <get src="http://download.java.net/maven/2/org/jvnet/staxex/stax-ex/1.4/stax-ex-${stax-ex.version}-sources.jar"
+             dest="lib/stax-ex-src.zip" />
+  </target>
   
   <target name="integrate-stax-ex-hudson" depends="prepare"
           description="integrate the last successful stax-ex Hudson build">
