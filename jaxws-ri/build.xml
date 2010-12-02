@@ -474,7 +474,7 @@
         <delete dir="build/maven2-repo"/>
         <mkdir dir="build/maven2-repo"/>
         <!--property name="jar.suffix" value="${release.impl.version}"/-->
-        <!--property  name="release.api.version" value="${release.spec.version}"/-->s                
+        <!--property  name="release.api.version" value="${release.spec.version}"/-->                
         <antcall target="push-api-to-maven2"/>
         <push-to-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <push-to-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
