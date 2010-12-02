@@ -546,6 +546,9 @@ abstract class ResponseBuilder {
             Object retVal = null;
 
             if (parts.length>0) {
+                if (!msg.hasPayload()) {
+                    throw new WebServiceException("No payload. Expecting payload with "+wrapperName+" element");
+                }
                 XMLStreamReader reader = msg.readPayload();
                 XMLStreamReaderUtil.verifyTag(reader,wrapperName);
                 Object wrapperBean = wrapper.unmarshal(reader, (msg.getAttachments() != null) ?
@@ -635,10 +638,11 @@ abstract class ResponseBuilder {
         public Object readResponse(Message msg, Object[] args) throws JAXBException, XMLStreamException {
             Object retVal = null;
 
+            if (!msg.hasPayload()) {
+                throw new WebServiceException("No payload. Expecting payload with "+wrapperName+" element");
+            }
             XMLStreamReader reader = msg.readPayload();
-            if (!reader.getName().equals(wrapperName))
-                throw new WebServiceException( // TODO: i18n
-                    "Unexpected response element "+reader.getName()+" expected: "+wrapperName);
+            XMLStreamReaderUtil.verifyTag(reader,wrapperName);
             reader.nextTag();
 
             while(reader.getEventType()==XMLStreamReader.START_ELEMENT) {

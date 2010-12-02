@@ -504,8 +504,10 @@ abstract class EndpointArgumentsBuilder {
         private final PartBuilder[] parts;
 
         private final Bridge wrapper;
+        private final QName wrapperName;
 
         public DocLit(WrapperParameter wp, Mode skipMode) {
+            wrapperName = wp.getName();
             wrapper = wp.getBridge();
             Class wrapperType = (Class) wrapper.getTypeReference().type;
 
@@ -544,7 +546,11 @@ abstract class EndpointArgumentsBuilder {
         public void readRequest(Message msg, Object[] args) throws JAXBException, XMLStreamException {
 
             if (parts.length>0) {
+                if (!msg.hasPayload()) {
+                    throw new WebServiceException("No payload. Expecting payload with "+wrapperName+" element");
+                }
                 XMLStreamReader reader = msg.readPayload();
+                XMLStreamReaderUtil.verifyTag(reader, wrapperName);
                 Object wrapperBean = wrapper.unmarshal(reader, (msg.getAttachments() != null) ?
                         new AttachmentUnmarshallerImpl(msg.getAttachments()): null);
 
@@ -622,10 +628,11 @@ abstract class EndpointArgumentsBuilder {
         }
 
         public void readRequest(Message msg, Object[] args) throws JAXBException, XMLStreamException {
+            if (!msg.hasPayload()) {
+                throw new WebServiceException("No payload. Expecting payload with "+wrapperName+" element");
+            }
             XMLStreamReader reader = msg.readPayload();
-            if (!reader.getName().equals(wrapperName))
-                throw new WebServiceException( // TODO: i18n
-                    "Unexpected request element "+reader.getName()+" expected: "+wrapperName);
+            XMLStreamReaderUtil.verifyTag(reader,wrapperName);
             reader.nextTag();
 
             while(reader.getEventType()==XMLStreamReader.START_ELEMENT) {
