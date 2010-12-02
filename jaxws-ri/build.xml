@@ -567,7 +567,7 @@
         srczip="lib/jsr181-api.src.zip" />
         -->
       <filterset>
-        <filter token="API_VERSION" value="${release.spec.version}"/>
+        <filter token="API_VERSION" value="${release.api.version}"/>
         <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
         <filter token="JAXB_API_VERSION" value="${jaxb.api.version}"/>  
       </filterset>
@@ -583,10 +583,12 @@
       <get src="${JAXWS_RE_BUILD}/jaxws-tools.jar" dest="${dist20.home}/lib/jaxws-tools.jar"/>
       <get src="${JAXWS_RE_BUILD}/jsr181-api.jar" dest="${dist20.home}/lib/jsr181-api.jar"/>
   </target>
-
-  <target name="push-to-maven" depends="dist-zip-with-src, replace-binaries-with-re-build"
+  <!--
+  <target name="push-to-maven1" depends="dist-zip-with-src, replace-binaries-with-re-build"
     description="publish artifacts into the maven repository">
     <property name="jar.suffix" value="${release.impl.version}" />
+    <property name="release.api.version" value="${release.spec.version}" />
+
     <antcall target="push-to-maven-prepare"/>
     <echo>importing to CVS...</echo>
     <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
@@ -595,12 +597,15 @@
   <target name="push-snapshot-to-maven1" depends="dist-zip-with-src"
       description="publish snapshot jars into the maven repository">
       <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT" />
+      <property name="release.api.version" value="${release.spec.version}-SNAPSHOT" />
       <antcall target="push-to-maven-prepare"/>
       <echo>importing to CVS...</echo>
       <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver;proxy=www-proxy.us.oracle.com;proxyport=80:ramapulavarthi@cvs.dev.java.net:/cvs" />
   </target>
 
-  <target  name="push-snapshot-to-maven" depends="push-snapshot-to-maven1, push-snapshot-to-maven2"/>
+    <target  name="push-snapshot-to-maven" depends="push-snapshot-to-maven1, push-snapshot-to-maven2"/>
+    -->
+
 
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
