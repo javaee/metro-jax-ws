@@ -817,6 +817,13 @@
          dest="lib/stax-ex-src.zip" />
   </target>
 
+  <target name="integrate-jsr250-maven" depends="prepare" description="integrate jsr250 from maven">
+    <get src="http://download.java.net/maven/glassfish/org/glassfish/javax.annotation/${jsr250.version}/javax.annotation-${jsr250.version}.jar"
+             dest="lib/jsr250-api.jar" />
+    <get src="http://download.java.net/maven/glassfish/org/glassfish/javax.annotation/${jsr250.version}/javax.annotation-${jsr250.version}-sources.jar"
+             dest="lib/jsr250-api.src.zip" />
+  </target>
+
   <target name="integrate-mimepull-maven" depends="prepare" description="integrate mimepull from maven">
     <get src="http://download.java.net/maven/2/org/jvnet/mimepull/${mimepull.version}/mimepull-${mimepull.version}.jar"
              dest="lib/mimepull.jar" />
