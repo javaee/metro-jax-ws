@@ -385,6 +385,7 @@
           <zipfileset dir="${btmp}/istack-commons/src"/>
           <zipfileset dir="${btmp}/istack-commons/src14"/>
           <zipfileset dir="${btmp}/xsom/src/com" prefix="com"/>
+          <zipfileset dir="${btmp}/xsom/build/src/com" prefix="com"/> 
           <zipfileset dir="${btmp}/xjc"/>
           <zipfileset dir="${btmp}/rngom/src"/>
           <zipfileset dir="${btmp}/relaxng-datatype/java/src"/>
