@@ -353,8 +353,17 @@
     <target name="repkg-jaxb-srczip" description="generates 'old-fashioned' src zip files used for JDK integration">
 
       <property name="btmp" value="${build.home}/xjc-src"/>
+      <property name="jaxb.api.src.zip" value="${lib.home}/jaxb-api-src.zip"/>
       <property name="jaxb.impl.src.zip" value="${lib.home}/jaxb-impl.src.zip"/>
       <property name="jaxb.xjc.src.zip" value="${lib.home}/jaxb-xjc.src.zip"/>
+
+      <unzip src="${jaxb.api.src.zip}" dest="${btmp}"/>
+      <delete file="${jaxb.api.src.zip}"/>
+      <zip zipfile="${jaxb.api.src.zip}">
+            <zipfileset dir="${btmp}/src"/>
+        </zip>
+
+      <delete dir="${btmp}"/>
 
       <unzip src="${jaxb.impl.src.zip}" dest="${btmp}"/>
       <delete file="${jaxb.impl.src.zip}"/>
@@ -381,7 +390,7 @@
       </zip>
 
       <delete dir="${btmp}"/>
-
+      
     </target>
 
 
