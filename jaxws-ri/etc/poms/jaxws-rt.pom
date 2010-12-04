@@ -157,7 +157,7 @@
         <dependency>
             <groupId>org.glassfish.gmbal</groupId>
             <artifactId>gmbal-api-only</artifactId>
-            <version>3.0.0-b023</version>
+            <version>3.1.0-b001</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.ha</groupId>
