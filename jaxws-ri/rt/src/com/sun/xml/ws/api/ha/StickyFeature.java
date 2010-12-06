@@ -40,13 +40,12 @@
 
 package com.sun.xml.ws.api.ha;
 
-import org.glassfish.ha.store.api.BackingStore;
 
 /**
  * Provides a way to tell the runtime about stickiness of requests. In a
  * HA environment, a client's requests need to land on the same instance so
- * that a {@link BackingStore} entry for a key is accessed/modified from
- * the same instance.
+ * that a {@link org.glassfish.ha.store.api.BackingStore} entry for a key is
+ * accessed/modified from the same instance.
  *
  * <p>
  * A web service feature may implement this interface. JAX-WS runtime

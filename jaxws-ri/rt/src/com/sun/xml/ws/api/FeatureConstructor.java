@@ -42,8 +42,6 @@ package com.sun.xml.ws.api;
 
 import com.sun.xml.ws.developer.MemberSubmissionAddressing;
 import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
-import com.sun.xml.ws.developer.Stateful;
-import com.sun.xml.ws.developer.StatefulFeature;
 
 import javax.xml.ws.WebServiceFeature;
 import java.lang.annotation.ElementType;
@@ -65,8 +63,8 @@ import java.lang.annotation.Target;
  * @see MemberSubmissionAddressingFeature
  * @see MemberSubmissionAddressing
  *
- * @see Stateful
- * @see StatefulFeature
+ * @see com.sun.xml.ws.developer.Stateful
+ * @see com.sun.xml.ws.developer.StatefulFeature
  *
  * @author Rama Pulavarthi
  */

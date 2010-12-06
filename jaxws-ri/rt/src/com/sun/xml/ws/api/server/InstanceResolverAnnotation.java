@@ -40,8 +40,6 @@
 
 package com.sun.xml.ws.api.server;
 
-import com.sun.xml.ws.developer.Stateful;
-
 import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import java.lang.annotation.Retention;
@@ -61,11 +59,11 @@ import java.lang.annotation.Target;
  * takes {@link Class}, which represents the type of the service.
  *
  * <p>
- * See {@link Stateful} for a real example. This annotation is only for
+ * See {@link com.sun.xml.ws.developer.Stateful} for a real example. This annotation is only for
  * advanced users of the JAX-WS RI. 
  *
  * @since JAX-WS 2.1
- * @see Stateful
+ * @see com.sun.xml.ws.developer.Stateful
  * @author Kohsuke Kawaguchi
  */
 @Target(ANNOTATION_TYPE)

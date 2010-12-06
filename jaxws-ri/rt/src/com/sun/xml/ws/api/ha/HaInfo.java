@@ -40,7 +40,6 @@
 
 package com.sun.xml.ws.api.ha;
 
-import org.glassfish.ha.store.api.BackingStore;
 import com.sun.xml.ws.api.message.Packet;
 
 /**
@@ -57,9 +56,9 @@ import com.sun.xml.ws.api.message.Packet;
  * <p>
  * To achieve this functionality, it carries two pieces of information:
  * <ol>
- * <li>key - Related {@link BackingStore} keys can use this info for their
- * HashableKey impl. First store creates this object, and subsequent related
- * stores use the same key.
+ * <li>key - Related {@link org.glassfish.ha.store.api.BackingStore} keys can
+ * use this info for their HashableKey impl. First store creates this object,
+ * and subsequent related stores use the same key.
  * <li>replicaInstance - where the related info is replicated
  * </ol>
  *
