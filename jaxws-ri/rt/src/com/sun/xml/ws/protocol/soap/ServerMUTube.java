@@ -56,19 +56,26 @@ public class ServerMUTube extends MUTube {
     
     private HandlerConfiguration handlerConfig;
     private ServerTubeAssemblerContext tubeContext;
+    private final Set<String> roles;
+    private final Set<QName> handlerKnownHeaders;
+
     public ServerMUTube(ServerTubeAssemblerContext tubeContext, Tube next) {
         super(tubeContext.getEndpoint().getBinding(), next);
 
         this.tubeContext = tubeContext;
 
-        //On Server, HandlerConfiguration does n't change after publish.
-        handlerConfig = ((BindingImpl)tubeContext.getEndpoint().getBinding()).getHandlerConfig();
+        //On Server, HandlerConfiguration does n't change after publish, so store locally
+        handlerConfig = binding.getHandlerConfig();
+        roles = handlerConfig.getRoles();
+        handlerKnownHeaders = handlerConfig.getHandlerKnownHeaders();
     }
 
     protected ServerMUTube(ServerMUTube that, TubeCloner cloner) {
         super(that,cloner);
         handlerConfig = that.handlerConfig;
         tubeContext = that.tubeContext;
+        roles = that.roles;
+        handlerKnownHeaders = handlerConfig.getHandlerKnownHeaders();
     }
 
     /**
@@ -81,8 +88,7 @@ public class ServerMUTube extends MUTube {
      */
     @Override
     public NextAction processRequest(Packet request) {
-        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(request.getMessage().getHeaders(),
-                handlerConfig.getRoles(),handlerConfig.getKnownHeaders());
+        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(request.getMessage().getHeaders(),roles, handlerKnownHeaders);
         if((misUnderstoodHeaders == null)  || misUnderstoodHeaders.isEmpty()) {
             return doInvoke(super.next, request);
         }

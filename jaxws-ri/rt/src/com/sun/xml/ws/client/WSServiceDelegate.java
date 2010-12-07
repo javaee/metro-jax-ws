@@ -391,6 +391,7 @@ public class WSServiceDelegate extends WSService {
     public <T> Dispatch<T> createDispatch(QName portName, WSEndpointReference wsepr, Class<T> aClass, Service.Mode mode, WebServiceFeature... features) {
         PortInfo port = safeGetPort(portName);
         BindingImpl binding = port.createBinding(features,null);
+        binding.setMode(mode);
         Dispatch<T> dispatch = Stubs.createDispatch(port, this, binding, aClass, mode, wsepr);
         serviceInterceptor.postCreateDispatch((WSBindingProvider) dispatch);
         return dispatch;
@@ -445,6 +446,7 @@ public class WSServiceDelegate extends WSService {
     public Dispatch<Object> createDispatch(QName portName, WSEndpointReference wsepr, JAXBContext jaxbContext, Service.Mode mode, WebServiceFeature... features) {
         PortInfo port = safeGetPort(portName);
         BindingImpl binding = port.createBinding(features,null);
+        binding.setMode(mode);
         Dispatch<Object> dispatch = Stubs.createJAXBDispatch(
                 port, binding, jaxbContext, mode,wsepr);
          serviceInterceptor.postCreateDispatch((WSBindingProvider)dispatch);

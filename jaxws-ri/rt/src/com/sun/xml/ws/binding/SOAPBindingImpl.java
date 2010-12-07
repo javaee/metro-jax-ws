@@ -43,6 +43,7 @@ package com.sun.xml.ws.binding;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.handler.MessageHandler;
 import com.sun.xml.ws.client.HandlerConfiguration;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
@@ -52,6 +53,7 @@ import com.sun.xml.ws.resources.ClientMessages;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPFactory;
+import javax.xml.ws.ServiceMode;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.handler.Handler;
@@ -76,6 +78,7 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     protected final SOAPVersion soapVersion;
 
     private Set<QName> portKnownHeaders = Collections.emptySet();
+    private Set<QName> bindingUnderstoodHeaders = new HashSet<QName>();
 
     /**
      * Use {@link BindingImpl#create(BindingID)} to create this.
@@ -102,6 +105,7 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
 
         setFeatures(features);
         this.features.addAll(bindingId.createBuiltinFeatureList());
+        populateBindingUnderstoodHeaders();
     }
 
     /**
@@ -113,43 +117,43 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
      */
     public void setPortKnownHeaders(@NotNull Set<QName> headers) {
         this.portKnownHeaders = headers;
-        // apply this change to HandlerConfiguration
-        setHandlerConfig(createHandlerConfig(getHandlerChain()));
+    }
+
+    public boolean understandsHeader(QName header) {
+        if(serviceMode == javax.xml.ws.Service.Mode.MESSAGE)
+            return true;
+        if(portKnownHeaders.contains(header))
+            return true;
+        if(bindingUnderstoodHeaders.contains(header))
+            return true;
+
+        return false;
     }
 
     /**
-     * This method separates the logical and protocol handlers. 
-     * Also parses Headers understood by SOAPHandlers and
-     * sets the HandlerConfiguration.
+     * Understand WS-Addressing headers if WS-Addressing is enabled
+     *
      */
-    protected HandlerConfiguration createHandlerConfig(List<Handler> handlerChain) {
-        List<LogicalHandler> logicalHandlers = new ArrayList<LogicalHandler>();
-        List<SOAPHandler> soapHandlers = new ArrayList<SOAPHandler>();
-        List<MessageHandler> messageHandlers = new ArrayList<MessageHandler>();
-        Set<QName> handlerKnownHeaders = new HashSet<QName>();
-
-        for (Handler handler : handlerChain) {
-            if (handler instanceof LogicalHandler) {
-                logicalHandlers.add((LogicalHandler) handler);
-            } else if (handler instanceof SOAPHandler) {
-                soapHandlers.add((SOAPHandler) handler);
-                Set<QName> headers = ((SOAPHandler<?>) handler).getHeaders();
-                if (headers != null) {
-                    handlerKnownHeaders.addAll(headers);
-                }
-            } else if (handler instanceof MessageHandler) {
-                messageHandlers.add((MessageHandler) handler);
-                Set<QName> headers = ((MessageHandler<?>) handler).getHeaders();
-                if (headers != null) {
-                    handlerKnownHeaders.addAll(headers);
-                }
-            }else {
-                throw new HandlerException("handler.not.valid.type",
-                    handler.getClass());
-            }
+    private void populateBindingUnderstoodHeaders() {
+        AddressingVersion addressingVersion = getAddressingVersion();
+        if (addressingVersion != null) {
+            bindingUnderstoodHeaders.add(addressingVersion.actionTag);
+            bindingUnderstoodHeaders.add(addressingVersion.faultToTag);
+            bindingUnderstoodHeaders.add(addressingVersion.fromTag);
+            bindingUnderstoodHeaders.add(addressingVersion.messageIDTag);
+            bindingUnderstoodHeaders.add(addressingVersion.relatesToTag);
+            bindingUnderstoodHeaders.add(addressingVersion.replyToTag);
+            bindingUnderstoodHeaders.add(addressingVersion.toTag);
         }
-        return new HandlerConfiguration(roles,portKnownHeaders,handlerChain,
-                logicalHandlers,soapHandlers,messageHandlers,handlerKnownHeaders);
+    }
+
+    /**
+     * Sets the handlers on the binding and then sorts the handlers in to logical and protocol handlers.
+     * Creates a new HandlerConfiguration object and sets it on the BindingImpl. Also parses Headers understood by
+     * Protocol Handlers and sets the HandlerConfiguration.
+     */
+    public void setHandlerChain(List<Handler> chain) {
+        handlerConfig = new HandlerConfiguration(roles, chain);
     }
 
     protected void addRequiredRoles() {
@@ -174,10 +178,7 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         }
         this.roles = roles;
         addRequiredRoles();
-        HandlerConfiguration oldConfig = getHandlerConfig();
-        setHandlerConfig(new HandlerConfiguration(this.roles, portKnownHeaders, oldConfig.getHandlerChain(),
-                oldConfig.getLogicalHandlers(),oldConfig.getSoapHandlers(), oldConfig.getMessageHandlers(),
-                oldConfig.getHandlerKnownHeaders()));
+        handlerConfig = new HandlerConfiguration(this.roles, getHandlerConfig());
     }
 
 

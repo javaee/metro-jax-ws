@@ -44,6 +44,7 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.server.AsyncProvider;
 import com.sun.xml.ws.api.server.Invoker;
+import com.sun.xml.ws.binding.SOAPBindingImpl;
 import com.sun.xml.ws.server.InvokerTube;
 
 import javax.xml.ws.Provider;
@@ -67,6 +68,11 @@ public abstract class ProviderInvokerTube<T> extends InvokerTube<Provider<T>> {
 
         ProviderEndpointModel<T> model = new ProviderEndpointModel<T>(implType, binding);
         ProviderArgumentsBuilder<?> argsBuilder = ProviderArgumentsBuilder.create(model, binding);
+        if (binding instanceof SOAPBindingImpl) {
+            //set portKnownHeaders on Binding, so that they can be used for MU processing
+            ((SOAPBindingImpl) binding).setMode(model.mode);
+        }
+
         return model.isAsync ? new AsyncProviderInvokerTube(invoker, argsBuilder)
             : new SyncProviderInvokerTube(invoker, argsBuilder);
     }

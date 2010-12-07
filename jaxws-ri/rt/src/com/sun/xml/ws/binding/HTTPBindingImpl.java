@@ -72,18 +72,15 @@ public class HTTPBindingImpl extends BindingImpl implements HTTPBinding {
      * Only logical handlers are allowed with HTTPBinding.
      * Setting SOAPHandlers throws WebServiceException
      */
-    protected HandlerConfiguration createHandlerConfig(List<Handler> handlerChain) {
+    public void setHandlerChain(List<Handler> chain) {
         List<LogicalHandler> logicalHandlers = new ArrayList<LogicalHandler>();
-        for (Handler handler : handlerChain) {
+        for (Handler handler : chain) {
             if (!(handler instanceof LogicalHandler)) {
                 throw new WebServiceException(ClientMessages.NON_LOGICAL_HANDLER_SET(handler.getClass()));
             } else {
                 logicalHandlers.add((LogicalHandler) handler);
             }
         }
-        return new HandlerConfiguration(
-                Collections.<String>emptySet(),
-                Collections.<QName>emptySet(),
-                handlerChain,logicalHandlers,null,null,null);
+        handlerConfig = new HandlerConfiguration(Collections.<String>emptySet(), chain);
     }
 }
