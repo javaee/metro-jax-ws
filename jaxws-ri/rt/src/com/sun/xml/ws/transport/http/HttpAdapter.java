@@ -44,7 +44,6 @@ package com.sun.xml.ws.transport.http;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.PropertySet;
-import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
 import com.sun.xml.ws.api.ha.HaInfo;
 import com.sun.xml.ws.api.ha.StickyFeature;
 import com.sun.xml.ws.api.message.ExceptionHasMessage;
@@ -124,7 +123,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      */
     public final String urlPattern;
 
-    public final boolean stickyCookie;
+    protected boolean stickyCookie;
 
 
     /**
@@ -157,17 +156,6 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         this.urlPattern = urlPattern;
 
         initWSDLMap(endpoint.getServiceDefinition());
-        boolean sticky = false;
-        if (HighAvailabilityProvider.INSTANCE.isHaEnvironmentConfigured()) {
-            WebServiceFeature[] features = endpoint.getBinding().getFeatures().toArray();
-            for(WebServiceFeature f : features) {
-                if (f instanceof StickyFeature) {
-                    sticky = true;
-                    break;
-                }
-            }
-        }
-        stickyCookie = sticky;
     }
 
     /**

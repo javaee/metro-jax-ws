@@ -41,6 +41,8 @@
 package com.sun.xml.ws.transport.http.servlet;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
+import com.sun.xml.ws.api.ha.StickyFeature;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.server.BoundEndpoint;
 import com.sun.xml.ws.api.server.Module;
@@ -54,6 +56,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -87,6 +90,17 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
             module.getBoundEndpoints().add(this);
         }
 
+        boolean sticky = false;
+        if (HighAvailabilityProvider.INSTANCE.isHaEnvironmentConfigured()) {
+            WebServiceFeature[] features = endpoint.getBinding().getFeatures().toArray();
+            for(WebServiceFeature f : features) {
+                if (f instanceof StickyFeature) {
+                    sticky = true;
+                    break;
+                }
+            }
+        }
+        stickyCookie = sticky;
     }
 
     public ServletContext getServletContext() {
