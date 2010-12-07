@@ -83,7 +83,6 @@ abstract class MUTube extends AbstractFilterTubeImpl {
             "One or more mandatory SOAP header blocks not understood";
 
     protected final SOAPVersion soapVersion;
-    private final AddressingVersion addressingVersion;
     protected SOAPBindingImpl binding;
 
     protected MUTube(WSBinding binding, Tube next) {
@@ -95,13 +94,12 @@ abstract class MUTube extends AbstractFilterTubeImpl {
         }
         this.binding = (SOAPBindingImpl) binding;
         this.soapVersion = binding.getSOAPVersion();
-        this.addressingVersion = binding.getAddressingVersion();
     }
 
     protected MUTube(MUTube that, TubeCloner cloner) {
         super(that, cloner);
+        binding = that.binding;
         soapVersion = that.soapVersion;
-        addressingVersion = that.addressingVersion;
     }
 
     /**
