@@ -160,6 +160,7 @@
         manifest="${basedir}/rt/build/manifest">
       <fileset dir="${basedir}/rt/build/classes"/>
       <fileset dir="${basedir}/rt-fi/build/classes"/>
+      <fileset dir="${basedir}/rt-ha/build/classes"/>
     </jar>
   </target>
 
@@ -320,6 +321,7 @@
       <fileset dir="${basedir}/rt/build/classes" includes="**/*.properties"/>
       <zipfileset dir="${basedir}/rt/etc/" includes="com.sun.*,javax.xml.ws.*" prefix="META-INF/services"/>  
       <fileset dir="${basedir}/rt-fi/src" />
+      <fileset dir="${basedir}/rt-ha/src"/>
       <fileset dir="${basedir}/servlet/src"/>
       <fileset dir="${basedir}/transports/local/src"/>
       <fileset dir="${basedir}/rt/build/gen-src/"/>
@@ -966,6 +968,9 @@
             <zipfileset dir="rt-fi/src" prefix="${source.dist.dir.name}/src" defaultexcludes="true">
                 <patternset refid="src-includes"/>
             </zipfileset>
+            <zipfileset dir="rt-ha/src" prefix="${source.dist.dir.name}/src" defaultexcludes="true">
+                <patternset refid="src-includes"/>
+            </zipfileset>
             <zipfileset dir="rt/build/gen-src" prefix="${source.dist.dir.name}/src" defaultexcludes="true">
                 <patternset refid="src-includes"/>
             </zipfileset>
@@ -990,6 +995,7 @@
             <!-- additional jar files -->
             <zipfileset dir="${basedir}/build/lib" includes="*.jar" excludes="ant*.* junit.jar" prefix="${source.dist.dir.name}/lib"/>
             <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/>
+            <zipfileset dir="rt-ha/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/>
 
             <!-- license files -->
             <zipfileset dir="." includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, LICENSE.txt"
@@ -1041,6 +1047,7 @@
         <zip destfile="${build.home}/jaxws-${release.jar.version}-src-licensee.zip"  duplicate="fail" whenempty="fail">
             <zipfileset dir="rt" prefix="${source.dist.dir.name}/rt" defaultexcludes="true" includes="build.xml, src/**, build/gen-src/**, etc/**" excludes="test/**"/>
             <zipfileset dir="rt-fi" prefix="${source.dist.dir.name}/rt-fi" defaultexcludes="true" includes="build.xml, src/**"/>
+            <zipfileset dir="rt-ha" prefix="${source.dist.dir.name}/rt-ha" defaultexcludes="true" includes="build.xml, src/**"/>
             <zipfileset dir="tools" prefix="${source.dist.dir.name}/tools" defaultexcludes="true" includes="etc/**, wscompile/build.xml, wscompile/src/**, wscompile/build/gen-src/**, resourcegen/**, bin/**"/>
             <zipfileset dir="servlet" prefix="${source.dist.dir.name}/servlet" defaultexcludes="true" includes="build.xml, src/**, lib/**"/>
             <zipfileset dir="httpspi-servlet" prefix="${source.dist.dir.name}/httpspi-servlet" defaultexcludes="true" includes="build.xml, src/**, lib/**"/>
@@ -1124,6 +1131,7 @@
                 <pathelement location="${basedir}/rt/src"/>
                 <pathelement location="${basedir}/tools/wscompile/src"/>
                 <pathelement location="${basedir}/servlet/src"/>
+                <pathelement location="${basedir}/rt-ha/src"/>
             </sourcepath>
             <class location="${build.home}/lib/jaxws-rt.jar"/>
             <class location="${build.home}/lib/jaxws-tools.jar"/>

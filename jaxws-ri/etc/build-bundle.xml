@@ -103,6 +103,7 @@
     <target name="runtime-compile" depends="prepare">
         <ant dir="${basedir}/rt" target="compile" inheritrefs="true"/>
         <ant dir="${basedir}/rt-fi" target="compile" inheritrefs="true"/>
+        <ant dir="${basedir}/rt-ha" target="compile" inheritrefs="true"/>
         <ant dir="${basedir}/servlet" target="compile" inheritrefs="true"/>
         <ant dir="${basedir}/httpspi-servlet" target="compile" inheritrefs="true"/>
     </target>
@@ -111,6 +112,7 @@
         <pathelement path="${basedir}/rt/src"/>
         <pathelement path="${basedir}/rt/build/gen-src"/>
         <pathelement path="${basedir}/rt-fi/src"/>
+        <pathelement path="${basedir}/rt-ha/src"/>
         <pathelement path="${basedir}/servlet/src"/>
         <pathelement path="${basedir}/httpspi-servlet/src"/>
         <pathelement path="${basedir}/tools/wscompile/src"/>
@@ -181,6 +183,7 @@
              manifest="${basedir}/rt/build/manifest">
             <fileset dir="${basedir}/rt/build/classes"/>
             <fileset dir="${basedir}/rt-fi/build/classes"/>
+            <fileset dir="${basedir}/rt-ha/build/classes"/>
             <fileset dir="${basedir}/servlet/build/classes"/>
             <fileset dir="${basedir}/rt/src" includes="**/*.xml"/>
         </jar>
@@ -251,6 +254,7 @@
         <delete dir="${basedir}/j2se-integration"/>
         <ant dir="${basedir}/rt" target="clean"/>
         <ant dir="${basedir}/rt-fi" target="clean"/>
+        <ant dir="${basedir}/rt-ha" target="clean"/>
         <ant dir="${basedir}/tools/resourcegen" target="clean"/>
         <ant dir="${basedir}/tools/wscompile" target="clean"/>
         <ant dir="${basedir}/servlet" target="clean"/>        

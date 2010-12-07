@@ -41,7 +41,7 @@
 
 -->
 
-<project name="JAXWS-RI Servlet Support" default="compile" basedir=".">
+<project name="JAXWS-RI HA Support" default="compile" basedir=".">
 
   <property name="build.dir" value="${basedir}/build"/>
   <property file="../project.properties"/>
@@ -56,18 +56,10 @@
         source="1.5">
       <classpath>
         <path refid="runtime.compile.classpath"/>
-        <fileset dir="lib" includes="javax.servlet.jar" />
+        <fileset dir="lib" includes="ha-api.jar" />
         <pathelement path="../rt/build/classes" />
-        <pathelement path="../rt-ha/build/classes" />
       </classpath>
     </javac>
-
-    <!-- Copy WSServletContainerInitializer -->
-
-    <copy todir="${build.dir}/classes/META-INF/services">
-      <fileset dir="${basedir}/etc/" includes="javax.servlet.ServletContainerInitializer"/>
-    </copy>
-    
   </target>
 
   <target name="clean">
