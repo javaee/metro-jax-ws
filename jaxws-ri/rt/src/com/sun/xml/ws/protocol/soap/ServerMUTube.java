@@ -75,7 +75,7 @@ public class ServerMUTube extends MUTube {
         handlerConfig = that.handlerConfig;
         tubeContext = that.tubeContext;
         roles = that.roles;
-        handlerKnownHeaders = handlerConfig.getHandlerKnownHeaders();
+        handlerKnownHeaders = that.handlerKnownHeaders;
     }
 
     /**
