@@ -339,7 +339,7 @@
     </zip>
   </target>
 
-    <target name="jdk-jaxws-src.zip" description="create source zip bundles of the JAX-WS RI" depends="src.zip">
+    <target name="jdk-jaxws-src.zip" description="create source zip bundles of the JAX-WS in JDK" depends="src.zip">
         <delete file="${dist20.home}/lib/jaxws-libs.src.zip"/> <!-- not needed as we create another bundle with all libs -->
         <zip file="${dist.home}/jdk-jaxws-libs.src.zip">
             <fileset dir="${dist20.home}/lib" includes="jaxws-rt.src.zip"/>
@@ -347,8 +347,7 @@
             <fileset dir="${basedir}/lib" includes="FastInfoset.src.zip,jaxb-impl.src.zip, jaxb-xjc.src.zip,
                 saaj-impl.src.zip, stax-ex-src.zip, streambuffer.src.zip,
                 jaxws-api-src.zip, jaxb-api-src.zip, jsr181-api.src.zip, saaj-api-src.zip, jsr250-api.src.zip,
-                mimepull-src.zip, jaxws-asm-src.zip, policy-src.zip,gmbal-api-only-src.zip,management-api-src.zip,
-                ha-api.src.zip"/>
+                mimepull-src.zip, jaxws-asm-src.zip, policy-src.zip,gmbal-api-only-src.zip,management-api-src.zip"/>
         </zip>
         <delete file="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <delete file="${dist20.home}/lib/jaxws-tools.src.zip"/>
