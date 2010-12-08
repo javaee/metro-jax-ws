@@ -100,6 +100,8 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         this.soapVersion = bindingId.getSOAPVersion();
         roles = new HashSet<String>();
         addRequiredRoles();
+        //update default handlerConfig in super with the required roles
+        handlerConfig = new HandlerConfiguration(roles, Collections.<Handler>emptyList());
         //Is this still required? comment out for now
         //setupSystemHandlerDelegate(serviceName);
 
