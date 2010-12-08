@@ -63,7 +63,7 @@
 
     <target name="integrate-ws-test-harness" depends="prepare"
             description="integrate the last successful ws-test-harness Hudson build">
-        <get src="http://hudson-sca.us.oracle.com/job/jaxws-test-harness/lastSuccessfulBuild/artifact/build/test-harness.zip"
+        <get src="http://hudson-sca.us.oracle.com/job/jaxws-test-harness/lastSuccessfulBuild/artifact/test-harness/build/test-harness.zip"
              dest="${build.home}/test-harness.zip"/>
         <unzip src="${build.home}/test-harness.zip" dest="${build.home}"/>
         <copy todir="lib" overwrite="true">
