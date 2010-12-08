@@ -214,7 +214,7 @@
 
         <copy todir="${build.home}/lib">
             <fileset dir="${lib.home}/"
-                     includes="FastInfoset.jar, activation.jar, gmbal-api-only.jar, management-api.jar, http.jar, jaxb-api.jar, jaxb-impl.jar, jaxb-xjc.jar, jaxws-api.jar, jaxws-rt.jar, jaxws-tools.jar, jsr173_api.jar, jsr181-api.jar, jsr250-api.jar, resolver.jar, saaj-api.jar, saaj-impl.jar, stax-ex.jar, streambuffer.jar, mimepull.jar, policy.jar, ${basedir}/rt-ha/lib/ha-api.jar"/>
+                     includes="FastInfoset.jar, activation.jar, gmbal-api-only.jar, management-api.jar, http.jar, jaxb-api.jar, jaxb-impl.jar, jaxb-xjc.jar, jaxws-api.jar, jaxws-rt.jar, jaxws-tools.jar, jsr173_api.jar, jsr181-api.jar, jsr250-api.jar, resolver.jar, saaj-api.jar, saaj-impl.jar, stax-ex.jar, streambuffer.jar, mimepull.jar, policy.jar"/>
             <fileset dir="${basedir}/rt-ha/lib"
                      includes="ha-api.jar"/>
         </copy>

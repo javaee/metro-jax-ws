@@ -994,7 +994,9 @@
             <!-- additional jar files -->
             <zipfileset dir="${basedir}/build/lib" includes="*.jar" excludes="ant*.* junit.jar" prefix="${source.dist.dir.name}/lib"/>
             <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/>
+            <!-- ha-api.jar is already copied to build/lib, so it is part of zip
             <zipfileset dir="rt-ha/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/>
+            -->
 
             <!-- license files -->
             <zipfileset dir="." includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, LICENSE.txt"
