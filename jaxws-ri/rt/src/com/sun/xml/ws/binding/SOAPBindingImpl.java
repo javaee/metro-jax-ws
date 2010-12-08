@@ -73,7 +73,6 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         "http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/";
 
     private static final String ROLE_NONE = SOAP12NamespaceConstants.ROLE_NONE;
-    private Set<String> roles;
     //protected boolean enableMtom;
     protected final SOAPVersion soapVersion;
 
@@ -153,15 +152,15 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
      * Protocol Handlers and sets the HandlerConfiguration.
      */
     public void setHandlerChain(List<Handler> chain) {
-        handlerConfig = new HandlerConfiguration(roles, chain);
+        handlerConfig = new HandlerConfiguration(handlerConfig.getRoles(), chain);
     }
 
-    protected void addRequiredRoles() {
+    protected void addRequiredRoles(Set<String> roles) {
         roles.addAll(soapVersion.requiredRoles);
     }
 
     public Set<String> getRoles() {
-        return roles;
+        return handlerConfig.getRoles();
     }
 
     /**
@@ -176,9 +175,8 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         if (roles.contains(ROLE_NONE)) {
             throw new WebServiceException(ClientMessages.INVALID_SOAP_ROLE_NONE());
         }
-        this.roles = roles;
-        addRequiredRoles();
-        handlerConfig = new HandlerConfiguration(this.roles, getHandlerConfig());
+        addRequiredRoles(roles);
+        handlerConfig = new HandlerConfiguration(roles, getHandlerConfig());
     }
 
 
