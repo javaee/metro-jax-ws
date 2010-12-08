@@ -803,6 +803,13 @@
          dest="lib/streambuffer.jar" />
   </target>
 
+  <target name="integrate-xmlstreambuffer-maven" depends="prepare" description="integrate xmlstreambuffer from maven">
+    <get src="http://download.java.net/maven/2/com/sun/xml/stream/buffer/streambuffer/${xmlstreambuffer.version}/streambuffer-${xmlstreambuffer.version}.jar"
+             dest="lib/streambuffer.jar" />
+    <get src="http://download.java.net/maven/2/com/sun/xml/stream/buffer/streambuffer/${xmlstreambuffer.version}/streambuffer-${xmlstreambuffer.version}-sources.jar"
+             dest="lib/streambuffer.src.zip" />
+  </target>
+
   <target name="integrate-stax-ex-maven" depends="prepare" description="integrate stax-ex from maven">
     <get src="http://download.java.net/maven/2/org/jvnet/staxex/stax-ex/${stax-ex.version}/stax-ex-${stax-ex.version}.jar"
              dest="lib/stax-ex.jar" />
