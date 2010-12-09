@@ -52,13 +52,13 @@ import com.sun.tools.ws.resources.WebserviceapMessages;
 import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.tools.ws.wsdl.document.soap.SOAPUse;
-import com.sun.xml.ws.developer.Stateful;
 import com.sun.xml.ws.model.RuntimeModeler;
 import com.sun.xml.ws.util.localization.Localizable;
 
 import javax.jws.*;
 import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.ParameterStyle;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -542,8 +542,14 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return true;
     }
 
-    private boolean isStateful(ClassDeclaration classDecl) {
-        return classDecl.getAnnotation(Stateful.class)!=null;
+    private boolean isStateful(ClassDeclaration classDecl){
+        try {
+            // We don't want dependency on rt-ha module as its not integrated in JDK
+            return classDecl.getAnnotation((Class <? extends Annotation>)Class.forName("com.sun.xml.ws.developer.Stateful"))!=null;
+        } catch (ClassNotFoundException e) {
+            //ignore
+        }
+        return false;
     }
 
     protected boolean classImplementsSEI(ClassDeclaration classDecl,
