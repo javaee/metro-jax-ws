@@ -86,7 +86,7 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
         skipProperties.add("getLocalizedMessage");
         skipProperties.add("getClass");
         skipProperties.add("getStackTrace");
-        skipProperties.add("getSuppressedExceptions");  // JDK 7 adds this
+        skipProperties.add("getSuppressed");  // JDK 7 adds this
     }
 
     private final AnnotationReader<T,C,?,M> annReader;
