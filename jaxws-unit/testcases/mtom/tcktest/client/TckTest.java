@@ -2,7 +2,6 @@ package mtom.tcktest.client;
 
 import junit.framework.TestCase;
 import testutil.AttachmentHelper;
-import testutil.ClientServerTestUtil;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -12,6 +11,7 @@ import javax.xml.ws.Holder;
 import java.awt.*;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Closeable;
 
 /**
  * @author Jitendra Kotamraju
@@ -26,7 +26,6 @@ public class TckTest extends TestCase {
 
     protected void setUp() throws Exception {
         proxy = new HelloService().getHelloPort(new MTOMFeature());
-        ClientServerTestUtil.setTransport(proxy);
     }
 
     public void testMtomIn() throws Exception {
@@ -35,7 +34,7 @@ public class TckTest extends TestCase {
         dt.setDoc2(getSource("gpsXml.xml"));
         // This not working since DCH is not registerd by JAX-WS
         //dt.setDoc3(new DataHandler(getSource("gpsXml.xml"), "text/xml"));
-        dt.setDoc3(getDataHandler("gpsXml.xml"));
+        dt.setDoc3(getDataHandler("gpsXml.xml", "text/xml"));
         dt.setDoc4(getImage("java.jpg"));
 
         String works = proxy.mtomIn(dt);
@@ -44,38 +43,47 @@ public class TckTest extends TestCase {
 
     public void testMtomInOut() throws Exception {
         Holder<DataHandler> doc1 = new Holder<DataHandler>();
-	doc1.value = getDataHandler("attach.txt");
+	    doc1.value = getDataHandler("attach.txt", "text/plain");
         Holder<DataHandler> doc2 = new Holder<DataHandler>();
-        doc2.value = getDataHandler("attach.html");
+        doc2.value = getDataHandler("attach.html", "text/html");
         Holder<DataHandler> doc3 = new Holder<DataHandler>();
-        doc3.value = getDataHandler("attach.xml");
+        doc3.value = getDataHandler("attach.xml", "application/xml");
         Holder<Image> doc4 = new Holder<Image>();
         doc4.value = getImage("attach.jpeg");
         Holder<Image> doc5 = new Holder<Image>();
         doc5.value = getImage("attach2.jpeg");
 
     	proxy.mtomInOut(doc1, doc2, doc3, doc4, doc5);
-        validate(getDataHandler("attach.txt"), doc1.value);
-        validate(getDataHandler("attach.html"), doc2.value);
-        validate(getDataHandler("attach.xml"), doc3.value);
+        validate(getDataHandler("attach.txt", "text/plain"), doc1.value);
+        validate(getDataHandler("attach.html", "text/html"), doc2.value);
+        validate(getDataHandler("attach.xml", "application/xml"), doc3.value);
     }
 
     public void testMtomInOut1() throws Exception {
         Holder<DataHandler> doc1 = new Holder<DataHandler>();
-	doc1.value = getDataHandler("some.bin");
+	    doc1.value = getDataHandler("some.bin", "application/octet-stream");
         Holder<DataHandler> doc2 = new Holder<DataHandler>();
-        doc2.value = getDataHandler("some.bin");
+        doc2.value = getDataHandler("some.bin", "application/octet-stream");
         Holder<DataHandler> doc3 = new Holder<DataHandler>();
-        doc3.value = getDataHandler("some.bin");
+        doc3.value = getDataHandler("some.bin", "application/octet-stream");
         Holder<Image> doc4 = new Holder<Image>();
         doc4.value = getImage("attach.jpeg");
         Holder<Image> doc5 = new Holder<Image>();
         doc5.value = getImage("attach2.jpeg");
 
     	proxy.mtomInOut(doc1, doc2, doc3, doc4, doc5);
-        validate(getDataHandler("some.bin"), doc1.value);
-        validate(getDataHandler("some.bin"), doc2.value);
-        validate(getDataHandler("some.bin"), doc3.value);
+        validate(getDataHandler("some.bin", "application/octet-stream"), doc1.value);
+        closeDataHandler(doc1.value);
+        validate(getDataHandler("some.bin", "application/octet-stream"), doc2.value);
+        closeDataHandler(doc2.value);
+        validate(getDataHandler("some.bin", "application/octet-stream"), doc3.value);
+        closeDataHandler(doc3.value);
+    }
+
+    private void closeDataHandler(DataHandler dh) throws Exception {
+        if (dh instanceof Closeable) {
+            ((Closeable)dh).close();
+        }
     }
 
     private void validate(DataHandler exp, DataHandler got) throws Exception {
@@ -83,7 +91,7 @@ public class TckTest extends TestCase {
         InputStream inGot = got.getInputStream();
         int ch;
         while((ch=inExp.read()) != -1) {
-	    assertEquals(ch, inGot.read());	
+	        assertEquals(ch, inGot.read());	
         }
         assertEquals(-1, inGot.read());
         inExp.close();
@@ -100,10 +108,10 @@ public class TckTest extends TestCase {
         return new StreamSource(is);
     }
 
-    private DataHandler getDataHandler(final String file) throws Exception {
+    private DataHandler getDataHandler(final String file, final String ct) throws Exception {
         return new DataHandler(new DataSource() {
             public String getContentType() {
-                return "text/html";
+                return ct;
             }
 
             public InputStream getInputStream() {
