@@ -273,7 +273,8 @@ public final class Packet extends DistributedPropertySet {
             try {
                 wsdlOperation = opDispatcher.getWSDLOperationQName(this);
             } catch (DispatchException e) {
-                LOGGER.info("Cannot resolve wsdl operation that this Packet is targeted for.");
+                //Ignore, this might be a protocol message which may not have a wsdl operation
+                //LOGGER.info("Cannot resolve wsdl operation that this Packet is targeted for.");
             }
         }
         return wsdlOperation;
