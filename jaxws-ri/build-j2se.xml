@@ -143,8 +143,11 @@
            </classpath>
         </javac>
 
-        <jar destfile="build/j2se-servlet/jdk7-jaxws-http-transport.jar"
-            basedir="build/j2se-servlet/classes"/>
+        <jar destfile="build/j2se-servlet/jdk7-jaxws-http-transport.jar">
+            <fileset dir="build/j2se-servlet/classes"/>
+            <zipfileset src="rt-ha/lib/ha-api.jar"/>            
+        </jar>
+
 
     </target>
 
