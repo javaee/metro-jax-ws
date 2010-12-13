@@ -121,7 +121,9 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
         } else {
             responseHeaders.clear();
         }
-        responseHeaders.putAll(headers);
+        if(headers != null) {
+            responseHeaders.putAll(headers);
+        }
     }
     @Override
     @Property({MessageContext.HTTP_RESPONSE_HEADERS, Packet.OUTBOUND_TRANSPORT_HEADERS})
