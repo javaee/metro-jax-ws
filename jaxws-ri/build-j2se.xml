@@ -136,7 +136,7 @@
             debug="${compile.debug}"
             destdir="build/j2se-servlet/classes" >
            <classpath>
-               <pathelement location="servlet/lib/servlet.jar"/>
+               <pathelement location="servlet/lib/javax.servlet.jar"/>
                <pathelement location="rt-ha/lib/ha-api.jar"/>
            </classpath>
         </javac>
