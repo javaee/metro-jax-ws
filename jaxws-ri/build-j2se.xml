@@ -120,7 +120,8 @@
        <prename srcdir="rt-ha/src" destdir="build/j2se-servlet/src">
            <pattern from="com.sun.xml.ws" to="com.sun.xml.internal.ws"/>
            <pattern from="com.sun.istack" to="com.sun.istack.internal" />
-           <pattern from="org.glassfish" to="com.sun.org.glassfish" excludes="org.glassfish.ha"/>  
+           <pattern from="org.glassfish" to="com.sun.org.glassfish" excludes="org.glassfish.ha"/>
+           <pattern from="com.sun.xml.bind" to="com.sun.xml.internal.bind"/>
        </prename>
 
        <prename srcdir="servlet/src" destdir="build/j2se-servlet/src">
