@@ -135,7 +135,7 @@
        <mkdir dir="build/j2se-servlet/classes"/>
        <!-- JAVA_HOME must be set to JDK 6 to compile -->
        <javac bootclasspathref="jdk.classpath" srcdir="build/j2se-servlet/src"
-            debug="${compile.debug}"
+            debug="true"
             destdir="build/j2se-servlet/classes" >
            <classpath>
                <pathelement location="servlet/lib/javax.servlet.jar"/>
@@ -227,7 +227,7 @@ import com.sun.istack.internal.tools.*;]]></replacevalue>
 
 
        <javac bootclasspathref="jdk.classpath" srcdir="build/ant-j2se/src"
-            debug="${compile.debug}"
+            debug="true"
             destdir="build/ant-j2se/classes" >
         </javac>
 
