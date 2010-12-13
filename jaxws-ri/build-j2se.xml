@@ -127,7 +127,8 @@
            <pattern from="com.sun.xml.ws" to="com.sun.xml.internal.ws"
                     excludes="com.sun.xml.ws.transport.http.servlet, com.sun.xml.ws.server.servlet, com.sun.xml.ws.developer.servlet"/>
            <pattern from="com.sun.istack" to="com.sun.istack.internal" />
-           <pattern from="org.glassfish" to="com.sun.org.glassfish"/>  
+           <pattern from="org.glassfish" to="com.sun.org.glassfish"/>
+           <pattern from="com.sun.xml.bind" to="com.sun.xml.internal.bind"/>
        </prename>
        
        <mkdir dir="build/j2se-servlet/classes"/>
