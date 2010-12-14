@@ -116,15 +116,18 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
      */
     @Override
     public void setResponseHeaders(Map<String,List<String>> headers) {
-        if (responseHeaders == null) {
-            responseHeaders = new Headers();
+        if (headers == null) {
+            responseHeaders = null;
         } else {
-            responseHeaders.clear();
-        }
-        if(headers != null) {
+            if (responseHeaders == null) {
+                responseHeaders = new Headers();
+            } else {
+                responseHeaders.clear();
+            }
             responseHeaders.putAll(headers);
         }
     }
+
     @Override
     @Property({MessageContext.HTTP_RESPONSE_HEADERS, Packet.OUTBOUND_TRANSPORT_HEADERS})
     public Map<String,List<String>> getResponseHeaders() {
