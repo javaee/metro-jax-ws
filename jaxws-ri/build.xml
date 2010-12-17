@@ -677,9 +677,9 @@
 
     <target name="integrate-ha-api-maven" description="integrate the latest GF HA API">
         <get src="http://download.java.net/maven/glassfish/org/glassfish/ha/ha-api/${ha-api.version}/ha-api-${ha-api.version}.jar"
-             dest="lib/ha-api.jar" />
+             dest="rt-ha/lib/ha-api.jar" />
         <get src="http://download.java.net/maven/glassfish/org/glassfish/ha/ha-api/${ha-api.version}/ha-api-${ha-api.version}-sources.jar"
-             dest="lib/ha-api.src.zip" />
+             dest="rt-ha/lib/ha-api.src.zip" />
     </target>
 
 
