@@ -58,13 +58,9 @@ public class SubDomainTest extends TestCase {
         String body  = "<ns2:introduce xmlns:ns2='urn:test'><arg0>"+host+"</arg0></ns2:introduce>";
         Source request = new StreamSource(new ByteArrayInputStream(body.getBytes()));
         d.invoke(request);
-        request = new StreamSource(new ByteArrayInputStream(body.getBytes()));
-        d.invoke(request);
 
         // rememeberMe() request
         body  = "<ns2:rememberMe xmlns:ns2='urn:test'/>";
-        request = new StreamSource(new ByteArrayInputStream(body.getBytes()));
-        d.invoke(request);
         request = new StreamSource(new ByteArrayInputStream(body.getBytes()));
         d.invoke(request);
     }
