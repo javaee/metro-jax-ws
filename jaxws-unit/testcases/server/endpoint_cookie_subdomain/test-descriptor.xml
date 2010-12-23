@@ -1,0 +1,4 @@
+<descriptor since="2.2.4" transport="http">
+  <description>Cookies get overwritten when sub domain sets them</description>
+
+</descriptor>
