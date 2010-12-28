@@ -191,7 +191,7 @@ public class EndpointImpl extends Endpoint {
         if (!com.sun.net.httpserver.HttpContext.class.isAssignableFrom(serverContext.getClass())) {
             throw new IllegalArgumentException(serverContext.getClass() + " is not a supported context.");
         }
-        createEndpoint("");
+        createEndpoint(((com.sun.net.httpserver.HttpContext)serverContext).getPath());
         ((HttpEndpoint) actualEndpoint).publish(serverContext);
     }
 
