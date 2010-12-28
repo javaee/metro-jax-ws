@@ -1,4 +1,4 @@
-<descriptor since="2.2.4" transport="http">
+<descriptor since="2.2.3" transport="http">
   <description>Cookies get overwritten when sub domain sets them</description>
     
   <service basedir="./server">
