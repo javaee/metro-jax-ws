@@ -99,13 +99,18 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
             Enumeration enums = request.getHeaderNames();
             while (enums.hasMoreElements()) {
                 String headerName = (String) enums.nextElement();
-                String headerValue = request.getHeader(headerName);
-                List<String> values = requestHeaders.get(headerName);
-                if (values == null) {
-                    values = new ArrayList<String>();
-                    requestHeaders.put(headerName, values);
+                Enumeration e = request.getHeaders(headerName);
+                if (e != null) {
+                    List<String> values = requestHeaders.get(headerName);
+                    while(e.hasMoreElements()) {
+                        String headerValue = (String)e.nextElement();
+                        if (values == null) {
+                            values = new ArrayList<String>();
+                            requestHeaders.put(headerName, values);
+                        }
+                        values.add(headerValue);
+                    }
                 }
-                values.add(headerValue);
             }
         }
         return requestHeaders;

@@ -292,7 +292,9 @@ final class HttpClientTransport {
 
         // set the properties on HttpURLConnection
         for (Map.Entry<String, List<String>> entry : reqHeaders.entrySet()) {
-            httpConnection.addRequestProperty(entry.getKey(), entry.getValue().get(0));
+            for(String value : entry.getValue()) {
+                httpConnection.addRequestProperty(entry.getKey(), value);
+            }
         }
     }
 

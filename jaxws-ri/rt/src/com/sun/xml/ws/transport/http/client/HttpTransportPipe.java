@@ -65,6 +65,8 @@ import javax.xml.ws.handler.MessageContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
+import java.net.CookieHandler;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -84,8 +86,44 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     private final Codec codec;
     private final WSBinding binding;
     private static final List<String> USER_AGENT = Collections.singletonList(RuntimeVersion.VERSION.toString());
-    private final CookieJar cookieJar;      // shared object among the tubes
+    private final CookieHandler cookieJar;      // shared object among the tubes
     private final boolean sticky;
+
+    private static final Constructor cookieManagerConstructor;
+    private static final Object cookiePolicy;
+    static {
+        Constructor tempConstructor;
+        Object tempPolicy;
+        try {
+            /*
+             * Using reflection to create CookieManger so that RI would continue to
+             * work with JDK 5.
+             */
+            Class policyClass = Class.forName("java.net.CookiePolicy");
+            Class storeClass = Class.forName("java.net.CookieStore");
+            tempConstructor = Class.forName("java.net.CookieManager").getConstructor(storeClass, policyClass);
+            // JDK's default policy is ACCEPT_ORIGINAL_SERVER, but ACCEPT_ALL
+            // is used for backward compatibility
+            tempPolicy = policyClass.getField("ACCEPT_ALL").get(null);
+        } catch(Exception e) {
+            try {
+                /*
+                 * Using reflection so that these classes won't have to be
+                 * integrated in JDK 6.
+                 */
+                Class policyClass = Class.forName("com.sun.xml.ws.transport.http.client.CookiePolicy");
+                Class storeClass = Class.forName("com.sun.xml.ws.transport.http.client.CookieStore");
+                tempConstructor = Class.forName("com.sun.xml.ws.transport.http.client.CookieManager").getConstructor(storeClass, policyClass);
+                // JDK's default policy is ACCEPT_ORIGINAL_SERVER, but ACCEPT_ALL
+                // is used for backward compatibility
+                tempPolicy = policyClass.getField("ACCEPT_ALL").get(null);
+            } catch(Exception ce) {
+                throw new WebServiceException(ce);
+            }
+        }
+        cookieManagerConstructor = tempConstructor;
+        cookiePolicy = tempPolicy;
+    }
 
     // Need to use JAXB first to register DatatypeConverter
     static {
@@ -96,14 +134,22 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         }
     }
 
+    private static CookieHandler getCookieHandler() {
+        try {
+            return (CookieHandler)cookieManagerConstructor.newInstance(null, cookiePolicy);
+        } catch(Exception e) {
+            throw new WebServiceException(e);
+        }
+    }
+
     public HttpTransportPipe(Codec codec, WSBinding binding) {
         // TODO Rather than creating a new instance, CookieJar should be got
         // TODO from a feature ideally. That way CookieJar can be shared across
         // TODO multiple proxies
-        this(codec, binding, new CookieJar(), isSticky(binding));
+        this(codec, binding, getCookieHandler(), isSticky(binding));
     }
 
-    private HttpTransportPipe(Codec codec, WSBinding binding, CookieJar cookieJar, boolean sticky) {
+    private HttpTransportPipe(Codec codec, WSBinding binding, CookieHandler cookieJar, boolean sticky) {
         this.codec = codec;
         this.binding = binding;
         this.sticky = sticky;
@@ -319,25 +365,27 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         return code == 500 || code == 400;
     }
 
-    private void addCookies(Packet context, Map<String, List<String>> reqHeaders) {
+    private void addCookies(Packet context, Map<String, List<String>> reqHeaders) throws IOException {
         Boolean shouldMaintainSessionProperty =
             (Boolean) context.invocationProperties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
         if (shouldMaintainSessionProperty != null && !shouldMaintainSessionProperty) {
             return;         // explicitly turned off
         }
         if (sticky || (shouldMaintainSessionProperty != null && shouldMaintainSessionProperty)) {
-            cookieJar.applyRelevantCookies(context.endpointAddress.getURL(), reqHeaders);
+            Map<String, List<String>> cookies = cookieJar.get(context.endpointAddress.getURI(),reqHeaders);
+            reqHeaders.putAll(cookies);
+            //cookieJar.applyRelevantCookies(context.endpointAddress.getURL(), reqHeaders);
         }
     }
 
-    private void recordCookies(Packet context, HttpClientTransport con) {
+    private void recordCookies(Packet context, HttpClientTransport con) throws IOException {
         Boolean shouldMaintainSessionProperty =
             (Boolean) context.invocationProperties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
         if (shouldMaintainSessionProperty != null && !shouldMaintainSessionProperty) {
             return;         // explicitly turned off
         }
         if (sticky || (shouldMaintainSessionProperty != null && shouldMaintainSessionProperty)) {
-            cookieJar.recordAnyCookies(context.endpointAddress.getURL(), con.getHeaders());
+            cookieJar.put(context.endpointAddress.getURI(), con.getHeaders());
         }
     }
 
