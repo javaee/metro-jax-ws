@@ -80,7 +80,7 @@ public class HttpContextTest extends TestCase {
         // access HTML page and check the wsdl location
         String wsdlAddress = address+"?wsdl";
         String str = getHtmlPage(address);
-        assertTrue(str.contains(wsdlAddress));
+        assertTrue(str+"doesn't have "+wsdlAddress, str.contains(wsdlAddress));
 
         // See if WSDL is published at the correct address
         int code = getHttpStatusCode(wsdlAddress);
