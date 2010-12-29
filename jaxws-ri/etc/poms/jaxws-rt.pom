@@ -83,7 +83,7 @@
             <name>
                 CDDL+GPL License
             </name>
-            <url>https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html</url>
+            <url>http://glassfish.java.net/public/CDDL+GPL_1_1.html</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
