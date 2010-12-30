@@ -445,7 +445,9 @@
         <sequential>
             <prepare-pom module="@{module}"/>
             <artifact:deploy file="${dist20.home}/lib/@{module}.jar" uniqueVersion="false">
-                <remoteRepository url="${java.net.maven2.repo.push.url}"/>
+                <remoteRepository url="${java.net.maven2.repo.push.url}">
+                  <!-- authentication username="xxx" password="xxx"/-->
+                </remoteRepository>
                 <localRepository path="build/maven2-repo/test"/>
                 <pom file="build/maven2-repo/@{module}.pom"/>
                 <attach file="@{module-src}" classifier="sources" />
@@ -686,6 +688,7 @@
     <property name="maven.ant.task.jar" value="maven-ant-tasks-2.0.10.jar"/>
     <property name="java.net.maven2.repo" value="http://download.java.net/maven/2"/>
     <property name="java.net.maven2.repo.push.url" value="java-net:/maven2-repository/trunk/repository"/>
+    <!--property name="java.net.maven2.repo.push.url" value="dav:http://glassfish-maven-repository.us.oracle.com/maven/repositories/glassfish/"/-->
 
     <target name="check-maven-ant-task">
         <available property="maven.ant.task.available" value="true" file="${lib.home}/${maven.ant.task.jar}"
@@ -712,6 +715,8 @@
         <mkdir dir="build/maven2-repo/test"/>
         <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.11">
             <artifact:remoteRepository url="${java.net.maven2.repo}"></artifact:remoteRepository>        
+        </artifact:install-provider>
+        <artifact:install-provider artifactId="wagon-webdav" groupId="org.apache.maven.wagon" version="1.0-beta-2">
         </artifact:install-provider>
         <!--
         <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.11-SNAPSHOT">
