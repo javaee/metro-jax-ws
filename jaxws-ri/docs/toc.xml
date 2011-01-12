@@ -46,7 +46,7 @@
     <a href="Copyright.txt">&#169; 2010, Oracle Corporation and/or its affiliates</a>
   </footer>
     
-  <chapter name="${PRODUCT_NAME}">
+  <chapter name="JAX-WS RI 2.2.3">
     <document name="Overview"
               url="index.html"/>
     <document name="Release Notes"
