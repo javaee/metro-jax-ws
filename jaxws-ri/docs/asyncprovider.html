@@ -30,11 +30,19 @@ that accesses the payload of the request.<br>
 public class AsyncProviderImpl implements AsyncProvider&lt;Source&gt; {     
     public void invoke(Source source, AsyncProviderCallback cbak, WebServiceContext ctxt) {...}
 }</code></pre>
+
 <h2><code>AsyncProvider</code> sample</h2>
 See a&nbsp; <a href="../samples/asyncprovider/Readme.txt">sample</a> that
-illustrates <code></code><code>AsyncProvider </code>endpoints.<br>
+illustrates <code></code><code>AsyncProvider </code>endpoints.
+<pre></pre>
+
+<h2><code>AsyncService</code> sample</h2>
+See another <a href="../samples/asyncservice/Readme.txt">sample</a> that
+illustrates <code></code><code>AsyncProvider </code>endpoint that uses asynchronous servlet as the transport to bring
+    true asynchronity on the server-side. See
+    <a href="http://weblogs.java.net/blog/ramapulavarthi/archive/2010/08/18/new-asynchronous-servlet-transport-jax-ws-ri">
+        New Asynchronous Servlet Transport in JAX-WS RI</a> for mroe details on this feature.<br>
 <br>
-<pre><br></pre>
 <br>
 
 </body>
