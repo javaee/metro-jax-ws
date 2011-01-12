@@ -113,8 +113,8 @@
 
     <chapter name="JAX-WS Community">
         <document name="Overview" url="community.html"/>
-        <document name="Java.net Homepage" url="https://jax-ws.dev.java.net/"/>
-        <document name="Mailing List" url="https://jax-ws.dev.java.net/servlets/ProjectMailingListList"/>
-        <document name="FAQ" url="https://jax-ws.dev.java.net/faq/index.html"/>
+        <document name="Java.net Homepage" url="http://jax-ws.java.net/"/>
+        <document name="Mailing List" url="http://java.net/projects/jax-ws/lists"/>
+        <document name="FAQ" url="http://jax-ws.java.net/faq/index.html"/>
     </chapter>
 </toc>
