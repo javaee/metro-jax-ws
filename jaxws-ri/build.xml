@@ -687,7 +687,8 @@
 
     <property name="maven.ant.task.jar" value="maven-ant-tasks-2.0.10.jar"/>
     <property name="java.net.maven2.repo" value="http://download.java.net/maven/2"/>
-    <property name="java.net.maven2.repo.push.url" value="svn:https://svn.java.net/svn/maven2-repository~svn/trunk/repository"/>
+    <property name="java.net.maven2.repo.push.url" value="java-net:/maven2-repository~svn/trunk/repository/"/>
+    <!--property name="java.net.maven2.repo.push.url" value="svn:https://svn.java.net/svn/maven2-repository~svn/trunk/repository"/-->
     <!--property name="java.net.maven2.repo.push.url" value="dav:http://glassfish-maven-repository.us.oracle.com/maven/repositories/glassfish/"/-->
 
     <target name="check-maven-ant-task">
@@ -713,7 +714,7 @@
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
                  classpathref="maven-ant-tasks.classpath"/>
         <mkdir dir="build/maven2-repo/test"/>
-        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.11">
+        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.12">
             <artifact:remoteRepository url="${java.net.maven2.repo}"></artifact:remoteRepository>        
         </artifact:install-provider>
         <artifact:install-provider artifactId="wagon-webdav" groupId="org.apache.maven.wagon" version="1.0-beta-2">
