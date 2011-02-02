@@ -677,6 +677,14 @@
 
     </target>
 
+    <target name="integrate-policy-maven"
+            description="integrate the last successful policy-core maven">
+         <get src="http://download.java.net/maven/2/com/sun/xml/ws/policy/${policy.version}/policy-${policy.version}.jar"
+             dest="lib/policy.jar" />
+         <get src="http://download.java.net/maven/2/com/sun/xml/ws/policy/${policy.version}/policy-${policy.version}-sources.jar"
+             dest="lib/policy-src.zip" />
+    </target>
+
     <target name="integrate-ha-api-maven" description="integrate the latest GF HA API">
         <get src="http://download.java.net/maven/glassfish/org/glassfish/ha/ha-api/${ha-api.version}/ha-api-${ha-api.version}.jar"
              dest="rt-ha/lib/ha-api.jar" />
