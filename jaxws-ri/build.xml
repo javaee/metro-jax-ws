@@ -406,7 +406,7 @@
             <fail unless="jar.suffix">jar.suffix property needs to be defined</fail>
             <copy file="etc/poms/@{module}.pom" tofile="build/maven2-repo/@{module}.pom" overwrite="true">
                 <filterset>
-                    <filter token="API_VERSION" value="${release.api.version}"/>
+                    <filter token="API_VERSION" value="${release.maven.api.version}"/>
                     <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
                     <filter token="JAXB_API_VERSION" value="${jaxb.api.version}"/>
                     <filter token="VERSION" value="${jar.suffix}"/>
@@ -489,7 +489,7 @@
         <delete dir="build/maven2-repo"/>
         <mkdir dir="build/maven2-repo"/>
         <!--property name="jar.suffix" value="${release.impl.version}"/-->
-        <!--property  name="release.api.version" value="${release.spec.version}"/-->                
+        <!--property  name="release.maven.api.version" value="${release.api.version}"/-->                
         <antcall target="push-api-to-maven2"/>
         <push-to-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <push-to-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
@@ -503,14 +503,14 @@
     <target name="push-snapshot-to-maven2" depends="dist-zip-with-src"
             description="publish snapshot jars into the maven repository">
         <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
-        <property name="release.api.version" value="${release.spec.version}-SNAPSHOT"/>
+        <property name="release.maven.api.version" value="${release.api.version}-SNAPSHOT"/>
         <property name="push.api.set" value="true"/>
         <antcall target="push-to-maven2"/>
     </target>
 
     <target  name="push-promoted-to-maven2" depends="dist-zip-with-src">
         <property  name="jar.suffix" value="${release.impl.version}-promoted-b${promoted.version}"/>
-        <property  name="release.api.version" value="${release.spec.version}-promoted-b${promoted.version}"/>
+        <property  name="release.maven.api.version" value="${release.api.version}-promoted-b${promoted.version}"/>
         <property name="push.api.set" value="true"/>
         <antcall target="push-to-maven2"/>
         <propertyfile file="project.properties">
@@ -529,7 +529,7 @@
         <delete dir="build/maven2-repo"/>
         <mkdir dir="build/maven2-repo"/>
         <!--property name="jar.suffix" value="${release.impl.version}"/-->
-        <!--property  name="release.api.version" value="${release.spec.version}"/-->
+        <!--property  name="release.maven.api.version" value="${release.api.version}"/-->
 
         <install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
         <install-local-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
@@ -541,13 +541,13 @@
             <delete dir="build/maven2-repo"/>
             <mkdir dir="build/maven2-repo"/>
             <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
-            <property name="release.api.version" value="${release.spec.version}-SNAPSHOT"/>
+            <property name="release.maven.api.version" value="${release.api.version}-SNAPSHOT"/>
             <antcall target="install-locally"/>
     </target>
 
     <target  name="install-promoted-locally">
             <property  name="jar.suffix" value="${release.impl.version}-promoted-b${promoted.version}"/>
-            <property  name="release.api.version" value="${release.spec.version}-promoted-b${promoted.version}"/>
+            <property  name="release.maven.api.version" value="${release.api.version}-promoted-b${promoted.version}"/>
             <antcall target="install-locally"/>
     </target>
 
@@ -596,7 +596,7 @@
         srczip="lib/jsr181-api.src.zip" />
         -->
       <filterset>
-        <filter token="API_VERSION" value="${release.api.version}"/>
+        <filter token="API_VERSION" value="${release.maven.api.version}"/>
         <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
         <filter token="JAXB_API_VERSION" value="${jaxb.api.version}"/>  
       </filterset>
