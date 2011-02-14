@@ -118,10 +118,7 @@ public class WsimportOptions extends Options {
 
     public SchemaCompiler getSchemaCompiler() {
         schemaCompiler.setTargetVersion(SpecVersion.parse(target.getVersion()));
-        if(entityResolver != null) {
-            //set if its not null so as not to override catalog option specified via xjc args
-            schemaCompiler.setEntityResolver(entityResolver);
-        }
+        schemaCompiler.setEntityResolver(entityResolver);
         return schemaCompiler;
     }
 
