@@ -659,6 +659,8 @@
             description="generate sources bundle for licensees">
         <tstamp/>
 
+        <get src="http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/TLDA_SCSL_Licensees_License_Notice.txt" dest="${build.home}/TLDA_SCSL_Licensees_License_Notice.txt"/>
+
         <!-- create the zip file contents -->
         <property name="source.drop.dir" value="${build.home}/source-bundle"/>
         <property name="source.dist.dir.name" value="jaxws-ri-${DSTAMP}"/>
@@ -667,26 +669,29 @@
         <mkdir dir="${source.drop.dir}"/>
         <mkdir dir="${source.drop.dir}/jaxws-ri/lib"/>
 
-        <zip destfile="${build.home}/jaxws-src.zip"  duplicate="fail" whenempty="fail">
-            <zipfileset dir="rt" prefix="${source.dist.dir.name}/rt" defaultexcludes="true"/>
-            <zipfileset dir="rt-fi" prefix="${source.dist.dir.name}/rt-fi" defaultexcludes="true"/>
-            <zipfileset dir="tools" prefix="${source.dist.dir.name}/tools" defaultexcludes="true"
-                    excludes="**/*.iml,javadoc-link/**,lib/**,scripts/**,in-cvs.sh"/>
-            <zipfileset dir="servlet" prefix="${source.dist.dir.name}/servlet" defaultexcludes="true"/>
+        <zip destfile="${build.home}/jaxws-${release.jar.version}-src-licensee.zip"  duplicate="fail" whenempty="fail">
+            <zipfileset dir="rt" prefix="${source.dist.dir.name}/rt" defaultexcludes="true" includes="build.xml, src/**, build/gen-src/**, etc/**" excludes="test/**"/>
+            <zipfileset dir="rt-fi" prefix="${source.dist.dir.name}/rt-fi" defaultexcludes="true" includes="build.xml, src/**"/>
+            <zipfileset dir="tools" prefix="${source.dist.dir.name}/tools" defaultexcludes="true" includes="etc/**, wscompile/build.xml, wscompile/src/**, wscompile/build/gen-src/**, resourcegen/**, bin/**"/>
+            <zipfileset dir="servlet" prefix="${source.dist.dir.name}/servlet" defaultexcludes="true" includes="build.xml, src/**, lib/**"/>
             <zipfileset dir="${basedir}/etc" includes="build-bundle.xml"
                         fullpath="${source.dist.dir.name}/build.xml"/>
+            <zipfileset dir="${basedir}/etc" prefix="${source.dist.dir.name}/etc" includes="CDDL+GPLv2.xml" />
             <zipfileset dir="${basedir}/etc" includes="src-build-readme.txt"
                         fullpath="${source.dist.dir.name}/README"/>
             <!-- additional jar files -->
-            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.* junit.jar"
+            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.*, junit.jar, commons-jelly-tags-jsl-1.0.jar, sjsxp.jar, maven-ant-tasks-2.0.10.jar"
                         prefix="${source.dist.dir.name}/lib"/>
           <!--  <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/> -->
 
             <!-- license files -->
             <zipfileset dir="."
-                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties"
+                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties, build-j2se.xml"
                         prefix="${source.dist.dir.name}"/>
-        </zip>        
+            <zipfileset dir="${build.home}"
+                        includes="TLDA_SCSL_Licensees_License_Notice.txt"
+                        prefix="${source.dist.dir.name}"/>
+        </zip>
     </target>
 
   <!-- =====================
