@@ -97,9 +97,12 @@
     <delete dir="${build.dir}"/>
   </target>
 
+  <target name="check-tests">
+        <available file="${basedir}/test" property="tests.exist"/>
+   </target>
 
 
-  <target name="test" description="rt-whitebox-tests">
+  <target name="test" depends="check-tests" description="rt-whitebox-tests">
      <path id="test.classpath">
         <path refid="runtime.compile.classpath"/>
         <pathelement path="${build.dir}/classes" />
