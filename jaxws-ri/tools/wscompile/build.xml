@@ -89,7 +89,7 @@
         <available file="${basedir}/test" property="tests.exist"/>
     </target>
 
-    <target name="test" depends="check-tests"  description="tools-whitebox-tests">
+    <target name="test" depends="check-tests"  description="tools-whitebox-tests" if="tests.exist">
         <path id="test.classpath">
             <path refid="tools.compile.classpath"/>
             <pathelement path="${build.dir}/classes"/>

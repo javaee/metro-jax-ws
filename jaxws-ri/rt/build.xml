@@ -102,7 +102,7 @@
    </target>
 
 
-  <target name="test" depends="check-tests" description="rt-whitebox-tests">
+  <target name="test" depends="check-tests" description="rt-whitebox-tests" if="tests.exist">
      <path id="test.classpath">
         <path refid="runtime.compile.classpath"/>
         <pathelement path="${build.dir}/classes" />
