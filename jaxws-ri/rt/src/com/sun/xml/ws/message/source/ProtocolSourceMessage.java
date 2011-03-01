@@ -47,6 +47,7 @@ import com.sun.xml.ws.api.pipe.StreamSOAPCodec;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -134,8 +135,11 @@ public class ProtocolSourceMessage extends Message {
     public <T> T readPayloadAsJAXB(Unmarshaller unmarshaller) throws JAXBException {
         return (T)sm.readPayloadAsJAXB(unmarshaller);
     }
-
+    /** @deprecated */
     public <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException {
+        return sm.readPayloadAsJAXB(bridge);
+    }
+    public <T> T readPayloadAsJAXB(XMLBridge<T> bridge) throws JAXBException {
         return sm.readPayloadAsJAXB(bridge);
     }
 

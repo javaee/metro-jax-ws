@@ -52,6 +52,10 @@ import com.sun.xml.ws.message.jaxb.JAXBHeader;
 import com.sun.xml.ws.message.saaj.SAAJHeader;
 import com.sun.xml.ws.message.stream.StreamHeader11;
 import com.sun.xml.ws.message.stream.StreamHeader12;
+import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.BindingContextFactory;
+import com.sun.xml.ws.spi.db.XMLBridge;
+
 import org.w3c.dom.Element;
 
 import javax.xml.bind.JAXBElement;
@@ -87,16 +91,22 @@ public abstract class Headers {
 
     /**
      * @deprecated
-     *      Use {@link #create(JAXBRIContext, Object)} instead.
+     *      Use {@link #create(BindingContext, Object)} instead.
      */
     public static Header create(SOAPVersion soapVersion, Marshaller m, Object o) {
-        return new JAXBHeader(((MarshallerImpl)m).getContext(),o);
+        return new JAXBHeader(BindingContextFactory.getBindingContext(m),o);
     }
 
     /**
      * Creates a {@link Header} backed a by a JAXB bean.
+     * @deprecated
+     *      Use {@link #create(BindingContext, Object)} instead.
      */
     public static Header create(JAXBRIContext context, Object o) {
+        return new JAXBHeader(BindingContextFactory.create(context),o);
+    }
+    
+    public static Header create(BindingContext context, Object o) {
         return new JAXBHeader(context,o);
     }
 
@@ -117,8 +127,13 @@ public abstract class Headers {
 
     /**
      * Creates a {@link Header} backed a by a JAXB bean.
+     * @deprecated
      */
     public static Header create(Bridge bridge, Object jaxbObject) {
+        return new JAXBHeader(new com.sun.xml.ws.db.glassfish.BridgeWrapper(null,bridge), jaxbObject);
+    }
+    
+    public static Header create(XMLBridge bridge, Object jaxbObject) {
         return new JAXBHeader(bridge, jaxbObject);
     }
 

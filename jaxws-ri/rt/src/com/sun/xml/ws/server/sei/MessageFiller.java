@@ -40,13 +40,14 @@
 
 package com.sun.xml.ws.server.sei;
 
-import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.message.Headers;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.message.ByteArrayAttachment;
 import com.sun.xml.ws.message.DataHandlerAttachment;
 import com.sun.xml.ws.message.JAXBAttachment;
 import com.sun.xml.ws.model.ParameterImpl;
+import com.sun.xml.ws.spi.db.XMLBridge;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.UUID;
@@ -112,7 +113,7 @@ abstract class MessageFiller {
          *      as a method argument.
          */
         public static MessageFiller createAttachmentFiller(ParameterImpl param, ValueGetter getter) {
-            Class type = (Class)param.getTypeReference().type;
+            Class type = (Class)param.getTypeInfo().type;
             if (DataHandler.class.isAssignableFrom(type) || Source.class.isAssignableFrom(type)) {
                 return new DataHandlerFiller(param, getter);
             } else if (byte[].class==type) {
@@ -163,7 +164,7 @@ abstract class MessageFiller {
         void fillIn(Object[] methodArgs, Object returnValue, Message msg) {
             String contentId = getContentId();
             Object obj = (methodPos == -1) ? returnValue : getter.get(methodArgs[methodPos]);
-            Attachment att = new JAXBAttachment(contentId, obj, param.getBridge(), mimeType);
+            Attachment att = new JAXBAttachment(contentId, obj, param.getXMLBridge(), mimeType);
             msg.getAttachments().add(att);
         }
     }
@@ -172,10 +173,10 @@ abstract class MessageFiller {
      * Adds a parameter as an header.
      */
     static final class Header extends MessageFiller {
-        private final Bridge bridge;
+        private final XMLBridge bridge;
         private final ValueGetter getter;
 
-        protected Header(int methodPos, Bridge bridge, ValueGetter getter) {
+        protected Header(int methodPos, XMLBridge bridge, ValueGetter getter) {
             super(methodPos);
             this.bridge = bridge;
             this.getter = getter;

@@ -41,9 +41,9 @@
 package com.sun.xml.ws.model;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.v2.model.annotation.AnnotationReader;
 import com.sun.xml.bind.v2.model.nav.Navigator;
+import com.sun.xml.ws.spi.db.BindingHelper;
 import com.sun.xml.ws.util.StringUtils;
 
 import javax.jws.WebParam;
@@ -385,7 +385,7 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
      * @return property name
      */
     private static String getPropertyName(String name) {
-        String propertyName = JAXBRIContext.mangleNameToVariableName(name);
+        String propertyName = BindingHelper.mangleNameToVariableName(name);
         //We wont have to do this if JAXBRIContext.mangleNameToVariableName() takes
         //care of mangling java identifiers
         return getJavaReservedVarialbeName(propertyName);

@@ -45,12 +45,12 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.Closeable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.EndpointAddress;
-import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.client.ServiceInterceptor;
 import com.sun.xml.ws.api.client.ServiceInterceptorFactory;
-import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.databinding.DatabindingFactory;
+import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ContainerResolver;
@@ -62,7 +62,6 @@ import com.sun.xml.ws.client.HandlerConfigurator.HandlerResolverImpl;
 import com.sun.xml.ws.client.sei.SEIStub;
 import com.sun.xml.ws.developer.WSBindingProvider;
 import com.sun.xml.ws.developer.UsesJAXBContextFeature;
-import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.model.RuntimeModeler;
 import com.sun.xml.ws.model.SOAPSEIModel;
 import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
@@ -96,7 +95,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 /**
@@ -661,11 +659,23 @@ public class WSServiceDelegate extends WSService {
 
     private SEIPortInfo createSEIPortInfo(QName portName, Class portInterface, WebServiceFeature... features) {
         WSDLPortImpl wsdlPort = getPortModel(wsdlService, portName);
-        RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName, wsdlPort, features);
-        modeler.setClassLoader(portInterface.getClassLoader());
-        modeler.setPortName(portName);
-        AbstractSEIModelImpl model = modeler.buildRuntimeModel();
-        return new SEIPortInfo(this, portInterface, (SOAPSEIModel) model, wsdlPort);
+//        RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName, wsdlPort, features);
+//        modeler.setClassLoader(portInterface.getClassLoader());
+//        modeler.setPortName(portName);
+//        AbstractSEIModelImpl model = modeler.buildRuntimeModel();
+
+		DatabindingFactory fac = DatabindingFactory.newInstance();
+		DatabindingConfig config = new DatabindingConfig();
+		config.setContractClass(portInterface);
+		config.getMappingInfo().setServiceName(serviceName);
+		config.setWsdlPort(wsdlPort);
+		config.setFeatures(features);
+		config.setClassLoader(portInterface.getClassLoader());
+		config.getMappingInfo().setPortName(portName);
+		
+		com.sun.xml.ws.db.DatabindingImpl rt = (com.sun.xml.ws.db.DatabindingImpl)fac.createRuntime(config);
+		
+        return new SEIPortInfo(this, portInterface, (SOAPSEIModel) rt.getModel(), wsdlPort);
     }
 
     private boolean useOwnSEIModel(WebServiceFeature... features) {

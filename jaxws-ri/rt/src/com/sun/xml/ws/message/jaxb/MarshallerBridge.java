@@ -61,7 +61,7 @@ import java.io.OutputStream;
 
 /**
  * Used to adapt {@link Marshaller} into a {@link Bridge}.
- *
+ * @deprecated
  * @author Kohsuke Kawaguchi
  */
 final class MarshallerBridge extends Bridge {

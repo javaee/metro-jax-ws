@@ -42,8 +42,6 @@ package com.sun.xml.ws.fault;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.bind.api.Bridge;
-import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.model.CheckedException;
@@ -55,6 +53,7 @@ import com.sun.xml.ws.message.jaxb.JAXBMessage;
 import com.sun.xml.ws.message.FaultMessage;
 import com.sun.xml.ws.model.CheckedExceptionImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
+import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.StringUtils;
 import org.w3c.dom.Document;
@@ -298,9 +297,9 @@ public abstract class SOAPFaultBuilder {
 
     abstract protected Throwable getProtocolException();
 
-    private Object getJAXBObject(Node jaxbBean, CheckedException ce) throws JAXBException {
-        Bridge bridge = ce.getBridge();
-        return bridge.unmarshal(jaxbBean);
+    private Object getJAXBObject(Node jaxbBean, CheckedExceptionImpl ce) throws JAXBException {
+        XMLBridge bridge = ce.getBond();
+        return bridge.unmarshal(jaxbBean,null);
     }
 
     private Exception createUserDefinedException(CheckedExceptionImpl ce) {
@@ -405,7 +404,7 @@ public abstract class SOAPFaultBuilder {
         } else if(ce != null){
             try {
                 DOMResult dr = new DOMResult();
-                ce.getBridge().marshal(detail,dr);
+                ce.getBond().marshal(detail,dr);
                 detailNode = (Element)dr.getNode().getFirstChild();
                 firstEntry = getFirstDetailEntryName(detailNode);
             } catch (JAXBException e1) {
@@ -500,7 +499,7 @@ public abstract class SOAPFaultBuilder {
         } else if(detail != null){
             try {
                 DOMResult dr = new DOMResult();
-                ce.getBridge().marshal(detail, dr);
+                ce.getBond().marshal(detail, dr);
                 detailNode = (Element)dr.getNode().getFirstChild();
                 firstEntry = getFirstDetailEntryName(detailNode);
             } catch (JAXBException e1) {
@@ -543,7 +542,7 @@ public abstract class SOAPFaultBuilder {
     /**
      * This {@link JAXBContext} can handle SOAP 1.1/1.2 faults.
      */
-    private static final JAXBRIContext JAXB_CONTEXT;
+    private static final JAXBContext JAXB_CONTEXT;
 
     private static final Logger logger = Logger.getLogger(SOAPFaultBuilder.class.getName());
 
@@ -562,7 +561,7 @@ public abstract class SOAPFaultBuilder {
         }
 
         try {
-            JAXB_CONTEXT = (JAXBRIContext)JAXBContext.newInstance(SOAP11Fault.class, SOAP12Fault.class);
+            JAXB_CONTEXT = JAXBContext.newInstance(SOAP11Fault.class, SOAP12Fault.class);
         } catch (JAXBException e) {
             throw new Error(e); // this must be a bug in our code
         }

@@ -40,10 +40,6 @@
 
 package com.sun.xml.ws.client.sei;
 
-import com.sun.xml.bind.api.AccessorException;
-import com.sun.xml.bind.api.Bridge;
-import com.sun.xml.bind.api.CompositeStructure;
-import com.sun.xml.bind.api.RawAccessor;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentSet;
@@ -54,6 +50,10 @@ import com.sun.xml.ws.message.AttachmentUnmarshallerImpl;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.resources.ServerMessages;
+import com.sun.xml.ws.spi.db.XMLBridge;
+import com.sun.xml.ws.spi.db.DatabindingException;
+import com.sun.xml.ws.spi.db.PropertyAccessor;
+import com.sun.xml.ws.spi.db.WrapperComposite;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.encoding.StringDataContentHandler;
 import com.sun.xml.ws.encoding.DataHandlerDataSource;
@@ -233,7 +233,7 @@ abstract class ResponseBuilder {
          *      care of Holder arguments.
          */
         public static ResponseBuilder createAttachmentBuilder(ParameterImpl param, ValueSetter setter) {
-            Class type = (Class)param.getTypeReference().type;
+            Class type = (Class)param.getTypeInfo().type;
             if (DataHandler.class.isAssignableFrom(type)) {
                 return new DataHandlerBuilder(param, setter);
             } else if (byte[].class==type) {
@@ -360,7 +360,7 @@ abstract class ResponseBuilder {
         }
         
         Object mapAttachment(Attachment att, Object[] args) throws JAXBException {
-            Object obj = param.getBridge().unmarshal(att.asInputStream());
+            Object obj = param.getXMLBridge().unmarshal(att.asInputStream());
             return setter.put(obj, args);
         }
     }
@@ -414,7 +414,7 @@ abstract class ResponseBuilder {
      * Reads a header into a JAXB object.
      */
     static final class Header extends ResponseBuilder {
-        private final Bridge<?> bridge;
+        private final XMLBridge<?> bridge;
         private final ValueSetter setter;
         private final QName headerName;
         private final SOAPVersion soapVersion;
@@ -429,7 +429,7 @@ abstract class ResponseBuilder {
          * @param setter
          *      specifies how the obtained value is returned to the client.
          */
-        public Header(SOAPVersion soapVersion, QName name, Bridge<?> bridge, ValueSetter setter) {
+        public Header(SOAPVersion soapVersion, QName name, XMLBridge<?> bridge, ValueSetter setter) {
             this.soapVersion = soapVersion;
             this.headerName = name;
             this.bridge = bridge;
@@ -438,8 +438,8 @@ abstract class ResponseBuilder {
 
         public Header(SOAPVersion soapVersion, ParameterImpl param, ValueSetter setter) {
             this(soapVersion,
-                param.getTypeReference().tagName,
-                param.getBridge(),
+                param.getTypeInfo().tagName,
+                param.getXMLBridge(),
                 setter);
             assert param.getOutBinding()== ParameterBinding.HEADER;
         }
@@ -477,7 +477,7 @@ abstract class ResponseBuilder {
      * Reads the whole payload into a single JAXB bean.
      */
     static final class Body extends ResponseBuilder {
-        private final Bridge<?> bridge;
+        private final XMLBridge<?> bridge;
         private final ValueSetter setter;
 
         /**
@@ -486,7 +486,7 @@ abstract class ResponseBuilder {
          * @param setter
          *      specifies how the obtained value is returned to the client.
          */
-        public Body(Bridge<?> bridge, ValueSetter setter) {
+        public Body(XMLBridge<?> bridge, ValueSetter setter) {
             this.bridge = bridge;
             this.setter = setter;
         }
@@ -506,14 +506,14 @@ abstract class ResponseBuilder {
          */
         private final PartBuilder[] parts;
 
-        private final Bridge wrapper;
+        private final XMLBridge wrapper;
 
         private final QName wrapperName;
 
         public DocLit(WrapperParameter wp, ValueSetterFactory setterFactory) {
             wrapperName = wp.getName();
-            wrapper = wp.getBridge();
-            Class wrapperType = (Class) wrapper.getTypeReference().type;
+            wrapper = wp.getXMLBridge();
+            Class wrapperType = (Class) wrapper.getTypeInfo().type;
 
             List<PartBuilder> parts = new ArrayList<PartBuilder>();
 
@@ -524,7 +524,7 @@ abstract class ResponseBuilder {
                 QName name = p.getName();
                 try {
                     parts.add( new PartBuilder(
-                        wp.getOwner().getJAXBContext().getElementPropertyAccessor(
+                        wp.getOwner().getBindingContext().getElementPropertyAccessor(
                             wrapperType,
                             name.getNamespaceURI(),
                             p.getName().getLocalPart()),
@@ -564,7 +564,7 @@ abstract class ResponseBuilder {
                             retVal = o;
                         }
                     }
-                } catch (AccessorException e) {
+                } catch (DatabindingException e) {
                     // this can happen when the set method throw a checked exception or something like that
                     throw new WebServiceException(e);    // TODO:i18n
                 }
@@ -584,7 +584,7 @@ abstract class ResponseBuilder {
          * to the expected place.
          */
         static final class PartBuilder {
-            private final RawAccessor accessor;
+            private final PropertyAccessor accessor;
             private final ValueSetter setter;
 
             /**
@@ -593,13 +593,13 @@ abstract class ResponseBuilder {
              * @param setter
              *      specifies how the obtained value is returned to the client.
              */
-            public PartBuilder(RawAccessor accessor, ValueSetter setter) {
+            public PartBuilder(PropertyAccessor accessor, ValueSetter setter) {
                 this.accessor = accessor;
                 this.setter = setter;
                 assert accessor!=null && setter!=null;
             }
 
-            final Object readResponse( Object[] args, Object wrapperBean ) throws AccessorException {
+            final Object readResponse( Object[] args, Object wrapperBean ) {
                 Object obj = accessor.get(wrapperBean);
                 return setter.put(obj,args);
             }
@@ -621,13 +621,13 @@ abstract class ResponseBuilder {
         private QName wrapperName;
 
         public RpcLit(WrapperParameter wp, ValueSetterFactory setterFactory) {
-            assert wp.getTypeReference().type== CompositeStructure.class;
+            assert wp.getTypeInfo().type== WrapperComposite.class;
 
             wrapperName = wp.getName();
             List<ParameterImpl> children = wp.getWrapperChildren();
             for (ParameterImpl p : children) {
                 parts.put( p.getName(), new PartBuilder(
-                    p.getBridge(), setterFactory.get(p)
+                    p.getXMLBridge(), setterFactory.get(p)
                 ));
                 // wrapper parameter itself always bind to body, and
                 // so do all its children
@@ -679,7 +679,7 @@ abstract class ResponseBuilder {
          * to the expected place.
          */
         static final class PartBuilder {
-            private final Bridge bridge;
+            private final XMLBridge bridge;
             private final ValueSetter setter;
 
             /**
@@ -688,7 +688,7 @@ abstract class ResponseBuilder {
              * @param setter
              *      specifies how the obtained value is returned to the client.
              */
-            public PartBuilder(Bridge bridge, ValueSetter setter) {
+            public PartBuilder(XMLBridge bridge, ValueSetter setter) {
                 this.bridge = bridge;
                 this.setter = setter;
             }

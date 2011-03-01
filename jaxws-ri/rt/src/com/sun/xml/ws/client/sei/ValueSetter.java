@@ -42,7 +42,7 @@ package com.sun.xml.ws.client.sei;
 
 import com.sun.xml.ws.api.model.Parameter;
 import com.sun.xml.ws.model.ParameterImpl;
-import com.sun.xml.bind.api.RawAccessor;
+import com.sun.xml.ws.spi.db.PropertyAccessor;
 
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceException;
@@ -169,12 +169,12 @@ abstract class ValueSetter {
      */
     static final class AsyncBeanValueSetter extends ValueSetter {
 
-        private final RawAccessor accessor;
+        private final PropertyAccessor accessor;
 
         AsyncBeanValueSetter(ParameterImpl p, Class wrapper) {
             QName name = p.getName();
             try {
-                accessor = p.getOwner().getJAXBContext().getElementPropertyAccessor(
+                accessor = p.getOwner().getBindingContext().getElementPropertyAccessor(
                             wrapper, name.getNamespaceURI(), name.getLocalPart() );
             } catch (JAXBException e) {
                     throw new WebServiceException(  // TODO: i18n

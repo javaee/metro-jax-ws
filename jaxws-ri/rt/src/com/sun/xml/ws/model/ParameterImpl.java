@@ -45,6 +45,8 @@ import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.Parameter;
 import com.sun.xml.ws.api.model.ParameterBinding;
+import com.sun.xml.ws.spi.db.XMLBridge;
+import com.sun.xml.ws.spi.db.TypeInfo;
 
 import javax.jws.WebParam.Mode;
 import javax.xml.namespace.QName;
@@ -72,14 +74,16 @@ public class ParameterImpl implements Parameter {
     private String partName;
     private final int index;
     private final Mode mode;
+    /** @deprecated */
     private TypeReference typeReference;
+    private TypeInfo typeInfo;
     private QName name;
     private final JavaMethodImpl parent;
 
-    public ParameterImpl(JavaMethodImpl parent, TypeReference type, Mode mode, int index) {
+    public ParameterImpl(JavaMethodImpl parent, TypeInfo type, Mode mode, int index) {
         assert type != null;
 
-        this.typeReference = type;
+        this.typeInfo = type;
         this.name = type.tagName;
         this.mode = mode;
         this.index = index;
@@ -100,11 +104,16 @@ public class ParameterImpl implements Parameter {
     public QName getName() {
         return name;
     }
+    
+    public XMLBridge getXMLBridge() {
+        return getOwner().getXMLBridge(typeInfo);
+    }
 
+    /**  @deprecated  */
     public Bridge getBridge() {
         return getOwner().getBridge(typeReference);
     }
-
+    /**  @deprecated  */
     protected Bridge getBridge(TypeReference typeRef) {
         return getOwner().getBridge(typeRef);
     }
@@ -112,16 +121,20 @@ public class ParameterImpl implements Parameter {
     /**
      * TODO: once the model gets JAXBContext, shouldn't {@link Bridge}s
      * be made available from model objects?
-     *
+     * @deprecated use getTypeInfo
      * @return Returns the TypeReference associated with this Parameter
      */
     public TypeReference getTypeReference() {
         return typeReference;
     }
+    public TypeInfo getTypeInfo() {
+        return typeInfo;
+    }
 
     /**
      * Sometimes we need to overwrite the typeReferenc, such as during patching for rpclit
      * @see AbstractSEIModelImpl#applyParameterBinding(com.sun.xml.ws.model.wsdl.WSDLBoundPortTypeImpl)
+     * @deprecated 
      */
     void setTypeReference(TypeReference type){
         typeReference = type;
@@ -230,7 +243,7 @@ public class ParameterImpl implements Parameter {
         this.partName = partName;
     }
 
-    void fillTypes(List<TypeReference> types) {
-        types.add(getTypeReference());
+    void fillTypes(List<TypeInfo> types) {
+        types.add(getTypeInfo());
     }
 }

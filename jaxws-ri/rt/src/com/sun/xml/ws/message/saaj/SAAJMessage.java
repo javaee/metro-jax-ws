@@ -51,6 +51,7 @@ import com.sun.xml.ws.api.message.*;
 import com.sun.xml.ws.message.AttachmentUnmarshallerImpl;
 import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.AttachmentSetImpl;
+import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.streaming.DOMStreamReader;
 import com.sun.xml.ws.util.DOMUtil;
 import org.w3c.dom.Element;
@@ -317,7 +318,14 @@ public class SAAJMessage extends Message {
         return null;
     }
 
+    /** @deprecated */
     public <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException {
+        access();
+        if (payload != null)
+            return bridge.unmarshal(payload,hasAttachments()? new AttachmentUnmarshallerImpl(getAttachments()) : null);
+        return null;
+    }
+    public <T> T readPayloadAsJAXB(XMLBridge<T> bridge) throws JAXBException {
         access();
         if (payload != null)
             return bridge.unmarshal(payload,hasAttachments()? new AttachmentUnmarshallerImpl(getAttachments()) : null);

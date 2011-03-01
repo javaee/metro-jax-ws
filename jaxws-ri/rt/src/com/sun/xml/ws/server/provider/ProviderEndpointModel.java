@@ -41,10 +41,10 @@
 package com.sun.xml.ws.server.provider;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.server.AsyncProvider;
 import com.sun.xml.ws.resources.ServerMessages;
+import com.sun.xml.ws.spi.db.BindingHelper;
 
 import javax.activation.DataSource;
 import javax.xml.soap.SOAPMessage;
@@ -98,7 +98,7 @@ final class ProviderEndpointModel<T> {
 
 
         Class<? extends Object> baseType = isAsync ? AsyncProvider.class : Provider.class;
-        Type baseParam = JAXBRIContext.getBaseType(implementorClass, baseType);
+        Type baseParam = BindingHelper.getBaseType(implementorClass, baseType);
         if (baseParam==null)
             throw new WebServiceException(ServerMessages.NOT_IMPLEMENT_PROVIDER(implementorClass.getName()));
         if (!(baseParam instanceof ParameterizedType))

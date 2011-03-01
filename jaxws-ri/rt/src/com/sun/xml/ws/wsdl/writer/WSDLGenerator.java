@@ -41,7 +41,6 @@
 package com.sun.xml.ws.wsdl.writer;
 
 
-import com.sun.xml.bind.api.JAXBRIContext;
 import static com.sun.xml.bind.v2.schemagen.Util.*;
 import com.sun.xml.txw2.TXW;
 import com.sun.xml.txw2.TypedXmlWriter;
@@ -83,6 +82,8 @@ import com.sun.xml.ws.wsdl.writer.document.soap.BodyType;
 import com.sun.xml.ws.wsdl.writer.document.soap.Header;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPAddress;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPFault;
+import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.BindingHelper;
 import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.policy.jaxws.PolicyWSDLGeneratorExtension;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
@@ -247,7 +248,7 @@ public class WSDLGenerator {
     public void doGeneration() {
         XmlSerializer serviceWriter;
         XmlSerializer portWriter = null;
-        String fileName = JAXBRIContext.mangleNameToClassName(model.getServiceQName().getLocalPart());
+        String fileName = BindingHelper.mangleNameToClassName(model.getServiceQName().getLocalPart());
         Result result = wsdlResolver.getWSDL(fileName+DOT_WSDL);
         wsdlLocation = result.getSystemId();
         serviceWriter = new CommentFilter(ResultFactory.createSerializer(result));
@@ -255,7 +256,7 @@ public class WSDLGenerator {
             portWriter = serviceWriter;
             schemaPrefix = fileName+"_";
         } else {
-            String wsdlName = JAXBRIContext.mangleNameToClassName(model.getPortTypeName().getLocalPart());
+            String wsdlName = BindingHelper.mangleNameToClassName(model.getPortTypeName().getLocalPart());
             if (wsdlName.equals(fileName))
                 wsdlName += "PortType";
             Holder<String> absWSDLName = new Holder<String>();
@@ -276,7 +277,7 @@ public class WSDLGenerator {
             int idx = schemaPrefix.lastIndexOf('.');
             if (idx > 0)
                 schemaPrefix = schemaPrefix.substring(0, idx);
-            schemaPrefix = JAXBRIContext.mangleNameToClassName(schemaPrefix)+"_";
+            schemaPrefix = BindingHelper.mangleNameToClassName(schemaPrefix)+"_";
         }    
         generateDocument(serviceWriter, portWriter);
     }
@@ -400,9 +401,9 @@ public class WSDLGenerator {
      */
     protected void generateTypes() {
         types = portDefinitions.types();
-        if (model.getJAXBContext() != null) {
+        if (model.getBindingContext() != null) {
             try {
-                model.getJAXBContext().generateSchema(resolver);
+                model.getBindingContext().generateSchema(resolver);
             } catch (IOException e) {
                 // TODO locallize and wrap this
                 e.printStackTrace();
@@ -431,7 +432,7 @@ public class WSDLGenerator {
         Message message = portDefinitions.message().name(method.getRequestMessageName());
         extension.addInputMessageExtension(message, method);
         com.sun.xml.ws.wsdl.writer.document.Part part;
-        JAXBRIContext jaxbContext = model.getJAXBContext();
+        BindingContext jaxbContext = model.getBindingContext();
         boolean unwrappable = true;
         for (ParameterImpl param : method.getRequestParameters()) {
             if (isDoclit) {
@@ -444,7 +445,7 @@ public class WSDLGenerator {
                 if (param.isWrapperStyle()) {
                     for (ParameterImpl childParam : ((WrapperParameter)param).getWrapperChildren()) {
                         part = message.part().name(childParam.getPartName());
-                        part.type(jaxbContext.getTypeName(childParam.getBridge().getTypeReference()));
+                        part.type(jaxbContext.getTypeName(childParam.getXMLBridge().getTypeInfo()));
                     }
                 } else {
                     part = message.part().name(param.getPartName());
@@ -472,7 +473,7 @@ public class WSDLGenerator {
                     if (param.isWrapperStyle()) {
                         for (ParameterImpl childParam : ((WrapperParameter)param).getWrapperChildren()) {
                             part = message.part().name(childParam.getPartName());
-                            part.type(jaxbContext.getTypeName(childParam.getBridge().getTypeReference()));
+                            part.type(jaxbContext.getTypeName(childParam.getXMLBridge().getTypeInfo()));
                         }
                     } else {
                         part = message.part().name(param.getPartName());

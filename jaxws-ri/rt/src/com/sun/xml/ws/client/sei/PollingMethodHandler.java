@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.client.sei;
 
+import com.sun.xml.ws.api.databinding.ClientCallBridge;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import javax.xml.ws.Response;
 import javax.xml.ws.WebServiceException;
@@ -50,8 +51,12 @@ import javax.xml.ws.WebServiceException;
  */
 final class PollingMethodHandler extends AsyncMethodHandler {
 
-    PollingMethodHandler(SEIStub owner, JavaMethodImpl jm, JavaMethodImpl core) {
-        super(owner, jm, core);
+//    PollingMethodHandler(SEIStub owner, JavaMethodImpl jm, JavaMethodImpl core) {
+//        super(owner, jm, core);
+//    }    
+    
+    PollingMethodHandler(SEIStub owner, ClientCallBridge so) {
+        super(owner, so);
     }
 
     Response<?> invoke(Object proxy, Object[] args) throws WebServiceException {

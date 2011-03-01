@@ -40,16 +40,15 @@
 
 package com.sun.xml.ws.server.sei;
 
-import com.sun.xml.bind.api.AccessorException;
-import com.sun.xml.bind.api.Bridge;
-import com.sun.xml.bind.api.CompositeStructure;
-import com.sun.xml.bind.api.RawAccessor;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Messages;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
+import com.sun.xml.ws.spi.db.XMLBridge;
+import com.sun.xml.ws.spi.db.PropertyAccessor;
+import com.sun.xml.ws.spi.db.WrapperComposite;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -90,10 +89,10 @@ abstract class EndpointResponseMessageBuilder {
          * This object determines the binding of the object returned
          * from {@link #createMessage(Object[], Object)}
          */
-        private final Bridge bridge;
+        private final XMLBridge bridge;
         private final SOAPVersion soapVersion;
 
-        protected JAXB(Bridge bridge, SOAPVersion soapVersion) {
+        protected JAXB(XMLBridge bridge, SOAPVersion soapVersion) {
             assert bridge!=null;
             this.bridge = bridge;
             this.soapVersion = soapVersion;
@@ -125,7 +124,7 @@ abstract class EndpointResponseMessageBuilder {
          * Creates a {@link EndpointResponseMessageBuilder} from a bare parameter.
          */
         Bare(ParameterImpl p, SOAPVersion soapVersion) {
-            super(p.getBridge(), soapVersion);
+            super(p.getXMLBridge(), soapVersion);
             this.methodPos = p.getIndex();
             this.getter = ValueGetter.get(p);
         }
@@ -159,7 +158,7 @@ abstract class EndpointResponseMessageBuilder {
         protected final ValueGetter[] getters;
 
         protected Wrapped(WrapperParameter wp, SOAPVersion soapVersion) {
-            super(wp.getBridge(), soapVersion);
+            super(wp.getXMLBridge(), soapVersion);
 
             List<ParameterImpl> children = wp.getWrapperChildren();
 
@@ -181,7 +180,7 @@ abstract class EndpointResponseMessageBuilder {
         /**
          * How does each wrapped parameter binds to XML?
          */
-        private final RawAccessor[] accessors;
+        private final PropertyAccessor[] accessors;
         
         //private final RawAccessor retAccessor;
 
@@ -196,16 +195,16 @@ abstract class EndpointResponseMessageBuilder {
         DocLit(WrapperParameter wp, SOAPVersion soapVersion) {
             super(wp, soapVersion);
 
-            wrapper = (Class)wp.getBridge().getTypeReference().type;
+            wrapper = (Class)wp.getXMLBridge().getTypeInfo().type;
 
             List<ParameterImpl> children = wp.getWrapperChildren();
 
-            accessors = new RawAccessor[children.size()];
+            accessors = new PropertyAccessor[children.size()];
             for( int i=0; i<accessors.length; i++ ) {
                 ParameterImpl p = children.get(i);
                 QName name = p.getName();
                 try {
-                    accessors[i] = p.getOwner().getJAXBContext().getElementPropertyAccessor(
+                    accessors[i] = p.getOwner().getBindingContext().getElementPropertyAccessor(
                         wrapper, name.getNamespaceURI(), name.getLocalPart() );
                 } catch (JAXBException e) {
                     throw new WebServiceException(  // TODO: i18n
@@ -216,7 +215,7 @@ abstract class EndpointResponseMessageBuilder {
         }
 
         /**
-         * Packs a bunch of arguments into a {@link CompositeStructure}.
+         * Packs a bunch of arguments into a {@link WrapperComposite}.
          */
         Object build(Object[] methodArgs, Object returnValue) {
             try {
@@ -242,7 +241,7 @@ abstract class EndpointResponseMessageBuilder {
                 Error x = new IllegalAccessError(e.getMessage());
                 x.initCause(e);
                 throw x;
-            } catch (AccessorException e) {
+            } catch (com.sun.xml.ws.spi.db.DatabindingException e) {
                 // this can happen when the set method throw a checked exception or something like that
                 throw new WebServiceException(e);    // TODO:i18n
             }
@@ -252,7 +251,7 @@ abstract class EndpointResponseMessageBuilder {
 
     /**
      * Used to create a payload JAXB object by wrapping
-     * multiple parameters into a {@link CompositeStructure}.
+     * multiple parameters into a {@link WrapperComposite}.
      *
      * <p>
      * This is used for rpc/lit, as we don't have a wrapper bean for it.
@@ -262,7 +261,7 @@ abstract class EndpointResponseMessageBuilder {
         /**
          * How does each wrapped parameter binds to XML?
          */
-        private final Bridge[] parameterBridges;
+        private final XMLBridge[] parameterBridges;
 
         /**
          * Used for error diagnostics.
@@ -275,20 +274,20 @@ abstract class EndpointResponseMessageBuilder {
         RpcLit(WrapperParameter wp, SOAPVersion soapVersion) {
             super(wp, soapVersion);
             // we'll use CompositeStructure to pack requests
-            assert wp.getTypeReference().type==CompositeStructure.class;
+            assert wp.getTypeInfo().type==WrapperComposite.class;
 
             this.children = wp.getWrapperChildren();
 
-            parameterBridges = new Bridge[children.size()];
+            parameterBridges = new XMLBridge[children.size()];
             for( int i=0; i<parameterBridges.length; i++ )
-                parameterBridges[i] = children.get(i).getBridge();
+                parameterBridges[i] = children.get(i).getXMLBridge();
         }
 
         /**
-         * Packs a bunch of arguments intoa {@link CompositeStructure}.
+         * Packs a bunch of arguments intoa {@link WrapperComposite}.
          */
-        CompositeStructure build(Object[] methodArgs, Object returnValue) {
-            CompositeStructure cs = new CompositeStructure();
+        WrapperComposite build(Object[] methodArgs, Object returnValue) {
+            WrapperComposite cs = new WrapperComposite();
             cs.bridges = parameterBridges;
             cs.values = new Object[parameterBridges.length];
 

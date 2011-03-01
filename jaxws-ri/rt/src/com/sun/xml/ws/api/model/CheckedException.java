@@ -91,6 +91,7 @@ public interface CheckedException {
 
     /**
      * Gives the {@link com.sun.xml.bind.api.Bridge} associated with the detail
+     * @deprecated Why do you need this?
      */
     Bridge getBridge();
 

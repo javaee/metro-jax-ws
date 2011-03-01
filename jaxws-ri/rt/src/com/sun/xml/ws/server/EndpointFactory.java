@@ -46,6 +46,9 @@ import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.policy.PolicyResolverFactory;
 import com.sun.xml.ws.api.policy.PolicyResolver;
+import com.sun.xml.ws.api.databinding.WSDLGenInfo;
+import com.sun.xml.ws.api.databinding.DatabindingFactory;
+import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.server.*;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
@@ -321,26 +324,36 @@ public class EndpointFactory {
 
     private static AbstractSEIModelImpl createSEIModel(WSDLPort wsdlPort,
                                                        Class<?> implType, @NotNull QName serviceName, @NotNull QName portName, WSBinding binding) {
-
-        RuntimeModeler rap;
-        // Create runtime model for non Provider endpoints
-
-        // wsdlPort will be null, means we will generate WSDL. Hence no need to apply
-        // bindings or need to look in the WSDL
-        if(wsdlPort == null){
-            rap = new RuntimeModeler(implType,serviceName, binding.getBindingId(), binding.getFeatures().toArray());
-        } else {
-            /*
-            This not needed anymore as wsdlFeatures are merged later anyway
-            and so is the MTOMFeature.
-            applyEffectiveMtomSetting(wsdlPort.getBinding(), binding);
-            */
-            //now we got the Binding so lets build the model
-            rap = new RuntimeModeler(implType, serviceName, (WSDLPortImpl)wsdlPort, binding.getFeatures().toArray());
-        }
-        rap.setClassLoader(implType.getClassLoader());
-        rap.setPortName(portName);
-        return rap.buildRuntimeModel();
+//        RuntimeModeler rap;
+//        // Create runtime model for non Provider endpoints
+//
+//        // wsdlPort will be null, means we will generate WSDL. Hence no need to apply
+//        // bindings or need to look in the WSDL
+//        if(wsdlPort == null){
+//            rap = new RuntimeModeler(implType,serviceName, binding.getBindingId(), binding.getFeatures().toArray());
+//        } else {
+//            /*
+//            This not needed anymore as wsdlFeatures are merged later anyway
+//            and so is the MTOMFeature.
+//            applyEffectiveMtomSetting(wsdlPort.getBinding(), binding);
+//            */
+//            //now we got the Binding so lets build the model
+//            rap = new RuntimeModeler(implType, serviceName, (WSDLPortImpl)wsdlPort, binding.getFeatures().toArray());
+//        }
+//        rap.setClassLoader(implType.getClassLoader());
+//        rap.setPortName(portName);
+//        return rap.buildRuntimeModel();
+		DatabindingFactory fac = DatabindingFactory.newInstance();
+		DatabindingConfig config = new DatabindingConfig();
+		config.setEndpointClass(implType);
+		config.getMappingInfo().setServiceName(serviceName);
+		config.setWsdlPort(wsdlPort);
+		config.setFeatures(binding.getFeatures().toArray());
+		config.setClassLoader(implType.getClassLoader());
+		config.getMappingInfo().setPortName(portName);
+		config.getMappingInfo().setBindingID(binding.getBindingId());
+		com.sun.xml.ws.db.DatabindingImpl rt = (com.sun.xml.ws.db.DatabindingImpl)fac.createRuntime(config);
+		return (AbstractSEIModelImpl) rt.getModel();    	
     }
 
     /**
@@ -443,9 +456,15 @@ public class EndpointFactory {
 
         // Generate WSDL and schema documents using runtime model
         WSDLGenResolver wsdlResolver = new WSDLGenResolver(docs,seiModel.getServiceQName(),seiModel.getPortTypeName());
-        WSDLGenerator wsdlGen = new WSDLGenerator(seiModel, wsdlResolver, binding, container, implType, false,
-                ServiceFinder.find(WSDLGeneratorExtension.class).toArray());
-        wsdlGen.doGeneration();
+        WSDLGenInfo wsdlGenInfo = new WSDLGenInfo(); 
+        wsdlGenInfo.setWsdlResolver(wsdlResolver);
+        wsdlGenInfo.setContainer(container);
+        wsdlGenInfo.setExtensions(ServiceFinder.find(WSDLGeneratorExtension.class).toArray());
+        wsdlGenInfo.setInlineSchemas(false);
+        seiModel.getDatabinding().generateWSDL(wsdlGenInfo);
+//        WSDLGenerator wsdlGen = new WSDLGenerator(seiModel, wsdlResolver, binding, container, implType, false,
+//                ServiceFinder.find(WSDLGeneratorExtension.class).toArray());
+//        wsdlGen.doGeneration();
         return wsdlResolver.updateDocs();
     }
 

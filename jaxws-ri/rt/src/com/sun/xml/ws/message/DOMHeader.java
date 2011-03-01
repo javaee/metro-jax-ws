@@ -96,7 +96,7 @@ public class DOMHeader<N extends Element> extends AbstractHeaderImpl {
     public <T> T readAsJAXB(Unmarshaller unmarshaller) throws JAXBException {
         return (T) unmarshaller.unmarshal(node);
     }
-
+    /** @deprecated */
     public <T> T readAsJAXB(Bridge<T> bridge) throws JAXBException {
         return bridge.unmarshal(node);
     }

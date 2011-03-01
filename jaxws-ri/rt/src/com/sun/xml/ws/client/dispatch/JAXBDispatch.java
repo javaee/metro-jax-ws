@@ -52,6 +52,7 @@ import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.WSServiceDelegate;
 import com.sun.xml.ws.client.PortInfo;
+import com.sun.xml.ws.spi.db.BindingContextFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -75,16 +76,23 @@ import javax.xml.ws.WebServiceException;
 public class JAXBDispatch extends DispatchImpl<Object> {
 
     private final JAXBContext jaxbcontext;
+    
+    // We will support a JAXBContext parameter from an unknown JAXB
+    // implementation by marshaling and unmarshaling directly from the
+    // context object, as there is no Bond available.
+    private final boolean isContextSupported;
 
     @Deprecated
     public JAXBDispatch(QName port, JAXBContext jc, Service.Mode mode, WSServiceDelegate service, Tube pipe, BindingImpl binding, WSEndpointReference epr) {
         super(port, mode, service, pipe, binding, epr);
         this.jaxbcontext = jc;
+        this.isContextSupported = BindingContextFactory.isContextSupported(jc);
     }
 
     public JAXBDispatch(WSPortInfo portInfo, JAXBContext jc, Service.Mode mode, BindingImpl binding, WSEndpointReference epr) {
         super(portInfo, mode, binding, epr);
         this.jaxbcontext = jc;
+        this.isContextSupported = BindingContextFactory.isContextSupported(jc);
     }
 
     Object toReturnValue(Packet response) {
@@ -108,16 +116,27 @@ public class JAXBDispatch extends DispatchImpl<Object> {
 
     Packet createPacket(Object msg) {
         assert jaxbcontext != null;
+        
+        Message message;
+    	if (msg == null)
+    		message = Messages.createEmpty(soapVersion);
+    	else if (isContextSupported)
+    		message = Messages.create(jaxbcontext, msg, soapVersion);
+    	else
+    		message = Messages.createRaw(jaxbcontext, msg, soapVersion);
+    	return new Packet(message);
 
+    	/*
         try {
             Marshaller marshaller = jaxbcontext.createMarshaller();
             marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
-
-            Message message = (msg == null) ? Messages.createEmpty(soapVersion): Messages.create(marshaller, msg, soapVersion);
+        	
+            Message message = (msg == null) ? Messages.createEmpty(soapVersion): Messages.create(jaxbcontext, msg, soapVersion);
             return new Packet(message);
         } catch (JAXBException e) {
             throw new WebServiceException(e);
         }
+        */
     }
 
     public void setOutboundHeaders(Object... headers) {

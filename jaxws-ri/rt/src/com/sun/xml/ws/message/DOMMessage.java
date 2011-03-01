@@ -132,7 +132,7 @@ public final class DOMMessage extends AbstractMessageImpl {
             unmarshaller.setAttachmentUnmarshaller(null);
         }
     }
-
+    /** @deprecated */
     public <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException {
         return bridge.unmarshal(payload,
             hasAttachments()? new AttachmentUnmarshallerImpl(getAttachments()) : null);

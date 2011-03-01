@@ -48,6 +48,8 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.message.source.PayloadSourceMessage;
+import com.sun.xml.ws.spi.db.BindingContext;
+
 import javax.xml.transform.Source;
 
 import javax.xml.ws.LogicalMessage;
@@ -67,8 +69,9 @@ import javax.xml.bind.JAXBContext;
 class LogicalMessageContextImpl extends MessageUpdatableContext implements LogicalMessageContext {
     private LogicalMessageImpl lm;
     private WSBinding binding;
-    private JAXBContext defaultJaxbContext;
-    public LogicalMessageContextImpl(WSBinding binding, JAXBContext defaultJAXBContext, Packet packet) {
+//  private JAXBContext defaultJaxbContext;
+    private BindingContext defaultJaxbContext;
+    public LogicalMessageContextImpl(WSBinding binding, BindingContext defaultJAXBContext, Packet packet) {
         super(packet);
         this.binding = binding;
         this.defaultJaxbContext = defaultJAXBContext;

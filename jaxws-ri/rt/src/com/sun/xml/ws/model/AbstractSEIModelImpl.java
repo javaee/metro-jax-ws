@@ -44,24 +44,32 @@ import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.TypeReference;
+import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
+import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.client.WSServiceDelegate;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.model.wsdl.WSDLBoundOperationImpl;
 import com.sun.xml.ws.model.wsdl.WSDLBoundPortTypeImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPartImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
+import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.BindingContextFactory;
+import com.sun.xml.ws.spi.db.BindingInfo;
+import com.sun.xml.ws.spi.db.XMLBridge;
+import com.sun.xml.ws.spi.db.TypeInfo;
 import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.developer.UsesJAXBContextFeature;
 import com.sun.xml.ws.developer.JAXBContextFactory;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
 
 import javax.jws.WebParam.Mode;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
@@ -110,6 +118,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
             putOp(m.getOperation().getName(),m);
 
         }
+        if (databinding != null) ((com.sun.xml.ws.db.DatabindingImpl)databinding).freeze(port);
     }
 
     /**
@@ -123,9 +132,16 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 
     /**
      * @return the <code>JAXBRIContext</code>
+     * @deprecated
      */
     public JAXBRIContext getJAXBContext() {
+    	JAXBContext jc = bindingContext.getJAXBContext();
+    	if (jaxbContext == null && jc instanceof JAXBRIContext) jaxbContext = (JAXBRIContext) bindingContext.getJAXBContext();
         return jaxbContext;
+    }
+
+    public BindingContext getBindingContext() {
+        return bindingContext;
     }
 
     /**
@@ -137,41 +153,67 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 
     /**
      * @return the <code>Bridge</code> for the <code>type</code>
+     * @deprecated use getBond
      */
     public final Bridge getBridge(TypeReference type) {
         Bridge b = bridgeMap.get(type);
         assert b!=null; // we should have created Bridge for all TypeReferences known to this model
         return b;
     }
+    
+    public final XMLBridge getXMLBridge(TypeInfo type) {
+        XMLBridge b = xmlBridgeMap.get(type);
+        assert b!=null; // we should have created Bridge for all TypeReferences known to this model
+        return b;
+    }
 
     private JAXBRIContext createJAXBContext() {
-        final List<TypeReference> types = getAllTypeReferences();
+        final List<TypeInfo> types = getAllTypeInfos();
         final List<Class> cls = new ArrayList<Class>(types.size() + additionalClasses.size());
 
         cls.addAll(additionalClasses);
-        for (TypeReference type : types)
+        for (TypeInfo type : types)
             cls.add((Class) type.type);
 
         try {
             //jaxbContext = JAXBRIContext.newInstance(cls, types, targetNamespace, false);
             // Need to avoid doPriv block once JAXB is fixed. Afterwards, use the above
-            jaxbContext = AccessController.doPrivileged(new PrivilegedExceptionAction<JAXBRIContext>() {
-                public JAXBRIContext run() throws Exception {
+            bindingContext = AccessController.doPrivileged(new PrivilegedExceptionAction<BindingContext>() {
+                public BindingContext run() throws Exception {
                     if(LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.log(Level.FINE,"Creating JAXBContext with classes="+cls+" and types="+types);
                     }
                     UsesJAXBContextFeature f = WebServiceFeatureList.getFeature(features, UsesJAXBContextFeature.class);
+                    DatabindingModeFeature dbf = WebServiceFeatureList.getFeature(features, DatabindingModeFeature.class);
                     JAXBContextFactory factory = f!=null ? f.getFactory() : null;
                     if(factory==null)   factory=JAXBContextFactory.DEFAULT;
-                    return factory.createJAXBContext(AbstractSEIModelImpl.this,cls,types);
+//                    return factory.createJAXBContext(AbstractSEIModelImpl.this,cls,types);
+
+                	BindingInfo bi = new BindingInfo();
+                	bi.setSEIModel(AbstractSEIModelImpl.this);
+                	bi.properties().put(JAXBContextFactory.class.getName(), factory);
+                	if (dbf != null) bi.setDatabindingMode(dbf.getMode());
+//                	else 
+//                		bi.setDatabindingMode(BindingContextFactory.EclipseLinkJAXB);
+//                		bi.setDatabindingMode(BindingContextFactory.GlassfishJAXB);   
+                	if (f!=null) bi.setDatabindingMode(BindingContextFactory.DefaultDatabindingMode);
+                	bi.setClassLoader(classLoader);
+                	bi.contentClasses().addAll(cls);
+                	bi.typeInfos().addAll(types);
+                	bi.properties().put("c14nSupport", Boolean.FALSE);
+                	bi.setDefaultNamespace(AbstractSEIModelImpl.this.getTargetNamespace());
+                	BindingContext bc =  BindingContextFactory.create(bi);
+//                	System.out.println("---------------------- databinding " + bc);
+                	return bc;
                 }
             });
-            createBridgeMap(types);
+//          createBridgeMap(types);
+            createBondMap(types);
         } catch (PrivilegedActionException e) {
             throw new WebServiceException(ModelerMessages.UNABLE_TO_CREATE_JAXB_CONTEXT(), e);
         }
         knownNamespaceURIs = new ArrayList<String>();
-        for (String namespace : jaxbContext.getKnownNamespaceURIs()) {
+        for (String namespace : bindingContext.getKnownNamespaceURIs()) {
             if (namespace.length() > 0) {
                 if (!namespace.equals(SOAPNamespaceConstants.XSD) && !namespace.equals(SOAPNamespaceConstants.XMLNS))
                     knownNamespaceURIs.add(namespace);
@@ -180,14 +222,14 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 
         marshallers = new Pool.Marshaller(jaxbContext);
 
-        return jaxbContext;
+        return getJAXBContext();
     }
 
     /**
      * @return returns non-null list of TypeReference
      */
-    private List<TypeReference> getAllTypeReferences() {
-        List<TypeReference> types = new ArrayList<TypeReference>();
+    private List<TypeInfo> getAllTypeInfos() {
+        List<TypeInfo> types = new ArrayList<TypeInfo>();
         Collection<JavaMethodImpl> methods = methodToJM.values();
         for (JavaMethodImpl m : methods) {
             m.fillTypes(types);
@@ -199,6 +241,12 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
         for (TypeReference type : types) {
             Bridge bridge = jaxbContext.createBridge(type);
             bridgeMap.put(type, bridge);
+        }
+    }
+    private void createBondMap(List<TypeInfo> types) {
+        for (TypeInfo type : types) {
+            XMLBridge binding = bindingContext.createBridge(type);
+            xmlBridgeMap.put(type, binding);
         }
     }
 
@@ -412,11 +460,39 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
         for(Class cls : additionalClasses)
             this.additionalClasses.add(cls);
     }
+    
+    public Databinding getDatabinding() {
+		return databinding;
+	}
 
-    private List<Class> additionalClasses = new ArrayList<Class>();
+	public void setDatabinding(Databinding wsRuntime) {
+		this.databinding = wsRuntime;
+	}
+	
+	public BindingID bindingId() {
+		return bindingId;
+	}
+	
+	public WebServiceFeature[] features() {
+		return features;
+	}
+	
+    public Class getContractClass() {
+		return contractClass;
+	}
+
+	public Class getEndpointClass() {
+		return endpointClass;
+	}
+
+	private List<Class> additionalClasses = new ArrayList<Class>();
 
     private Pool.Marshaller marshallers;
+    /**
+     * @deprecated
+     */
     protected JAXBRIContext jaxbContext;
+    protected BindingContext bindingContext;
     private String wsdlLocation;
     private QName serviceName;
     private QName portName;
@@ -433,11 +509,16 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 
     private List<JavaMethodImpl> javaMethods = new ArrayList<JavaMethodImpl>();
     private final Map<TypeReference, Bridge> bridgeMap = new HashMap<TypeReference, Bridge>();
+    private final Map<TypeInfo, XMLBridge> xmlBridgeMap = new HashMap<TypeInfo, XMLBridge>();
     protected final QName emptyBodyName = new QName("");
     private String targetNamespace = "";
     private List<String> knownNamespaceURIs = null;
     private WSDLPortImpl port;
     private final WebServiceFeature[] features;
-
-    private static final Logger LOGGER = Logger.getLogger(AbstractSEIModelImpl.class.getName());
+    private Databinding databinding;
+    BindingID bindingId;
+    protected Class contractClass;
+	protected Class endpointClass;
+	protected ClassLoader classLoader = null;
+	private static final Logger LOGGER = Logger.getLogger(AbstractSEIModelImpl.class.getName());
 }

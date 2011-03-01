@@ -42,8 +42,6 @@ package com.sun.xml.ws.message.jaxb;
 
 import com.sun.istack.FragmentContentHandler;
 import com.sun.istack.NotNull;
-import com.sun.xml.bind.api.Bridge;
-import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.stream.buffer.MutableXMLStreamBuffer;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.stream.buffer.XMLStreamBufferResult;
@@ -55,6 +53,9 @@ import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.AttachmentSetImpl;
 import com.sun.xml.ws.message.RootElementSniffer;
 import com.sun.xml.ws.message.stream.StreamMessage;
+import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.BindingContextFactory;
+import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.streaming.XMLStreamWriterUtil;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.streaming.MtomStreamWriter;
@@ -62,6 +63,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -92,7 +94,16 @@ public final class JAXBMessage extends AbstractMessageImpl {
      */
     private final Object jaxbObject;
     
-    private final Bridge bridge;
+    private final XMLBridge bridge;
+    
+    /**
+     * For the use case of a user-supplied JAXB context that is not
+     * a known JAXB type, as when creating a Disaptch object with a
+     * JAXB object parameter, we will marshal and unmarshal directly with
+     * the context object, as there is no Bond available.  In this case,
+     * swaRef is not supported.
+     */
+    private final JAXBContext rawContext;
 
     /**
      * Lazily sniffed payload element name
@@ -104,7 +115,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
      */
     private XMLStreamBuffer infoset;
 
-    public static Message create(JAXBRIContext context, Object jaxbObject, SOAPVersion soapVersion, HeaderList headers, AttachmentSet attachments) {
+    public static Message create(BindingContext context, Object jaxbObject, SOAPVersion soapVersion, HeaderList headers, AttachmentSet attachments) {
         if(!context.hasSwaRef()) {
             return new JAXBMessage(context,jaxbObject,soapVersion,headers,attachments);
         }
@@ -142,13 +153,39 @@ public final class JAXBMessage extends AbstractMessageImpl {
      * @param soapVersion
      *      The SOAP version of the message. Must not be null.
      */
-    public static Message create(JAXBRIContext context, Object jaxbObject, SOAPVersion soapVersion) {
+    public static Message create(BindingContext context, Object jaxbObject, SOAPVersion soapVersion) {
         return create(context,jaxbObject,soapVersion,null,null);
     }
+    /** @deprecated */ 
+    public static Message create(JAXBContext context, Object jaxbObject, SOAPVersion soapVersion) {
+        return create(BindingContextFactory.create(context),jaxbObject,soapVersion,null,null);
+    }
+    
+    /** 
+     * @deprecated
+     * For use when creating a Dispatch object with an unknown JAXB implementation
+     * for he JAXBContext parameter.
+     * 
+     */ 
+    public static Message createRaw(JAXBContext context, Object jaxbObject, SOAPVersion soapVersion) {
+        return new JAXBMessage(context,jaxbObject,soapVersion,null,null);
+    }
 
-    private JAXBMessage( JAXBRIContext context, Object jaxbObject, SOAPVersion soapVer, HeaderList headers, AttachmentSet attachments ) {
+    private JAXBMessage( BindingContext context, Object jaxbObject, SOAPVersion soapVer, HeaderList headers, AttachmentSet attachments ) {
         super(soapVer);
-        this.bridge = new MarshallerBridge(context);
+//        this.bridge = new MarshallerBridge(context);
+        this.bridge = context.createFragmentBridge();
+        this.rawContext = null;
+        this.jaxbObject = jaxbObject;
+        this.headers = headers;
+        this.attachmentSet = attachments;
+    }
+    
+    private JAXBMessage( JAXBContext rawContext, Object jaxbObject, SOAPVersion soapVer, HeaderList headers, AttachmentSet attachments ) {
+        super(soapVer);
+//        this.bridge = new MarshallerBridge(context);
+        this.rawContext = rawContext;
+        this.bridge = null;
         this.jaxbObject = jaxbObject;
         this.headers = headers;
         this.attachmentSet = attachments;
@@ -161,8 +198,8 @@ public final class JAXBMessage extends AbstractMessageImpl {
      *      Specify the payload tag name and how <tt>jaxbObject</tt> is bound.
      * @param jaxbObject
      */
-    public static Message create(Bridge bridge, Object jaxbObject, SOAPVersion soapVer) {
-        if(!bridge.getContext().hasSwaRef()) {
+    public static Message create(XMLBridge bridge, Object jaxbObject, SOAPVersion soapVer) {
+        if(!bridge.context().hasSwaRef()) {
             return new JAXBMessage(bridge,jaxbObject,soapVer);
         }
 
@@ -187,12 +224,13 @@ public final class JAXBMessage extends AbstractMessageImpl {
         }
     }
 
-    private JAXBMessage(Bridge bridge, Object jaxbObject, SOAPVersion soapVer) {
+    private JAXBMessage(XMLBridge bridge, Object jaxbObject, SOAPVersion soapVer) {
         super(soapVer);
         // TODO: think about a better way to handle BridgeContext
         this.bridge = bridge;
+        this.rawContext = null;
         this.jaxbObject = jaxbObject;
-        QName tagName = bridge.getTypeReference().tagName;
+        QName tagName = bridge.getTypeInfo().tagName;
         this.nsUri = tagName.getNamespaceURI();
         this.localName = tagName.getLocalPart();
         this.attachmentSet = new AttachmentSetImpl();
@@ -210,6 +248,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
 
         this.jaxbObject = that.jaxbObject;
         this.bridge = that.bridge;
+        this.rawContext = that.rawContext;
     }
     
     public boolean hasHeaders() {
@@ -244,7 +283,12 @@ public final class JAXBMessage extends AbstractMessageImpl {
     private void sniff() {
         RootElementSniffer sniffer = new RootElementSniffer(false);
         try {
-            bridge.marshal(jaxbObject,sniffer);
+        	if (rawContext != null) {
+        		Marshaller m = rawContext.createMarshaller();
+        		m.setProperty("jaxb.fragment", Boolean.TRUE);
+        		m.marshal(jaxbObject,sniffer);
+        	} else
+        		bridge.marshal(jaxbObject,sniffer,null);
         } catch (JAXBException e) {
             // if it's due to us aborting the processing after the first element,
             // we can safely ignore this exception.
@@ -266,7 +310,12 @@ public final class JAXBMessage extends AbstractMessageImpl {
         // since the bridge only produces fragments, we need to fire start/end document.
         try {
             out.getHandler().startDocument();
-            bridge.marshal(jaxbObject,out);
+            if (rawContext != null) {
+            	Marshaller m = rawContext.createMarshaller();
+            	m.setProperty("jaxb.fragment", Boolean.TRUE);
+            	m.marshal(jaxbObject,out);
+            } else
+            	bridge.marshal(jaxbObject,out);
             out.getHandler().endDocument();
         } catch (SAXException e) {
             throw new JAXBException(e);
@@ -278,7 +327,12 @@ public final class JAXBMessage extends AbstractMessageImpl {
        try {
             if(infoset==null) {
                 XMLStreamBufferResult sbr = new XMLStreamBufferResult();
-                bridge.marshal(jaxbObject,sbr);
+				if (rawContext != null) {
+					Marshaller m = rawContext.createMarshaller();
+					m.setProperty("jaxb.fragment", Boolean.TRUE);
+					m.marshal(jaxbObject, sbr);
+				} else
+					bridge.marshal(jaxbObject, sbr);
                 infoset = sbr.getXMLStreamBuffer();
             }
             XMLStreamReader reader = infoset.readAsXMLStreamReader();
@@ -299,7 +353,13 @@ public final class JAXBMessage extends AbstractMessageImpl {
             if(fragment)
                 contentHandler = new FragmentContentHandler(contentHandler);
             AttachmentMarshallerImpl am = new AttachmentMarshallerImpl(attachmentSet);
-            bridge.marshal(jaxbObject,contentHandler, am);
+            if (rawContext != null) {
+            	Marshaller m = rawContext.createMarshaller();
+            	m.setProperty("jaxb.fragment", Boolean.TRUE);
+            	m.setAttachmentMarshaller(am);
+            	m.marshal(jaxbObject,contentHandler);
+            } else
+            	bridge.marshal(jaxbObject,contentHandler, am);
             am.cleanup();
         } catch (JAXBException e) {
             // this is really more helpful but spec compliance
@@ -318,11 +378,21 @@ public final class JAXBMessage extends AbstractMessageImpl {
 
             // Get output stream and use JAXB UTF-8 writer
             OutputStream os = XMLStreamWriterUtil.getOutputStream(sw);
-            if (os != null) {
-                bridge.marshal(jaxbObject, os, sw.getNamespaceContext(),am);
-            } else {
-                bridge.marshal(jaxbObject,sw,am);   
-            }
+			if (rawContext != null) {
+				Marshaller m = rawContext.createMarshaller();
+				m.setProperty("jaxb.fragment", Boolean.TRUE);
+				m.setAttachmentMarshaller(am);
+				if (os != null)
+					m.marshal(jaxbObject, os);
+				else
+					m.marshal(jaxbObject, sw);
+			} else {
+				if (os != null && bridge.supportOutputStream()) {
+					bridge.marshal(jaxbObject, os, sw.getNamespaceContext(), am);
+				} else {
+					bridge.marshal(jaxbObject, sw, am);
+				}
+			}
             //cleanup() is not needed since JAXB doesn't keep ref to AttachmentMarshaller
             //am.cleanup();
         } catch (JAXBException e) {
@@ -334,4 +404,5 @@ public final class JAXBMessage extends AbstractMessageImpl {
     public Message copy() {
         return new JAXBMessage(this);
     }
+
 }

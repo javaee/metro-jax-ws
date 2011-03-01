@@ -58,6 +58,9 @@ import com.sun.xml.txw2.annotation.XmlAttribute;
 import com.sun.xml.txw2.annotation.XmlElement;
 import com.sun.xml.txw2.output.StreamSerializer;
 import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.databinding.WSDLGenInfo;
+import com.sun.xml.ws.api.databinding.DatabindingFactory;
+import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
@@ -225,6 +228,7 @@ public class WsgenTool implements AnnotationProcessorFactory {
             return false;
         }
         if (options.genWsdl) {
+    		DatabindingConfig config = new DatabindingConfig();
             String tmpPath = options.destDir.getAbsolutePath()+ File.pathSeparator+options.classpath;
             ClassLoader classLoader = new URLClassLoader(Options.pathToURLs(tmpPath),
                     this.getClass().getClassLoader());
@@ -240,16 +244,25 @@ public class WsgenTool implements AnnotationProcessorFactory {
                 bindingID = BindingID.parse(endpointClass);
             }
             WebServiceFeatureList wsfeatures = new WebServiceFeatureList(endpointClass);
-            RuntimeModeler rtModeler = new RuntimeModeler(endpointClass, options.serviceName, bindingID, wsfeatures.toArray());
-            rtModeler.setClassLoader(classLoader);
+//            RuntimeModeler rtModeler = new RuntimeModeler(endpointClass, options.serviceName, bindingID, wsfeatures.toArray());
+//            rtModeler.setClassLoader(classLoader);
             if (options.portName != null)
-                rtModeler.setPortName(options.portName);
-            AbstractSEIModelImpl rtModel = rtModeler.buildRuntimeModel();
+            	config.getMappingInfo().setPortName(options.portName);//rtModeler.setPortName(options.portName);
+//            AbstractSEIModelImpl rtModel = rtModeler.buildRuntimeModel();
+
+    		DatabindingFactory fac = DatabindingFactory.newInstance();
+    		config.setEndpointClass(endpointClass);
+    		config.getMappingInfo().setServiceName(options.serviceName);
+    		config.setFeatures(wsfeatures.toArray());
+    		config.setClassLoader(classLoader);    		
+    		config.getMappingInfo().setBindingID(bindingID);
+    		com.sun.xml.ws.db.DatabindingImpl rt = (com.sun.xml.ws.db.DatabindingImpl)fac.createRuntime(config);
 
             final File[] wsdlFileName = new File[1]; // used to capture the generated WSDL file.
             final Map<String,File> schemaFiles = new HashMap<String,File>();
 
-            WSDLGenerator wsdlGenerator = new WSDLGenerator(rtModel,
+            WSDLGenInfo wsdlGenInfo = new WSDLGenInfo(); 
+            wsdlGenInfo.setWsdlResolver(
                     new WSDLResolver() {
                         private File toFile(String suggestedFilename) {
                             return new File(options.nonclassDestDir, suggestedFilename);
@@ -285,12 +298,16 @@ public class WsgenTool implements AnnotationProcessorFactory {
                             return getSchemaOutput(namespace, filename.value);
                         }
                         // TODO pass correct impl's class name
-                    }, bindingID.createBinding(wsfeatures.toArray()), container,
-                    endpointClass, options.inlineSchemas, ServiceFinder.find(WSDLGeneratorExtension.class).toArray());
-            wsdlGenerator.doGeneration();
+                    });
+
+            wsdlGenInfo.setContainer(container);
+            wsdlGenInfo.setExtensions(ServiceFinder.find(WSDLGeneratorExtension.class).toArray());
+            wsdlGenInfo.setInlineSchemas(options.inlineSchemas);
+            rt.generateWSDL(wsdlGenInfo);
+            
 
             if(options.wsgenReport!=null)
-                generateWsgenReport(endpointClass,rtModel,wsdlFileName[0],schemaFiles);
+                generateWsgenReport(endpointClass,(AbstractSEIModelImpl)rt.getModel(),wsdlFileName[0],schemaFiles);
         }
         return true;
     }

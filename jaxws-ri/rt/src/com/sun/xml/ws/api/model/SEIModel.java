@@ -80,6 +80,7 @@ public interface SEIModel {
      * JAXBContext that will be used to marshall/unmarshall the java classes found in the SEI.
      *
      * @return the <code>{@link JAXBRIContext}</code>
+     * @deprecated Why do you need this?
      */
     JAXBRIContext getJAXBContext();
 

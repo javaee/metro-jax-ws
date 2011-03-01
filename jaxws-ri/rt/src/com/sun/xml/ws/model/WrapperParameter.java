@@ -40,10 +40,9 @@
 
 package com.sun.xml.ws.model;
 
-import com.sun.xml.bind.api.CompositeStructure;
-import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.ParameterBinding;
+import com.sun.xml.ws.spi.db.TypeInfo;
 
 import javax.jws.WebParam.Mode;
 import java.util.ArrayList;
@@ -70,7 +69,7 @@ public class WrapperParameter extends ParameterImpl {
     protected final List<ParameterImpl> wrapperChildren = new ArrayList<ParameterImpl>();
 
     // TODO: wrapper parameter doesn't use 'typeRef' --- it only uses tag name.
-    public WrapperParameter(JavaMethodImpl parent, TypeReference typeRef, Mode mode, int index) {
+    public WrapperParameter(JavaMethodImpl parent, TypeInfo typeRef, Mode mode, int index) {
         super(parent, typeRef, mode, index);
     }
 
@@ -107,12 +106,12 @@ public class WrapperParameter extends ParameterImpl {
     }
 
     @Override
-    void fillTypes(List<TypeReference> types) {
+    void fillTypes(List<TypeInfo> types) {
         super.fillTypes(types);
         if(getParent().getBinding().isRpcLit()) {
             // for rpc/lit, we need to individually marshal/unmarshal wrapped values,
             // so their TypeReference needs to be collected
-            assert getTypeReference().type==CompositeStructure.class;
+//            assert getTypeReference().type==CompositeStructure.class;
             for (ParameterImpl p : wrapperChildren)
                 p.fillTypes(types);
         }

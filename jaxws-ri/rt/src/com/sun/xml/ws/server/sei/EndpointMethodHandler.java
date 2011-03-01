@@ -64,7 +64,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Refactored to TieHandler
+ * 
  * <p>
  * This class mainly performs the following two tasks:
  * <ol>
@@ -136,7 +137,7 @@ final class EndpointMethodHandler {
                     else
                         builders.add(new EndpointArgumentsBuilder.DocLit((WrapperParameter)param, Mode.OUT));
                 } else {
-                    builders.add(new EndpointArgumentsBuilder.Body(param.getBridge(),setter));
+                    builders.add(new EndpointArgumentsBuilder.Body(param.getXMLBridge(),setter));
                 }
                 break;
             case HEADER:
@@ -147,7 +148,7 @@ final class EndpointMethodHandler {
                 break;
             case UNBOUND:
                 builders.add(new EndpointArgumentsBuilder.NullSetter(setter,
-                    EndpointArgumentsBuilder.getVMUninitializedValue(param.getTypeReference().type)));
+                    EndpointArgumentsBuilder.getVMUninitializedValue(param.getTypeInfo().type)));
                 break;
             default:
                 throw new AssertionError();
@@ -211,7 +212,7 @@ final class EndpointMethodHandler {
                 }
                 break;
             case HEADER:
-                fillers.add(new MessageFiller.Header(param.getIndex(), param.getBridge(), getter ));
+                fillers.add(new MessageFiller.Header(param.getIndex(), param.getXMLBridge(), getter ));
                 break;
             case ATTACHMENT:
                 fillers.add(MessageFiller.AttachmentFiller.createAttachmentFiller(param, getter));

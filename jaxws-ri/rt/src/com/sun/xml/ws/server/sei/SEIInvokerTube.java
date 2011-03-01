@@ -43,6 +43,7 @@ package com.sun.xml.ws.server.sei;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.NextAction;
@@ -60,6 +61,7 @@ import com.sun.xml.ws.util.QNameMap;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 
 /**
@@ -77,15 +79,15 @@ public class SEIInvokerTube extends InvokerTube {
     private final AbstractSEIModelImpl model;
 
     //store WSDL Operation to EndpointMethodHandler map
-    private final QNameMap<EndpointMethodHandler> wsdlOpMap;
+//    private final QNameMap<EndpointMethodHandler> wsdlOpMap;
     public SEIInvokerTube(AbstractSEIModelImpl model,Invoker invoker, WSBinding binding) {
         super(invoker);
         this.binding = binding;
         this.model = model;
-        wsdlOpMap = new QNameMap<EndpointMethodHandler>();
-        for(JavaMethodImpl jm: model.getJavaMethods()) {
-            wsdlOpMap.put(jm.getOperation().getName(),new EndpointMethodHandler(this,jm,binding));
-        }
+//        wsdlOpMap = new QNameMap<EndpointMethodHandler>();
+//        for(JavaMethodImpl jm: model.getJavaMethods()) {
+//            wsdlOpMap.put(jm.getOperation().getName(),new EndpointMethodHandler(this,jm,binding));
+//        }
     }
 
     /**
@@ -95,14 +97,29 @@ public class SEIInvokerTube extends InvokerTube {
      */
     public @NotNull NextAction processRequest(@NotNull Packet req) {
         QName wsdlOp;
-        try {
-            wsdlOp = ((WSEndpointImpl) getEndpoint()).getOperationDispatcher().getWSDLOperationQName(req);
-            Packet res = wsdlOpMap.get(wsdlOp).invoke(req);
+//        try {
+        	JavaCallInfo call = model.getDatabinding().deserializeRequest(req);
+        	if (call.getException() == null) {
+	        	try {
+	        		Object ret = getInvoker(req).invoke(req, call.getMethod(), call.getParameters());
+	        		call.setReturnValue(ret);
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+					call.setException(e);
+				} catch (Exception e) {
+					e.printStackTrace();
+					call.setException(e);
+				}
+			}
+			Message responseMessage = model.getDatabinding().serializeResponse(call);
+			Packet res = req.createServerResponse(responseMessage, req.endpoint.getPort(), model, req.endpoint.getBinding());
+//            wsdlOp = ((WSEndpointImpl) getEndpoint()).getOperationDispatcher().getWSDLOperationQName(req);
+//            Packet res = wsdlOpMap.get(wsdlOp).invoke(req);
             assert res != null;
             return doReturnWith(res);
-        } catch (DispatchException e) {
-            return doReturnWith(req.createServerResponse(e.fault, model.getPort(), null, binding));
-        }
+//        } catch (DispatchException e) {
+//            return doReturnWith(req.createServerResponse(e.fault, model.getPort(), null, binding));
+//        }
     }
 
     public @NotNull NextAction processResponse(@NotNull Packet response) {

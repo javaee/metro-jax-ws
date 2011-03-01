@@ -69,7 +69,8 @@ import com.sun.tools.ws.wsdl.parser.WSDLParser;
 import com.sun.tools.xjc.api.S2JJAXBModel;
 import com.sun.tools.xjc.api.TypeAndAnnotation;
 import com.sun.tools.xjc.api.XJC;
-import com.sun.xml.bind.api.JAXBRIContext;
+import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.BindingHelper;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -1412,7 +1413,7 @@ public class WSDLModeler extends WSDLModelerBase {
                 return makePackageQualified(className.getName());
             }
         }
-        return makePackageQualified(JAXBRIContext.mangleNameToClassName(portTypeFault.getMessage().getLocalPart()));
+        return makePackageQualified(BindingHelper.mangleNameToClassName(portTypeFault.getMessage().getLocalPart()));
     }
 
     protected boolean setMessagePartsBinding(StyleAndUse styleAndUse) {
@@ -1782,7 +1783,7 @@ public class WSDLModeler extends WSDLModelerBase {
         if (unwrappable && (outParams != null)) {
             int index = params.size();
             for (Parameter param : outParams) {
-                if (JAXBRIContext.mangleNameToVariableName(param.getName()).equals("return")) {
+                if (BindingHelper.mangleNameToVariableName(param.getName()).equals("return")) {
                     param.setParameterIndex(-1);
                 } else {
                     Parameter inParam = ModelerUtils.getParameter(param.getName(), params);
@@ -2301,7 +2302,7 @@ public class WSDLModeler extends WSDLModelerBase {
             if (name != null && !name.getName().equals(""))
                 return makePackageQualified(name.getName());
         }
-        return makePackageQualified(JAXBRIContext.mangleNameToClassName(serviceName));
+        return makePackageQualified(BindingHelper.mangleNameToClassName(serviceName));
     }
 
     protected String getJavaNameOfSEI(Port port) {
@@ -2325,11 +2326,11 @@ public class WSDLModeler extends WSDLModelerBase {
         if (portTypeName != null) {
             // got portType information from WSDL, use it to name the interface
             interfaceName =
-                    makePackageQualified(JAXBRIContext.mangleNameToClassName(portTypeName.getLocalPart()));
+                    makePackageQualified(BindingHelper.mangleNameToClassName(portTypeName.getLocalPart()));
         } else {
             // somehow we only got the port name, so we use that
             interfaceName =
-                    makePackageQualified(JAXBRIContext.mangleNameToClassName(port.getName().getLocalPart()));
+                    makePackageQualified(BindingHelper.mangleNameToClassName(port.getName().getLocalPart()));
         }
         return interfaceName;
     }
@@ -2369,7 +2370,7 @@ public class WSDLModeler extends WSDLModelerBase {
             JavaType parameterType = parameter.getType().getJavaType();
             JavaParameter javaParameter =
                     new JavaParameter(
-                            JAXBRIContext.mangleNameToVariableName(parameter.getName()),
+                    		BindingHelper.mangleNameToVariableName(parameter.getName()),
                             parameterType,
                             parameter,
                             parameter.getLinkedParameter() != null);
@@ -2418,7 +2419,7 @@ public class WSDLModeler extends WSDLModelerBase {
         for (Parameter param : parameterOrder) {
             JavaType parameterType = param.getType().getJavaType();
             String name = (param.getCustomName() != null) ? param.getCustomName() : param.getName();
-            name = JAXBRIContext.mangleNameToVariableName(name);
+            name = BindingHelper.mangleNameToVariableName(name);
             //if its a java keyword after name mangling, then we simply put underscore as there is no
             //need to ask user to customize the parameter name if its java keyword
             if(Names.isJavaReservedWord(name)){
@@ -2439,7 +2440,7 @@ public class WSDLModeler extends WSDLModelerBase {
         operation.setJavaMethod(method);
         intf.addMethod(method);
 
-        String opName = JAXBRIContext.mangleNameToVariableName(operation.getName().getLocalPart());
+        String opName = BindingHelper.mangleNameToVariableName(operation.getName().getLocalPart());
         for (Iterator iter = operation.getFaults();
              iter != null && iter.hasNext();
                 ) {
@@ -2690,7 +2691,7 @@ public class WSDLModeler extends WSDLModelerBase {
      * @return the Java ClassName for a port
      */
     protected String getClassName(Port port, String suffix) {
-        String prefix = JAXBRIContext.mangleNameToClassName((port.getName().getLocalPart()));
+        String prefix = BindingHelper.mangleNameToClassName((port.getName().getLocalPart()));
         return options.defaultPackage + "." + prefix + suffix;
     }
 

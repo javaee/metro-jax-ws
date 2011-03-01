@@ -67,7 +67,9 @@ import com.sun.tools.ws.wsdl.framework.NoSuchEntityException;
 import com.sun.tools.ws.wsdl.parser.DOMForest;
 import com.sun.tools.ws.wsdl.parser.WSDLParser;
 import com.sun.tools.ws.wsdl.parser.MetadataFinder;
-import com.sun.xml.bind.api.JAXBRIContext;
+import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.BindingHelper;
+
 import org.xml.sax.helpers.LocatorImpl;
 
 import javax.xml.namespace.QName;
@@ -106,7 +108,7 @@ public abstract class WSDLModelerBase implements Modeler {
             port.setPortGetter(portMethodName);
         }else{
             portMethodName = Names.getPortName(port);
-            portMethodName = JAXBRIContext.mangleNameToClassName(portMethodName);
+            portMethodName = BindingHelper.mangleNameToClassName(portMethodName);
             port.setPortGetter("get"+portMethodName);
         }
 

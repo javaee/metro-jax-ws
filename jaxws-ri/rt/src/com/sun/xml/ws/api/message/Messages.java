@@ -42,8 +42,6 @@ package com.sun.xml.ws.api.message;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.bind.api.JAXBRIContext;
-import com.sun.xml.bind.v2.runtime.MarshallerImpl;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
@@ -60,6 +58,7 @@ import com.sun.xml.ws.message.jaxb.JAXBMessage;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.message.source.PayloadSourceMessage;
 import com.sun.xml.ws.message.source.ProtocolSourceMessage;
+import com.sun.xml.ws.spi.db.BindingContextFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderException;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.DOMUtil;
@@ -69,6 +68,7 @@ import com.sun.xml.ws.resources.AddressingMessages;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -109,7 +109,7 @@ public abstract class Messages {
 
     /**
      * Creates a {@link Message} backed by a JAXB bean.
-     *
+     * @deprecated
      * @param context
      *      The context to be used to produce infoset from the object. Must not be null.
      * @param jaxbObject
@@ -119,8 +119,18 @@ public abstract class Messages {
      * @param soapVersion
      *      The SOAP version of the message. Must not be null.
      */
-    public static Message create(JAXBRIContext context, Object jaxbObject, SOAPVersion soapVersion) {
+    public static Message create(JAXBContext context, Object jaxbObject, SOAPVersion soapVersion) {
         return JAXBMessage.create(context,jaxbObject,soapVersion);
+    }
+    
+    /** 
+     * @deprecated
+     * For use when creating a Dispatch object with an unknown JAXB implementation
+     * for he JAXBContext parameter.
+     * 
+     */ 
+    public static Message createRaw(JAXBContext context, Object jaxbObject, SOAPVersion soapVersion) {
+        return JAXBMessage.createRaw(context,jaxbObject,soapVersion);
     }
 
     /**
@@ -128,7 +138,7 @@ public abstract class Messages {
      *      Use {@link #create(JAXBRIContext, Object, SOAPVersion)}
      */
     public static Message create(Marshaller marshaller, Object jaxbObject, SOAPVersion soapVersion) {
-        return create(((MarshallerImpl)marshaller).getContext(),jaxbObject,soapVersion);
+        return create(BindingContextFactory.getBindingContext(marshaller).getJAXBContext(),jaxbObject,soapVersion);
     }
 
     /**

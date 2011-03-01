@@ -48,6 +48,8 @@ import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
+import com.sun.xml.ws.spi.db.XMLBridge;
+
 import org.xml.sax.helpers.AttributesImpl;
 
 import javax.xml.bind.JAXBException;
@@ -85,10 +87,18 @@ public abstract class AbstractHeaderImpl implements Header {
             throw new JAXBException(e);
         }
     }
-
+    /** @deprecated */
     public <T> T readAsJAXB(Bridge<T> bridge) throws JAXBException {
         try {
             return bridge.unmarshal(readHeader());
+        } catch (XMLStreamException e) {
+            throw new JAXBException(e);
+        }
+    }
+
+    public <T> T readAsJAXB(XMLBridge<T> bridge) throws JAXBException {
+        try {
+            return bridge.unmarshal(readHeader(), null);
         } catch (XMLStreamException e) {
             throw new JAXBException(e);
         }

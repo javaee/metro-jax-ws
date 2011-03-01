@@ -61,9 +61,10 @@ import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.tools.ws.wscompile.FilerCodeWriter;
 import com.sun.tools.ws.wscompile.WsgenOptions;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
-import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.v2.model.annotation.AnnotationReader;
 import com.sun.xml.bind.v2.model.nav.Navigator;
+import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.BindingHelper;
 import com.sun.xml.ws.model.AbstractWrapperBeanGenerator;
 import com.sun.xml.ws.util.StringUtils;
 
@@ -531,7 +532,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         if (cls == null)
             return;
 
-        String accessorName =JAXBRIContext.mangleNameToPropertyName(paramName);
+        String accessorName =BindingHelper.mangleNameToPropertyName(paramName);
         String getterPrefix = paramType.toString().equals("boolean")? "is" : "get";
         JType propType = getType(paramType);
         JMethod m = cls.method(JMod.PUBLIC, propType, getterPrefix+ accessorName);

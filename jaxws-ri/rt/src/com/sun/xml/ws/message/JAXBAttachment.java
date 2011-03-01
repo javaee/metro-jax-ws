@@ -41,8 +41,8 @@
 package com.sun.xml.ws.message;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.message.Attachment;
+import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.util.ASCIIUtility;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.encoding.DataSourceStreamingDataHandler;
@@ -68,9 +68,9 @@ public final class JAXBAttachment implements Attachment, DataSource {
     private final String contentId;
     private final String mimeType;
     private final Object jaxbObject;
-    private final Bridge bridge;
+    private final XMLBridge bridge;
 
-    public JAXBAttachment(@NotNull String contentId, Object jaxbObject, Bridge bridge, String mimeType) {
+    public JAXBAttachment(@NotNull String contentId, Object jaxbObject, XMLBridge bridge, String mimeType) {
         this.contentId = contentId;
         this.jaxbObject = jaxbObject;
         this.bridge = bridge;
@@ -115,7 +115,7 @@ public final class JAXBAttachment implements Attachment, DataSource {
 
     public void writeTo(OutputStream os) throws IOException {
         try {
-            bridge.marshal(jaxbObject, os, null);
+            bridge.marshal(jaxbObject, os, null, null);
         } catch (JAXBException e) {
             throw new WebServiceException(e);
         }

@@ -58,6 +58,7 @@ import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.client.dispatch.DispatchImpl;
 import com.sun.xml.ws.message.AttachmentSetImpl;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
+import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import org.jvnet.staxex.XMLStreamReaderEx;
 import org.jvnet.staxex.XMLStreamWriterEx;
@@ -538,12 +539,25 @@ public abstract class Message {
      *
      * This consumes the message.
      *
+     * @deprecated
      * @return null
      *      if there's no payload.
      * @throws JAXBException
      *      If JAXB reports an error during the processing.
      */
     public abstract <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException;
+
+    /**
+     * Reads the payload as a Data-Bond object
+     *
+     * This consumes the message.
+     *
+     * @return null
+     *      if there's no payload.
+     * @throws JAXBException
+     *      If JAXB reports an error during the processing.
+     */
+    public abstract <T> T readPayloadAsJAXB(XMLBridge<T> bridge) throws JAXBException;
 
     /**
      * Reads the payload as a {@link XMLStreamReader}

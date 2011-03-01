@@ -40,7 +40,10 @@
 
 package com.sun.xml.ws.client.sei;
 
+import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
+
+import com.sun.xml.ws.api.databinding.ClientCallBridge;
 
 /**
  * Handles an invocation of a method.
@@ -54,9 +57,11 @@ import javax.xml.ws.WebServiceException;
 public abstract class MethodHandler {
 
     protected final SEIStub owner;
+    protected ClientCallBridge dbHandler;
 
-    protected MethodHandler(SEIStub owner) {
+    protected MethodHandler(SEIStub owner, ClientCallBridge so) {
         this.owner = owner;
+        dbHandler = so;
     }
 
     /**

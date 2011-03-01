@@ -48,6 +48,8 @@ import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.model.AbstractSEIModelImpl;
+import com.sun.xml.ws.spi.db.BindingContext;
 
 import javax.xml.ws.handler.LogicalHandler;
 import javax.xml.ws.handler.MessageContext;
@@ -127,10 +129,15 @@ public class ClientLogicalHandlerTube extends HandlerTube {
 
 
     MessageUpdatableContext getContext(Packet packet) {
-        return new LogicalMessageContextImpl(binding, (seiModel!= null?seiModel.getJAXBContext():null), packet);
-    }
+        return new LogicalMessageContextImpl(binding, getBindingContext(), packet);
+    }    
 
-    boolean callHandlersOnRequest(MessageUpdatableContext context, boolean isOneWay) {
+    private BindingContext getBindingContext() {
+        return (seiModel!= null && seiModel instanceof AbstractSEIModelImpl) ?
+        	((AbstractSEIModelImpl)seiModel).getBindingContext() : null;
+	}
+
+	boolean callHandlersOnRequest(MessageUpdatableContext context, boolean isOneWay) {
 
         boolean handlerResult;
         try {

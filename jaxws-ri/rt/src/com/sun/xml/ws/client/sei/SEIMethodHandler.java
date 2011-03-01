@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.xml.ws.client.sei;
 
 import com.sun.xml.ws.api.message.Message;
@@ -76,24 +75,28 @@ import java.util.Map;
 abstract class SEIMethodHandler extends MethodHandler {
 
     // these objects together create a message from method parameters
-    private final BodyBuilder bodyBuilder;
-    private final MessageFiller[] inFillers;
+    private BodyBuilder bodyBuilder;
+    private MessageFiller[] inFillers;
 
-    protected final String soapAction;
+    protected String soapAction;
 
-    protected final boolean isOneWay;
+    protected boolean isOneWay;
 
-    protected final JavaMethodImpl javaMethod;
+    protected JavaMethodImpl javaMethod;
 
-    protected final Map<QName, CheckedExceptionImpl> checkedExceptions;
+    protected Map<QName, CheckedExceptionImpl> checkedExceptions;
 
+    SEIMethodHandler(SEIStub owner) {
+        super(owner, null);
+    }
+    
     SEIMethodHandler(SEIStub owner, JavaMethodImpl method) {
-        super(owner);
+        super(owner, null);
 
         //keep all the CheckedException model for the detail qname
         this.checkedExceptions = new HashMap<QName, CheckedExceptionImpl>();
         for(CheckedExceptionImpl ce : method.getCheckedExceptions()){
-            checkedExceptions.put(ce.getBridge().getTypeReference().tagName, ce);
+            checkedExceptions.put(ce.getBond().getTypeInfo().tagName, ce);
         }
         //If a non-"" soapAction is specified, wsa:action the SOAPAction
         if(method.getInputAction() != null && !method.getBinding().getSOAPAction().equals("") ) {
@@ -126,7 +129,7 @@ abstract class SEIMethodHandler extends MethodHandler {
                 case HEADER:
                     fillers.add(new MessageFiller.Header(
                         param.getIndex(),
-                        param.getBridge(),
+                        param.getXMLBridge(),
                         getter ));
                     break;
                 case ATTACHMENT:
@@ -176,7 +179,7 @@ abstract class SEIMethodHandler extends MethodHandler {
                         builders.add(new ResponseBuilder.DocLit((WrapperParameter)param, setterFactory));
                 } else {
                     setter = setterFactory.get(param);
-                    builders.add(new ResponseBuilder.Body(param.getBridge(),setter));
+                    builders.add(new ResponseBuilder.Body(param.getXMLBridge(),setter));
                 }
                 break;
             case HEADER:
@@ -190,7 +193,7 @@ abstract class SEIMethodHandler extends MethodHandler {
             case UNBOUND:
                 setter = setterFactory.get(param);
                 builders.add(new ResponseBuilder.NullSetter(setter,
-                    ResponseBuilder.getVMUninitializedValue(param.getTypeReference().type)));
+                    ResponseBuilder.getVMUninitializedValue(param.getTypeInfo().type)));
                 break;
             default:
                 throw new AssertionError();

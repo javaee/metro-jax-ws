@@ -258,7 +258,7 @@ public final class StreamMessage extends AbstractMessageImpl {
             XMLStreamReaderFactory.recycle(reader);
         }
     }
-
+    /** @deprecated */
     public <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException {
         if(!hasPayload())
             return null;

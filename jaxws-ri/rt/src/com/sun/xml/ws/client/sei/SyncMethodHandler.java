@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.client.sei;
 
+import com.sun.xml.ws.api.databinding.ClientCallBridge;
+import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.client.RequestContext;
@@ -81,13 +83,19 @@ import java.util.Map;
  *
  * @author Kohsuke Kawaguchi
  */
-final class SyncMethodHandler extends SEIMethodHandler {
-    private final ResponseBuilder responseBuilder;
-
-    SyncMethodHandler(SEIStub owner, JavaMethodImpl method) {
-        super(owner, method);
-        responseBuilder = buildResponseBuilder(method, ValueSetterFactory.SYNC);
+final class SyncMethodHandler extends MethodHandler {
+//    private ResponseBuilder responseBuilder;
+    
+    SyncMethodHandler(SEIStub owner, ClientCallBridge so) {
+        super(owner, so);
+        dbHandler = so;
+//        responseBuilder = buildResponseBuilder(method, ValueSetterFactory.SYNC);
     }
+    
+//    SyncMethodHandler(SEIStub owner, JavaMethodImpl method) {
+//        super(owner, method);
+//        responseBuilder = buildResponseBuilder(method, ValueSetterFactory.SYNC);
+//    }
 
     Object invoke(Object proxy, Object[] args) throws Throwable {
         return invoke(proxy,args,owner.requestContext,owner);
@@ -103,12 +111,9 @@ final class SyncMethodHandler extends SEIMethodHandler {
      *      handling, which requires a separate copy.
      */
     Object invoke(Object proxy, Object[] args, RequestContext rc, ResponseContextReceiver receiver) throws Throwable {
-        Packet req = new Packet(createRequestMessage(args));
-
-        req.soapAction = soapAction;
-        req.expectReply = !isOneWay;
-        req.getMessage().assertOneWay(isOneWay);
-        req.setWSDLOperation(this.javaMethod.getOperation().getName());
+    	JavaCallInfo call = new JavaCallInfo(dbHandler.getMethod(), args);
+//      Packet req = new Packet(createRequestMessage(args));
+        Packet req = dbHandler.createRequestPacket(call);
         // process the message
         Packet reply = owner.doProcess(req,rc,receiver);
 
@@ -118,12 +123,13 @@ final class SyncMethodHandler extends SEIMethodHandler {
             return null;
 
         try {
-            if(msg.isFault()) {
-                SOAPFaultBuilder faultBuilder = SOAPFaultBuilder.create(msg);
-                throw faultBuilder.createException(checkedExceptions);
-            } else {
-                return responseBuilder.readResponse(msg,args);
-            }
+        	return dbHandler.readResponse(reply, call).getReturnValue();
+//            if(msg.isFault()) {
+//                SOAPFaultBuilder faultBuilder = SOAPFaultBuilder.create(msg);
+//                throw faultBuilder.createException(checkedExceptions);
+//            } else {
+//                return responseBuilder.readResponse(msg,args);
+//            }
         } catch (JAXBException e) {
             throw new DeserializationException("failed.to.read.response",e);
         } catch (XMLStreamException e) {

@@ -40,16 +40,15 @@
 
 package com.sun.xml.ws.client.sei;
 
-import com.sun.xml.bind.api.AccessorException;
-import com.sun.xml.bind.api.Bridge;
-import com.sun.xml.bind.api.CompositeStructure;
-import com.sun.xml.bind.api.RawAccessor;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Messages;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
+import com.sun.xml.ws.spi.db.XMLBridge;
+import com.sun.xml.ws.spi.db.PropertyAccessor;
+import com.sun.xml.ws.spi.db.WrapperComposite;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -90,10 +89,10 @@ abstract class BodyBuilder {
          * This object determines the binding of the object returned
          * from {@link #build(Object[])}.
          */
-        private final Bridge bridge;
+        private final XMLBridge bridge;
         private final SOAPVersion soapVersion;
 
-        protected JAXB(Bridge bridge, SOAPVersion soapVersion) {
+        protected JAXB(XMLBridge bridge, SOAPVersion soapVersion) {
             assert bridge!=null;
             this.bridge = bridge;
             this.soapVersion = soapVersion;
@@ -125,7 +124,7 @@ abstract class BodyBuilder {
          * Creates a {@link BodyBuilder} from a bare parameter.
          */
         Bare(ParameterImpl p, SOAPVersion soapVersion, ValueGetter getter) {
-            super(p.getBridge(), soapVersion);
+            super(p.getXMLBridge(), soapVersion);
             this.methodPos = p.getIndex();
             this.getter = getter;
         }
@@ -156,7 +155,7 @@ abstract class BodyBuilder {
         protected final ValueGetter[] getters;
 
         protected Wrapped(WrapperParameter wp, SOAPVersion soapVersion, ValueGetterFactory getter) {
-            super(wp.getBridge(), soapVersion);
+            super(wp.getXMLBridge(), soapVersion);
 
             List<ParameterImpl> children = wp.getWrapperChildren();
 
@@ -178,7 +177,7 @@ abstract class BodyBuilder {
         /**
          * How does each wrapped parameter binds to XML?
          */
-        private final RawAccessor[] accessors;
+        private final PropertyAccessor[] accessors;
 
         /**
          * Wrapper bean.
@@ -191,16 +190,16 @@ abstract class BodyBuilder {
         DocLit(WrapperParameter wp, SOAPVersion soapVersion, ValueGetterFactory getter) {
             super(wp, soapVersion, getter);
 
-            wrapper = (Class)wp.getBridge().getTypeReference().type;
+            wrapper = (Class)wp.getXMLBridge().getTypeInfo().type;
 
             List<ParameterImpl> children = wp.getWrapperChildren();
 
-            accessors = new RawAccessor[children.size()];
+            accessors = new PropertyAccessor[children.size()];
             for( int i=0; i<accessors.length; i++ ) {
                 ParameterImpl p = children.get(i);
                 QName name = p.getName();
                 try {
-                    accessors[i] = p.getOwner().getJAXBContext().getElementPropertyAccessor(
+                    accessors[i] = p.getOwner().getBindingContext().getElementPropertyAccessor(
                         wrapper, name.getNamespaceURI(), name.getLocalPart() );
                 } catch (JAXBException e) {
                     throw new WebServiceException(  // TODO: i18n
@@ -211,7 +210,7 @@ abstract class BodyBuilder {
         }
 
         /**
-         * Packs a bunch of arguments into a {@link CompositeStructure}.
+         * Packs a bunch of arguments into a {@link WrapperComposite}.
          */
         Object build(Object[] methodArgs) {
             try {
@@ -233,7 +232,7 @@ abstract class BodyBuilder {
                 Error x = new IllegalAccessError(e.getMessage());
                 x.initCause(e);
                 throw x;
-            } catch (AccessorException e) {
+            } catch (com.sun.xml.ws.spi.db.DatabindingException e) {
                 // this can happen when the set method throw a checked exception or something like that
                 throw new WebServiceException(e);    // TODO:i18n
             }
@@ -243,7 +242,7 @@ abstract class BodyBuilder {
 
     /**
      * Used to create a payload JAXB object by wrapping
-     * multiple parameters into a {@link CompositeStructure}.
+     * multiple parameters into a {@link WrapperComposite}.
      *
      * <p>
      * This is used for rpc/lit, as we don't have a wrapper bean for it.
@@ -253,7 +252,7 @@ abstract class BodyBuilder {
         /**
          * How does each wrapped parameter binds to XML?
          */
-        private final Bridge[] parameterBridges;
+        private final XMLBridge[] parameterBridges;
 
         /**
          * List of Parameters packed in the body.
@@ -267,20 +266,20 @@ abstract class BodyBuilder {
         RpcLit(WrapperParameter wp, SOAPVersion soapVersion, ValueGetterFactory getter) {
             super(wp, soapVersion, getter);
             // we'll use CompositeStructure to pack requests
-            assert wp.getTypeReference().type==CompositeStructure.class;
+            assert wp.getTypeInfo().type==WrapperComposite.class;
 
             this.children = wp.getWrapperChildren();
 
-            parameterBridges = new Bridge[children.size()];
+            parameterBridges = new XMLBridge[children.size()];
             for( int i=0; i<parameterBridges.length; i++ )
-                parameterBridges[i] = children.get(i).getBridge();
+                parameterBridges[i] = children.get(i).getXMLBridge();
         }
 
         /**
-         * Packs a bunch of arguments intoa {@link CompositeStructure}.
+         * Packs a bunch of arguments intoa {@link WrapperComposite}.
          */
-        CompositeStructure build(Object[] methodArgs) {
-            CompositeStructure cs = new CompositeStructure();
+        WrapperComposite build(Object[] methodArgs) {
+            WrapperComposite cs = new WrapperComposite();
             cs.bridges = parameterBridges;
             cs.values = new Object[parameterBridges.length];
 

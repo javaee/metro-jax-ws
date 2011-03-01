@@ -44,6 +44,8 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.client.WSPortInfo;
+import com.sun.xml.ws.api.databinding.Databinding;
+import com.sun.xml.ws.api.databinding.ClientCallBridge;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Headers;
@@ -73,11 +75,14 @@ import java.util.Map;
  */
 public final class SEIStub extends Stub implements InvocationHandler {
 
+	Databinding databinding;
+	
     @Deprecated
     public SEIStub(WSServiceDelegate owner, BindingImpl binding, SOAPSEIModel seiModel, Tube master, WSEndpointReference epr) {
         super(owner, master, binding, seiModel.getPort(), seiModel.getPort().getAddress(), epr);
         this.seiModel = seiModel;
         this.soapVersion = binding.getSOAPVersion();
+        databinding = seiModel.getDatabinding();
         initMethodHandlers();
     }
 
@@ -85,6 +90,7 @@ public final class SEIStub extends Stub implements InvocationHandler {
         super(portInfo, binding, seiModel.getPort().getAddress(),epr);
         this.seiModel = seiModel;
         this.soapVersion = binding.getSOAPVersion();
+        databinding = seiModel.getDatabinding();
         initMethodHandlers();
     }
 
@@ -95,7 +101,9 @@ public final class SEIStub extends Stub implements InvocationHandler {
         // first fill in sychronized versions
         for (JavaMethodImpl m : seiModel.getJavaMethods()) {
             if (!m.getMEP().isAsync) {
-                SyncMethodHandler handler = new SyncMethodHandler(this, m);
+            	ClientCallBridge so = databinding.getClientBridge(m.getMethod());
+            	SyncMethodHandler handler = new SyncMethodHandler(this, so);
+//                SyncMethodHandler handler = new SyncMethodHandler(this, m);
                 syncs.put(m.getOperation(), m);
                 methodHandlers.put(m.getMethod(), handler);
             }
@@ -105,13 +113,18 @@ public final class SEIStub extends Stub implements InvocationHandler {
             JavaMethodImpl sync = syncs.get(jm.getOperation());
             if (jm.getMEP() == MEP.ASYNC_CALLBACK) {
                 Method m = jm.getMethod();
+            	ClientCallBridge so = databinding.getClientBridge(m);
                 CallbackMethodHandler handler = new CallbackMethodHandler(
-                        this, jm, sync, m.getParameterTypes().length - 1);
+                        this, so, m.getParameterTypes().length - 1);
+//                CallbackMethodHandler handler = new CallbackMethodHandler(
+//                        this, jm, sync, m.getParameterTypes().length - 1);
                 methodHandlers.put(m, handler);
             }
             if (jm.getMEP() == MEP.ASYNC_POLL) {
                 Method m = jm.getMethod();
-                PollingMethodHandler handler = new PollingMethodHandler(this, jm, sync);
+            	ClientCallBridge so = databinding.getClientBridge(m);
+                PollingMethodHandler handler = new PollingMethodHandler(this, so);
+//                PollingMethodHandler handler = new PollingMethodHandler(this, jm, sync);
                 methodHandlers.put(m, handler);
             }
         }
@@ -177,7 +190,7 @@ public final class SEIStub extends Stub implements InvocationHandler {
         for( int i=0; i<hl.length; i++ ) {
             if(headers[i]==null)
                 throw new IllegalArgumentException();
-            hl[i] = Headers.create(seiModel.getJAXBContext(),headers[i]);
+            hl[i] = Headers.create(seiModel.getBindingContext(),headers[i]);
         }
         super.setOutboundHeaders(hl);
     }

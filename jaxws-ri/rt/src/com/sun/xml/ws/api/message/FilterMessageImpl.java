@@ -47,6 +47,8 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.spi.db.XMLBridge;
+
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -141,8 +143,12 @@ public class FilterMessageImpl extends Message {
     public <T> T readPayloadAsJAXB(Unmarshaller unmarshaller) throws JAXBException {
         return (T)delegate.readPayloadAsJAXB(unmarshaller);
     }
-
+    /** @deprecated */ 
     public <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException {
+        return delegate.readPayloadAsJAXB(bridge);
+    }
+    
+    public <T> T readPayloadAsJAXB(XMLBridge<T> bridge) throws JAXBException {
         return delegate.readPayloadAsJAXB(bridge);
     }
 

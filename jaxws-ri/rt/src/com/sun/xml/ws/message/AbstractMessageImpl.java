@@ -47,6 +47,7 @@ import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import javax.xml.soap.AttachmentPart;
 import org.xml.sax.ContentHandler;
@@ -118,8 +119,13 @@ public abstract class AbstractMessageImpl extends Message {
             unmarshaller.setAttachmentUnmarshaller(null);
         }
     }
-
+    /** @deprecated */
     public <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException {
+        return bridge.unmarshal(readPayloadAsSource(),
+            hasAttachments()? new AttachmentUnmarshallerImpl(getAttachments()) : null );
+    }
+    
+    public <T> T readPayloadAsJAXB(XMLBridge<T> bridge) throws JAXBException {
         return bridge.unmarshal(readPayloadAsSource(),
             hasAttachments()? new AttachmentUnmarshallerImpl(getAttachments()) : null );
     }

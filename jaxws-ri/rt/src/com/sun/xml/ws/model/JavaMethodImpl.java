@@ -50,6 +50,7 @@ import com.sun.xml.ws.model.soap.SOAPBindingImpl;
 import com.sun.xml.ws.model.wsdl.WSDLBoundOperationImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.api.model.wsdl.WSDLFault;
+import com.sun.xml.ws.spi.db.TypeInfo;
 import com.sun.istack.Nullable;
 
 import javax.xml.namespace.QName;
@@ -325,13 +326,14 @@ public final class JavaMethodImpl implements JavaMethod {
     }
 
     /**
+     * @deprecated
      * @param detailType
      * @return Gets the CheckedException corresponding to detailType. Returns
      *         null if no CheckedExcpetion with the detailType found.
      */
     public CheckedExceptionImpl getCheckedException(TypeReference detailType) {
         for (CheckedExceptionImpl ce : exceptions) {
-            TypeReference actual = ce.getDetailType();
+            TypeInfo actual = ce.getDetailType();
             if (actual.tagName.equals(detailType.tagName) && actual.type==detailType.type) {
                 return ce;
             }
@@ -385,7 +387,7 @@ public final class JavaMethodImpl implements JavaMethod {
         }
     }
 
-    final void fillTypes(List<TypeReference> types) {
+    final void fillTypes(List<TypeInfo> types) {
         fillTypes(requestParams, types);
         fillTypes(responseParams, types);
 
@@ -394,7 +396,7 @@ public final class JavaMethodImpl implements JavaMethod {
         }
     }
 
-    private void fillTypes(List<ParameterImpl> params, List<TypeReference> types) {
+    private void fillTypes(List<ParameterImpl> params, List<TypeInfo> types) {
         for (ParameterImpl p : params) {
             p.fillTypes(types);
         }

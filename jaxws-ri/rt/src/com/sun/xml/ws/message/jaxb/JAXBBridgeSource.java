@@ -40,7 +40,8 @@
 
 package com.sun.xml.ws.message.jaxb;
 
-import com.sun.xml.bind.api.Bridge;
+import com.sun.xml.ws.spi.db.XMLBridge;
+
 import org.xml.sax.*;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.XMLFilterImpl;
@@ -55,7 +56,7 @@ import javax.xml.transform.sax.SAXSource;
  */
 final class JAXBBridgeSource extends SAXSource {
 
-    public JAXBBridgeSource( Bridge bridge, Object contentObject ) {
+    public JAXBBridgeSource( XMLBridge bridge, Object contentObject ) {
         this.bridge = bridge;
         this.contentObject = contentObject;
 
@@ -64,7 +65,7 @@ final class JAXBBridgeSource extends SAXSource {
         super.setInputSource(new InputSource());
     }
 
-    private final Bridge bridge;
+    private final XMLBridge bridge;
     private final Object contentObject;
 
     // this object will pretend as an XMLReader.
@@ -119,7 +120,7 @@ final class JAXBBridgeSource extends SAXSource {
             try {
                 startDocument();
                 // this method only writes a fragment, so need start/end document
-                bridge.marshal( contentObject, this );
+                bridge.marshal( contentObject, this, null );
                 endDocument();
             } catch( JAXBException e ) {
                 // wrap it to a SAXException

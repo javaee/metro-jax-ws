@@ -68,7 +68,8 @@ import com.sun.tools.ws.wscompile.ErrorReceiver;
 import com.sun.tools.ws.wscompile.Options;
 import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.document.PortType;
-import com.sun.xml.bind.api.JAXBRIContext;
+import com.sun.xml.ws.spi.db.BindingHelper;
+
 import org.xml.sax.Locator;
 
 import javax.xml.namespace.QName;
@@ -113,7 +114,7 @@ public class ServiceGenerator extends GeneratorBase {
         }
 
         cls._extends(javax.xml.ws.Service.class);
-        String serviceFieldName = JAXBRIContext.mangleNameToClassName(service.getName().getLocalPart()).toUpperCase();
+        String serviceFieldName = BindingHelper.mangleNameToClassName(service.getName().getLocalPart()).toUpperCase();
         String wsdlLocationName = serviceFieldName + "_WSDL_LOCATION";
         JFieldVar urlField = cls.field(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, URL.class, wsdlLocationName);
 

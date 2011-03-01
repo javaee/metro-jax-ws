@@ -45,12 +45,13 @@ import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.BindingContextFactory;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.message.DOMMessage;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
 import com.sun.xml.ws.message.source.PayloadSourceMessage;
-import com.sun.xml.bind.api.JAXBRIContext;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -83,11 +84,12 @@ import org.w3c.dom.Document;
  */
 class LogicalMessageImpl implements LogicalMessage {
     private Packet packet;
-    protected JAXBContext defaultJaxbContext;
+//    protected JAXBContext defaultJaxbContext;
+    protected BindingContext defaultJaxbContext;
     private ImmutableLM lm = null;
 
 
-    public LogicalMessageImpl(JAXBContext defaultJaxbContext, Packet
+    public LogicalMessageImpl(BindingContext defaultJaxbContext, Packet
             packet) {
         // don't create extract payload until Users wants it.
         this.packet = packet;
@@ -121,9 +123,30 @@ class LogicalMessageImpl implements LogicalMessage {
         return lm;
     }
 
-    public Object getPayload(JAXBContext context) {
+    public Object getPayload(BindingContext context) {
         if (context == null) {
             context = defaultJaxbContext;
+        }
+        if (context == null)
+            throw new WebServiceException("JAXBContext parameter cannot be null");
+
+        Object o;
+        if (lm == null) {
+            try {
+                o = packet.getMessage().copy().readPayloadAsJAXB(context.createUnmarshaller());
+            } catch (JAXBException e) {
+                throw new WebServiceException(e);
+            }
+        } else {
+            o = lm.getPayload(context);
+            lm = new JAXBLogicalMessageImpl(context.getJAXBContext(), o);
+        }
+        return o;    	
+    }
+
+    public Object getPayload(JAXBContext context) {
+        if (context == null) {
+            return getPayload(defaultJaxbContext);
         }
         if (context == null)
             throw new WebServiceException("JAXBContext parameter cannot be null");
@@ -142,9 +165,20 @@ class LogicalMessageImpl implements LogicalMessage {
         return o;
     }
 
-    public void setPayload(Object payload, JAXBContext context) {
+    public void setPayload(Object payload, BindingContext context) {
         if (context == null) {
             context = defaultJaxbContext;
+        }
+        if (payload == null) {
+            lm = new EmptyLogicalMessageImpl();
+        } else {
+            lm = new JAXBLogicalMessageImpl(context.getJAXBContext(), payload);
+        }
+    }
+
+    public void setPayload(Object payload, JAXBContext context) {
+        if (context == null) {
+        	setPayload(payload, defaultJaxbContext);
         }
         if (payload == null) {
             lm = new EmptyLogicalMessageImpl();
@@ -178,6 +212,7 @@ class LogicalMessageImpl implements LogicalMessage {
 
     private abstract class ImmutableLM {
         public abstract Source getPayload();
+        public abstract Object getPayload(BindingContext context);
         public abstract Object getPayload(JAXBContext context);
         public abstract Message getMessage(HeaderList headers, AttachmentSet attachments, WSBinding binding);
 
@@ -220,6 +255,11 @@ class LogicalMessageImpl implements LogicalMessage {
             return null;
         }
 
+        @Override
+        public Object getPayload(BindingContext context) {
+            return null;
+        }
+
         public Message getMessage(HeaderList headers, AttachmentSet attachments, WSBinding binding) {
             return new EmptyMessageImpl(headers,attachments,binding.getSOAPVersion());
         }
@@ -239,7 +279,7 @@ class LogicalMessageImpl implements LogicalMessage {
         public Source getPayload() {
             JAXBContext context = ctxt;
             if (context == null) {
-                context = defaultJaxbContext;
+                context = defaultJaxbContext.getJAXBContext();
             }
             try {
                 return new JAXBSource(context, o);
@@ -263,9 +303,23 @@ class LogicalMessageImpl implements LogicalMessage {
                 throw new WebServiceException(e);
             }
         }
+        public Object getPayload(BindingContext context) {
+//          if(context == ctxt) {
+//              return o;
+//          }
+          try {
+              Source payloadSrc = getPayload();
+              if (payloadSrc == null)
+                  return null;
+              Unmarshaller unmarshaller = context.createUnmarshaller();
+              return unmarshaller.unmarshal(payloadSrc);
+          } catch (JAXBException e) {
+              throw new WebServiceException(e);
+          }
+      }
 
         public Message getMessage(HeaderList headers, AttachmentSet attachments, WSBinding binding) {
-            return JAXBMessage.create((JAXBRIContext)ctxt, o,binding.getSOAPVersion(), headers,attachments);
+            return JAXBMessage.create(BindingContextFactory.create(ctxt), o,binding.getSOAPVersion(), headers,attachments);
         }
     }
 
@@ -292,6 +346,19 @@ class LogicalMessageImpl implements LogicalMessage {
         }
 
         public Object getPayload(JAXBContext context) {
+            try {
+                Source payloadSrc = getPayload();
+                if (payloadSrc == null)
+                    return null;
+                Unmarshaller unmarshaller = context.createUnmarshaller();
+                return unmarshaller.unmarshal(payloadSrc);
+            } catch (JAXBException e) {
+                throw new WebServiceException(e);
+            }
+
+        }
+
+        public Object getPayload(BindingContext context) {
             try {
                 Source payloadSrc = getPayload();
                 if (payloadSrc == null)

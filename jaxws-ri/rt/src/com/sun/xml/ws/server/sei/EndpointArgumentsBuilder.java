@@ -40,10 +40,6 @@
 
 package com.sun.xml.ws.server.sei;
 
-import com.sun.xml.bind.api.AccessorException;
-import com.sun.xml.bind.api.Bridge;
-import com.sun.xml.bind.api.CompositeStructure;
-import com.sun.xml.bind.api.RawAccessor;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentSet;
@@ -54,6 +50,10 @@ import com.sun.xml.ws.message.AttachmentUnmarshallerImpl;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.resources.ServerMessages;
+import com.sun.xml.ws.spi.db.XMLBridge;
+import com.sun.xml.ws.spi.db.DatabindingException;
+import com.sun.xml.ws.spi.db.PropertyAccessor;
+import com.sun.xml.ws.spi.db.WrapperComposite;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.encoding.StringDataContentHandler;
 import com.sun.xml.ws.encoding.DataHandlerDataSource;
@@ -224,7 +224,7 @@ abstract class EndpointArgumentsBuilder {
          *      care of Holder arguments.
          */
         public static EndpointArgumentsBuilder createAttachmentBuilder(ParameterImpl param, EndpointValueSetter setter) {
-            Class type = (Class)param.getTypeReference().type;
+            Class type = (Class)param.getTypeInfo().type;
             if (DataHandler.class.isAssignableFrom(type)) {
                 return new DataHandlerBuilder(param, setter);
             } else if (byte[].class==type) {
@@ -338,7 +338,7 @@ abstract class EndpointArgumentsBuilder {
         }
         
         void mapAttachment(Attachment att, Object[] args) throws JAXBException {
-            Object obj = param.getBridge().unmarshal(att.asInputStream());
+            Object obj = param.getXMLBridge().unmarshal(att.asInputStream());
             setter.put(obj, args);
         }
     }
@@ -412,7 +412,7 @@ abstract class EndpointArgumentsBuilder {
      * Reads a header into a JAXB object.
      */
     static final class Header extends EndpointArgumentsBuilder {
-        private final Bridge<?> bridge;
+        private final XMLBridge<?> bridge;
         private final EndpointValueSetter setter;
         private final QName headerName;
         private final SOAPVersion soapVersion;
@@ -425,7 +425,7 @@ abstract class EndpointArgumentsBuilder {
          * @param setter
          *      specifies how the obtained value is returned to the client.
          */
-        public Header(SOAPVersion soapVersion, QName name, Bridge<?> bridge, EndpointValueSetter setter) {
+        public Header(SOAPVersion soapVersion, QName name, XMLBridge<?> bridge, EndpointValueSetter setter) {
             this.soapVersion = soapVersion;
             this.headerName = name;
             this.bridge = bridge;
@@ -435,8 +435,8 @@ abstract class EndpointArgumentsBuilder {
         public Header(SOAPVersion soapVersion, ParameterImpl param, EndpointValueSetter setter) {
             this(
                 soapVersion,
-                param.getTypeReference().tagName,
-                param.getBridge(),
+                param.getTypeInfo().tagName,
+                param.getXMLBridge(),
                 setter);
             assert param.getOutBinding()== ParameterBinding.HEADER;
         }
@@ -474,7 +474,7 @@ abstract class EndpointArgumentsBuilder {
      * Reads the whole payload into a single JAXB bean.
      */
     static final class Body extends EndpointArgumentsBuilder {
-        private final Bridge<?> bridge;
+        private final XMLBridge<?> bridge;
         private final EndpointValueSetter setter;
 
         /**
@@ -483,7 +483,7 @@ abstract class EndpointArgumentsBuilder {
          * @param setter
          *      specifies how the obtained value is returned to the client.
          */
-        public Body(Bridge<?> bridge, EndpointValueSetter setter) {
+        public Body(XMLBridge<?> bridge, EndpointValueSetter setter) {
             this.bridge = bridge;
             this.setter = setter;
         }
@@ -503,13 +503,13 @@ abstract class EndpointArgumentsBuilder {
          */
         private final PartBuilder[] parts;
 
-        private final Bridge wrapper;
+        private final XMLBridge wrapper;
         private final QName wrapperName;
 
         public DocLit(WrapperParameter wp, Mode skipMode) {
             wrapperName = wp.getName();
-            wrapper = wp.getBridge();
-            Class wrapperType = (Class) wrapper.getTypeReference().type;
+            wrapper = wp.getXMLBridge();
+            Class wrapperType = (Class) wrapper.getTypeInfo().type;
 
             List<PartBuilder> parts = new ArrayList<PartBuilder>();
 
@@ -525,7 +525,7 @@ abstract class EndpointArgumentsBuilder {
                 QName name = p.getName();
                 try {
                     parts.add( new PartBuilder(
-                        wp.getOwner().getJAXBContext().getElementPropertyAccessor(
+                        wp.getOwner().getBindingContext().getElementPropertyAccessor(
                             wrapperType,
                             name.getNamespaceURI(),
                             p.getName().getLocalPart()),
@@ -558,7 +558,7 @@ abstract class EndpointArgumentsBuilder {
                     for (PartBuilder part : parts) {
                         part.readRequest(args,wrapperBean);
                     }
-                } catch (AccessorException e) {
+                } catch (DatabindingException e) {
                     // this can happen when the set method throw a checked exception or something like that
                     throw new WebServiceException(e);    // TODO:i18n
                 }
@@ -576,7 +576,7 @@ abstract class EndpointArgumentsBuilder {
          * to the expected place.
          */
         static final class PartBuilder {
-            private final RawAccessor accessor;
+            private final PropertyAccessor accessor;
             private final EndpointValueSetter setter;
 
             /**
@@ -585,13 +585,13 @@ abstract class EndpointArgumentsBuilder {
              * @param setter
              *      specifies how the obtained value is returned to the client.
              */
-            public PartBuilder(RawAccessor accessor, EndpointValueSetter setter) {
+            public PartBuilder(PropertyAccessor accessor, EndpointValueSetter setter) {
                 this.accessor = accessor;
                 this.setter = setter;
                 assert accessor!=null && setter!=null;
             }
 
-            final void readRequest( Object[] args, Object wrapperBean ) throws AccessorException {
+            final void readRequest( Object[] args, Object wrapperBean ) {
                 Object obj = accessor.get(wrapperBean);
                 setter.put(obj,args);
             }
@@ -613,13 +613,13 @@ abstract class EndpointArgumentsBuilder {
         private QName wrapperName;
 
         public RpcLit(WrapperParameter wp) {
-            assert wp.getTypeReference().type== CompositeStructure.class;
+            assert wp.getTypeInfo().type== WrapperComposite.class;
 
             wrapperName = wp.getName();
             List<ParameterImpl> children = wp.getWrapperChildren();
             for (ParameterImpl p : children) {
                 parts.put( p.getName(), new PartBuilder(
-                    p.getBridge(), EndpointValueSetter.get(p)
+                    p.getXMLBridge(), EndpointValueSetter.get(p)
                 ));
                 // wrapper parameter itself always bind to body, and
                 // so do all its children
@@ -637,7 +637,8 @@ abstract class EndpointArgumentsBuilder {
 
             while(reader.getEventType()==XMLStreamReader.START_ELEMENT) {
                 // TODO: QName has a performance issue
-                PartBuilder part = parts.get(reader.getName());
+            	QName name = reader.getName();
+                PartBuilder part = parts.get(name);
                 if(part==null) {
                     // no corresponding part found. ignore
                     XMLStreamReaderUtil.skipElement(reader);
@@ -649,6 +650,9 @@ abstract class EndpointArgumentsBuilder {
                 if (reader.getEventType() != XMLStreamConstants.START_ELEMENT &&
                         reader.getEventType() != XMLStreamConstants.END_ELEMENT) {
                     XMLStreamReaderUtil.nextElementContent(reader);
+                }
+                if(reader.getEventType() == XMLStreamConstants.END_ELEMENT && name.equals(reader.getName())) {
+                    XMLStreamReaderUtil.nextElementContent(reader);	
                 }
             }
 
@@ -662,7 +666,7 @@ abstract class EndpointArgumentsBuilder {
          * to the expected place.
          */
         static final class PartBuilder {
-            private final Bridge bridge;
+            private final XMLBridge bridge;
             private final EndpointValueSetter setter;
 
             /**
@@ -671,7 +675,7 @@ abstract class EndpointArgumentsBuilder {
              * @param setter
              *      specifies how the obtained value is returned to the endpoint.
              */
-            public PartBuilder(Bridge bridge, EndpointValueSetter setter) {
+            public PartBuilder(XMLBridge bridge, EndpointValueSetter setter) {
                 this.bridge = bridge;
                 this.setter = setter;
             }

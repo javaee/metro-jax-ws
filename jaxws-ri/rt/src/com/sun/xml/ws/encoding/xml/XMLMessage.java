@@ -315,7 +315,7 @@ public final class XMLMessage {
         public <T> T readPayloadAsJAXB(Unmarshaller unmarshaller) throws JAXBException {
             return (T)getMessage().readPayloadAsJAXB(unmarshaller);
         }
-
+        /** @deprecated */
         public <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException {
             return getMessage().readPayloadAsJAXB(bridge);
         }

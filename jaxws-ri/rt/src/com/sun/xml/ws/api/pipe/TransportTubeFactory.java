@@ -144,7 +144,11 @@ public abstract class TransportTubeFactory {
             if(scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https"))
                 return new HttpTransportPipe(context.getCodec(), context.getBinding());
         }
-
+        TransportTubeFactory f = context.getContainer().getSPI(TransportTubeFactory.class);
+        if (f != null) {
+            Tube tube = f.doCreate(context);
+            if(tube != null) return tube;
+        }
         throw new WebServiceException("Unsupported endpoint address: "+context.getAddress());    // TODO: i18n
     }
 

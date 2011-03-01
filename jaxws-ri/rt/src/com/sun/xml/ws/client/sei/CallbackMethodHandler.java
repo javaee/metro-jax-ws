@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.client.sei;
 
+import com.sun.xml.ws.api.databinding.ClientCallBridge;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.WebServiceException;
@@ -57,10 +58,15 @@ final class CallbackMethodHandler extends AsyncMethodHandler {
      */
     private final int handlerPos;
 
-    CallbackMethodHandler(SEIStub owner, JavaMethodImpl jm, JavaMethodImpl core, int handlerPos) {
-        super(owner,jm,core);
+    CallbackMethodHandler(SEIStub owner, ClientCallBridge so, int handlerPos) {
+        super(owner,so);
         this.handlerPos = handlerPos;
     }
+
+//    CallbackMethodHandler(SEIStub owner, JavaMethodImpl jm, JavaMethodImpl core, int handlerPos) {
+//        super(owner,jm,core);
+//        this.handlerPos = handlerPos;
+//    }
 
     Future<?> invoke(Object proxy, Object[] args) throws WebServiceException {
         // the spec requires the last argument

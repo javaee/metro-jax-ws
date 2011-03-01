@@ -46,6 +46,8 @@ import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
+import com.sun.xml.ws.spi.db.XMLBridge;
+
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -259,9 +261,15 @@ public interface Header {
 
     /**
      * Reads the header as a JAXB object by using the given unmarshaller.
+     * @deprecated
      */
     public <T> T readAsJAXB(Bridge<T> bridge) throws JAXBException;
-
+    
+    /**
+     * Reads the header as a data-bond object
+     */
+    public <T> T readAsJAXB(XMLBridge<T> bridge) throws JAXBException;
+    
     /**
      * Reads this header as an {@link WSEndpointReference}.
      *

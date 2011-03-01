@@ -44,7 +44,7 @@ import com.sun.tools.ws.processor.model.java.JavaMethod;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.tools.ws.wsdl.document.soap.SOAPUse;
 import com.sun.tools.ws.wsdl.framework.Entity;
-import com.sun.xml.bind.api.JAXBRIContext;
+import com.sun.xml.ws.spi.db.BindingHelper;
 
 import javax.xml.namespace.QName;
 import java.util.HashSet;
@@ -242,7 +242,7 @@ public class Operation extends ModelObject {
             return customizedName;
         }
 
-        return JAXBRIContext.mangleNameToVariableName(_name.getLocalPart());
+        return BindingHelper.mangleNameToVariableName(_name.getLocalPart());
     }
 
     public com.sun.tools.ws.wsdl.document.Operation getWSDLPortTypeOperation(){
