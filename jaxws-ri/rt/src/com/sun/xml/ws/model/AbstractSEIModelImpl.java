@@ -45,6 +45,7 @@ import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.model.JavaMethod;
@@ -469,12 +470,8 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 		this.databinding = wsRuntime;
 	}
 	
-	public BindingID bindingId() {
-		return bindingId;
-	}
-	
-	public WebServiceFeature[] features() {
-		return features;
+	public WSBinding getWSBinding() {
+		return wsBinding;
 	}
 	
     public Class getContractClass() {
@@ -520,5 +517,6 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
     protected Class contractClass;
 	protected Class endpointClass;
 	protected ClassLoader classLoader = null;
+	protected WSBinding wsBinding;
 	private static final Logger LOGGER = Logger.getLogger(AbstractSEIModelImpl.class.getName());
 }

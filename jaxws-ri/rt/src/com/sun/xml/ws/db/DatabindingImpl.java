@@ -46,7 +46,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
 
-import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.databinding.EndpointCallBridge;
 import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;
@@ -82,17 +81,12 @@ public class DatabindingImpl implements Databinding {
     QNameMap<TieHandler> wsdlOpMap = new QNameMap<TieHandler>();
 	Map<Method, TieHandler> tieHandlers = new HashMap<Method, TieHandler>();
     OperationDispatcher operationDispatcher;
-    WSBinding wsbinding;
     boolean clientConfig = false;
     
 	public DatabindingImpl(DatabindingProviderImpl p, DatabindingConfig config) {
 		RuntimeModeler modeler = new RuntimeModeler(config);
 		modeler.setClassLoader(config.getClassLoader());
 		seiModel = modeler.buildRuntimeModel();
-		wsbinding = config.getWSBinding();
-		if (wsbinding == null) {
-			wsbinding = seiModel.bindingId().createBinding(seiModel.features());
-		}
 		WSDLPort wsdlport = config.getWsdlPort();
 		clientConfig = isClientConfig(config);
 		if (wsdlport != null && clientConfig ) initStubHandlers();
@@ -110,9 +104,9 @@ public class DatabindingImpl implements Databinding {
 	public synchronized void freeze(WSDLPort port) {
 		if (clientConfig) return;
 		if (operationDispatcher != null) return;
-		operationDispatcher = (port == null) ? null : new OperationDispatcher(port, wsbinding, seiModel);
+		operationDispatcher = (port == null) ? null : new OperationDispatcher(port, seiModel.getWSBinding(), seiModel);
         for(JavaMethodImpl jm: seiModel.getJavaMethods()) {
-        	TieHandler th = new TieHandler(jm,wsbinding);
+        	TieHandler th = new TieHandler(jm, seiModel.getWSBinding());
             wsdlOpMap.put(jm.getOperation().getName(), th);
             tieHandlers.put(th.getMethod(), th);
         }
@@ -197,15 +191,13 @@ public class DatabindingImpl implements Databinding {
         WSDLGenerator wsdlGen = new WSDLGenerator(
 		    seiModel, 
 		    info.getWsdlResolver(), 
-		    wsbinding, 
+		    seiModel.getWSBinding(), 
 		    info.getContainer(), seiModel.getEndpointClass(), 
 		    info.isInlineSchemas(),
 		    info.getExtensions());
         wsdlGen.doGeneration();		
 	}
 	
-	public WSBinding getWSBinding() { return wsbinding; }
-
 	public EndpointCallBridge getEndpointBridge(Packet req) throws DispatchException {
 		QName wsdlOp = operationDispatcher.getWSDLOperationQName(req);
 		return wsdlOpMap.get(wsdlOp);

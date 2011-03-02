@@ -131,7 +131,7 @@ public class PortInfo implements WSPortInfo {
      *      The initialized BindingImpl
      */
     public BindingImpl createBinding(WebServiceFeature[] webServiceFeatures, Class<?> portInterface) {
-        WebServiceFeatureList r = new WebServiceFeatureList(webServiceFeatures);
+/*        WebServiceFeatureList r = new WebServiceFeatureList(webServiceFeatures);
 
         Iterable<WebServiceFeature> configFeatures;
 
@@ -156,7 +156,38 @@ public class PortInfo implements WSPortInfo {
 
         BindingImpl bindingImpl = BindingImpl.create(bindingId, r.toArray());
         owner.getHandlerConfigurator().configureHandlers(this,bindingImpl);
+*/
+        return createBinding(webServiceFeatures, portInterface, null);
+    }
+    
+    protected BindingImpl createBinding(WebServiceFeature[] webServiceFeatures, Class<?> portInterface, 
+    		  BindingImpl existingBinding) {    	
+        WebServiceFeatureList r = (existingBinding == null)? new WebServiceFeatureList(webServiceFeatures) : existingBinding.getFeatures();
+        if (existingBinding != null) {
+        	r.mergeFeatures(webServiceFeatures, false);
+        }
+        Iterable<WebServiceFeature> configFeatures;
+        //TODO incase of Dispatch, provide a way to User for complete control of the message processing by giving
+        // ability to turn off the WSDL/Policy based features and its associated tubes.
 
+        //Even in case of Dispatch, merge all features configured via WSDL/Policy or deployment configuration
+        if (portModel != null) {
+            // could have merged features from this.policyMap, but some features are set in WSDLModel which are not there in PolicyMap
+            // for ex: <wsaw:UsingAddressing> wsdl extn., and since the policyMap features are merged into WSDLModel anyway during postFinished(),
+            // So, using here WsdlModel for merging is right.
+
+            // merge features from WSDL
+            configFeatures = portModel.getFeatures();
+        } else {
+            configFeatures = PolicyUtil.getPortScopedFeatures(policyMap, owner.getServiceName(),portName);
+        }
+        r.mergeFeatures(configFeatures, false);
+
+        // merge features from interceptor
+        r.mergeFeatures(owner.serviceInterceptor.preCreateBinding(this,portInterface,r), false);
+
+        BindingImpl bindingImpl = BindingImpl.create(bindingId, r.toArray());
+        owner.getHandlerConfigurator().configureHandlers(this,bindingImpl);
         return bindingImpl;
     }
 

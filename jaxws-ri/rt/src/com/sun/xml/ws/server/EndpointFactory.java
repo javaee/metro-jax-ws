@@ -348,10 +348,11 @@ public class EndpointFactory {
 		config.setEndpointClass(implType);
 		config.getMappingInfo().setServiceName(serviceName);
 		config.setWsdlPort(wsdlPort);
-		config.setFeatures(binding.getFeatures().toArray());
+		config.setWSBinding(binding);
+//		config.setFeatures(binding.getFeatures().toArray());
+//		config.getMappingInfo().setBindingID(binding.getBindingId());
 		config.setClassLoader(implType.getClassLoader());
 		config.getMappingInfo().setPortName(portName);
-		config.getMappingInfo().setBindingID(binding.getBindingId());
 		com.sun.xml.ws.db.DatabindingImpl rt = (com.sun.xml.ws.db.DatabindingImpl)fac.createRuntime(config);
 		return (AbstractSEIModelImpl) rt.getModel();    	
     }

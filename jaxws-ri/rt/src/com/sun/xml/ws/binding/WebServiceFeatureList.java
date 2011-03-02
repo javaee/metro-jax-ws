@@ -287,6 +287,19 @@ public final class WebServiceFeatureList implements WSFeatureList {
             }
         }
     }
+    
+	public void mergeFeatures(WebServiceFeature[] features, boolean reportConflicts) {
+        for (WebServiceFeature wsdlFtr : features) {
+            if (get(wsdlFtr.getClass()) == null) {
+                add(wsdlFtr);
+            } else if (reportConflicts) {
+                if (isEnabled(wsdlFtr.getClass()) != wsdlFtr.isEnabled()) {
+                    LOGGER.warning(ModelerMessages.RUNTIME_MODELER_FEATURE_CONFLICT(
+                            get(wsdlFtr.getClass()), wsdlFtr));
+                }
+            }
+        }		
+	}
 
     /**
      * Set the parent features. Basically the parent feature list will be overriden

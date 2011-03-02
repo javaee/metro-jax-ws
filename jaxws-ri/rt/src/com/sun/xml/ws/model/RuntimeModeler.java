@@ -43,6 +43,8 @@ package com.sun.xml.ws.model;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.model.ExceptionType;
 import com.sun.xml.ws.api.model.MEP;
@@ -95,6 +97,7 @@ import java.util.logging.Logger;
 public class RuntimeModeler {
     private final WebServiceFeature[] features;
     private BindingID bindingId;
+    private WSBinding wsBinding;
     private final Class portClass;
     private AbstractSEIModelImpl model;
     private SOAPBindingImpl defaultBinding;
@@ -152,13 +155,23 @@ public class RuntimeModeler {
     public RuntimeModeler(@NotNull DatabindingConfig config){
         this.portClass = (config.getEndpointClass() != null)? config.getEndpointClass() : config.getContractClass();
         this.serviceName = config.getMappingInfo().getServiceName();
-        this.bindingId = config.getMappingInfo().getBindingID();
         this.binding = (WSDLPortImpl)config.getWsdlPort();
-        if (binding != null) bindingId = binding.getBinding().getBindingId();
-        this.features = config.getFeatures();
         this.classLoader = config.getClassLoader();
         this.portName = config.getMappingInfo().getPortName();
         this.config = config;
+        this.wsBinding = config.getWSBinding();  
+        //TODO default bindingId
+        if (wsBinding != null) {
+            this.bindingId = wsBinding.getBindingId();
+        	if (config.getFeatures() != null) wsBinding.getFeatures().mergeFeatures(config.getFeatures(), false);
+        	if (binding != null) wsBinding.getFeatures().mergeFeatures(binding.getFeatures(), false);
+        	this.features = wsBinding.getFeatures().toArray();
+        } else {
+            this.bindingId = config.getMappingInfo().getBindingID();
+            if (binding != null) bindingId = binding.getBinding().getBindingId();
+            this.features = config.getFeatures();
+            this.wsBinding = bindingId.createBinding(features);
+        }
     }
 
     /**
@@ -217,6 +230,7 @@ public class RuntimeModeler {
         model.contractClass = (config != null)? config.getContractClass() : null;
         model.endpointClass = (config != null)? config.getEndpointClass() : null;
         model.classLoader = this.classLoader;
+        model.wsBinding = wsBinding;
         if (model.contractClass == null) model.contractClass = portClass;
         if (model.endpointClass == null && !portClass.isInterface()) model.endpointClass = portClass;
         Class clazz = portClass;
