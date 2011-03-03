@@ -39,11 +39,13 @@
  */
 package com.sun.xml.ws.api.databinding;
 
+import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 
 public interface EndpointCallBridge {
 	
 	public JavaCallInfo deserializeRequest(Packet req);
 	
-	public Packet serializeResponse(JavaCallInfo call);
+	//Change the return type to??
+	public Message serializeResponse(JavaCallInfo call);
 }

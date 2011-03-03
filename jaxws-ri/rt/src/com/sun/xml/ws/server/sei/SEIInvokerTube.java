@@ -43,6 +43,7 @@ package com.sun.xml.ws.server.sei;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.databinding.EndpointCallBridge;
 import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
@@ -96,9 +97,9 @@ public class SEIInvokerTube extends InvokerTube {
      * that traverses through the Pipeline to transport.
      */
     public @NotNull NextAction processRequest(@NotNull Packet req) {
-        QName wsdlOp;
-//        try {
-        	JavaCallInfo call = model.getDatabinding().deserializeRequest(req);
+        try {
+        	EndpointCallBridge handler =  model.getDatabinding().getEndpointBridge(req);
+        	JavaCallInfo call = handler.deserializeRequest(req);
         	if (call.getException() == null) {
 	        	try {
 	        		Object ret = getInvoker(req).invoke(req, call.getMethod(), call.getParameters());
@@ -111,15 +112,13 @@ public class SEIInvokerTube extends InvokerTube {
 					call.setException(e);
 				}
 			}
-			Message responseMessage = model.getDatabinding().serializeResponse(call);
+        	Message responseMessage = handler.serializeResponse(call);
 			Packet res = req.createServerResponse(responseMessage, req.endpoint.getPort(), model, req.endpoint.getBinding());
-//            wsdlOp = ((WSEndpointImpl) getEndpoint()).getOperationDispatcher().getWSDLOperationQName(req);
-//            Packet res = wsdlOpMap.get(wsdlOp).invoke(req);
             assert res != null;
             return doReturnWith(res);
-//        } catch (DispatchException e) {
-//            return doReturnWith(req.createServerResponse(e.fault, model.getPort(), null, binding));
-//        }
+        } catch (DispatchException e) {
+            return doReturnWith(req.createServerResponse(e.fault, model.getPort(), null, binding));
+        }
     }
 
     public @NotNull NextAction processResponse(@NotNull Packet response) {

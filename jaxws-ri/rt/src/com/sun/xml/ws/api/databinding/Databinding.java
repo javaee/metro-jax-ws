@@ -47,25 +47,25 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.wsdl.DispatchException;
 
 /**
- * {@code WsRuntime} is the entry point for all the WebService databinding
- * runtime functionality. Primarily, a WsRuntime is to serialize/deserialize an
+ * {@code Databinding} is the entry point for all the WebService databinding
+ * runtime functionality. Primarily, a Databinding is to serialize/deserialize an
  * XML(SOAP) message to/from a JAVA method invocation and return value which 
  * are represented as <code>JavaCallInfo</code> instances.
  * <p>
  * </p>
- * Each WsRuntime is associated with a <code>MessageFactory</code> instance
+ * Each Databinding is associated with a <code>MessageFactory</code> instance
  * which can be used to create <code>Message</code> instances that can be
- * deserialized by the WsRuntime. The <code>MessageFactory</code> also supports
+ * deserialized by the Databinding. The <code>MessageFactory</code> also supports
  * the conversion of Oracle Fabric Normalized messages.
  * <p>
  * </p>
- * <blockquote> Following is an example that creates a {@code WsRuntime} which
+ * <blockquote> Following is an example that creates a {@code Databinding} which
  * provides the operations to serialize/deserialize a JavaCallInfo to/from a
  * SOAP message:<br />
  * 
  * <pre>
- * WsFactory wsfac = WsFactory.newInstance();
- * WsRuntime rt = wsfac.createRuntime(wsRuntimeConfig);
+ * DatabindingFactory wsfac = DatabindingFactory();
+ * Databinding rt = wsfac.createDatabinding(DatabindingConfig);
  * </pre>
  * 
  * </blockquote>
@@ -90,7 +90,7 @@ public interface Databinding {
 	 * 
 	 * @return the JavaCallInfo representing a method call
 	 */
-	JavaCallInfo deserializeRequest(Packet soap);
+//	JavaCallInfo deserializeRequest(Packet soap);
 
 	EndpointCallBridge getEndpointBridge(Packet soap) throws DispatchException;
 	
@@ -117,7 +117,7 @@ public interface Databinding {
 	 * 
 	 * @return the response XML(SOAP) message
 	 */
-	Message serializeResponse(JavaCallInfo call);
+//	Message serializeResponse(JavaCallInfo call);
 
 	/**
 	 * Deserializes a response XML(SOAP) message to a JavaCallInfo instance

@@ -54,6 +54,7 @@ import com.sun.xml.ws.wsdl.DispatchException;
 
 import javax.jws.WebParam.Mode;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Holder;
 import javax.xml.ws.ProtocolException;
@@ -309,12 +310,14 @@ final public class TieHandler implements EndpointCallBridge {
     private static final Logger LOGGER = Logger.getLogger(TieHandler.class.getName());
 
 	public JavaCallInfo deserializeRequest(Packet req) {
-		// TODO Auto-generated method stub
-		return null;
+		JavaCallInfo call = new JavaCallInfo();
+		call.setMethod(this.getMethod());
+        Object[] args = this.readRequest(req.getMessage());
+		call.setParameters(args);
+		return call;
 	}
 
-	public Packet serializeResponse(JavaCallInfo call) {
-		// TODO Auto-generated method stub
-		return null;
+	public Message serializeResponse(JavaCallInfo call) {
+		return this.createResponse(call);
 	}
 }
