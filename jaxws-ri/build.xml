@@ -673,15 +673,17 @@
             <zipfileset dir="rt" prefix="${source.dist.dir.name}/rt" defaultexcludes="true" includes="build.xml, src/**, build/gen-src/**, etc/**" excludes="test/**"/>
             <zipfileset dir="rt-fi" prefix="${source.dist.dir.name}/rt-fi" defaultexcludes="true" includes="build.xml, src/**"/>
             <zipfileset dir="tools" prefix="${source.dist.dir.name}/tools" defaultexcludes="true" includes="etc/**, wscompile/build.xml, wscompile/src/**, wscompile/build/gen-src/**, resourcegen/**, bin/**"/>
-            <zipfileset dir="servlet" prefix="${source.dist.dir.name}/servlet" defaultexcludes="true" includes="build.xml, src/**, lib/**"/>
+            <zipfileset dir="servlet" prefix="${source.dist.dir.name}/servlet" defaultexcludes="true" includes="build.xml, src/**, lib/**, etc/**"/>
             <zipfileset dir="${basedir}/etc" includes="build-bundle.xml"
                         fullpath="${source.dist.dir.name}/build.xml"/>
             <zipfileset dir="${basedir}/etc" prefix="${source.dist.dir.name}/etc" includes="CDDL+GPLv2.xml" />
             <zipfileset dir="${basedir}/etc" includes="src-build-readme.txt"
                         fullpath="${source.dist.dir.name}/README"/>
             <!-- additional jar files -->
-            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.*, junit.jar, commons-jelly-tags-jsl-1.0.jar, sjsxp.jar, maven-ant-tasks-2.0.10.jar"
+            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.*, junit.jar, commons-jelly-tags-jsl-1.0.jar, sjsxp.jar, maven-ant-tasks-2.0.10.jar, html*.jar"
                         prefix="${source.dist.dir.name}/lib"/>
+            <zipfileset dir="${basedir}/lib" includes="*.zip" excludes="ant*.zip, junit-*.zip, commons-jelly-tags-jsl-1.0.zip, sjsxp-*.zip, maven-ant-tasks-2.0.10.zip, *-doc.zip, html*.zip "
+                        prefix="${source.dist.dir.name}/lib"/>            
           <!--  <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/> -->
 
             <!-- license files -->
