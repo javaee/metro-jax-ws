@@ -37,55 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.xml.ws.model;
+package com.sun.xml.ws.api.databinding;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
-import com.sun.xml.ws.api.databinding.AnnotationReader;
 
 /**
- * ReflectAnnotationReader
+ * AnnotationReader
  * 
  * @author shih-chang.chen@oracle.com
  */
-public class ReflectAnnotationReader implements AnnotationReader {
-//getAnnotationOnImpl SEIorIMpl
-	public Annotation[] getAnnotations(Method m) {
-		return m.getAnnotations();
-	}
-
-	public Annotation[][] getParameterAnnotations(final Method method) {
-        return AccessController.doPrivileged(new PrivilegedAction<Annotation[][]>() {
-           public Annotation[][] run() {
-               return method.getParameterAnnotations();
-           }
-        });
-    }
+public interface AnnotationReader {
 	
-	public <A extends Annotation> A getAnnotation(final Class<A> annType, final Method m) {
-        return AccessController.doPrivileged(new PrivilegedAction<A>() {
-            public A run() {
-                return m.getAnnotation(annType);
-            }
-         });
-	}
-	
-	public <A extends Annotation> A getAnnotation(final Class<A> annType, final Class<?> cls) {
-        return AccessController.doPrivileged(new PrivilegedAction<A>() {
-            public A run() {
-                return cls.getAnnotation(annType);
-            }
-        });
-	}
+    public Annotation[] getAnnotations(Method m) ;
+    
+    public Annotation[][] getParameterAnnotations(final Method method);
+		
+    public <A extends Annotation> A getAnnotation(final Class<A> annType, final Method m);
+		
+    public <A extends Annotation> A getAnnotation(final Class<A> annType, final Class<?> cls);
 
-    public Annotation[] getAnnotations(final Class<?> cls) {
-        return AccessController.doPrivileged(new PrivilegedAction<Annotation[]>() {
-            public Annotation[] run() {
-                return cls.getAnnotations();
-            }
-        });
-    }
+    public Annotation[] getAnnotations(Class<?> c);
 }

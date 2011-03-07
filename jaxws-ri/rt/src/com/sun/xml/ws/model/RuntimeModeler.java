@@ -44,7 +44,7 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.WSFeatureList;
+import com.sun.xml.ws.api.databinding.AnnotationReader;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.model.ExceptionType;
 import com.sun.xml.ws.api.model.MEP;
@@ -110,6 +110,7 @@ public class RuntimeModeler {
     private QName serviceName;
     private QName portName;
     private DatabindingConfig config;
+    private AnnotationReader annotationReader;
     /**
      *
      */
@@ -128,9 +129,9 @@ public class RuntimeModeler {
     public static final Class<RuntimeException> RUNTIME_EXCEPTION_CLASS = RuntimeException.class;
     public static final Class<Exception> EXCEPTION_CLASS = Exception.class;
 
-    public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull BindingID bindingId, @NotNull WebServiceFeature... features) {
+  /*public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull BindingID bindingId, @NotNull WebServiceFeature... features) {
         this(portClass, serviceName, null, bindingId, features);
-    }
+    }*/
 
     /**
      *
@@ -140,17 +141,17 @@ public class RuntimeModeler {
      * @param wsdlPort {@link com.sun.xml.ws.api.model.wsdl.WSDLPort}
      * @param features web service features
      */
-    public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull WSDLPortImpl wsdlPort, @NotNull WebServiceFeature... features){
+  /*public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull WSDLPortImpl wsdlPort, @NotNull WebServiceFeature... features){
         this(portClass, serviceName, wsdlPort, wsdlPort.getBinding().getBindingId(), features);
-    }
+    }*/
 
-    private RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, WSDLPortImpl binding, BindingID bindingId, @NotNull WebServiceFeature... features) {
+  /*private RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, WSDLPortImpl binding, BindingID bindingId, @NotNull WebServiceFeature... features) {
         this.portClass = portClass;
         this.serviceName = serviceName;
         this.binding = binding;
         this.bindingId = bindingId;
         this.features = features;
-    }
+    }*/
     
     public RuntimeModeler(@NotNull DatabindingConfig config){
         this.portClass = (config.getEndpointClass() != null)? config.getEndpointClass() : config.getContractClass();
@@ -172,6 +173,8 @@ public class RuntimeModeler {
             this.features = config.getFeatures();
             this.wsBinding = bindingId.createBinding(features);
         }
+        annotationReader = config.getAnnotationReader();
+        if (annotationReader == null) annotationReader = new ReflectAnnotationReader();
     }
 
     /**
@@ -191,28 +194,38 @@ public class RuntimeModeler {
         this.portName = portName;
     }
 
-    private static <T extends Annotation> T getPrivClassAnnotation(final Class<?> clazz, final Class<T> T) {
-        return AccessController.doPrivileged(new PrivilegedAction<T>() {
-           public T run() {
-               return clazz.getAnnotation(T);
-           }
-        });
+    private <T extends Annotation> T getAnnotation(final Class<?> clazz, final Class<T> T) {
+    	return annotationReader.getAnnotation(T, clazz);
+//        return AccessController.doPrivileged(new PrivilegedAction<T>() {
+//           public T run() {
+//               return clazz.getAnnotation(T);
+//           }
+//        });
     }
 
-    private static <T extends Annotation> T getPrivMethodAnnotation(final Method method, final Class<T> T) {
-        return AccessController.doPrivileged(new PrivilegedAction<T>() {
-           public T run() {
-               return method.getAnnotation(T);
-           }
-        });
+    private <T extends Annotation> T getAnnotation(final Method method, final Class<T> T) {
+    	return annotationReader.getAnnotation(T, method);
+//        return AccessController.doPrivileged(new PrivilegedAction<T>() {
+//           public T run() {
+//               return method.getAnnotation(T);
+//           }
+//        });
     }
 
-    private static Annotation[][] getPrivParameterAnnotations(final Method method) {
-        return AccessController.doPrivileged(new PrivilegedAction<Annotation[][]>() {
-           public Annotation[][] run() {
-               return method.getParameterAnnotations();
-           }
-        });
+    private Annotation[] getAnnotations(final Method method) {
+        return annotationReader.getAnnotations(method);
+    }
+
+    private Annotation[] getAnnotations(final Class<?> c) {
+        return annotationReader.getAnnotations(c);
+    }
+    private Annotation[][] getParamAnnotations(final Method method) {
+    	return annotationReader.getParameterAnnotations(method);
+//        return AccessController.doPrivileged(new PrivilegedAction<Annotation[][]>() {
+//           public Annotation[][] run() {
+//               return method.getParameterAnnotations();
+//           }
+//        });
     }
 
     private static final Logger logger =
@@ -227,14 +240,14 @@ public class RuntimeModeler {
      */
     public AbstractSEIModelImpl buildRuntimeModel() {
         model = new SOAPSEIModel(features);
-        model.contractClass = (config != null)? config.getContractClass() : null;
-        model.endpointClass = (config != null)? config.getEndpointClass() : null;
+        model.contractClass = config.getContractClass();
+        model.endpointClass = config.getEndpointClass();
         model.classLoader = this.classLoader;
         model.wsBinding = wsBinding;
         if (model.contractClass == null) model.contractClass = portClass;
         if (model.endpointClass == null && !portClass.isInterface()) model.endpointClass = portClass;
         Class clazz = portClass;
-        WebService webService = getPrivClassAnnotation(portClass, WebService.class);
+        WebService webService = getAnnotation(portClass, WebService.class);
         if (webService == null) {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                 portClass.getCanonicalName());
@@ -248,15 +261,15 @@ public class RuntimeModeler {
         	}
             model.contractClass = clazz;
         	model.endpointClass = portClass;
-            WebService seiService = getPrivClassAnnotation(clazz, WebService.class);
+            WebService seiService = getAnnotation(clazz, WebService.class);
             if (seiService == null) {
                 throw new RuntimeModelerException("runtime.modeler.endpoint.interface.no.webservice",
                     webService.endpointInterface());
             }
 
             //check if @SOAPBinding is defined on the impl class
-            SOAPBinding sbPortClass = getPrivClassAnnotation(portClass, SOAPBinding.class);
-            SOAPBinding sbSei = getPrivClassAnnotation(clazz, SOAPBinding.class);
+            SOAPBinding sbPortClass = getAnnotation(portClass, SOAPBinding.class);
+            SOAPBinding sbSei = getAnnotation(clazz, SOAPBinding.class);
             if(sbPortClass != null){
                 if(sbSei == null || sbSei.style() != sbPortClass.style()|| sbSei.use() != sbPortClass.use()){
                     logger.warning(ServerMessages.RUNTIMEMODELER_INVALIDANNOTATION_ON_IMPL("@SOAPBinding", portClass.getName(), clazz.getName()));
@@ -298,7 +311,6 @@ public class RuntimeModeler {
     }
 
     private Class configEndpointInterface() {
-		if (config == null) return null;
 		if (config.getEndpointClass() == null ||
 		    config.getEndpointClass().isInterface()	) return null; //client proxy Interface
 		return config.getContractClass();
@@ -354,11 +366,10 @@ public class RuntimeModeler {
     }
 
     void processClass(Class clazz) {
-        WebService webService = getPrivClassAnnotation(clazz, WebService.class);
+        WebService webService = getAnnotation(clazz, WebService.class);
         String portTypeLocalName  = clazz.getSimpleName();
         if (webService.name().length() >0)
             portTypeLocalName = webService.name();
-
 
         targetNamespace = webService.targetNamespace();
         packageName = "";
@@ -372,7 +383,7 @@ public class RuntimeModeler {
         model.setPortTypeName(portTypeName);
         model.setWSDLLocation(webService.wsdlLocation());
 
-        SOAPBinding soapBinding = getPrivClassAnnotation(clazz, SOAPBinding.class);
+        SOAPBinding soapBinding = getAnnotation(clazz, SOAPBinding.class);
         if (soapBinding != null) {
             if (soapBinding.style() == SOAPBinding.Style.RPC && soapBinding.parameterStyle() == SOAPBinding.ParameterStyle.BARE) {
                 throw new RuntimeModelerException("runtime.modeler.invalid.soapbinding.parameterstyle",
@@ -412,7 +423,7 @@ public class RuntimeModeler {
             processMethod(method);
         }
         //Add additional jaxb classes referenced by {@link XmlSeeAlso}
-        XmlSeeAlso xmlSeeAlso = getPrivClassAnnotation(clazz, XmlSeeAlso.class);
+        XmlSeeAlso xmlSeeAlso = getAnnotation(clazz, XmlSeeAlso.class);
         if(xmlSeeAlso != null)
             model.addAdditionalClasses(xmlSeeAlso.value());
     }
@@ -436,7 +447,7 @@ public class RuntimeModeler {
         assert Modifier.isPublic(modifiers);
         assert !clazz.isInterface();
 
-        WebMethod webMethod = getPrivMethodAnnotation(method, WebMethod.class);
+        WebMethod webMethod = getAnnotation(method, WebMethod.class);
         if (webMethod != null) {
             if (webMethod.exclude()) {
                 return false;       // @WebMethod(exclude="true")
@@ -452,7 +463,7 @@ public class RuntimeModeler {
         }
 
         Class declClass = method.getDeclaringClass();
-        return getPrivClassAnnotation(declClass, WebService.class) != null;
+        return getAnnotation(declClass, WebService.class) != null;
     }
 
     /**
@@ -517,8 +528,9 @@ public class RuntimeModeler {
      */
     protected void processMethod(Method method) {
         int mods = method.getModifiers();
+        WebMethod webMethod = getAnnotation(method, WebMethod.class);
         if (!Modifier.isPublic(mods) || Modifier.isStatic(mods)) {
-            if(method.getAnnotation(WebMethod.class)!=null) {
+            if(webMethod != null) {
                 // if the user put @WebMethod on these non-qualifying method,
                 // it's an error
                 if(Modifier.isStatic(mods))
@@ -529,12 +541,11 @@ public class RuntimeModeler {
             return;
         }
 
-        WebMethod webMethod = getPrivMethodAnnotation(method, WebMethod.class);
         if (webMethod != null && webMethod.exclude())
             return;
 
         String methodName = method.getName();
-        boolean isOneway = method.isAnnotationPresent(Oneway.class);
+        boolean isOneway = (getAnnotation(method, Oneway.class) != null);
 
         //Check that oneway methods don't thorw any checked exceptions
         if (isOneway) {
@@ -592,12 +603,11 @@ public class RuntimeModeler {
         }
 
         javaMethod.setOperationName(operationName);
-        SOAPBinding methodBinding =
-            method.getAnnotation(SOAPBinding.class);
+        SOAPBinding methodBinding = getAnnotation(method, SOAPBinding.class);
         if(methodBinding != null && methodBinding.style() == SOAPBinding.Style.RPC) {
             logger.warning(ModelerMessages.RUNTIMEMODELER_INVALID_SOAPBINDING_ON_METHOD(methodBinding, method.getName(), method.getDeclaringClass().getName()));
         } else if (methodBinding == null && !method.getDeclaringClass().equals(portClass)) {
-            methodBinding = method.getDeclaringClass().getAnnotation(SOAPBinding.class);
+            methodBinding = getAnnotation(method.getDeclaringClass(), SOAPBinding.class); 
             if (methodBinding != null && methodBinding.style() == SOAPBinding.Style.RPC && methodBinding.parameterStyle() == SOAPBinding.ParameterStyle.BARE) {
                 throw new RuntimeModelerException("runtime.modeler.invalid.soapbinding.parameterstyle",
                         methodBinding, method.getDeclaringClass());
@@ -639,7 +649,7 @@ public class RuntimeModeler {
     }
 
     private MEP getMEP(Method m){
-        if (m.isAnnotationPresent(Oneway.class)) {
+        if (getAnnotation(m, Oneway.class)!= null) {
             return MEP.ONE_WAY;
         }
         if(Response.class.isAssignableFrom(m.getReturnType())){
@@ -660,9 +670,9 @@ public class RuntimeModeler {
     protected void processDocWrappedMethod(JavaMethodImpl javaMethod, String methodName,
                                            String operationName, Method method) {
         boolean methodHasHeaderParams = false;
-        boolean isOneway = method.isAnnotationPresent(Oneway.class);
-        RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
-        ResponseWrapper resWrapper = method.getAnnotation(ResponseWrapper.class);
+        boolean isOneway = getAnnotation(method, Oneway.class)!= null;
+        RequestWrapper reqWrapper = getAnnotation(method,RequestWrapper.class);
+        ResponseWrapper resWrapper = getAnnotation(method,ResponseWrapper.class);
         String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
         if (packageName == null || (packageName != null && packageName.length() == 0))
             beanPackage = JAXWS_PACKAGE_PD;
@@ -741,8 +751,8 @@ public class RuntimeModeler {
         // return value
 
 
-        WebResult webResult = method.getAnnotation(WebResult.class);
-        XmlElement xmlElem = method.getAnnotation(XmlElement.class);
+        WebResult webResult = getAnnotation(method, WebResult.class);
+        XmlElement xmlElem = getAnnotation(method, XmlElement.class);
         QName resultQName = getReturnQName(method, webResult, xmlElem);
         Class returnType = method.getReturnType();
         boolean isResultHeader = false;
@@ -764,7 +774,7 @@ public class RuntimeModeler {
         }
 
         if (!isOneway && (returnType != null) && (!returnType.getName().equals("void"))) {
-            Annotation[] rann = method.getAnnotations();
+            Annotation[] rann = getAnnotations(method);
             if (resultQName.getLocalPart() != null) {
                 TypeInfo rTypeReference = new TypeInfo(resultQName, returnType, rann);
                 ParameterImpl returnParameter = new ParameterImpl(javaMethod, rTypeReference, Mode.OUT, -1);
@@ -781,7 +791,7 @@ public class RuntimeModeler {
         //get WebParam
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
-        Annotation[][] pannotations = getPrivParameterAnnotations(method);
+        Annotation[][] pannotations = getParamAnnotations(method);
         int pos = 0;
         for (Class clazzType : parameterTypes) {
             String partName=null;
@@ -872,7 +882,7 @@ public class RuntimeModeler {
      */
     protected void processRpcMethod(JavaMethodImpl javaMethod, String methodName,
                                     String operationName, Method method) {
-        boolean isOneway = method.isAnnotationPresent(Oneway.class);
+        boolean isOneway = getAnnotation(method, Oneway.class) != null;
 
         // use Map to build parameters in the part order when they are known.
         // if part is unbound, we just put them at the end, and for that we
@@ -926,7 +936,7 @@ public class RuntimeModeler {
         String resultTNS = targetNamespace;
         String resultPartName = resultName;
         boolean isResultHeader = false;
-        WebResult webResult = method.getAnnotation(WebResult.class);
+        WebResult webResult = getAnnotation(method, WebResult.class);
 
         if (webResult != null) {
             isResultHeader = webResult.header();
@@ -953,7 +963,7 @@ public class RuntimeModeler {
         }
 
         if (!isOneway && returnType!=null && returnType!=void.class) {
-            Annotation[] rann = method.getAnnotations();
+            Annotation[] rann = getAnnotations(method);
             TypeInfo rTypeReference = new TypeInfo(resultQName, returnType, rann);
             rTypeReference.setGenericType(method.getGenericReturnType());
             ParameterImpl returnParameter = new ParameterImpl(javaMethod, rTypeReference, Mode.OUT, -1);
@@ -981,7 +991,7 @@ public class RuntimeModeler {
         //get WebParam
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
-        Annotation[][] pannotations = getPrivParameterAnnotations(method);
+        Annotation[][] pannotations = getParamAnnotations(method);
         int pos = 0;
         for (Class clazzType : parameterTypes) {
             String paramName = "";
@@ -1095,7 +1105,7 @@ public class RuntimeModeler {
      * @param method the <code>method</code> from which to find the exceptions to model
      */
     protected void processExceptions(JavaMethodImpl javaMethod, Method method) {
-        Action actionAnn = method.getAnnotation(Action.class);
+        Action actionAnn = getAnnotation(method, Action.class);
         FaultAction[] faultActions = {};
         if(actionAnn != null)
             faultActions = actionAnn.fault();
@@ -1109,7 +1119,7 @@ public class RuntimeModeler {
             
             Class exceptionBean;
             Annotation[] anns;
-            WebFault webFault = getPrivClassAnnotation(exception, WebFault.class);
+            WebFault webFault = getAnnotation(exception, WebFault.class);
             Method faultInfoMethod = getWSDLExceptionFaultInfo(exception);
             ExceptionType exceptionType = ExceptionType.WSDLException;
             String namespace = targetNamespace;
@@ -1132,10 +1142,10 @@ public class RuntimeModeler {
             if (faultInfoMethod == null)  {
                 exceptionBean = getExceptionBeanClass(className, exception, name, namespace);
                 exceptionType = ExceptionType.UserDefined;
-                anns = exceptionBean.getAnnotations();
+                anns = getAnnotations(exceptionBean);
             } else {
                 exceptionBean = faultInfoMethod.getReturnType();
-                anns = faultInfoMethod.getAnnotations();
+                anns = getAnnotations(faultInfoMethod);
             }
             QName faultName = new QName(namespace, name);
             TypeInfo typeRef = new TypeInfo(faultName, exceptionBean, anns);
@@ -1160,7 +1170,8 @@ public class RuntimeModeler {
      * exception that contains the <code>WebFault</code> annotation.  Otherwise it returns null
      */
     protected Method getWSDLExceptionFaultInfo(Class exception) {
-        if (!exception.isAnnotationPresent(WebFault.class))
+//      if (!exception.isAnnotationPresent(WebFault.class))
+        if (getAnnotation(exception, WebFault.class) == null)
             return null;
         try {
             return exception.getMethod("getFaultInfo");
@@ -1182,7 +1193,7 @@ public class RuntimeModeler {
         String resultTNS = targetNamespace;
         String resultPartName = null;
         boolean isResultHeader = false;
-        WebResult webResult = method.getAnnotation(WebResult.class);
+        WebResult webResult = getAnnotation(method, WebResult.class);
         if (webResult != null) {
             if (webResult.name().length() > 0)
                 resultName = webResult.name();
@@ -1199,7 +1210,7 @@ public class RuntimeModeler {
         }
 
         if ((returnType != null) && (!returnType.getName().equals("void"))) {
-            Annotation[] rann = method.getAnnotations();
+            Annotation[] rann = getAnnotations(method);
             if (resultName != null) {
                 QName responseQName = new QName(resultTNS, resultName);
                 TypeInfo rTypeReference = new TypeInfo(responseQName, returnType, rann);
@@ -1223,7 +1234,7 @@ public class RuntimeModeler {
         //get WebParam
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
-        Annotation[][] pannotations = getPrivParameterAnnotations(method);
+        Annotation[][] pannotations = getParamAnnotations(method);
         int pos = 0;
         for (Class clazzType : parameterTypes) {
             String paramName = operationName; //method.getName();
