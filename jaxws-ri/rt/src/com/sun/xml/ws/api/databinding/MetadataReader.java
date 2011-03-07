@@ -41,13 +41,14 @@ package com.sun.xml.ws.api.databinding;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
- * AnnotationReader
+ * MetadataReader
  * 
  * @author shih-chang.chen@oracle.com
  */
-public interface AnnotationReader {
+public interface MetadataReader {
 	
     public Annotation[] getAnnotations(Method m) ;
     
@@ -58,4 +59,11 @@ public interface AnnotationReader {
     public <A extends Annotation> A getAnnotation(final Class<A> annType, final Class<?> cls);
 
     public Annotation[] getAnnotations(Class<?> c);
+
+    public void getProperties(final Map<String, Object> prop, final Class<?> cls);
+    
+    public void getProperties(final Map<String, Object> prop, final Method method);  
+    
+    public void getProperties(final Map<String, Object> prop, final Method method, int pos);
+    
 }

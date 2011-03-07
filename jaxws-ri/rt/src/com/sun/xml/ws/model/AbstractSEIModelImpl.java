@@ -98,6 +98,8 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 
     protected AbstractSEIModelImpl(WebServiceFeature[] features) {
         this.features = features;
+        databindingInfo = new BindingInfo();
+        databindingInfo.setSEIModel(this);
     }
 
     void postProcess() {
@@ -190,20 +192,18 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
                     if(factory==null)   factory=JAXBContextFactory.DEFAULT;
 //                    return factory.createJAXBContext(AbstractSEIModelImpl.this,cls,types);
 
-                	BindingInfo bi = new BindingInfo();
-                	bi.setSEIModel(AbstractSEIModelImpl.this);
-                	bi.properties().put(JAXBContextFactory.class.getName(), factory);
-                	if (dbf != null) bi.setDatabindingMode(dbf.getMode());
+                    databindingInfo.properties().put(JAXBContextFactory.class.getName(), factory);
+                	if (dbf != null) databindingInfo.setDatabindingMode(dbf.getMode());
 //                	else 
 //                		bi.setDatabindingMode(BindingContextFactory.EclipseLinkJAXB);
 //                		bi.setDatabindingMode(BindingContextFactory.GlassfishJAXB);   
-                	if (f!=null) bi.setDatabindingMode(BindingContextFactory.DefaultDatabindingMode);
-                	bi.setClassLoader(classLoader);
-                	bi.contentClasses().addAll(cls);
-                	bi.typeInfos().addAll(types);
-                	bi.properties().put("c14nSupport", Boolean.FALSE);
-                	bi.setDefaultNamespace(AbstractSEIModelImpl.this.getTargetNamespace());
-                	BindingContext bc =  BindingContextFactory.create(bi);
+                	if (f!=null) databindingInfo.setDatabindingMode(BindingContextFactory.DefaultDatabindingMode);
+                	databindingInfo.setClassLoader(classLoader);
+                	databindingInfo.contentClasses().addAll(cls);
+                	databindingInfo.typeInfos().addAll(types);
+                	databindingInfo.properties().put("c14nSupport", Boolean.FALSE);
+                	databindingInfo.setDefaultNamespace(AbstractSEIModelImpl.this.getTargetNamespace());
+                	BindingContext bc =  BindingContextFactory.create(databindingInfo);
 //                	System.out.println("---------------------- databinding " + bc);
                 	return bc;
                 }
@@ -518,5 +518,6 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 	protected Class endpointClass;
 	protected ClassLoader classLoader = null;
 	protected WSBinding wsBinding;
+	protected BindingInfo databindingInfo;
 	private static final Logger LOGGER = Logger.getLogger(AbstractSEIModelImpl.class.getName());
 }

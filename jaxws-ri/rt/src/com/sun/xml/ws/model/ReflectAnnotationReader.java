@@ -43,15 +43,16 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Map;
 
-import com.sun.xml.ws.api.databinding.AnnotationReader;
+import com.sun.xml.ws.api.databinding.MetadataReader;
 
 /**
  * ReflectAnnotationReader
  * 
  * @author shih-chang.chen@oracle.com
  */
-public class ReflectAnnotationReader implements AnnotationReader {
+public class ReflectAnnotationReader implements MetadataReader {
 //getAnnotationOnImpl SEIorIMpl
 	public Annotation[] getAnnotations(Method m) {
 		return m.getAnnotations();
@@ -88,4 +89,10 @@ public class ReflectAnnotationReader implements AnnotationReader {
             }
         });
     }
+
+    public void getProperties(final Map<String, Object> prop, final Class<?> cls){}
+    
+    public void getProperties(final Map<String, Object> prop, final Method method){}  
+    
+    public void getProperties(final Map<String, Object> prop, final Method method, int pos){}
 }

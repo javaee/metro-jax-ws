@@ -75,7 +75,7 @@ public class DatabindingConfig {
 	//On the EndpointFactory.createEndpoint path, WSBinding could be created from DeploymentDescriptorParser.createBinding
 	protected WSBinding wsBinding;
 	protected WSDLPort wsdlPort;
-	protected AnnotationReader annotationReader;
+	protected MetadataReader metadataReader;
 	protected Map<String, Object> properties = new HashMap<String, Object>();
 	
 //	public MappingInfo getDefaultMappingInfo() {
@@ -157,10 +157,10 @@ public class DatabindingConfig {
 	public void setWSBinding(WSBinding wsBinding) {
 		this.wsBinding = wsBinding;
 	}
-	public AnnotationReader getAnnotationReader() {
-		return annotationReader;
+	public MetadataReader getMetadataReader() {
+		return metadataReader;
 	}
-	public void setAnnotationReader(AnnotationReader  reader) {
-		this.annotationReader = reader;
+	public void setMetadataReader(MetadataReader  reader) {
+		this.metadataReader = reader;
 	}
 }

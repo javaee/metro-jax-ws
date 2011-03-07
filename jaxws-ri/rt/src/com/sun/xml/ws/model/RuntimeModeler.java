@@ -44,7 +44,7 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.databinding.AnnotationReader;
+import com.sun.xml.ws.api.databinding.MetadataReader;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.model.ExceptionType;
 import com.sun.xml.ws.api.model.MEP;
@@ -110,7 +110,7 @@ public class RuntimeModeler {
     private QName serviceName;
     private QName portName;
     private DatabindingConfig config;
-    private AnnotationReader annotationReader;
+    private MetadataReader metadataReader;
     /**
      *
      */
@@ -173,8 +173,8 @@ public class RuntimeModeler {
             this.features = config.getFeatures();
             this.wsBinding = bindingId.createBinding(features);
         }
-        annotationReader = config.getAnnotationReader();
-        if (annotationReader == null) annotationReader = new ReflectAnnotationReader();
+        metadataReader = config.getMetadataReader();
+        if (metadataReader == null) metadataReader = new ReflectAnnotationReader();
     }
 
     /**
@@ -195,7 +195,7 @@ public class RuntimeModeler {
     }
 
     private <T extends Annotation> T getAnnotation(final Class<?> clazz, final Class<T> T) {
-    	return annotationReader.getAnnotation(T, clazz);
+    	return metadataReader.getAnnotation(T, clazz);
 //        return AccessController.doPrivileged(new PrivilegedAction<T>() {
 //           public T run() {
 //               return clazz.getAnnotation(T);
@@ -204,7 +204,7 @@ public class RuntimeModeler {
     }
 
     private <T extends Annotation> T getAnnotation(final Method method, final Class<T> T) {
-    	return annotationReader.getAnnotation(T, method);
+    	return metadataReader.getAnnotation(T, method);
 //        return AccessController.doPrivileged(new PrivilegedAction<T>() {
 //           public T run() {
 //               return method.getAnnotation(T);
@@ -213,14 +213,14 @@ public class RuntimeModeler {
     }
 
     private Annotation[] getAnnotations(final Method method) {
-        return annotationReader.getAnnotations(method);
+        return metadataReader.getAnnotations(method);
     }
 
     private Annotation[] getAnnotations(final Class<?> c) {
-        return annotationReader.getAnnotations(c);
+        return metadataReader.getAnnotations(c);
     }
     private Annotation[][] getParamAnnotations(final Method method) {
-    	return annotationReader.getParameterAnnotations(method);
+    	return metadataReader.getParameterAnnotations(method);
 //        return AccessController.doPrivileged(new PrivilegedAction<Annotation[][]>() {
 //           public Annotation[][] run() {
 //               return method.getParameterAnnotations();
@@ -247,6 +247,7 @@ public class RuntimeModeler {
         if (model.contractClass == null) model.contractClass = portClass;
         if (model.endpointClass == null && !portClass.isInterface()) model.endpointClass = portClass;
         Class clazz = portClass;
+        metadataReader.getProperties(model.databindingInfo.properties(), portClass);
         WebService webService = getAnnotation(portClass, WebService.class);
         if (webService == null) {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
@@ -306,7 +307,6 @@ public class RuntimeModeler {
         // we still need to do this correctyl
         if(binding!=null)
             model.freeze(binding);
-
         return model;
     }
 
@@ -777,6 +777,7 @@ public class RuntimeModeler {
             Annotation[] rann = getAnnotations(method);
             if (resultQName.getLocalPart() != null) {
                 TypeInfo rTypeReference = new TypeInfo(resultQName, returnType, rann);
+                metadataReader.getProperties(rTypeReference.properties(), method);
                 ParameterImpl returnParameter = new ParameterImpl(javaMethod, rTypeReference, Mode.OUT, -1);
                 if (isResultHeader) {
                     returnParameter.setBinding(ParameterBinding.HEADER);
@@ -840,6 +841,7 @@ public class RuntimeModeler {
             }
             typeRef =
                 new TypeInfo(paramQName, clazzType, pannotations[pos]);
+            metadataReader.getProperties(typeRef.properties(), method, pos);
             ParameterImpl param = new ParameterImpl(javaMethod, typeRef, paramMode, pos++);
 
             if (isHeader) {
@@ -965,6 +967,7 @@ public class RuntimeModeler {
         if (!isOneway && returnType!=null && returnType!=void.class) {
             Annotation[] rann = getAnnotations(method);
             TypeInfo rTypeReference = new TypeInfo(resultQName, returnType, rann);
+            metadataReader.getProperties(rTypeReference.properties(), method);
             rTypeReference.setGenericType(method.getGenericReturnType());
             ParameterImpl returnParameter = new ParameterImpl(javaMethod, rTypeReference, Mode.OUT, -1);
             returnParameter.setPartName(resultPartName);
@@ -1048,6 +1051,7 @@ public class RuntimeModeler {
             }
             typeRef =
                 new TypeInfo(paramQName, clazzType, pannotations[pos]);
+            metadataReader.getProperties(typeRef.properties(), method, pos);
             typeRef.setGenericType(genericParameterTypes[pos]);
             ParameterImpl param = new ParameterImpl(javaMethod, typeRef, paramMode, pos++);
             param.setPartName(partName);
@@ -1215,6 +1219,7 @@ public class RuntimeModeler {
                 QName responseQName = new QName(resultTNS, resultName);
                 TypeInfo rTypeReference = new TypeInfo(responseQName, returnType, rann);
                 rTypeReference.setGenericType(gReturnType);
+                metadataReader.getProperties(rTypeReference.properties(), method);
                 ParameterImpl returnParameter = new ParameterImpl(javaMethod, rTypeReference, Mode.OUT, -1);
 
                 if(resultPartName == null || (resultPartName.length() == 0)){
@@ -1281,6 +1286,7 @@ public class RuntimeModeler {
             TypeInfo typeRef = //operationName with upper 1 char
                 new TypeInfo(requestQName, clazzType,
                     pannotations[pos]);
+            metadataReader.getProperties(typeRef.properties(), method, pos);
             typeRef.setGenericType(genericParameterTypes[pos]);
             ParameterImpl param = new ParameterImpl(javaMethod, typeRef, paramMode, pos++);
             if(partName == null || (partName.length() == 0)){
