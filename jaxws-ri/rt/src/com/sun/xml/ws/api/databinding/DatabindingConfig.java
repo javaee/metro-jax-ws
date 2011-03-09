@@ -51,9 +51,9 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 
 /**
- * WsRuntimeConfig contains the initial states for WsRuntime. After a WsRuntime 
+ * DatabindingConfig contains the initial states for Databinding. After a Databinding 
  * instance is created, all it's internal states should be considered 
- * 'immutable' and therefore the operations on WsRuntime can be thread-safe.
+ * 'immutable' and therefore the operations on Databinding are thread-safe.
  *
  * @author shih-chang.chen@oracle.com
  */

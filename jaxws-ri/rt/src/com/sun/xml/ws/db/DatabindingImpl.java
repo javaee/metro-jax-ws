@@ -39,6 +39,9 @@
  */
 package com.sun.xml.ws.db;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +61,9 @@ import com.sun.xml.ws.api.model.MEP;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.pipe.Codec;
+import com.sun.xml.ws.api.pipe.ContentType;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.sei.StubAsyncHandler;
 import com.sun.xml.ws.client.sei.StubHandler;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
@@ -82,6 +88,7 @@ public class DatabindingImpl implements Databinding {
 	Map<Method, TieHandler> tieHandlers = new HashMap<Method, TieHandler>();
     OperationDispatcher operationDispatcher;
     boolean clientConfig = false;
+    Codec codec;
     
 	public DatabindingImpl(DatabindingProviderImpl p, DatabindingConfig config) {
 		RuntimeModeler modeler = new RuntimeModeler(config);
@@ -202,4 +209,18 @@ public class DatabindingImpl implements Databinding {
 		QName wsdlOp = operationDispatcher.getWSDLOperationQName(req);
 		return wsdlOpMap.get(wsdlOp);
 	}
+
+	
+	Codec getCodec() {
+		if (codec == null) codec = ((BindingImpl)seiModel.getWSBinding()).createCodec();
+		return codec;
+	}
+
+	public ContentType encode( Packet packet, OutputStream out ) throws IOException {
+    	return getCodec().encode(packet, out);    	
+    }
+
+	public void decode( InputStream in, String ct, Packet p ) throws IOException{
+    	getCodec().decode(in, ct, p);    	
+    }
 }

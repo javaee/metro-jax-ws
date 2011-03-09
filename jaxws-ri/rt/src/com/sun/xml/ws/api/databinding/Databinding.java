@@ -39,11 +39,15 @@
  */
 package com.sun.xml.ws.api.databinding;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 
 import javax.xml.ws.WebServiceFeature;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.wsdl.DispatchException;
 
 /**
@@ -151,4 +155,8 @@ public interface Databinding {
 	WebServiceFeature[] getFeatures();
 
 	void generateWSDL(WSDLGenInfo info);
+
+	public ContentType encode( Packet packet, OutputStream out ) throws IOException ;
+
+	public void decode( InputStream in, String ct, Packet packet ) throws IOException;
 }

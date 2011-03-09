@@ -246,23 +246,23 @@ public class RuntimeModeler {
         model.wsBinding = wsBinding;
         if (model.contractClass == null) model.contractClass = portClass;
         if (model.endpointClass == null && !portClass.isInterface()) model.endpointClass = portClass;
-        Class clazz = portClass;
+        Class<?> seiClass = portClass;
         metadataReader.getProperties(model.databindingInfo.properties(), portClass);
         WebService webService = getAnnotation(portClass, WebService.class);
         if (webService == null) {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                 portClass.getCanonicalName());
         } 
-        Class seiFromConfig = configEndpointInterface();
+        Class<?> seiFromConfig = configEndpointInterface();
         if (webService.endpointInterface().length() > 0 || seiFromConfig != null) {
         	if (seiFromConfig != null) {
-        		clazz = seiFromConfig;
+        		seiClass = seiFromConfig;
         	} else {
-        		clazz = getClass(webService.endpointInterface(), ModelerMessages.localizableRUNTIME_MODELER_CLASS_NOT_FOUND(webService.endpointInterface()));
+        		seiClass = getClass(webService.endpointInterface(), ModelerMessages.localizableRUNTIME_MODELER_CLASS_NOT_FOUND(webService.endpointInterface()));
         	}
-            model.contractClass = clazz;
+            model.contractClass = seiClass;
         	model.endpointClass = portClass;
-            WebService seiService = getAnnotation(clazz, WebService.class);
+            WebService seiService = getAnnotation(seiClass, WebService.class);
             if (seiService == null) {
                 throw new RuntimeModelerException("runtime.modeler.endpoint.interface.no.webservice",
                     webService.endpointInterface());
@@ -270,15 +270,15 @@ public class RuntimeModeler {
 
             //check if @SOAPBinding is defined on the impl class
             SOAPBinding sbPortClass = getAnnotation(portClass, SOAPBinding.class);
-            SOAPBinding sbSei = getAnnotation(clazz, SOAPBinding.class);
+            SOAPBinding sbSei = getAnnotation(seiClass, SOAPBinding.class);
             if(sbPortClass != null){
                 if(sbSei == null || sbSei.style() != sbPortClass.style()|| sbSei.use() != sbPortClass.use()){
-                    logger.warning(ServerMessages.RUNTIMEMODELER_INVALIDANNOTATION_ON_IMPL("@SOAPBinding", portClass.getName(), clazz.getName()));
+                    logger.warning(ServerMessages.RUNTIMEMODELER_INVALIDANNOTATION_ON_IMPL("@SOAPBinding", portClass.getName(), seiClass.getName()));
                 }
             }
         }
         if (serviceName == null)
-            serviceName = getServiceName(portClass);
+            serviceName = getServiceName(portClass, metadataReader);
         model.setServiceQName(serviceName);
 
         String portLocalName  = portClass.getSimpleName()+PORT;
@@ -296,7 +296,7 @@ public class RuntimeModeler {
         }
         model.setPortName(portName);
 
-        processClass(clazz);
+        processClass(seiClass);
         if (model.getJavaMethods().size() == 0)
             throw new RuntimeModelerException("runtime.modeler.no.operations",
                     portClass.getName());
@@ -1381,6 +1381,10 @@ public class RuntimeModeler {
      * @return the <code>wsdl:serviceName</code> for the <code>implClass</code>
      */
     public static QName getServiceName(Class<?> implClass) {
+    	return getServiceName(implClass, null);
+    }
+    
+    public static QName getServiceName(Class<?> implClass, MetadataReader reader) {
         if (implClass.isInterface()) {
             throw new RuntimeModelerException("runtime.modeler.cannot.get.serviceName.from.interface",
                                     implClass.getCanonicalName());
@@ -1391,7 +1395,7 @@ public class RuntimeModeler {
         if (implClass.getPackage() != null)
             packageName = implClass.getPackage().getName();
 
-        WebService webService = implClass.getAnnotation(WebService.class);
+        WebService webService = (reader != null)? reader.getAnnotation(WebService.class, implClass): implClass.getAnnotation(WebService.class);
         if (webService == null) {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                 implClass.getCanonicalName());
@@ -1406,9 +1410,6 @@ public class RuntimeModeler {
             throw new RuntimeModelerException("runtime.modeler.no.package",
                 implClass.getName());
         }
-
-
-
         return new QName(targetNamespace, name);
     }
 
