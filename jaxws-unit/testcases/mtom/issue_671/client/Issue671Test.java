@@ -65,6 +65,7 @@ public class Issue671Test extends TestCase {
         XDoc xdoc = new XDoc();
         xdoc.setDoc1(getSource("gpsXml.xml"));
         XDoc out = provider_proxy.xDoc(xdoc);
+        assertNotNull(out.getDoc1());
     }
 
     /**
