@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings xmlns="http://java.sun.com/xml/ns/jaxws" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <package name="fromwsdl.mime.simple_rpclit.client"/>
+    <bindings node="wsdl:definitions/wsdl:binding[@name='CatalogSoapBinding']/wsdl:operation[@name='getProductDetails']">
+        <enableMIMEContent>true</enableMIMEContent>
+    </bindings>
+    <bindings node="wsdl:definitions/wsdl:binding[@name='CatalogSoapBinding']/wsdl:operation[@name='testDataHandler']">
+        <enableMIMEContent>true</enableMIMEContent>
+    </bindings>
+    <bindings node="wsdl:definitions/wsdl:binding[@name='CatalogSoapBinding']/wsdl:operation[@name='echoAllAttachmentTypes']">
+        <enableMIMEContent>true</enableMIMEContent>
+    </bindings>
+</bindings>
