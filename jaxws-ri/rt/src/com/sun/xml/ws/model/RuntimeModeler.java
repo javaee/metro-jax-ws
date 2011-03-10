@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -281,19 +281,21 @@ public class RuntimeModeler {
             serviceName = getServiceName(portClass, metadataReader);
         model.setServiceQName(serviceName);
 
-        String portLocalName  = portClass.getSimpleName()+PORT;
-        if (webService.portName().length() >0) {
-            portLocalName = webService.portName();
-        } else if (webService.name().length() >0) {
-            portLocalName = webService.name()+PORT;
-        }
+//        String portLocalName  = portClass.getSimpleName()+PORT;
+//        if (webService.portName().length() >0) {
+//            portLocalName = webService.portName();
+//        } else if (webService.name().length() >0) {
+//            portLocalName = webService.name()+PORT;
+//        }
+//
+//        if (portName == null) 
+//            portName = new QName(serviceName.getNamespaceURI(), portLocalName);
+//        if (!portName.getNamespaceURI().equals(serviceName.getNamespaceURI())) {
+//            throw new RuntimeModelerException("runtime.modeler.portname.servicename.namespace.mismatch",
+//                serviceName, portName);
+//        }
 
-        if (portName == null)
-            portName = new QName(serviceName.getNamespaceURI(), portLocalName);
-        if (!portName.getNamespaceURI().equals(serviceName.getNamespaceURI())) {
-            throw new RuntimeModelerException("runtime.modeler.portname.servicename.namespace.mismatch",
-                serviceName, portName);
-        }
+        if (portName == null) portName = getPortName(portClass, serviceName.getNamespaceURI(), metadataReader);
         model.setPortName(portName);
 
         processClass(seiClass);
@@ -367,20 +369,23 @@ public class RuntimeModeler {
 
     void processClass(Class clazz) {
         WebService webService = getAnnotation(clazz, WebService.class);
-        String portTypeLocalName  = clazz.getSimpleName();
-        if (webService.name().length() >0)
-            portTypeLocalName = webService.name();
-
-        targetNamespace = webService.targetNamespace();
+        QName portTypeName = getPortTypeName(clazz, targetNamespace, metadataReader);
+//        String portTypeLocalName  = clazz.getSimpleName();
+//        if (webService.name().length() >0)
+//            portTypeLocalName = webService.name();
+//
+//        targetNamespace = webService.targetNamespace();
         packageName = "";
         if (clazz.getPackage() != null)
             packageName = clazz.getPackage().getName();
-        if (targetNamespace.length() == 0) {
-            targetNamespace = getNamespace(packageName);
-        }
-        model.setTargetNamespace(targetNamespace);
-        QName portTypeName = new QName(targetNamespace, portTypeLocalName);
+//        if (targetNamespace.length() == 0) {
+//            targetNamespace = getNamespace(packageName);
+//        }
+//        model.setTargetNamespace(targetNamespace);
+//        QName portTypeName = new QName(targetNamespace, portTypeLocalName);
+        targetNamespace = portTypeName.getNamespaceURI();
         model.setPortTypeName(portTypeName);
+        model.setTargetNamespace(targetNamespace);
         model.setWSDLLocation(webService.wsdlLocation());
 
         SOAPBinding soapBinding = getAnnotation(clazz, SOAPBinding.class);
@@ -1395,7 +1400,7 @@ public class RuntimeModeler {
         if (implClass.getPackage() != null)
             packageName = implClass.getPackage().getName();
 
-        WebService webService = (reader != null)? reader.getAnnotation(WebService.class, implClass): implClass.getAnnotation(WebService.class);
+        WebService webService = getAnnotation(WebService.class, implClass, reader);
         if (webService == null) {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                 implClass.getCanonicalName());
@@ -1420,7 +1425,11 @@ public class RuntimeModeler {
      * @return the <code>wsdl:portName</code> for the <code>implClass</code>
      */
     public static QName getPortName(Class<?> implClass, String targetNamespace) {
-        WebService webService = implClass.getAnnotation(WebService.class);
+        return getPortName(implClass, targetNamespace, null);
+    }
+    
+    public static QName getPortName(Class<?> implClass, String targetNamespace, MetadataReader reader) {
+        WebService webService = getAnnotation(WebService.class, implClass, reader);  
         if (webService == null) {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                 implClass.getCanonicalName());
@@ -1453,6 +1462,10 @@ public class RuntimeModeler {
 
         return new QName(targetNamespace, name);
     }
+    
+    static <A extends Annotation> A getAnnotation(Class<A> t, Class<?> cls, MetadataReader reader) {
+        return (reader == null)? cls.getAnnotation(t) : reader.getAnnotation(t, cls);
+    }
 
     /**
      * Gives portType QName from implementatorClass or SEI
@@ -1460,14 +1473,17 @@ public class RuntimeModeler {
      * @return  <code>wsdl:portType@name</code>, null if it could not find the annotated class.
      */
     public static QName getPortTypeName(Class<?> implOrSeiClass){
+        return getPortTypeName(implOrSeiClass, null, null);
+    }
+    public static QName getPortTypeName(Class<?> implOrSeiClass, String tns, MetadataReader reader){
         assert(implOrSeiClass != null);
+        WebService webService = getAnnotation(WebService.class, implOrSeiClass, reader);        
         Class<?> clazz = implOrSeiClass;
-        if (!implOrSeiClass.isAnnotationPresent(WebService.class))
+        if (webService == null)
                 throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                                            implOrSeiClass.getCanonicalName());
 
         if (!implOrSeiClass.isInterface()) {
-            WebService webService = implOrSeiClass.getAnnotation(WebService.class);
             String epi = webService.endpointInterface();
             if (epi.length() > 0) {
                 try {
@@ -1482,13 +1498,13 @@ public class RuntimeModeler {
             }
         }
 
-        WebService webService = clazz.getAnnotation(WebService.class);
+        webService = getAnnotation(WebService.class, clazz, reader);  
         String name = webService.name();
         if(name.length() == 0){
             name = clazz.getSimpleName();
         }
-
-        String tns = webService.targetNamespace();
+        tns = webService.targetNamespace();
+        if (tns == null || "".equals(tns.trim())) tns = webService.targetNamespace();
         if (tns.length() == 0)
             tns = getNamespace(clazz.getPackage().getName());
         if (tns == null) {
