@@ -118,7 +118,7 @@ public class WrapperBridge<T> implements XMLBridge<T> {
 	}
 
 	public final void marshal(T object, XMLStreamWriter output, AttachmentMarshaller am) throws JAXBException {
-		bridge.marshal(object, output, am);
+		bridge.marshal((T) convert(object), output, am);
 	}
 	
 	public String toString() {
