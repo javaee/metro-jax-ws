@@ -1,4 +1,4 @@
-package com.sun.xml.ws.eclipselink;
+package com.sun.xml.ws;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -10,7 +10,7 @@ import javax.jws.WebService;
 
 import com.sun.xml.ws.api.databinding.MetadataReader;
 
-class DummyAnnotations implements MetadataReader {
+public class DummyAnnotations implements MetadataReader {
 	static class DummyAnnotation implements InvocationHandler {
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			Class<?> type = method.getReturnType();
@@ -27,6 +27,7 @@ class DummyAnnotations implements MetadataReader {
 		return null;
 	}
 	public <A extends Annotation> A getAnnotation(Class<A> annType, Class<?> cls) {
+		if (Object.class.equals(cls)) return null;
 		if (WebService.class.equals(annType)) {
 			Class[] intf = { annType };
 			Object dummy = Proxy.newProxyInstance(annType.getClassLoader(), intf, new DummyAnnotation());

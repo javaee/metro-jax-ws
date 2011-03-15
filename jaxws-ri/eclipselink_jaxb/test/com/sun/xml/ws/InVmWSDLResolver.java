@@ -1,4 +1,4 @@
-package com.sun.xml.ws.eclipselink;
+package com.sun.xml.ws;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

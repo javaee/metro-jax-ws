@@ -1,10 +1,15 @@
-package com.sun.xml.ws.eclipselink;
+package com.sun.xml.ws;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
@@ -167,4 +172,32 @@ abstract public class WsDatabindingTestBase extends TestCase {
 			return cliCall.getReturnValue();
 		}		
 	}
+
+    
+    static public void assertEqualList(List<?> list1, List<?> list2) {
+        assertTrue(list1.size() == list2.size());
+        for (int i = 0; i < list1.size(); i++) {
+            assertEquals(list1.get(i), list2.get(i));
+        }        
+    }
+
+    static public void assertEqualCollection(Collection<?> c1, Collection<?> c2) {
+        assertTrue(c1.size() == c2.size());
+        for (Iterator i = c1.iterator(); i.hasNext();) {
+            assertTrue(c2.contains(i.next()));
+        }        
+    }
+    
+    static public void assertEqualArray(Object a1, Object a2) {
+        assertTrue(Array.getLength(a1) == Array.getLength(a2));
+        for (int i = 0; i < Array.getLength(a1); i++) {
+            assertEquals(Array.get(a1, i), Array.get(a2, i));
+        }        
+    }   
+
+    static public boolean equalsMap(Map<?,?> req, Map<?,?>  res) {
+      if (req.size() != res.size()) return false;
+      for(Object k : req.keySet()) if(!req.get(k).equals(res.get(k))) return false;
+      return true;
+    }
 }

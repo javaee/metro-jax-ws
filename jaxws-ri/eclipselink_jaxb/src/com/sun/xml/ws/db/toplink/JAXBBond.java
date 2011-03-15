@@ -103,7 +103,7 @@ public class JAXBBond<T> implements XMLBridge<T> {
 			if (mappingInfo != null) {
 				JAXBElement<T> elt = new JAXBElement<T>(
 						mappingInfo.getXmlTagName(),
-						(Class<T>) mappingInfo.getType(), object);
+						(Class<T>) typeInfo.type, object);
 				marshaller.marshal(elt, output, mappingInfo);
 			} else
 				marshaller.marshal(object, output);
