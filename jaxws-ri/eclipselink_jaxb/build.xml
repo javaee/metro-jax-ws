@@ -48,6 +48,8 @@
 
   <target name="compile">
     <mkdir dir="${build.dir}/classes"/>
+    <mkdir dir="${build.dir}/test-classes"/>
+    <mkdir dir="${build.dir}/test-reports"/>
     <javac srcdir="src"
         destdir="${basedir}/build/classes"
         debug="${compile.debug}"
@@ -56,13 +58,59 @@
         source="1.5">
       <classpath>
       	<pathelement path="./lib/eclipselink.jar"/>
+      	<pathelement path="./lib/javax.mail_1.4.jar"/>
         <path refid="runtime.compile.classpath"/>
         <pathelement path="../rt/build/classes" />
       </classpath>
     </javac>
+    <copy todir="${build.dir}/classes/META-INF/services">
+      <fileset dir="${basedir}/etc/" includes="javax.xml.ws.*, com.sun.xml.ws.*"/>
+    </copy>
+    <antcall target="test" inheritrefs="true"/>
   </target>
 
   <target name="clean">
     <delete dir="${build.dir}"/>
   </target>
-</project> 
+
+  <target name="test">
+          <path id="test.classpath">
+      	      <pathelement path="./lib/eclipselink.jar"/>
+      	      <pathelement path="./lib/javax.mail_1.4.jar"/>
+              <path refid="runtime.compile.classpath"/>
+              <pathelement path="../rt/build/classes" />
+              <pathelement path="${build.dir}/classes" />
+              <pathelement path="${build.dir}/test-classes" />
+              <pathelement path="${basedir}/test"/>
+          </path>
+
+          <javac srcdir="${basedir}/test"
+                 destdir="${build.dir}/test-classes"
+                 debug="${compile.debug}"
+                 optimize="${compile.optimize}">
+              <classpath refid="test.classpath"/>
+          </javac>
+
+          <junit haltonfailure="yes"
+                 showoutput="true">
+              <classpath refid="test.classpath"/>
+              <formatter type="xml"/>
+              <!-- This formatter allows NetBeans to display the test results -->
+              <formatter type="brief" usefile="false"/>
+              <batchtest todir="${build.dir}/test-reports" haltonerror="false">
+                  <fileset dir="${build.dir}/test-classes">
+                      <include name="**/AllTests.class" />
+                      <include name="**/*Test.class" />
+                  </fileset>
+              </batchtest>
+          </junit>
+
+          <junitreport todir="${build.dir}/test-reports">
+              <fileset dir="${build.dir}/test-reports">
+                  <include name="TEST-*.xml"/>
+              </fileset>
+              <report format="frames" todir="${build.dir}/test-reports/report/html"/>
+          </junitreport>
+
+    </target>
+</project>

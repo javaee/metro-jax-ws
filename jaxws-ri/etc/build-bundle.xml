@@ -189,13 +189,13 @@
             <fileset dir="${basedir}/servlet/build/classes"/>
             <fileset dir="${basedir}/rt/src" includes="**/*.xml"/>
         </jar>
-        <ant dir="${basedir}/httpspi-servlet" target="jar"/>   
+        <ant dir="${basedir}/httpspi-servlet" target="jar"/>
 
     	<jar jarfile="${build.home}/lib/jaxws-eclipselink-plugin.jar">
-    		<service type="com.sun.xml.ws.spi.db.BindingContextFactory"
-    			provider="com.sun.xml.ws.db.toplink.JAXBContextFactory"/>
+    		<!-- <service type="com.sun.xml.ws.spi.db.BindingContextFactory"
+    			provider="com.sun.xml.ws.db.toplink.JAXBContextFactory"/>-->
     	    <fileset dir="${basedir}/eclipselink_jaxb/build/classes"/>
-    	</jar>     
+    	</jar>
     </target>
 
     <!-- runtime must be built before tools -->
@@ -226,10 +226,10 @@
             <fileset dir="${basedir}/rt-ha/lib"
                      includes="ha-api.jar"/>
         </copy>
-    	
+
     	<copy todir="${build.home}/lib">
     	    <fileset dir="${basedir}/eclipselink_jaxb/lib"
-    	             includes="eclipselink.jar"/>
+    	             includes="eclipselink.jar, javax.mail_1.4.jar"/>
     	</copy>
 
         <antcall target="copy-sjsxp-libs"/>
@@ -272,9 +272,9 @@
         <ant dir="${basedir}/rt-ha" target="clean"/>
         <ant dir="${basedir}/tools/resourcegen" target="clean"/>
         <ant dir="${basedir}/tools/wscompile" target="clean"/>
-        <ant dir="${basedir}/servlet" target="clean"/>        
-        <ant dir="${basedir}/httpspi-servlet" target="clean"/>   
-    	<ant dir="${basedir}/eclipselink_jaxb" target="clean"/>     
+        <ant dir="${basedir}/servlet" target="clean"/>
+        <ant dir="${basedir}/httpspi-servlet" target="clean"/>
+    	<ant dir="${basedir}/eclipselink_jaxb" target="clean"/>
     </target>
 
     <!-- for now, this gets everything built -->
