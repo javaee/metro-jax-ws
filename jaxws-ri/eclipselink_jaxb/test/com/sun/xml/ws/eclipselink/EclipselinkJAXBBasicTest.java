@@ -37,7 +37,7 @@ public class EclipselinkJAXBBasicTest extends BasicDatabindingTestBase  {
 		cliConfig.setContractClass(proxySEIClass);
 		cliConfig.setFeatures(f);	
 		
-		CollectionMap p = createProxy(CollectionMap.class, srvConfig, cliConfig, true);
+		CollectionMap p = createProxy(CollectionMap.class, srvConfig, cliConfig, false);
 	    List<String> req = Arrays.asList("x", "Eclipselink", "parameterized", "List");
 	    List<String> res = p.echoListOfString(req);
 	    assertEqualList(req, res);

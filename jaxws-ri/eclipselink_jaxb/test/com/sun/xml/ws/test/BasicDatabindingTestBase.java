@@ -37,7 +37,7 @@ public abstract class BasicDatabindingTestBase extends WsDatabindingTestBase  {
 		cliConfig.setContractClass(proxySEIClass);
 		cliConfig.setFeatures(f);	
 		
-		HelloPort hp = createProxy(HelloPort.class, srvConfig, cliConfig, true);
+		HelloPort hp = createProxy(HelloPort.class, srvConfig, cliConfig, false);
 		String req = "testInVM " + dbm.getMode();
 		String res = hp.echoS(req);
 		assertEquals(req, res);
