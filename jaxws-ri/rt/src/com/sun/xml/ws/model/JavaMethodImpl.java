@@ -42,6 +42,7 @@ package com.sun.xml.ws.model;
 
 import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.TypeReference;
+import com.sun.xml.ws.api.databinding.MetadataReader;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.MEP;
 import com.sun.xml.ws.api.model.SEIModel;
@@ -91,22 +92,22 @@ public final class JavaMethodImpl implements JavaMethod {
      * @param seiMethod : corresponding SEI Method.
      *                  Is there is no SEI, it should be Implementation class method
      */
-    public JavaMethodImpl(AbstractSEIModelImpl owner, Method method, Method seiMethod) {
+    public JavaMethodImpl(AbstractSEIModelImpl owner, Method method, Method seiMethod, MetadataReader metadataReader) {
         this.owner = owner;
         this.method = method;
         this.seiMethod = seiMethod;
-        setWsaActions();
+        setWsaActions(metadataReader);
     }
 
-    private void setWsaActions() {
-        Action action = seiMethod.getAnnotation(Action.class);
+    private void setWsaActions(MetadataReader metadataReader) {
+        Action action = (metadataReader != null)? metadataReader.getAnnotation(Action.class, seiMethod):seiMethod.getAnnotation(Action.class);
         if(action != null) {
             inputAction = action.input();
             outputAction = action.output();
         }
 
         //@Action(input) =="", get it from @WebMethod(action)
-        WebMethod webMethod = seiMethod.getAnnotation(WebMethod.class);
+        WebMethod webMethod = (metadataReader != null)? metadataReader.getAnnotation(WebMethod.class, seiMethod):seiMethod.getAnnotation(WebMethod.class);
         String soapAction = "";
         if (webMethod != null )
             soapAction = webMethod.action();

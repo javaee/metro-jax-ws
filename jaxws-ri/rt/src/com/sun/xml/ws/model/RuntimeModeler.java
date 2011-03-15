@@ -565,12 +565,12 @@ public class RuntimeModeler {
         JavaMethodImpl javaMethod;
         //Class implementorClass = portClass;
         if (method.getDeclaringClass()==portClass) {
-            javaMethod = new JavaMethodImpl(model,method,method);
+            javaMethod = new JavaMethodImpl(model,method,method,metadataReader);
         } else {
             try {
                 Method tmpMethod = portClass.getMethod(method.getName(),
                     method.getParameterTypes());
-                javaMethod = new JavaMethodImpl(model,tmpMethod,method);
+                javaMethod = new JavaMethodImpl(model,tmpMethod,method,metadataReader);
             } catch (NoSuchMethodException e) {
                 throw new RuntimeModelerException("runtime.modeler.method.not.found",
                     method.getName(), portClass.getName());
