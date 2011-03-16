@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -93,8 +93,18 @@ import javax.jws.soap.SOAPBinding.Use;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXResult;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceException;
+
+import org.w3c.dom.Document;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -402,12 +412,32 @@ public class WSDLGenerator {
     protected void generateTypes() {
         types = portDefinitions.types();
         if (model.getBindingContext() != null) {
+            if (inlineSchemas && model.getBindingContext().getClass().getName().indexOf("glassfish") == -1) {
+                resolver.nonGlassfishSchemas = new ArrayList<DOMResult>();;
+            }
             try {
                 model.getBindingContext().generateSchema(resolver);
             } catch (IOException e) {
                 // TODO locallize and wrap this
                 e.printStackTrace();
                 throw new WebServiceException(e.getMessage());
+            }
+        }
+        if (resolver.nonGlassfishSchemas != null) {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            try {
+                Transformer t = tf.newTransformer();
+                for (DOMResult xsd : resolver.nonGlassfishSchemas) {
+                    Document doc = (Document)xsd.getNode();
+                    SAXResult sax = new SAXResult(new TXWContentHandler(types));
+                    t.transform(new DOMSource(doc.getDocumentElement()), sax);
+                }
+            } catch (TransformerConfigurationException e) {
+                e.printStackTrace();
+                throw new WebServiceException(e.getMessage(), e);
+            } catch (TransformerException e) {
+                e.printStackTrace();
+                throw new WebServiceException(e.getMessage(), e);
             }
         }
     }
@@ -1125,6 +1155,7 @@ public class WSDLGenerator {
      * Implements the SchemaOutputResolver used by JAXB to
      */    
     protected class JAXWSOutputSchemaResolver extends SchemaOutputResolver {
+        ArrayList<DOMResult> nonGlassfishSchemas = null;
 
         /**
          * Creates the {@link Result} object used by JAXB to generate a schema for the
@@ -1135,9 +1166,17 @@ public class WSDLGenerator {
          * @throws java.io.IOException thrown if on IO error occurs
          */        
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
-            return inlineSchemas
-                    ? createInlineSchema(namespaceUri, suggestedFileName)
+            return inlineSchemas 
+            ? ((nonGlassfishSchemas != null)? nonGlassfishSchemaResult(namespaceUri, suggestedFileName) : createInlineSchema(namespaceUri, suggestedFileName))
+//                    ? createInlineSchema(namespaceUri, suggestedFileName)
                     : createOutputFile(namespaceUri, suggestedFileName);
+        }
+
+        private Result nonGlassfishSchemaResult(String namespaceUri, String suggestedFileName) throws IOException {
+            DOMResult result = new DOMResult();
+            result.setSystemId("");
+            nonGlassfishSchemas.add(result);
+            return result;
         }
     }
 
