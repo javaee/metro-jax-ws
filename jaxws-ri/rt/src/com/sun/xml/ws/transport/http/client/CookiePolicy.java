@@ -53,7 +53,7 @@ import java.net.URI;
  * @author Edward Wang
  * @since 1.6
  */
-interface CookiePolicy {
+public interface CookiePolicy {
     /**
      * One pre-defined policy which accepts all cookies.
      */

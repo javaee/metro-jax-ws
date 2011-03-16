@@ -132,7 +132,7 @@ import java.io.IOException;
  * @author Edward Wang
  * @since 1.6
  */
-class CookieManager extends CookieHandler
+public class CookieManager extends CookieHandler
 {
     /* ---------------- Fields -------------- */
 

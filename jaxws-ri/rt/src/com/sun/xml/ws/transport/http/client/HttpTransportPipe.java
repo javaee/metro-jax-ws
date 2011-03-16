@@ -47,6 +47,7 @@ import com.sun.xml.ws.api.ha.StickyFeature;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
+import com.sun.xml.ws.developer.HttpConfigFeature;
 import com.sun.xml.ws.transport.Headers;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.client.ClientTransportException;
@@ -65,7 +66,6 @@ import javax.xml.ws.handler.MessageContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
 import java.net.CookieHandler;
 import java.util.Collections;
 import java.util.List;
@@ -89,42 +89,6 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     private final CookieHandler cookieJar;      // shared object among the tubes
     private final boolean sticky;
 
-    private static final Constructor cookieManagerConstructor;
-    private static final Object cookiePolicy;
-    static {
-        Constructor tempConstructor;
-        Object tempPolicy;
-        try {
-            /*
-             * Using reflection to create CookieManger so that RI would continue to
-             * work with JDK 5.
-             */
-            Class policyClass = Class.forName("java.net.CookiePolicy");
-            Class storeClass = Class.forName("java.net.CookieStore");
-            tempConstructor = Class.forName("java.net.CookieManager").getConstructor(storeClass, policyClass);
-            // JDK's default policy is ACCEPT_ORIGINAL_SERVER, but ACCEPT_ALL
-            // is used for backward compatibility
-            tempPolicy = policyClass.getField("ACCEPT_ALL").get(null);
-        } catch(Exception e) {
-            try {
-                /*
-                 * Using reflection so that these classes won't have to be
-                 * integrated in JDK 6.
-                 */
-                Class policyClass = Class.forName("com.sun.xml.ws.transport.http.client.CookiePolicy");
-                Class storeClass = Class.forName("com.sun.xml.ws.transport.http.client.CookieStore");
-                tempConstructor = Class.forName("com.sun.xml.ws.transport.http.client.CookieManager").getConstructor(storeClass, policyClass);
-                // JDK's default policy is ACCEPT_ORIGINAL_SERVER, but ACCEPT_ALL
-                // is used for backward compatibility
-                tempPolicy = policyClass.getField("ACCEPT_ALL").get(null);
-            } catch(Exception ce) {
-                throw new WebServiceException(ce);
-            }
-        }
-        cookieManagerConstructor = tempConstructor;
-        cookiePolicy = tempPolicy;
-    }
-
     // Need to use JAXB first to register DatatypeConverter
     static {
         try {
@@ -134,26 +98,11 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         }
     }
 
-    private static CookieHandler getCookieHandler() {
-        try {
-            return (CookieHandler)cookieManagerConstructor.newInstance(null, cookiePolicy);
-        } catch(Exception e) {
-            throw new WebServiceException(e);
-        }
-    }
-
     public HttpTransportPipe(Codec codec, WSBinding binding) {
-        // TODO Rather than creating a new instance, CookieJar should be got
-        // TODO from a feature ideally. That way CookieJar can be shared across
-        // TODO multiple proxies
-        this(codec, binding, getCookieHandler(), isSticky(binding));
-    }
-
-    private HttpTransportPipe(Codec codec, WSBinding binding, CookieHandler cookieJar, boolean sticky) {
         this.codec = codec;
         this.binding = binding;
-        this.sticky = sticky;
-        this.cookieJar = cookieJar;
+        this.sticky = isSticky(binding);
+        this.cookieJar = binding.getFeature(HttpConfigFeature.class).getCookieHandler();
     }
 
     private static boolean isSticky(WSBinding binding) {
@@ -172,7 +121,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
      * Copy constructor for {@link Tube#copy(TubeCloner)}.
      */
     private HttpTransportPipe(HttpTransportPipe that, TubeCloner cloner) {
-        this(that.codec.copy(), that.binding, that.cookieJar, that.sticky);
+        this(that.codec.copy(), that.binding);
         cloner.add(that,this);
     }
 
@@ -373,8 +322,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         }
         if (sticky || (shouldMaintainSessionProperty != null && shouldMaintainSessionProperty)) {
             Map<String, List<String>> cookies = cookieJar.get(context.endpointAddress.getURI(),reqHeaders);
-            reqHeaders.putAll(cookies);
-            //cookieJar.applyRelevantCookies(context.endpointAddress.getURL(), reqHeaders);
+            if (!cookies.isEmpty()) {
+                reqHeaders.putAll(cookies);
+            }
         }
     }
 
