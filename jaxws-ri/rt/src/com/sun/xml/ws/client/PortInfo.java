@@ -51,6 +51,7 @@ import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
+import com.sun.xml.ws.developer.HttpConfigFeature;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
 import com.sun.xml.ws.policy.PolicyMap;
@@ -182,9 +183,12 @@ public class PortInfo implements WSPortInfo {
             configFeatures = PolicyUtil.getPortScopedFeatures(policyMap, owner.getServiceName(),portName);
         }
         r.mergeFeatures(configFeatures, false);
+        if (r.get(HttpConfigFeature.class) == null) {
+            r.add(new HttpConfigFeature());
+        }
 
         // merge features from interceptor
-        r.mergeFeatures(owner.serviceInterceptor.preCreateBinding(this,portInterface,r), false);
+        r.mergeFeatures(owner.serviceInterceptor.preCreateBinding(this, portInterface, r), false);
 
         BindingImpl bindingImpl = BindingImpl.create(bindingId, r.toArray());
         owner.getHandlerConfigurator().configureHandlers(this,bindingImpl);
