@@ -75,6 +75,8 @@ import java.util.List;
  */
 public abstract class BindingImpl implements WSBinding {
 
+    protected static final WebServiceFeature[] EMPTY_FEATURES = new WebServiceFeature[0];
+
     //This is reset when ever Binding.setHandlerChain() or SOAPBinding.setRoles() is called.
     protected HandlerConfiguration handlerConfig;
     private final BindingID bindingId;
@@ -83,9 +85,10 @@ public abstract class BindingImpl implements WSBinding {
 
     protected javax.xml.ws.Service.Mode serviceMode = javax.xml.ws.Service.Mode.PAYLOAD;
 
-    protected BindingImpl(BindingID bindingId) {
+    protected BindingImpl(BindingID bindingId, WebServiceFeature ... features) {
         this.bindingId = bindingId;
         handlerConfig = new HandlerConfiguration(Collections.<String>emptySet(), Collections.<Handler>emptyList());
+        setFeatures(features);
     }
 
     public
@@ -146,7 +149,7 @@ public abstract class BindingImpl implements WSBinding {
             }
         }
         if (bindingId.equals(BindingID.XML_HTTP))
-            return new HTTPBindingImpl();
+            return new HTTPBindingImpl(features);
         else
             return new SOAPBindingImpl(bindingId, features);
     }

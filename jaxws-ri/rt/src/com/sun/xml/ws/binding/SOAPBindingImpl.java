@@ -44,21 +44,17 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
-import com.sun.xml.ws.api.handler.MessageHandler;
 import com.sun.xml.ws.client.HandlerConfiguration;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
-import com.sun.xml.ws.handler.HandlerException;
 import com.sun.xml.ws.resources.ClientMessages;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPFactory;
-import javax.xml.ws.ServiceMode;
+
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.handler.Handler;
-import javax.xml.ws.handler.LogicalHandler;
-import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
 import java.util.*;
@@ -81,6 +77,8 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
 
     /**
      * Use {@link BindingImpl#create(BindingID)} to create this.
+     *
+     * @param bindingId SOAP binding ID
      */
     SOAPBindingImpl(BindingID bindingId) {
         this(bindingId,EMPTY_FEATURES);
@@ -89,20 +87,20 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     /**
      * Use {@link BindingImpl#create(BindingID)} to create this.
      *
+     * @param bindingId binding id
      * @param features
      *      These features have a precedence over
      *      {@link BindingID#createBuiltinFeatureList() the implicit features}
      *      associated with the {@link BindingID}. 
      */
     SOAPBindingImpl(BindingID bindingId, WebServiceFeature... features) {
-        super(bindingId);
+        super(bindingId, features);
         this.soapVersion = bindingId.getSOAPVersion();
         //populates with required roles and updates handlerConfig
         setRoles(new HashSet<String>());
         //Is this still required? comment out for now
         //setupSystemHandlerDelegate(serviceName);
 
-        setFeatures(features);
         this.features.addAll(bindingId.createBuiltinFeatureList());
         populateBindingUnderstoodHeaders();
     }
@@ -112,21 +110,17 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
      *  The Headers understood by the Port are set, so that they can be used for MU
      *  processing.
      *
-     * @param headers
+     * @param headers SOAP header names
      */
     public void setPortKnownHeaders(@NotNull Set<QName> headers) {
         this.portKnownHeaders = headers;
     }
 
     public boolean understandsHeader(QName header) {
-        if(serviceMode == javax.xml.ws.Service.Mode.MESSAGE)
-            return true;
-        if(portKnownHeaders.contains(header))
-            return true;
-        if(bindingUnderstoodHeaders.contains(header))
-            return true;
+        return serviceMode == javax.xml.ws.Service.Mode.MESSAGE
+                || portKnownHeaders.contains(header)
+                || bindingUnderstoodHeaders.contains(header);
 
-        return false;
     }
 
     /**
@@ -202,5 +196,4 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         return soapVersion.saajMessageFactory;
     }
 
-    private static final WebServiceFeature[] EMPTY_FEATURES = new WebServiceFeature[0];
 }
