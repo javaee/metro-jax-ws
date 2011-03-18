@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -116,6 +116,11 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         this.portKnownHeaders = headers;
     }
 
+    /**
+     * TODO A feature should be created to configure processing of MU headers. 
+     * @param header
+     * @return
+     */
     public boolean understandsHeader(QName header) {
         return serviceMode == javax.xml.ws.Service.Mode.MESSAGE
                 || portKnownHeaders.contains(header)
