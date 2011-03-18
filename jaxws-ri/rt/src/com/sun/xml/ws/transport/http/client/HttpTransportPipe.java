@@ -102,7 +102,11 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         this.codec = codec;
         this.binding = binding;
         this.sticky = isSticky(binding);
-        this.cookieJar = binding.getFeature(HttpConfigFeature.class).getCookieHandler();
+        HttpConfigFeature configFeature = binding.getFeature(HttpConfigFeature.class);
+        if (configFeature == null) {
+            configFeature = new HttpConfigFeature();
+        }
+        this.cookieJar = configFeature.getCookieHandler();
     }
 
     private static boolean isSticky(WSBinding binding) {
@@ -322,8 +326,13 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         }
         if (sticky || (shouldMaintainSessionProperty != null && shouldMaintainSessionProperty)) {
             Map<String, List<String>> cookies = cookieJar.get(context.endpointAddress.getURI(),reqHeaders);
-            if (!cookies.isEmpty()) {
-                reqHeaders.putAll(cookies);
+            List<String> cookieList = cookies.get("Cookie");
+            if (cookieList != null && !cookieList.isEmpty()) {
+                reqHeaders.put("Cookie", cookieList);
+            }
+            cookieList = cookies.get("Cookie2");
+            if (cookieList != null && !cookieList.isEmpty()) {
+                reqHeaders.put("Cookie2", cookieList);
             }
         }
     }
@@ -378,15 +387,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     private void dump(ByteArrayBuffer buf, String caption, Map<String, List<String>> headers) throws IOException {
         System.out.println("---["+caption +"]---");
         for (Entry<String,List<String>> header : headers.entrySet()) {
-            if(header.getValue().isEmpty()) {
-                // I don't think this is legal, but let's just dump it,
-                // as the point of the dump is to uncover problems.
-                System.out.println(header.getValue());
-            } else {
-                for (String value : header.getValue()) {
-                    System.out.println(header.getKey()+": "+value);
-                }
-            }
+            System.out.println(header.getKey()+": "+header.getValue());
         }
 
         buf.writeTo(System.out);

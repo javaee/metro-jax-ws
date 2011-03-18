@@ -45,8 +45,10 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.developer.HttpConfigFeature;
 
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceFeature;
 
 /**
  * Proxy transport {@link Tube} and {@link Pipe} that lazily determines the
@@ -73,14 +75,13 @@ public final class DeferredTransportPipe extends AbstractTubeImpl {
     private final ClassLoader classLoader;
     private final ClientTubeAssemblerContext context;
 
-    public DeferredTransportPipe(ClassLoader classLoader, ClientPipeAssemblerContext context) {
-        this(classLoader, new ClientTubeAssemblerContext(context.getAddress(), context.getWsdlModel(),
-                context.getBindingProvider(), context.getBinding(), context.getContainer(), context.getCodec(), context.getSEIModel()));
-    }
-
     public DeferredTransportPipe(ClassLoader classLoader, ClientTubeAssemblerContext context) {
         this.classLoader = classLoader;
         this.context = context;
+        if (context.getBinding().getFeature(HttpConfigFeature.class) == null) {
+            context.getBinding().getFeatures().mergeFeatures(
+                    new WebServiceFeature[] { new HttpConfigFeature() }, false);
+        }
         //See if we can create the transport pipe from the available information.
         try {
             this.transport = TransportTubeFactory.create(classLoader, context);
@@ -95,7 +96,7 @@ public final class DeferredTransportPipe extends AbstractTubeImpl {
         this.classLoader = that.classLoader;
         this.context = that.context;
         if(that.transport!=null) {
-            this.transport = ((PipeCloner)cloner).copy(that.transport);
+            this.transport = cloner.copy(that.transport);
             this.address = that.address;
        }
     }
@@ -151,19 +152,5 @@ public final class DeferredTransportPipe extends AbstractTubeImpl {
 
     public DeferredTransportPipe copy(TubeCloner cloner) {
         return new DeferredTransportPipe(this,cloner);
-        /*
-        DeferredTransportPipe copy = new DeferredTransportPipe(classLoader,context);
-        cloner.add(this,copy);
-
-        // TODO Is the following thread-safe ??
-        // copied pipeline is still likely to work with the same endpoint address,
-        // so also copy the cached transport pipe, if any
-        if(transport!=null) {
-            copy.transport = cloner.copy(this.transport);
-            copy.address = this.address;
-        }
-
-        return copy;
-        */
     }
 }
