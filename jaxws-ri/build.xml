@@ -893,9 +893,9 @@
 
   <target name="integrate-jaxws22-api-hudson" depends="prepare"
           description="integrate the last successful jaxws 2.2 API from Hudson build">
-    <get src="http://hudson-sca.us.oracle.com/view/JAX-WS%202.2/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
+    <get src="http://hudson-sca.us.oracle.com/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
          dest="lib/jaxws-api.jar" />
-    <get src="http://hudson-sca.us.oracle.com/view/JAX-WS%202.2/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
+    <get src="http://hudson-sca.us.oracle.com/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
          dest="lib/jaxws-api-src.zip" />
   </target>
 
