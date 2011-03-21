@@ -41,6 +41,8 @@ package com.sun.xml.ws.db.toplink;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -62,6 +64,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBTypeElement;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.w3c.dom.Node;
@@ -76,12 +79,15 @@ public class JAXBBond<T> implements XMLBridge<T> {
 	JAXBContextWrapper parent;
 	TypeInfo typeInfo;
 	TypeMappingInfo mappingInfo;
+	boolean isParameterizedType = false;
 
 	public JAXBBond(JAXBContextWrapper p, TypeInfo ti) {
 		this.parent = p;
 		this.typeInfo = ti;
 		if (parent.infoMap != null)
 			mappingInfo = parent.infoMap.get(ti);
+		if (mappingInfo != null)
+			isParameterizedType = (mappingInfo.getType() instanceof ParameterizedType);
 	}
 
 	public BindingContext context() {
@@ -101,10 +107,17 @@ public class JAXBBond<T> implements XMLBridge<T> {
 			marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FRAGMENT,
 					true);
 			if (mappingInfo != null) {
-				JAXBElement<T> elt = new JAXBElement<T>(
-						mappingInfo.getXmlTagName(),
-						(Class<T>) typeInfo.type, object);
-				marshaller.marshal(elt, output, mappingInfo);
+				if (isParameterizedType) {
+					JAXBTypeElement jte = new JAXBTypeElement(
+							mappingInfo.getXmlTagName(), object,
+							(ParameterizedType) mappingInfo.getType());
+					marshaller.marshal(jte, output, mappingInfo);
+				} else {
+					JAXBElement<T> elt = new JAXBElement<T>(
+							mappingInfo.getXmlTagName(),
+							(Class<T>) typeInfo.type, object);
+					marshaller.marshal(elt, output, mappingInfo);
+				}
 			} else
 				marshaller.marshal(object, output);
 		} finally {
@@ -127,12 +140,21 @@ public class JAXBBond<T> implements XMLBridge<T> {
 			marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FRAGMENT,
 					true);
 			if (mappingInfo != null) {
-				JAXBElement<T> elt = new JAXBElement<T>(
-						mappingInfo.getXmlTagName(),
-						(Class<T>) mappingInfo.getType(), object);
-				// marshaller.marshal(elt, output);
-				// GAG missing
-				marshaller.marshal(elt, new StreamResult(output), mappingInfo);
+				if (isParameterizedType) {
+					JAXBTypeElement jte = new JAXBTypeElement(
+							mappingInfo.getXmlTagName(), object,
+							(ParameterizedType) mappingInfo.getType());
+					marshaller.marshal(jte, new StreamResult(output),
+							mappingInfo);
+				} else {
+					JAXBElement<T> elt = new JAXBElement<T>(
+							mappingInfo.getXmlTagName(),
+							(Class<T>) mappingInfo.getType(), object);
+					// marshaller.marshal(elt, output);
+					// GAG missing
+					marshaller.marshal(elt, new StreamResult(output),
+							mappingInfo);
+				}
 			} else
 				marshaller.marshal(object, output);
 		} finally {
@@ -151,12 +173,18 @@ public class JAXBBond<T> implements XMLBridge<T> {
 			marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FRAGMENT,
 					true);
 			if (mappingInfo != null) {
-				JAXBElement<T> elt = new JAXBElement<T>(
-						mappingInfo.getXmlTagName(),
-						(Class<T>) mappingInfo.getType(), object);
-				// marshaller.marshal(elt, output);
-				marshaller.marshal(elt, new DOMResult(output), mappingInfo);
-
+				if (isParameterizedType) {
+					JAXBTypeElement jte = new JAXBTypeElement(
+							mappingInfo.getXmlTagName(), object,
+							(ParameterizedType) mappingInfo.getType());
+					marshaller.marshal(jte, new DOMResult(output), mappingInfo);
+				} else {
+					JAXBElement<T> elt = new JAXBElement<T>(
+							mappingInfo.getXmlTagName(),
+							(Class<T>) mappingInfo.getType(), object);
+					// marshaller.marshal(elt, output);
+					marshaller.marshal(elt, new DOMResult(output), mappingInfo);
+				}
 			} else
 				marshaller.marshal(object, output);
 		} finally {
@@ -176,16 +204,24 @@ public class JAXBBond<T> implements XMLBridge<T> {
 			marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FRAGMENT,
 					true);
 			if (mappingInfo != null) {
-				JAXBElement<T> elt = new JAXBElement<T>(
-						mappingInfo.getXmlTagName(),
-						(Class<T>) mappingInfo.getType(), object);
-				// marshaller.marshal(elt, contentHandler);
+				if (isParameterizedType) {
+					JAXBTypeElement jte = new JAXBTypeElement(
+							mappingInfo.getXmlTagName(), object,
+							(ParameterizedType) mappingInfo.getType());
+					marshaller.marshal(jte, new SAXResult(contentHandler),
+							mappingInfo);
+				} else {
+					JAXBElement<T> elt = new JAXBElement<T>(
+							mappingInfo.getXmlTagName(),
+							(Class<T>) mappingInfo.getType(), object);
+					// marshaller.marshal(elt, contentHandler);
 
-				// GAG missing
-				marshaller.marshal(elt, new SAXResult(contentHandler),
-						mappingInfo);
+					// GAG missing
+					marshaller.marshal(elt, new SAXResult(contentHandler),
+							mappingInfo);
 
-				// marshaller.marshal(elt, contentHandler, mappingInfo);
+					// marshaller.marshal(elt, contentHandler, mappingInfo);
+				}
 			} else
 				marshaller.marshal(object, contentHandler);
 		} finally {
@@ -204,11 +240,18 @@ public class JAXBBond<T> implements XMLBridge<T> {
 			marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FRAGMENT,
 					true);
 			if (mappingInfo != null) {
-				JAXBElement<T> elt = new JAXBElement<T>(
-						mappingInfo.getXmlTagName(),
-						(Class<T>) mappingInfo.getType(), object);
-				// marshaller.marshal(elt, result);
-				marshaller.marshal(elt, result, mappingInfo);
+				if (isParameterizedType) {
+					JAXBTypeElement jte = new JAXBTypeElement(
+							mappingInfo.getXmlTagName(), object,
+							(ParameterizedType) mappingInfo.getType());
+					marshaller.marshal(jte, result, mappingInfo);
+				} else {
+					JAXBElement<T> elt = new JAXBElement<T>(
+							mappingInfo.getXmlTagName(),
+							(Class<T>) mappingInfo.getType(), object);
+					// marshaller.marshal(elt, result);
+					marshaller.marshal(elt, result, mappingInfo);
+				}
 			} else
 				marshaller.marshal(object, result);
 		} finally {
