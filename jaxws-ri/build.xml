@@ -363,32 +363,25 @@
       <unzip src="${jaxb.api.src.zip}" dest="${btmp}"/>
       <delete file="${jaxb.api.src.zip}"/>
       <zip zipfile="${jaxb.api.src.zip}">
-            <zipfileset dir="${btmp}/src"/>
-        </zip>
+        <zipfileset dir="${btmp}/src"/>
+      </zip>
 
       <delete dir="${btmp}"/>
       <unzip src="${jaxb.impl.src.zip}" dest="${btmp}"/>
       <delete file="${jaxb.impl.src.zip}"/>
       <zip zipfile="${jaxb.impl.src.zip}" >
-          <zipfileset dir="${btmp}/impl"/>
-          <zipfileset dir="${btmp}/istack-commons/src/main/java"/>
-          <zipfileset dir="${btmp}/txw2/src/runtime"/>
-          <zipfileset dir="${btmp}/fi/com" prefix="com"/>
-          <zipfileset dir="${btmp}/staxex/com" prefix="com"/>
+          <zipfileset dir="${btmp}/META-INF" prefix="META-INF"/>
+          <zipfileset dir="${btmp}/src/runtime"/>
+          <zipfileset dir="${btmp}/com" prefix="com"/>
       </zip>
 
       <delete dir="${btmp}"/>
       <unzip src="${jaxb.xjc.src.zip}" dest="${btmp}"/>
       <delete file="${jaxb.xjc.src.zip}"/>  
       <zip zipfile="${jaxb.xjc.src.zip}" >
-          <zipfileset dir="${btmp}/codemodel/codemodel/src/main/java"/>
-          <zipfileset dir="${btmp}/dtd-parser"/>
-          <zipfileset dir="${btmp}/istack-commons/src"/>
-          <zipfileset dir="${btmp}/istack-commons/src14"/>
-          <zipfileset dir="${btmp}/xsom/src/com" prefix="com"/>
-          <zipfileset dir="${btmp}/xsom/build/src/com" prefix="com"/> 
-          <zipfileset dir="${btmp}/xjc"/>
-          <zipfileset dir="${btmp}/rngom/src"/>
+          <zipfileset dir="${btmp}/META-INF" prefix="META-INF"/>
+          <zipfileset dir="${btmp}/com" prefix="com"/>
+          <zipfileset dir="${btmp}/src"/>
           <zipfileset dir="${btmp}/relaxng-datatype/java/src"/>
           <zipfileset dir="${btmp}/resolver-comsun/src"/>
       </zip>
@@ -648,7 +641,7 @@
       <unzip src="${build.home}/jaxb-ri.zip" dest="${build.home}/jaxb"/>
       <copy todir="lib" overwrite="true">
         <fileset dir="${build.home}/jaxb/jaxb-ri/lib" includes="*.zip,*.jar"
-                 excludes="activation.jar, jsr173_1.0_api.jar, jaxb1-impl.jar" />
+                 excludes="activation.jar, jsr173_1.0_api.jar, jaxb1-impl*" />
       </copy>
       <antcall target="repkg-jaxb-srczip"/>  
       <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-osgi.jar"
