@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.db.toplink;
 
 import static org.eclipse.persistence.jaxb.JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY;
@@ -136,7 +137,9 @@ public class JAXBContextFactory extends BindingContextFactory {
 			}
 
 			// GAG
-			// Work around possible duplicate global TypeInfos.
+			// Work around possible duplicate global TypeInfos by reusing
+			// a single TypeMappingInfo for multiple TypeInfos if not
+			// one of the problem classes (see below).
 			TypeMappingInfo tmi = null;
 			boolean forceLocal = false;
 			for (TypeInfo ti : refs.keySet()) {
@@ -150,16 +153,22 @@ public class JAXBContextFactory extends BindingContextFactory {
 							// be resolved adequately.
 							if (e.type instanceof Class<?>) {
 								Class<?> clz = (Class<?>) e.type;
-								if (clz.isEnum())
+								if (clz.isEnum()) {
 									forceLocal = true;
-								else
-									continue;
-							} else
-								continue;
+									break;
+								} else {
+									tmi = refs.get(ti);
+									break;
+								}
+							} else {
+								tmi = refs.get(ti);
+								break;
+							}
 						} else {
 							// Conflicting types on globals!  May not be
 							// a bullet-proof solution possible.
 							forceLocal = true;
+							break;
 						}
 					}
 				}
@@ -179,8 +188,8 @@ public class JAXBContextFactory extends BindingContextFactory {
 					}
 					if (Object.class.equals(e.type)) {
 						tmi.setType(e.type);
-						System.out.println(e.getGenericType().getClass() + " "
-								+ e.type);
+						//System.out.println(e.getGenericType().getClass() + " "
+						//		+ e.type);
 					}
 				}
 				// Filter out non-JAXB annotations.
