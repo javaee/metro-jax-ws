@@ -140,6 +140,9 @@ public class JAXBContextFactory extends BindingContextFactory {
 			// Work around possible duplicate global TypeInfos by reusing
 			// a single TypeMappingInfo for multiple TypeInfos if not
 			// one of the problem classes (see below).
+			// First do the obvious check: is the instance already in the map?
+			if (refs.get(e) != null)
+				continue;
 			TypeMappingInfo tmi = null;
 			boolean forceLocal = false;
 			for (TypeInfo ti : refs.keySet()) {
