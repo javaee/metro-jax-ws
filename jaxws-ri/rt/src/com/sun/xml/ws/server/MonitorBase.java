@@ -282,7 +282,7 @@ public abstract class MonitorBase {
         try {
             final Object ignored = mom.createRoot(this, name);
             if (ignored != null) {
-                logger.log(Level.INFO, "Metro monitoring rootname successfully set to: " + mom.getObjectName(mom.getRoot()));
+                logger.log(Level.FINE, "Metro monitoring rootname successfully set to: " + mom.getObjectName(mom.getRoot()));
                 return mom;
             }
             try {
