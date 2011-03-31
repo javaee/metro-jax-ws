@@ -863,10 +863,13 @@
 
   <target name="integrate-FastInfoset-hudson" depends="prepare"
           description="integrate the last successful FastInfoset 1.2 Hudson build">
-    <get src="http://hudson-sca.us.oracle.com/job/fi-1.2/lastSuccessfulBuild/artifact/code/fastinfoset/target/FastInfoset-${fi.version}.jar"
+      <echo  message="Use target:integrate-FastInfoset-maven"/>
+     <!--
+      <get src="http://hudson-sca.us.oracle.com/job/fi-1.2/lastSuccessfulBuild/artifact/code/fastinfoset/target/FastInfoset-${fi.version}.jar"
          dest="lib/FastInfoset.jar" />
     <get src="http://hudson-sca.us.oracle.com/job/fi-1.2/lastSuccessfulBuild/artifact/code/fastinfoset/target/FastInfoset-${fi.version}-sources.jar"
          dest="lib/FastInfoset.src.zip" />
+         -->
   </target>
 
     <target name="integrate-htmlmacro-hudson" depends="prepare"
