@@ -49,6 +49,7 @@
   <import file="etc/build-bundle.xml"/>
   <import file="build-taskdefs.xml" />  
   <property name="v3-osgi.dir" value="${basedir}/v3-osgi"/>
+  <property name="jn.m2" value="http://download.java.net/maven/2"/>
   <target name="runtime-compile-mustang" depends="prepare">
     <ant dir="${basedir}/rt"
         target="compile-mustang"
@@ -850,6 +851,14 @@
          dest="lib/jaxws-api.jar" />
     <get src="http://hudson-sca.us.oracle.com/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
          dest="lib/jaxws-api-src.zip" />
+  </target>
+
+  <target name="integrate-FastInfoset-maven" depends="prepare"
+              description="integrate the last successful FastInfoset 1.2 Hudson build">
+          <get src="${jn.m2}/com/sun/xml/fastinfoset/FastInfoset/${fi.version}/FastInfoset-${fi.version}.jar"
+                 dest="lib/FastInfoset.jar" />
+          <get src="${jn.m2}/com/sun/xml/fastinfoset/FastInfoset/${fi.version}/FastInfoset-${fi.version}-sources.jar"
+                 dest="lib/FastInfoset.src.zip" />
   </target>
 
   <target name="integrate-FastInfoset-hudson" depends="prepare"
