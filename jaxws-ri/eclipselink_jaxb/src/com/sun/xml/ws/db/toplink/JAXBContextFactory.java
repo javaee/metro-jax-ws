@@ -97,7 +97,7 @@ public class JAXBContextFactory extends BindingContextFactory {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		Map<TypeInfo, TypeMappingInfo> map = createTypeMappings(bi.typeInfos());
 		HashSet<Type> typeSet = new HashSet<Type>(); 
-		ArrayList<TypeMappingInfo> typeList = new ArrayList<TypeMappingInfo>();
+		HashSet<TypeMappingInfo> typeList = new HashSet<TypeMappingInfo>();
 		for (TypeMappingInfo tmi : map.values()) {
 			typeList.add(tmi);
 			typeSet.add(tmi.getType());
