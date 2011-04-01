@@ -44,6 +44,7 @@ import static org.eclipse.persistence.jaxb.JAXBContextFactory.DEFAULT_TARGET_NAM
 import static org.eclipse.persistence.jaxb.JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,13 +57,32 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.ws.WebServiceException;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
+import com.sun.xml.ws.model.WrapperParameter;
+import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingContextFactory;
 import com.sun.xml.ws.spi.db.BindingInfo;
@@ -76,6 +96,9 @@ import com.sun.xml.ws.spi.db.WrapperComposite;
  * @author shih-chang.chen@oracle.com
  */
 public class JAXBContextFactory extends BindingContextFactory {
+	static final public String OXM_XML_OVERRIDE = "eclipselink-oxm-xml";
+	static final public String OXM_XML_ELEMENT  = "eclipselink-oxm-xml.xml-element";
+	
 	protected boolean isFor(String str) {
 		return (str.equals("toplink.jaxb") ||
 			    str.equals("eclipselink.jaxb")||
@@ -93,9 +116,49 @@ public class JAXBContextFactory extends BindingContextFactory {
 	}
 
 	protected BindingContext newContext(BindingInfo bi) {
-		Map<String, Source> extMapping = null;
+		Map<String, Source> extMapping = (Map<String, Source>) bi.properties().get(OXM_XML_OVERRIDE);
 		Map<String, Object> properties = new HashMap<String, Object>();
 		Map<TypeInfo, TypeMappingInfo> map = createTypeMappings(bi.typeInfos());
+		//chen workaround for document-literal wrapper - new feature on eclipselink API requested
+		for(TypeInfo tinfo: map.keySet()) {
+			WrapperParameter wp = (WrapperParameter)tinfo.properties().get(WrapperParameter.class.getName());
+			if (wp != null) {
+				Class<?> wrpCls = (Class)tinfo.type;
+				Element javaAttributes = null;
+				for(ParameterImpl p: wp.getWrapperChildren()) {
+					Element xmlelem = findXmlElement(p.getTypeInfo().properties());
+					if (xmlelem != null) {
+						if (javaAttributes == null) {
+							javaAttributes = javaAttributes(wrpCls, extMapping);
+						}
+						xmlelem = (Element) javaAttributes.getOwnerDocument().importNode(xmlelem, true);
+						String fieldName = getFieldName(p, wrpCls);
+						xmlelem.setAttribute("java-attribute",fieldName);
+						javaAttributes.appendChild(xmlelem);
+					}
+				}
+				wrpCls.getPackage().getName();
+			}
+		}
+		
+//		Source src = extMapping.get("com.sun.xml.ws.test.toplink.jaxws");
+//		if (src != null){
+//	        TransformerFactory tf = TransformerFactory.newInstance();
+//	        try {
+//	            Transformer t = tf.newTransformer();
+//	            java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream(); 
+//	            StreamResult sax = new StreamResult(bo);
+//	            t.transform(src, sax);
+//	            System.out.println(new String(bo.toByteArray()));
+//	        } catch (TransformerConfigurationException e) {
+//	            e.printStackTrace();
+//	            throw new WebServiceException(e.getMessage(), e);
+//	        } catch (TransformerException e) {
+//	            e.printStackTrace();
+//	            throw new WebServiceException(e.getMessage(), e);
+//	        }
+//		}
+        
 		HashSet<Type> typeSet = new HashSet<Type>(); 
 		HashSet<TypeMappingInfo> typeList = new HashSet<TypeMappingInfo>();
 		for (TypeMappingInfo tmi : map.values()) {
@@ -121,6 +184,117 @@ public class JAXBContextFactory extends BindingContextFactory {
 			e.printStackTrace();
 			throw new DatabindingException(e.getMessage(), e);
 		}
+	}
+	private String getFieldName(ParameterImpl p, Class wrpCls) {
+		for(Field f : wrpCls.getFields()) {
+			XmlElement xe = f.getAnnotation(XmlElement.class);
+			if (xe != null && p.getName().getLocalPart().equals(xe.name())) {
+				return f.getName();
+			} else {
+				if (p.getName().getLocalPart().equals(f.getName())) {
+					return f.getName();
+				}
+			}
+		}
+        return null;
+	}
+    static DocumentBuilderFactory docBuilderFactory;
+	static {
+        docBuilderFactory = DocumentBuilderFactory.newInstance();
+	    docBuilderFactory.setNamespaceAware(true);
+    }
+	static String OxmTns = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm";
+	  
+	private Element javaAttributes(Class<?> wrpCls, Map<String, Source> extMapping) {
+		XmlRootElement xmlRootElement = wrpCls.getAnnotation(XmlRootElement.class);
+		XmlType xmlType = wrpCls.getAnnotation(XmlType.class);
+		Element xmlbindings = xmlbindings(wrpCls, extMapping);
+		extMapping.put(wrpCls.getPackage().getName(), new DOMSource(xmlbindings));
+		Element javatypes = child(xmlbindings, "java-types");
+		Element javatype = null;
+		NodeList javatypeList = xmlbindings.getElementsByTagNameNS(OxmTns, "java-type");
+		for(int i = 0; javatype == null && i < javatypeList.getLength(); i++) {
+			Element e = (Element)javatypeList.item(i);
+			if (wrpCls.getName().equals(e.getAttribute("name"))) {
+				javatype = e;
+			}
+		}
+		if (javatype == null) {
+			javatype = javatypes.getOwnerDocument().createElementNS(OxmTns, "java-type");
+			javatype.setAttribute("name", wrpCls.getName());
+			javatypes.appendChild(javatype);
+			if (xmlRootElement!= null) {
+				Element r = javatype.getOwnerDocument().createElementNS(OxmTns, "xml-root-element");
+				r.setAttribute("name", xmlRootElement.name());
+				r.setAttribute("namespace", xmlRootElement.namespace());
+				javatype.appendChild(r);
+			}
+			if (xmlType!= null) {
+				Element r = javatype.getOwnerDocument().createElementNS(OxmTns, "xml-type");
+				r.setAttribute("name", xmlType.name());
+				r.setAttribute("namespace", xmlType.namespace());
+				String propOrdr = "";
+				if (xmlType.propOrder() != null) {
+					for(int pi =0; pi < xmlType.propOrder().length; pi++) {
+						propOrdr += (xmlType.propOrder()[pi] + " ");
+					}
+				}
+				r.setAttribute("prop-order", propOrdr.trim());				
+				javatype.appendChild(r);
+			}
+		}
+		return child(javatype, "java-attributes");
+	}
+	
+	Element child(Element parent, String name) {
+		NodeList list = parent.getElementsByTagNameNS(OxmTns, name);
+		if (list == null || list.getLength() == 0) {
+			Element c = parent.getOwnerDocument().createElementNS(OxmTns, name);
+			parent.appendChild(c);
+			return c;
+		} else {
+			return (Element)list.item(0);
+		}		
+	}
+
+	Element xmlbindings(Class<?> wrpCls, Map<String, Source> extMapping) {
+		Source src = extMapping.get(wrpCls.getPackage().getName());
+		Element xmlbindings = null;
+		if (src != null) {
+			if (src instanceof DOMSource) {
+				xmlbindings = (Element) ((DOMSource)src).getNode();
+			} else {
+		        TransformerFactory tf = TransformerFactory.newInstance();
+		        try {
+		            Transformer t = tf.newTransformer();
+		            DOMResult dr = new DOMResult();
+		            t.transform(src, dr);
+					Node n = dr.getNode();
+					if (n instanceof Document) {
+						xmlbindings = ((Document)n).getDocumentElement();
+					} else if (n instanceof Element) {
+						xmlbindings = (Element)n;
+					}
+		        } catch (TransformerConfigurationException e) {
+		            e.printStackTrace();
+		            throw new WebServiceException(e.getMessage(), e);
+		        } catch (TransformerException e) {
+		            e.printStackTrace();
+		            throw new WebServiceException(e.getMessage(), e);
+		        }
+			}
+		} else {
+			try {
+				DocumentBuilder builder = docBuilderFactory.newDocumentBuilder();
+				Document doc = builder.newDocument();
+				xmlbindings = doc.createElementNS(OxmTns, "xml-bindings");
+				doc.appendChild(xmlbindings);
+			} catch (ParserConfigurationException e) {
+	            e.printStackTrace();
+	            throw new WebServiceException(e.getMessage(), e);
+			}
+		}
+		return xmlbindings;
 	}
 
 	static Map<TypeInfo, TypeMappingInfo> createTypeMappings(Collection<TypeInfo> col) {
@@ -226,8 +400,7 @@ public class JAXBContextFactory extends BindingContextFactory {
 	}
 
 	private static Element findXmlElement(Map<String, Object> properties) {
-		// TODO Auto-generated method stub
-		return null;
+		return (Element) properties.get(OXM_XML_ELEMENT);
 	}
 	  
 	private static TypeInfo repeatedWrapee(TypeInfo e, Element xmlAnn) {

@@ -71,6 +71,8 @@ public class WrapperParameter extends ParameterImpl {
     // TODO: wrapper parameter doesn't use 'typeRef' --- it only uses tag name.
     public WrapperParameter(JavaMethodImpl parent, TypeInfo typeRef, Mode mode, int index) {
         super(parent, typeRef, mode, index);
+		//chen workaround for document-literal wrapper - new feature on eclipselink API requested
+        typeRef.properties().put(WrapperParameter.class.getName(), this);
     }
 
     /**
