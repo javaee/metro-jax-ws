@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -112,8 +112,8 @@ public class SEIInvokerTube extends InvokerTube {
 					call.setException(e);
 				}
 			}
-        	Message responseMessage = handler.serializeResponse(call);
-			Packet res = req.createServerResponse(responseMessage, req.endpoint.getPort(), model, req.endpoint.getBinding());
+        	Packet res = handler.serializeResponse(call);        	
+			res = req.relateServerResponse(res, req.endpoint.getPort(), model, req.endpoint.getBinding());
             assert res != null;
             return doReturnWith(res);
         } catch (DispatchException e) {

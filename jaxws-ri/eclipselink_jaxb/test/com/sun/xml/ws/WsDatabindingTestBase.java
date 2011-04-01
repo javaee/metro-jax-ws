@@ -191,8 +191,8 @@ abstract public class WsDatabindingTestBase extends TestCase {
 			} catch (Exception e) {
 				srcCall.setException(e);
 			}
-			Message srvSoapResMsg = endpointBridge.serializeResponse(srcCall);
-			Packet srvSoapRes = srvSoapReq.createResponse(srvSoapResMsg);
+			Packet srvSoapRes = endpointBridge.serializeResponse(srcCall);
+//			Packet srvSoapRes = srvSoapReq.createResponse(srvSoapResMsg);
 			//Transmit to Client
 			ByteArrayOutputStream srvBo = new ByteArrayOutputStream();
 			ContentType srvCt = srv.encode(srvSoapRes, srvBo);

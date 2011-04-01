@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -760,6 +760,43 @@ public final class Packet extends DistributedPropertySet {
         return r;
     }
 
+    
+   public Packet relateServerResponse(@Nullable Packet r, @Nullable WSDLPort wsdlPort, @Nullable SEIModel seiModel, @NotNull WSBinding binding) {
+       copySatelliteInto(r);
+       r.soapAction = null;
+       r.handlerConfig = this.handlerConfig;
+       r.invocationProperties.putAll(this.invocationProperties);
+       r.handlerScopePropertyNames = this.handlerScopePropertyNames;
+       r.contentNegotiation = this.contentNegotiation;
+       r.wasTransportSecure = this.wasTransportSecure;
+       r.endpointAddress = this.endpointAddress;
+       r.wsdlOperation = this.wsdlOperation;
+
+       r.acceptableMimeTypes = this.acceptableMimeTypes;
+       r.endpoint = this.endpoint;
+       r.proxy = this.proxy;
+       r.webServiceContextDelegate = this.webServiceContextDelegate;
+       r.soapAction = this.soapAction;
+       r.expectReply = this.expectReply;
+       
+       AddressingVersion av = binding.getAddressingVersion();
+       // populate WS-A headers only if WS-A is enabled
+       if (av == null)
+           return r;
+       //populate WS-A headers only if the request has addressing headers
+       String inputAction = this.getMessage().getHeaders().getAction(av, binding.getSOAPVersion());
+       if (inputAction == null) {
+           return r;
+       }
+       // if one-way, then dont populate any WS-A headers
+       if (r.getMessage() == null || (wsdlPort != null && message.isOneWay(wsdlPort)))
+           return r;
+
+       // otherwise populate WS-Addressing headers
+       populateAddressingHeaders(binding, r, wsdlPort,seiModel);
+       return r;
+   }
+    
     /**
      * Creates a server-side response {@link Packet} from a request
      * packet ({@code this}). If WS-Addressing is enabled, <code>action</code>

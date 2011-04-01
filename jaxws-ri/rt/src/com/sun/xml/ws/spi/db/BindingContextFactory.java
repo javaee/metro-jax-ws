@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.spi.db;
 
 import java.util.List;
@@ -58,12 +59,13 @@ abstract public class BindingContextFactory {
 //	static final String EclipseLinkJAXB = "eclipselink.jaxb";
 	static final public String DefaultDatabindingMode = DatabindingModeFeature.GLASSFISH_JAXB;
 	//TODO the factoryImpls should be loaded from a config file/object:
-	static List<BindingContextFactory> factoryImpls;
-	static private void init() {
-		factoryImpls = new java.util.ArrayList<BindingContextFactory>();
+//	List<BindingContextFactory> factoryImpls;
+	static private List<BindingContextFactory> factories() {
+	    List<BindingContextFactory> factories = new java.util.ArrayList<BindingContextFactory>();
         for (BindingContextFactory bcf : ServiceFinder.find(BindingContextFactory.class)) {
-        	factoryImpls.add(bcf);
-        }		
+            factories.add(bcf);
+        }
+        return factories;
 //		factoryImpls.put(GlassfishJAXB,   "com.sun.xml.ws.db.glassfish.JAXBRIContextFactory");
 //		factoryImpls.put(EclipseLinkJAXB, "com.sun.xml.ws.db.toplink.JAXBContextFactory");
 	}
@@ -98,8 +100,7 @@ abstract public class BindingContextFactory {
 	
 	@SuppressWarnings("unchecked")
 	static private BindingContextFactory getFactory(String mode) {
-		if (factoryImpls == null) init();
-		for (BindingContextFactory f: factoryImpls) if (f.isFor(mode)) return f;
+		for (BindingContextFactory f: factories()) if (f.isFor(mode)) return f;
 		return null;
 	}
 
@@ -118,8 +119,8 @@ abstract public class BindingContextFactory {
 	
 	static public boolean isContextSupported(Object o) {
 		String pkgName = o.getClass().getPackage().getName();
-		if (factoryImpls == null) init();
-		for (BindingContextFactory f: factoryImpls) if (f.isFor(pkgName)) return true;
+//		if (factoryImpls == null) init();
+		for (BindingContextFactory f: factories()) if (f.isFor(pkgName)) return true;
 		return false;
 	}
 	

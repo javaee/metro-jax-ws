@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.server.sei;
 
 import com.sun.xml.ws.api.SOAPVersion;
@@ -317,7 +318,10 @@ final public class TieHandler implements EndpointCallBridge {
 		return call;
 	}
 
-	public Message serializeResponse(JavaCallInfo call) {
-		return this.createResponse(call);
+	public Packet serializeResponse(JavaCallInfo call) {
+		Message msg = this.createResponse(call);
+        Packet response = new Packet();
+        response.setMessage(msg);
+        return response;
 	}
 }

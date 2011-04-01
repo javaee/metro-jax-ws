@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.api.databinding;
 
 import com.sun.xml.ws.api.message.Message;
@@ -47,5 +48,5 @@ public interface EndpointCallBridge {
 	public JavaCallInfo deserializeRequest(Packet req);
 	
 	//Change the return type to??
-	public Message serializeResponse(JavaCallInfo call);
+	public Packet serializeResponse(JavaCallInfo call);
 }
