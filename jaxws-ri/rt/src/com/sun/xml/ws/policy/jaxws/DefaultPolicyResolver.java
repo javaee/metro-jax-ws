@@ -94,7 +94,7 @@ public class DefaultPolicyResolver implements PolicyResolver {
                 for (AssertionSet assertionSet : policy) {
                     for (PolicyAssertion assertion : assertionSet) {
                         Fitness validationResult = validationProcessor.validateServerSide(assertion);
-                        if (validationResult != Fitness.SUPPORTED) {
+                        if (validationResult != Fitness.SUPPORTED && !assertion.isOptional()) {
                             throw new PolicyException(PolicyMessages.WSP_1015_SERVER_SIDE_ASSERTION_VALIDATION_FAILED(
                                     assertion.getName(),
                                     validationResult));
