@@ -73,8 +73,8 @@
     <property file="../build.properties"/>
     <!-- Commons local     -->
     <property file="project.properties"/>
-    <property name="build.id" value="${now}(${user.name})"/>
-    <property name="build.version" value="${Name} ${release.impl.version}-${build.id}-${release.impl.version.suffix}"/>
+    <property name="build.id" value="b${promoted.version}"/>
+    <property name="build.version" value="${Name} ${release.impl.version}${build.id} ${release.impl.version.suffix}"/>
     <echo message="The build id is: ${build.version}"/>
 
     <path id="runtime.compile.classpath">
