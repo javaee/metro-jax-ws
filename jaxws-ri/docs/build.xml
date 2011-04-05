@@ -94,8 +94,8 @@
         Create a zip file for release notes source files,
         so that it can be used as a basis of the Metro release notes.
       -->
-      <zip file="build/release-notes-src.zip">
-        <fileset dir="docs" includes="*" />
+      <zip file="${build.home}/release-notes-src.zip">
+        <fileset dir="." includes="*" />
       </zip>
     </target>
 

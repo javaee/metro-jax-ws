@@ -170,7 +170,7 @@
   </target>
     
     <target name="doc-src-zip">
-     <ant dir="${basedir}/docs" target="docs-src-zip"/>
+     <ant dir="${basedir}/docs" target="doc-src-zip"/>
     </target>
 
     <target name="clean" depends="jax-ws.clean">
