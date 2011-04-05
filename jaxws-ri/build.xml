@@ -166,49 +166,11 @@
   </target>
 
   <target name="docs" depends="prepare">
-      <copy todir="${build.home}/docs">
-          <fileset dir="." includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, distributionREADME_WMforJava2.0.txt" />
-          <fileset dir="docs" includes="sun-jaxws.xsd" />
-          <filterset begintoken="@@" endtoken="@@">
-            <filter token="SPEC_VERSION"
-                    value="${release.spec.version}" />
-            <filter token="IMPL_VERSION"
-                    value="${release.impl.version}"/>
-            <filter token="IMPL_VERSION_SUFFIX"
-                    value="${release.impl.version.suffix}"/>
-          </filterset>
-      </copy>
-      <copy todir="${build.home}/docs">
-          <fileset dir="${docs.home}" includes="style/*, Copyright.txt" />
-      </copy>
-
-      <taskdef name="htmlmacro" classname="com.sun.wts.tools.htmlmacro.HtmlMacroTask">
-          <classpath>
-            <fileset dir="${lib.home}" />
-          </classpath>
-      </taskdef>
-      <htmlmacro  destdir="${build.home}/docs">
-        <documents dir="${docs.home}" includes="*.html *.xsd *.xml" excludes="sun-jaxws.xsd"/>
-        <tags dir="${docs.home}/tags" includes="**/*.tag" />
-        <property key="SPEC_VERSION" value="${release.spec.version}"/>
-        <property key="IMPL_VERSION" value="${release.impl.version}"/>
-        <property key="IMPL_VERSION_SUFFIX" value="${release.impl.version.suffix}"/>
-        <!-- Product name so that we can switch between JAX-WS RI and Metro -->
-        <property key="PRODUCT_SHORT_NAME" value="JAX-WS RI"/>
-        <property key="PRODUCT_NAME" value="JAX-WS RI ${release.impl.version}${release.impl.version.suffix}"/>
-        <!-- Used in various places to refer to installation dir -->
-        <property key="HOME" value="JAXWS_HOME" />
-      </htmlmacro>
-    </target>
+     <ant dir="${basedir}/docs" target="docs"/>
+  </target>
     
     <target name="doc-src-zip">
-      <!--
-        Create a zip file for release notes source files,
-        so that it can be used as a basis of the Metro release notes.
-      -->
-      <zip file="build/release-notes-src.zip">
-        <fileset dir="docs" includes="*" />
-      </zip>
+     <ant dir="${basedir}/docs" target="docs-src-zip"/>
     </target>
 
     <target name="clean" depends="jax-ws.clean">
