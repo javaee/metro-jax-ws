@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.api.databinding;
 
 import java.io.IOException;
@@ -94,7 +95,7 @@ public interface Databinding {
 	 * 
 	 * @return the JavaCallInfo representing a method call
 	 */
-//	JavaCallInfo deserializeRequest(Packet soap);
+	JavaCallInfo deserializeRequest(Packet req);
 
 	EndpointCallBridge getEndpointBridge(Packet soap) throws DispatchException;
 	
@@ -109,7 +110,7 @@ public interface Databinding {
 	 * 
 	 * @return the request XML(SOAP) message
 	 */
-//	Message serializeRequest(JavaCallInfo call);
+	Packet serializeRequest(JavaCallInfo call);
 
 	/**
 	 * Serializes a JavaCallInfo instance representing the return value or
@@ -121,7 +122,7 @@ public interface Databinding {
 	 * 
 	 * @return the response XML(SOAP) message
 	 */
-//	Message serializeResponse(JavaCallInfo call);
+	Packet serializeResponse(JavaCallInfo call);
 
 	/**
 	 * Deserializes a response XML(SOAP) message to a JavaCallInfo instance
@@ -136,7 +137,7 @@ public interface Databinding {
 	 * @return the JavaCallInfo updated with the return value or exception of a
 	 *         JAVA method call
 	 */
-//	JavaCallInfo deserializeResponse(Message soap, JavaCallInfo call);
+	JavaCallInfo deserializeResponse(Packet res, JavaCallInfo call);
 
 	/**
 	 * Gets the WSDL operation metadata of the specified JAVA method.

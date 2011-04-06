@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.client.sei;
 
+import java.lang.reflect.Method;
+
 import com.sun.xml.ws.api.databinding.ClientCallBridge;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import javax.xml.ws.Response;
@@ -55,8 +57,8 @@ final class PollingMethodHandler extends AsyncMethodHandler {
 //        super(owner, jm, core);
 //    }    
     
-    PollingMethodHandler(SEIStub owner, ClientCallBridge so) {
-        super(owner, so);
+    PollingMethodHandler(SEIStub owner, Method m) {
+        super(owner, m);
     }
 
     Response<?> invoke(Object proxy, Object[] args) throws WebServiceException {

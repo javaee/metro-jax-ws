@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,6 +62,8 @@ import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.Response;
 import javax.xml.ws.WebServiceException;
+
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -72,8 +74,8 @@ import java.util.List;
  */
 abstract class AsyncMethodHandler extends MethodHandler {
 
-    AsyncMethodHandler(SEIStub owner, ClientCallBridge so) {
-    	super(owner, so);
+    AsyncMethodHandler(SEIStub owner, Method m) {
+    	super(owner, m);
     }
 
 //    private final ResponseBuilder responseBuilder;
@@ -164,9 +166,10 @@ abstract class AsyncMethodHandler extends MethodHandler {
         }
 
         public void do_run () {    	
-        	JavaCallInfo call = new JavaCallInfo(dbHandler.getMethod(), args);
+        	JavaCallInfo call = new JavaCallInfo(method, args);
 //            Packet req = new Packet(createRequestMessage(args));
-            Packet req = dbHandler.createRequestPacket(call);
+//            Packet req = dbHandler.createRequestPacket(call);
+            Packet req = owner.databinding.serializeRequest(call);
 
             Fiber.CompletionCallback callback = new Fiber.CompletionCallback() {
 
@@ -178,9 +181,15 @@ abstract class AsyncMethodHandler extends MethodHandler {
                     }
                     try {
                     	Object[] rargs = new Object[1];
-                    	JavaCallInfo call = new JavaCallInfo(dbHandler.getMethod(), rargs);
-                    	dbHandler.readResponse(response, call);
-                    	responseImpl.set(rargs[0], null);
+                    	JavaCallInfo call = new JavaCallInfo(method, rargs);
+                        call = owner.databinding.deserializeResponse(response, call);
+                        if (call.getException() != null) {
+                            throw call.getException();
+                        } else {
+                            responseImpl.set(rargs[0], null);
+                        }
+//                    	dbHandler.readResponse(response, call);
+//                    	responseImpl.set(rargs[0], null);
 //                        if(msg.isFault()) {
 //                            SOAPFaultBuilder faultBuilder = SOAPFaultBuilder.create(msg);
 //                            throw faultBuilder.createException(checkedExceptions);

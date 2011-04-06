@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,6 +58,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Holder;
+
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,9 +88,8 @@ import java.util.Map;
 final class SyncMethodHandler extends MethodHandler {
 //    private ResponseBuilder responseBuilder;
     
-    SyncMethodHandler(SEIStub owner, ClientCallBridge so) {
-        super(owner, so);
-        dbHandler = so;
+    SyncMethodHandler(SEIStub owner, Method m) {
+        super(owner, m);
 //        responseBuilder = buildResponseBuilder(method, ValueSetterFactory.SYNC);
     }
     
@@ -111,9 +112,9 @@ final class SyncMethodHandler extends MethodHandler {
      *      handling, which requires a separate copy.
      */
     Object invoke(Object proxy, Object[] args, RequestContext rc, ResponseContextReceiver receiver) throws Throwable {
-    	JavaCallInfo call = new JavaCallInfo(dbHandler.getMethod(), args);
+    	JavaCallInfo call = new JavaCallInfo(method, args);
 //      Packet req = new Packet(createRequestMessage(args));
-        Packet req = dbHandler.createRequestPacket(call);
+        Packet req = owner.databinding.serializeRequest(call);
         // process the message
         Packet reply = owner.doProcess(req,rc,receiver);
 
@@ -123,7 +124,13 @@ final class SyncMethodHandler extends MethodHandler {
             return null;
 
         try {
-        	return dbHandler.readResponse(reply, call).getReturnValue();
+//        	return dbHandler.readResponse(reply, call).getReturnValue();
+            call = owner.databinding.deserializeResponse(reply, call);
+            if (call.getException() != null) {
+                throw call.getException();
+            } else {
+                return call.getReturnValue();
+            }
 //            if(msg.isFault()) {
 //                SOAPFaultBuilder faultBuilder = SOAPFaultBuilder.create(msg);
 //                throw faultBuilder.createException(checkedExceptions);

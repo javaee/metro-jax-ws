@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.db;
 
 import java.io.IOException;
@@ -160,33 +161,41 @@ public class DatabindingImpl implements Databinding {
 		return call;
 	}
 
-//	public JavaCallInfo deserializeResponse(Message soap, JavaCallInfo call) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	public JavaCallInfo deserializeResponse(Packet res, JavaCallInfo call) {
+        StubHandler stubHandler = stubHandlers.get(call.getMethod());
+        try {
+            return stubHandler.readResponse(res, call);
+        } catch (Throwable e) {
+            call.setException(e);
+            return call;
+        }
+	}
 
 	public WebServiceFeature[] getFeatures() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-//	public Message serializeRequest(JavaCallInfo call) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	public Packet serializeRequest(JavaCallInfo call) {
+        StubHandler stubHandler = stubHandlers.get(call.getMethod());
+        return stubHandler.createRequestPacket(call);	    
+	}
 
-	public Message serializeResponse(JavaCallInfo call) {
+	public Packet serializeResponse(JavaCallInfo call) {
 		Method method = call.getMethod();
+		Message message = null;
 		if (method != null) {
 			TieHandler th = tieHandlers.get(method);
 			if (th != null) {
-				return th.createResponse(call);
+			    return th.serializeResponse(call);
 			}
 		} 
 		if (call.getException() instanceof DispatchException) {
-			return ((DispatchException)call.getException()).fault;
+		    message = ((DispatchException)call.getException()).fault;
 		}
-		return null;
+        Packet response = new Packet();
+        response.setMessage(message);
+        return response;
 	}
 
 	public ClientCallBridge getClientBridge(Method method) {

@@ -97,9 +97,9 @@ public class SEIInvokerTube extends InvokerTube {
      * that traverses through the Pipeline to transport.
      */
     public @NotNull NextAction processRequest(@NotNull Packet req) {
-        try {
-        	EndpointCallBridge handler =  model.getDatabinding().getEndpointBridge(req);
-        	JavaCallInfo call = handler.deserializeRequest(req);
+//        try {
+//        	EndpointCallBridge handler =  model.getDatabinding().getEndpointBridge(req);
+        	JavaCallInfo call = model.getDatabinding().deserializeRequest(req);
         	if (call.getException() == null) {
 	        	try {
 	        		Object ret = getInvoker(req).invoke(req, call.getMethod(), call.getParameters());
@@ -111,14 +111,17 @@ public class SEIInvokerTube extends InvokerTube {
 					e.printStackTrace();
 					call.setException(e);
 				}
+			} else if (call.getException() instanceof DispatchException) {
+			    DispatchException e = (DispatchException)call.getException();
+			    return doReturnWith(req.createServerResponse(e.fault, model.getPort(), null, binding));
 			}
-        	Packet res = handler.serializeResponse(call);        	
+        	Packet res = model.getDatabinding().serializeResponse(call);        	
 			res = req.relateServerResponse(res, req.endpoint.getPort(), model, req.endpoint.getBinding());
             assert res != null;
             return doReturnWith(res);
-        } catch (DispatchException e) {
-            return doReturnWith(req.createServerResponse(e.fault, model.getPort(), null, binding));
-        }
+//        } catch (DispatchException e) {
+//            return doReturnWith(req.createServerResponse(e.fault, model.getPort(), null, binding));
+//        }
     }
 
     public @NotNull NextAction processResponse(@NotNull Packet response) {

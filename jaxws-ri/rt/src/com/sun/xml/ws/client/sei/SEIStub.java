@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -102,7 +102,7 @@ public final class SEIStub extends Stub implements InvocationHandler {
         for (JavaMethodImpl m : seiModel.getJavaMethods()) {
             if (!m.getMEP().isAsync) {
             	ClientCallBridge so = databinding.getClientBridge(m.getMethod());
-            	SyncMethodHandler handler = new SyncMethodHandler(this, so);
+            	SyncMethodHandler handler = new SyncMethodHandler(this, m.getMethod());
 //                SyncMethodHandler handler = new SyncMethodHandler(this, m);
                 syncs.put(m.getOperation(), m);
                 methodHandlers.put(m.getMethod(), handler);
@@ -115,7 +115,7 @@ public final class SEIStub extends Stub implements InvocationHandler {
                 Method m = jm.getMethod();
             	ClientCallBridge so = databinding.getClientBridge(m);
                 CallbackMethodHandler handler = new CallbackMethodHandler(
-                        this, so, m.getParameterTypes().length - 1);
+                        this, m, m.getParameterTypes().length - 1);
 //                CallbackMethodHandler handler = new CallbackMethodHandler(
 //                        this, jm, sync, m.getParameterTypes().length - 1);
                 methodHandlers.put(m, handler);
@@ -123,7 +123,7 @@ public final class SEIStub extends Stub implements InvocationHandler {
             if (jm.getMEP() == MEP.ASYNC_POLL) {
                 Method m = jm.getMethod();
             	ClientCallBridge so = databinding.getClientBridge(m);
-                PollingMethodHandler handler = new PollingMethodHandler(this, so);
+                PollingMethodHandler handler = new PollingMethodHandler(this, m);
 //                PollingMethodHandler handler = new PollingMethodHandler(this, jm, sync);
                 methodHandlers.put(m, handler);
             }

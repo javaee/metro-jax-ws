@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,8 @@ import com.sun.xml.ws.api.databinding.ClientCallBridge;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.WebServiceException;
+
+import java.lang.reflect.Method;
 import java.util.concurrent.Future;
 
 /**
@@ -58,8 +60,8 @@ final class CallbackMethodHandler extends AsyncMethodHandler {
      */
     private final int handlerPos;
 
-    CallbackMethodHandler(SEIStub owner, ClientCallBridge so, int handlerPos) {
-        super(owner,so);
+    CallbackMethodHandler(SEIStub owner, Method m, int handlerPos) {
+        super(owner, m);
         this.handlerPos = handlerPos;
     }
 
