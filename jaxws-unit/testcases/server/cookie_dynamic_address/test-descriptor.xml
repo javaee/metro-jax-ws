@@ -1,4 +1,4 @@
-<descriptor since="2.2.4" transport="http" uses="ri">
+<descriptor since="2.2.5" transport="http" uses="ri">
   <description>Cookie test</description>
   <service basedir="./server">
   </service>
