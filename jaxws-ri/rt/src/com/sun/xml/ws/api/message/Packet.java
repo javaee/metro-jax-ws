@@ -776,7 +776,6 @@ public final class Packet extends DistributedPropertySet {
        r.endpoint = this.endpoint;
        r.proxy = this.proxy;
        r.webServiceContextDelegate = this.webServiceContextDelegate;
-       r.soapAction = this.soapAction;
        r.expectReply = this.expectReply;
        
        AddressingVersion av = binding.getAddressingVersion();

@@ -118,6 +118,7 @@ abstract public class BindingContextFactory {
 	}
 	
 	static public boolean isContextSupported(Object o) {
+	    if (o == null) return false;
 		String pkgName = o.getClass().getPackage().getName();
 //		if (factoryImpls == null) init();
 		for (BindingContextFactory f: factories()) if (f.isFor(pkgName)) return true;
