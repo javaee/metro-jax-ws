@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.wsdl.writer;
 
 import java.util.Stack;
@@ -80,6 +81,9 @@ public class TXWContentHandler implements ContentHandler {
                 if ("http://www.w3.org/2000/xmlns/".equals(auri)) {
                     txw._namespace(atts.getValue(i),atts.getLocalName(i));
                 } else {
+                    if ("schemaLocation".equals(atts.getLocalName(i))
+                            && "".equals(atts.getValue(i)))
+                        continue;
                     txw._attribute(auri, atts.getLocalName(i), atts.getValue(i));
                 }
             }
