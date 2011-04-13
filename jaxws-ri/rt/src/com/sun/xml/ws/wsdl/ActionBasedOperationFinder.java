@@ -100,17 +100,17 @@ final class ActionBasedOperationFinder extends WSDLOperationFinder {
                     payloadName = EMPTY_PAYLOAD;
                 //first look at annotations and then in wsdlmodel
                 if (action == null || action.equals("")) {
-                    action = m.getOperation().getOperation().getInput().getAction();
-
+                    if (m.getOperation() != null) action = m.getOperation().getOperation().getInput().getAction();
+//                    action = m.getInputAction();
                 }
                 if (action != null) {
                     ActionBasedOperationSignature opSignature = new ActionBasedOperationSignature(action, payloadName);
                     if(uniqueOpSignatureMap.get(opSignature) != null) {
                         LOGGER.warning(AddressingMessages.NON_UNIQUE_OPERATION_SIGNATURE(
-                                uniqueOpSignatureMap.get(opSignature),m.getOperation().getName(),action,payloadName));
+                                uniqueOpSignatureMap.get(opSignature),m.getOperationQName(),action,payloadName));
                     }
-                    uniqueOpSignatureMap.put(opSignature, m.getOperation().getName());
-                    actionMap.put(action,m.getOperation().getName());
+                    uniqueOpSignatureMap.put(opSignature, m.getOperationQName());
+                    actionMap.put(action,m.getOperationQName());
                 }
             }
         } else {

@@ -607,7 +607,7 @@ public class RuntimeModeler {
             }
         }
 
-        javaMethod.setOperationName(operationName);
+        javaMethod.setOperationQName(new QName(targetNamespace,operationName));
         SOAPBinding methodBinding = getAnnotation(method, SOAPBinding.class);
         if(methodBinding != null && methodBinding.style() == SOAPBinding.Style.RPC) {
             logger.warning(ModelerMessages.RUNTIMEMODELER_INVALID_SOAPBINDING_ON_METHOD(methodBinding, method.getName(), method.getDeclaringClass().getName()));
@@ -713,6 +713,7 @@ public class RuntimeModeler {
             }
         }
         QName reqElementName = new QName(reqNamespace, reqName);
+        javaMethod.setRequestPayloadName(reqElementName);
         Class requestClass = getRequestWrapperClass(requestClassName, method, reqElementName);
 
         Class responseClass = null;
@@ -920,6 +921,7 @@ public class RuntimeModeler {
         }
 
         QName reqElementName = new QName(reqNamespace, operationName);
+        javaMethod.setRequestPayloadName(reqElementName);
         QName resElementName = null;
         if (!isOneway) {
             resElementName = new QName(respNamespace, operationName+RESPONSE);
@@ -1287,6 +1289,7 @@ public class RuntimeModeler {
             }
 
             QName requestQName = new QName(requestNamespace, paramName);
+            if (!isHeader) javaMethod.setRequestPayloadName(requestQName);
             //doclit/wrapped
             TypeInfo typeRef = //operationName with upper 1 char
                 new TypeInfo(requestQName, clazzType,

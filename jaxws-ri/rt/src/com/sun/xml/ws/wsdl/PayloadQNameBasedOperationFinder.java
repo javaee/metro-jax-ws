@@ -113,7 +113,7 @@ final class PayloadQNameBasedOperationFinder extends WSDLOperationFinder {
                 // Set up method handlers only for unique QNames. So that dispatching
                 // happens consistently for a method
                 if (unique.get(name).size() == 1) {
-                    methodHandlers.put(name, m.getOperation().getName());
+                    methodHandlers.put(name, m.getOperationQName());
                 }
             }
         } else {

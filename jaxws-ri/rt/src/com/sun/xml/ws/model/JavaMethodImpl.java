@@ -81,11 +81,13 @@ public final class JavaMethodImpl implements JavaMethod {
     private final List<ParameterImpl> unmResParams = Collections.unmodifiableList(responseParams);
     private SOAPBindingImpl binding;
     private MEP mep;
-    private String operationName;
+    private QName operationName;
     private WSDLBoundOperationImpl wsdlOperation;
     /*package*/ final AbstractSEIModelImpl owner;
     private final Method seiMethod;
-
+    private QName requestPayloadName;
+    private String soapAction;
+    
     /**
      * @param owner
      * @param method : Implementation class method
@@ -108,7 +110,7 @@ public final class JavaMethodImpl implements JavaMethod {
 
         //@Action(input) =="", get it from @WebMethod(action)
         WebMethod webMethod = (metadataReader != null)? metadataReader.getAnnotation(WebMethod.class, seiMethod):seiMethod.getAnnotation(WebMethod.class);
-        String soapAction = "";
+        soapAction = "";
         if (webMethod != null )
             soapAction = webMethod.action();
         if(!soapAction.equals("")) {
@@ -183,33 +185,45 @@ public final class JavaMethodImpl implements JavaMethod {
      * @return the WSDLBoundOperation for this JavaMethod
      */
     public @NotNull WSDLBoundOperation getOperation() {
-        assert wsdlOperation != null;
+//        assert wsdlOperation != null;
         return wsdlOperation;
     }
 
-    public void setOperationName(String name) {
+    public void setOperationQName(QName name) {
         this.operationName = name;
     }
-
+    
+    public QName getOperationQName() {
+        return (wsdlOperation != null)? wsdlOperation.getName(): operationName;
+    }
+    
+    public String getSOAPAction() {
+        return (wsdlOperation != null)? wsdlOperation.getSOAPAction(): soapAction;
+    }
+    
     public String getOperationName() {
-        return operationName;
+        return operationName.getLocalPart();
     }
 
     public String getRequestMessageName() {
-        return operationName;
+        return getOperationName();
     }
 
     public String getResponseMessageName() {
         if(mep.isOneWay())
             return null;
-        return operationName+"Response";
+        return getOperationName()+"Response";
+    }
+    
+    public void setRequestPayloadName(QName n)  {
+        requestPayloadName = n;
     }
 
     /**
      * @return soap:Body's first child name for request message.
      */
     public @Nullable QName getRequestPayloadName() {
-        return wsdlOperation.getReqPayloadName();
+        return (wsdlOperation != null)? wsdlOperation.getReqPayloadName(): requestPayloadName;
     }
 
     /**
@@ -319,11 +333,13 @@ public final class JavaMethodImpl implements JavaMethod {
     }
 
     public String getInputAction() {
-        return inputAction;
+        return (wsdlOperation != null)? wsdlOperation.getOperation().getInput().getAction(): inputAction;    
+//        return inputAction;
     }
 
     public String getOutputAction() {
-        return outputAction;
+        return (wsdlOperation != null)? wsdlOperation.getOperation().getOutput().getAction(): outputAction;   
+//        return outputAction;
     }
 
     /**
@@ -353,7 +369,7 @@ public final class JavaMethodImpl implements JavaMethod {
     }
 
     /*package*/ void freeze(WSDLPortImpl portType) {
-        this.wsdlOperation = portType.getBinding().get(new QName(portType.getBinding().getPortType().getName().getNamespaceURI(),operationName));
+        this.wsdlOperation = portType.getBinding().get(new QName(portType.getBinding().getPortType().getName().getNamespaceURI(),getOperationName()));
         // TODO: replace this with proper error handling
         if(wsdlOperation ==null)
             throw new WebServiceException("Method "+seiMethod.getName()+" is exposed as WebMethod, but there is no corresponding wsdl operation with name "+operationName+" in the wsdl:portType" + portType.getBinding().getPortType().getName());

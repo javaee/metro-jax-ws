@@ -119,7 +119,7 @@ abstract public class WsDatabindingTestBase extends TestCase {
         		result.getWsdlSource(), result.getEntityResolver(), false, null, new WSDLParserExtension[0]);
         QName serviceName = wsdl.getFirstServiceName();
         WSDLPort wsdlPort = wsdl.getService(serviceName).getFirstPort();
-        ((AbstractSEIModelImpl)((DatabindingImpl)srvDb).getModel()).freeze((WSDLPortImpl)wsdlPort);
+//        ((AbstractSEIModelImpl)((DatabindingImpl)srvDb).getModel()).freeze((WSDLPortImpl)wsdlPort);
 
 		cliConfig.setWsdlPort(wsdlPort);
 		cliConfig.getMappingInfo().setServiceName(serviceName);

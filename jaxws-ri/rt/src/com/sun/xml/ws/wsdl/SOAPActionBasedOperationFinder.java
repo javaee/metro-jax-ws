@@ -74,7 +74,7 @@ final class SOAPActionBasedOperationFinder extends WSDLOperationFinder {
         Map<String, Integer> unique = new HashMap<String, Integer>();
         if (seiModel != null) {
             for (JavaMethodImpl m : ((AbstractSEIModelImpl) seiModel).getJavaMethods()) {
-                String soapAction = m.getOperation().getSOAPAction();
+                String soapAction = m.getSOAPAction();
                 Integer count = unique.get(soapAction);
                 if (count == null) {
                     unique.put(soapAction, 1);
@@ -84,11 +84,11 @@ final class SOAPActionBasedOperationFinder extends WSDLOperationFinder {
             }
 
             for (JavaMethodImpl m : ((AbstractSEIModelImpl) seiModel).getJavaMethods()) {
-                String soapAction = m.getOperation().getSOAPAction();
+                String soapAction = m.getSOAPAction();
                 // Set up method handlers only for unique SOAPAction values so
                 // that dispatching happens consistently for a method
                 if (unique.get(soapAction) == 1) {
-                    methodHandlers.put('"' + soapAction + '"', m.getOperation().getName());
+                    methodHandlers.put('"' + soapAction + '"', m.getOperationQName());
                 }
             }
         } else {
