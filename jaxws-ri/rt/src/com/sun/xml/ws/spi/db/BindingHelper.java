@@ -51,7 +51,6 @@ import com.sun.xml.bind.marshaller.SAX2DOMEx;
 import com.sun.xml.bind.unmarshaller.DOMScanner;
 
 //TODO MtomCodec
-import com.sun.xml.bind.DatatypeConverterImpl;
 import com.sun.xml.bind.v2.runtime.output.Encoded;
 
 //TODO ExceptionBean
