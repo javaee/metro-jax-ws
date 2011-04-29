@@ -118,7 +118,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
         this.port = port;
         for (JavaMethodImpl m : javaMethods) {
             m.freeze(port);
-            putOp(m.getOperation().getName(),m);
+            putOp(m.getOperationQName(),m);
 
         }
         if (databinding != null) ((com.sun.xml.ws.db.DatabindingImpl)databinding).freeze(port);

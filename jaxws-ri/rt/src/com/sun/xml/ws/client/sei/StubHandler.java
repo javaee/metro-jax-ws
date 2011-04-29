@@ -256,7 +256,7 @@ public class StubHandler implements ClientCallBridge {
 
 	public QName getOperationName() {
 		//TODO javaMethod.getOperation()
-		return javaMethod.getOperation().getName();
+		return javaMethod.getOperationQName();
 	}
 
 	public String getSoapAction() {

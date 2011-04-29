@@ -181,7 +181,7 @@ public final class JavaMethodImpl implements JavaMethod {
     /**
      * Returns the {@link WSDLBoundOperation} Operation associated with {@link this}
      * operation.
-     *
+     * @deprecated
      * @return the WSDLBoundOperation for this JavaMethod
      */
     public WSDLBoundOperation getOperation() {
@@ -333,13 +333,13 @@ public final class JavaMethodImpl implements JavaMethod {
     }
 
     public String getInputAction() {
-        return (wsdlOperation != null)? wsdlOperation.getOperation().getInput().getAction(): inputAction;    
-//        return inputAction;
+//        return (wsdlOperation != null)? wsdlOperation.getOperation().getInput().getAction(): inputAction; 
+        return inputAction;
     }
 
     public String getOutputAction() {
-        return (wsdlOperation != null)? wsdlOperation.getOperation().getOutput().getAction(): outputAction;   
-//        return outputAction;
+//        return (wsdlOperation != null)? wsdlOperation.getOperation().getOutput().getAction(): outputAction; 
+        return outputAction;
     }
 
     /**
