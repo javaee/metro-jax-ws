@@ -95,7 +95,8 @@ final class ServerMgr {
                 state = servers.get(inetAddress);
                 if (state == null) {
                     logger.fine("Creating new HTTP Server at "+inetAddress);
-                    server = HttpServer.create(inetAddress, 5);
+                    // Creates server with default socket backlog
+                    server = HttpServer.create(inetAddress, 0);
                     server.setExecutor(Executors.newCachedThreadPool());
                     String path = url.toURI().getPath();
                     logger.fine("Creating HTTP Context at = "+path);
