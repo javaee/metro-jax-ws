@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,11 +53,10 @@ import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.wsdl.WSDLPart;
+import com.sun.xml.ws.api.model.wsdl.WSDLBoundPortType;
+import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.model.wsdl.WSDLBoundOperationImpl;
-import com.sun.xml.ws.model.wsdl.WSDLBoundPortTypeImpl;
-import com.sun.xml.ws.model.wsdl.WSDLPartImpl;
-import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
 import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingContextFactory;
@@ -114,7 +113,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
      * Link {@link SEIModel} to {@link WSDLModel}.
      * Merge it with {@link #postProcess()}.
      */
-    public void freeze(WSDLPortImpl port) {
+    public void freeze(WSDLPort port) {
         this.port = port;
         for (JavaMethodImpl m : javaMethods) {
             m.freeze(port);
@@ -333,9 +332,9 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
      * @return
      * Returns attachment parameters if/any.
      */
-    private List<ParameterImpl> applyRpcLitParamBinding(JavaMethodImpl method, WrapperParameter wrapperParameter, WSDLBoundPortTypeImpl boundPortType, Mode mode) {
+    private List<ParameterImpl> applyRpcLitParamBinding(JavaMethodImpl method, WrapperParameter wrapperParameter, WSDLBoundPortType boundPortType, Mode mode) {
         QName opName = new QName(boundPortType.getPortTypeName().getNamespaceURI(), method.getOperationName());
-        WSDLBoundOperationImpl bo = boundPortType.get(opName);
+        WSDLBoundOperation bo = boundPortType.get(opName);
         Map<Integer, ParameterImpl> bodyParams = new HashMap<Integer, ParameterImpl>();
         List<ParameterImpl> unboundParams = new ArrayList<ParameterImpl>();
         List<ParameterImpl> attachParams = new ArrayList<ParameterImpl>();
@@ -358,7 +357,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
                     attachParams.add(param);
                 }else if(paramBinding.isBody()){
                     if(bo != null){
-                        WSDLPartImpl p = bo.getPart(param.getPartName(), mode);
+                        WSDLPart p = bo.getPart(param.getPartName(), mode);
                         if(p != null)
                             bodyParams.put(p.getIndex(), param);
                         else
@@ -510,7 +509,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
     protected final QName emptyBodyName = new QName("");
     private String targetNamespace = "";
     private List<String> knownNamespaceURIs = null;
-    private WSDLPortImpl port;
+    private WSDLPort port;
     private final WebServiceFeature[] features;
     private Databinding databinding;
     BindingID bindingId;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -116,5 +116,24 @@ public interface WSDLBoundOperation extends WSDLObject, WSDLExtensible {
      * this method returns null. 
      */
     @Nullable QName getReqPayloadName();
+
+    /**
+     * Gets the payload QName of the response message.
+     *
+     * <p>
+     * It's possible for an operation to define no body part, in which case
+     * this method returns null. 
+     */
+    @Nullable QName getResPayloadName();
+
+    /**
+     * Gets the namespace of request payload.
+     */
+    String getRequestNamespace();
+
+    /**
+     * Gets the namespace of response payload.
+     */
+    String getResponseNamespace();
 
 }

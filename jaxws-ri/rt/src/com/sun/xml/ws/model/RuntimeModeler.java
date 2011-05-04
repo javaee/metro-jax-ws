@@ -51,10 +51,10 @@ import com.sun.xml.ws.api.model.MEP;
 import com.sun.xml.ws.api.model.Parameter;
 import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLPart;
+import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
+import com.sun.xml.ws.api.model.wsdl.WSDLInput;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.model.soap.SOAPBindingImpl;
-import com.sun.xml.ws.model.wsdl.WSDLBoundOperationImpl;
-import com.sun.xml.ws.model.wsdl.WSDLInputImpl;
-import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.spi.db.BindingHelper;
@@ -106,7 +106,7 @@ public class RuntimeModeler {
     private String targetNamespace;
     private boolean isWrapped = true;
     private ClassLoader classLoader;
-    private final WSDLPortImpl binding;
+    private final WSDLPort binding;
     private QName serviceName;
     private QName portName;
     private DatabindingConfig config;
@@ -156,7 +156,7 @@ public class RuntimeModeler {
     public RuntimeModeler(@NotNull DatabindingConfig config){
         this.portClass = (config.getEndpointClass() != null)? config.getEndpointClass() : config.getContractClass();
         this.serviceName = config.getMappingInfo().getServiceName();
-        this.binding = (WSDLPortImpl)config.getWsdlPort();
+        this.binding = config.getWsdlPort();
         this.classLoader = config.getClassLoader();
         this.portName = config.getMappingInfo().getPortName();
         this.config = config;
@@ -596,9 +596,9 @@ public class RuntimeModeler {
 
         //override the @WebMethod.action value by the one from the WSDL
         if(binding != null){
-            WSDLBoundOperationImpl bo = binding.getBinding().get(new QName(targetNamespace, operationName));
+            WSDLBoundOperation bo = binding.getBinding().get(new QName(targetNamespace, operationName));
             if(bo != null){
-                WSDLInputImpl wsdlInput = bo.getOperation().getInput();
+                WSDLInput wsdlInput = bo.getOperation().getInput();
                 String wsaAction = wsdlInput.getAction();
                 if(wsaAction != null && !wsdlInput.isDefaultAction())
                     action = wsaAction;
@@ -904,9 +904,9 @@ public class RuntimeModeler {
         String reqNamespace = targetNamespace;
         String respNamespace = targetNamespace;
 
-        if(binding != null && binding.getBinding().isRpcLit()){
+        if(binding != null && Style.RPC.equals(binding.getBinding().getStyle())){
             QName opQName = new QName(binding.getBinding().getPortTypeName().getNamespaceURI(), operationName);
-            WSDLBoundOperationImpl op = binding.getBinding().get(opQName);
+            WSDLBoundOperation op = binding.getBinding().get(opQName);
             if(op != null){
                 //it cant be null, but lets not fail and try to work with service namespce
                 if(op.getRequestNamespace() != null){
@@ -1529,7 +1529,7 @@ public class RuntimeModeler {
 
     private WSDLPart getPart(QName opName, String partName, Mode mode){
         if(binding != null){
-            WSDLBoundOperationImpl bo = binding.getBinding().get(opName);
+            WSDLBoundOperation bo = binding.getBinding().get(opName);
             if(bo != null)
                 return bo.getPart(partName, mode);
         }
