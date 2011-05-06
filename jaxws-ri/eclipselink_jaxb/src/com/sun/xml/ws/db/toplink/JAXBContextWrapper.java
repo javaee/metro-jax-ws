@@ -153,4 +153,9 @@ public class JAXBContextWrapper implements BindingContext {
 	public boolean hasSwaRef() {
 		return hasSwaRef;
 	}
+	
+    public Object newWrapperInstace(Class<?> wrapperType)
+            throws InstantiationException, IllegalAccessException {
+        return wrapperType.newInstance();
+    }
 }

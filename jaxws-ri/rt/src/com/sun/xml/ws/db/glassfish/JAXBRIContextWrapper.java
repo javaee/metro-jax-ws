@@ -165,4 +165,9 @@ class JAXBRIContextWrapper implements BindingContext {
 	public XMLBridge createFragmentBridge() {
 		return new MarshallerBridge((com.sun.xml.bind.v2.runtime.JAXBContextImpl)context);
 	}
+	
+    public Object newWrapperInstace(Class<?> wrapperType)
+            throws InstantiationException, IllegalAccessException {
+        return wrapperType.newInstance();
+    }
 }

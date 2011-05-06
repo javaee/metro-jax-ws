@@ -46,6 +46,7 @@ import com.sun.xml.ws.api.message.Messages;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
+import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.spi.db.PropertyAccessor;
 import com.sun.xml.ws.spi.db.WrapperComposite;
@@ -188,12 +189,18 @@ abstract class EndpointResponseMessageBuilder {
          * Wrapper bean.
          */
         private final Class wrapper;
+        
+        /**
+         * Needed to get wrapper instantiation method.
+         */
+        private BindingContext bindingContext;
 
         /**
          * Creates a {@link EndpointResponseMessageBuilder} from a {@link WrapperParameter}.
          */
         DocLit(WrapperParameter wp, SOAPVersion soapVersion) {
             super(wp, soapVersion);
+            bindingContext = wp.getOwner().getBindingContext();
 
             wrapper = (Class)wp.getXMLBridge().getTypeInfo().type;
 
@@ -219,7 +226,8 @@ abstract class EndpointResponseMessageBuilder {
          */
         Object build(Object[] methodArgs, Object returnValue) {
             try {
-                Object bean = wrapper.newInstance();
+                //Object bean = wrapper.newInstance();
+                Object bean = bindingContext.newWrapperInstace(wrapper);
 
                 // fill in wrapped parameters from methodArgs
                 for( int i=indices.length-1; i>=0; i-- ) {

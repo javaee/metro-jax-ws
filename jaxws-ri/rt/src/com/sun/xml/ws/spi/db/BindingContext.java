@@ -76,6 +76,8 @@ public interface BindingContext {
 	abstract public Marshaller createMarshaller() throws JAXBException;
 	abstract public Unmarshaller createUnmarshaller() throws JAXBException;
 	abstract public JAXBContext getJAXBContext();
+    abstract public Object newWrapperInstace(Class<?> wrapperType)
+            throws InstantiationException, IllegalAccessException;
 	
 	
 	

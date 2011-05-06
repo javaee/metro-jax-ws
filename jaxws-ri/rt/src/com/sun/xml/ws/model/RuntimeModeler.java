@@ -244,6 +244,7 @@ public class RuntimeModeler {
         model.endpointClass = config.getEndpointClass();
         model.classLoader = this.classLoader;
         model.wsBinding = wsBinding;
+        model.databindingInfo.properties().putAll(config.properties());
         if (model.contractClass == null) model.contractClass = portClass;
         if (model.endpointClass == null && !portClass.isInterface()) model.endpointClass = portClass;
         Class<?> seiClass = portClass;
