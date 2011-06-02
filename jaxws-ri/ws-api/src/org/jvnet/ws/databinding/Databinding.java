@@ -50,7 +50,7 @@ import javax.xml.transform.Source;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceFeature;
 
-import org.jvnet.ws.message.MessagePacket;
+import org.jvnet.ws.message.MessageContext;
 import org.xml.sax.EntityResolver;
 
 /**
@@ -102,7 +102,7 @@ public interface Databinding {
 	 * 
 	 * @return The request XML(SOAP) message
 	 */
-	MessagePacket serializeRequest(JavaCallInfo call);
+	MessageContext serializeRequest(JavaCallInfo call);
 	
 	/**
 	 * Deserializes a response XML(SOAP) message to a JavaCallInfo instance
@@ -114,7 +114,7 @@ public interface Databinding {
 	 * @return The JavaCallInfo updated with the return value or exception of a
 	 *         JAVA method call
 	 */
-	JavaCallInfo deserializeResponse(MessagePacket message, JavaCallInfo call);
+	JavaCallInfo deserializeResponse(MessageContext message, JavaCallInfo call);
 
 	/**
 	 * Deserializes a request XML(SOAP) message to a JavaCallInfo instance
@@ -124,7 +124,7 @@ public interface Databinding {
 	 * 
 	 * @return The JavaCallInfo representing a method call
 	 */
-	JavaCallInfo deserializeRequest(MessagePacket message);
+	JavaCallInfo deserializeRequest(MessageContext message);
 	
 	/**
 	 * Serializes a JavaCallInfo instance representing the return value or
@@ -135,7 +135,7 @@ public interface Databinding {
 	 * 
 	 * @return The response XML(SOAP) message
 	 */
-	MessagePacket serializeResponse(JavaCallInfo call);
+	MessageContext serializeResponse(JavaCallInfo call);
 	
 	/**
 	 * {@code Databinding.Builder}, created from the DatabindingFactory, is used to 
