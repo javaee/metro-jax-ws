@@ -80,6 +80,7 @@ import org.xml.sax.EntityResolver;
  * </blockquote>
  * 
  * @see org.jvnet.ws.databinding.DatabindingFactory
+ * 
  * @author shih-chang.chen@oracle.com
  */
 public interface Databinding {
