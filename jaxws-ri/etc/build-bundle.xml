@@ -109,6 +109,7 @@
         <ant dir="${basedir}/servlet" target="compile" inheritrefs="true"/>
         <ant dir="${basedir}/httpspi-servlet" target="compile" inheritrefs="true"/>
     	<ant dir="${basedir}/eclipselink_jaxb" target="compile" inheritrefs="true"/>
+    	<ant dir="${basedir}/eclipselink_sdo" target="compile" inheritrefs="true"/>
     </target>
 
     <path id="all-source-path">
@@ -122,6 +123,7 @@
         <pathelement path="${basedir}/tools/wscompile/src"/>
         <pathelement path="${basedir}/tools/wscompile/build/gen-src"/>
     	<pathelement path="${basedir}/eclipselink_jaxb/src"/>
+    	<pathelement path="${basedir}/eclipselink_sdo/src"/>
     </path>
 
 
@@ -199,6 +201,10 @@
     			provider="com.sun.xml.ws.db.toplink.JAXBContextFactory"/>-->
     	    <fileset dir="${basedir}/eclipselink_jaxb/build/classes"/>
     	</jar>
+    	
+    	<jar jarfile="${build.home}/lib/sdo-eclipselink-plugin.jar">
+            <fileset dir="${basedir}/eclipselink_sdo/build/classes"/>
+        </jar>
     </target>
 
     <!-- runtime must be built before tools -->
@@ -234,6 +240,11 @@
     	    <fileset dir="${basedir}/eclipselink_jaxb/lib"
     	             includes="eclipselink.jar, javax.mail_1.4.jar"/>
     	</copy>
+    	
+    	<copy todir="${build.home}/lib">
+    	    	    <fileset dir="${basedir}/eclipselink_sdo/lib"
+    	    	             includes="common.sdo.jar"/>
+        </copy>
 
         <antcall target="copy-sjsxp-libs"/>
         <antcall target="copy-woodstox-libs"/>
@@ -278,6 +289,7 @@
         <ant dir="${basedir}/servlet" target="clean"/>
         <ant dir="${basedir}/httpspi-servlet" target="clean"/>
     	<ant dir="${basedir}/eclipselink_jaxb" target="clean"/>
+    	<ant dir="${basedir}/eclipselink_sdo" target="clean"/>
     </target>
 
     <!-- for now, this gets everything built -->
