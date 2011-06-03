@@ -72,6 +72,7 @@ import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.RuntimeModeler;
 import com.sun.xml.ws.server.sei.TieHandler;
 import com.sun.xml.ws.util.QNameMap;
+import com.sun.xml.ws.wsdl.ActionBasedOperationSignature;
 import com.sun.xml.ws.wsdl.DispatchException;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
@@ -98,17 +99,17 @@ public class DatabindingImpl implements Databinding {
 		seiModel = modeler.buildRuntimeModel();
 		WSDLPort wsdlport = config.getWsdlPort();
 		clientConfig = isClientConfig(config);
-		if (wsdlport != null && clientConfig ) initStubHandlers();
+		if ( clientConfig ) initStubHandlers();
 		seiModel.setDatabinding(this);
 		if (wsdlport != null) freeze(wsdlport);
 		if (operationDispatcher == null) operationDispatcherNoWsdl = new OperationDispatcher(null, seiModel.getWSBinding(), seiModel);
-        if(!clientConfig) {
-    		for(JavaMethodImpl jm: seiModel.getJavaMethods()) {
-                TieHandler th = new TieHandler(jm, seiModel.getWSBinding());
-                wsdlOpMap.put(jm.getOperationQName(), th);
-                tieHandlers.put(th.getMethod(), th);
-            }
+//    if(!clientConfig) {
+		for(JavaMethodImpl jm: seiModel.getJavaMethods()) if (!jm.isAsync()) {
+            TieHandler th = new TieHandler(jm, seiModel.getWSBinding());
+            wsdlOpMap.put(jm.getOperationQName(), th);
+            tieHandlers.put(th.getMethod(), th);
         }
+//    }
 	}
 	
 	//TODO isClientConfig
@@ -130,18 +131,18 @@ public class DatabindingImpl implements Databinding {
 //Refactored from SEIStub
     private void initStubHandlers() {
 		stubHandlers = new HashMap<Method, StubHandler>();
-        Map<WSDLBoundOperation, JavaMethodImpl> syncs = new HashMap<WSDLBoundOperation, JavaMethodImpl>();
+        Map<ActionBasedOperationSignature, JavaMethodImpl> syncs = new HashMap<ActionBasedOperationSignature, JavaMethodImpl>();
         // fill in methodHandlers.
         // first fill in sychronized versions
         for (JavaMethodImpl m : seiModel.getJavaMethods()) {
             if (!m.getMEP().isAsync) {
             	StubHandler handler = new StubHandler(m);
-                syncs.put(m.getOperation(), m);
+                syncs.put(m.getOperationSignature(), m);
                 stubHandlers.put(m.getMethod(), handler);
             }
         }
         for (JavaMethodImpl jm : seiModel.getJavaMethods()) {
-            JavaMethodImpl sync = syncs.get(jm.getOperation());
+            JavaMethodImpl sync = syncs.get(jm.getOperationSignature());
             if (jm.getMEP() == MEP.ASYNC_CALLBACK || jm.getMEP() == MEP.ASYNC_POLL) {
                 Method m = jm.getMethod();
                 StubAsyncHandler handler = new StubAsyncHandler(jm, sync);

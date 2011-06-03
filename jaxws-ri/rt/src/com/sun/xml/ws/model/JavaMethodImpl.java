@@ -52,6 +52,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLFault;
 import com.sun.xml.ws.api.model.soap.SOAPBinding;
 import com.sun.xml.ws.model.soap.SOAPBindingImpl;
 import com.sun.xml.ws.spi.db.TypeInfo;
+import com.sun.xml.ws.wsdl.ActionBasedOperationSignature;
 import com.sun.istack.Nullable;
 
 import javax.xml.namespace.QName;
@@ -123,6 +124,12 @@ public final class JavaMethodImpl implements JavaMethod {
                 throw new WebServiceException("@Action and @WebMethod(action=\"\" does not match on operation "+ method.getName());
             }
         }
+    }
+    
+    public ActionBasedOperationSignature getOperationSignature() {
+        QName qname = getRequestPayloadName();
+        if (qname == null) qname = new QName("", "");
+        return new ActionBasedOperationSignature(getInputAction(), qname);
     }
 
     public SEIModel getOwner() {
