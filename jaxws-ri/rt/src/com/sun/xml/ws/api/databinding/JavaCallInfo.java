@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.api.databinding;
 
 import java.lang.reflect.Method;
@@ -59,7 +60,7 @@ import java.lang.reflect.Method;
  *  
  * @author shih-chang.chen@oracle.com
  */
-public class JavaCallInfo {
+public class JavaCallInfo implements org.jvnet.ws.databinding.JavaCallInfo {
 
 	private Method method;
 	private Object[] parameters;

@@ -81,7 +81,7 @@
         <fileset dir="${lib.home}">
             <include name="**/*.jar"/>
         </fileset>
-        <pathelement location="${basedir}/ws-api/build/classes"/>
+        <!--<pathelement location="${basedir}/ws-api/build/classes"/>-->
     </path>
 
     <path id="tools.compile.classpath">
@@ -102,7 +102,7 @@
     </target>
 
     <target name="runtime-compile" depends="prepare">
-        <ant dir="${basedir}/ws-api" target="compile" inheritrefs="true"/>
+        <!--<ant dir="${basedir}/ws-api" target="compile" inheritrefs="true"/>-->
         <ant dir="${basedir}/rt" target="compile" inheritrefs="true"/>
         <ant dir="${basedir}/rt-fi" target="compile" inheritrefs="true"/>
         <ant dir="${basedir}/rt-ha" target="compile" inheritrefs="true"/>
@@ -113,7 +113,7 @@
     </target>
 
     <path id="all-source-path">
-        <pathelement path="${basedir}/ws-api/src"/>
+        <!--<pathelement path="${basedir}/ws-api/src"/>-->
         <pathelement path="${basedir}/rt/src"/>
         <pathelement path="${basedir}/rt/build/gen-src"/>
         <pathelement path="${basedir}/rt-fi/src"/>
