@@ -70,7 +70,7 @@ import java.util.Map;
  * 
  * @author shih-chang.chen@oracle.com
  */
-public abstract class DatabindingFactory {
+public abstract class DatabindingFactory extends org.jvnet.ws.databinding.DatabindingFactory {
 
   /**
    * Creates a new instance of a <code>WsTool</code>. 
@@ -87,7 +87,7 @@ public abstract class DatabindingFactory {
    *          the EndpointRuntimeConfig to init this WsRuntime
    * @return New instance of a <code>WsRuntime</code>
    */
-  abstract public Databinding createRuntime(DatabindingConfig config);
+  abstract public org.jvnet.ws.databinding.Databinding createRuntime(DatabindingConfig config);
 	
   /**
    * Creates a new instance of a <code>XsTool</code>. 

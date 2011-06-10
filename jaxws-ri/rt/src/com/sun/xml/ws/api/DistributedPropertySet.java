@@ -105,7 +105,7 @@ public abstract class DistributedPropertySet extends PropertySet {
         r.satellites.addAll(this.satellites);
     }
 
-    public @Nullable <T extends PropertySet> T getSatellite(Class<T> satelliteClass) {
+    public @Nullable <T extends org.jvnet.ws.message.PropertySet> T getSatellite(Class<T> satelliteClass) {
         for (PropertySet child : satellites) {
             if (satelliteClass.isInstance(child)) {
                 return satelliteClass.cast(child);

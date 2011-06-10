@@ -70,7 +70,7 @@ import java.util.Set;
  * @author Kohsuke Kawaguchi
  */
 @SuppressWarnings("SuspiciousMethodCalls")
-public abstract class PropertySet {
+public abstract class PropertySet implements org.jvnet.ws.message.PropertySet {
 
     /**
      * Creates a new instance of TypedMap.

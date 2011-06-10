@@ -41,12 +41,12 @@ package com.sun.xml.ws.spi.db;
 
 import java.util.Map;
 
-import com.sun.xml.ws.api.databinding.Databinding;
+import org.jvnet.ws.databinding.Databinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 
 public interface DatabindingProvider {
 	//We will need this for ServiceFinder
-//	boolean isFor(String databindingMode);
+	boolean isFor(String databindingMode);
 	void init(Map<String, Object> properties);
-	Databinding create(DatabindingConfig config);
+	org.jvnet.ws.databinding.Databinding create(com.sun.xml.ws.api.databinding.DatabindingConfig config);
 }

@@ -106,7 +106,7 @@ abstract public class WsDatabindingTestBase extends TestCase {
     	//TODO default BindingID
     	if (srvConfig.getMappingInfo().getBindingID() == null)
 		    srvConfig.getMappingInfo().setBindingID(BindingID.parse(endpointClass));
-		Databinding srvDb = factory.createRuntime(srvConfig);		
+		Databinding srvDb = (Databinding) factory.createRuntime(srvConfig);		
 		InVmWSDLResolver result = new InVmWSDLResolver();
         WSDLGenInfo wsdlGenInfo = new WSDLGenInfo();
         wsdlGenInfo.setWsdlResolver(result);
@@ -123,7 +123,7 @@ abstract public class WsDatabindingTestBase extends TestCase {
 
 		cliConfig.setWsdlPort(wsdlPort);
 		cliConfig.getMappingInfo().setServiceName(serviceName);
-		Databinding cliDb = factory.createRuntime(cliConfig);		        
+		Databinding cliDb = (Databinding) factory.createRuntime(cliConfig);		        
 
 		Class<?>[] intf = { proxySEI };
 		WsDatabindingTestFacade h = new WsDatabindingTestFacade(cliDb, srvDb, endpointClass);

@@ -40,16 +40,14 @@
 
 package org.jvnet.ws.message;
 
-import java.util.List;
-
-import javax.activation.DataHandler;
+import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
 /**
  * MessageContext represents a container of a SOAP message and all the properties
  * including the transport headers.
  *
- * MessageContext is a {@link PropertySet} that combines properties exposed from multiple
+ * MessageContext is a composite {@link PropertySet} that combines properties exposed from multiple
  * {@link PropertySet}s into one.
  *
  * <p>
@@ -67,7 +65,7 @@ public interface MessageContext extends PropertySet {
 	 * 
 	 * @return The SOAPMessage
 	 */
-	SOAPMessage getSOAPMessage();
+	SOAPMessage getSOAPMessage() throws SOAPException;
 
 	/**
 	 * Sets the SAAJ SOAPMessage to be the SOAP message.
@@ -76,24 +74,31 @@ public interface MessageContext extends PropertySet {
 	 */
 	void setSOAPMessage(SOAPMessage message);
 
+	/**
+	 * Adds the {@link PropertySet} 
+	 * 
+	 * @param satellite the PropertySet
+	 */
     void addSatellite(PropertySet satellite);
 
+    /**
+     * Removes the {@link PropertySet} 
+     * 
+     * @param satellite the PropertySet
+     */
     void removeSatellite(PropertySet satellite);
 
-    void copySatelliteInto(MessageContext r);
+    /**
+     * Copies all the {@link PropertySet} of this MessageContext into the other MessageContext
+     * 
+     * @param otherMessageContext the MessageContext
+     */
+    void copySatelliteInto(MessageContext otherMessageContext);
 
+    /**
+     * Gets the {@link PropertySet}
+     * 
+     * @param satellite the PropertySet type
+     */
     <T extends PropertySet> T getSatellite(Class<T> satelliteClass);
-
-	void addTransportHeader(String name, List<String> values);
-	
-	void addAttachment(String name, DataHandler dh);
-    
-//    public interface Builder {
-//    	MessageContext build();
-//    	Builder message(InputStream is);
-//    	Builder message(Source s);
-//    	Builder message(SOAPMessage m);
-//    	Builder transportHeader(String name, List<String> values);
-//    	Builder attachment(String name, DataHandler dh);
-//    }
 }

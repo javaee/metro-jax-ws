@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.api.databinding;
 
 import java.net.URL;
@@ -45,7 +46,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
 
+import javax.xml.transform.Source;
 import javax.xml.ws.WebServiceFeature;
+
+import org.xml.sax.EntityResolver;
 
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
@@ -77,6 +81,8 @@ public class DatabindingConfig {
 	protected WSDLPort wsdlPort;
 	protected MetadataReader metadataReader;
 	protected Map<String, Object> properties = new HashMap<String, Object>();
+    protected Source wsdlSource;
+    protected EntityResolver entityResolver;
 	
 //	public MappingInfo getDefaultMappingInfo() {
 //		return defaultMappingInfo;
@@ -163,4 +169,17 @@ public class DatabindingConfig {
 	public void setMetadataReader(MetadataReader  reader) {
 		this.metadataReader = reader;
 	}
+    
+    public Source getWsdlSource() {
+        return wsdlSource;
+    }
+    public void setWsdlSource(Source wsdlSource) {
+        this.wsdlSource = wsdlSource;
+    }
+    public EntityResolver getEntityResolver() {
+        return entityResolver;
+    }
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
 }

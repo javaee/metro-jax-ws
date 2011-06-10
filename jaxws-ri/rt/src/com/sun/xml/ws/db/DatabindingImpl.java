@@ -50,6 +50,8 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
 
+import org.jvnet.ws.message.MessageContext;
+
 import com.sun.xml.ws.api.databinding.EndpointCallBridge;
 import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;
@@ -82,7 +84,7 @@ import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
  *
  * @author shih-chang.chen@oracle.com
  */
-public class DatabindingImpl implements Databinding {
+public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Databinding {
 	
     AbstractSEIModelImpl seiModel;
 	Map<Method, StubHandler> stubHandlers;
@@ -214,7 +216,7 @@ public class DatabindingImpl implements Databinding {
 	
 	
 	public void generateWSDL(WSDLGenInfo info) {        
-        WSDLGenerator wsdlGen = new WSDLGenerator(
+	    com.sun.xml.ws.wsdl.writer.WSDLGenerator wsdlGen = new com.sun.xml.ws.wsdl.writer.WSDLGenerator(
 		    seiModel, 
 		    info.getWsdlResolver(), 
 		    seiModel.getWSBinding(), 
@@ -241,5 +243,31 @@ public class DatabindingImpl implements Databinding {
 
 	public void decode( InputStream in, String ct, Packet p ) throws IOException{
     	getCodec().decode(in, ct, p);    	
+    }
+
+    public org.jvnet.ws.databinding.JavaCallInfo createJavaCallInfo(Method method, Object[] args) {
+        return new JavaCallInfo(method, args);
+    }
+
+    public MessageContext serializeRequest(org.jvnet.ws.databinding.JavaCallInfo call) {
+        return serializeRequest((JavaCallInfo)call);
+    }
+
+    public org.jvnet.ws.databinding.JavaCallInfo deserializeResponse(
+            MessageContext message, org.jvnet.ws.databinding.JavaCallInfo call) {
+        return deserializeResponse((Packet)message, (JavaCallInfo)call);
+    }
+
+    public org.jvnet.ws.databinding.JavaCallInfo deserializeRequest(MessageContext message) {
+        return deserializeRequest((Packet)message);
+    }
+
+    public MessageContext serializeResponse(org.jvnet.ws.databinding.JavaCallInfo call) {
+        return serializeResponse((JavaCallInfo)call);
+    }
+
+    public WSDLGenerator createWSDLGenerator() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

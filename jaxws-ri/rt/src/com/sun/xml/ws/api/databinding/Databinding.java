@@ -77,7 +77,7 @@ import com.sun.xml.ws.wsdl.DispatchException;
  * 
  * @author shih-chang.chen@oracle.com
  */
-public interface Databinding {
+public interface Databinding extends org.jvnet.ws.databinding.Databinding {
 
 	/**
 	 * Gets the MessageFactory instance associated with this WsRuntime

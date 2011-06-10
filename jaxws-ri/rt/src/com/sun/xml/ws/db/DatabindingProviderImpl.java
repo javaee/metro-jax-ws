@@ -55,4 +55,9 @@ public class DatabindingProviderImpl implements DatabindingProvider {
 	public Databinding create(DatabindingConfig config) {
 		return new DatabindingImpl(this, config);
 	}
+
+    public boolean isFor(String databindingMode) {
+        //This is the default one, so it always return true
+        return true;
+    }
 }
