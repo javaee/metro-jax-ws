@@ -44,7 +44,6 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.databinding.EndpointCallBridge;
-import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.NextAction;
@@ -58,7 +57,7 @@ import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.wsdl.DispatchException;
 import com.sun.xml.ws.util.QNameMap;
-
+import org.jvnet.ws.databinding.JavaCallInfo;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +114,7 @@ public class SEIInvokerTube extends InvokerTube {
 			    DispatchException e = (DispatchException)call.getException();
 			    return doReturnWith(req.createServerResponse(e.fault, model.getPort(), null, binding));
 			}
-        	Packet res = model.getDatabinding().serializeResponse(call);        	
+        	Packet res = (Packet) model.getDatabinding().serializeResponse(call);        	
 			res = req.relateServerResponse(res, req.endpoint.getPort(), model, req.endpoint.getBinding());
             assert res != null;
             return doReturnWith(res);

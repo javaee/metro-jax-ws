@@ -41,7 +41,6 @@
 package com.sun.xml.ws.client.sei;
 
 import com.sun.xml.ws.api.databinding.ClientCallBridge;
-import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.client.RequestContext;
@@ -53,6 +52,7 @@ import com.sun.xml.ws.model.CheckedExceptionImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
+import org.jvnet.ws.databinding.JavaCallInfo;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -112,9 +112,9 @@ final class SyncMethodHandler extends MethodHandler {
      *      handling, which requires a separate copy.
      */
     Object invoke(Object proxy, Object[] args, RequestContext rc, ResponseContextReceiver receiver) throws Throwable {
-    	JavaCallInfo call = new JavaCallInfo(method, args);
+    	JavaCallInfo call = owner.databinding.createJavaCallInfo(method, args);
 //      Packet req = new Packet(createRequestMessage(args));
-        Packet req = owner.databinding.serializeRequest(call);
+        Packet req = (Packet) owner.databinding.serializeRequest(call);
         // process the message
         Packet reply = owner.doProcess(req,rc,receiver);
 

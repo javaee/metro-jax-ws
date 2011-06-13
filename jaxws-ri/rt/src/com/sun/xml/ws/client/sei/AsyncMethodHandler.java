@@ -45,7 +45,6 @@ package com.sun.xml.ws.client.sei;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.databinding.ClientCallBridge;
-import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Fiber;
@@ -57,6 +56,7 @@ import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
+import org.jvnet.ws.databinding.JavaCallInfo;
 
 import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.ws.AsyncHandler;
@@ -166,10 +166,10 @@ abstract class AsyncMethodHandler extends MethodHandler {
         }
 
         public void do_run () {    	
-        	JavaCallInfo call = new JavaCallInfo(method, args);
+        	JavaCallInfo call = owner.databinding.createJavaCallInfo(method, args);
 //            Packet req = new Packet(createRequestMessage(args));
 //            Packet req = dbHandler.createRequestPacket(call);
-            Packet req = owner.databinding.serializeRequest(call);
+            Packet req = (Packet)owner.databinding.serializeRequest(call);
 
             Fiber.CompletionCallback callback = new Fiber.CompletionCallback() {
 
@@ -181,7 +181,7 @@ abstract class AsyncMethodHandler extends MethodHandler {
                     }
                     try {
                     	Object[] rargs = new Object[1];
-                    	JavaCallInfo call = new JavaCallInfo(method, rargs);
+                    	JavaCallInfo call = owner.databinding.createJavaCallInfo(method, rargs);
                         call = owner.databinding.deserializeResponse(response, call);
                         if (call.getException() != null) {
                             throw call.getException();

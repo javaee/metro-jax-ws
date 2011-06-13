@@ -101,7 +101,7 @@ public final class SEIStub extends Stub implements InvocationHandler {
         // first fill in sychronized versions
         for (JavaMethodImpl m : seiModel.getJavaMethods()) {
             if (!m.getMEP().isAsync) {
-            	ClientCallBridge so = databinding.getClientBridge(m.getMethod());
+//            	ClientCallBridge so = databinding.getClientBridge(m.getMethod());
             	SyncMethodHandler handler = new SyncMethodHandler(this, m.getMethod());
 //                SyncMethodHandler handler = new SyncMethodHandler(this, m);
                 syncs.put(m.getOperation(), m);
@@ -113,7 +113,7 @@ public final class SEIStub extends Stub implements InvocationHandler {
             JavaMethodImpl sync = syncs.get(jm.getOperation());
             if (jm.getMEP() == MEP.ASYNC_CALLBACK) {
                 Method m = jm.getMethod();
-            	ClientCallBridge so = databinding.getClientBridge(m);
+//            	ClientCallBridge so = databinding.getClientBridge(m);
                 CallbackMethodHandler handler = new CallbackMethodHandler(
                         this, m, m.getParameterTypes().length - 1);
 //                CallbackMethodHandler handler = new CallbackMethodHandler(
@@ -122,7 +122,7 @@ public final class SEIStub extends Stub implements InvocationHandler {
             }
             if (jm.getMEP() == MEP.ASYNC_POLL) {
                 Method m = jm.getMethod();
-            	ClientCallBridge so = databinding.getClientBridge(m);
+//            	ClientCallBridge so = databinding.getClientBridge(m);
                 PollingMethodHandler handler = new PollingMethodHandler(this, m);
 //                PollingMethodHandler handler = new PollingMethodHandler(this, jm, sync);
                 methodHandlers.put(m, handler);

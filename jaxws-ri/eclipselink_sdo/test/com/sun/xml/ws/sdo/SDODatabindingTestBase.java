@@ -55,26 +55,21 @@ import javax.xml.ws.WebServiceFeature;
 
 import junit.framework.TestCase;
 
+import org.jvnet.ws.databinding.JavaCallInfo;
+
 import com.sun.xml.ws.api.BindingID;
-import com.sun.xml.ws.api.databinding.ClientCallBridge;
 import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;
 import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
-import com.sun.xml.ws.api.databinding.EndpointCallBridge;
-import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;
-import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
-import com.sun.xml.ws.db.DatabindingImpl;
-import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
-import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 
@@ -157,11 +152,12 @@ abstract public class SDODatabindingTestBase extends TestCase {
         }
 
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            JavaCallInfo cliCall = new JavaCallInfo();
-            cliCall.setMethod(method);
-            cliCall.setParameters(args);
-            ClientCallBridge clientBridge = cli.getClientBridge(method);
-            Packet cliSoapReq = clientBridge.createRequestPacket(cliCall);
+//          JavaCallInfo cliCall = new JavaCallInfo();
+//          cliCall.setMethod(method);
+//          cliCall.setParameters(args);
+            JavaCallInfo cliCall = cli.createJavaCallInfo(method, args);
+//            Packet cliSoapReq = clientBridge.createRequestPacket(cliCall);
+            Packet cliSoapReq = (Packet)cli.serializeRequest(cliCall);
             //Transmit to Server
             ByteArrayOutputStream cliBo = new ByteArrayOutputStream();
             ContentType cliCt = cli.encode(cliSoapReq, cliBo);
@@ -181,8 +177,8 @@ abstract public class SDODatabindingTestBase extends TestCase {
 //          packet.soapAction = fixQuotesAroundSoapAction(con.getRequestHeader("SOAPAction"));
             srv.decode(srvBi, cliCt.getContentType(), srvSoapReq);
 //          Message srvSoapReq = tie.getMessageFactory().createMessage(srcReq, cliSoapReq.transportHeaders(), null);
-            EndpointCallBridge endpointBridge = srv.getEndpointBridge(srvSoapReq);
-            JavaCallInfo srcCall = endpointBridge.deserializeRequest(srvSoapReq);           
+//            EndpointCallBridge endpointBridge = srv.getEndpointBridge(srvSoapReq);
+            JavaCallInfo srcCall = srv.deserializeRequest(srvSoapReq);           
             Method intfMethod = srcCall.getMethod();
             Method implMethod = serviceBeanType.getMethod(intfMethod.getName(), intfMethod.getParameterTypes());
             try {
@@ -191,7 +187,7 @@ abstract public class SDODatabindingTestBase extends TestCase {
             } catch (Exception e) {
                 srcCall.setException(e);
             }
-            Packet srvSoapRes = endpointBridge.serializeResponse(srcCall);
+            Packet srvSoapRes = (Packet)srv.serializeResponse(srcCall);
 //          Packet srvSoapRes = srvSoapReq.createResponse(srvSoapResMsg);
             //Transmit to Client
             ByteArrayOutputStream srvBo = new ByteArrayOutputStream();
@@ -209,7 +205,8 @@ abstract public class SDODatabindingTestBase extends TestCase {
             ByteArrayInputStream cliBi = new ByteArrayInputStream(srvBo.toByteArray());
             Packet cliSoapRes = new Packet();
             cli.decode(cliBi, srvCt.getContentType(), cliSoapRes);
-            cliCall = clientBridge.readResponse(cliSoapRes, cliCall);
+//            cliCall = clientBridge.readResponse(cliSoapRes, cliCall);
+            cliCall = cli.deserializeResponse(cliSoapRes, cliCall);
             if (cliCall.getException() != null) {
                 throw cliCall.getException(); 
             }

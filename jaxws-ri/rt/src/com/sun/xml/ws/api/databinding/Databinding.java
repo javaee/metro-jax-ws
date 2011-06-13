@@ -46,7 +46,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 
 import javax.xml.ws.WebServiceFeature;
-import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.wsdl.DispatchException;
@@ -95,11 +94,11 @@ public interface Databinding extends org.jvnet.ws.databinding.Databinding {
 	 * 
 	 * @return the JavaCallInfo representing a method call
 	 */
-	JavaCallInfo deserializeRequest(Packet req);
+//	JavaCallInfo deserializeRequest(Packet req);
 
-	EndpointCallBridge getEndpointBridge(Packet soap) throws DispatchException;
+//	EndpointCallBridge getEndpointBridge(Packet soap) throws DispatchException;
 	
-	ClientCallBridge getClientBridge(Method method);
+//	ClientCallBridge getClientBridge(Method method);
 
 	/**
 	 * Serializes a JavaCallInfo instance representing a JAVA method call to a
@@ -110,7 +109,7 @@ public interface Databinding extends org.jvnet.ws.databinding.Databinding {
 	 * 
 	 * @return the request XML(SOAP) message
 	 */
-	Packet serializeRequest(JavaCallInfo call);
+//	Packet serializeRequest(JavaCallInfo call);
 
 	/**
 	 * Serializes a JavaCallInfo instance representing the return value or
@@ -122,7 +121,7 @@ public interface Databinding extends org.jvnet.ws.databinding.Databinding {
 	 * 
 	 * @return the response XML(SOAP) message
 	 */
-	Packet serializeResponse(JavaCallInfo call);
+//	Packet serializeResponse(JavaCallInfo call);
 
 	/**
 	 * Deserializes a response XML(SOAP) message to a JavaCallInfo instance
@@ -137,7 +136,7 @@ public interface Databinding extends org.jvnet.ws.databinding.Databinding {
 	 * @return the JavaCallInfo updated with the return value or exception of a
 	 *         JAVA method call
 	 */
-	JavaCallInfo deserializeResponse(Packet res, JavaCallInfo call);
+//	JavaCallInfo deserializeResponse(Packet res, JavaCallInfo call);
 
 	/**
 	 * Gets the WSDL operation metadata of the specified JAVA method.
@@ -153,7 +152,7 @@ public interface Databinding extends org.jvnet.ws.databinding.Databinding {
 	 * 
 	 * @return the features
 	 */
-	WebServiceFeature[] getFeatures();
+//	WebServiceFeature[] getFeatures();
 
 	void generateWSDL(WSDLGenInfo info);
 
