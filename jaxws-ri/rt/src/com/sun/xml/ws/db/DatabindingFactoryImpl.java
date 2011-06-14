@@ -37,8 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.db;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
@@ -51,20 +53,24 @@ import javax.xml.transform.Source;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 
+import org.jvnet.ws.databinding.Databinding;
 import org.jvnet.ws.databinding.Databinding.Builder;
+import org.jvnet.ws.databinding.Databinding.WSDLGenerator;
 import org.xml.sax.EntityResolver;
 
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;
+import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
+import com.sun.xml.ws.api.databinding.WSDLGenInfo;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.spi.db.DatabindingException;
 import com.sun.xml.ws.spi.db.DatabindingProvider;
 import com.sun.xml.ws.util.ServiceFinder;
 
 /**
- * WsFactoryImpl
+ * DatabindingFactoryImpl
  * 
  * @author shih-chang.chen@oracle.com
  */
@@ -98,33 +104,44 @@ public class DatabindingFactoryImpl extends DatabindingFactory {
 		if (propName == null) propName = propType.getName();
 		return propType.cast(properties.get(propName));
 	}
+    
+    public DatabindingProvider provider(DatabindingConfig config) {
+        String mode = databindingMode(config);
+        if (providers == null) providers = providers();
+        DatabindingProvider provider = null;
+        if(providers != null) for(DatabindingProvider p : providers) if(provider.isFor(mode)) provider = p;
+        if (provider == null) {
+//            if (defaultRuntimeFactory == null) {
+//                defaultRuntimeFactory = newRuntimeFactory(WsRuntimeFactoryDefaultImpl);
+//            }
+//            provider = defaultRuntimeFactory;
+            provider = new DatabindingProviderImpl();
+        }
+        return provider;
+    }
 	
-	public org.jvnet.ws.databinding.Databinding createRuntime(DatabindingConfig config) {
-		String mode = databindingMode(config);
-		if (providers == null) providers = providers();
-		DatabindingProvider factory = null;
-		if(providers != null) for(DatabindingProvider provider : providers) if(provider.isFor(mode)) factory = provider;
-		if (factory == null) {
-            if (defaultRuntimeFactory == null) {
-                defaultRuntimeFactory = newRuntimeFactory(WsRuntimeFactoryDefaultImpl);
-            }
-            factory = defaultRuntimeFactory;
-		}
-		return factory.create(config);
+	public Databinding createRuntime(DatabindingConfig config) {
+	    DatabindingProvider provider = provider(config);
+		return provider.create(config);
 	}
+    
+    public Databinding.WSDLGenerator createWsdlGen(DatabindingConfig config) {
+        DatabindingProvider provider = provider(config);
+        return provider.wsdlGen(config);
+    }
 	
-	DatabindingProvider newRuntimeFactory(String name) {
-		ClassLoader classLoader = classLoader();
-		DatabindingProvider factory = null;
-		try {
-			Class cls = (classLoader != null) ? classLoader.loadClass(name) : Class.forName(name);
-			factory = DatabindingProvider.class.cast(cls.newInstance());
-		} catch (Exception e) {
-			throw new DatabindingException("Unknown DatabindingFactory: " + name, e);
-		}
-		factory.init(properties);
-		return factory;
-	}
+//	DatabindingProvider newRuntimeFactory(String name) {
+//		ClassLoader classLoader = classLoader();
+//		DatabindingProvider factory = null;
+//		try {
+//			Class cls = (classLoader != null) ? classLoader.loadClass(name) : Class.forName(name);
+//			factory = DatabindingProvider.class.cast(cls.newInstance());
+//		} catch (Exception e) {
+//			throw new DatabindingException("Unknown DatabindingFactory: " + name, e);
+//		}
+//		factory.init(properties);
+//		return factory;
+//	}
 
 	String databindingMode(DatabindingConfig config) {
 //		if ( config.getOverrideMappingInfo() != null && 
@@ -137,6 +154,12 @@ public class DatabindingFactoryImpl extends DatabindingFactory {
 		if ( config.getMappingInfo() != null && 
 		     config.getMappingInfo().getDatabindingMode() != null)
 			return config.getMappingInfo().getDatabindingMode();
+        if ( config.getFeatures() != null) for (WebServiceFeature f : config.getFeatures()) {
+            if (f instanceof DatabindingModeFeature) {
+                DatabindingModeFeature dmf = (DatabindingModeFeature) f;
+                return dmf.getMode();
+            }
+        }
 		return null;
 	}
 	
@@ -230,6 +253,9 @@ public class DatabindingFactoryImpl extends DatabindingFactory {
 
         public org.jvnet.ws.databinding.Databinding build() {
             return factory.createRuntime(config);
+        }
+        public WSDLGenerator createWSDLGenerator() {
+            return factory.createWsdlGen(config);
         }       
     }
 }

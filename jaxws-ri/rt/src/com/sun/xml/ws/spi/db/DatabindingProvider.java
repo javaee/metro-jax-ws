@@ -48,5 +48,6 @@ public interface DatabindingProvider {
 	//We will need this for ServiceFinder
 	boolean isFor(String databindingMode);
 	void init(Map<String, Object> properties);
-	org.jvnet.ws.databinding.Databinding create(com.sun.xml.ws.api.databinding.DatabindingConfig config);
+	Databinding create(DatabindingConfig config);
+    Databinding.WSDLGenerator wsdlGen(DatabindingConfig config);
 }

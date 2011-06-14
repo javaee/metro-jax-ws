@@ -62,7 +62,6 @@ import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.MEP;
 import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
@@ -77,7 +76,6 @@ import com.sun.xml.ws.util.QNameMap;
 import com.sun.xml.ws.wsdl.ActionBasedOperationSignature;
 import com.sun.xml.ws.wsdl.DispatchException;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
-import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 
 /**
  * WsRuntimeImpl is the databinding processor built on SEIModel
@@ -264,10 +262,5 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
 
     public MessageContext serializeResponse(org.jvnet.ws.databinding.JavaCallInfo call) {
         return serializeResponse((JavaCallInfo)call);
-    }
-
-    public WSDLGenerator createWSDLGenerator() {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

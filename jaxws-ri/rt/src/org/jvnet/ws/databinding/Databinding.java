@@ -237,17 +237,17 @@ public interface Databinding {
          * @return The Builder instance
 		 */
 		Databinding build();
+	    
+	    /**
+	     * Creates the WSDLGenerator which can be used to generate the WSDL
+	     * representation of the service endpoint interface of this Databinding
+	     * object.
+	     * 
+	     * @return WSDLGenerator The WSDLGenerator
+	     */
+	    WSDLGenerator createWSDLGenerator();	
 	}
 	
-	/**
-	 * Creates the WSDLGenerator which can be used to generate the WSDL
-	 * representation of the service endpoint interface of this Databinding
-	 * object.
-	 * 
-	 * @return WSDLGenerator The WSDLGenerator
-	 */
-	WSDLGenerator createWSDLGenerator();
-
 	/**
 	 * WSDLGenerator is used to generate the WSDL representation of the service 
 	 * endpoint interface of the parent Databinding object.
