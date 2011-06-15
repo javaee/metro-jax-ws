@@ -107,14 +107,19 @@ public class DatabindingFactoryImpl extends DatabindingFactory {
     
     public DatabindingProvider provider(DatabindingConfig config) {
         String mode = databindingMode(config);
-        if (providers == null) providers = providers();
+        if (providers == null)
+            providers = providers();
         DatabindingProvider provider = null;
-        if(providers != null) for(DatabindingProvider p : providers) if(provider.isFor(mode)) provider = p;
-        if (provider == null) {
-//            if (defaultRuntimeFactory == null) {
-//                defaultRuntimeFactory = newRuntimeFactory(WsRuntimeFactoryDefaultImpl);
-//            }
-//            provider = defaultRuntimeFactory;
+        if (providers != null) {
+            for (DatabindingProvider p : providers)
+                if (p.isFor(mode))
+                    provider = p;
+        } if (provider == null) {
+            // if (defaultRuntimeFactory == null) {
+            // defaultRuntimeFactory =
+            // newRuntimeFactory(WsRuntimeFactoryDefaultImpl);
+            // }
+            // provider = defaultRuntimeFactory;
             provider = new DatabindingProviderImpl();
         }
         return provider;
