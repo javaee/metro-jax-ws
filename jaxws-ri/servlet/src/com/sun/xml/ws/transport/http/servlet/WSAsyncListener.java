@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,6 +48,7 @@ import java.util.logging.Logger;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
 import javax.servlet.AsyncContext;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Rama Pulavarthi
@@ -61,27 +62,28 @@ public class WSAsyncListener {
         this.callback = callback;
     }
 
-    public void addListenerTo(AsyncContext context) {
+    public void addListenerTo(AsyncContext context, final ServletAdapter.AsyncCompletionCheck completionCheck) {
         context.addListener(new AsyncListener() {
 
             public void onComplete(AsyncEvent event) throws IOException {
-                LOGGER.fine("WSAsyncListener completed");
+                LOGGER.finer("Asynchronous Servlet Invocation completed for "+((HttpServletRequest)event.getAsyncContext().getRequest()).getRequestURL());
                 callback.onCompletion();
 
             }
 
             public void onTimeout(AsyncEvent event) throws IOException {
-                LOGGER.fine("WSAsyncListener timed out");
+                completionCheck.markComplete();                                
+                LOGGER.fine("Time out on Request:" + ((HttpServletRequest)event.getAsyncContext().getRequest()).getRequestURL());
                 con.close();
             }
 
             public void onError(AsyncEvent event) throws IOException {
-                LOGGER.fine("WSAsyncListener on error");
+                LOGGER.fine("Error processing Request:" + ((HttpServletRequest)event.getAsyncContext().getRequest()).getRequestURL());
                 con.close();
             }
 
             public void onStartAsync(AsyncEvent event) throws IOException {
-                LOGGER.fine("WSAsyncListener on start async");
+                LOGGER.finer("Asynchronous Servlet Invocation started for "+((HttpServletRequest)event.getAsyncContext().getRequest()).getRequestURL());
             }
         });
     }

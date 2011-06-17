@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -195,11 +195,17 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
 
             if (asyncRequest) {
                 final javax.servlet.AsyncContext asyncContext = request.startAsync(request, response);
-                new WSAsyncListener(connection, callback).addListenerTo(asyncContext);
+                final AsyncCompletionCheck completionCheck = new AsyncCompletionCheck();
+                new WSAsyncListener(connection, callback).addListenerTo(asyncContext,completionCheck);
                 //asyncContext.setTimeout(10000L);// TODO get it from @ or config file
                 super.invokeAsync(connection, new CompletionCallback() {
                     public void onCompletion() {
-                        asyncContext.complete();
+                        synchronized (completionCheck) {
+                            if(!completionCheck.isCompleted()) {
+                                asyncContext.complete();
+                                completionCheck.markComplete();
+                            }
+                        }
                     }
                 });
                 asyncStarted = true;
@@ -213,6 +219,20 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
         }
     }
 
+    /**
+     * Synchronizes the CompletionHandler action and Container's timeout action.
+     */
+    class AsyncCompletionCheck {
+        boolean completed = false;
+        synchronized void markComplete() {
+            completed = true;
+        }
+
+        synchronized boolean isCompleted() {
+            return completed;
+        }
+    }
+    
     /**
      * @param context Servlet Context
      * @param request Servlet Request
