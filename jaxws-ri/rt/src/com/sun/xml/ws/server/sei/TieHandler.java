@@ -48,6 +48,7 @@ import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
+import com.sun.xml.ws.model.CheckedExceptionImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
@@ -261,14 +262,17 @@ final public class TieHandler implements EndpointCallBridge {
             responseMessage = isOneWay ? null : createResponseMessage(call.getParameters(), call.getReturnValue());
         } else {
             Throwable e = call.getException();
-            if (e instanceof InvocationTargetException) {
-                Throwable cause = e.getCause();
-                if (!(cause instanceof RuntimeException) && cause instanceof Exception) {
+            Throwable serviceException = getServiceException(e);
+            if (e instanceof InvocationTargetException || serviceException != null) {
+//              Throwable cause = e.getCause();
+              //if (!(cause instanceof RuntimeException) && cause instanceof Exception) {
+                if (serviceException != null) {
                     // Service specific exception
-                    LOGGER.log(Level.FINE, cause.getMessage(), cause);
+                    LOGGER.log(Level.FINE, serviceException.getMessage(), serviceException);
                     responseMessage = SOAPFaultBuilder.createSOAPFaultMessage(soapVersion,
-                            javaMethodModel.getCheckedException(cause.getClass()), cause);
+                            javaMethodModel.getCheckedException(serviceException.getClass()), serviceException);
                 } else {
+                    Throwable cause = e.getCause();
                     if (cause instanceof ProtocolException) {
                         // Application code may be throwing it intentionally
                         LOGGER.log(Level.FINE, cause.getMessage(), cause);
@@ -288,6 +292,18 @@ final public class TieHandler implements EndpointCallBridge {
 //        return req.createServerResponse(responseMessage, req.endpoint.getPort(), javaMethodModel.getOwner(), req.endpoint.getBinding());
 
         return responseMessage;
+    }
+    
+    Throwable getServiceException(Throwable throwable) {
+        if (javaMethodModel.getCheckedException(throwable.getClass()) != null) return throwable;
+        if (throwable.getCause() != null) {
+            Throwable cause = throwable.getCause();
+//            if (!(cause instanceof RuntimeException) && cause instanceof Exception) {
+             if (javaMethodModel.getCheckedException(cause.getClass()) != null) return cause;
+//            }
+//            if (javaMethodModel.getCheckedException(cause.getClass()) != null) return cause;
+        }
+        return null;        
     }
 
     /**
