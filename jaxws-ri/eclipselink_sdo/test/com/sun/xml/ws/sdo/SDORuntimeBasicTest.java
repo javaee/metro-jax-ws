@@ -39,7 +39,7 @@ public class SDORuntimeBasicTest extends SDODatabindingTestBase {
         final HelperContext shc = SDOHelperContext.getHelperContext("server");
         HelperContextResolver shcr = new HelperContextResolver() {
 
-            @Override
+            //@Override
             public HelperContext getHelperContext(boolean isClient,
                     QName serviceName, Map<String, Object> properties) {
                 return shc;
@@ -61,7 +61,7 @@ public class SDORuntimeBasicTest extends SDODatabindingTestBase {
         final HelperContext chc = SDOHelperContext.getHelperContext("client");//SDODatabindingContext.getLocalHelperContext();
         HelperContextResolver chcr = new HelperContextResolver() {
 
-            @Override
+            //@Override
             public HelperContext getHelperContext(boolean isClient,
                     QName serviceName, Map<String, Object> properties) {
                 return chc;
@@ -94,7 +94,7 @@ public class SDORuntimeBasicTest extends SDODatabindingTestBase {
         final HelperContext chc = SDOHelperContext.getHelperContext("client");//SDODatabindingContext.getLocalHelperContext();
         HelperContextResolver chcr = new HelperContextResolver() {
 
-            @Override
+            //@Override
             public HelperContext getHelperContext(boolean isClient,
                     QName serviceName, Map<String, Object> properties) {
                 return chc;
@@ -107,7 +107,7 @@ public class SDORuntimeBasicTest extends SDODatabindingTestBase {
         final HelperContext shc = SDOHelperContext.getHelperContext("server");
         HelperContextResolver shcr = new HelperContextResolver() {
 
-            @Override
+            //@Override
             public HelperContext getHelperContext(boolean isClient,
                     QName serviceName, Map<String, Object> properties) {
                 return shc;

@@ -27,22 +27,22 @@ public class SDOAttachmentMarshaller implements XMLAttachmentMarshaller {
         final ByteArrayInputStream bais = new ByteArrayInputStream(data, start, length);
         DataSource ds = new DataSource() {
 
-            @Override
+            //@Override
             public String getContentType() {
                 return "application/data";
             }
 
-            @Override
+            //@Override
             public InputStream getInputStream() throws IOException {
                 return bais;
             }
 
-            @Override
+            //@Override
             public String getName() {
                return "";
             }
 
-            @Override
+            //@Override
             public OutputStream getOutputStream() throws IOException {
                 return null;
             }

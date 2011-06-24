@@ -12,7 +12,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stax.StAXSource;
+//import javax.xml.transform.stax.StAXSource;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -65,7 +65,8 @@ public class SDOSchemaCompiler {
     }
 
     public void parseSchema(String systemId, XMLStreamReader xmlStreamReader) throws XMLStreamException {
-        StAXSource src = new StAXSource(xmlStreamReader);
+        //StAXSource src = new StAXSource(xmlStreamReader);
+        SAXSource src = new com.sun.xml.ws.util.xml.StAXSource(xmlStreamReader, false);
         src.setSystemId(systemId);
         schemas.add(src);
     }

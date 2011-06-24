@@ -34,7 +34,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stax.StAXSource;
+//import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -145,7 +145,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         }
     }
 
-    @Override
+    //@Override
     public BindingContext context() {
 
         return parent;
@@ -187,7 +187,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         }
     }
 
-    @Override
+    //@Override
     public void marshal(T object, XMLStreamWriter output,
             AttachmentMarshaller am) throws JAXBException {
         /*  Didn't work due to bug 8539542
@@ -225,7 +225,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         }
     }
 
-    @Override
+    //@Override
     public void marshal(T object, OutputStream output,
             NamespaceContext nsContext, AttachmentMarshaller am)
             throws JAXBException {
@@ -264,7 +264,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         }
     }
 
-    @Override
+    //@Override
     public void marshal(T object, Node output) throws JAXBException {
         Result res = new DOMResult(output);
         if (object instanceof DataObject) {
@@ -275,7 +275,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         serializeToResult(value, res);
     }
 
-    @Override
+    //@Override
     public void marshal(T object, ContentHandler contentHandler,
             AttachmentMarshaller am) throws JAXBException {
         Result res = new SAXResult(contentHandler);
@@ -288,7 +288,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         serializeToResult(value, res);
     }
 
-    @Override
+    //@Override
     public void marshal(T object, Result result) throws JAXBException {
         if (object instanceof DataObject) {
             serializeDataObject((DataObject) object, result, null);
@@ -299,34 +299,35 @@ public class SDOBond<T>  implements XMLBridge<T> {
         serializeToResult(value, result);
     }
 
-    @Override
+    //@Override
     public T unmarshal(XMLStreamReader in, AttachmentUnmarshaller au)
             throws JAXBException {
-        return deserialize(new StAXSource(in), au);
+        //return deserialize(new StAXSource(in), au);
+        return deserialize(new com.sun.xml.ws.util.xml.StAXSource(in, false), au);
     }
 
-    @Override
+    //@Override
     public T unmarshal(Source in, AttachmentUnmarshaller au)
             throws JAXBException {
         return deserialize(in, au);
     }
 
-    @Override
+    //@Override
     public T unmarshal(InputStream in) throws JAXBException {
         return deserialize(new StreamSource(in), null);
     }
 
-    @Override
+    //@Override
     public T unmarshal(Node n, AttachmentUnmarshaller au) throws JAXBException {
         return deserialize(new DOMSource(n), au);
     }
 
-    @Override
+    //@Override
     public TypeInfo getTypeInfo() {
         return ti;
     }
 
-    @Override
+    //@Override
     public boolean supportOutputStream() {
         return true;
     }
