@@ -124,8 +124,13 @@
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>wstx-asl</artifactId>
-            <version>3.2.1</version>
+            <artifactId>woodstox-core-asl</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>stax2-api</artifactId>
+            <version>3.1.1</version>
         </dependency>
         <!-- If you want to use SJSXP StAX parser, uncomment this and comment woodstox one
        <dependency>
