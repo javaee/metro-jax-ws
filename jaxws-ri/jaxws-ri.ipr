@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project relativePaths="true" version="4">
+<project version="4">
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
     <buildFile url="file://$PROJECT_DIR$/build.xml">
@@ -7,6 +7,7 @@
       <antReference projectDefault="true" />
       <customJdkName value="" />
       <maximumHeapSize value="128" />
+      <maximumStackSize value="2" />
       <properties />
     </buildFile>
     <buildFile url="file://$PROJECT_DIR$/rt/build.xml">
@@ -14,6 +15,7 @@
       <antReference projectDefault="true" />
       <customJdkName value="" />
       <maximumHeapSize value="128" />
+      <maximumStackSize value="2" />
       <properties />
     </buildFile>
     <buildFile url="file://$PROJECT_DIR$/transports/local/build.xml">
@@ -21,6 +23,7 @@
       <antReference projectDefault="true" />
       <customJdkName value="" />
       <maximumHeapSize value="128" />
+      <maximumStackSize value="2" />
       <properties />
     </buildFile>
     <buildFile url="file://$PROJECT_DIR$/build.xml">
@@ -28,8 +31,286 @@
       <antReference projectDefault="true" />
       <customJdkName value="" />
       <maximumHeapSize value="128" />
+      <maximumStackSize value="2" />
       <properties />
     </buildFile>
+  </component>
+  <component name="ArtifactManager">
+    <artifact type="exploded-war" name="jaxws-ri:Web20 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web20" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web26 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web26" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web25 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web25" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web28 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web28" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web27 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web27" />
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web22 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web22" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web21 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web21" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web24 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web24" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web23 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web23" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web17 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web17" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web16 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web16" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web9 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web9" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web15 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web15" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web14 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web14" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web13 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web13" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web12 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web12" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web11 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web11" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web10 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web10" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web3 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web3" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web4 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web4" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web2 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web2" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web7 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web7" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web8 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web8" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web19 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web19" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web5 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web5" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web18 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web18" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="jaxws-ri:Web6 exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="jaxws-ri/web/Web6" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="jaxws-ri" />
+          </element>
+        </element>
+      </root>
+    </artifact>
   </component>
   <component name="BSFConsole">
     <sendcommandbycontrolenter>false</sendcommandbycontrolenter>
@@ -78,13 +359,8 @@
     <option name="PROJECT_PROFILE" />
     <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />
   </component>
-  <component name="CodeStyleSettingsManager">
-    <option name="PER_PROJECT_SETTINGS" />
-    <option name="USE_PER_PROJECT_SETTINGS" value="false" />
-  </component>
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
-    <option name="DEPLOY_AFTER_MAKE" value="0" />
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
       <entry name=".+\.(gif|png|jpeg|jpg)" />
@@ -100,6 +376,7 @@
       <entry name="?*.dtd" />
       <entry name="?*.tld" />
     </wildcardResourcePatterns>
+    <annotationProcessing enabled="false" useClasspath="true" />
   </component>
   <component name="CopyrightManager" default="">
     <module2copyright />
@@ -111,11 +388,8 @@
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
   <component name="EclipseCompilerSettings">
-    <option name="DEBUGGING_INFO" value="true" />
     <option name="GENERATE_NO_WARNINGS" value="true" />
     <option name="DEPRECATION" value="false" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value="" />
-    <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
   <component name="EclipseEmbeddedCompilerSettings">
     <option name="DEBUGGING_INFO" value="true" />
@@ -134,25 +408,6 @@
     <option name="OUTPUT_DIRECTORY" />
   </component>
   <component name="IdProvider" IDEtalkID="DD2ED0A6E5A2694C894DF4AB18CF8555" />
-  <component name="InspectionProjectProfileManager">
-    <option name="PROJECT_PROFILE" value="Project Default" />
-    <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />
-    <scopes />
-    <profiles>
-      <profile version="1.0" is_locked="false">
-        <option name="myName" value="Project Default" />
-        <option name="myLocal" value="false" />
-      </profile>
-    </profiles>
-    <list size="0" />
-  </component>
-  <component name="JavacSettings">
-    <option name="DEBUGGING_INFO" value="true" />
-    <option name="GENERATE_NO_WARNINGS" value="false" />
-    <option name="DEPRECATION" value="true" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value="" />
-    <option name="MAXIMUM_HEAP_SIZE" value="128" />
-  </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
     <option name="OPTION_SCOPE" value="protected" />
@@ -169,14 +424,6 @@
     <option name="HEAP_SIZE" />
     <option name="LOCALE" />
     <option name="OPEN_IN_BROWSER" value="true" />
-  </component>
-  <component name="JikesSettings">
-    <option name="JIKES_PATH" value="" />
-    <option name="DEBUGGING_INFO" value="true" />
-    <option name="DEPRECATION" value="true" />
-    <option name="GENERATE_NO_WARNINGS" value="false" />
-    <option name="IS_EMACS_ERRORS_MODE" value="true" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
   <component name="LogConsolePreferences">
     <option name="FILTER_ERRORS" value="false" />
@@ -334,9 +581,10 @@
   <component name="ProjectDetails">
     <option name="projectName" value="jaxws-ri" />
   </component>
-  <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/eclipselink_jaxb/eclipselink_jaxb.iml" filepath="$PROJECT_DIR$/eclipselink_jaxb/eclipselink_jaxb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eclipselink_sdo/eclipselink_sdo.iml" filepath="$PROJECT_DIR$/eclipselink_sdo/eclipselink_sdo.iml" />
       <module fileurl="file://$PROJECT_DIR$/httpspi-servlet/httpspi-servlet.iml" filepath="$PROJECT_DIR$/httpspi-servlet/httpspi-servlet.iml" group="transports" />
       <module fileurl="file://$PROJECT_DIR$/javadoc/javadoc.iml" filepath="$PROJECT_DIR$/javadoc/javadoc.iml" />
       <module fileurl="file://$PROJECT_DIR$/jaxws-ri.iml" filepath="$PROJECT_DIR$/jaxws-ri.iml" />
@@ -360,15 +608,11 @@
       </value>
     </option>
   </component>
-  <component name="RmicSettings">
-    <option name="IS_EANABLED" value="false" />
-    <option name="DEBUGGING_INFO" value="true" />
-    <option name="GENERATE_NO_WARNINGS" value="false" />
-    <option name="GENERATE_IIOP_STUBS" value="false" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value="" />
+  <component name="SvnBranchConfigurationManager">
+    <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="CVS" />
+    <mapping directory="" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">

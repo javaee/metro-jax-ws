@@ -115,7 +115,7 @@
         <dependency>
             <groupId>com.sun.xml.messaging.saaj</groupId>
             <artifactId>saaj-impl</artifactId>
-            <version>1.3.8</version>
+            <version>@SAAJ_VERSION@</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.stream.buffer</groupId>

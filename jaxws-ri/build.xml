@@ -326,7 +326,9 @@
                 <filterset>
                     <filter token="API_VERSION" value="${release.maven.api.version}"/>
                     <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
+                    <filter token="SAAJ_VERSION" value="${saaj-impl.version}"/>
                     <filter token="JAXB_API_VERSION" value="${jaxb.api.version}"/>
+                    <filter token="SAAJ_API_VERSION" value="${saaj-api.version}"/>
                     <filter token="VERSION" value="${jar.suffix}"/>
                 </filterset>
             </copy>
