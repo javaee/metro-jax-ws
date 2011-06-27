@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -120,17 +120,17 @@
         <dependency>
             <groupId>com.sun.xml.stream.buffer</groupId>
             <artifactId>streambuffer</artifactId>
-            <version>1.2</version>
+            <version>@XMLSTREAMBUFFER_VERSION@</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>woodstox-core-asl</artifactId>
-            <version>4.1.1</version>
+            <version>@WOODSTOX_CORE_VERSION@</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>stax2-api</artifactId>
-            <version>3.1.1</version>
+            <version>@STAX2_API_VERSION@</version>
         </dependency>
         <!-- If you want to use SJSXP StAX parser, uncomment this and comment woodstox one
        <dependency>
@@ -142,32 +142,32 @@
         <dependency>
             <groupId>org.jvnet.staxex</groupId>
             <artifactId>stax-ex</artifactId>
-            <version>1.4</version>
+            <version>@STAX_EX_VERSION@</version>
         </dependency>
         <dependency>
             <groupId>com.sun.org.apache.xml.internal</groupId>
             <artifactId>resolver</artifactId>
-            <version>20050927</version>
+            <version>@RESOLVER_VERSION@</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet</groupId>
             <artifactId>mimepull</artifactId>
-            <version>1.5</version>
+            <version>@MIMEPULL_VERSION@</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>policy</artifactId>
-            <version>2.2.2</version>
+            <version>@POLICY_VERSION@</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.gmbal</groupId>
             <artifactId>gmbal-api-only</artifactId>
-            <version>3.1.0-b001</version>
+            <version>@GMBAL_API_VERSION@</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.ha</groupId>
             <artifactId>ha-api</artifactId>
-            <version>3.1.8</version>
+            <version>@HA_API_VERSION@</version>
         </dependency>
     </dependencies>
 </project>

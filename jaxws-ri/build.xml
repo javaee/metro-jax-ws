@@ -325,10 +325,21 @@
             <copy file="etc/poms/@{module}.pom" tofile="build/maven2-repo/@{module}.pom" overwrite="true">
                 <filterset>
                     <filter token="API_VERSION" value="${release.maven.api.version}"/>
-                    <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
-                    <filter token="SAAJ_VERSION" value="${saaj-impl.version}"/>
                     <filter token="JAXB_API_VERSION" value="${jaxb.api.version}"/>
                     <filter token="SAAJ_API_VERSION" value="${saaj-api.version}"/>
+                    <filter token="JSR_181_API_VERSION" value="${jsr181.version}"/>
+                    <filter token="JSR_250_API_VERSION" value="${jsr250.version}"/>
+                    <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
+                    <filter token="SAAJ_VERSION" value="${saaj-impl.version}"/>
+                    <filter token="XMLSTREAMBUFFER_VERSION" value="${xmlstreambuffer.version}"/>
+                    <filter token="WOODSTOX_CORE_VERSION" value="${woodstox.version}"/>
+                    <filter token="STAX2_API_VERSION" value="${stax2-api.version}"/>
+                    <filter token="STAX_EX_VERSION" value="${stax-ex.version}"/>
+                    <filter token="RESOLVER_VERSION" value="${resolver.version}"/>
+                    <filter token="MIMEPULL_VERSION" value="${mimepull.version}"/>
+                    <filter token="POLICY_VERSION" value="${policy.version}"/>
+                    <filter token="GMBAL_API_VERSION" value="${gmbal.version}"/>
+                    <filter token="HA_API_VERSION" value="${ha-api.version}"/>
                     <filter token="VERSION" value="${jar.suffix}"/>
                 </filterset>
             </copy>
@@ -451,8 +462,7 @@
         <delete dir="build/maven2-repo"/>
         <mkdir dir="build/maven2-repo"/>
         <!--property name="jar.suffix" value="${release.impl.version}"/-->
-        <!--property  name="release.maven.api.version" value="${release.api.version}"/-->
-
+        <property  name="release.maven.api.version" value="${release.api.version}"/>
         <install-local-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
         <install-local-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <install-local-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
