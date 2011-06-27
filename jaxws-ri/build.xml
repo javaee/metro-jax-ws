@@ -421,7 +421,6 @@
         <mkdir dir="build/maven2-repo"/>
         <!--property name="jar.suffix" value="${release.impl.version}"/-->
         <property  name="release.maven.api.version" value="${release.api.version}"/>                
-        <antcall target="push-api-to-maven2"/>
         <push-to-m2 module="jaxws-rt" module-src="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <push-to-m2 module="jaxws-tools" module-src="${dist20.home}/lib/jaxws-tools.src.zip"/>
         <push-to-m2-zip module="jaxws-ri"/>
