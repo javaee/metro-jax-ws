@@ -449,11 +449,13 @@
     </target>
 
     <target  name="push-api-to-maven2" depends="mavenize">
+        <!-- bogus --><property name="jar.suffix" value=""/>
         <property  name="release.maven.api.version" value="${release.api.version}"/>
         <push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
     </target>
 
     <target  name="push-api-snapshot-to-maven2" depends="mavenize">
+        <!-- bogus --><property name="jar.suffix" value=""/>
         <property  name="release.maven.api.version" value="${release.api.version}-SNAPSHOT"/>
         <push-to-m2 module="jaxws-api" module-src="lib/jaxws-api-src.zip"/>
     </target>
