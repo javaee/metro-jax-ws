@@ -58,7 +58,7 @@ import java.io.IOException;
  *
  * @author Rama Pulavarthi
  */
-public class Test1 extends TestCase {
+public class GlobalNsDeclTest extends TestCase {
 
     public void testNsDecl() throws Exception{
         String requestStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
