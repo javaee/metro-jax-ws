@@ -1,5 +1,4 @@
 <descriptor since="2.2" uses="ri" bugs="jax-ws-674">
-  <description>Tests RuntimeWSDLParser.java </description>
-  <client href="test.bsh" />
+  <description>Tests RuntimeWSDLParser.java </description>  
  </descriptor>
 
