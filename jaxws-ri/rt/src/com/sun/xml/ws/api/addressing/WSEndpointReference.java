@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -803,9 +803,13 @@ public final class WSEndpointReference  implements WSDLExtension {
             protected void processElement(String prefix, String uri, String _localName) {
                 if (_depth == 0)
                     _localName = localName;
-                super.processElement(prefix, uri, _localName);
+                super.processElement(prefix, uri, _localName, isInscope(infoset,_depth));
             }
         };
+    }
+
+    private boolean isInscope(XMLStreamBuffer buffer, int depth) {
+        return buffer.getInscopeNamespaces().size() > 0 && depth ==0;
     }
 
     /**
@@ -949,7 +953,7 @@ public final class WSEndpointReference  implements WSDLExtension {
             this.rootLocalName = rootLocalName;
         }
 
-        protected void processElement(String uri, String localName, String qName) throws SAXException {
+        protected void processElement(String uri, String localName, String qName, boolean inscope) throws SAXException {
             if(root) {
                 root = false;
 
@@ -961,7 +965,7 @@ public final class WSEndpointReference  implements WSDLExtension {
                     qName = qName.substring(0,idx+1)+rootLocalName;
                 }
             }
-            super.processElement(uri, localName, qName);
+            super.processElement(uri, localName, qName, inscope);
         }
     }
 
