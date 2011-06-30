@@ -19,3 +19,19 @@ fromwsdl - All the starting from WSDL tests go here
 * Refer to docs/index.html on how to run the tests 
   individually during development/debugging.
 
+* For those who are lazy to read the above doc, here instructions to run tests against the workspace !
+
+1. Unset JAXWS_HOME
+2. set JAVA_HOME to JDK 5
+3. Checkout RI & test workspaces such that jaxws-ri and jaxws-unit are in the same directory.
+    $ svn co https://svn.java.net/svn/jax-ws~sources/trunk/jaxws-unit
+    $ svn co https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri
+4. Build RI
+    $ cd jaxws-ri
+    $ ./build.sh
+5. Run a test using in-vm transport
+    $ cd jaxws-unit
+    $ java -jar lib/harness.jar testcases/fromwsdl/wsdl_hello_lit
+6. Run a test using lwhs
+    $cd jaxws-unit
+    $ java -jar lib/harness.jar -lwhs testcases/fromwsdl/wsdl_hello_lit
