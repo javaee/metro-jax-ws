@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,10 @@ package com.sun.xml.ws.wsdl.parser;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.stream.buffer.MutableXMLStreamBuffer;
+import com.sun.xml.stream.buffer.XMLStreamBuffer;
+import com.sun.xml.stream.buffer.XMLStreamBufferMark;
+import com.sun.xml.stream.buffer.stax.StreamReaderBufferCreator;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.policy.PolicyResolver;
@@ -72,9 +76,7 @@ import org.xml.sax.SAXException;
 
 import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.*;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
@@ -83,17 +85,14 @@ import java.io.InputStream;
 import java.io.FilterInputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
  * Parses WSDL and builds {@link com.sun.xml.ws.api.model.wsdl.WSDLModel}.
  *
  * @author Vivek Pandey
+ * @author Rama Pulavarthi
  */
 public class RuntimeWSDLParser {
 
@@ -120,6 +119,13 @@ public class RuntimeWSDLParser {
     private final WSDLParserExtensionContextImpl context;
 
     List<WSDLParserExtension> extensions;
+
+    //Capture namespaces declared on the ancestors of wsa:EndpointReference, so that valid XmlStreamBuffer is created
+    // from the EndpointReference fragment.
+    Map<String, String> wsdldef_nsdecl = new HashMap<String, String>();
+    Map<String, String> service_nsdecl = new HashMap<String, String>();
+    Map<String, String> port_nsdecl = new HashMap<String, String>();
+
     /**
      * Parses the WSDL and gives WSDLModel. If wsdl parameter is null, then wsdlLoc is used to get the WSDL. If the WSDL
      * document could not be obtained then {@link MetadataResolverFactory} is tried to get the WSDL document, if not found
@@ -326,7 +332,9 @@ public class RuntimeWSDLParser {
 
             if(reader.getEventType() == XMLStreamConstants.START_DOCUMENT)
                 XMLStreamReaderUtil.nextElementContent(reader);
-            
+            if (WSDLConstants.QNAME_DEFINITIONS.equals(reader.getName())) {
+                readNSDecl(wsdldef_nsdecl, reader);
+            }
             if (reader.getEventType()!= XMLStreamConstants.END_DOCUMENT && reader.getName().equals(WSDLConstants.QNAME_SCHEMA)) {
                 if (imported) {
                     // wsdl:import could be a schema. Relaxing BP R2001 requirement.
@@ -363,11 +371,15 @@ public class RuntimeWSDLParser {
             }
             targetNamespace = oldTargetNamespace;
         } finally {
+            this.wsdldef_nsdecl = new HashMap<String,String>();
             reader.close();
         }
     }
 
     private void parseService(XMLStreamReader reader) {
+        service_nsdecl.putAll(wsdldef_nsdecl);
+        readNSDecl(service_nsdecl,reader);
+
         String serviceName = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_NAME);
         WSDLServiceImpl service = new WSDLServiceImpl(reader,wsdlDoc,new QName(targetNamespace, serviceName));
         extensionFacade.serviceAttributes(service, reader);
@@ -383,9 +395,13 @@ public class RuntimeWSDLParser {
             }
         }
         wsdlDoc.addService(service);
+        service_nsdecl =  new HashMap<String, String>();
     }
 
     private void parsePort(XMLStreamReader reader, WSDLServiceImpl service) {
+        port_nsdecl.putAll(service_nsdecl);
+        readNSDecl(port_nsdecl,reader);
+
         String portName = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_NAME);
         String binding = ParserUtil.getMandatoryNonEmptyAttribute(reader, "binding");
 
@@ -412,7 +428,12 @@ public class RuntimeWSDLParser {
             } else if (AddressingVersion.W3C.nsUri.equals(name.getNamespaceURI()) &&
                     "EndpointReference".equals(name.getLocalPart())) {
                 try {
-                    WSEndpointReference wsepr = new WSEndpointReference(reader, AddressingVersion.W3C);
+                    StreamReaderBufferCreator creator = new StreamReaderBufferCreator(new MutableXMLStreamBuffer());
+                    XMLStreamBuffer eprbuffer = new XMLStreamBufferMark(port_nsdecl, creator);
+                    creator.createElementFragment(reader, false);
+
+                    WSEndpointReference wsepr = new WSEndpointReference(eprbuffer, AddressingVersion.W3C);
+                    //wsepr.toSpec().writeTo(new StreamResult(System.out));
                     port.setEPR(wsepr);
                     /** XMLStreamBuffer.createNewBufferFromXMLStreamReader(reader) called from inside WSEndpointReference()
                      *  consumes the complete EPR infoset and moves to the next element. This breaks the normal wsdl parser
@@ -438,6 +459,7 @@ public class RuntimeWSDLParser {
             }
         }
         service.put(portQName, port);
+        port_nsdecl =new HashMap<String, String>();                        
     }
 
     private void parseBinding(XMLStreamReader reader) {
@@ -861,6 +883,21 @@ public class RuntimeWSDLParser {
     private void register(WSDLParserExtension e) {
         // protect JAX-WS RI from broken parser extension
         extensions.add(new FoolProofParserExtension(e));
+    }
+
+    /**
+     * Reads the namespace declarations from the reader's current position in to the map. The reader is expected to be
+     * on the start element.
+     *
+     * @param ns_map
+     * @param reader
+     */
+    private static void readNSDecl(Map<String, String> ns_map, XMLStreamReader reader) {
+        if (reader.getNamespaceCount() > 0) {
+            for (int i = 0; i < reader.getNamespaceCount(); i++) {
+                ns_map.put(reader.getNamespacePrefix(i), reader.getNamespaceURI(i));
+            }
+        }
     }
 
     private static final Logger LOGGER = Logger.getLogger(RuntimeWSDLParser.class.getName());
