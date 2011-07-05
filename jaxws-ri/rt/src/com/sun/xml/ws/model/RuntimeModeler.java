@@ -75,6 +75,9 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
+
+import org.jvnet.ws.databinding.DatabindingMode;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -298,6 +301,10 @@ public class RuntimeModeler {
 
         if (portName == null) portName = getPortName(portClass, serviceName.getNamespaceURI(), metadataReader);
         model.setPortName(portName);
+        
+        // Check if databinding is overridden in annotation.
+        DatabindingMode dbm = getAnnotation(portClass, DatabindingMode.class);
+        if (dbm != null) model.databindingInfo.setDatabindingMode(dbm.value());
 
         processClass(seiClass);
         if (model.getJavaMethods().size() == 0)
@@ -307,7 +314,7 @@ public class RuntimeModeler {
 
         // TODO: this needs to be fixed properly --
         // when we are building RuntimeModel first before building WSDLModel,
-        // we still need to do this correctyl
+        // we still need to do this correctly
         if(binding!=null)
             model.freeze(binding);
         return model;

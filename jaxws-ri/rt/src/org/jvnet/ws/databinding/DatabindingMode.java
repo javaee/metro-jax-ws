@@ -37,8 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.xml.ws.api.databinding;
+package org.jvnet.ws.databinding;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
 public @interface DatabindingMode {	
 	String value();
 }
