@@ -41,11 +41,13 @@
 package com.sun.xml.ws.encoding;
 
 import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.MutableXMLStreamBuffer;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.stream.buffer.XMLStreamBufferMark;
 import com.sun.xml.stream.buffer.stax.StreamReaderBufferCreator;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
@@ -53,6 +55,7 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.developer.SerializationFeature;
 import com.sun.xml.ws.message.AttachmentSetImpl;
 import com.sun.xml.ws.message.stream.StreamHeader;
 import com.sun.xml.ws.message.stream.StreamMessage;
@@ -90,17 +93,26 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
     private final String SOAP_NAMESPACE_URI;
     private final SOAPVersion soapVersion;
+    protected final String encoding;
 
     /*package*/ StreamSOAPCodec(SOAPVersion soapVersion) {
-        SOAP_NAMESPACE_URI = soapVersion.nsUri;
-        this.soapVersion = soapVersion;
+        this(soapVersion, null);
     }
 
-    // consider caching
-    // private final XMLStreamReader reader;
+    /*package*/ StreamSOAPCodec(WSBinding binding) {
+        this(binding.getSOAPVersion(), getEncoding(binding));
+    }
 
-    // consider caching
-    // private final MutableXMLStreamBuffer buffer;
+    private StreamSOAPCodec(SOAPVersion soapVersion, @Nullable String encoding) {
+        this.soapVersion = soapVersion;
+        this.encoding = (encoding == null||encoding.equals("")) ? "utf-8" : encoding;
+        SOAP_NAMESPACE_URI = soapVersion.nsUri;
+    }
+
+    private static String getEncoding(WSBinding binding) {
+        SerializationFeature sf = binding.getFeature(SerializationFeature.class);
+        return (sf == null) ? null : sf.getEncoding();
+    }
 
     public ContentType getStaticContentType(Packet packet) {
         return getContentType(packet.soapAction);
@@ -108,7 +120,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
     public ContentType encode(Packet packet, OutputStream out) {
         if (packet.getMessage() != null) {
-            XMLStreamWriter writer = XMLStreamWriterFactory.create(out);
+            XMLStreamWriter writer = XMLStreamWriterFactory.create(out, encoding);
             try {
                 packet.getMessage().writeTo(writer);
                 writer.flush();
@@ -143,7 +155,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
      */
     private static boolean isContentTypeSupported(String ct, List<String> expected) {
         for(String contentType : expected) {
-            if (ct.indexOf(contentType) != -1) {
+            if (ct.contains(contentType)) {
                 return true;
             }
         }
@@ -313,7 +325,8 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
 
 
-    /**
+
+    /*
      * Creates a new {@link StreamSOAPCodec} instance.
      */
     public static StreamSOAPCodec create(SOAPVersion version) {
@@ -325,6 +338,24 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
                 return new StreamSOAP11Codec();
             case SOAP_12:
                 return new StreamSOAP12Codec();
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    /*
+     * Creates a new {@link StreamSOAPCodec} instance using binding
+     */
+    public static StreamSOAPCodec create(WSBinding binding) {
+        SOAPVersion version = binding.getSOAPVersion();
+        if(version==null)
+            // this decoder is for SOAP, not for XML/HTTP
+            throw new IllegalArgumentException();
+        switch(version) {
+            case SOAP_11:
+                return new StreamSOAP11Codec(binding);
+            case SOAP_12:
+                return new StreamSOAP12Codec(binding);
             default:
                 throw new AssertionError();
         }

@@ -94,4 +94,17 @@ public abstract class Codecs {
     StreamSOAPCodec createSOAPEnvelopeXmlCodec(@NotNull SOAPVersion version) {
         return com.sun.xml.ws.encoding.StreamSOAPCodec.create(version);
     }
+
+    /**
+     * Creates a default {@link Codec} that can be used to used to
+     * decode XML infoset in SOAP envelope(primary part in MIME message).
+     * New codecs can be written using this codec as delegate. WSBinding
+     * parameter is used to get SOAP version and features.
+     *
+     * @param binding SOAP version and features are used from this binding
+     * @return non null default xml codec
+     */
+    public static @NotNull StreamSOAPCodec createSOAPEnvelopeXmlCodec(@NotNull WSBinding binding) {
+        return com.sun.xml.ws.encoding.StreamSOAPCodec.create(binding);
+    }
 }

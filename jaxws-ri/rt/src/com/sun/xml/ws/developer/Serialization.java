@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,56 +38,46 @@
  * holder.
  */
 
-package com.sun.xml.ws.encoding;
+package com.sun.xml.ws.developer;
 
-import com.sun.xml.stream.buffer.XMLStreamBuffer;
-import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.pipe.ContentType;
-import com.sun.xml.ws.message.stream.StreamHeader;
-import com.sun.xml.ws.message.stream.StreamHeader11;
+import javax.xml.ws.spi.WebServiceFeatureAnnotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import javax.xml.stream.XMLStreamReader;
-import java.util.Collections;
-import java.util.List;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * {@link StreamSOAPCodec} for SOAP 1.1.
+ * Configures various aspects of serialization like encoding
  *
- * @author Paul.Sandoz@Sun.Com
+ * <pre>
+ * for e.g.:
+ *
+ * &#64;WebService
+ * &#64;Serialization(encoding="Shift_JIS")
+ * public class HelloImpl {
+ *   ...
+ * }
+ * </pre>
+ *
+ *
+ * @since JAX-WS RI 2.2.6
+ * @author Jitendra Kotamraju
+ * @see com.sun.xml.ws.developer.SerializationFeature
  */
-final class StreamSOAP11Codec extends StreamSOAPCodec {
-    public static final String SOAP11_MIME_TYPE = "text/xml";
-    public static final String DEFAULT_SOAP11_CONTENT_TYPE = SOAP11_MIME_TYPE+"; charset=utf-8";
+@Retention(RUNTIME)
+@Target({TYPE, ElementType.METHOD, ElementType.FIELD})
+@Documented
+@WebServiceFeatureAnnotation(id = SerializationFeature.ID, bean = SerializationFeature.class)
+public @interface Serialization {
 
-    private static final List<String> EXPECTED_CONTENT_TYPES = Collections.singletonList(SOAP11_MIME_TYPE);
-    private final String ctStr;
+    /**
+     * Turns validation on/off for inbound messages
+     *
+     * @since JAX-WS RI 2.2.6
+     */
+    String encoding() default "";
 
-    /*package*/  StreamSOAP11Codec() {
-        super(SOAPVersion.SOAP_11);
-        ctStr = DEFAULT_SOAP11_CONTENT_TYPE;
-    }
-
-    /*package*/  StreamSOAP11Codec(WSBinding binding) {
-        super(binding);
-        ctStr = SOAP11_MIME_TYPE+"; charset="+encoding;
-    }
-
-    public String getMimeType() {
-        return SOAP11_MIME_TYPE;
-    }
-    
-    @Override
-    protected final StreamHeader createHeader(XMLStreamReader reader, XMLStreamBuffer mark) {
-        return new StreamHeader11(reader, mark);
-    }
-
-    @Override
-    protected ContentType getContentType(String soapAction) {
-        return new ContentTypeImpl(ctStr, soapAction);
-    }
-
-    protected List<String> getExpectedContentTypes() {
-        return EXPECTED_CONTENT_TYPES;
-    }
 }

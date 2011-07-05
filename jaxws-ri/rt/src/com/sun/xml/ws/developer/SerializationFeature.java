@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,56 +38,40 @@
  * holder.
  */
 
-package com.sun.xml.ws.encoding;
+package com.sun.xml.ws.developer;
 
-import com.sun.xml.stream.buffer.XMLStreamBuffer;
-import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.pipe.ContentType;
-import com.sun.xml.ws.message.stream.StreamHeader;
-import com.sun.xml.ws.message.stream.StreamHeader11;
+import com.sun.xml.ws.api.FeatureConstructor;
 
-import javax.xml.stream.XMLStreamReader;
-import java.util.Collections;
-import java.util.List;
+import javax.xml.ws.WebServiceFeature;
 
 /**
- * {@link StreamSOAPCodec} for SOAP 1.1.
+ * {@link javax.xml.ws.WebServiceFeature} for configuration serialization.
  *
- * @author Paul.Sandoz@Sun.Com
+ * @since JAX-WS RI 2.2.6
+ * @author Jitendra Kotamraju
+ * @see com.sun.xml.ws.developer.Serialization
  */
-final class StreamSOAP11Codec extends StreamSOAPCodec {
-    public static final String SOAP11_MIME_TYPE = "text/xml";
-    public static final String DEFAULT_SOAP11_CONTENT_TYPE = SOAP11_MIME_TYPE+"; charset=utf-8";
+public class SerializationFeature extends WebServiceFeature {
+    /**
+     * Constant value identifying this feature
+     */
+    public static final String ID = "http://jax-ws.java.net/features/serialization";
+    private final String encoding;
 
-    private static final List<String> EXPECTED_CONTENT_TYPES = Collections.singletonList(SOAP11_MIME_TYPE);
-    private final String ctStr;
-
-    /*package*/  StreamSOAP11Codec() {
-        super(SOAPVersion.SOAP_11);
-        ctStr = DEFAULT_SOAP11_CONTENT_TYPE;
+    public SerializationFeature() {
+        this("");
     }
 
-    /*package*/  StreamSOAP11Codec(WSBinding binding) {
-        super(binding);
-        ctStr = SOAP11_MIME_TYPE+"; charset="+encoding;
+    @FeatureConstructor({"encoding"})
+    public SerializationFeature(String encoding) {
+        this.encoding = encoding;
     }
 
-    public String getMimeType() {
-        return SOAP11_MIME_TYPE;
-    }
-    
-    @Override
-    protected final StreamHeader createHeader(XMLStreamReader reader, XMLStreamBuffer mark) {
-        return new StreamHeader11(reader, mark);
+    public String getID() {
+        return ID;
     }
 
-    @Override
-    protected ContentType getContentType(String soapAction) {
-        return new ContentTypeImpl(ctStr, soapAction);
-    }
-
-    protected List<String> getExpectedContentTypes() {
-        return EXPECTED_CONTENT_TYPES;
+    public String getEncoding() {
+        return encoding;
     }
 }

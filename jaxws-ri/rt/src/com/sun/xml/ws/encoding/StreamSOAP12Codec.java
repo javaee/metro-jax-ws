@@ -42,6 +42,7 @@ package com.sun.xml.ws.encoding;
 
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.pipe.ContentType;
@@ -61,12 +62,18 @@ import java.io.IOException;
  */
 final class StreamSOAP12Codec extends StreamSOAPCodec {
     public static final String SOAP12_MIME_TYPE = "application/soap+xml";
-    public static final String SOAP12_CONTENT_TYPE = SOAP12_MIME_TYPE+"; charset=utf-8";
+    public static final String DEFAULT_SOAP12_CONTENT_TYPE = SOAP12_MIME_TYPE+"; charset=utf-8";
+    private static final List<String> EXPECTED_CONTENT_TYPES = Collections.singletonList(SOAP12_MIME_TYPE);
+    private final String ctStr;
 
-    private static final List<String> expectedContentTypes = Collections.singletonList(SOAP12_MIME_TYPE);
-
-    /*package*/ StreamSOAP12Codec() {
+    /*package*/  StreamSOAP12Codec() {
         super(SOAPVersion.SOAP_12);
+        ctStr = DEFAULT_SOAP12_CONTENT_TYPE;
+    }
+
+    /*package*/ StreamSOAP12Codec(WSBinding binding) {
+        super(binding);
+        ctStr = SOAP12_MIME_TYPE+"; charset="+encoding;
     }
 
     public String getMimeType() {
@@ -78,16 +85,13 @@ final class StreamSOAP12Codec extends StreamSOAPCodec {
         return new StreamHeader12(reader, mark);
     }
 
-    public static final ContentTypeImpl defaultContentType =
-            new ContentTypeImpl(SOAP12_CONTENT_TYPE);
-
     @Override
     protected ContentType getContentType(String soapAction) {
         // TODO: set accept header
         if (soapAction == null) {
-            return defaultContentType;
+            return new ContentTypeImpl(ctStr);
         } else {
-            return new ContentTypeImpl(SOAP12_CONTENT_TYPE + ";action="+fixQuotesAroundSoapAction(soapAction));
+            return new ContentTypeImpl(ctStr + ";action="+fixQuotesAroundSoapAction(soapAction));
         }
     }
 
@@ -111,6 +115,6 @@ final class StreamSOAP12Codec extends StreamSOAPCodec {
     }
     
     protected List<String> getExpectedContentTypes() {
-        return expectedContentTypes;
+        return EXPECTED_CONTENT_TYPES;
     }
 }
