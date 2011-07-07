@@ -46,7 +46,6 @@ import com.sun.xml.stream.buffer.MutableXMLStreamBuffer;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.stream.buffer.XMLStreamBufferResult;
 import com.sun.xml.stream.buffer.XMLStreamBufferSource;
-import com.sun.xml.stream.buffer.sax.Features;
 import com.sun.xml.stream.buffer.sax.SAXBufferProcessor;
 import com.sun.xml.stream.buffer.stax.StreamReaderBufferProcessor;
 import com.sun.xml.stream.buffer.stax.StreamWriterBufferCreator;
@@ -101,6 +100,8 @@ import java.util.*;
  * Instances of this class are immutable and thread-safe.
  *
  * @author Kohsuke Kawaguchi
+ * @author Rama Pulavarthi
+ * 
  * @see AddressingVersion#anonymousEpr
  */
 public final class WSEndpointReference  implements WSDLExtension {
@@ -951,12 +952,6 @@ public final class WSEndpointReference  implements WSDLExtension {
 
         public SAXBufferProcessorImpl(String rootLocalName) {
             super(infoset,false);
-            try {
-                super.setFeature(Features.NAMESPACE_PREFIXES_FEATURE, true);
-                super.setFeature(Features.NAMESPACES_FEATURE, true);
-            } catch (Exception e) {
-                throw new WebServiceException(e);
-            }
             this.rootLocalName = rootLocalName;
         }
 
