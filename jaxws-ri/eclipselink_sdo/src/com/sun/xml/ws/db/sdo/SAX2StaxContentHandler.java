@@ -131,7 +131,7 @@ public class SAX2StaxContentHandler implements ContentHandler {
                         continue;
                     }
                     if (px != null && px.length() > 0) {
-                        xwriter.writeAttribute(prefix, uri, localname, value);
+                        xwriter.writeAttribute(px, uri, localname, value);
                     } else {
                         xwriter.writeAttribute(localname, value);
                     }
