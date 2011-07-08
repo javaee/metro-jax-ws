@@ -39,11 +39,14 @@
  */
 package com.sun.xml.ws.db.toplink;
 
+import java.awt.Image;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
+import java.util.Map;
 
+import javax.activation.DataHandler;
+import javax.mail.internet.MimeMultipart;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.attachment.AttachmentMarshaller;
@@ -59,16 +62,25 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBTypeElement;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
+
+import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
+import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
+import org.jvnet.staxex.Base64Data;
+import org.jvnet.staxex.XMLStreamReaderEx;
+
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
 
 import com.sun.xml.ws.spi.db.BindingContext;
@@ -252,9 +264,28 @@ public class JAXBBond<T> implements XMLBridge<T> {
 					// marshaller.marshal(elt, result);
 					marshaller.marshal(elt, result, mappingInfo);
 				}
-			} else
-				marshaller.marshal(object, result);
-		} finally {
+            } else {
+                TypeMappingInfo tmi = null;
+                if (object instanceof JAXBElement) {
+                    QName q = ((JAXBElement) object).getName();
+                    JAXBContext ctx = (JAXBContext) parent.getJAXBContext();
+                    
+                    Map<TypeMappingInfo, QName> mtq = ctx
+                            .getTypeMappingInfoToSchemaType();
+                    for (Map.Entry<TypeMappingInfo, QName> es : mtq.entrySet()) {
+                        if (q.equals(es.getValue())) {
+                            tmi = es.getKey();
+                            break;
+                        }
+                            
+                    }
+                }
+                if (tmi != null)
+                    marshaller.marshal(object, result, tmi);
+                else
+                    marshaller.marshal(object, result);
+            }
+        } finally {
 			if (marshaller != null) {
 				marshaller.setAttachmentMarshaller(null);
 				parent.mpool.replace(marshaller);
@@ -273,12 +304,24 @@ public class JAXBBond<T> implements XMLBridge<T> {
 
 			unmarshaller = parent.upool.allocate();
 			unmarshaller.setAttachmentUnmarshaller(au);
-			Object o = ((mappingInfo != null) ? unmarshaller.unmarshal(in,
-					mappingInfo) : unmarshaller.unmarshal(in));
+			
+            Object o = null;
+            if (in instanceof XMLStreamReaderEx) {
+                CustomXMLStreamReaderReader cr = new CustomXMLStreamReaderReader();
+                XMLStreamReaderInputSource is = new XMLStreamReaderInputSource(
+                        in);
+                SAXSource saxSource = new SAXSource(cr, is);
+                o = ((mappingInfo != null) ? unmarshaller.unmarshal(saxSource,
+                        mappingInfo) : unmarshaller.unmarshal(saxSource));
+            } else {
+                o = ((mappingInfo != null) ? unmarshaller.unmarshal(in,
+                        mappingInfo) : unmarshaller.unmarshal(in));
+            }
+			
 			if (o instanceof JAXBElement)
 				o = ((JAXBElement) o).getValue();
 			// TODO recycle to pool
-			
+
 			// Workaround for Eclipselink JAXB not consuming END_ELEMENT.
             try {
 				if (in.getEventType() == XMLStreamConstants.END_ELEMENT && in.getName().equals(tagName)) 
@@ -363,4 +406,33 @@ public class JAXBBond<T> implements XMLBridge<T> {
 	public boolean supportOutputStream() {
 		return true;
 	}
+
+    public static class CustomXMLStreamReaderReader extends
+            XMLStreamReaderReader {
+
+        //@Override
+        protected void parseCharactersEvent(XMLStreamReader xmlStreamReader)
+                throws SAXException {
+            //super.parseCharactersEvent(xmlStreamReader);
+            
+            CharSequence characters;
+            try {
+                characters = ((XMLStreamReaderEx) xmlStreamReader).getPCDATA();
+            } catch (XMLStreamException e) {
+                throw new SAXException(e);
+            }
+            contentHandler.characters(characters);
+
+        }
+
+        @Override
+        public Object getValue(CharSequence characters, Class<?> dataType) {
+            if (Base64Data.class.equals(characters.getClass())
+                    && (DataHandler.class == dataType
+                            || Image.class == dataType
+                            || Source.class == dataType || MimeMultipart.class == dataType))
+                return ((Base64Data) characters).getDataHandler();
+            return null;
+        }
+    }
 }
