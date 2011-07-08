@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,8 @@
 package com.sun.xml.ws.streaming;
 
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.encoding.HasEncoding;
+import com.sun.xml.ws.encoding.SOAPBindingCodec;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
@@ -104,6 +106,17 @@ public class XMLStreamWriterUtil {
         return null;
     }
 
+    /**
+     * Gives the encoding with which XMLStreamWriter is created.
+     *
+     * @param writer XMLStreamWriter for which encoding is required
+     * @return  encoding
+     */
+    public static @Nullable String getEncoding(XMLStreamWriter writer) {
+        return (writer instanceof HasEncoding)
+                ? ((HasEncoding)writer).getEncoding()
+                : SOAPBindingCodec.UTF8_ENCODING;
+    }
 
     public static String encodeQName(XMLStreamWriter writer, QName qname,
         PrefixFactory prefixFactory) 
