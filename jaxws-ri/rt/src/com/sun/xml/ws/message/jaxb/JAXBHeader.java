@@ -197,7 +197,7 @@ public final class JAXBHeader extends AbstractHeaderImpl {
 
             // Get output stream and use JAXB UTF-8 writer
             OutputStream os = XMLStreamWriterUtil.getOutputStream(sw);
-            if (os != null && bridge.supportOutputStream() && encoding.equalsIgnoreCase(SOAPBindingCodec.UTF8_ENCODING)) {
+            if (os != null && bridge.supportOutputStream() && encoding != null && encoding.equalsIgnoreCase(SOAPBindingCodec.UTF8_ENCODING)) {
                 bridge.marshal(jaxbObject, os, sw.getNamespaceContext(), null);
             } else {
                 bridge.marshal(jaxbObject,sw, null);

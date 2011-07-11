@@ -110,12 +110,18 @@ public class XMLStreamWriterUtil {
      * Gives the encoding with which XMLStreamWriter is created.
      *
      * @param writer XMLStreamWriter for which encoding is required
-     * @return  encoding
+     * @return null if cannot be found, else the encoding
      */
     public static @Nullable String getEncoding(XMLStreamWriter writer) {
+        /*
+         * TODO Add reflection logic to handle woodstox writer
+         * as it implements XMLStreamWriter2#getEncoding()
+         * It's not that important since woodstox writer is typically wrapped
+         * in a writer with HasEncoding
+         */
         return (writer instanceof HasEncoding)
                 ? ((HasEncoding)writer).getEncoding()
-                : SOAPBindingCodec.UTF8_ENCODING;
+                : null;
     }
 
     public static String encodeQName(XMLStreamWriter writer, QName qname,

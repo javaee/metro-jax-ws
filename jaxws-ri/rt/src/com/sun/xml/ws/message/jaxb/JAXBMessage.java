@@ -389,7 +389,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
 				else
 					m.marshal(jaxbObject, sw);
 			} else {
-				if (os != null && bridge.supportOutputStream() && encoding.equalsIgnoreCase(SOAPBindingCodec.UTF8_ENCODING)) {
+				if (os != null && bridge.supportOutputStream() && encoding != null && encoding.equalsIgnoreCase(SOAPBindingCodec.UTF8_ENCODING)) {
 					bridge.marshal(jaxbObject, os, sw.getNamespaceContext(), am);
 				} else {
 					bridge.marshal(jaxbObject, sw, am);
