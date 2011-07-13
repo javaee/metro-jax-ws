@@ -42,7 +42,6 @@ package com.sun.xml.ws.encoding;
 
 import com.sun.istack.NotNull;
 import com.sun.xml.bind.DatatypeConverterImpl;
-import com.sun.xml.bind.v2.runtime.output.Encoded;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Attachment;
@@ -52,7 +51,9 @@ import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.api.pipe.StreamSOAPCodec;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.developer.SerializationFeature;
 import com.sun.xml.ws.message.MimeAttachmentSet;
+import com.sun.xml.ws.streaming.XMLStreamWriterUtil;
 import com.sun.xml.ws.util.ByteArrayDataSource;
 import com.sun.xml.ws.util.xml.XMLStreamReaderFilter;
 import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
@@ -103,16 +104,23 @@ public class MtomCodec extends MimeCodec {
     private final String soapXopContentType;
     private String messageContentType;
     private final MTOMFeature mtomFeature;
+    private final String encoding;
 
     MtomCodec(SOAPVersion version, StreamSOAPCodec codec, WSBinding binding, WebServiceFeature mtomFeature){
         super(version, binding);
         this.codec = codec;
         createConteTypeHeader();
-        this.soapXopContentType = XOP_XML_MIME_TYPE +";charset=utf-8;type=\""+version.contentType+"\"";
+        this.encoding = getEncoding(binding);
+        this.soapXopContentType = XOP_XML_MIME_TYPE +";charset="+encoding+";type=\""+version.contentType+"\"";
         if(mtomFeature == null)
             this.mtomFeature = new MTOMFeature();
         else
             this.mtomFeature = (MTOMFeature) mtomFeature;
+    }
+
+    private static String getEncoding(WSBinding binding) {
+        SerializationFeature sf = binding.getFeature(SerializationFeature.class);
+        return (sf == null||sf.getEncoding().equals("")) ? SOAPBindingCodec.UTF8_ENCODING : sf.getEncoding();
     }
 
     private void createConteTypeHeader(){
@@ -164,7 +172,7 @@ public class MtomCodec extends MimeCodec {
 
                 //mtom attachments that need to be written after the root part
                 List<ByteArrayBuffer> mtomAttachments = new ArrayList<ByteArrayBuffer>();
-                MtomStreamWriterImpl writer = new MtomStreamWriterImpl(XMLStreamWriterFactory.create(out),out, mtomAttachments);
+                MtomStreamWriterImpl writer = new MtomStreamWriterImpl(XMLStreamWriterFactory.create(out, encoding), mtomAttachments);
                 packet.getMessage().writeTo(writer);
                 XMLStreamWriterFactory.recycle(writer);
                 writeln(out);
@@ -266,14 +274,11 @@ public class MtomCodec extends MimeCodec {
     }
 
     private class MtomStreamWriterImpl extends XMLStreamWriterFilter implements XMLStreamWriterEx,
-            MtomStreamWriter {
-        private final OutputStream out;
-        private final Encoded encoded = new Encoded();
+            MtomStreamWriter, HasEncoding {
         private final List<ByteArrayBuffer> mtomAttachments;
 
-        public MtomStreamWriterImpl(XMLStreamWriter w, OutputStream out, List<ByteArrayBuffer> mtomAttachments) {
+        public MtomStreamWriterImpl(XMLStreamWriter w, List<ByteArrayBuffer> mtomAttachments) {
             super(w);
-            this.out = out;
             this.mtomAttachments = mtomAttachments;
         }
 
@@ -310,16 +315,10 @@ public class MtomCodec extends MimeCodec {
         private void writeBinary(ByteArrayBuffer bab) {
             try {
                 mtomAttachments.add(bab);
-
-                writer.writeCharacters("");   // Force completion of open elems
+                writer.writeStartElement(XOP_NAMESPACEURI, XOP_LOCALNAME);
+                writer.writeAttribute("href", "cid:"+bab.contentId);
+                writer.writeEndElement();
                 writer.flush();
-                //flush the underlying writer to write-out any cached data to the underlying
-                // stream before writing directly to it
-                //write out the xop reference
-                encoded.set(XOP_PREF+bab.contentId+XOP_SUFF);
-                out.write(encoded.buf,0,encoded.len);
-            } catch (IOException e) {
-                throw new WebServiceException(e);
             } catch (XMLStreamException e) {
                 throw new WebServiceException(e);
             }
@@ -374,6 +373,10 @@ public class MtomCodec extends MimeCodec {
                     return true;
                 }
             };
+        }
+
+        public String getEncoding() {
+            return XMLStreamWriterUtil.getEncoding(writer);
         }
 
         private class MtomNamespaceContextEx implements NamespaceContextEx {
@@ -574,8 +577,6 @@ public class MtomCodec extends MimeCodec {
         }
     }
 
-    private static final String XOP_PREF = "<Include xmlns=\"http://www.w3.org/2004/08/xop/include\" href=\"cid:";
-    private static final String XOP_SUFF = "\"/>";
     private static final String XOP_LOCALNAME = "Include";
     private static final String XOP_NAMESPACEURI = "http://www.w3.org/2004/08/xop/include";
 

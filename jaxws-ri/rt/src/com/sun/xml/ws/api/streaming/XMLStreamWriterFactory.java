@@ -242,10 +242,7 @@ public abstract class XMLStreamWriterFactory {
         public synchronized XMLStreamWriter doCreate(OutputStream out, String encoding) {
             try {
                 XMLStreamWriter writer = xof.createXMLStreamWriter(out,encoding);
-                // Since UTF-8 encoding is default, not decorating with HasEncoding
-                return encoding.equalsIgnoreCase(SOAPBindingCodec.UTF8_ENCODING)
-                        ? writer
-                        : new HasEncodingWriter(writer, encoding);
+                return new HasEncodingWriter(writer, encoding);
             } catch (XMLStreamException e) {
                 throw new XMLReaderException("stax.cantCreate",e);
             }
@@ -326,10 +323,7 @@ public abstract class XMLStreamWriterFactory {
                     throw new XMLReaderException("stax.cantCreate",e);
                 }
             }
-            // Since UTF-8 encoding is default, not decorating with HasEncoding
-            return encoding.equalsIgnoreCase(SOAPBindingCodec.UTF8_ENCODING)
-                        ? xsw
-                        : new HasEncodingWriter(xsw, encoding);
+            return new HasEncodingWriter(xsw, encoding);
         }
 
         public void doRecycle(XMLStreamWriter r) {
@@ -368,10 +362,7 @@ public abstract class XMLStreamWriterFactory {
         public XMLStreamWriter doCreate(OutputStream out, String encoding) {
             try {
                 XMLStreamWriter writer = xof.createXMLStreamWriter(out,encoding);
-                // Since UTF-8 encoding is default, not decorating with HasEncoding
-                return encoding.equalsIgnoreCase(SOAPBindingCodec.UTF8_ENCODING)
-                        ? writer
-                        : new HasEncodingWriter(writer, encoding);
+                return new HasEncodingWriter(writer, encoding);
             } catch (XMLStreamException e) {
                 throw new XMLReaderException("stax.cantCreate",e);
             }
