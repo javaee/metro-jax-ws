@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -76,6 +76,23 @@
     <property name="build.id" value="b${promoted.version}"/>
     <property name="build.version" value="${Name} ${release.impl.version}${build.id} ${release.impl.version.suffix}"/>
     <echo message="The build id is: ${build.version}"/>
+	
+    <mkdir dir="${build.home}"/>
+		<exec executable="svn" output="build/svn.properties">
+        <arg value="info" />
+    </exec>			
+    <property prefix="svn" file="build/svn.properties"/>
+    <echo>svn Revision: ${svn.Revision}</echo>
+	<loadfile property="svn.Last.Changed.Rev" srcFile="build/svn.properties">
+		<filterchain>
+		    <linecontains>
+				<contains value="Last Changed Rev: " />
+			</linecontains>
+			<deletecharacters chars="Last Changed Rev: " />
+			<striplinebreaks />
+		</filterchain>
+	</loadfile>
+    <echo>svn Last Changed Rev: ${svn.Last.Changed.Rev}</echo>	
 
     <path id="runtime.compile.classpath">
         <fileset dir="${lib.home}">
@@ -153,6 +170,8 @@
                     >build-id=${build.id}
                 build-version=${build.version}
                 major-version=${release.impl.version}
+                svn-revision=${svn.Last.Changed.Rev}
+                svn-url=${svn.URL}
             </echo>
         </sequential>
     </macrodef>
@@ -165,6 +184,8 @@
                 <attribute name="Specification-Version" value="${release.spec.version}"/>
                 <attribute name="Implementation-Version" value="${release.impl.version}"/>
                 <attribute name="Build-Id" value="${build.id}"/>
+                <attribute name="SVN-Revision" value="${svn.Last.Changed.Rev}"/>
+                <attribute name="SVN-URL" value="${svn.URL}"/>
                 <attribute name="Build-Version" value="${build.version}"/>
                 <attribute name="Major-Version" value="${release.impl.version}"/>
             </manifest>
