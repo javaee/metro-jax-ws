@@ -87,6 +87,7 @@ import java.util.StringTokenizer;
 public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pipe.SOAPBindingCodec {
 
     public static final String UTF8_ENCODING = "utf-8";
+    public static final String DEFAULT_ENCODING = UTF8_ENCODING;
 
     /**
      * Based on request's Accept header this is set.

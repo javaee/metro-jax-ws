@@ -62,18 +62,16 @@ import java.io.IOException;
  */
 final class StreamSOAP12Codec extends StreamSOAPCodec {
     public static final String SOAP12_MIME_TYPE = "application/soap+xml";
-    public static final String DEFAULT_SOAP12_CONTENT_TYPE = SOAP12_MIME_TYPE+"; charset=utf-8";
+    public static final String DEFAULT_SOAP12_CONTENT_TYPE =
+            SOAP12_MIME_TYPE+"; charset="+SOAPBindingCodec.DEFAULT_ENCODING;
     private static final List<String> EXPECTED_CONTENT_TYPES = Collections.singletonList(SOAP12_MIME_TYPE);
-    private final String ctStr;
 
     /*package*/  StreamSOAP12Codec() {
         super(SOAPVersion.SOAP_12);
-        ctStr = DEFAULT_SOAP12_CONTENT_TYPE;
     }
 
     /*package*/ StreamSOAP12Codec(WSBinding binding) {
         super(binding);
-        ctStr = SOAP12_MIME_TYPE+"; charset="+encoding;
     }
 
     public String getMimeType() {
@@ -86,12 +84,12 @@ final class StreamSOAP12Codec extends StreamSOAPCodec {
     }
 
     @Override
-    protected ContentType getContentType(String soapAction) {
+    protected ContentType getContentType(Packet packet) {
         // TODO: set accept header
-        if (soapAction == null) {
-            return new ContentTypeImpl(ctStr);
+        if (packet.soapAction == null) {
+            return new ContentTypeImpl(getContenTypeStr(packet));
         } else {
-            return new ContentTypeImpl(ctStr + ";action="+fixQuotesAroundSoapAction(soapAction));
+            return new ContentTypeImpl(getContenTypeStr(packet) + ";action="+fixQuotesAroundSoapAction(packet.soapAction));
         }
     }
 
@@ -116,5 +114,10 @@ final class StreamSOAP12Codec extends StreamSOAPCodec {
     
     protected List<String> getExpectedContentTypes() {
         return EXPECTED_CONTENT_TYPES;
+    }
+
+    @Override
+    protected String getDefaultContentType() {
+        return DEFAULT_SOAP12_CONTENT_TYPE;
     }
 }

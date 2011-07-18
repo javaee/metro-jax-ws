@@ -95,6 +95,10 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
     private final SOAPVersion soapVersion;
     protected final String encoding;
 
+    // charset of last decoded message. Will be used for encoding server's
+    // response messages with the request message's encoding
+    protected String decodedMessageCharset;
+
     /*package*/ StreamSOAPCodec(SOAPVersion soapVersion) {
         this(soapVersion, null);
     }
@@ -115,12 +119,12 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
     }
 
     public ContentType getStaticContentType(Packet packet) {
-        return getContentType(packet.soapAction);
+        return getContentType(packet);
     }
 
     public ContentType encode(Packet packet, OutputStream out) {
         if (packet.getMessage() != null) {
-            XMLStreamWriter writer = XMLStreamWriterFactory.create(out, encoding);
+            XMLStreamWriter writer = XMLStreamWriterFactory.create(out, getPacketEncoding(packet));
             try {
                 packet.getMessage().writeTo(writer);
                 writer.flush();
@@ -129,10 +133,12 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
             }
             XMLStreamWriterFactory.recycle(writer);
         }
-        return getContentType(packet.soapAction);
+        return getContentType(packet);
     }
 
-    protected abstract ContentType getContentType(String soapAction);
+    protected abstract ContentType getContentType(Packet packet);
+
+    protected abstract String getDefaultContentType();
 
     public ContentType encode(Packet packet, WritableByteChannel buffer) {
         //TODO: not yet implemented
@@ -314,6 +320,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         if (charset != null && !Charset.isSupported(charset)) {
             throw new UnsupportedMediaException(charset);
         }
+        decodedMessageCharset = charset;
         XMLStreamReader reader = XMLStreamReaderFactory.create(null, in, charset, true);
         reader =  new TidyXMLStreamReader(reader, in);
         packet.setMessage(decode(reader, att));
@@ -359,6 +366,28 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
             default:
                 throw new AssertionError();
         }
+    }
+
+    private String getPacketEncoding(Packet packet) {
+        String tempEncoding = null;
+        if (packet.endpoint != null) {
+            // Server-side response message encoding is gotten from request
+            // message's encoding
+            tempEncoding = decodedMessageCharset;
+        }
+        if (tempEncoding == null) {
+            // Otherwise, SerializationFeature's encoding, or default encoding
+            tempEncoding = encoding;
+        }
+        return tempEncoding;
+    }
+
+    protected String getContenTypeStr(Packet packet) {
+        String encoding = getPacketEncoding(packet);
+        if (encoding.equalsIgnoreCase(SOAPBindingCodec.DEFAULT_ENCODING)) {
+            return getDefaultContentType();
+        }
+        return getMimeType()+" ;charset="+encoding;
     }
 
 }
