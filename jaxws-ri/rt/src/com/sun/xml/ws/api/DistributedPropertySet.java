@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -87,7 +87,7 @@ import java.util.Set;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class DistributedPropertySet extends PropertySet {
+public abstract class DistributedPropertySet extends PropertySet implements org.jvnet.ws.message.MessageContext {
     /**
      * All {@link PropertySet}s that are bundled into this {@link PropertySet}.
      */
@@ -174,5 +174,17 @@ public abstract class DistributedPropertySet extends PropertySet {
         for (PropertySet child : satellites) {
             child.createEntrySet(core);
         }
+    }
+
+    public void addSatellite(org.jvnet.ws.message.PropertySet satellite) {
+        addSatellite((PropertySet)satellite);       
+    }
+
+    public void removeSatellite(org.jvnet.ws.message.PropertySet satellite) {
+        removeSatellite((PropertySet)satellite);       
+    }
+
+    public void copySatelliteInto(org.jvnet.ws.message.MessageContext r) {
+        copySatelliteInto((DistributedPropertySet)r);    
     }
 }

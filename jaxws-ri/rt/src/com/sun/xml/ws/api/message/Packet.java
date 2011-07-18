@@ -162,7 +162,7 @@ import java.util.logging.Logger;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class Packet extends DistributedPropertySet implements org.jvnet.ws.message.MessageContext {
+public final class Packet extends DistributedPropertySet {
 
     /**
      * Creates a {@link Packet} that wraps a given {@link Message}.
@@ -939,17 +939,5 @@ public final class Packet extends DistributedPropertySet implements org.jvnet.ws
         } else {
             message = null;
         }
-    }
-
-    public void addSatellite(org.jvnet.ws.message.PropertySet satellite) {
-        addSatellite((PropertySet)satellite);       
-    }
-
-    public void removeSatellite(org.jvnet.ws.message.PropertySet satellite) {
-        removeSatellite((PropertySet)satellite);       
-    }
-
-    public void copySatelliteInto(org.jvnet.ws.message.MessageContext r) {
-        copySatelliteInto((DistributedPropertySet)r);    
     }
 }
