@@ -3,8 +3,8 @@
       It tests handler invocation order, handler closing order, handling Exception processing in handlers.
   </description>
 
-    <!-- Test for http://java.net/jira/browse/JAX_WS-457, Not fixed in 2.2.5 -->
-    <client name="testAddMimeHeadersInSOAPMessage" since="2.2.5"><![CDATA[
+    <!-- Test for http://java.net/jira/browse/JAX_WS-457, Not fixed in 2.2.6 -->
+    <client name="testAddMimeHeadersInSOAPMessage" since="2.2.6"><![CDATA[
     import handler.handler_processing.common.*;
     HandlerTracker tracker = HandlerTracker.getClientInstance();
     try {
