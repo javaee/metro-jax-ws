@@ -78,8 +78,8 @@
     <echo message="The build id is: ${build.version}"/>
 	
     <mkdir dir="${build.home}"/>
-		<exec failonerror="false" failifexecutionfails="false" errorproperty="svnversion.failed"
-              executable="svn" output="build/svn.properties">
+	<exec failonerror="false" failifexecutionfails="false" errorproperty="svnversion.failed"
+          executable="svn" output="build/svn.properties">
         <arg value="info" />
     </exec>			
     <property prefix="svn" file="build/svn.properties"/>
