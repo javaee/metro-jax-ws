@@ -78,12 +78,13 @@
     <echo message="The build id is: ${build.version}"/>
 	
     <mkdir dir="${build.home}"/>
-		<exec executable="svn" output="build/svn.properties">
+		<exec failonerror="false" failifexecutionfails="false" errorproperty="svnversion.failed"
+              executable="svn" output="build/svn.properties">
         <arg value="info" />
     </exec>			
     <property prefix="svn" file="build/svn.properties"/>
     <echo>svn Revision: ${svn.Revision}</echo>
-	<loadfile property="svn.Last.Changed.Rev" srcFile="build/svn.properties">
+	<loadfile property="svn.Last.Changed.Rev" srcFile="build/svn.properties" failonerror="false">
 		<filterchain>
 		    <linecontains>
 				<contains value="Last Changed Rev: " />
