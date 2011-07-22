@@ -1,0 +1,7 @@
+<descriptor since="2.2.6" bugs="JAX-WS-744" transport="http" uses="ri">
+  <description>encoding</description>
+
+  <service basedir="./server">
+  </service>
+
+</descriptor>
