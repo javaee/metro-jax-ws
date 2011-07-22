@@ -93,7 +93,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
     private final String SOAP_NAMESPACE_URI;
     private final SOAPVersion soapVersion;
-    protected final String encoding;
+    protected final SerializationFeature serializationFeature;
 
     // charset of last decoded message. Will be used for encoding server's
     // response messages with the request message's encoding
@@ -104,18 +104,13 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
     }
 
     /*package*/ StreamSOAPCodec(WSBinding binding) {
-        this(binding.getSOAPVersion(), getEncoding(binding));
+        this(binding.getSOAPVersion(), binding.getFeature(SerializationFeature.class));
     }
 
-    private StreamSOAPCodec(SOAPVersion soapVersion, @Nullable String encoding) {
+    private StreamSOAPCodec(SOAPVersion soapVersion, @Nullable SerializationFeature sf) {
         this.soapVersion = soapVersion;
-        this.encoding = (encoding == null||encoding.equals("")) ? "utf-8" : encoding;
         SOAP_NAMESPACE_URI = soapVersion.nsUri;
-    }
-
-    private static String getEncoding(WSBinding binding) {
-        SerializationFeature sf = binding.getFeature(SerializationFeature.class);
-        return (sf == null) ? null : sf.getEncoding();
+        this.serializationFeature = sf;
     }
 
     public ContentType getStaticContentType(Packet packet) {
@@ -124,7 +119,9 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
     public ContentType encode(Packet packet, OutputStream out) {
         if (packet.getMessage() != null) {
-            XMLStreamWriter writer = XMLStreamWriterFactory.create(out, getPacketEncoding(packet));
+            String encoding = getPacketEncoding(packet);
+            decodedMessageCharset = null;
+            XMLStreamWriter writer = XMLStreamWriterFactory.create(out, encoding);
             try {
                 packet.getMessage().writeTo(writer);
                 writer.flush();
@@ -330,9 +327,6 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         throw new UnsupportedOperationException();
     }
 
-
-
-
     /*
      * Creates a new {@link StreamSOAPCodec} instance.
      */
@@ -369,17 +363,20 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
     }
 
     private String getPacketEncoding(Packet packet) {
-        String tempEncoding = null;
+        // If SerializationFeature is set, just use that encoding
+        if (serializationFeature != null) {
+            return serializationFeature.getEncoding().equals("")
+                    ? SOAPBindingCodec.DEFAULT_ENCODING : serializationFeature.getEncoding();
+        }
+
         if (packet.endpoint != null) {
-            // Server-side response message encoding is gotten from request
-            // message's encoding
-            tempEncoding = decodedMessageCharset;
+            // Use request message's encoding for Server-side response messages
+            return decodedMessageCharset == null
+                    ? SOAPBindingCodec.DEFAULT_ENCODING : decodedMessageCharset;
+        } else {
+            // Use default encoding for client-side request messages
+            return SOAPBindingCodec.DEFAULT_ENCODING;
         }
-        if (tempEncoding == null) {
-            // Otherwise, SerializationFeature's encoding, or default encoding
-            tempEncoding = encoding;
-        }
-        return tempEncoding;
     }
 
     protected String getContenTypeStr(Packet packet) {

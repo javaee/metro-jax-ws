@@ -101,26 +101,21 @@ public class MtomCodec extends MimeCodec {
     // encoding related parameters
     private String boundary;
     private String rootId;
-    private final String soapXopContentType;
     private String messageContentType;
     private final MTOMFeature mtomFeature;
-    private final String encoding;
+    private final SerializationFeature sf;
+    private String decodedMessageCharset;
 
     MtomCodec(SOAPVersion version, StreamSOAPCodec codec, WSBinding binding, WebServiceFeature mtomFeature){
         super(version, binding);
         this.codec = codec;
         createConteTypeHeader();
-        this.encoding = getEncoding(binding);
-        this.soapXopContentType = XOP_XML_MIME_TYPE +";charset="+encoding+";type=\""+version.contentType+"\"";
+        sf = binding.getFeature(SerializationFeature.class);
+
         if(mtomFeature == null)
             this.mtomFeature = new MTOMFeature();
         else
             this.mtomFeature = (MTOMFeature) mtomFeature;
-    }
-
-    private static String getEncoding(WSBinding binding) {
-        SerializationFeature sf = binding.getFeature(SerializationFeature.class);
-        return (sf == null||sf.getEncoding().equals("")) ? SOAPBindingCodec.UTF8_ENCODING : sf.getEncoding();
     }
 
     private void createConteTypeHeader(){
@@ -164,6 +159,10 @@ public class MtomCodec extends MimeCodec {
 
         if(packet.getMessage() != null){
             try {
+                String encoding = getPacketEncoding(packet);
+                decodedMessageCharset = null;
+                String soapXopContentType = XOP_XML_MIME_TYPE +";charset="+encoding+";type=\""+version.contentType+"\"";
+
                 writeln("--"+boundary, out);
                 writeln("Content-Id: " + rootId, out);
                 writeln("Content-Type: "+ soapXopContentType,  out);
@@ -172,7 +171,9 @@ public class MtomCodec extends MimeCodec {
 
                 //mtom attachments that need to be written after the root part
                 List<ByteArrayBuffer> mtomAttachments = new ArrayList<ByteArrayBuffer>();
-                MtomStreamWriterImpl writer = new MtomStreamWriterImpl(XMLStreamWriterFactory.create(out, encoding), mtomAttachments);
+                MtomStreamWriterImpl writer = new MtomStreamWriterImpl(
+                        XMLStreamWriterFactory.create(out, encoding), mtomAttachments);
+
                 packet.getMessage().writeTo(writer);
                 XMLStreamWriterFactory.recycle(writer);
                 writeln(out);
@@ -263,14 +264,31 @@ public class MtomCodec extends MimeCodec {
             throw new UnsupportedMediaException(charset);
         }
 
+        decodedMessageCharset = charset;
+
         // we'd like to reuse those reader objects but unfortunately decoder may be reused
         // before the decoded message is completely used.
         XMLStreamReader mtomReader = new MtomXMLStreamReaderEx( mpp,
-            XMLStreamReaderFactory.create(null, mpp.getRootPart().asInputStream(), charset, true)
+            XMLStreamReaderFactory.create(null, mpp.getRootPart().asInputStream(), decodedMessageCharset, true)
         );
 
         packet.setMessage(codec.decode(mtomReader, new MimeAttachmentSet(mpp)));
 
+    }
+
+    private String getPacketEncoding(Packet packet) {
+        // If SerializationFeature is set, just use that encoding
+        if (sf != null) {
+            return sf.getEncoding().equals("") ? SOAPBindingCodec.DEFAULT_ENCODING : sf.getEncoding();
+        }
+
+        if (packet.endpoint != null) {
+            // Use request message's encoding for Server-side response messages
+            return decodedMessageCharset == null ? SOAPBindingCodec.DEFAULT_ENCODING : decodedMessageCharset;
+        } else {
+            // Use default encoding for client-side request messages
+            return SOAPBindingCodec.DEFAULT_ENCODING;
+        }
     }
 
     private class MtomStreamWriterImpl extends XMLStreamWriterFilter implements XMLStreamWriterEx,
