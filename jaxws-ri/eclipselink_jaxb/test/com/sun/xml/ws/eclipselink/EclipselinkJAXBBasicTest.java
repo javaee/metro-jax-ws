@@ -48,6 +48,7 @@ import javax.xml.ws.WebServiceFeature;
 
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
+import com.sun.xml.ws.spi.db.BindingContextFactory;
 import com.sun.xml.ws.test.BasicDatabindingTestBase;
 import com.sun.xml.ws.test.CollectionMap;
 import com.sun.xml.ws.test.CollectionMapImpl;
@@ -64,8 +65,24 @@ public class EclipselinkJAXBBasicTest extends BasicDatabindingTestBase  {
 	}
 	
 	public void testHelloEcho() throws Exception {
-		_testHelloEcho();
+	    String wrapperName = _testHelloEcho();
+        assertTrue(wrapperName != null && wrapperName.endsWith("JAXBContextWrapper"));
 	}
+	
+	public void testHelloEchoWithProperty() throws Exception {
+	    String propName = BindingContextFactory.JAXB_CONTEXT_FACTORY_PROPERTY;
+	    String oldProp = System.getProperty(propName);
+	    try {
+	        System.setProperty(propName, DatabindingModeFeature.ECLIPSELINK_JAXB);
+	        String wrapperName = _testHelloEcho();
+	        assertTrue(wrapperName != null && wrapperName.endsWith("JAXBContextWrapper"));
+	    } finally {
+	        if (oldProp != null)
+	            System.setProperty(propName, oldProp);
+	        else
+	            System.clearProperty(propName);
+	    }
+    }
 
 	public void testCollectionMap() throws Exception {
 		Class<?> endpointClass = CollectionMapImpl.class;

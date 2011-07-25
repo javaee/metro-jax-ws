@@ -45,6 +45,8 @@ import com.sun.xml.ws.DummyAnnotations;
 import com.sun.xml.ws.WsDatabindingTestBase;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
+import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.BindingContextFactory;
 import com.sun.xml.ws.test.HelloImpl;
 import com.sun.xml.ws.test.HelloPort;
 
@@ -61,24 +63,34 @@ import com.sun.xml.ws.test.HelloPort;
 public abstract class BasicDatabindingTestBase extends WsDatabindingTestBase  {
 	abstract protected DatabindingModeFeature databindingMode();
 	
-	protected void _testHelloEcho() throws Exception {
-		Class endpointClass = HelloImpl.class;
-		Class proxySEIClass = HelloPort.class;
+	protected String _testHelloEcho() throws Exception {
+		Class<?> endpointClass = HelloImpl.class;
+		Class<?> proxySEIClass = HelloPort.class;
 		DatabindingConfig srvConfig = new DatabindingConfig();
 		srvConfig.setEndpointClass(endpointClass);
 		srvConfig.setMetadataReader(new DummyAnnotations());
 		DatabindingModeFeature dbm = databindingMode();
-		WebServiceFeature[] f = { dbm };
-		srvConfig.setFeatures(f);	
 
         DatabindingConfig cliConfig = new DatabindingConfig();
 		cliConfig.setMetadataReader(new DummyAnnotations());
 		cliConfig.setContractClass(proxySEIClass);
-		cliConfig.setFeatures(f);	
+		
+		// Honor system property if present, otherwise set feature.
+		WebServiceFeature[] f = null;
+        String dbProperty = System
+                .getProperty(BindingContextFactory.JAXB_CONTEXT_FACTORY_PROPERTY);
+        if (dbProperty == null)
+            f = new WebServiceFeature[] { dbm };
+        else
+            f = new WebServiceFeature[0];
+        srvConfig.setFeatures(f);
+        cliConfig.setFeatures(f);
 		
 		HelloPort hp = createProxy(HelloPort.class, srvConfig, cliConfig, false);
 		String req = "testInVM " + dbm.getMode();
 		String res = hp.echoS(req);
 		assertEquals(req, res);
+        return srvConfig.properties().get(BindingContext.class.getName())
+                .getClass().getName();
 	}
 }

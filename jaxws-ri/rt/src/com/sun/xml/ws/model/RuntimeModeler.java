@@ -57,6 +57,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.model.soap.SOAPBindingImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
 import com.sun.xml.ws.resources.ServerMessages;
+import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingHelper;
 import com.sun.xml.ws.spi.db.TypeInfo;
 import com.sun.xml.ws.spi.db.WrapperComposite;
@@ -311,6 +312,11 @@ public class RuntimeModeler {
             throw new RuntimeModelerException("runtime.modeler.no.operations",
                     portClass.getName());
         model.postProcess();
+        
+        // Make the configured databinding mode available to the
+        // DatabindingConfig.
+        config.properties().put(BindingContext.class.getName(),
+                model.bindingContext);
 
         // TODO: this needs to be fixed properly --
         // when we are building RuntimeModel first before building WSDLModel,

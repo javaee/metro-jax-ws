@@ -74,6 +74,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
+
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -136,10 +137,11 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
      * @return the <code>JAXBRIContext</code>
      * @deprecated
      */
-    public JAXBRIContext getJAXBContext() {
+    public JAXBContext getJAXBContext() {
     	JAXBContext jc = bindingContext.getJAXBContext();
+    	if (jc != null) return jc;
     	if (jaxbContext == null && jc instanceof JAXBRIContext) jaxbContext = (JAXBRIContext) bindingContext.getJAXBContext();
-        return jaxbContext;
+    	return jaxbContext;
     }
 
     public BindingContext getBindingContext() {
@@ -169,7 +171,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
         return b;
     }
 
-    private JAXBRIContext createJAXBContext() {
+    private void /*JAXBRIContext*/ createJAXBContext() {
         final List<TypeInfo> types = getAllTypeInfos();
         final List<Class> cls = new ArrayList<Class>(types.size() + additionalClasses.size());
 
@@ -182,20 +184,25 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
             // Need to avoid doPriv block once JAXB is fixed. Afterwards, use the above
             bindingContext = AccessController.doPrivileged(new PrivilegedExceptionAction<BindingContext>() {
                 public BindingContext run() throws Exception {
-                    if(LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.log(Level.FINE,"Creating JAXBContext with classes="+cls+" and types="+types);
+                    if(LOGGER.isLoggable(Level.FINEST)) {
+                        LOGGER.log(Level.FINEST,"Creating JAXBContext with classes="+cls+" and types="+types);
                     }
                     UsesJAXBContextFeature f = WebServiceFeatureList.getFeature(features, UsesJAXBContextFeature.class);
-                    DatabindingModeFeature dbf = WebServiceFeatureList.getFeature(features, DatabindingModeFeature.class);
+                    DatabindingModeFeature dbf = WebServiceFeatureList.getFeature(features, DatabindingModeFeature.class);  
                     JAXBContextFactory factory = f!=null ? f.getFactory() : null;
                     if(factory==null)   factory=JAXBContextFactory.DEFAULT;
+
 //                    return factory.createJAXBContext(AbstractSEIModelImpl.this,cls,types);
 
                     databindingInfo.properties().put(JAXBContextFactory.class.getName(), factory);
-                	if (dbf != null) databindingInfo.setDatabindingMode(dbf.getMode());
-//                	else 
-//                		bi.setDatabindingMode(BindingContextFactory.EclipseLinkJAXB);
-//                		bi.setDatabindingMode(BindingContextFactory.GlassfishJAXB);   
+                    if (dbf != null) {
+                        if (LOGGER.isLoggable(Level.FINE))
+                            LOGGER.fine("DatabindingModeFeature in SEI specifies mode: "
+                                    + dbf.getMode());
+                        databindingInfo.setDatabindingMode(dbf
+                                .getMode());
+                    }
+
                 	if (f!=null) databindingInfo.setDatabindingMode(BindingContextFactory.DefaultDatabindingMode);
                 	databindingInfo.setClassLoader(classLoader);
                 	databindingInfo.contentClasses().addAll(cls);
@@ -203,6 +210,10 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
                 	databindingInfo.properties().put("c14nSupport", Boolean.FALSE);
                 	databindingInfo.setDefaultNamespace(AbstractSEIModelImpl.this.getTargetNamespace());
                 	BindingContext bc =  BindingContextFactory.create(databindingInfo);
+                            if (LOGGER.isLoggable(Level.FINE))
+                                LOGGER.log(Level.FINE,
+                                        "Created binding context: "
+                                                + bc.getClass().getName());
 //                	System.out.println("---------------------- databinding " + bc);
                 	return bc;
                 }
@@ -222,7 +233,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 
         marshallers = new Pool.Marshaller(jaxbContext);
 
-        return getJAXBContext();
+        //return getJAXBContext();
     }
 
     /**

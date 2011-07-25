@@ -2,7 +2,6 @@
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-
     Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
@@ -115,6 +114,7 @@
     <target name="prepare" depends="init">
         <mkdir dir="${build.home}"/>
         <mkdir dir="${build.home}/lib"/>
+    	<mkdir dir="${build.home}/plugins_lib"/>
         <mkdir dir="${build.home}/bin"/>
         <mkdir dir="${build.home}/samples"/>
     </target>
@@ -218,13 +218,13 @@
         </jar>
         <ant dir="${basedir}/httpspi-servlet" target="jar"/>
 
-    	<jar jarfile="${build.home}/lib/jaxws-eclipselink-plugin.jar">
+    	<jar jarfile="${build.home}/plugins_lib/jaxws-eclipselink-plugin.jar">
     		<!-- <service type="com.sun.xml.ws.spi.db.BindingContextFactory"
     			provider="com.sun.xml.ws.db.toplink.JAXBContextFactory"/>-->
     	    <fileset dir="${basedir}/eclipselink_jaxb/build/classes"/>
     	</jar>
     	
-    	<jar jarfile="${build.home}/lib/sdo-eclipselink-plugin.jar">
+    	<jar jarfile="${build.home}/plugins_lib/sdo-eclipselink-plugin.jar">
             <fileset dir="${basedir}/eclipselink_sdo/build/classes"/>
         </jar>
     </target>

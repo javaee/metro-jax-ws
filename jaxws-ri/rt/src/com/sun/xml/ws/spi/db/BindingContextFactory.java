@@ -40,13 +40,17 @@
 
 package com.sun.xml.ws.spi.db;
 
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
+import com.sun.xml.ws.db.glassfish.JAXBRIContextFactory;
+import com.sun.xml.ws.policy.privateutil.ServiceConfigurationError;
 import com.sun.xml.ws.util.ServiceFinder;
 
 /**
@@ -55,31 +59,62 @@ import com.sun.xml.ws.util.ServiceFinder;
  * @author shih-chang.chen@oracle.com
  */
 abstract public class BindingContextFactory {
-//	static final String GlassfishJAXB   = "glassfish.jaxb";
-//	static final String EclipseLinkJAXB = "eclipselink.jaxb";
-	static final public String DefaultDatabindingMode = DatabindingModeFeature.GLASSFISH_JAXB;
-	//TODO the factoryImpls should be loaded from a config file/object:
-//	List<BindingContextFactory> factoryImpls;
-	static private List<BindingContextFactory> factories() {
-	    List<BindingContextFactory> factories = new java.util.ArrayList<BindingContextFactory>();
-        for (BindingContextFactory bcf : ServiceFinder.find(BindingContextFactory.class)) {
-            factories.add(bcf);
-        }       
-        factories.add(new com.sun.xml.ws.db.glassfish.JAXBRIContextFactory());
+    public static final String DefaultDatabindingMode = DatabindingModeFeature.GLASSFISH_JAXB;
+    public static final String JAXB_CONTEXT_FACTORY_PROPERTY = BindingContextFactory.class.getName();
+    public static final Logger LOGGER = Logger.getLogger(BindingContextFactory.class.getName());
+
+    // This iterator adds exception checking for proper logging.
+    public static Iterator<BindingContextFactory> serviceIterator() {
+        final ServiceFinder<BindingContextFactory> sf = ServiceFinder
+                .find(BindingContextFactory.class);
+        final Iterator<BindingContextFactory> ibcf = sf.iterator();
+
+        return new Iterator<BindingContextFactory>() {
+            private BindingContextFactory bcf;
+
+            public boolean hasNext() {
+                while (true) {
+                    try {
+                        if (ibcf.hasNext()) {
+                            bcf = ibcf.next();
+                            return true;
+                        } else
+                            return false;
+                    } catch (ServiceConfigurationError e) {
+                        LOGGER.warning("skipping factory: ServiceConfigurationError: "
+                                + e.getMessage());
+                    }
+                }
+            }
+
+            public BindingContextFactory next() {
+                if (LOGGER.isLoggable(Level.FINER))
+                    LOGGER.finer("SPI found provider: " +
+                            bcf.getClass().getName());
+                return bcf;
+            }
+
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    static private List<BindingContextFactory> factories() {
+        List<BindingContextFactory> factories = new java.util.ArrayList<BindingContextFactory>();
+        Iterator<BindingContextFactory> ibcf = serviceIterator();
+        while (ibcf.hasNext())
+            factories.add(ibcf.next());
+        
+        // There should always be at least one factory available.
+        if (factories.isEmpty()) {
+            if (LOGGER.isLoggable(Level.FINER))
+                LOGGER.log(Level.FINER, "No SPI providers for BindingContextFactory found, adding: "
+                        + JAXBRIContextFactory.class.getName()); 
+            factories.add(new JAXBRIContextFactory());
+        }
         return factories;
-//		factoryImpls.put(GlassfishJAXB,   "com.sun.xml.ws.db.glassfish.JAXBRIContextFactory");
-//		factoryImpls.put(EclipseLinkJAXB, "com.sun.xml.ws.db.toplink.JAXBContextFactory");
-	}
-	
-//	/**
-//	 * Maps the JAXBContext impl package name to databindingMode string.
-//	 */
-//	static Map<String, String> jaxbImpls;
-//	static {
-//		jaxbImpls = new java.util.HashMap<String, String>();
-//		jaxbImpls.put("com.sun.xml.bind.v2.runtime", GlassfishJAXB);
-//		jaxbImpls.put("org.eclipse.persistence.jaxb", EclipseLinkJAXB);
-//	}
+    }
 
 	abstract protected BindingContext newContext(JAXBContext context);
 	
@@ -97,31 +132,66 @@ abstract public class BindingContextFactory {
 	 * @deprecated - Does jaxws need this?
 	 */
 	abstract protected BindingContext getContext(Marshaller m);
-	
-	
-	@SuppressWarnings("unchecked")
-	static private BindingContextFactory getFactory(String mode) {
-		for (BindingContextFactory f: factories()) if (f.isFor(mode)) return f;
-		return null;
-	}
+
+    static private BindingContextFactory getFactory(String mode) {
+        for (BindingContextFactory f: factories()) {
+            if (f.isFor(mode))
+                return f;
+        }
+        return null;
+    }
 
 	static public BindingContext create(JAXBContext context) throws DatabindingException { 
 		return getJAXBFactory(context).newContext(context);
 	}
 	
-	static public BindingContext create(BindingInfo bi) {
-		String mode = bi.getDatabindingMode();
-		if (mode == null) mode = System.getProperty("BindingContextFactory");
-		if (mode == null) mode = DefaultDatabindingMode;
-		BindingContextFactory f = getFactory(mode);
-		if (f != null) return f.newContext(bi);
-		throw new DatabindingException("Unknown Databinding mode: " + mode);
-	}
+    static public BindingContext create(BindingInfo bi) {
+        // Any mode configured in AbstractSEIModelImpl trumps all.
+        // System property comes next, then SPI-located.
+        String mode = bi.getDatabindingMode();
+        if (mode != null) {
+            if (LOGGER.isLoggable(Level.FINE))
+                LOGGER.log(Level.FINE, "Using SEI-configured databindng mode: "
+                        + mode);
+        } else if ((mode = System.getProperty("BindingContextFactory")) != null) {
+            // The following is left for backward compatibility and should
+            // eventually be removed.
+            bi.setDatabindingMode(mode);
+            if (LOGGER.isLoggable(Level.FINE))
+                LOGGER.log(Level.FINE, "Using databindng: " + mode
+                        + " based on 'BindingContextFactory' System property");
+        } else if ((mode = System.getProperty(JAXB_CONTEXT_FACTORY_PROPERTY)) != null) {
+            bi.setDatabindingMode(mode);
+            if (LOGGER.isLoggable(Level.FINE))
+                LOGGER.log(Level.FINE, "Using databindng: " + mode
+                        + " based on '" + JAXB_CONTEXT_FACTORY_PROPERTY
+                        + "' System property");
+        } else {
+            // Find a default provider.  Note we always ensure the list
+            // is always non-empty.
+            for (BindingContextFactory factory : factories()) {
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.log(Level.FINE,
+                            "Using SPI-determined databindng mode: "
+                                    + factory.getClass().getName());
+                // Special case: no name lookup used.
+                return factory.newContext(bi);
+            }
+            
+            // Should never get here as the list is non-empty.
+            LOGGER.log(Level.SEVERE, "No Binding Context Factories found.");
+            throw new DatabindingException("No Binding Context Factories found.");
+        }
+        BindingContextFactory f = getFactory(mode);
+        if (f != null)
+            return f.newContext(bi);
+        LOGGER.severe("Unknown Databinding mode: " + mode);
+        throw new DatabindingException("Unknown Databinding mode: " + mode);
+    }
 	
 	static public boolean isContextSupported(Object o) {
 	    if (o == null) return false;
 		String pkgName = o.getClass().getPackage().getName();
-//		if (factoryImpls == null) init();
 		for (BindingContextFactory f: factories()) if (f.isFor(pkgName)) return true;
 		return false;
 	}

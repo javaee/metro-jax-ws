@@ -22,6 +22,7 @@ import com.sun.xml.ws.sdo.test.AddNumbersServiceImpl;
 import com.sun.xml.ws.sdo.test.HelloSDO_ProxyInterface;
 import com.sun.xml.ws.sdo.test.HelloSDO_ProxyInterfaceImpl;
 import com.sun.xml.ws.sdo.test.helloSDO.MySDO;
+import com.sun.xml.ws.spi.db.BindingContext;
 
 import commonj.sdo.helper.HelperContext;
 
@@ -83,6 +84,9 @@ public class SDORuntimeBasicTest extends SDODatabindingTestBase {
         mySDO = (MySDO) obj;
         assertEquals(21, mySDO.getIntPart());
         assertEquals("Gary", mySDO.getStringPart());
+        String wrapperName = srvConfig.properties().get(
+                BindingContext.class.getName()).getClass().getName();
+        assertTrue(wrapperName != null && wrapperName.endsWith("SDOContextWrapper"));
     }
     
     public void testAddNumbers() throws Exception {

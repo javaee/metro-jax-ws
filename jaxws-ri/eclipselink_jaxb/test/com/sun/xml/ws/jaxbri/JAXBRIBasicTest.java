@@ -39,8 +39,17 @@
  */
 package com.sun.xml.ws.jaxbri;
 
+import javax.xml.ws.WebServiceFeature;
+
+import com.sun.xml.ws.DummyAnnotations;
+import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
+import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.BindingContextFactory;
+import com.sun.xml.ws.spi.db.DatabindingException;
 import com.sun.xml.ws.test.BasicDatabindingTestBase;
+import com.sun.xml.ws.test.HelloImpl;
+import com.sun.xml.ws.test.HelloPort;
 
 /**
  * JAXBRIBasicTest
@@ -54,7 +63,53 @@ public class JAXBRIBasicTest extends BasicDatabindingTestBase  {
 	}
 	
 	public void testHelloEcho() throws Exception {
-		_testHelloEcho();
+	    String wrapperName = _testHelloEcho();
+        assertTrue(wrapperName != null && wrapperName.endsWith("JAXBRIContextWrapper"));
 	}
+	
+	public void testHelloEchoNoMode() throws Exception {
+        Class endpointClass = HelloImpl.class;
+        Class proxySEIClass = HelloPort.class;
+        DatabindingConfig srvConfig = new DatabindingConfig();
+        srvConfig.setEndpointClass(endpointClass);
+        srvConfig.setMetadataReader(new DummyAnnotations());
+        WebServiceFeature[] f = {  };
+        srvConfig.setFeatures(f);
+
+        DatabindingConfig cliConfig = new DatabindingConfig();
+        cliConfig.setMetadataReader(new DummyAnnotations());
+        cliConfig.setContractClass(proxySEIClass);
+        cliConfig.setFeatures(f);
+
+        HelloPort hp = createProxy(HelloPort.class, srvConfig, cliConfig, false);
+        String req = "testInVM " + databindingMode().getMode();
+        String res = hp.echoS(req);
+        assertEquals(req, res);
+        String wrapperName = srvConfig.properties().get(
+                BindingContext.class.getName()).getClass().getName();
+        assertTrue(wrapperName != null && wrapperName.endsWith("JAXBRIContextWrapper"));
+    }
+	
+	public void testHelloEchoInvalidDB() throws Exception {
+        Class endpointClass = HelloImpl.class;
+        Class proxySEIClass = HelloPort.class;
+        DatabindingConfig srvConfig = new DatabindingConfig();
+        srvConfig.setEndpointClass(endpointClass);
+        srvConfig.setMetadataReader(new DummyAnnotations());
+        WebServiceFeature[] f = { new DatabindingModeFeature("invalid.db") };
+        srvConfig.setFeatures(f);
+
+        DatabindingConfig cliConfig = new DatabindingConfig();
+        cliConfig.setMetadataReader(new DummyAnnotations());
+        cliConfig.setContractClass(proxySEIClass);
+        cliConfig.setFeatures(f);
+        
+        try {
+            HelloPort hp = createProxy(HelloPort.class, srvConfig, cliConfig, false);
+            fail("Expected DatabindingException not thrown");
+        } catch (DatabindingException e) {
+            // expected exception.
+        }
+    }
 }
 

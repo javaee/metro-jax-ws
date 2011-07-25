@@ -168,4 +168,9 @@ public final class TypeInfo {
 	public void setGenericType(Type genericType) {
 		this.genericType = genericType;
 	}
+	
+    public String toString() {
+        return new StringBuilder("TypeInfo: Type = ").append(type)
+                .append(", tag = ").append(tagName).toString();
+    }
 }

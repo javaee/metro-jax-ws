@@ -47,6 +47,7 @@ import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.util.Pool;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.Provider;
@@ -82,7 +83,7 @@ public interface SEIModel {
      * @return the <code>{@link JAXBRIContext}</code>
      * @deprecated Why do you need this?
      */
-    JAXBRIContext getJAXBContext();
+    JAXBContext getJAXBContext();
 
     /**
      * Get the Bridge associated with the {@link TypeReference}
