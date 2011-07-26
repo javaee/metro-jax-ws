@@ -1,0 +1,6 @@
+<descriptor bugs="JAX-WS-744" since="2.2.6" uses="ri">
+    <description>charset encoding tests for MTOM</description>
+    <service basedir="./server">
+        <wsdl href="hello.wsdl"/>
+    </service>
+</descriptor>
