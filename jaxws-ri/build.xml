@@ -582,9 +582,9 @@
       </copy>
       <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-osgi.jar"
            dest="${v3-osgi.dir}/jaxb-osgi.jar" />
-      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-api-osgi.jar"
+      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/tools/lib/osgi/jaxb-api-osgi.jar"
            dest="${v3-osgi.dir}/jaxb-api-osgi.jar" />
-      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-api-osgi-sources.jar"
+      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/tools/lib/osgi/jaxb-api-osgi-sources.jar"
            dest="${v3-osgi.dir}/jaxb-api-osgi-sources.jar" />
   <!--<delete dir="${build.home}/jaxb" /> -->
     </target>
