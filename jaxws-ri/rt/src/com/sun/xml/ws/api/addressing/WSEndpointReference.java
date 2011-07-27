@@ -364,7 +364,8 @@ public final class WSEndpointReference  implements WSDLExtension {
             writer.writeStartElement(version.getPrefix(), version.eprType.address, version.nsUri);
             writer.writeCharacters(address);
             writer.writeEndElement();
-            if (referenceParameters != null) {
+            //When the size of ReferenceParametes is zero, the ReferenceParametes element will not be written.
+            if(referenceParameters != null && referenceParameters.size() > 0) {
                 writer.writeStartElement(version.getPrefix(), version.eprType.referenceParameters, version.nsUri);
                 for (Element e : referenceParameters)
                     DOMUtil.serializeNode(e, writer);
@@ -406,7 +407,11 @@ public final class WSEndpointReference  implements WSDLExtension {
                                          QName port,
                                          QName portType, List<Element> metadata,
                                          String wsdlAddress, String wsdlTargetNamespace) throws XMLStreamException {
-
+    	
+        
+    	//.NET treate empty metaData element as bad request.
+        if (service == null && port == null && portType == null && metadata == null && wsdlAddress == null)
+        return;
         writer.writeStartElement(AddressingVersion.W3C.getPrefix(),
                 AddressingVersion.W3C.eprType.wsdlMetadata.getLocalPart(), AddressingVersion.W3C.nsUri);
         writer.writeNamespace(AddressingVersion.W3C.getWsdlPrefix(),
