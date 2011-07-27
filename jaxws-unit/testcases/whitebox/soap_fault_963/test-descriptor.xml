@@ -1,0 +1,4 @@
+<descriptor since="2.2.6" >
+  <description>Regression test for JAXWS SOAP11Fault #963.</description>
+
+</descriptor>
