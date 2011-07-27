@@ -51,12 +51,15 @@ import com.sun.xml.ws.client.HandlerConfiguration;
 import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
 import com.sun.xml.ws.developer.BindingTypeFeature;
 
+import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.AddressingFeature;
 import javax.xml.ws.handler.Handler;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Instances are created by the service, which then
@@ -82,6 +85,14 @@ public abstract class BindingImpl implements WSBinding {
     private final BindingID bindingId;
     // Features that are set(enabled/disabled) on the binding
     protected final WebServiceFeatureList features = new WebServiceFeatureList();
+    // Features that are set(enabled/disabled) on the binding or an operation
+    protected final Map<QName, WebServiceFeatureList> operationFeatures = new HashMap<QName, WebServiceFeatureList>();
+    // Features that are set(enabled/disabled) on the binding, an operation or an input message
+    protected final Map<QName, WebServiceFeatureList> inputMessageFeatures = new HashMap<QName, WebServiceFeatureList>();
+    // Features that are set(enabled/disabled) on the binding, an operation or an output message
+    protected final Map<QName, WebServiceFeatureList> outputMessageFeatures = new HashMap<QName, WebServiceFeatureList>();
+    // Features that are set(enabled/disabled) on the binding, an operation or a fault message
+    protected final Map<MessageKey, WebServiceFeatureList> faultMessageFeatures = new HashMap<MessageKey, WebServiceFeatureList>();
 
     protected javax.xml.ws.Service.Mode serviceMode = javax.xml.ws.Service.Mode.PAYLOAD;
 
@@ -166,8 +177,20 @@ public abstract class BindingImpl implements WSBinding {
         return features.get(featureType);
     }
 
+    public @Nullable <F extends WebServiceFeature> F getOperationFeature(@NotNull Class<F> featureType,
+            @NotNull final QName operationName) {
+        final WebServiceFeatureList operationFeatureList = this.operationFeatures.get(operationName);
+        return FeatureListUtil.mergeFeature(featureType, operationFeatureList, features);
+    }
+
     public boolean isFeatureEnabled(@NotNull Class<? extends WebServiceFeature> feature){
         return features.isEnabled(feature);
+    }
+
+    public boolean isOperationFeatureEnabled(@NotNull Class<? extends WebServiceFeature> featureType,
+            @NotNull final QName operationName) {
+        final WebServiceFeatureList operationFeatureList = this.operationFeatures.get(operationName);
+        return FeatureListUtil.isFeatureEnabled(featureType, operationFeatureList, features);
     }
 
     @NotNull
@@ -175,6 +198,28 @@ public abstract class BindingImpl implements WSBinding {
         return features;
     }
 
+    public @NotNull WebServiceFeatureList getOperationFeatures(@NotNull final QName operationName) {
+        final WebServiceFeatureList operationFeatureList = this.operationFeatures.get(operationName);
+        return FeatureListUtil.mergeList(operationFeatureList, features);
+    }
+    
+    public @NotNull WebServiceFeatureList getInputMessageFeatures(@NotNull final QName operationName) {
+        final WebServiceFeatureList messageFeatureList = this.inputMessageFeatures.get(operationName);
+        return FeatureListUtil.mergeList(messageFeatureList, features);
+        
+    }
+    
+    public @NotNull WebServiceFeatureList getOutputMessageFeatures(@NotNull final QName operationName) {
+        final WebServiceFeatureList messageFeatureList = this.outputMessageFeatures.get(operationName);
+        return FeatureListUtil.mergeList(messageFeatureList, features);
+    }
+    
+    public @NotNull WebServiceFeatureList getFaultMessageFeatures(@NotNull final QName operationName,
+            @NotNull final QName messageName) {
+        final WebServiceFeatureList messageFeatureList = this.faultMessageFeatures.get(
+                new MessageKey(operationName, messageName));
+        return FeatureListUtil.mergeList(messageFeatureList, features);
+    }
 
     public void setFeatures(WebServiceFeature... newFeatures) {
         if (newFeatures != null) {
@@ -187,4 +232,53 @@ public abstract class BindingImpl implements WSBinding {
     public void addFeature(@NotNull WebServiceFeature newFeature) {
         features.add(newFeature);
     }
+
+
+    /**
+     * Experimental: Identify messages based on the name of the message and the
+     * operation that uses this message.
+     */
+    protected static class MessageKey {
+        
+        final private QName operationName;
+        final private QName messageName;
+        
+        public MessageKey(final QName operationName, final QName messageName) {
+            this.operationName = operationName;
+            this.messageName = messageName;
+        }
+        
+        @Override
+        public int hashCode() {
+            final int hashFirst = this.operationName != null ? this.operationName.hashCode() : 0;
+            final int hashSecond = this.messageName != null ? this.messageName.hashCode() : 0;
+
+            return (hashFirst + hashSecond) * hashSecond + hashFirst;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final MessageKey other = (MessageKey) obj;
+            if (this.operationName != other.operationName && (this.operationName == null || !this.operationName.equals(other.operationName))) {
+                return false;
+            }
+            if (this.messageName != other.messageName && (this.messageName == null || !this.messageName.equals(other.messageName))) {
+                return false;
+            }
+            return true;
+        }
+        
+        @Override
+        public String toString() { 
+           return "(" + this.operationName + ", " + this.messageName + ")";
+        }
+        
+    }
+
 }

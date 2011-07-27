@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Tube;
 
+import javax.xml.namespace.QName;
 import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.handler.Handler;
@@ -71,7 +72,7 @@ public interface WSBinding extends Binding {
      * TODO: clarify what to do with XML/HTTP binding
      *
      * <p>
-     * This is just a shor-cut for  {@code getBindingID().getSOAPVersion()}
+     * This is just a short-cut for  {@code getBindingID().getSOAPVersion()}
      *
      * @return
      *      If the binding is using SOAP, this method returns
@@ -121,6 +122,17 @@ public interface WSBinding extends Binding {
     boolean isFeatureEnabled(@NotNull Class<? extends WebServiceFeature> feature);
 
     /**
+     * Experimental: Checks if a particular {@link WebServiceFeature} on an operation is enabled.
+     *
+     * @param operationName
+     *      The WSDL name of the operation.
+     * @return
+     *      true if enabled.
+     */
+    boolean isOperationFeatureEnabled(@NotNull Class<? extends WebServiceFeature> feature,
+            @NotNull final QName operationName);
+
+    /**
      * Gets a {@link WebServiceFeature} of the specific type.
      *
      * @param featureType
@@ -132,7 +144,61 @@ public interface WSBinding extends Binding {
     @Nullable <F extends WebServiceFeature> F getFeature(@NotNull Class<F> featureType);
 
     /**
+     * Experimental: Gets a {@link WebServiceFeature} of the specific type that applies to an operation.
+     *
+     * @param featureType
+     *      The type of the feature to retrieve.
+     * @param operationName
+     *      The WSDL name of the operation.
+     * @return
+     *      If the feature is present and enabled, return a non-null instance.
+     *      Otherwise null.
+     */
+    @Nullable <F extends WebServiceFeature> F getOperationFeature(@NotNull Class<F> featureType,
+            @NotNull final QName operationName);
+
+    /**
      * Returns a list of features associated with {@link WSBinding}.
      */
     @NotNull WSFeatureList getFeatures();
+    
+    /**
+     * Experimental: Returns a list of features associated with {@link WSBinding} that apply to
+     * a particular operation.
+     * 
+     * @param operationName
+     *      The WSDL name of the operation.
+     */
+    @NotNull WSFeatureList getOperationFeatures(@NotNull final QName operationName);
+    
+    /**
+     * Experimental: Returns a list of features associated with {@link WSBinding} that apply to
+     * the input message of an operation.
+     * 
+     * @param operationName
+     *      The WSDL name of the operation.
+     */
+    @NotNull WSFeatureList getInputMessageFeatures(@NotNull final QName operationName);
+    
+    /**
+     * Experimental: Returns a list of features associated with {@link WSBinding} that apply to
+     * the output message of an operation.
+     * 
+     * @param operationName
+     *      The WSDL name of the operation.
+     */
+    @NotNull WSFeatureList getOutputMessageFeatures(@NotNull final QName operationName);
+    
+    /**
+     * Experimental: Returns a list of features associated with {@link WSBinding} that apply to
+     * one of the fault messages of an operation.
+     * 
+     * @param operationName
+     *      The WSDL name of the operation.
+     * @param messageName
+     *      The WSDL name of the fault message.
+     */
+    @NotNull WSFeatureList getFaultMessageFeatures(@NotNull final QName operationName,
+            @NotNull final QName messageName);
+    
 }
