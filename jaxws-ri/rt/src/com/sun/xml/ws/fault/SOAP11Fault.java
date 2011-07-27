@@ -117,7 +117,7 @@ class SOAP11Fault extends SOAPFaultBuilder {
         this.faultstring = reason;
         this.faultactor = actor;
         if (detailObject != null) {
-            if(detailObject.getNamespaceURI().equals("") && detailObject.getLocalName().equals("detail")){
+            if("".equals(detailObject.getNamespaceURI()) && "detail".equals(detailObject.getLocalName())){
                 detail = new DetailType();
                 for(Element detailEntry : DOMUtil.getChildElements(detailObject)){
                     detail.getDetails().add(detailEntry);
