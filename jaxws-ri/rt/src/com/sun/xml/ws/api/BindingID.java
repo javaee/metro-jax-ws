@@ -343,7 +343,7 @@ public abstract class BindingID {
      * Constant that represents SOAP1.2/HTTP.
      */
     public static final SOAPHTTPImpl SOAP12_HTTP = new SOAPHTTPImpl(
-        SOAPVersion.SOAP_12, SOAPBinding.SOAP12HTTP_BINDING, false);
+        SOAPVersion.SOAP_12, SOAPBinding.SOAP12HTTP_BINDING, true);
     /**
      * Constant that represents SOAP1.1/HTTP.
      */
@@ -354,7 +354,7 @@ public abstract class BindingID {
      * Constant that represents SOAP1.2/HTTP.
      */
     public static final SOAPHTTPImpl SOAP12_HTTP_MTOM = new SOAPHTTPImpl(
-        SOAPVersion.SOAP_12, SOAPBinding.SOAP12HTTP_MTOM_BINDING, false, true);
+        SOAPVersion.SOAP_12, SOAPBinding.SOAP12HTTP_MTOM_BINDING, true, true);
     /**
      * Constant that represents SOAP1.1/HTTP.
      */
