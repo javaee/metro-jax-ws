@@ -107,7 +107,7 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
             String name = entry.getKey();
             List<String> values = entry.getValue();
             // ignore headers that interfere with our correct operations
-            if (!name.equalsIgnoreCase("Content-Length") && !name.equalsIgnoreCase("Content-Type")) {
+            if (!"Content-Length".equalsIgnoreCase(name) && !"Content-Type".equalsIgnoreCase(name)) {
                 r.put(name,new ArrayList<String>(values));
             }
         }
