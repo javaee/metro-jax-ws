@@ -53,23 +53,19 @@ import javax.xml.ws.WebServiceFeature;
  */
 public class FeatureListUtil {
 
-    public static @NotNull WebServiceFeatureList mergeList(@Nullable WebServiceFeatureList list1,
-            @Nullable WebServiceFeatureList list2) {
-        if ((list1 == null) && (list2 == null)) {
-            return new WebServiceFeatureList();
+    /**
+     * Merge all features into one list. Returns an empty list if no lists were
+     * passed as parameter.
+     * 
+     * @param lists The WebServiceFeatureLists.
+     * @return A new WebServiceFeatureList that contains all features.
+     */
+    public static @NotNull WebServiceFeatureList mergeList(WebServiceFeatureList... lists) {
+        final WebServiceFeatureList result = new WebServiceFeatureList();
+        for (WebServiceFeatureList list : lists) {
+            result.addAll(list);
         }
-        else if ((list1 != null) && (list2 != null)) {
-            final WebServiceFeatureList features = new WebServiceFeatureList();
-            features.addAll(list1);
-            features.addAll(list2);
-            return features;
-        }
-        else if (list1 != null) {
-            return list2;
-        }
-        else {
-            return list1;
-        }
+        return result;
     }
             
     public static @Nullable <F extends WebServiceFeature> F mergeFeature(final @NotNull Class<F> featureType,

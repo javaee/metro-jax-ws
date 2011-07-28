@@ -204,21 +204,24 @@ public abstract class BindingImpl implements WSBinding {
     }
     
     public @NotNull WebServiceFeatureList getInputMessageFeatures(@NotNull final QName operationName) {
+        final WebServiceFeatureList operationFeatureList = this.operationFeatures.get(operationName);
         final WebServiceFeatureList messageFeatureList = this.inputMessageFeatures.get(operationName);
-        return FeatureListUtil.mergeList(messageFeatureList, features);
+        return FeatureListUtil.mergeList(operationFeatureList, messageFeatureList, features);
         
     }
     
     public @NotNull WebServiceFeatureList getOutputMessageFeatures(@NotNull final QName operationName) {
+        final WebServiceFeatureList operationFeatureList = this.operationFeatures.get(operationName);
         final WebServiceFeatureList messageFeatureList = this.outputMessageFeatures.get(operationName);
-        return FeatureListUtil.mergeList(messageFeatureList, features);
+        return FeatureListUtil.mergeList(operationFeatureList, messageFeatureList, features);
     }
     
     public @NotNull WebServiceFeatureList getFaultMessageFeatures(@NotNull final QName operationName,
             @NotNull final QName messageName) {
+        final WebServiceFeatureList operationFeatureList = this.operationFeatures.get(operationName);
         final WebServiceFeatureList messageFeatureList = this.faultMessageFeatures.get(
                 new MessageKey(operationName, messageName));
-        return FeatureListUtil.mergeList(messageFeatureList, features);
+        return FeatureListUtil.mergeList(operationFeatureList, messageFeatureList, features);
     }
 
     public void setFeatures(WebServiceFeature... newFeatures) {
@@ -226,6 +229,59 @@ public abstract class BindingImpl implements WSBinding {
             for (WebServiceFeature f : newFeatures) {
                 features.add(f);
             }
+        }
+    }
+
+    public void setOperationFeatures(@NotNull final QName operationName, WebServiceFeature... newFeatures) {
+        if (newFeatures != null) {
+            WebServiceFeatureList featureList = operationFeatures.get(operationName);
+            if (featureList == null) {
+                featureList = new WebServiceFeatureList();
+            }
+            for (WebServiceFeature f : newFeatures) {
+                featureList.add(f);
+            }
+            operationFeatures.put(operationName, featureList);
+        }
+    }
+
+    public void setInputMessageFeatures(@NotNull final QName operationName, WebServiceFeature... newFeatures) {
+        if (newFeatures != null) {
+            WebServiceFeatureList featureList = inputMessageFeatures.get(operationName);
+            if (featureList == null) {
+                featureList = new WebServiceFeatureList();
+            }
+            for (WebServiceFeature f : newFeatures) {
+                featureList.add(f);
+            }
+            inputMessageFeatures.put(operationName, featureList);
+        }
+    }
+
+    public void setOutputMessageFeatures(@NotNull final QName operationName, WebServiceFeature... newFeatures) {
+        if (newFeatures != null) {
+            WebServiceFeatureList featureList = outputMessageFeatures.get(operationName);
+            if (featureList == null) {
+                featureList = new WebServiceFeatureList();
+            }
+            for (WebServiceFeature f : newFeatures) {
+                featureList.add(f);
+            }
+            outputMessageFeatures.put(operationName, featureList);
+        }
+    }
+
+    public void setFaultMessageFeatures(@NotNull final QName operationName, @NotNull final QName messageName, WebServiceFeature... newFeatures) {
+        if (newFeatures != null) {
+            final MessageKey key = new MessageKey(operationName, messageName);
+            WebServiceFeatureList featureList = faultMessageFeatures.get(key);
+            if (featureList == null) {
+                featureList = new WebServiceFeatureList();
+            }
+            for (WebServiceFeature f : newFeatures) {
+                featureList.add(f);
+            }
+            faultMessageFeatures.put(key, featureList);
         }
     }
 
