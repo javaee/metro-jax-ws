@@ -172,6 +172,7 @@ public class EchoClientTest extends XMLTestCase {
                    MESSAGES.getDuplicateToMessage(),
                    S11_NS,
                    getAddress(),
+                   getAddress(),
                    "test1140");
             fail("SOAPFaultException must be thrown");
         } catch (SOAPFaultException e) {
@@ -189,6 +190,7 @@ public class EchoClientTest extends XMLTestCase {
             invoke(createDispatchWithWSDLWithAddressing(),
                    MESSAGES.getDuplicateReplyToMessage(),
                    S11_NS,
+                   getAddress(),
                    "test1141");
             fail("SOAPFaultException must be thrown");
         } catch (SOAPFaultException e) {
@@ -241,6 +243,7 @@ public class EchoClientTest extends XMLTestCase {
             invoke(createDispatchWithWSDLWithAddressing(),
                    MESSAGES.getDuplicateMessageIDMessage(),
                    S11_NS,
+                   getAddress(),
                    "test1144");
             fail("SOAPFaultException must be thrown");
         } catch (SOAPFaultException e) {
