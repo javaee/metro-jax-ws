@@ -228,6 +228,10 @@
     <copy    todir="${dist20.home}/lib">
       <fileset dir="${build.home}/lib" includes="*.jar"/>
     </copy>
+  	
+  	<copy    todir="${dist20.home}/lib">
+  	  <fileset dir="${build.home}/plugins_lib" includes="*.jar"/>
+  	</copy>
     	
     <copy    todir="${dist20.home}/docs">
       <fileset dir="${build.home}/docs"/>
