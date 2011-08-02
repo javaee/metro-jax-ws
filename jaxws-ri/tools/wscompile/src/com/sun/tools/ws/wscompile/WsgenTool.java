@@ -285,7 +285,7 @@ public class WsgenTool implements AnnotationProcessorFactory {
                             return toResult(f);
                         }
                         public Result getSchemaOutput(String namespace, String suggestedFilename) {
-                            if (namespace.equals(""))
+                            if (namespace == null)
                                 return null;
                             File f = toFile(suggestedFilename);
                             schemaFiles.put(namespace,f);

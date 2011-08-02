@@ -1034,12 +1034,11 @@ public class WSDLGenerator {
      * @throws java.io.IOException thrown if on IO error occurs
      */    
     public Result createOutputFile(String namespaceUri, String suggestedFileName) throws IOException {
-        Result result;
-        if (namespaceUri.equals("")) {
+        Result result; 
+        if (namespaceUri ==  null) {
             return null;
         }
-        com.sun.xml.ws.wsdl.writer.document.xsd.Import _import = types.schema()._import().namespace(namespaceUri);
-
+    
         Holder<String> fileNameHolder = new Holder<String>();
         fileNameHolder.value = schemaPrefix+suggestedFileName;
         result = wsdlResolver.getSchemaOutput(namespaceUri, fileNameHolder);
@@ -1050,8 +1049,12 @@ public class WSDLGenerator {
             schemaLoc = fileNameHolder.value;
         else
             schemaLoc = relativize(result.getSystemId(), wsdlLocation);
-//        System.out.println("schemaLoca: "+schemaLoc);
-        _import.schemaLocation(schemaLoc);
+        boolean isEmptyNs = namespaceUri.trim().equals("");
+        if(!isEmptyNs) {
+            com.sun.xml.ws.wsdl.writer.document.xsd.Import _import = types.schema()._import();
+            _import.namespace(namespaceUri);
+            _import.schemaLocation(schemaLoc);
+        }
         return result;
     }
 
