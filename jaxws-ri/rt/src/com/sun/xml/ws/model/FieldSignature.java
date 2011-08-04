@@ -111,7 +111,7 @@ final class FieldSignature {
             if (c.getDeclaringClass() == null) {
                 return c.getName().replace('.', '/');
             } else {
-                return fqcn(c.getDeclaringClass())+"."+c.getSimpleName();
+                return fqcn(c.getDeclaringClass())+"$"+c.getSimpleName();
             }
         } else if (t instanceof ParameterizedType) {
             ParameterizedType p = (ParameterizedType)t;
