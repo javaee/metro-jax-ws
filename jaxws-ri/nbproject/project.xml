@@ -39,53 +39,76 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/profiler/1" profile-file-target="" profile-target="" version="0.4"/>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>JAXWS-RI-2.2</name>
+        </general-data>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
             <!--Do not use Project Properties customizer when editing this file manually.-->
             <name>JAXWS-RI-2.2</name>
             <folders>
                 <source-folder>
+                    <label>JAXWS-RI-2.2</label>
+                    <location>.</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
                     <label>rt/src</label>
                     <type>java</type>
                     <location>rt/src</location>
-                </source-folder>
-                <source-folder>
-                    <label>tools/wscompile/src</label>
-                    <type>java</type>
-                    <location>tools/wscompile/src</location>
-                </source-folder>
-                <source-folder>
-                    <label>servlet/src</label>
-                    <type>java</type>
-                    <location>servlet/src</location>
-                </source-folder>
-                <source-folder>
-                    <label>transports/local/src</label>
-                    <type>java</type>
-                    <location>transports/local/src</location>
-                </source-folder>
-                <source-folder>
-                    <label>rt-fi/src</label>
-                    <type>java</type>
-                    <location>rt-fi/src</location>
+                    <encoding>UTF-8</encoding>
                 </source-folder>
                 <source-folder>
                     <label>rt/build/gen-src</label>
                     <type>java</type>
                     <location>rt/build/gen-src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>tools/wscompile/src</label>
+                    <type>java</type>
+                    <location>tools/wscompile/src</location>
+                    <encoding>UTF-8</encoding>
                 </source-folder>
                 <source-folder>
                     <label>tools/wscompile/build/gen-src</label>
                     <type>java</type>
                     <location>tools/wscompile/build/gen-src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>servlet/src</label>
+                    <type>java</type>
+                    <location>servlet/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>transports/local/src</label>
+                    <type>java</type>
+                    <location>transports/local/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>rt-fi/src</label>
+                    <type>java</type>
+                    <location>rt-fi/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>rt-ha/src</label>
+                    <type>java</type>
+                    <location>rt-ha/src</location>
+                    <encoding>UTF-8</encoding>
                 </source-folder>
                 <source-folder>
                     <label>rt/test</label>
                     <type>java</type>
                     <location>rt/test</location>
+                    <encoding>UTF-8</encoding>
                 </source-folder>
                 <source-folder>
                     <label>tools/wscompile/test</label>
                     <type>java</type>
                     <location>tools/wscompile/test</location>
+                    <encoding>UTF-8</encoding>
                 </source-folder>
             </folders>
             <ide-actions>
@@ -777,8 +800,16 @@
                         <location>rt/src</location>
                     </source-folder>
                     <source-folder style="packages">
+                        <label>rt/build/gen-src</label>
+                        <location>rt/build/gen-src</location>
+                    </source-folder>
+                    <source-folder style="packages">
                         <label>tools/wscompile/src</label>
                         <location>tools/wscompile/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>tools/wscompile/build/gen-src</label>
+                        <location>tools/wscompile/build/gen-src</location>
                     </source-folder>
                     <source-folder style="packages">
                         <label>servlet/src</label>
@@ -793,12 +824,8 @@
                         <location>rt-fi/src</location>
                     </source-folder>
                     <source-folder style="packages">
-                        <label>rt/build/gen-src</label>
-                        <location>rt/build/gen-src</location>
-                    </source-folder>
-                    <source-folder style="packages">
-                        <label>tools/wscompile/build/gen-src</label>
-                        <location>tools/wscompile/build/gen-src</location>
+                        <label>rt-ha/src</label>
+                        <location>rt-ha/src</location>
                     </source-folder>
                     <source-folder style="packages">
                         <label>rt/test</label>
@@ -826,7 +853,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>rt/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/management-api.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:lib/ha-api.jar:servlet/lib/servlet.jar:rt/build/classes</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/management-api.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:lib/ha-api.jar:servlet/lib/servlet.jar:rt/src</classpath>
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
@@ -849,7 +876,7 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>tools/wscompile/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar:rt/build/classes</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar:tools:tools/wscompile/src:tools/wscompile/build/gen-src:rt/src:${java.home}/../lib/tools.jar</classpath>
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
@@ -872,7 +899,7 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>servlet/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar:servlet/lib/javax.servlet.jar:servlet/lib/javax.servlet-sources.jar:rt/src:rt-ha/src:/space/java/sdk/jdk1.6.0_26/jre/../lib/tools.jar:rt/build/gen-src</classpath>
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
@@ -895,7 +922,7 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>transports/local/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar:rt/src</classpath>
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
@@ -918,7 +945,7 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>rt-fi/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar:rt/src</classpath>
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
@@ -941,7 +968,7 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>rt/build/gen-src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal-api-only.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar:rt/src</classpath>
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
@@ -995,7 +1022,12 @@
             <compilation-unit>
                 <package-root>tools/wscompile/test</package-root>
                 <unit-tests/>
-                <classpath mode="compile">tools/wscompile/build/classes:lib/junit.jar</classpath>
+                <classpath mode="compile">tools/wscompile/src:lib/junit.jar:lib/ant.jar:rt/src:lib/jaxb-impl.jar</classpath>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>rt-ha/src</package-root>
+                <classpath mode="compile">rt/src:rt-ha/lib/ha-api.jar:rt-ha/lib/ha-api.src.zip:lib/jaxb-impl.jar:lib/jaxb-impl.src.zip:lib/gmbal-api-only-src.zip:lib/gmbal-api-only.jar:rt/build/gen-src</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
