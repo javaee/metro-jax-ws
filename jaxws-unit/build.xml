@@ -211,6 +211,9 @@
 
     <target name="clean">
         <delete dir="${build.home}"/>
+        <delete includeemptydirs="true">
+            <fileset dir="${test}" includes="**/work/**"/>
+        </delete>
     </target>
 
 </project>
