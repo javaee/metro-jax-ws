@@ -49,8 +49,6 @@ import com.sun.xml.bind.unmarshaller.DOMScanner;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.*;
 import com.sun.xml.ws.message.AttachmentUnmarshallerImpl;
-import com.sun.xml.ws.message.AbstractMessageImpl;
-import com.sun.xml.ws.message.AttachmentSetImpl;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.streaming.DOMStreamReader;
 import com.sun.xml.ws.util.DOMUtil;
@@ -81,7 +79,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.soap.SOAPFaultException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -233,7 +230,7 @@ public class SAAJMessage extends Message {
         for(int i=0; i < attrs.getLength();i++) {
             Attr a = (Attr)attrs.item(i);
             //check if attr is ns declaration
-            if("xmlns".equals(a.getPrefix()) || a.getLocalName().equals("xmlns")) {
+            if("xmlns".equals(a.getPrefix()) || "xmlns".equals(a.getLocalName())) {
                 if(elPrefix == null && a.getLocalName().equals("xmlns")) {
                     // the target element has already default ns declaration, dont' override it
                     continue;
@@ -433,7 +430,7 @@ public class SAAJMessage extends Message {
         for(int i=0; i < attrs.getLength();i++) {
             Attr a = (Attr)attrs.item(i);
             //check if attr is ns declaration
-            if("xmlns".equals(a.getPrefix()) || a.getLocalName().equals("xmlns")) {
+            if("xmlns".equals(a.getPrefix()) || "xmlns".equals(a.getLocalName())) {
               continue;
             }
             atts.addAttribute(fixNull(a.getNamespaceURI()),a.getLocalName(),a.getName(),a.getSchemaTypeInfo().getTypeName(),a.getValue());
@@ -454,7 +451,7 @@ public class SAAJMessage extends Message {
         for(int i=0; i < attrs.getLength();i++) {
             Attr a = (Attr)attrs.item(i);
             //check if attr is ns declaration
-            if("xmlns".equals(a.getPrefix()) || a.getLocalName().equals("xmlns")) {
+            if("xmlns".equals(a.getPrefix()) || "xmlns".equals(a.getLocalName())) {
                 if(!fixNull(a.getPrefix()).equals(excludePrefix)) {
                     contentHandler.startPrefixMapping(fixNull(a.getPrefix()), a.getNamespaceURI());
                 }
@@ -468,7 +465,7 @@ public class SAAJMessage extends Message {
         for(int i=0; i < attrs.getLength();i++) {
             Attr a = (Attr)attrs.item(i);
             //check if attr is ns declaration
-            if("xmlns".equals(a.getPrefix()) || a.getLocalName().equals("xmlns")) {
+            if("xmlns".equals(a.getPrefix()) || "xmlns".equals(a.getLocalName())) {
                 if(!fixNull(a.getPrefix()).equals(excludePrefix)) {
                     contentHandler.endPrefixMapping(fixNull(a.getPrefix()));
                 }
@@ -521,6 +518,7 @@ public class SAAJMessage extends Message {
                     Node n = newBody.getOwnerDocument().importNode(part, true);
                     newBody.appendChild(n);
                 }
+                addAttributes(newBody, bodyAttrs);
                 return new SAAJMessage(getHeaders(), getAttachments(), msg);
             }
         } catch (SOAPException e) {
