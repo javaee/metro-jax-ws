@@ -1158,13 +1158,10 @@
         <path id="maven-ant-tasks.classpath" path="${lib.home}/${maven.ant.task.jar}"/>
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
             classpathref="maven-ant-tasks.classpath"/>
-        <artifact:remoteRepository id="eclipselink.repository"
-            url="http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo"
-        />
         <artifact:dependencies pathId="dependency.classpath" filesetId="dependency.fileset"> 
             <dependency groupId="org.eclipse.persistence" artifactId="eclipselink"
                 version="2.3.1-SNAPSHOT"/>
-            <remoteRepository refid="eclipselink.repository"/>
+            <remoteRepository url="http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo"/>
         </artifact:dependencies>
 		
         <copy todir="${basedir}/eclipselink_jaxb/lib">
