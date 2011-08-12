@@ -41,26 +41,25 @@
 package com.sun.xml.ws.handler;
 
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentSet;
-import com.sun.xml.ws.api.pipe.TubeCloner;
-import com.sun.xml.ws.api.pipe.Tube;
-import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
+import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.client.HandlerConfiguration;
+import com.sun.xml.ws.api.pipe.Tube;
+import com.sun.xml.ws.api.pipe.TubeCloner;
+import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.client.HandlerConfiguration;
 import com.sun.xml.ws.message.DataHandlerAttachment;
 
-import javax.xml.ws.handler.soap.SOAPHandler;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.Handler;
-import javax.xml.ws.WebServiceException;
 import javax.activation.DataHandler;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.Handler;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.soap.SOAPHandler;
 import java.util.*;
 
 /**
- *
  * @author WS Development Team
  */
 public class ClientSOAPHandlerTube extends HandlerTube {
@@ -101,7 +100,7 @@ public class ClientSOAPHandlerTube extends HandlerTube {
         this.binding = that.binding;
     }
 
-   public AbstractFilterTubeImpl copy(TubeCloner cloner) {
+    public AbstractFilterTubeImpl copy(TubeCloner cloner) {
         return new ClientSOAPHandlerTube(this, cloner);
     }
 
@@ -110,7 +109,7 @@ public class ClientSOAPHandlerTube extends HandlerTube {
         // should be used for the entire MEP
         handlers = new ArrayList<Handler>();
         HandlerConfiguration handlerConfig = ((BindingImpl) binding).getHandlerConfig();
-        List<SOAPHandler> soapSnapShot= handlerConfig.getSoapHandlers();
+        List<SOAPHandler> soapSnapShot = handlerConfig.getSoapHandlers();
         if (!soapSnapShot.isEmpty()) {
             handlers.addAll(soapSnapShot);
             roles = new HashSet<String>();
@@ -120,7 +119,7 @@ public class ClientSOAPHandlerTube extends HandlerTube {
     }
 
     MessageUpdatableContext getContext(Packet packet) {
-        SOAPMessageContextImpl context = new SOAPMessageContextImpl(binding, packet,roles);
+        SOAPMessageContextImpl context = new SOAPMessageContextImpl(binding, packet, roles);
         return context;
     }
 
@@ -129,8 +128,8 @@ public class ClientSOAPHandlerTube extends HandlerTube {
         boolean handlerResult;
         //Lets copy all the MessageContext.OUTBOUND_ATTACHMENT_PROPERTY to the message
         Map<String, DataHandler> atts = (Map<String, DataHandler>) context.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
-        AttachmentSet attSet = packet.getMessage().getAttachments();
-        for(String cid : atts.keySet()){
+        AttachmentSet attSet = context.packet.getMessage().getAttachments();
+        for (String cid : atts.keySet()) {
             if (attSet.get(cid) == null) {  // Otherwise we would be adding attachments twice
                 Attachment att = new DataHandlerAttachment(cid, atts.get(cid));
                 attSet.add(att);

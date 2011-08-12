@@ -55,14 +55,14 @@ import com.sun.xml.ws.message.DataHandlerAttachment;
 
 import javax.activation.DataHandler;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.Handler;
+import javax.xml.ws.handler.MessageContext;
 import java.util.*;
 
 /**
  * @author Rama Pulavarthi
  */
-public class ServerMessageHandlerTube extends HandlerTube{
+public class ServerMessageHandlerTube extends HandlerTube {
     private SEIModel seiModel;
     private WSBinding binding;
     private Set<String> roles;
@@ -88,7 +88,7 @@ public class ServerMessageHandlerTube extends HandlerTube{
     private void setUpHandlersOnce() {
         handlers = new ArrayList<Handler>();
         HandlerConfiguration handlerConfig = ((BindingImpl) binding).getHandlerConfig();
-        List<MessageHandler> msgHandlersSnapShot= handlerConfig.getMessageHandlers();
+        List<MessageHandler> msgHandlersSnapShot = handlerConfig.getMessageHandlers();
         if (!msgHandlersSnapShot.isEmpty()) {
             handlers.addAll(msgHandlersSnapShot);
             roles = new HashSet<String>();
@@ -99,8 +99,8 @@ public class ServerMessageHandlerTube extends HandlerTube{
     void callHandlersOnResponse(MessageUpdatableContext context, boolean handleFault) {
         //Lets copy all the MessageContext.OUTBOUND_ATTACHMENT_PROPERTY to the message
         Map<String, DataHandler> atts = (Map<String, DataHandler>) context.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
-        AttachmentSet attSet = packet.getMessage().getAttachments();
-        for(String cid : atts.keySet()){
+        AttachmentSet attSet = context.packet.getMessage().getAttachments();
+        for (String cid : atts.keySet()) {
             if (attSet.get(cid) == null) { // Otherwise we would be adding attachments twice
                 Attachment att = new DataHandlerAttachment(cid, atts.get(cid));
                 attSet.add(att);
@@ -138,7 +138,7 @@ public class ServerMessageHandlerTube extends HandlerTube{
     }
 
     void setUpProcessor() {
-        if(!handlers.isEmpty()) {
+        if (!handlers.isEmpty()) {
             processor = new SOAPHandlerProcessor(false, this, binding, handlers);
         }
     }
@@ -147,19 +147,20 @@ public class ServerMessageHandlerTube extends HandlerTube{
         closeServersideHandlers(mc);
 
     }
+
     MessageUpdatableContext getContext(Packet packet) {
-       MessageHandlerContextImpl context = new MessageHandlerContextImpl(seiModel, binding, port, packet, roles);
-       return context;
+        MessageHandlerContextImpl context = new MessageHandlerContextImpl(seiModel, binding, port, packet, roles);
+        return context;
     }
 
     //should be overridden by DriverHandlerTubes
     @Override
     protected void initiateClosing(MessageContext mc) {
-      close(mc);
-      super.initiateClosing(mc);  
+        close(mc);
+        super.initiateClosing(mc);
     }
 
-   public AbstractFilterTubeImpl copy(TubeCloner cloner) {
+    public AbstractFilterTubeImpl copy(TubeCloner cloner) {
         return new ServerMessageHandlerTube(this, cloner);
     }
 }

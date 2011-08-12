@@ -43,11 +43,14 @@ package com.sun.xml.ws.handler;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.pipe.*;
+import com.sun.xml.ws.api.pipe.Fiber;
+import com.sun.xml.ws.api.pipe.NextAction;
+import com.sun.xml.ws.api.pipe.Tube;
+import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
 
-import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.Handler;
+import javax.xml.ws.handler.MessageContext;
 import java.util.List;
 
 /**
@@ -62,13 +65,11 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
     protected List<Handler> handlers;
     HandlerProcessor processor;
     boolean remedyActionTaken = false;
-    protected final @Nullable WSDLPort port;
+    protected final
+    @Nullable
+    WSDLPort port;
     // flag used to decide whether to call close on cousinTube
     boolean requestProcessingSucessful = false;
-
-    // TODO: For closing in Exceptions this is needed
-    // This is used for creating MessageContext in #close
-    Packet packet;
 
     public HandlerTube(Tube next, WSDLPort port) {
         super(next);
@@ -78,7 +79,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
     public HandlerTube(Tube next, HandlerTube cousinTube) {
         super(next);
         this.cousinTube = cousinTube;
-        if(cousinTube != null) {
+        if (cousinTube != null) {
             this.port = cousinTube.port;
         } else {
             this.port = null;
@@ -89,31 +90,30 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
      * Copy constructor for {@link Tube#copy(TubeCloner)}.
      */
     protected HandlerTube(HandlerTube that, TubeCloner cloner) {
-        super(that,cloner);
-        if(that.cousinTube != null) {
+        super(that, cloner);
+        if (that.cousinTube != null) {
             this.cousinTube = cloner.copy(that.cousinTube);
         }
-        this.port = that.port;        
+        this.port = that.port;
     }
 
     @Override
     public NextAction processRequest(Packet request) {
-        this.packet = request;
         setupExchange();
         // This check is done to cover handler returning false in Oneway request
         if (isHandleFalse()) {
             // Cousin HandlerTube returned false during Oneway Request processing.
             // Don't call handlers and dispatch the message.
             remedyActionTaken = true;
-            return doInvoke(super.next, packet);
+            return doInvoke(super.next, request);
         }
 
         // This is done here instead of the constructor, since User can change
         // the roles and handlerchain after a stub/proxy is created.
         setUpProcessor();
 
-        MessageUpdatableContext context = getContext(packet);
-        boolean isOneWay = checkOneWay(packet);
+        MessageUpdatableContext context = getContext(request);
+        boolean isOneWay = checkOneWay(request);
         try {
             if (!isHandlerChainEmpty()) {
                 // Call handlers on Request
@@ -122,24 +122,24 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
                 context.updatePacket();
                 // two-way case where no message is sent
                 if (!isOneWay && !handlerResult) {
-                    return doReturnWith(packet);
+                    return doReturnWith(request);
                 }
             }
             requestProcessingSucessful = true;
             // Call next Tube 
-            return doInvoke(super.next, packet);
+            return doInvoke(super.next, request);
         } catch (RuntimeException re) {
-            if(isOneWay) {
+            if (isOneWay) {
                 //Eat the exception, its already logged and close the transportBackChannel
-                if(packet.transportBackChannel != null ) {
-                    packet.transportBackChannel.close();
+                if (request.transportBackChannel != null) {
+                    request.transportBackChannel.close();
                 }
-                packet.setMessage(null);
-                return doReturnWith(packet);
+                request.setMessage(null);
+                return doReturnWith(request);
             } else
                 throw re;
         } finally {
-            if(!requestProcessingSucessful) {
+            if (!requestProcessingSucessful) {
                 initiateClosing(context.getMessageContext());
             }
         }
@@ -148,17 +148,16 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
 
     @Override
     public NextAction processResponse(Packet response) {
-        this.packet = response;
-        MessageUpdatableContext context = getContext(packet);
+        MessageUpdatableContext context = getContext(response);
         try {
-            if (isHandleFalse() || (packet.getMessage() == null)) {
+            if (isHandleFalse() || (response.getMessage() == null)) {
                 // Cousin HandlerTube returned false during Response processing.
                 // or it is oneway request
                 // or handler chain is empty
                 // Don't call handlers.
-                return doReturnWith(packet);
+                return doReturnWith(response);
             }
-            boolean isFault = isHandleFault(packet);
+            boolean isFault = isHandleFault(response);
             if (!isHandlerChainEmpty()) {
                 // Call handlers on Response
                 callHandlersOnResponse(context, isFault);
@@ -169,7 +168,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
         //Update Packet with user modifications
         context.updatePacket();
 
-        return doReturnWith(packet);
+        return doReturnWith(response);
 
     }
 
@@ -178,6 +177,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
         try {
             return doThrow(t);
         } finally {
+            Packet packet = Fiber.current().getPacket();
             MessageUpdatableContext context = getContext(packet);
             initiateClosing(context.getMessageContext());
             /* TODO revisit: commented this out as the modified packet is no longer used
@@ -190,16 +190,15 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
 
         }
     }
-    
+
     /**
      * Must be overridden by HandlerTube that drives other handler tubes for processing a message.
      * On Client-side: ClientLogicalHandlerTube drives the Handler Processing.
      * On Server-side: In case SOAP Binding, ServerMessageHandlerTube drives the Handler Processing.
-     *                 In case XML/HTTP Binding, ServerLogicalHandlerTube drives the Handler Processing.
-     *
-     *
+     * In case XML/HTTP Binding, ServerLogicalHandlerTube drives the Handler Processing.
+     * <p/>
+     * <p/>
      * If its a top HandlerTube, should override by calling #close(MessaggeContext);
-     *
      */
 
     protected void initiateClosing(MessageContext mc) {
@@ -211,7 +210,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
      * Calls close on previously invoked handlers.
      * Also, Cleans up any state left over in the Tube instance from the current
      * invocation, as Tube instances can be reused after the completion of MEP.
-     *
+     * <p/>
      * On Client, SOAPHandlers are closed first and then LogicalHandlers
      * On Server, LogicalHandlers are closed first and then SOAPHandlers
      */
@@ -225,7 +224,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
         }
         if (processor != null)
             closeHandlers(msgContext);
-        
+
         // Clean up the exchange for next invocation.
         exchange = null;
         requestProcessingSucessful = false;
@@ -235,7 +234,8 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
     /**
      * On Client, Override by calling #closeClientHandlers(MessageContext mc)
      * On Server, Override by calling #closeServerHandlers(MessageContext mc)
-     *      The difference is the order in which they are closed.
+     * The difference is the order in which they are closed.
+     *
      * @param mc
      */
     abstract void closeHandlers(MessageContext mc);
@@ -244,7 +244,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
      * Called by close(MessageContext mc) in a Client Handlertube
      */
     protected void closeClientsideHandlers(MessageContext msgContext) {
-         if (processor == null)
+        if (processor == null)
             return;
         if (remedyActionTaken) {
             //Close only invoked handlers in the chain
@@ -304,11 +304,13 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
     }
 
     abstract void setUpProcessor();
+
     final public boolean isHandlerChainEmpty() {
         return handlers.isEmpty();
     }
+
     abstract MessageUpdatableContext getContext(Packet p);
-    
+
     private boolean isHandleFault(Packet packet) {
         if (cousinTube != null) {
             return exchange.isHandleFault();
@@ -332,18 +334,19 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
     }
 
     private void setupExchange() {
-        if(exchange == null) {
+        if (exchange == null) {
             exchange = new HandlerTubeExchange();
-            if(cousinTube != null) {
+            if (cousinTube != null) {
                 cousinTube.exchange = exchange;
             }
         } else {
-            if(cousinTube != null) {
+            if (cousinTube != null) {
                 cousinTube.exchange = exchange;
             }
 
         }
     }
+
     private HandlerTubeExchange exchange;
 
     /**
@@ -370,5 +373,5 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
             this.handleFalse = true;
         }
     }
-    
+
 }

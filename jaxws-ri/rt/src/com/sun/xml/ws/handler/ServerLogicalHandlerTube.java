@@ -41,36 +41,36 @@
 package com.sun.xml.ws.handler;
 
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.Attachment;
-import com.sun.xml.ws.api.pipe.TubeCloner;
-import com.sun.xml.ws.api.pipe.Tube;
-import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.message.AttachmentSet;
+import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.pipe.Tube;
+import com.sun.xml.ws.api.pipe.TubeCloner;
+import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.message.DataHandlerAttachment;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.spi.db.BindingContext;
 
+import javax.activation.DataHandler;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.LogicalHandler;
 import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.Handler;
-import javax.xml.ws.WebServiceException;
-import javax.activation.DataHandler;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
- *
  * @author WS Development Team
  */
 public class ServerLogicalHandlerTube extends HandlerTube {
 
     private WSBinding binding;
     private SEIModel seiModel;
+
     /**
      * Creates a new instance of LogicalHandlerTube
      */
@@ -109,21 +109,21 @@ public class ServerLogicalHandlerTube extends HandlerTube {
     //should be overridden by DriverHandlerTubes
     @Override
     protected void initiateClosing(MessageContext mc) {
-         if (binding.getSOAPVersion() != null) {
+        if (binding.getSOAPVersion() != null) {
             super.initiateClosing(mc);
         } else {
             close(mc);
-            super.initiateClosing(mc); 
+            super.initiateClosing(mc);
         }
     }
 
-   public AbstractFilterTubeImpl copy(TubeCloner cloner) {
+    public AbstractFilterTubeImpl copy(TubeCloner cloner) {
         return new ServerLogicalHandlerTube(this, cloner);
     }
 
     private void setUpHandlersOnce() {
         handlers = new ArrayList<Handler>();
-        List<LogicalHandler> logicalSnapShot= ((BindingImpl) binding).getHandlerConfig().getLogicalHandlers();
+        List<LogicalHandler> logicalSnapShot = ((BindingImpl) binding).getHandlerConfig().getLogicalHandlers();
         if (!logicalSnapShot.isEmpty()) {
             handlers.addAll(logicalSnapShot);
         }
@@ -142,12 +142,12 @@ public class ServerLogicalHandlerTube extends HandlerTube {
 
     MessageUpdatableContext getContext(Packet packet) {
         return new LogicalMessageContextImpl(binding, getBindingContext(), packet);
-    }   
+    }
 
     private BindingContext getBindingContext() {
-        return (seiModel!= null && seiModel instanceof AbstractSEIModelImpl) ?
-        	((AbstractSEIModelImpl)seiModel).getBindingContext() : null;
-	}
+        return (seiModel != null && seiModel instanceof AbstractSEIModelImpl) ?
+                ((AbstractSEIModelImpl) seiModel).getBindingContext() : null;
+    }
 
     boolean callHandlersOnRequest(MessageUpdatableContext context, boolean isOneWay) {
 
@@ -169,8 +169,8 @@ public class ServerLogicalHandlerTube extends HandlerTube {
     void callHandlersOnResponse(MessageUpdatableContext context, boolean handleFault) {
         //Lets copy all the MessageContext.OUTBOUND_ATTACHMENT_PROPERTY to the message
         Map<String, DataHandler> atts = (Map<String, DataHandler>) context.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
-        AttachmentSet attSet = packet.getMessage().getAttachments();
-        for(String cid : atts.keySet()){
+        AttachmentSet attSet = context.packet.getMessage().getAttachments();
+        for (String cid : atts.keySet()) {
             Attachment att = new DataHandlerAttachment(cid, atts.get(cid));
             attSet.add(att);
         }

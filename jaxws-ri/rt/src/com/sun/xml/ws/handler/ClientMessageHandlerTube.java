@@ -57,8 +57,8 @@ import com.sun.xml.ws.message.DataHandlerAttachment;
 
 import javax.activation.DataHandler;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.Handler;
+import javax.xml.ws.handler.MessageContext;
 import java.util.*;
 
 /**
@@ -68,7 +68,7 @@ public class ClientMessageHandlerTube extends HandlerTube {
     private SEIModel seiModel;
     private WSBinding binding;
     private Set<String> roles;
-    
+
     /**
      * Creates a new instance of MessageHandlerTube
      */
@@ -90,7 +90,7 @@ public class ClientMessageHandlerTube extends HandlerTube {
     public AbstractFilterTubeImpl copy(TubeCloner cloner) {
         return new ClientMessageHandlerTube(this, cloner);
     }
-    
+
     void callHandlersOnResponse(MessageUpdatableContext context, boolean handleFault) {
         try {
             //CLIENT-SIDE
@@ -109,8 +109,8 @@ public class ClientMessageHandlerTube extends HandlerTube {
 
         //Lets copy all the MessageContext.OUTBOUND_ATTACHMENT_PROPERTY to the message
         Map<String, DataHandler> atts = (Map<String, DataHandler>) context.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
-        AttachmentSet attSet = packet.getMessage().getAttachments();
-        for(String cid : atts.keySet()){
+        AttachmentSet attSet = context.packet.getMessage().getAttachments();
+        for (String cid : atts.keySet()) {
             if (attSet.get(cid) == null) {  // Otherwise we would be adding attachments twice
                 Attachment att = new DataHandlerAttachment(cid, atts.get(cid));
                 attSet.add(att);
@@ -140,13 +140,13 @@ public class ClientMessageHandlerTube extends HandlerTube {
         closeClientsideHandlers(mc);
 
     }
-    
+
     void setUpProcessor() {
-       // Take a snapshot, User may change chain after invocation, Same chain
+        // Take a snapshot, User may change chain after invocation, Same chain
         // should be used for the entire MEP
         handlers = new ArrayList<Handler>();
         HandlerConfiguration handlerConfig = ((BindingImpl) binding).getHandlerConfig();
-        List<MessageHandler> msgHandlersSnapShot= handlerConfig.getMessageHandlers();
+        List<MessageHandler> msgHandlersSnapShot = handlerConfig.getMessageHandlers();
         if (!msgHandlersSnapShot.isEmpty()) {
             handlers.addAll(msgHandlersSnapShot);
             roles = new HashSet<String>();
@@ -156,9 +156,8 @@ public class ClientMessageHandlerTube extends HandlerTube {
     }
 
 
-
     MessageUpdatableContext getContext(Packet p) {
-        MessageHandlerContextImpl context = new MessageHandlerContextImpl(seiModel, binding, port, packet,roles);
+        MessageHandlerContextImpl context = new MessageHandlerContextImpl(seiModel, binding, port, p, roles);
         return context;
     }
 
