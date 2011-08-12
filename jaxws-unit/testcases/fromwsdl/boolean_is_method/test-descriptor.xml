@@ -1,17 +1,4 @@
-<descriptor since="2.0">
-    <description>bean method must be isXXX() instead of getXXX()</description>
-    <service basedir="./server">
-        <wsdl href="MarshallTestService.wsdl"/>
-    </service>
-    <client name="fromwsdl.boolean_is_method">
-        bean = new JavaBean();
-        bean.setMyBoolean(true);
-        bean.setMyBoolean1(new Boolean(true));
-        bean = marshallTestPort.javaBeanTest(bean);
-        assertTrue(bean.isMyBoolean());
-        // JAXB generates getMyBoolean1() in some cases
-        // This test makes sure that isMyBoolean1() is generated
-        assertTrue(bean.isMyBoolean1());
-    </client>
-
+<descriptor since="2.2.6">
+    <description>Test for freezing port types</description>
+ 
 </descriptor>
