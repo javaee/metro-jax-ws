@@ -62,6 +62,7 @@ import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPFault;
 import javax.xml.soap.Detail;
@@ -94,7 +95,7 @@ public abstract class SOAPFaultBuilder {
 
     abstract void setDetail(DetailType detailType);
 
-    public @Nullable QName getFirstDetailEntryName() {
+    public @XmlTransient @Nullable QName getFirstDetailEntryName() {
         DetailType dt = getDetail();
         if (dt != null) {
             Node entry = dt.getDetail(0);
