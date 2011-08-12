@@ -263,5 +263,9 @@ public final class WSDLModelImpl extends AbstractExtensibleImpl implements WSDLM
         for (WSDLBoundPortTypeImpl bp : bindings.values()) {
             bp.freeze();
         }
+        // Enforce freeze all the portTypes referenced by this endpoints, see Bug8966673 for detail
+        for (WSDLPortTypeImpl pt : portTypes.values()) {
+            pt.freeze();
+        }        
     }
 }
