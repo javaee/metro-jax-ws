@@ -1,5 +1,5 @@
-<!-- Not yet fixed in 2.2.5 -->
-<descriptor since="2.2.6">
+<!-- Not yet fixed in 2.2.6 -->
+<descriptor since="2.2.7">
   <description>This is a JAXWS 563 test</description>
   <service basedir="./server">
   </service>
