@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<wsdl:definitions
+     name="StoreFrontService"
+     targetNamespace="www.globalcompany.example.com"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:errors="http://xmlns.oracle.com/adf/svc/errors/"
+     xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+     xmlns:tns="www.globalcompany.example.com"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+     xmlns:types="www.globalcompany.example.com/types/"
+    >
+    <plnk:partnerLinkType name="StorefrontService">
+        <plnk:role name="StoreFrontService">
+            <plnk:portType name="tns:StoreFrontService"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+    <wsdl:types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="www.globalcompany.example.com/types/" schemaLocation="StoreFrontService.xsd"/>
+        </schema>
+    </wsdl:types>
+    <wsdl:message name="StoreFrontService_findCustomerInfoVO1">
+        <wsdl:part name="parameters" element="types:findCustomerInfoVO1"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_findCustomerInfoVO1Response">
+        <wsdl:part name="parameters" element="types:findCustomerInfoVO1Response"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_findCustomerInfoVO1CustomerInfoVOCriteria">
+        <wsdl:part name="parameters" element="types:findCustomerInfoVO1CustomerInfoVOCriteria"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_findCustomerInfoVO1CustomerInfoVOCriteriaResponse">
+        <wsdl:part name="parameters" element="types:findCustomerInfoVO1CustomerInfoVOCriteriaResponse"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_getOrderInfoVOSDO">
+        <wsdl:part name="parameters" element="types:getOrderInfoVOSDO"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_getOrderInfoVOSDOResponse">
+        <wsdl:part name="parameters" element="types:getOrderInfoVOSDOResponse"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_createOrderInfoVOSDO">
+        <wsdl:part name="parameters" element="types:createOrderInfoVOSDO"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_createOrderInfoVOSDOResponse">
+        <wsdl:part name="parameters" element="types:createOrderInfoVOSDOResponse"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_updateOrderInfoVOSDO">
+        <wsdl:part name="parameters" element="types:updateOrderInfoVOSDO"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_updateOrderInfoVOSDOResponse">
+        <wsdl:part name="parameters" element="types:updateOrderInfoVOSDOResponse"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_deleteOrderInfoVOSDO">
+        <wsdl:part name="parameters" element="types:deleteOrderInfoVOSDO"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_deleteOrderInfoVOSDOResponse">
+        <wsdl:part name="parameters" element="types:deleteOrderInfoVOSDOResponse"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_mergeOrderInfoVOSDO">
+        <wsdl:part name="parameters" element="types:mergeOrderInfoVOSDO"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_mergeOrderInfoVOSDOResponse">
+        <wsdl:part name="parameters" element="types:mergeOrderInfoVOSDOResponse"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_findOrderInfoVOSDO">
+        <wsdl:part name="parameters" element="types:findOrderInfoVOSDO"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_findOrderInfoVOSDOResponse">
+        <wsdl:part name="parameters" element="types:findOrderInfoVOSDOResponse"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_processOrderInfoVOSDO">
+        <wsdl:part name="parameters" element="types:processOrderInfoVOSDO"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_processOrderInfoVOSDOResponse">
+        <wsdl:part name="parameters" element="types:processOrderInfoVOSDOResponse"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_processCSOrderInfoVOSDO">
+        <wsdl:part name="parameters" element="types:processCSOrderInfoVOSDO"/>
+    </wsdl:message>
+    <wsdl:message name="StoreFrontService_processCSOrderInfoVOSDOResponse">
+        <wsdl:part name="parameters" element="types:processCSOrderInfoVOSDOResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="StoreFrontService">
+        <wsdl:documentation>
+            <ViewInstance xmlns="http://xmlns.oracle.com/adf/svc/metadata/" Name="CustomerInfoVO1" xmlns:ns0="/oracle/fodemo/storefront/store/queries/common/"
+                 SDOName="ns0:CustomerInfoVOSDO" FindOpName="findCustomerInfoVO1"/>
+            <ViewInstance xmlns="http://xmlns.oracle.com/adf/svc/metadata/" Name="OrderInfoVO1" xmlns:ns0="/oracle/fodemo/storefront/store/queries/common/"
+                 SDOName="ns0:OrderInfoVOSDO" CreateOpName="createOrderInfoVOSDO" UpdateOpName="updateOrderInfoVOSDO"
+                 DeleteOpName="deleteOrderInfoVOSDO" MergeOpName="mergeOrderInfoVOSDO" GetOpName="getOrderInfoVOSDO"
+                 FindOpName="findOrderInfoVOSDO" ProcessOpName="processOrderInfoVOSDO" ProcessCSOpName="processCSOrderInfoVOSDO"/>
+        </wsdl:documentation>
+        <wsdl:operation name="findCustomerInfoVO1">
+            <wsdl:input message="tns:StoreFrontService_findCustomerInfoVO1"/>
+            <wsdl:output message="tns:StoreFrontService_findCustomerInfoVO1Response"/>
+        </wsdl:operation>
+        <wsdl:operation name="findCustomerInfoVO1CustomerInfoVOCriteria">
+            <wsdl:input message="tns:StoreFrontService_findCustomerInfoVO1CustomerInfoVOCriteria"/>
+            <wsdl:output message="tns:StoreFrontService_findCustomerInfoVO1CustomerInfoVOCriteriaResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getOrderInfoVOSDO">
+            <wsdl:input message="tns:StoreFrontService_getOrderInfoVOSDO"/>
+            <wsdl:output message="tns:StoreFrontService_getOrderInfoVOSDOResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="createOrderInfoVOSDO">
+            <wsdl:input message="tns:StoreFrontService_createOrderInfoVOSDO"/>
+            <wsdl:output message="tns:StoreFrontService_createOrderInfoVOSDOResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="updateOrderInfoVOSDO">
+            <wsdl:input message="tns:StoreFrontService_updateOrderInfoVOSDO"/>
+            <wsdl:output message="tns:StoreFrontService_updateOrderInfoVOSDOResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deleteOrderInfoVOSDO">
+            <wsdl:input message="tns:StoreFrontService_deleteOrderInfoVOSDO"/>
+            <wsdl:output message="tns:StoreFrontService_deleteOrderInfoVOSDOResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="mergeOrderInfoVOSDO">
+            <wsdl:input message="tns:StoreFrontService_mergeOrderInfoVOSDO"/>
+            <wsdl:output message="tns:StoreFrontService_mergeOrderInfoVOSDOResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="findOrderInfoVOSDO">
+            <wsdl:input message="tns:StoreFrontService_findOrderInfoVOSDO"/>
+            <wsdl:output message="tns:StoreFrontService_findOrderInfoVOSDOResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="processOrderInfoVOSDO">
+            <wsdl:input message="tns:StoreFrontService_processOrderInfoVOSDO"/>
+            <wsdl:output message="tns:StoreFrontService_processOrderInfoVOSDOResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="processCSOrderInfoVOSDO">
+            <wsdl:input message="tns:StoreFrontService_processCSOrderInfoVOSDO"/>
+            <wsdl:output message="tns:StoreFrontService_processCSOrderInfoVOSDOResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+</wsdl:definitions>

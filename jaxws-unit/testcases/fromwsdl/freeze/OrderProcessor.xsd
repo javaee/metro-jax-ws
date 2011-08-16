@@ -1,0 +1,61 @@
+<schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.globalcompany.example.com/ns/OrderBookingService"
+     xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fod="/oracle/fodemo/storefront/store/queries/common/">
+    <import namespace="/oracle/fodemo/storefront/store/queries/common/" schemaLocation="OrderItemsInfoVOSDO.xsd"/>
+    <element name="process">
+        <complexType>
+            <sequence>
+                <element name="orderId" type="string"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="processResponse">
+        <complexType>
+            <sequence>
+                <element name="result" type="string"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="orderProcessFault">
+        <complexType>
+            <sequence>
+                <element name="code" type="string"/>
+                <element name="detail" type="string"/>
+                <element name="summary" type="string"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="updateOrderStatus">
+        <complexType>
+            <sequence>
+                <element name="orderId" type="string" minOccurs="1"/>
+                <element name="orderStatus" type="string" minOccurs="1"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="orderInformationEvent">
+        <complexType>
+            <sequence>
+                <element name="orderId" type="string"/>
+                <element name="creditCardNumber" type="string"/>
+                <element name="shipToId" type="string"/>
+                <element name="shipToName" type="string"/>
+                <element name="orderItems" type="fod:OrderItemsInfoVOSDO" minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="continueOrderProcessingEvent">
+        <complexType>
+            <sequence>
+                <element name="orderId" type="string"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="stopOrderProcessingEvent">
+        <complexType>
+            <sequence>
+                <element name="orderId" type="string"/>
+                <element name="fraudedOrderIds" type="string" minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
+        </complexType>
+    </element>
+</schema>
