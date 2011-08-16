@@ -2,6 +2,7 @@ package fromwsdl.freeze.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
@@ -30,18 +31,20 @@ import junit.framework.TestCase;
 public class FODTest extends TestCase {
 //	OrderProcessorService service = null;
 	
-	public void testFreezeFOD() throws IOException, XMLStreamException, SAXException {
+	public void testFreezeFOD() throws Exception {
 		/*
 		 * Verify that we can get messages from a port type by walking the model.
 		 * 
 		 */
-		File f = new File("testcases/fromwsdl/freeze/concrete.wsdl");
-		System.out.println(f.getAbsolutePath());
-		URL wsdl = f.toURL();
+		//File f = new File("testcases/fromwsdl/freeze/concrete.wsdl");
+//		System.out.println(f.getAbsolutePath());
+		
 //		URL wsdl = new URL("file:/scratch/bnaugle/bugs/fod/v2/concrete.wsdl");
 //		URL wsdl = new URL("file:/scratch/bnaugle/bugs/fod/FusionOrderDemoShared/services/orderbooking/output/concrete.wsdl");
-		Source wsdlSource = new StreamSource(wsdl.toString());
-		WSDLModelImpl model = RuntimeWSDLParser.parse(wsdl, wsdlSource, XmlUtil.createDefaultCatalogResolver(), true, Container.NONE, new WSDLParserExtension[]{});
+		String WSDL_NAME = "concrete.wsdl";  
+		Source wsdlSource = getSource(WSDL_NAME);
+		
+		WSDLModelImpl model = RuntimeWSDLParser.parse(getURL(WSDL_NAME), wsdlSource, XmlUtil.createDefaultCatalogResolver(), true, Container.NONE, new WSDLParserExtension[]{});
 		Map<QName, WSDLPortTypeImpl> portTypes = model.getPortTypes();
 		Set<QName> keySet = portTypes.keySet();
 		for (QName name : keySet) {
@@ -56,5 +59,14 @@ public class FODTest extends TestCase {
 
 
 	}
+    private URL getURL(String file) throws Exception {
+        return getClass().getClassLoader().getResource(file);
+       
+    }
+
+	   private StreamSource getSource(String file) throws Exception {
+	        InputStream is = getClass().getClassLoader().getResourceAsStream(file);
+	        return new StreamSource(is, getURL(file).toString());
+	    }
 
 }
