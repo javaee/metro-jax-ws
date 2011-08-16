@@ -58,6 +58,7 @@ import com.sun.xml.ws.spi.db.XMLBridge;
 
 import org.w3c.dom.Element;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
@@ -99,10 +100,8 @@ public abstract class Headers {
 
     /**
      * Creates a {@link Header} backed a by a JAXB bean.
-     * @deprecated
-     *      Use {@link #create(BindingContext, Object)} instead.
      */
-    public static Header create(JAXBRIContext context, Object o) {
+    public static Header create(JAXBContext context, Object o) {
         return new JAXBHeader(BindingContextFactory.create(context),o);
     }
     
