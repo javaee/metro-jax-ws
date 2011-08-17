@@ -404,7 +404,7 @@ public class JAXBBond<T> implements XMLBridge<T> {
 	}
 
 	public boolean supportOutputStream() {
-		return true;
+	    return true;
 	}
 
     public static class CustomXMLStreamReaderReader extends
@@ -427,11 +427,14 @@ public class JAXBBond<T> implements XMLBridge<T> {
 
         @Override
         public Object getValue(CharSequence characters, Class<?> dataType) {
-            if (Base64Data.class.equals(characters.getClass())
-                    && (DataHandler.class == dataType
-                            || Image.class == dataType
-                            || Source.class == dataType || MimeMultipart.class == dataType))
-                return ((Base64Data) characters).getDataHandler();
+            if (Base64Data.class.equals(characters.getClass())) {
+                if (DataHandler.class == dataType || Image.class == dataType
+                        || Source.class == dataType
+                        || MimeMultipart.class == dataType)
+                    return ((Base64Data) characters).getDataHandler();
+                else if (byte[].class == dataType)
+                    return ((Base64Data) characters).get();
+            }
             return null;
         }
     }
