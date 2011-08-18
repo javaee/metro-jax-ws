@@ -433,7 +433,7 @@ public class JAXBBond<T> implements XMLBridge<T> {
                         || MimeMultipart.class == dataType)
                     return ((Base64Data) characters).getDataHandler();
                 else if (byte[].class == dataType)
-                    return ((Base64Data) characters).get();
+                    return ((Base64Data) characters).getExact();
             }
             return null;
         }
