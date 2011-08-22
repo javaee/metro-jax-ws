@@ -150,7 +150,7 @@
             <version>@RESOLVER_VERSION@</version>
         </dependency>
         <dependency>
-            <groupId>org.jvnet</groupId>
+            <groupId>org.jvnet.mimepull</groupId>
             <artifactId>mimepull</artifactId>
             <version>@MIMEPULL_VERSION@</version>
         </dependency>

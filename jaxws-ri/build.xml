@@ -796,9 +796,9 @@
   </target>
 
   <target name="integrate-mimepull-maven" depends="prepare" description="integrate mimepull from maven">
-    <get src="http://download.java.net/maven/2/org/jvnet/mimepull/${mimepull.version}/mimepull-${mimepull.version}.jar"
+    <get src="${mavenrepo.url}/org/jvnet/mimepull/mimepull/${mimepull.version}/mimepull-${mimepull.version}.jar"
              dest="lib/mimepull.jar" />
-    <get src="http://download.java.net/maven/2/org/jvnet/mimepull/${mimepull.version}/mimepull-${mimepull.version}-sources.jar"
+    <get src="${mavenrepo.url}/org/jvnet/mimepull/mimepull/${mimepull.version}/mimepull-${mimepull.version}-sources.jar"
              dest="lib/mimepull-src.zip" />
   </target>
 
