@@ -730,19 +730,21 @@
          dest="tools/lib/maven-repository-importer.jar" />
   </target>
 
-  <target name="integrate-saaj-maven" depends="prepare" description="integrate saaj from maven">
-    <get src="http://download.java.net/maven/2/com/sun/xml/messaging/saaj/saaj-impl/${saaj-impl.version}/saaj-impl-${saaj-impl.version}.jar"
-             dest="lib/saaj-impl.jar" />
-    <get src="http://download.java.net/maven/2/com/sun/xml/messaging/saaj/saaj-impl/${saaj-impl.version}/saaj-impl-${saaj-impl.version}-sources.jar"
-             dest="lib/saaj-impl.src.zip" />
-  </target>
+    <property name="mavenrepo.url" value="https://maven.java.net/content/groups/public"/>
 
-  <target name="integrate-saaj-api-maven" depends="prepare" description="integrate saaj api from maven">
-    <get src="http://download.java.net/maven/2/javax/xml/soap/saaj-api/${saaj-api.version}/saaj-api-${saaj-api.version}.jar"
-             dest="lib/saaj-api.jar" />
-    <get src="http://download.java.net/maven/2/javax/xml/soap/saaj-api/${saaj-api.version}/saaj-api-${saaj-api.version}-sources.jar"
-             dest="lib/saaj-api-src.zip" />
-  </target>
+    <target name="integrate-saaj-maven" depends="prepare" description="integrate saaj from maven">
+        <get src="${mavenrepo.url}/com/sun/xml/messaging/saaj/saaj-impl/${saaj-impl.version}/saaj-impl-${saaj-impl.version}.jar"
+             dest="lib/saaj-impl.jar"/>
+        <get src="${mavenrepo.url}/com/sun/xml/messaging/saaj/saaj-impl/${saaj-impl.version}/saaj-impl-${saaj-impl.version}-sources.jar"
+             dest="lib/saaj-impl.src.zip"/>
+    </target>
+
+    <target name="integrate-saaj-api-maven" depends="prepare" description="integrate saaj api from maven">
+        <get src="${mavenrepo.url}/javax/xml/soap/saaj-api/${saaj-api.version}/saaj-api-${saaj-api.version}.jar"
+             dest="lib/saaj-api.jar"/>
+        <get src="${mavenrepo.url}/javax/xml/soap/saaj-api/${saaj-api.version}/saaj-api-${saaj-api.version}-sources.jar"
+             dest="lib/saaj-api-src.zip"/>
+    </target>
 
     <target name="integrate-saaj-hudson" depends="prepare"
             description="integrate the last successful SAAJ RI Hudson build">
