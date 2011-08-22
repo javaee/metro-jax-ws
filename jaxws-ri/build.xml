@@ -612,9 +612,9 @@
 
     <target name="integrate-policy-maven"
             description="integrate the last successful policy-core maven">
-         <get src="http://download.java.net/maven/2/com/sun/xml/ws/policy/${policy.version}/policy-${policy.version}.jar"
+         <get src="${mavenrepo.url}/com/sun/xml/ws/policy/${policy.version}/policy-${policy.version}.jar"
              dest="lib/policy.jar" />
-         <get src="http://download.java.net/maven/2/com/sun/xml/ws/policy/${policy.version}/policy-${policy.version}-sources.jar"
+         <get src="${mavenrepo.url}/com/sun/xml/ws/policy/${policy.version}/policy-${policy.version}-sources.jar"
              dest="lib/policy-src.zip" />
     </target>
 
