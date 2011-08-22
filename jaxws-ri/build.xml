@@ -767,9 +767,9 @@
   </target>
 
   <target name="integrate-xmlstreambuffer-maven" depends="prepare" description="integrate xmlstreambuffer from maven">
-    <get src="http://download.java.net/maven/2/com/sun/xml/stream/buffer/streambuffer/${xmlstreambuffer.version}/streambuffer-${xmlstreambuffer.version}.jar"
+    <get src="${mavenrepo.url}/com/sun/xml/stream/buffer/streambuffer/${xmlstreambuffer.version}/streambuffer-${xmlstreambuffer.version}.jar"
              dest="lib/streambuffer.jar" />
-    <get src="http://download.java.net/maven/2/com/sun/xml/stream/buffer/streambuffer/${xmlstreambuffer.version}/streambuffer-${xmlstreambuffer.version}-sources.jar"
+    <get src="${mavenrepo.url}/com/sun/xml/stream/buffer/streambuffer/${xmlstreambuffer.version}/streambuffer-${xmlstreambuffer.version}-sources.jar"
              dest="lib/streambuffer.src.zip" />
   </target>
 
