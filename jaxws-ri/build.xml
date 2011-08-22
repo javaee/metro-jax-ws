@@ -834,15 +834,15 @@
          dest="lib/jaxws-api-src.zip" />
   </target>
 
-  <target name="integrate-FastInfoset-maven" depends="prepare"
-              description="integrate the last successful FastInfoset 1.2 Hudson build">
-          <get src="${jn.m2}/com/sun/xml/fastinfoset/FastInfoset/${fi.version}/FastInfoset-${fi.version}.jar"
-                 dest="lib/FastInfoset.jar" />
-          <get src="${jn.m2}/com/sun/xml/fastinfoset/FastInfoset/${fi.version}/FastInfoset-${fi.version}-sources.jar"
-                 dest="lib/FastInfoset.src.zip" />
-  </target>
+    <target name="integrate-fastinfoset-maven" depends="prepare"
+            description="integrate the last successful FastInfoset 1.2.x Hudson build">
+        <get src="${mavenrepo.url}/com/sun/xml/fastinfoset/FastInfoset/${fi.version}/FastInfoset-${fi.version}.jar"
+             dest="lib/FastInfoset.jar"/>
+        <get src="${mavenrepo.url}/com/sun/xml/fastinfoset/FastInfoset/${fi.version}/FastInfoset-${fi.version}-sources.jar"
+             dest="lib/FastInfoset.src.zip"/>
+    </target>
 
-  <target name="integrate-FastInfoset-hudson" depends="prepare"
+  <target name="integrate-fastinfoset-hudson" depends="prepare"
           description="integrate the last successful FastInfoset 1.2 Hudson build">
       <echo  message="Use target:integrate-FastInfoset-maven"/>
      <!--
