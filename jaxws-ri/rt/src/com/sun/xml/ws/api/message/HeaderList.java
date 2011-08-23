@@ -50,8 +50,8 @@ import com.sun.xml.ws.api.addressing.OneWayFeature;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.pipe.Pipe;
 import com.sun.xml.ws.api.pipe.Codec;
+import com.sun.xml.ws.api.pipe.Pipe;
 import com.sun.xml.ws.message.RelatesToHeader;
 import com.sun.xml.ws.message.StringHeader;
 import com.sun.xml.ws.protocol.soap.ClientMUTube;
@@ -62,7 +62,6 @@ import com.sun.xml.ws.resources.ClientMessages;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.soap.AddressingFeature;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
@@ -694,7 +693,7 @@ public final class HeaderList extends ArrayList<Header> {
      * @param action Action Message Addressing Property value
      * @param mustUnderstand to indicate if the addressing headers are set with mustUnderstand attribute
      */
-    public void fillRequestAddressingHeaders(Packet packet, AddressingVersion av, SOAPVersion sv, boolean oneway, String action, boolean mustUnderstand)  {
+    public void fillRequestAddressingHeaders(Packet packet, AddressingVersion av, SOAPVersion sv, boolean oneway, String action, boolean mustUnderstand) {
         fillCommonAddressingHeaders(packet, av, sv, action, mustUnderstand);
 
         // wsa:ReplyTo
@@ -704,14 +703,17 @@ public final class HeaderList extends ArrayList<Header> {
             add(epr.createHeader(av.replyToTag));
 
             // wsa:MessageID
-            Header h = new StringHeader(av.messageIDTag, packet.getMessage().getID(av, sv));
-            add(h);
+            if (packet.getMessage().getHeaders().get(av.messageIDTag, false) == null) {
+                // if header doesn't exist, method getID creates a new random id
+                String newID = packet.getMessage().getID(av, sv);
+                add(new StringHeader(av.messageIDTag, newID));
+            }
         }
     }
 
     public void fillRequestAddressingHeaders(Packet packet, AddressingVersion av, SOAPVersion sv, boolean oneway, String action) {
-            fillRequestAddressingHeaders(packet,av,sv,oneway,action,false);
-        }
+        fillRequestAddressingHeaders(packet, av, sv, oneway, action, false);
+    }
 
     /**
      * Creates a set of outbound WS-Addressing headers on the client with the
@@ -739,7 +741,7 @@ public final class HeaderList extends ArrayList<Header> {
         //See if WSA headers are already set by the user.
         HeaderList hl = packet.getMessage().getHeaders();
         String action = hl.getAction(binding.getAddressingVersion(), binding.getSOAPVersion());
-        if(action != null) {
+        if (action != null) {
             //assume that all the WSA headers are set by the user
             return;
         }
@@ -758,8 +760,7 @@ public final class HeaderList extends ArrayList<Header> {
             // as anonymous ReplyTo MUST NOT be added in that case. BindingProvider need to
             // disable AddressingFeature and MemberSubmissionAddressingFeature and hand-craft
             // the SOAP message with non-anonymous ReplyTo/FaultTo.
-            if (!oneway && packet.getMessage() != null)
-            {
+            if (!oneway && packet.getMessage() != null) {
                 WSDLBoundOperation wbo = wsdlPort.getBinding().get(packet.getWSDLOperation());
                 if (wbo != null && wbo.getAnonymous() == WSDLBoundOperation.ANONYMOUS.prohibited) {
                     throw new WebServiceException(AddressingMessages.WSAW_ANONYMOUS_PROHIBITED());
@@ -768,7 +769,7 @@ public final class HeaderList extends ArrayList<Header> {
         }
         if (!binding.isFeatureEnabled(OneWayFeature.class)) {
             // standard oneway
-            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), oneway, effectiveInputAction,addressingVersion.isRequired(binding));
+            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), oneway, effectiveInputAction, addressingVersion.isRequired(binding));
         } else {
             // custom oneway
             fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), binding.getFeature(OneWayFeature.class), effectiveInputAction);
@@ -783,8 +784,11 @@ public final class HeaderList extends ArrayList<Header> {
             add(of.getReplyTo().createHeader(av.replyToTag));
 
             // add wsa:MessageID only for non-null ReplyTo
-            Header h = new StringHeader(av.messageIDTag, packet.getMessage().getID(av, sv));
-            add(h);
+            if (packet.getMessage().getHeaders().get(av.messageIDTag, false) == null) {
+                // if header doesn't exist, method getID creates a new random id
+                String newID = packet.getMessage().getID(av, sv);
+                add(new StringHeader(av.messageIDTag, newID));
+            }
         }
 
         // wsa:From
@@ -845,7 +849,7 @@ public final class HeaderList extends ArrayList<Header> {
      * is inserted.
      *
      * @return
-     *      always true. Don't use the return value.      
+     *      always true. Don't use the return value.
      */
     @Override
     public boolean add(Header header) {
@@ -902,7 +906,7 @@ public final class HeaderList extends ArrayList<Header> {
     /**
      * Removes the "understood" bit for header on the position specified by {@code index} parameter
      * from the set of understood header bits.
-     * 
+     *
      * @param index position of the bit to remove
      */
     private void removeUnderstoodBit(int index) {
@@ -952,7 +956,7 @@ public final class HeaderList extends ArrayList<Header> {
         }
 
         // remove bit set if the new size will be < 33 => we fit all bits into int
-        if (size() - 1 <= 33  && moreUnderstoodBits != null) {
+        if (size() - 1 <= 33 && moreUnderstoodBits != null) {
             moreUnderstoodBits = null;
         }
     }
@@ -974,10 +978,10 @@ public final class HeaderList extends ArrayList<Header> {
     public boolean remove(Object o) {
         if (o != null) {
             for (int index = 0; index < this.size(); index++)
-            if (o.equals(this.get(index))) {
-                remove(index);
-                return true;
-            }
+                if (o.equals(this.get(index))) {
+                    remove(index);
+                    return true;
+                }
         }
 
         return false;
@@ -1002,6 +1006,6 @@ public final class HeaderList extends ArrayList<Header> {
     public void readResponseAddressingHeaders(WSDLPort wsdlPort, WSBinding binding) {
         // read Action
         String wsaAction = getAction(binding.getAddressingVersion(), binding.getSOAPVersion());
-    // TODO: validate client-inbound Action
+        // TODO: validate client-inbound Action
     }
 }

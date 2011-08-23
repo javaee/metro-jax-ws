@@ -43,18 +43,13 @@ package com.sun.xml.ws.api.message;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.bind.marshaller.SAX2DOMEx;
-import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.addressing.WsaTubeHelper;
 import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
-import com.sun.xml.ws.api.DistributedPropertySet;
-import com.sun.xml.ws.api.EndpointAddress;
-import com.sun.xml.ws.api.PropertySet;
-import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.*;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
-import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.JavaMethod;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Tube;
@@ -65,16 +60,17 @@ import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.message.RelatesToHeader;
 import com.sun.xml.ws.message.StringHeader;
+import com.sun.xml.ws.message.saaj.SAAJMessage;
+import com.sun.xml.ws.server.WSEndpointImpl;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
-import com.sun.xml.ws.server.WSEndpointImpl;
 import com.sun.xml.ws.wsdl.DispatchException;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import javax.activation.DataHandler;
+import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.BindingProvider;
@@ -84,15 +80,7 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-import javax.xml.namespace.QName;
-import javax.xml.ws.soap.AddressingFeature;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -183,14 +171,14 @@ public final class Packet extends DistributedPropertySet {
      * Creates an empty {@link Packet} that doesn't have any {@link Message}.
      */
     public Packet() {
-        this.invocationProperties = new HashMap<String,Object>();
+        this.invocationProperties = new HashMap<String, Object>();
     }
 
     /**
      * Used by {@link #createResponse(Message)} and {@link #copy(boolean)}.
      */
     private Packet(Packet that) {
-        that.copySatelliteInto((DistributedPropertySet)this);
+        that.copySatelliteInto((DistributedPropertySet) this);
         this.handlerConfig = that.handlerConfig;
         this.invocationProperties = that.invocationProperties;
         this.handlerScopePropertyNames = that.handlerScopePropertyNames;
@@ -210,8 +198,8 @@ public final class Packet extends DistributedPropertySet {
 
     /**
      * Creates a copy of this {@link Packet}.
-     * 
-     * @param copyMessage determines whether the {@link Message} from the original {@link Packet} should be copied as 
+     *
+     * @param copyMessage determines whether the {@link Message} from the original {@link Packet} should be copied as
      *        well, or not. If the value is {@code false}, the {@link Message} in the copy of the {@link Packet} is {@code null}.
      * @return copy of the original packet
      */
@@ -221,19 +209,18 @@ public final class Packet extends DistributedPropertySet {
         // to avoid code dupliation.
         Packet copy = new Packet(this);
         if (copyMessage && this.message != null) {
-            copy.message = this.message.copy(); 
+            copy.message = this.message.copy();
         }
-       
+
         return copy;
     }
-    
+
     private Message message;
 
     /**
      * Gets the last {@link Message} set through {@link #setMessage(Message)}.
      *
-     * @return
-     *      may null. See the class javadoc for when it's null.
+     * @return may null. See the class javadoc for when it's null.
      */
     public Message getMessage() {
         return message;
@@ -242,8 +229,7 @@ public final class Packet extends DistributedPropertySet {
     /**
      * Sets a {@link Message} to this packet.
      *
-     * @param message
-     *      Can be null.
+     * @param message Can be null.
      */
     public void setMessage(Message message) {
         this.message = message;
@@ -257,22 +243,24 @@ public final class Packet extends DistributedPropertySet {
      * Information such as Payload QName, wsa:Action header, SOAPAction HTTP header are used depending on the features
      * enabled on the particular port.
      *
-     * @return null if there is no WSDL model or  
-     *              runtime cannot uniquely identify the wsdl operation from the information in the packet.
+     * @return null if there is no WSDL model or
+     *         runtime cannot uniquely identify the wsdl operation from the information in the packet.
      */
     @com.sun.xml.ws.api.PropertySet.Property(MessageContext.WSDL_OPERATION)
-    public final @Nullable QName getWSDLOperation(){
-        if(wsdlOperation != null)
+    public final
+    @Nullable
+    QName getWSDLOperation() {
+        if (wsdlOperation != null)
             return wsdlOperation;
 
         OperationDispatcher opDispatcher = null;
-        if(endpoint != null) {
-            opDispatcher = ((WSEndpointImpl)endpoint).getOperationDispatcher();
+        if (endpoint != null) {
+            opDispatcher = ((WSEndpointImpl) endpoint).getOperationDispatcher();
         } else if (proxy != null) {
-            opDispatcher = ((Stub)proxy).getOperationDispatcher();
+            opDispatcher = ((Stub) proxy).getOperationDispatcher();
         }
         //OpDispatcher is null when there is no WSDLModel
-        if(opDispatcher != null) {
+        if (opDispatcher != null) {
             try {
                 wsdlOperation = opDispatcher.getWSDLOperationQName(this);
             } catch (DispatchException e) {
@@ -293,7 +281,7 @@ public final class Packet extends DistributedPropertySet {
     public void setWSDLOperation(QName wsdlOp) {
         this.wsdlOperation = wsdlOp;
     }
-    
+
     /**
      * True if this message came from a transport (IOW inbound),
      * and in paricular from a "secure" transport. A transport
@@ -310,7 +298,6 @@ public final class Packet extends DistributedPropertySet {
      * Transports are expected to fill this data after creating a Packet.
      * <p>
      * {@link SOAPMessage#getMimeHeaders()} would return these headers.
-     *
      */
     public static final String INBOUND_TRANSPORT_HEADERS = "com.sun.xml.ws.api.message.packet.inbound.transport.headers";
 
@@ -320,14 +307,14 @@ public final class Packet extends DistributedPropertySet {
      * <p>
      * Transports may choose to ignore certain headers that interfere with
      * its correct operation, such as
-     * <tt>Content-Type</tt> and <tt>Content-Length</tt>. 
+     * <tt>Content-Type</tt> and <tt>Content-Length</tt>.
      */
     public static final String OUTBOUND_TRANSPORT_HEADERS = "com.sun.xml.ws.api.message.packet.outbound.transport.headers";
 
     /**
-     * 
+     *
      */
-     public static final String HA_INFO = "com.sun.xml.ws.api.message.packet.hainfo";
+    public static final String HA_INFO = "com.sun.xml.ws.api.message.packet.hainfo";
 
 
     /**
@@ -368,14 +355,14 @@ public final class Packet extends DistributedPropertySet {
      */
     @com.sun.xml.ws.api.PropertySet.Property(BindingProvider.ENDPOINT_ADDRESS_PROPERTY)
     public String getEndPointAddressString() {
-        if(endpointAddress==null)
+        if (endpointAddress == null)
             return null;
         else
             return endpointAddress.toString();
     }
 
     public void setEndPointAddressString(String s) {
-        if(s==null)
+        if (s == null)
             this.endpointAddress = null;
         else
             this.endpointAddress = EndpointAddress.create(s);
@@ -384,7 +371,7 @@ public final class Packet extends DistributedPropertySet {
     /**
      * The value of {@link ContentNegotiation#PROPERTY}
      * property.
-     *
+     * <p/>
      * This property is used only on the client side.
      */
     public ContentNegotiation contentNegotiation;
@@ -395,7 +382,7 @@ public final class Packet extends DistributedPropertySet {
     }
 
     public void setContentNegotiationString(String s) {
-        if(s==null)
+        if (s == null)
             contentNegotiation = null;
         else {
             try {
@@ -415,12 +402,14 @@ public final class Packet extends DistributedPropertySet {
      *<p>
      */
     @com.sun.xml.ws.api.PropertySet.Property(MessageContext.REFERENCE_PARAMETERS)
-    public @NotNull List<Element> getReferenceParameters() {
-        List<Element> refParams =  new ArrayList<Element>();
+    public
+    @NotNull
+    List<Element> getReferenceParameters() {
+        List<Element> refParams = new ArrayList<Element>();
         HeaderList hl = message.getHeaders();
-        for(Header h :hl) {
-            String attr = h.getAttribute(AddressingVersion.W3C.nsUri,"IsReferenceParameter");
-            if(attr!=null && (attr.equals("true") || attr.equals("1"))) {
+        for (Header h : hl) {
+            String attr = h.getAttribute(AddressingVersion.W3C.nsUri, "IsReferenceParameter");
+            if (attr != null && (attr.equals("true") || attr.equals("1"))) {
                 Document d = DOMUtil.createDom();
                 SAX2DOMEx s2d = new SAX2DOMEx(d);
                 try {
@@ -451,7 +440,7 @@ public final class Packet extends DistributedPropertySet {
      */
     @com.sun.xml.ws.api.PropertySet.Property(JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY)
     /*package*/ HeaderList getHeaderList() {
-        if(message==null)   return null;
+        if (message == null) return null;
         return message.getHeaders();
     }
 
@@ -467,7 +456,6 @@ public final class Packet extends DistributedPropertySet {
      * <p>The list of content types will be obtained from the transport
      * meta-data of a inbound message in a request/response message exchange.
      * Hence this property will be set by the service-side transport pipe.
-     *
      */
     public String acceptableMimeTypes;
 
@@ -497,7 +485,9 @@ public final class Packet extends DistributedPropertySet {
      * This property is set from the parameter
      * of {@link WSEndpoint.PipeHead#process}.
      */
-    public @Nullable TransportBackChannel transportBackChannel;
+    public
+    @Nullable
+    TransportBackChannel transportBackChannel;
 
     /**
      * Keeps the transport back channel open (by seeting {@link #transportBackChannel} to null.)
@@ -539,7 +529,7 @@ public final class Packet extends DistributedPropertySet {
      * <p>
      * Note that the way the transport sends this value out depends on
      * transport and SOAP version.
-     *
+     * <p/>
      * For HTTP transport and SOAP 1.1, BP requires that SOAPAction
      * header is present (See {@BP R2744} and {@BP R2745}.) For SOAP 1.2,
      * this is moved to the parameter of the "application/soap+xml".
@@ -645,7 +635,7 @@ public final class Packet extends DistributedPropertySet {
      *
      * @see #getHandlerScopePropertyNames(boolean)
      */
-    public final Map<String,Object> invocationProperties;
+    public final Map<String, Object> invocationProperties;
 
     /**
      * Gets a {@link Set} that stores handler-scope properties.
@@ -664,10 +654,10 @@ public final class Packet extends DistributedPropertySet {
      * @return
      *      always non-null, possibly empty set that stores property names.
      */
-    public final Set<String> getHandlerScopePropertyNames( boolean readOnly ) {
+    public final Set<String> getHandlerScopePropertyNames(boolean readOnly) {
         Set<String> o = this.handlerScopePropertyNames;
-        if(o==null) {
-            if(readOnly)
+        if (o == null) {
+            if (readOnly)
                 return Collections.emptySet();
             o = new HashSet<String>();
             this.handlerScopePropertyNames = o;
@@ -682,7 +672,7 @@ public final class Packet extends DistributedPropertySet {
      *      Use {@link #getHandlerScopePropertyNames(boolean)}.
      *      To be removed once Tango components are updated.
      */
-    public final Set<String> getApplicationScopePropertyNames( boolean readOnly ) {
+    public final Set<String> getApplicationScopePropertyNames(boolean readOnly) {
         assert false;
         return new HashSet<String>();
     }
@@ -759,46 +749,46 @@ public final class Packet extends DistributedPropertySet {
             return r;
 
         // otherwise populate WS-Addressing headers
-        populateAddressingHeaders(binding, r, wsdlPort,seiModel);
+        populateAddressingHeaders(binding, r, wsdlPort, seiModel);
         return r;
     }
 
-    
-   public Packet relateServerResponse(@Nullable Packet r, @Nullable WSDLPort wsdlPort, @Nullable SEIModel seiModel, @NotNull WSBinding binding) {
-       copySatelliteInto((DistributedPropertySet)r);
-       r.soapAction = null;
-       r.handlerConfig = this.handlerConfig;
-       r.invocationProperties.putAll(this.invocationProperties);
-       r.handlerScopePropertyNames = this.handlerScopePropertyNames;
-       r.contentNegotiation = this.contentNegotiation;
-       r.wasTransportSecure = this.wasTransportSecure;
-       r.endpointAddress = this.endpointAddress;
-       r.wsdlOperation = this.wsdlOperation;
 
-       r.acceptableMimeTypes = this.acceptableMimeTypes;
-       r.endpoint = this.endpoint;
-       r.proxy = this.proxy;
-       r.webServiceContextDelegate = this.webServiceContextDelegate;
-       r.expectReply = this.expectReply;
-       
-       AddressingVersion av = binding.getAddressingVersion();
-       // populate WS-A headers only if WS-A is enabled
-       if (av == null)
-           return r;
-       //populate WS-A headers only if the request has addressing headers
-       String inputAction = this.getMessage().getHeaders().getAction(av, binding.getSOAPVersion());
-       if (inputAction == null) {
-           return r;
-       }
-       // if one-way, then dont populate any WS-A headers
-       if (r.getMessage() == null || (wsdlPort != null && message.isOneWay(wsdlPort)))
-           return r;
+    public Packet relateServerResponse(@Nullable Packet r, @Nullable WSDLPort wsdlPort, @Nullable SEIModel seiModel, @NotNull WSBinding binding) {
+        copySatelliteInto((DistributedPropertySet) r);
+        r.soapAction = null;
+        r.handlerConfig = this.handlerConfig;
+        r.invocationProperties.putAll(this.invocationProperties);
+        r.handlerScopePropertyNames = this.handlerScopePropertyNames;
+        r.contentNegotiation = this.contentNegotiation;
+        r.wasTransportSecure = this.wasTransportSecure;
+        r.endpointAddress = this.endpointAddress;
+        r.wsdlOperation = this.wsdlOperation;
 
-       // otherwise populate WS-Addressing headers
-       populateAddressingHeaders(binding, r, wsdlPort,seiModel);
-       return r;
-   }
-    
+        r.acceptableMimeTypes = this.acceptableMimeTypes;
+        r.endpoint = this.endpoint;
+        r.proxy = this.proxy;
+        r.webServiceContextDelegate = this.webServiceContextDelegate;
+        r.expectReply = this.expectReply;
+
+        AddressingVersion av = binding.getAddressingVersion();
+        // populate WS-A headers only if WS-A is enabled
+        if (av == null)
+            return r;
+        //populate WS-A headers only if the request has addressing headers
+        String inputAction = this.getMessage().getHeaders().getAction(av, binding.getSOAPVersion());
+        if (inputAction == null) {
+            return r;
+        }
+        // if one-way, then dont populate any WS-A headers
+        if (r.getMessage() == null || (wsdlPort != null && message.isOneWay(wsdlPort)))
+            return r;
+
+        // otherwise populate WS-Addressing headers
+        populateAddressingHeaders(binding, r, wsdlPort, seiModel);
+        return r;
+    }
+
     /**
      * Creates a server-side response {@link Packet} from a request
      * packet ({@code this}). If WS-Addressing is enabled, <code>action</code>
@@ -835,15 +825,15 @@ public final class Packet extends DistributedPropertySet {
      * Overwrites the {@link Message} of the response packet ({@code this}) by the given {@link Message}.
      * Unlike {@link #setMessage(Message)}, fill in the addressing headers correctly, and this process
      * requires the access to the request packet.
-     * 
+     *
      * <p>
      * This method is useful when the caller needs to swap a response message completely to a new one.
      *
-     * @see #createServerResponse(Message, AddressingVersion, SOAPVersion, String) 
+     * @see #createServerResponse(Message, AddressingVersion, SOAPVersion, String)
      */
     public void setResponseMessage(@NotNull Packet request, @Nullable Message responseMessage, @NotNull AddressingVersion addressingVersion, @NotNull SOAPVersion soapVersion, @NotNull String action) {
-       Packet temp = request.createServerResponse(responseMessage, addressingVersion, soapVersion, action);
-       setMessage(temp.getMessage());
+        Packet temp = request.createServerResponse(responseMessage, addressingVersion, soapVersion, action);
+        setMessage(temp.getMessage());
     }
 
     private void populateAddressingHeaders(Packet responsePacket, AddressingVersion av, SOAPVersion sv, String action, boolean mustUnderstand) {
@@ -859,9 +849,9 @@ public final class Packet extends DistributedPropertySet {
         // wsa:To
         WSEndpointReference replyTo;
         try {
-        replyTo = message.getHeaders().getReplyTo(av, sv);
-        if (replyTo != null)
-            hl.add(new StringHeader(av.toTag, replyTo.getAddress()));
+            replyTo = message.getHeaders().getReplyTo(av, sv);
+            if (replyTo != null)
+                hl.add(new StringHeader(av.toTag, replyTo.getAddress()));
         } catch (InvalidAddressingHeaderException e) {
             replyTo = null;
         }
@@ -869,16 +859,20 @@ public final class Packet extends DistributedPropertySet {
         // wsa:Action, add if the message doesn't already contain it,
         // generally true for SEI case where there is SEIModel or WSDLModel
         //           false for Provider with no wsdl, Expects User to set the coresponding header on the Message.
-        if(responsePacket.getMessage().getHeaders().getAction(av,sv) == null) {
+        if (responsePacket.getMessage().getHeaders().getAction(av, sv) == null) {
             //wsa:Action header is not set in the message, so use the wsa:Action  passed as the parameter.
             hl.add(new StringHeader(av.actionTag, action, sv, mustUnderstand));
         }
 
         // wsa:MessageID
-        hl.add(new StringHeader(av.messageIDTag, responsePacket.getMessage().getID(av, sv)));
+        if (responsePacket.getMessage().getHeaders().get(av.messageIDTag, false) == null) {
+            // if header doesn't exist, method getID creates a new random id
+            String newID = responsePacket.getMessage().getID(av, sv);
+            hl.add(new StringHeader(av.messageIDTag, newID));
+        }
 
         // wsa:RelatesTo
-        String mid = getMessage().getHeaders().getMessageID(av,sv);
+        String mid = getMessage().getHeaders().getMessageID(av, sv);
         if (mid != null)
             hl.add(new RelatesToHeader(av.relatesToTag, mid));
 
@@ -903,13 +897,13 @@ public final class Packet extends DistributedPropertySet {
     private void populateAddressingHeaders(WSBinding binding, Packet responsePacket, WSDLPort wsdlPort, SEIModel seiModel) {
         AddressingVersion addressingVersion = binding.getAddressingVersion();
 
-        if (addressingVersion == null)  return;
+        if (addressingVersion == null) return;
 
-        WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort,seiModel, binding);
+        WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort, seiModel, binding);
         String action = responsePacket.message.isFault() ?
                 wsaHelper.getFaultAction(this, responsePacket) :
                 wsaHelper.getOutputAction(this);
-        if(action == null) {
+        if (action == null) {
             LOGGER.info("WSA headers are not added as value for wsa:Action cannot be resolved for this message");
             return;
         }
