@@ -834,6 +834,14 @@
          dest="lib/jaxws-api-src.zip" />
   </target>
 
+  <target name="integrate-jaxws22-api-maven" depends="prepare"
+          description="integrate the last successful jaxws 2.2 API from Hudson build">
+    <get src="${mavenrepo.url}/javax/xml/ws/jaxws-api/${release.api.version}/jaxws-api-${release.api.version}.jar"
+         dest="lib/jaxws-api.jar" />
+    <get src="${mavenrepo.url}/javax/xml/ws/jaxws-api/${release.api.version}/jaxws-api-${release.api.version}-sources.jar"
+         dest="lib/jaxws-api-src.zip" />
+  </target>
+
     <target name="integrate-fastinfoset-maven" depends="prepare"
             description="integrate the last successful FastInfoset 1.2.x Hudson build">
         <get src="${mavenrepo.url}/com/sun/xml/fastinfoset/FastInfoset/${fi.version}/FastInfoset-${fi.version}.jar"
