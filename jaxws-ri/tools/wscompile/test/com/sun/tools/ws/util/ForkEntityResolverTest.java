@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,33 +37,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.tools.ws.util;
 
+import java.io.IOException;
+import junit.framework.TestCase;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-
 /**
- * {@link EntityResolver} that delegates to two {@link EntityResolver}s.
  *
- * @author WS Development Team
+ * @author lukas
  */
-public class ForkEntityResolver implements EntityResolver {
-    private final EntityResolver lhs;
-    private final EntityResolver rhs;
+public class ForkEntityResolverTest extends TestCase {
 
-    public ForkEntityResolver(EntityResolver lhs, EntityResolver rhs) {
-        this.lhs = lhs;
-        this.rhs = rhs;
+    public ForkEntityResolverTest(String testName) {
+        super(testName);
     }
 
-    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-        InputSource is = lhs.resolveEntity(publicId, systemId);
-        if(is!=null)
-            return is;
-        return rhs.resolveEntity(publicId, systemId);
+    public void testResolve() throws SAXException, IOException {
+        EntityResolver a = new ER("A-public", "A-system");
+        EntityResolver b = new ER("B-public", "B-system");
+        EntityResolver fork = new ForkEntityResolver(a, b);
+        assertNull(fork.resolveEntity("A-public", "A-public"));
+        assertNull(fork.resolveEntity("B-public", "B-public"));
+        assertNotNull(fork.resolveEntity("A-public", "A-system"));
+        assertNotNull(fork.resolveEntity("B-public", "B-system"));
+    }
+
+    private class ER implements EntityResolver {
+
+        private final String sId;
+        private final String pId;
+
+        public ER(String publicId, String systemId) {
+            sId = systemId;
+            pId = publicId;
+        }
+
+        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+            if (sId.equals(systemId) && pId.equals(publicId)) {
+                return new InputSource();
+            }
+            return null;
+        }
     }
 }
