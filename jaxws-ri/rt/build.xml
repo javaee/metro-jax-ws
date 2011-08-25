@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -75,6 +75,7 @@
         deprecation="${compile.deprecation}"
         optimize="${compile.optimize}"
         source="1.5">
+      <compilerarg value="-Xbootclasspath/p:${lib.home}/jaxws-api.jar"/>
       <classpath refid="runtime.compile.classpath"/>
     </javac>
     <!-- Copy AnnotationProcessor factory info -->
@@ -93,6 +94,7 @@
         optimize="${compile.optimize}"
         source="1.5"
         excludes="**/JaxWsRtObjectFactory*.java,**/WSServletContext.java,**/WSDLPublisher.java,**/servlet/,**/ServletDelegate.java, **/ServletSecondDelegate.java, **/FastInfoset*.java, **/SourceReaderFactory.java">
+      <compilerarg value="-Xbootclasspath/p:${lib.home}/jaxws-api.jar"/>
       <classpath refid="runtime.compile.classpath"/>
     </javac>
   </target>
@@ -120,6 +122,7 @@
                destdir="${build.dir}/test-classes"
                debug="${compile.debug}"
                optimize="${compile.optimize}">
+            <compilerarg value="-Xbootclasspath/p:${lib.home}/jaxws-api.jar"/>
             <classpath refid="test.classpath"/>
         </javac>
 

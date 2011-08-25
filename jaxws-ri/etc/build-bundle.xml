@@ -101,6 +101,12 @@
         <!--<pathelement location="${basedir}/ws-api/build/classes"/>-->
     </path>
 
+    <path id="boot.classpath">
+        <fileset dir="${lib.home}">
+            <include name="**/jaxws-api.jar"/>
+        </fileset>
+    </path>
+  
     <path id="tools.compile.classpath">
         <path refid="runtime.compile.classpath"/>
         <pathelement location="${build.home}/lib/jaxws-rt.jar"/>
