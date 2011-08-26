@@ -1123,6 +1123,12 @@
         <mvn.publish.release.zip module="jaxws-ri"/>
     </target>
 
+    <target  name="mvn.publish.promoted.local">
+            <property  name="jar.suffix" value="${release.impl.version}-promoted-b${promoted.version}"/>
+            <antcall  target="mvn.publish.release.local"/>
+    </target>
+
+
     <target  name="mvn.publish.snapshots.remote">
         <mvn.publish.snapshot.module module="jaxws-rt" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.module module="jaxws-tools" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
@@ -1133,5 +1139,20 @@
         <mvn.publish.release.module module="jaxws-rt" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="jaxws-tools" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.zip module="jaxws-ri" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
+    </target>
+
+
+    <target  name="mvn.publish.promoted.remote">
+        <property  name="jar.suffix" value="${release.impl.version}-promoted-b${promoted.version}"/>
+        <antcall  target="mvn.publish.release.remote"/>
+        <propertyfile file="project.properties">
+            <entry key="promoted.version" type="int" operation="+" value="1" pattern="00"/>
+        </propertyfile>
+        <exec executable="svn">
+            <arg value="commit"/>
+            <arg  value="-m"/>
+            <arg  value="Updating promoted.version"/>
+            <arg  value="project.properties"/>
+        </exec>
     </target>
 </project>
