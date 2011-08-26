@@ -1151,7 +1151,7 @@
         <exec executable="svn">
             <arg value="commit"/>
             <arg  value="-m"/>
-            <arg  value="Updating promoted.version"/>
+            <arg  value="Pushed JAX-WS RI ${jar.suffix}, Incrementing the promoted version."/>
             <arg  value="project.properties"/>
         </exec>
     </target>
