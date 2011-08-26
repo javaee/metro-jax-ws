@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,14 +44,13 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpsExchange;
 import com.sun.xml.ws.resources.HttpserverMessages;
 import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -68,9 +67,10 @@ final class WSHttpHandler implements HttpHandler {
     private static final String PUT_METHOD = "PUT";
     private static final String DELETE_METHOD = "DELETE";
 
-    private static final Logger logger =
+    private static final Logger LOGGER =
         Logger.getLogger(
             com.sun.xml.ws.util.Constants.LoggingDomain + ".server.http");
+    private static final boolean fineTraceEnabled = LOGGER.isLoggable(Level.FINE);
 
     private final HttpAdapter adapter;
     private final Executor executor;
@@ -86,7 +86,9 @@ final class WSHttpHandler implements HttpHandler {
      */
     public void handle(HttpExchange msg) {
         try {
-            logger.fine("Received HTTP request:"+msg.getRequestURI());
+            if (fineTraceEnabled) {
+                LOGGER.fine("Received HTTP request:"+msg.getRequestURI());
+            }
             if (executor != null) {
                 // Use application's Executor to handle request. Application may
                 // have set an executor using Endpoint.setExecutor().
@@ -100,16 +102,20 @@ final class WSHttpHandler implements HttpHandler {
         }
     }
 
-    public void handleExchange(HttpExchange msg) throws IOException {
+    private void handleExchange(HttpExchange msg) throws IOException {
         WSHTTPConnection con = new ServerConnectionImpl(adapter,msg);
         try {
-            logger.fine("Received HTTP request:"+msg.getRequestURI());
+            if (fineTraceEnabled) {
+                LOGGER.fine("Received HTTP request:"+msg.getRequestURI());
+            }
             String method = msg.getRequestMethod();
             if(method.equals(GET_METHOD) || method.equals(POST_METHOD) || method.equals(HEAD_METHOD)
             || method.equals(PUT_METHOD) || method.equals(DELETE_METHOD)) {
                 adapter.handle(con);
             } else {
-                logger.warning(HttpserverMessages.UNEXPECTED_HTTP_METHOD(method));
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning(HttpserverMessages.UNEXPECTED_HTTP_METHOD(method));
+                }
             }
         } finally {
             msg.close();
