@@ -322,34 +322,6 @@
 
     <target name="hudson" depends="clean, dist.zip, src.zip,javadocs, doc-src-zip" />
 
-    <macrodef name="prepare-pom">
-        <attribute name="module"/>
-        <sequential>
-            <fail unless="jar.suffix">jar.suffix property needs to be defined</fail>
-            <copy file="etc/poms/@{module}.pom" tofile="build/maven2-repo/@{module}.pom" overwrite="true">
-                <filterset>
-                    <filter token="API_VERSION" value="${release.maven.api.version}"/>
-                    <filter token="JAXB_API_VERSION" value="${jaxb.api.version}"/>
-                    <filter token="SAAJ_API_VERSION" value="${saaj-api.version}"/>
-                    <filter token="JSR_181_API_VERSION" value="${jsr181.version}"/>
-                    <filter token="JSR_250_API_VERSION" value="${jsr250.version}"/>
-                    <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
-                    <filter token="SAAJ_VERSION" value="${saaj-impl.version}"/>
-                    <filter token="XMLSTREAMBUFFER_VERSION" value="${xmlstreambuffer.version}"/>
-                    <filter token="WOODSTOX_CORE_VERSION" value="${woodstox.version}"/>
-                    <filter token="STAX2_API_VERSION" value="${stax2-api.version}"/>
-                    <filter token="STAX_EX_VERSION" value="${stax-ex.version}"/>
-                    <filter token="RESOLVER_VERSION" value="${resolver.version}"/>
-                    <filter token="MIMEPULL_VERSION" value="${mimepull.version}"/>
-                    <filter token="POLICY_VERSION" value="${policy.version}"/>
-                    <filter token="GMBAL_API_VERSION" value="${gmbal.version}"/>
-                    <filter token="HA_API_VERSION" value="${ha-api.version}"/>
-                    <filter token="VERSION" value="${jar.suffix}"/>
-                </filterset>
-            </copy>
-        </sequential>
-    </macrodef>
-
     <macrodef name="install-local-m2">
             <attribute name="module"/>
             <attribute name="module-src"/>
@@ -1183,4 +1155,157 @@
         </copy>			
     </target>
 
+    <macrodef name="prepare-pom">
+            <attribute name="module"/>
+            <sequential>
+                <fail unless="jar.suffix">jar.suffix property needs to be defined</fail>
+                <copy file="etc/poms/@{module}.pom" tofile="build/maven2-repo/@{module}.pom" overwrite="true">
+                    <filterset>
+                        <filter token="API_VERSION" value="${release.api.version}"/>
+                        <filter token="JAXB_API_VERSION" value="${jaxb.api.version}"/>
+                        <filter token="SAAJ_API_VERSION" value="${saaj-api.version}"/>
+                        <filter token="JSR_181_API_VERSION" value="${jsr181.version}"/>
+                        <filter token="JSR_250_API_VERSION" value="${jsr250.version}"/>
+                        <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
+                        <filter token="SAAJ_VERSION" value="${saaj-impl.version}"/>
+                        <filter token="XMLSTREAMBUFFER_VERSION" value="${xmlstreambuffer.version}"/>
+                        <filter token="WOODSTOX_CORE_VERSION" value="${woodstox.version}"/>
+                        <filter token="STAX2_API_VERSION" value="${stax2-api.version}"/>
+                        <filter token="STAX_EX_VERSION" value="${stax-ex.version}"/>
+                        <filter token="RESOLVER_VERSION" value="${resolver.version}"/>
+                        <filter token="MIMEPULL_VERSION" value="${mimepull.version}"/>
+                        <filter token="POLICY_VERSION" value="${policy.version}"/>
+                        <filter token="GMBAL_API_VERSION" value="${gmbal.version}"/>
+                        <filter token="HA_API_VERSION" value="${ha-api.version}"/>
+                        <filter token="VERSION" value="${jar.suffix}"/>
+                    </filterset>
+                </copy>
+            </sequential>
+        </macrodef>
+
+   <macrodef name="mvn.publish.snapshot.file">
+        <attribute name="command" default="deploy:deploy-file"/>
+        <attribute name="repoid" default="jvnet-nexus-snapshots"/>
+        <attribute name="repo" default="${maven.repo.local}"/>
+
+        <attribute name="jar"/>
+        <attribute name="pom"/>
+        <attribute name="classifier" default=""/>
+        <attribute name="password" default=""/>
+        <attribute name="extra-args" default=""/>
+        <sequential>
+            <exec executable="mvn" failonerror="true">
+                <arg line="@{command}"/>
+                <arg line="-Dfile=@{jar}"/>
+                <arg line="-Dclassifier=@{classifier}"/>
+                <arg line="-DpomFile=@{pom}"/>
+                <arg line="-DuniqueVersion=false"/>
+                <arg line="-Durl=@{repo}"/>
+                <arg line="-DrepositoryId=@{repoid}"/>
+                <arg line="-Dgpg.passphrase=@{password}"/>
+                <arg line="@{extra-args}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="mvn.publish.release.file">
+        <attribute name="command" default="gpg:sign-and-deploy-file"/>
+        <attribute name="repoid" default="jvnet-nexus-staging"/>
+        <attribute name="repo" default="${maven.repo.local}"/>
+
+        <attribute name="jar"/>
+        <attribute name="pom"/>
+        <attribute name="classifier" default=""/>
+        <attribute name="password" default="${gpg.password}"/>
+        <attribute name="extra-args" default=""/>
+        <sequential>
+            <exec executable="mvn" failonerror="true">
+                <arg line="@{command}"/>
+                <arg line="-Dfile=@{jar}"/>
+                <arg line="-Dclassifier=@{classifier}"/>
+                <arg line="-DpomFile=@{pom}"/>
+                <arg line="-DuniqueVersion=false"/>
+                <arg line="-Durl=@{repo}"/>
+                <arg line="-DrepositoryId=@{repoid}"/>
+                <arg line="-Dgpg.passphrase=@{password}"/>
+                <arg line="@{extra-args}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="mvn.publish.snapshot.module">
+        <attribute name="module"/>
+        <attribute  name="repo" default="${maven.repo.local}"/>
+        <sequential>
+            <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
+            <prepare-pom module="@{module}"/>
+            <mvn.publish.snapshot.file  jar="${dist20.home}/lib/@{module}.jar" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"/>
+            <mvn.publish.snapshot.file  jar="${dist20.home}/lib/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"
+                               classifier="sources"/>
+            <mvn.publish.snapshot.file  jar="${dist20.home}/lib/@{module}-javadoc.jar" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"
+                               classifier="javadoc"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="mvn.publish.snapshot.zip">
+        <attribute name="module"/>
+        <attribute  name="repo" default="${maven.repo.local}"/>
+        <sequential>
+            <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
+            <prepare-pom module="@{module}"/>
+            <mvn.publish.snapshot.file  jar="${build.home}/@{module}.zip" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"/>
+        </sequential>
+    </macrodef>
+
+   <macrodef name="mvn.publish.release.module">
+        <attribute name="module"/>
+        <attribute  name="repo" default="${maven.repo.local}"/>
+        <sequential>
+            <property name="jar.suffix" value="${release.impl.version}"/>
+            <prepare-pom module="@{module}"/>
+            <mvn.publish.release.file  jar="${dist20.home}/lib/@{module}.jar" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"/>
+            <mvn.publish.release.file  jar="${dist20.home}/lib/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"
+                               classifier="sources"/>
+            <mvn.publish.release.file  jar="${dist20.home}/lib/@{module}-javadoc.jar" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"
+                               classifier="javadoc"/>
+        </sequential>
+    </macrodef>
+
+   <macrodef name="mvn.publish.release.zip">
+        <attribute name="module"/>
+        <attribute  name="repo" default="${maven.repo.local}"/>
+        <sequential>
+            <property name="jar.suffix" value="${release.impl.version}"/>
+            <prepare-pom module="@{module}"/>
+            <mvn.publish.release.file  jar="${build.home}/@{module}.zip" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"/>
+        </sequential>
+    </macrodef>
+
+    <property name="java.net.staging.repo" value="https://maven.java.net/service/local/staging/deploy/maven2/"/>
+
+    <target  name="mvn.publish.snapshots.local">
+        <fail unless="maven.repo.local">maven.repo.local property needs to be set</fail>
+        <mvn.publish.snapshot.module module="jaxws-rt"/>
+        <mvn.publish.snapshot.module module="jaxws-tools"/>
+        <mvn.publish.snapshot.zip module="jaxws-ri"/>
+    </target>
+    
+    <target name="mvn.publish.release.local">
+        <fail unless="maven.repo.local">maven.repo.local property needs to be set</fail>
+        <mvn.publish.release.module module="jaxws-rt"/>
+        <mvn.publish.release.module module="jaxws-tools"/>
+        <mvn.publish.release.zip module="jaxws-ri"/>
+    </target>
+
+    <target  name="mvn.publish.snapshots.remote">
+        <mvn.publish.snapshot.module module="jaxws-rt" repo="${java.net.staging.repo}"/>
+        <mvn.publish.snapshot.module module="jaxws-tools" repo="${java.net.staging.repo}"/>
+        <mvn.publish.snapshot.zip module="jaxws-ri" repo="${java.net.staging.repo}"/>
+    </target>
+
+    <target name="mvn.publish.release.remote">
+        <mvn.publish.release.module module="jaxws-rt" repo="${java.net.staging.repo}"/>
+        <mvn.publish.release.module module="jaxws-tools" repo="${java.net.staging.repo}"/>
+        <mvn.publish.release.zip module="jaxws-ri" repo="${java.net.staging.repo}"/>
+    </target>
 </project>
