@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+        xmlns:tns="http://echo.org/"
+        xmlns:abs="http://echo.abstract.org/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns="http://schemas.xmlsoap.org/wsdl/"
+        targetNamespace="http://echo.org/"
+        name="RpcLitEndpoint">
+
+    <import namespace="http://echo.abstract.org" location="RpcLitAbstract.wsdl"/>
+
+    <binding type="abs:RpcLitIF" name="RpcLitPortBinding">
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"></soap:binding>
+        <operation name="echoInteger">
+            <soap:operation soapAction=""></soap:operation>
+            <input>
+                <soap:body namespace="http://echo.input.binding.org/" use="literal"></soap:body>
+            </input>
+            <output>
+                <soap:body namespace="http://echo.output.binding.org/" use="literal"></soap:body>
+            </output>
+        </operation>
+    </binding>
+    <service name="RpcLitEndpoint">
+        <port binding="tns:RpcLitPortBinding" name="RpcLitPort">
+            <soap:address location="http://localhost:21345/hello"></soap:address>
+        </port>
+    </service>
+    <!-- NOT_GENERATED -->
+</definitions>
