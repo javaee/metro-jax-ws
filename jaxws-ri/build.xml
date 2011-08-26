@@ -1047,54 +1047,68 @@
 
     <macrodef name="mvn.publish.snapshot.module">
         <attribute name="module"/>
-        <attribute  name="repo" default="${maven.repo.local}"/>
+        <attribute name="extra-args" default=""/>
+        <attribute name="repo" default="${maven.repo.local}"/>
         <sequential>
             <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
             <prepare-pom module="@{module}"/>
-            <mvn.publish.snapshot.file  jar="${dist20.home}/lib/@{module}.jar" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"/>
-            <mvn.publish.snapshot.file  jar="${dist20.home}/lib/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"
-                               classifier="sources"/>
-            <mvn.publish.snapshot.file  jar="${dist20.home}/lib/@{module}-javadoc.jar" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"
-                               classifier="javadoc"/>
+            <mvn.publish.snapshot.file jar="${dist20.home}/lib/@{module}.jar" pom="build/maven2-repo/@{module}.pom"
+                                       repo="@{repo}" extra-args="@{extra-args}"/>
+            <mvn.publish.snapshot.file jar="${dist20.home}/lib/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom"
+                                       repo="@{repo}" extra-args="@{extra-args}"
+                                       classifier="sources"/>
+            <mvn.publish.snapshot.file jar="${dist20.home}/lib/@{module}-javadoc.jar"
+                                       pom="build/maven2-repo/@{module}.pom" repo="@{repo}" extra-args="@{extra-args}"
+                                       classifier="javadoc"/>
         </sequential>
     </macrodef>
 
     <macrodef name="mvn.publish.snapshot.zip">
         <attribute name="module"/>
-        <attribute  name="repo" default="${maven.repo.local}"/>
+        <attribute name="extra-args" default=""/>
+        <attribute name="repo" default="${maven.repo.local}"/>
         <sequential>
             <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
             <prepare-pom module="@{module}"/>
-            <mvn.publish.snapshot.file  jar="${build.home}/@{module}.zip" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"/>
+            <mvn.publish.snapshot.file jar="${build.home}/@{module}.zip" pom="build/maven2-repo/@{module}.pom"
+                                       repo="@{repo}" extra-args="@{extra-args}"/>
         </sequential>
     </macrodef>
 
-   <macrodef name="mvn.publish.release.module">
+    <macrodef name="mvn.publish.release.module">
         <attribute name="module"/>
-        <attribute  name="repo" default="${maven.repo.local}"/>
+        <attribute name="repo" default="${maven.repo.local}"/>
+        <attribute name="extra-args" default=""/>
         <sequential>
             <property name="jar.suffix" value="${release.impl.version}"/>
             <prepare-pom module="@{module}"/>
-            <mvn.publish.release.file  jar="${dist20.home}/lib/@{module}.jar" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"/>
-            <mvn.publish.release.file  jar="${dist20.home}/lib/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"
-                               classifier="sources"/>
-            <mvn.publish.release.file  jar="${dist20.home}/lib/@{module}-javadoc.jar" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"
-                               classifier="javadoc"/>
+            <mvn.publish.release.file jar="${dist20.home}/lib/@{module}.jar" pom="build/maven2-repo/@{module}.pom"
+                                      repo="@{repo}" extra-args="@{extra-args}"/>
+            <mvn.publish.release.file jar="${dist20.home}/lib/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom"
+                                      repo="@{repo}" extra-args="@{extra-args}"
+                                      classifier="sources"/>
+            <mvn.publish.release.file jar="${dist20.home}/lib/@{module}-javadoc.jar"
+                                      pom="build/maven2-repo/@{module}.pom" repo="@{repo}" extra-args="@{extra-args}"
+                                      classifier="javadoc"/>
         </sequential>
     </macrodef>
 
-   <macrodef name="mvn.publish.release.zip">
+    <macrodef name="mvn.publish.release.zip">
         <attribute name="module"/>
-        <attribute  name="repo" default="${maven.repo.local}"/>
+        <attribute name="repo" default="${maven.repo.local}"/>
+        <attribute name="extra-args" default=""/>
         <sequential>
             <property name="jar.suffix" value="${release.impl.version}"/>
             <prepare-pom module="@{module}"/>
-            <mvn.publish.release.file  jar="${build.home}/@{module}.zip" pom="build/maven2-repo/@{module}.pom" repo="@{repo}"/>
+            <mvn.publish.release.file jar="${build.home}/@{module}.zip" pom="build/maven2-repo/@{module}.pom"
+                                      repo="@{repo}" extra-args="@{extra-args}"/>
         </sequential>
     </macrodef>
 
     <property name="java.net.staging.repo" value="https://maven.java.net/service/local/staging/deploy/maven2/"/>
-
+    <property name="java.net.snapshot.repo" value="https://maven.java.net/content/repositories/snapshots/"/>
+    <property name="mvn.proxy.args" value="-Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80"/>
+    
     <target  name="mvn.publish.snapshots.local">
         <fail unless="maven.repo.local">maven.repo.local property needs to be set</fail>
         <mvn.publish.snapshot.module module="jaxws-rt"/>
@@ -1110,14 +1124,14 @@
     </target>
 
     <target  name="mvn.publish.snapshots.remote">
-        <mvn.publish.snapshot.module module="jaxws-rt" repo="${java.net.staging.repo}"/>
-        <mvn.publish.snapshot.module module="jaxws-tools" repo="${java.net.staging.repo}"/>
-        <mvn.publish.snapshot.zip module="jaxws-ri" repo="${java.net.staging.repo}"/>
+        <mvn.publish.snapshot.module module="jaxws-rt" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.snapshot.module module="jaxws-tools" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.snapshot.zip module="jaxws-ri" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
     </target>
 
     <target name="mvn.publish.release.remote">
-        <mvn.publish.release.module module="jaxws-rt" repo="${java.net.staging.repo}"/>
-        <mvn.publish.release.module module="jaxws-tools" repo="${java.net.staging.repo}"/>
-        <mvn.publish.release.zip module="jaxws-ri" repo="${java.net.staging.repo}"/>
+        <mvn.publish.release.module module="jaxws-rt" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.release.module module="jaxws-tools" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.release.zip module="jaxws-ri" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
     </target>
 </project>
