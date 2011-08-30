@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -324,6 +324,13 @@ public class Apt extends Task {
             cmd.createArgument().setValue(getTarget());
         }
         
+        //if fork, these arguments will appear twice
+        if (!fork) {
+            for (Jvmarg jvmarg : jvmargs) {
+                cmd.createArgument().setValue("-J" + jvmarg.getValue());
+            }
+        }
+
         for (Option option : options) {
             cmd.createArgument().setValue("-A" + option.getKey() + "=" + option.getValue());
         }
