@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -121,7 +121,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     private static final class HAInstance<T> implements Storeable {
         transient @NotNull T instance;
         private byte[] buf;
-        
+
         private long lastAccess = 0L;
 
         private boolean isNew = false;
@@ -155,9 +155,9 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                             return clazz;
                         }
                     };
-                    instance = (T)in.readObject();
+                    instance = (T) in.readObject();
                     in.close();
-                } catch(Exception ioe) {
+                } catch (Exception ioe) {
                     throw new WebServiceException(ioe);
                 }
             }
@@ -242,16 +242,19 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
          */
         public synchronized void restartTimer() {
             cancel();
-            if(timeoutMilliseconds==0)  return; // no timer
+            if (timeoutMilliseconds == 0) return; // no timer
 
             task = new TimerTask() {
                 public void run() {
                     try {
                         Callback<T> cb = timeoutCallback;
-                        if(cb!=null) {
+                        if (cb != null) {
+                            if (logger.isLoggable(Level.FINEST)) {
+                                logger.finest("Invoking timeout callback for instance/timeouttask = [ " + instance + " / " + this + " ]");
+                            }
                             cb.onTimeout(instance, StatefulInstanceResolver.this);
                             return;
-                        }                        
+                        }
                         // default operation is to unexport it.
                         unexport(instance);
                     } catch (Throwable e) {
@@ -267,8 +270,16 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
          * Cancels the timer.
          */
         public synchronized void cancel() {
-            if(task!=null)
-                task.cancel();
+            if (task != null) {
+                boolean result = task.cancel();
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.finest("Timeout callback CANCELED for instance/timeouttask/cancel result = [ " + instance + " / " + this + " / " + result + " ]");
+                }
+            } else {
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.finest("Timeout callback NOT CANCELED for instance = [ " + instance + " ]; task is null ...");
+                }
+            }
             task = null;
         }
 
@@ -283,8 +294,8 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         boolean ha = false;
         if (HighAvailabilityProvider.INSTANCE.isHaEnvironmentConfigured()) {
             if (Serializable.class.isAssignableFrom(clazz)) {
-                logger.warning(clazz+" doesn't implement Serializable. High availibility is disabled i.e."+
-                    "if a failover happens, stateful instance state is not failed over.");
+                logger.warning(clazz + " doesn't implement Serializable. High availibility is disabled i.e." +
+                        "if a failover happens, stateful instance state is not failed over.");
                 ha = true;
             }
         }
@@ -297,29 +308,34 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
         HeaderList headers = request.getMessage().getHeaders();
         Header header = headers.get(COOKIE_TAG, true);
-        String id=null;
-        if(header!=null) {
+        String id = null;
+        if (header != null) {
             // find the instance
             id = header.getStringContent();
             Instance o = haMap.get(id);
-            if(o!=null) {
+            if (o != null) {
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.finest("Restarting timer for objectId/Instance = [ " + id + " / " + o + " ]");
+                }
                 o.restartTimer();
                 return o.instance;
             }
 
             // huh? what is this ID?
-            logger.log(Level.INFO,"Request had an unrecognized object ID "+id);
+            logger.log(Level.INFO, "Request had an unrecognized object ID " + id);
+        } else {
+            logger.fine("No objectId header received");
         }
 
         // need to fallback
         T fallback = this.fallback;
-        if(fallback!=null)
+        if (fallback != null)
             return fallback;
 
-        if(id==null)
+        if (id == null)
             throw new WebServiceException(ServerMessages.STATEFUL_COOKIE_HEADER_REQUIRED(COOKIE_TAG));
         else
-            throw new WebServiceException(ServerMessages.STATEFUL_COOKIE_HEADER_INCORRECT(COOKIE_TAG,id));
+            throw new WebServiceException(ServerMessages.STATEFUL_COOKIE_HEADER_INCORRECT(COOKIE_TAG, id));
     }
 
     /*
@@ -333,47 +349,47 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
     @Override
     public void start(WSWebServiceContext wsc, WSEndpoint endpoint) {
-        super.start(wsc,endpoint);
+        super.start(wsc, endpoint);
 
         haMap = new HAMap();
 
-        if(endpoint.getBinding().getAddressingVersion()==null)
+        if (endpoint.getBinding().getAddressingVersion() == null)
             // addressing is not enabled.
             throw new WebServiceException(ServerMessages.STATEFUL_REQURES_ADDRESSING(clazz));
 
         // inject StatefulWebServiceManager.
-        for(Field field: clazz.getDeclaredFields()) {
-            if(field.getType()==StatefulWebServiceManager.class) {
-                if(!Modifier.isStatic(field.getModifiers()))
-                    throw new WebServiceException(ServerMessages.STATIC_RESOURCE_INJECTION_ONLY(StatefulWebServiceManager.class,field));
-                new FieldInjectionPlan<T,StatefulWebServiceManager>(field).inject(null,this);
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getType() == StatefulWebServiceManager.class) {
+                if (!Modifier.isStatic(field.getModifiers()))
+                    throw new WebServiceException(ServerMessages.STATIC_RESOURCE_INJECTION_ONLY(StatefulWebServiceManager.class, field));
+                new FieldInjectionPlan<T, StatefulWebServiceManager>(field).inject(null, this);
             }
         }
 
-        for(Method method : clazz.getDeclaredMethods()) {
+        for (Method method : clazz.getDeclaredMethods()) {
             Class[] paramTypes = method.getParameterTypes();
             if (paramTypes.length != 1)
                 continue;   // not what we are looking for
 
-            if(paramTypes[0]==StatefulWebServiceManager.class) {
-                if(!Modifier.isStatic(method.getModifiers()))
-                    throw new WebServiceException(ServerMessages.STATIC_RESOURCE_INJECTION_ONLY(StatefulWebServiceManager.class,method));
+            if (paramTypes[0] == StatefulWebServiceManager.class) {
+                if (!Modifier.isStatic(method.getModifiers()))
+                    throw new WebServiceException(ServerMessages.STATIC_RESOURCE_INJECTION_ONLY(StatefulWebServiceManager.class, method));
 
-                new MethodInjectionPlan<T,StatefulWebServiceManager>(method).inject(null,this);
+                new MethodInjectionPlan<T, StatefulWebServiceManager>(method).inject(null, this);
             }
         }
     }
 
     @Override
     public void dispose() {
-        synchronized(haMap) {
+        synchronized (haMap) {
             for (Instance t : haMap.values()) {
                 t.cancel();
                 dispose(t.instance);
             }
             haMap.destroy();
         }
-        if(fallback!=null)
+        if (fallback != null)
             dispose(fallback);
         fallback = null;
         stopTimer();
@@ -381,12 +397,12 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
     @NotNull
     public W3CEndpointReference export(T o) {
-        return export(W3CEndpointReference.class,o);
+        return export(W3CEndpointReference.class, o);
     }
 
     @NotNull
-    public <EPR extends EndpointReference>EPR export(Class<EPR> epr, T o) {
-        return export(epr,o,null);
+    public <EPR extends EndpointReference> EPR export(Class<EPR> epr, T o) {
+        return export(epr, o, null);
     }
 
     public <EPR extends EndpointReference> EPR export(Class<EPR> epr, T o, EPRRecipe recipe) {
@@ -394,7 +410,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     }
 
     @NotNull
-    public <EPR extends EndpointReference>EPR export(Class<EPR> epr, WebServiceContext context, T o) {
+    public <EPR extends EndpointReference> EPR export(Class<EPR> epr, WebServiceContext context, T o) {
         if (context instanceof WSWebServiceContext) {
             WSWebServiceContext wswsc = (WSWebServiceContext) context;
             return export(epr, wswsc.getRequestPacket(), o);
@@ -405,45 +421,48 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
     @NotNull
     public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, @NotNull Packet currentRequest, T o) {
-        return export(adrsVer,currentRequest,o,null);
+        return export(adrsVer, currentRequest, o, null);
     }
 
     public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, @NotNull Packet currentRequest, T o, EPRRecipe recipe) {
-        return export(adrsVer, currentRequest.webServiceContextDelegate.getEPRAddress(currentRequest,owner),
-                currentRequest.webServiceContextDelegate.getWSDLAddress(currentRequest,owner), o, recipe);
+        return export(adrsVer, currentRequest.webServiceContextDelegate.getEPRAddress(currentRequest, owner),
+                currentRequest.webServiceContextDelegate.getWSDLAddress(currentRequest, owner), o, recipe);
     }
 
     @NotNull
     public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, String endpointAddress, T o) {
-        return export(adrsVer,endpointAddress,null,o,null);
+        return export(adrsVer, endpointAddress, null, o, null);
     }
 
     @NotNull
-    public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, String endpointAddress,String wsdlAddress, T o, EPRRecipe recipe) {
-        if(endpointAddress==null)
+    public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, String endpointAddress, String wsdlAddress, T o, EPRRecipe recipe) {
+        if (endpointAddress == null)
             throw new IllegalArgumentException("No address available");
 
         String key = haMap.get(o);
 
-        if(key!=null) return createEPR(key, adrsVer, endpointAddress,wsdlAddress, recipe);
+        if (key != null) return createEPR(key, adrsVer, endpointAddress, wsdlAddress, recipe);
 
         // not exported yet.
-        synchronized(this) {
+        synchronized (this) {
             // double check now in the synchronization block to
             // really make sure that we can export.
             key = haMap.get(o);
-            if(key!=null) return createEPR(key, adrsVer, endpointAddress,wsdlAddress, recipe);
+            if (key != null) return createEPR(key, adrsVer, endpointAddress, wsdlAddress, recipe);
 
-            if(o!=null)
+            if (o != null)
                 prepare(o);
             key = UUID.randomUUID().toString();
             Instance instance = new Instance(o);
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("Storing instance ID/Instance/Object/TimerTask = [ " + key + " / " + instance + " / " + instance.instance + " / " + instance.task + " ]");
+            }
             haMap.put(key, instance);
-            if(timeoutMilliseconds!=0)
+            if (timeoutMilliseconds != 0)
                 instance.restartTimer();
         }
 
-        return createEPR(key, adrsVer, endpointAddress, wsdlAddress,recipe);
+        return createEPR(key, adrsVer, endpointAddress, wsdlAddress, recipe);
     }
 
     /*
@@ -550,8 +569,11 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     }
     */
     public void unexport(@Nullable T o) {
-        if(o==null)     return;
+        if (o == null) return;
         Instance i = haMap.remove(o);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Removed Instance = [ " + o + " ], remaining instance keys = [ " + haMap.instances.keySet() + " ]");
+        }
         if (i != null) {
             i.cancel();
         }
@@ -561,14 +583,17 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         class CookieSniffer extends DefaultHandler {
             StringBuilder buf = new StringBuilder();
             boolean inCookie = false;
+
             public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-                if(localName.equals(COOKIE_TAG.getLocalPart()) && uri.equals(COOKIE_TAG.getNamespaceURI()))
+                if (localName.equals(COOKIE_TAG.getLocalPart()) && uri.equals(COOKIE_TAG.getNamespaceURI()))
                     inCookie = true;
             }
+
             public void characters(char ch[], int start, int length) throws SAXException {
-                if(inCookie)
-                    buf.append(ch,start,length);
+                if (inCookie)
+                    buf.append(ch, start, length);
             }
+
             public void endElement(String uri, String localName, String qName) throws SAXException {
                 inCookie = false;
             }
@@ -577,24 +602,24 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         epr.writeTo(new SAXResult(sniffer));
 
         Instance o = haMap.get(sniffer.buf.toString());
-        if(o!=null)
+        if (o != null)
             return o.instance;
         return null;
     }
 
     public void setFallbackInstance(T o) {
-        if(o!=null)
+        if (o != null)
             prepare(o);
         this.fallback = o;
     }
 
     public void setTimeout(long milliseconds, Callback<T> callback) {
-        if(milliseconds<0)
+        if (milliseconds < 0)
             throw new IllegalArgumentException();
         this.timeoutMilliseconds = milliseconds;
         this.timeoutCallback = callback;
         haMap.getExpiredTask().cancel();
-        if (timeoutMilliseconds>0) {
+        if (timeoutMilliseconds > 0) {
             startTimer();
             timer.schedule(haMap.newExpiredTask(), timeoutMilliseconds, timeoutMilliseconds);
         } else {
@@ -611,7 +636,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
 
     private synchronized void startTimer() {
-        if (timer==null) {
+        if (timer == null) {
             timer = new Timer("JAX-WS stateful web service timeout timer");
         }
     }
@@ -636,7 +661,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             StoreType type = haEnabled ? StoreType.IN_MEMORY : StoreType.NOOP;
             bs = HighAvailabilityProvider.INSTANCE.createBackingStore(
                     HighAvailabilityProvider.INSTANCE.getBackingStoreFactory(type),
-                    owner.getServiceName()+":"+owner.getPortName()+":STATEFUL_WEB_SERVICE",
+                    owner.getServiceName() + ":" + owner.getPortName() + ":STATEFUL_WEB_SERVICE",
                     String.class,
                     HAInstance.class);
             expiredTask = newExpiredTask();
@@ -688,14 +713,17 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         synchronized void put(String id, Instance newi) {
             Instance oldi = instances.get(id);
             boolean isNew = oldi == null;
-            if (oldi != null) {
+            if (!isNew) {
                 reverseInstances.remove(oldi.instance);
+
+                // reuse the original timeout task
+                newi.task = oldi.task;
             }
 
             instances.put(id, newi);
             reverseInstances.put(newi.instance, id);
             HAInstance<T> hai = new HAInstance<T>(newi.instance, timeoutMilliseconds);
-            HighAvailabilityProvider.saveTo(bs,id, hai, isNew);
+            HighAvailabilityProvider.saveTo(bs, id, hai, isNew);
         }
 
         synchronized void put(T t) {
@@ -738,8 +766,8 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     }
 
 
-    private static final QName COOKIE_TAG = new QName("http://jax-ws.dev.java.net/xml/ns/","objectId","jaxws");
+    private static final QName COOKIE_TAG = new QName("http://jax-ws.dev.java.net/xml/ns/", "objectId", "jaxws");
 
     private static final Logger logger =
-        Logger.getLogger(com.sun.xml.ws.util.Constants.LoggingDomain + ".server");
+            Logger.getLogger(com.sun.xml.ws.util.Constants.LoggingDomain + ".server");
 }
