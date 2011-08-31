@@ -1,0 +1,6 @@
+<descriptor since="2.2.6" bugs="jaxws-943" uses="multi-endpoint">
+    <description>This is test for JAXWS-943 bug</description>
+    <service basedir="./server" />
+    <test-options>-noPackage</test-options>
+</descriptor>
+
