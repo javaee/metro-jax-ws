@@ -7,6 +7,7 @@
     assertEquals("str", testImplPort.method1("str"));
     assertEquals("str", testImplPort.method3("str"));
     assertEquals("str", testImplPort.method4("str"));
+    assertEquals("str", testImplPort.method5("str"));
   ]]></client>
 
   <client name="inheritance_webMethods_reflection" sideEffectFree="true">
@@ -16,6 +17,11 @@
     try {
       testImplPort.getClass().getMethod("method2", new Class[]{String.class});
       fail("method2 shouldn't be a Web Method");
+    } catch(NoSuchMethodException e) {
+    }
+    try {
+      testImplPort.getClass().getMethod("method6", new Class[]{String.class});
+      fail("method6 shouldn't be a Web Method");
     } catch(NoSuchMethodException e) {
     }
   ]]></client>

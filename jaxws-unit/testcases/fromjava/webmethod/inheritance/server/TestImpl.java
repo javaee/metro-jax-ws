@@ -19,4 +19,16 @@ public class TestImpl extends TestImplBase {
     public String method4(String str) {
         return str;
     }
+
+    // This is also a WebMethod since declaring class
+    // has WebService(eventhough the overridden method
+    // has @WebMethod(exclude=true))
+    public String method5(String str) {
+        return str;
+    }
+
+    @WebMethod(exclude=true)
+    public String method6(String str) {
+        return str;
+    }
 }

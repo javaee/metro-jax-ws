@@ -12,4 +12,14 @@ public class TestImplBase extends TestImplBaseBase {
     public String method2(String str) {
         return str;
     }
+
+    @WebMethod(exclude=true)
+    public String method5(String str) {
+        return str;
+    }
+
+    @WebMethod
+    public String method6(String str) {
+        return str;
+    }
 }
