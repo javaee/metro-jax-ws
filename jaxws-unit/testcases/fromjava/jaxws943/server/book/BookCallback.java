@@ -45,7 +45,6 @@ import com.sun.xml.ws.developer.StatefulWebServiceManager.Callback;
 
 public class BookCallback implements Callback<Book>{
 
-	@Override
 	public void onTimeout(Book book, StatefulWebServiceManager<Book> swsm) {
 		System.out.println("[ " + hashCode() + " ] Calling timeout on book : "+book.getId());
 		swsm.unexport(book);		
