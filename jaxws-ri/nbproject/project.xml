@@ -347,22 +347,22 @@
             <compilation-unit>
                 <package-root>rt/src</package-root>
                 <classpath mode="boot">${ri.nb.boot.cp}</classpath>
-                <classpath mode="compile">${ri.nb.common.cp}:${rt/build/classes}:rt/build/gen-src</classpath>
-                <built-to>${rt/build/classes}</built-to>
+                <classpath mode="compile">rt/build/gen-src:rt/build/classes:${ri.nb.common.cp}</classpath>
+                <built-to>rt/build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>
                 <package-root>rt/build/gen-src</package-root>
                 <classpath mode="boot">${ri.nb.boot.cp}</classpath>
                 <classpath mode="compile">rt/src:${ri.nb.common.cp}</classpath>
-                <built-to>${rt/build/classes}</built-to>
+                <built-to>rt/build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>
                 <package-root>rt/test</package-root>
                 <unit-tests/>
                 <classpath mode="boot">${ri.nb.boot.cp}</classpath>
-                <classpath mode="compile">${rt/build/classes}:${ri.nb.test.cp}</classpath>
+                <classpath mode="compile">rt/build/classes:${ri.nb.test.cp}</classpath>
                 <built-to>rt/build/test-classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
@@ -412,7 +412,7 @@
             <compilation-unit>
                 <package-root>eclipselink_sdo/src</package-root>
                 <classpath mode="boot">${ri.nb.boot.cp}</classpath>
-                <classpath mode="compile">${ri.nb.common.cp}:eclipselink_sdo/lib/common.sdo.jar:eclipselink_jaxb/lib/eclipselink.jar:eclipselink_jaxb/lib/javax.mail_1.4.jar:rt/build/classes</classpath>
+                <classpath mode="compile">eclipselink_sdo/lib/common.sdo.jar:eclipselink_jaxb/lib/eclipselink.jar:eclipselink_jaxb/lib/javax.mail_1.4.jar:rt/build/classes:${ri.nb.common.cp}</classpath>
                 <built-to>eclipselink_sdo/build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
