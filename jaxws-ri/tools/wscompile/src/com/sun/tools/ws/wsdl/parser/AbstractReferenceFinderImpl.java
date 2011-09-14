@@ -51,6 +51,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * XMLFilter that finds references to other schema files from
@@ -93,7 +94,16 @@ public abstract class AbstractReferenceFinderImpl extends XMLFilterImpl {
 
         try {
             // absolutize URL.
-            String ref = new URI(locator.getSystemId()).resolve(new URI(relativeRef)).toString();
+        	String lsi = locator.getSystemId();
+        	String ref;
+        	if (lsi.startsWith("jar:")) {
+        		int bangIdx = lsi.indexOf('!');
+        		if (bangIdx > 0) {
+        			ref = new URL(new URL(lsi), relativeRef).toString();
+        		} else
+        			ref = relativeRef;
+        	} else
+        		ref = new URI(lsi).resolve(new URI(relativeRef)).toString();
 
             // then parse this schema as well,
             // but don't mark this document as a root.

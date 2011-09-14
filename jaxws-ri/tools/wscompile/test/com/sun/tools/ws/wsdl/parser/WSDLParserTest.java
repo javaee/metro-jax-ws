@@ -85,6 +85,61 @@ public class WSDLParserTest extends TestCase {
         assertTrue(errorReceiver.hadError());
     }
 
+    // testJaxws994
+    private class MyLocator implements org.xml.sax.Locator {
+      boolean hasEntry;
+      MyLocator(boolean hasEntry) {
+        this.hasEntry = hasEntry;
+      }
+      public java.lang.String getPublicId() { return "id";}
+      public java.lang.String getSystemId() { 
+        if (hasEntry) {
+          return "jar:file:my.jar!/wsdls/simple.wsdl";
+        } else {
+         return "jar:file:my.jar";
+        }
+      }
+      public int getLineNumber() { return 0;}
+      public int getColumnNumber() { return 0;}
+    }
+    private class MyFinder extends com.sun.tools.ws.wsdl.parser.AbstractReferenceFinderImpl {
+      MyFinder(boolean hasEntry) { 
+        super(new MyDOMForest(null,null, null, null, hasEntry)); 
+      }
+      protected String findExternalResource( String nsURI, String localName, org.xml.sax.Attributes atts) {
+        return nsURI;
+      }
+    }
+    private class MyDOMForest extends com.sun.tools.ws.wsdl.parser.DOMForest {
+      boolean hasEntry;
+      MyDOMForest(InternalizationLogic logic, org.xml.sax.EntityResolver entityResolver, WsimportOptions options, com.sun.tools.ws.wscompile.ErrorReceiver errReceiver, boolean hasEntry) {
+       super(logic, entityResolver, options, errReceiver);
+       this.hasEntry = hasEntry;
+     }
+
+     public org.w3c.dom.Document parse(String systemId, boolean root) throws org.xml.sax.SAXException, java.io.IOException {
+       if (hasEntry) {
+         assertEquals("fail to resolve jar:file resource", "jar:file:my.jar!/wsdls/simple.wsdl", systemId);
+       } else {
+         assertEquals("fail to resolve jar:file resource", "externalResource", systemId);
+       }
+       return null;
+     }
+    }
+    public void testJaxws994() throws Exception {
+      boolean hasEntry = false;
+      MyLocator locator = new MyLocator(hasEntry);
+      MyFinder finder = new MyFinder(hasEntry);
+      finder.setDocumentLocator(locator);
+      finder.startElement(null, null, null, null);
+
+      hasEntry = true;
+      locator = new MyLocator(hasEntry);
+      finder = new MyFinder(hasEntry);
+      finder.setDocumentLocator(locator);
+      finder.startElement(null, null, null, null);
+    }
+
     public void testParseSimpleSystemIdNull() throws Exception {
         final ErrorReceiverFilter errorReceiver = new ErrorReceiverFilter();
         final InputSource source = getResourceSource("com/sun/tools/ws/wsdl/parser/simple.wsdl");
