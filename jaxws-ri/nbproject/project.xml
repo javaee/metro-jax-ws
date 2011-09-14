@@ -37,6 +37,9 @@
 <project xmlns="http://www.netbeans.org/ns/project/1">
     <type>org.netbeans.modules.ant.freeform</type>
     <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>JAXWS-RI-2.2</name>
+        </general-data>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
             <!--
                 !!! Do NOT use Project Properties customizer to edit this file
@@ -329,16 +332,29 @@
                         <location>transports/local/src</location>
                     </source-folder>
                     <source-file>
+                        <label>etc/build-bundle.xml</label>
+                        <location>etc/build-bundle.xml</location>
+                    </source-file>
+                    <source-file>
+                        <location>build-taskdefs.xml</location>
+                    </source-file>
+                    <source-file>
                         <location>build.xml</location>
+                    </source-file>
+                    <source-file>
+                        <location>project.properties</location>
+                    </source-file>
+                    <source-file>
+                        <location>nbproject/private/private.properties</location>
                     </source-file>
                 </items>
                 <context-menu>
                     <ide-action name="build"/>
                     <ide-action name="rebuild"/>
                     <ide-action name="clean"/>
-                    <ide-action name="javadoc"/>
+                    <!--                    <ide-action name="javadoc"/>-->
                     <ide-action name="test"/>
-                    <ide-action name="compile.single"/>
+                    <!--                    <ide-action name="compile.single"/>-->
                 </context-menu>
             </view>
             <subprojects/>
@@ -427,7 +443,7 @@
             <compilation-unit>
                 <package-root>tools/wscompile/src</package-root>
                 <classpath mode="boot">${ri.nb.boot.cp}</classpath>
-                <classpath mode="compile">tools/wscompile/build/classes:tools/wscompile/build/gen-src:rt/src:rt/build/gen-src:${ri.nb.common.cp}:${ri.nb.ant.cp}:${ri.nb.tools.jar}</classpath>
+                <classpath mode="compile">tools/wscompile/build/classes:tools/wscompile/build/gen-src:rt/src:rt/build/gen-src:build/lib/jaxws-rt.jar:${ri.nb.common.cp}:${ri.nb.ant.cp}:${ri.nb.tools.jar}</classpath>
                 <built-to>tools/wscompile/build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
