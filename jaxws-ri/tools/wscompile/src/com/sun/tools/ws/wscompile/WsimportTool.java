@@ -169,6 +169,8 @@ public class WsimportTool {
                 return true;
             }
         }
+        
+        Authenticator orig = null;
         try {
             options.parseArguments(args);
             options.validate();
@@ -182,6 +184,7 @@ public class WsimportTool {
 
                 //set auth info
                 //if(options.authFile != null)
+                orig = DefaultAuthenticator.getCurrentAuthenticator();
                     Authenticator.setDefault(new DefaultAuthenticator(receiver, options.authFile));
 
                 MetadataFinder forest = new MetadataFinder(new WSDLInternalizationLogic(), options, receiver);
@@ -256,6 +259,7 @@ public class WsimportTool {
             return false;
         } finally{
             deleteGeneratedFiles();
+            Authenticator.setDefault(orig);
 
         }
         if(receiver.hadError()) {

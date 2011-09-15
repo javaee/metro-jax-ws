@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,9 +46,12 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.LocatorImpl;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,6 +110,44 @@ public class DefaultAuthenticator extends Authenticator {
         return null;
     }
 
+    static Authenticator getCurrentAuthenticator() {
+        final Field f = getTheAuthenticator();
+        if (f == null) {
+            return null;
+        }
+
+        try {
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
+
+                public Void run() {
+                    f.setAccessible(true);
+                    return null;
+                }
+            });
+            return (Authenticator) f.get(null);
+        } catch (Exception ex) {
+            return null;
+        } finally {
+            if (f != null) {
+                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+
+                    public Void run() {
+                        f.setAccessible(false);
+                        return null;
+                    }
+                });
+            }
+        }
+    }
+
+    private static Field getTheAuthenticator() {
+        try {
+            return Authenticator.class.getDeclaredField("theAuthenticator");
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+    
     private void parseAuth() {
         errReceiver.info(new SAXParseException(WscompileMessages.WSIMPORT_READING_AUTH_FILE(authFile), null));
 

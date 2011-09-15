@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2005-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,7 @@ import com.sun.istack.NotNull;
 import com.sun.tools.ws.processor.modeler.wsdl.ConsoleErrorReporter;
 import junit.framework.TestCase;
 import java.io.File;
+import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
@@ -78,6 +79,18 @@ public class WsimportDefaultAuthTest extends TestCase {
 
     }
 
+    public void testGetDefaultAuth() throws Exception {
+        URL url = getResourceAsUrl("com/sun/tools/ws/wscompile/.auth");
+        DefaultAuthenticator da = new MyAuthenticator(new ConsoleErrorReporter(System.out), new File(url.toURI()));
+        assertNull(DefaultAuthenticator.getCurrentAuthenticator());
+        Authenticator.setDefault(da);
+        Authenticator auth = DefaultAuthenticator.getCurrentAuthenticator();
+        assertNotNull(auth);
+        assertEquals(da, auth);
+        Authenticator.setDefault(null);
+        assertNull(DefaultAuthenticator.getCurrentAuthenticator());
+    }
+    
     private static URL getResourceAsUrl(String resourceName) throws RuntimeException {
         URL input = Thread.currentThread().getContextClassLoader().getResource(resourceName);
         if (input == null) {
