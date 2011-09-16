@@ -174,8 +174,7 @@ end users and middleware developers. </p>
 <p>
 This release brings in the highly pluggable framework through abstractions such as 
 <a href="http://jax-ws-architecture-document.java.net/nonav/doc21/com/sun/xml/ws/api/pipe/Tube.html">Tube</a> and 
-<a href="http://jax-ws-architecture-document.java.net/nonav/doc21/com/sun/xml/ws/api/message/Message.html">Message</a>. Refer to the latest <span style="background-color: #FFFFFF">
-<a href="http://jax-ws-architecture-document.java.net/nonav/doc21/?jaxws/package-summary.html">architecture document</a></span>. 
+<a href="http://jax-ws-architecture-document.java.net/nonav/doc21/com/sun/xml/ws/api/message/Message.html">Message</a>.  
 This architecture document is a glorified javadoc which includes all the JAX-WS 
 RI specific APIs. ${PRODUCT_NAME} has many bug fixes made for interoperability with .NET 3.0. This is made mostly 
 possible due to WSIT, which uses JAX-WS plugabble architecture to plug in support 
@@ -265,7 +264,7 @@ valid with Java EE 6 as well.
 <table border="1" width="100%" id="table1">
 	<tr>
 		<td>Runtime Jars</td>
-		<td>FastInfoset.jar, activation.jar, http.jar, jaxb-api.jar, jaxb-impl.jar, jaxws-api.jar, jaxws-rt.jar, jsr173_api.jar, jsr181-api.jar, jsr250-api.jar, mimepull.jar, resolver.jar, saaj-api.jar, saaj-impl.jar, woodstox.jar, stax-ex.jar, streambuffer.jar, policy.jar, gmbal-api-only.jar, management-api.jar, ha-api.jar</td>
+		<td>FastInfoset.jar, activation.jar, http.jar, jaxb-api.jar, jaxb-impl.jar, jaxws-api.jar, jaxws-rt.jar, jsr173_api.jar, jsr181-api.jar, jsr250-api.jar, mimepull.jar, resolver.jar, saaj-api.jar, saaj-impl.jar<sup>*</sup>, woodstox.jar, stax-ex.jar, streambuffer.jar, policy.jar, gmbal-api-only.jar, management-api.jar, ha-api.jar</td>
 	</tr>
 	<tr>
 		<td>Tooltime Jars</td>
@@ -273,6 +272,15 @@ valid with Java EE 6 as well.
 	</tr>
 </table>
 </section>
+<br />
+<div style="margin-left: 40px; padding:2px 50px 20px 50px; background-color:#f0f0f0">
+    <p><sup style="">*</sup> If you run ${PRODUCT_NAME} with <b>IBM-JDK</b>, there are two options:</p>
+    <ol>
+        <li>to add Oracles's JAXP implementation jars along</li>
+        <li>to remove the saaj-impl.jar from the libraries in order IBM SAAJ implementation to be used</li>
+    </ol>
+    The first approach is recommended.
+</div>
 
 <section title="Current Limitations">
 </p>
