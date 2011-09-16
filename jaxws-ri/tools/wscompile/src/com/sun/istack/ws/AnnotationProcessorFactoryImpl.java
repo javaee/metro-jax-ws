@@ -59,7 +59,7 @@ import com.sun.tools.ws.processor.modeler.annotation.WebServiceAP;
  */
 public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactory {
 
-    private static WebServiceAP wsAP;
+    private WebServiceAP wsAP;
     /*
      * Processor doesn't examine any options.
      */
