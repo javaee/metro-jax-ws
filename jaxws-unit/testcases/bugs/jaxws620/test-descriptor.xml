@@ -1,0 +1,4 @@
+<descriptor since="2.2.6" bugs="jaxws-620">
+    <description>JAX_WS-620: Service.Mode.MESSAGE generates incorrect SOAP request with Dispatch&lt;JAXBContext&gt;</description>
+    <service basedir="./server" />
+</descriptor>
