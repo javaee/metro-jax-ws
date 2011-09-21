@@ -51,12 +51,11 @@ import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.WSServiceDelegate;
-import com.sun.xml.ws.client.PortInfo;
+import com.sun.xml.ws.message.jaxb.JAXBDispatchMessage;
 import com.sun.xml.ws.spi.db.BindingContextFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -76,7 +75,7 @@ import javax.xml.ws.WebServiceException;
 public class JAXBDispatch extends DispatchImpl<Object> {
 
     private final JAXBContext jaxbcontext;
-    
+
     // We will support a JAXBContext parameter from an unknown JAXB
     // implementation by marshaling and unmarshaling directly from the
     // context object, as there is no Bond available.
@@ -116,38 +115,35 @@ public class JAXBDispatch extends DispatchImpl<Object> {
 
     Packet createPacket(Object msg) {
         assert jaxbcontext != null;
-        
-        Message message;
-    	if (msg == null)
-    		message = Messages.createEmpty(soapVersion);
-    	else if (isContextSupported)
-    		message = Messages.create(jaxbcontext, msg, soapVersion);
-    	else
-    		message = Messages.createRaw(jaxbcontext, msg, soapVersion);
-    	return new Packet(message);
 
-    	/*
-        try {
-            Marshaller marshaller = jaxbcontext.createMarshaller();
-            marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
-        	
-            Message message = (msg == null) ? Messages.createEmpty(soapVersion): Messages.create(jaxbcontext, msg, soapVersion);
-            return new Packet(message);
-        } catch (JAXBException e) {
-            throw new WebServiceException(e);
+        Message message;
+        if (mode == Service.Mode.MESSAGE) {
+            message = isContextSupported ?
+                    new JAXBDispatchMessage(BindingContextFactory.create(jaxbcontext), msg, soapVersion) :
+                    new JAXBDispatchMessage(jaxbcontext, msg, soapVersion);
+        } else {
+            if (msg == null) {
+                message = Messages.createEmpty(soapVersion);
+            } else {
+                message = isContextSupported ?
+                        Messages.create(jaxbcontext, msg, soapVersion) :
+                        Messages.createRaw(jaxbcontext, msg, soapVersion);
+            }
         }
-        */
+
+        return new Packet(message);
+
     }
 
     public void setOutboundHeaders(Object... headers) {
-        if(headers==null)
+        if (headers == null)
             throw new IllegalArgumentException();
         Header[] hl = new Header[headers.length];
-        for( int i=0; i<hl.length; i++ ) {
-            if(headers[i]==null)
+        for (int i = 0; i < hl.length; i++) {
+            if (headers[i] == null)
                 throw new IllegalArgumentException();
             // TODO: handle any JAXBContext.
-            hl[i] = Headers.create((JAXBRIContext)jaxbcontext,headers[i]);
+            hl[i] = Headers.create((JAXBRIContext) jaxbcontext, headers[i]);
         }
         super.setOutboundHeaders(hl);
     }

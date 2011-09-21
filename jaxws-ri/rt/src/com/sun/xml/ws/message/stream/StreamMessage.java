@@ -462,7 +462,7 @@ public final class StreamMessage extends AbstractMessageImpl {
         writePayloadTo(contentHandler,errorHandler, true);
         bodyTag.writeEnd(contentHandler);
         envelopeTag.writeEnd(contentHandler);
-
+        contentHandler.endDocument();
     }
 
     /**
