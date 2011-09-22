@@ -54,7 +54,6 @@ import javax.xml.ws.ResponseWrapper;
 @WebService(name = "AddNumbers", targetNamespace = "http://duke.example.org")
 public class AddNumbersImpl implements AddNumbers {
 
-    @Override
     @WebMethod
     @WebResult(targetNamespace = "http://duke.example.org")
     @RequestWrapper(localName = "addNumbers", targetNamespace = "http://duke.example.org", className = "dispatch.generate.client.AddNumbers")
