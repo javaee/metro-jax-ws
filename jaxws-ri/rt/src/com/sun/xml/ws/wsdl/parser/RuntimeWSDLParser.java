@@ -300,14 +300,26 @@ public class RuntimeWSDLParser {
 
         }
         if(parser == null){
-            if(wsdlLoc != null)
-                parser = new Parser(wsdlLoc, createReader(wsdlLoc));
-            else
-                parser = new Parser(wsdlLoc, createReader(wsdlSource));
+        	//If a WSDL source is provided that is known to be readable, then
+        	//prioritize that over the URL - this avoids going over the network
+        	//an additional time if a valid WSDL Source is provided - Deva Sagar 09/20/2011
+        	if (wsdlSource != null && isKnownReadableSource(wsdlSource)) {
+            	parser = new Parser(wsdlLoc, createReader(wsdlSource));
+        	} else if (wsdlLoc != null) {
+        		parser = new Parser(wsdlLoc, createReader(wsdlLoc));
+        	}
         }
         return parser;
     }
 
+    private boolean isKnownReadableSource(Source wsdlSource) {
+		if (wsdlSource instanceof StreamSource) {
+			return (((StreamSource) wsdlSource).getInputStream() != null ||
+					((StreamSource) wsdlSource).getReader() != null);
+		} else {
+			return false;
+		}
+	}
 
     private XMLStreamReader createReader(@NotNull Source src) throws XMLStreamException {
         return new TidyXMLStreamReader(SourceReaderFactory.createSourceReader(src, true), null);
