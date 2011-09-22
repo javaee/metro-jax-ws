@@ -35,7 +35,9 @@
  */
 package server.endpoint.client;
 
+import com.sun.xml.ws.client.WSServiceDelegate;
 import java.io.StringReader;
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
  
 import javax.jws.WebMethod;
@@ -55,6 +57,8 @@ import javax.xml.stream.*;
 import java.io.*;
 import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.Style;
+
+import com.sun.xml.ws.client.WSServiceDelegate;
 
 import junit.framework.TestCase;
 
@@ -94,7 +98,47 @@ public class SourceTest extends TestCase
         endpoint.stop();
     }
 
-    private Source invoke(String address) throws Exception {
+    /**
+     * This test ensures that when a valid Source object is provided to the JAX-WS client for
+     * the WSDL, it gets used instead of going over the wire to read from the WSDL URL
+     * (Associated change is in RuntimeWSDLParser.resolveWSDL)
+     * 
+     * The test first reads the WSDL into an in-memory Source object and uses that 
+     * to construct the Service delegate (using WSServiceDelegate constructor since 
+     * no standard API is available). It then creates the service with this Source and makes
+     * sure that the InputStream underlying the Source has been consumed 
+     * 
+     * @throws Exception
+     */
+    public void testServiceCreateUsingInMemorySource() throws Exception {
+    	int port = PortAllocator.getFreePort();
+        String address = "http://localhost:"+port+"/source2";
+        Endpoint endpoint = Endpoint.create(new SourceEndpoint());
+        endpoint.publish(address);
+        QName portName = new QName(NS, "RpcLitPort");
+        QName serviceName = new QName(NS, "RpcLitEndpoint");
+        StreamSource wsdlSource = readWsdlToInMemorySource(address + "?wsdl");
+        WSServiceDelegate svcDel = new WSServiceDelegate(wsdlSource, serviceName, Service.class);
+        byte[] b = new byte[512];
+        int len = wsdlSource.getInputStream().read(b);
+        assertTrue("In-memory WSDL Source passed to client must be consumed!", len < 0);
+    }
+    private StreamSource readWsdlToInMemorySource(String wsdlAddr) throws Exception {
+		URL wsdlUrl = new URL(wsdlAddr);
+		InputStream wsdlStream = wsdlUrl.openStream();
+		byte[] b = new byte[512];
+		int len = wsdlStream.read(b);
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		while (len >= 0) {
+			bos.write(b, 0, len);
+			len = wsdlStream.read(b);
+		}
+		ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+		StreamSource wsdlSource = new StreamSource(bis, wsdlAddr);
+		return wsdlSource;
+	}
+
+	private Source invoke(String address) throws Exception {
         QName portName = new QName(NS, "RpcLitPort");
         QName serviceName = new QName(NS, "RpcLitEndpoint");
         Service service = Service.create(new URL(address+"?wsdl"), serviceName);
