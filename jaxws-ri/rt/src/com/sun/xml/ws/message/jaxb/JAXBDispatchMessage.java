@@ -52,7 +52,6 @@ import com.sun.xml.ws.streaming.XMLStreamWriterUtil;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -120,7 +119,7 @@ public class JAXBDispatchMessage extends AbstractMessageImpl {
 
     @Override
     protected void writePayloadTo(ContentHandler contentHandler, ErrorHandler errorHandler, boolean fragment) throws SAXException {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -178,17 +177,17 @@ public class JAXBDispatchMessage extends AbstractMessageImpl {
 
     @Override
     public Source readPayloadAsSource() {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public XMLStreamReader readPayload() throws XMLStreamException {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void writePayloadTo(XMLStreamWriter sw) throws XMLStreamException {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
