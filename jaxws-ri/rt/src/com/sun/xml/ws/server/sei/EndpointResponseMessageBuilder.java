@@ -63,11 +63,11 @@ import java.util.List;
  * @see MessageFiller
  * @author Jitendra Kotamraju
  */
-abstract class EndpointResponseMessageBuilder {
-    abstract Message createMessage(Object[] methodArgs, Object returnValue);
+public abstract class EndpointResponseMessageBuilder {
+    public abstract Message createMessage(Object[] methodArgs, Object returnValue);
 
-    static final EndpointResponseMessageBuilder EMPTY_SOAP11 = new Empty(SOAPVersion.SOAP_11);
-    static final EndpointResponseMessageBuilder EMPTY_SOAP12 = new Empty(SOAPVersion.SOAP_12);
+    public static final EndpointResponseMessageBuilder EMPTY_SOAP11 = new Empty(SOAPVersion.SOAP_11);
+    public static final EndpointResponseMessageBuilder EMPTY_SOAP12 = new Empty(SOAPVersion.SOAP_12);
 
     private static final class Empty extends EndpointResponseMessageBuilder {
         private final SOAPVersion soapVersion;
@@ -76,7 +76,7 @@ abstract class EndpointResponseMessageBuilder {
             this.soapVersion = soapVersion;
         }
 
-        Message createMessage(Object[] methodArgs, Object returnValue) {
+        public Message createMessage(Object[] methodArgs, Object returnValue) {
             return Messages.createEmpty(soapVersion);
         }
     }
@@ -99,7 +99,7 @@ abstract class EndpointResponseMessageBuilder {
             this.soapVersion = soapVersion;
         }
 
-        final Message createMessage(Object[] methodArgs, Object returnValue) {
+        public final Message createMessage(Object[] methodArgs, Object returnValue) {
             return JAXBMessage.create( bridge, build(methodArgs, returnValue), soapVersion );
         }
 
@@ -113,7 +113,7 @@ abstract class EndpointResponseMessageBuilder {
      * Used to create a payload JAXB object just by taking
      * one of the parameters.
      */
-    final static class Bare extends JAXB {
+    public final static class Bare extends JAXB {
         /**
          * The index of the method invocation parameters that goes into the payload.
          */
@@ -124,7 +124,7 @@ abstract class EndpointResponseMessageBuilder {
         /**
          * Creates a {@link EndpointResponseMessageBuilder} from a bare parameter.
          */
-        Bare(ParameterImpl p, SOAPVersion soapVersion) {
+        public Bare(ParameterImpl p, SOAPVersion soapVersion) {
             super(p.getXMLBridge(), soapVersion);
             this.methodPos = p.getIndex();
             this.getter = ValueGetter.get(p);
@@ -177,7 +177,7 @@ abstract class EndpointResponseMessageBuilder {
      * Used to create a payload JAXB object by wrapping
      * multiple parameters into one "wrapper bean".
      */
-    final static class DocLit extends Wrapped {
+    public final static class DocLit extends Wrapped {
         /**
          * How does each wrapped parameter binds to XML?
          */
@@ -198,7 +198,7 @@ abstract class EndpointResponseMessageBuilder {
         /**
          * Creates a {@link EndpointResponseMessageBuilder} from a {@link WrapperParameter}.
          */
-        DocLit(WrapperParameter wp, SOAPVersion soapVersion) {
+        public DocLit(WrapperParameter wp, SOAPVersion soapVersion) {
             super(wp, soapVersion);
             bindingContext = wp.getOwner().getBindingContext();
 
@@ -265,7 +265,7 @@ abstract class EndpointResponseMessageBuilder {
      * This is used for rpc/lit, as we don't have a wrapper bean for it.
      * (TODO: Why don't we have a wrapper bean for this, when doc/lit does!?)
      */
-    final static class RpcLit extends Wrapped {
+    public final static class RpcLit extends Wrapped {
         /**
          * How does each wrapped parameter binds to XML?
          */
@@ -279,7 +279,7 @@ abstract class EndpointResponseMessageBuilder {
         /**
          * Creates a {@link EndpointResponseMessageBuilder} from a {@link WrapperParameter}.
          */
-        RpcLit(WrapperParameter wp, SOAPVersion soapVersion) {
+        public RpcLit(WrapperParameter wp, SOAPVersion soapVersion) {
             super(wp, soapVersion);
             // we'll use CompositeStructure to pack requests
             assert wp.getTypeInfo().type==WrapperComposite.class;

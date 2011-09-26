@@ -93,7 +93,7 @@ public class ServiceGenerator extends GeneratorBase {
     }
 
     private ServiceGenerator(Model model, WsimportOptions options, ErrorReceiver receiver) {
-        super(model, options, receiver);
+        init(model, options, receiver);
     }
 
     @Override
@@ -131,7 +131,9 @@ public class ServiceGenerator extends GeneratorBase {
         inv.arg("namespace");
         inv.arg("localpart");
 
-        if (wsdlLocation.startsWith("http://") || wsdlLocation.startsWith("https://") || wsdlLocation.startsWith("file:/")) {
+        if (options.useBaseResourceAndURLToLoadWSDL) {
+            writeClassLoaderBaseResourceWSDLLocation(className, cls, urlField, exField);
+        } else if (wsdlLocation.startsWith("http://") || wsdlLocation.startsWith("https://") || wsdlLocation.startsWith("file:/")) {
             writeAbsWSDLLocation(cls, urlField, exField);
         } else if (wsdlLocation.startsWith("META-INF/")) {
             writeClassLoaderResourceWSDLLocation(className, cls, urlField, exField);
@@ -342,6 +344,34 @@ public class ServiceGenerator extends GeneratorBase {
         staticBlock.assign(exField, exVar);
     }
 
+    /*
+       Generates the code to create URL for WSDL location from classloader base resource
+
+       for e.g.:
+       static {
+           Exception e = null;
+           URL url = null;
+           try {
+               url = new URL(ExampleService.class.getClassLoader().getResource("."), ...);
+           } catch (MalformedURLException murl) {
+               e = new WebServiceException(murl);
+           }
+           EXAMPLESERVICE_WSDL_LOCATION = url;
+           EXAMPLESERVICE_EXCEPTION = e;
+       }
+     */
+     private void writeClassLoaderBaseResourceWSDLLocation(String className, JDefinedClass cls, JFieldVar urlField, JFieldVar exField) {
+         JBlock staticBlock = cls.init();
+         JVar exVar = staticBlock.decl(cm.ref(WebServiceException.class), "e", JExpr._null());
+         JVar urlVar = staticBlock.decl(cm.ref(URL.class), "url", JExpr._null());
+         JTryBlock tryBlock = staticBlock._try();
+         tryBlock.body().assign(urlVar, JExpr._new(cm.ref(URL.class)).arg(JExpr.dotclass(cm.ref(className)).invoke("getResource").arg(".")).arg(wsdlLocation));
+         JCatchBlock catchBlock = tryBlock._catch(cm.ref(MalformedURLException.class));
+         JVar murlVar = catchBlock.param("murl");
+         catchBlock.body().assign(exVar, JExpr._new(cm.ref(WebServiceException.class)).arg(murlVar));
+         staticBlock.assign(urlField, urlVar);
+         staticBlock.assign(exField, exVar);
+     }
 
     /*
        Generates code that gives wsdl URL. If there is an exception in

@@ -78,11 +78,33 @@ public final class JAXWSUtils {
 
     public static URL getFileOrURL(String fileOrURL) throws IOException {
         try {
-            return new URL(fileOrURL);
+          URL url = new URL(fileOrURL);
+          String scheme = String.valueOf(url.getProtocol()).toLowerCase();
+          if (scheme.equals("http") || scheme.equals("https"))
+            return new URL(url.toURI().toASCIIString());
+          return url;
+        } catch (URISyntaxException e) {
+            return new File(fileOrURL).toURL();
         } catch (MalformedURLException e) {
             return new File(fileOrURL).toURL();
         }
     }
+
+  public static URL getEncodedURL(String urlStr) throws MalformedURLException {
+      URL url = new URL(urlStr);
+      String scheme = String.valueOf(url.getProtocol()).toLowerCase();
+      if (scheme.equals("http") || scheme.equals("https")) {
+          try {
+              return new URL(url.toURI().toASCIIString());
+          } catch (URISyntaxException e) {
+              MalformedURLException malformedURLException = new MalformedURLException(e.getMessage());
+              malformedURLException.initCause(e);
+              throw malformedURLException;
+          }
+       }
+       return url;
+  }
+
     private static String escapeSpace( String url ) {
         // URLEncoder didn't work.
         StringBuffer buf = new StringBuffer();

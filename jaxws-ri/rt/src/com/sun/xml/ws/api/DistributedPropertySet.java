@@ -40,15 +40,18 @@
 
 package com.sun.xml.ws.api;
 
-import com.sun.istack.FinalArrayList;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.ResponseContext;
 
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.WebServiceContext;
 import java.util.Map.Entry;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -91,41 +94,44 @@ public abstract class DistributedPropertySet extends PropertySet implements org.
     /**
      * All {@link PropertySet}s that are bundled into this {@link PropertySet}.
      */
-    private final FinalArrayList<PropertySet> satellites = new FinalArrayList<PropertySet>();
+    private final Map<Class, PropertySet> satellites = new IdentityHashMap<Class, PropertySet>();
 
     public void addSatellite(@NotNull PropertySet satellite) {
-        satellites.add(satellite);
+        addSatellite(satellite.getClass(), satellite);
     }
 
-    public void removeSatellite(@NotNull PropertySet satellite) {
-        satellites.remove(satellite);
+    public void addSatellite(@NotNull Class keyClass, @NotNull PropertySet satellite) {
+        satellites.put(keyClass, satellite);
     }
 
     public void copySatelliteInto(@NotNull DistributedPropertySet r) {
-        r.satellites.addAll(this.satellites);
+        r.satellites.putAll(this.satellites);
     }
-
+    
     public @Nullable <T extends org.jvnet.ws.message.PropertySet> T getSatellite(Class<T> satelliteClass) {
-        for (PropertySet child : satellites) {
+        T satellite = (T) satellites.get(satelliteClass);
+        if (satellite != null)
+        	return satellite;
+        
+        for (PropertySet child : satellites.values()) {
             if (satelliteClass.isInstance(child)) {
                 return satelliteClass.cast(child);
             }
 
             if (DistributedPropertySet.class.isInstance(child)) {
-                T satellite = DistributedPropertySet.class.cast(child).getSatellite(satelliteClass);
+                satellite = DistributedPropertySet.class.cast(child).getSatellite(satelliteClass);
                 if (satellite != null) {
                     return satellite;
                 }
             }
         }
-
         return null;
     }
 
     @Override
     public Object get(Object key) {
         // check satellites
-        for (PropertySet child : satellites) {
+        for (PropertySet child : satellites.values()) {
             if(child.supports(key))
                 return child.get(key);
         }
@@ -137,7 +143,7 @@ public abstract class DistributedPropertySet extends PropertySet implements org.
     @Override
     public Object put(String key, Object value) {
         // check satellites
-        for (PropertySet child : satellites) {
+        for (PropertySet child : satellites.values()) {
             if(child.supports(key))
                 return child.put(key,value);
         }
@@ -149,7 +155,7 @@ public abstract class DistributedPropertySet extends PropertySet implements org.
     @Override
     public boolean supports(Object key) {
         // check satellites
-        for (PropertySet child : satellites) {
+        for (PropertySet child : satellites.values()) {
             if(child.supports(key))
                 return true;
         }
@@ -160,7 +166,7 @@ public abstract class DistributedPropertySet extends PropertySet implements org.
     @Override
     public Object remove(Object key) {
         // check satellites
-        for (PropertySet child : satellites) {
+        for (PropertySet child : satellites.values()) {
             if(child.supports(key))
                 return child.remove(key);
         }
@@ -171,7 +177,7 @@ public abstract class DistributedPropertySet extends PropertySet implements org.
     @Override
     /*package*/ void createEntrySet(Set<Entry<String, Object>> core) {
         super.createEntrySet(core);
-        for (PropertySet child : satellites) {
+        for (PropertySet child : satellites.values()) {
             child.createEntrySet(core);
         }
     }
@@ -187,4 +193,12 @@ public abstract class DistributedPropertySet extends PropertySet implements org.
     public void copySatelliteInto(org.jvnet.ws.message.MessageContext r) {
         copySatelliteInto((DistributedPropertySet)r);    
     }
+    
+	public SOAPMessage getSOAPMessage() throws SOAPException {
+		throw new UnsupportedOperationException();
+	}
+
+	public void setSOAPMessage(SOAPMessage message) {
+		throw new UnsupportedOperationException();
+	}
 }

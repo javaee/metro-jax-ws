@@ -46,6 +46,7 @@ import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.WSServiceDelegate;
@@ -53,6 +54,7 @@ import com.sun.xml.ws.client.dispatch.DataSourceDispatch;
 import com.sun.xml.ws.client.dispatch.DispatchImpl;
 import com.sun.xml.ws.client.dispatch.JAXBDispatch;
 import com.sun.xml.ws.client.dispatch.MessageDispatch;
+import com.sun.xml.ws.client.dispatch.PacketDispatch;
 import com.sun.xml.ws.client.sei.SEIStub;
 import com.sun.xml.ws.developer.WSBindingProvider;
 import com.sun.xml.ws.model.SOAPSEIModel;
@@ -220,7 +222,8 @@ public abstract class Stubs {
      *      see <a href="#param">common parameters</a>
      * TODO: are these parameters making sense?
      */
-    public static <T> Dispatch<T> createDispatch(QName portName,
+    @SuppressWarnings("unchecked")
+	public static <T> Dispatch<T> createDispatch(QName portName,
                                                  WSService owner,
                                                  WSBinding binding,
                                                  Class<T> clazz, Service.Mode mode, Tube next,
@@ -236,6 +239,8 @@ public abstract class Stubs {
                 return (Dispatch<T>) createMessageDispatch(portName, owner, binding, next, epr);
             else
                 throw new WebServiceException(mode+" not supported with Dispatch<Message>");
+        } else if (clazz == Packet.class) {
+            return (Dispatch<T>) createPacketDispatch(portName, owner, binding, next, epr);
         } else
             throw new WebServiceException("Unknown class type " + clazz.getName());
     }
@@ -275,6 +280,11 @@ public abstract class Stubs {
                 return (Dispatch<T>) createMessageDispatch(portInfo, binding, epr);
             else
                 throw new WebServiceException(mode+" not supported with Dispatch<Message>");
+        } else if (clazz == Packet.class) {
+            if(mode==Mode.MESSAGE)
+                return (Dispatch<T>) createPacketDispatch(portInfo, binding, epr);
+            else
+                throw new WebServiceException(mode+" not supported with Dispatch<Packet>");
         } else
             throw new WebServiceException("Unknown class type " + clazz.getName());
     }
@@ -365,6 +375,43 @@ public abstract class Stubs {
     }
 
     /**
+     * Creates a new {@link Packet}-based {@link Dispatch} stub that connects to the given pipe.
+     *
+     * @param portName
+     *      see {@link Service#createDispatch(QName, Class, Service.Mode)}.
+     * @param owner
+     *      see <a href="#param">common parameters</a>
+     * @param binding
+     *      see <a href="#param">common parameters</a>
+     * @param next
+     *      see <a href="#param">common parameters</a>
+     * @param epr
+     *      see <a href="#param">common parameters</a>
+     */
+    public static Dispatch<Packet> createPacketDispatch(
+                                           QName portName, WSService owner, WSBinding binding,
+                                           Tube next, @Nullable WSEndpointReference epr) {
+        return new PacketDispatch(portName, (WSServiceDelegate)owner, next, (BindingImpl)binding, epr);
+    }
+
+    /**
+     * Creates a new {@link Message}-based {@link Dispatch} stub that connects to the given pipe.
+     * The returned dispatch is always {@link Service.Mode#MESSAGE}.
+     *
+     * @param portInfo
+     *      see <a href="#param">common parameters</a>
+     * @param binding
+     *      see <a href="#param">common parameters</a>
+     * @param epr
+     *      see <a href="#param">common parameters</a>
+     */
+    public static Dispatch<Packet> createPacketDispatch(
+                                           WSPortInfo portInfo, WSBinding binding,
+                                           @Nullable WSEndpointReference epr) {
+        return new PacketDispatch(portInfo, (BindingImpl)binding, epr);
+    }
+
+    /**
      * Creates a new strongly-typed proxy object that implements a given port interface.
      *
      * @param service
@@ -385,7 +432,7 @@ public abstract class Stubs {
     public <T> T createPortProxy( WSService service, WSBinding binding, SEIModel model,
                                   Class<T> portInterface, Tube next, @Nullable WSEndpointReference epr ) {
 
-        SEIStub ps = new SEIStub((WSServiceDelegate)service,(BindingImpl)binding, (SOAPSEIModel)model,next, epr);
+        SEIStub ps = new SEIStub((WSServiceDelegate)service,(BindingImpl)binding, (SOAPSEIModel)model, next, epr);
         return portInterface.cast(
             Proxy.newProxyInstance( portInterface.getClassLoader(),
                 new Class[]{portInterface, WSBindingProvider.class}, ps ));

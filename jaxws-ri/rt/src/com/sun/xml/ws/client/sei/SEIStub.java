@@ -45,7 +45,6 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.api.databinding.Databinding;
-import com.sun.xml.ws.api.databinding.ClientCallBridge;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Headers;
@@ -55,6 +54,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.Fiber;
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.client.AsyncResponseImpl;
 import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.SOAPSEIModel;
@@ -86,6 +86,7 @@ public final class SEIStub extends Stub implements InvocationHandler {
         initMethodHandlers();
     }
 
+    // added portInterface to the constructor, otherwise AsyncHandler won't work
     public SEIStub(WSPortInfo portInfo, BindingImpl binding, SOAPSEIModel seiModel, WSEndpointReference epr) {
         super(portInfo, binding, seiModel.getPort().getAddress(),epr);
         this.seiModel = seiModel;
@@ -101,9 +102,7 @@ public final class SEIStub extends Stub implements InvocationHandler {
         // first fill in sychronized versions
         for (JavaMethodImpl m : seiModel.getJavaMethods()) {
             if (!m.getMEP().isAsync) {
-//            	ClientCallBridge so = databinding.getClientBridge(m.getMethod());
             	SyncMethodHandler handler = new SyncMethodHandler(this, m.getMethod());
-//                SyncMethodHandler handler = new SyncMethodHandler(this, m);
                 syncs.put(m.getOperation(), m);
                 methodHandlers.put(m.getMethod(), handler);
             }
@@ -113,18 +112,13 @@ public final class SEIStub extends Stub implements InvocationHandler {
             JavaMethodImpl sync = syncs.get(jm.getOperation());
             if (jm.getMEP() == MEP.ASYNC_CALLBACK) {
                 Method m = jm.getMethod();
-//            	ClientCallBridge so = databinding.getClientBridge(m);
                 CallbackMethodHandler handler = new CallbackMethodHandler(
                         this, m, m.getParameterTypes().length - 1);
-//                CallbackMethodHandler handler = new CallbackMethodHandler(
-//                        this, jm, sync, m.getParameterTypes().length - 1);
                 methodHandlers.put(m, handler);
             }
             if (jm.getMEP() == MEP.ASYNC_POLL) {
                 Method m = jm.getMethod();
-//            	ClientCallBridge so = databinding.getClientBridge(m);
                 PollingMethodHandler handler = new PollingMethodHandler(this, m);
-//                PollingMethodHandler handler = new PollingMethodHandler(this, jm, sync);
                 methodHandlers.put(m, handler);
             }
         }
@@ -174,8 +168,8 @@ public final class SEIStub extends Stub implements InvocationHandler {
         return super.process(request, rc, receiver);
     }
 
-    public final void doProcessAsync(Packet request, RequestContext rc, Fiber.CompletionCallback callback) {
-        super.processAsync(request, rc, callback);
+    public final void doProcessAsync(AsyncResponseImpl<?> receiver, Packet request, RequestContext rc, Fiber.CompletionCallback callback) {
+        super.processAsync(receiver, request, rc, callback);
     }
 
     protected final @NotNull QName getPortName() {

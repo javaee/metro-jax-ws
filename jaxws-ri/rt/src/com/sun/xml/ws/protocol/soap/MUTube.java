@@ -140,7 +140,7 @@ abstract class MUTube extends AbstractFilterTubeImpl {
      */
     final SOAPFaultException createMUSOAPFaultException(Set<QName> notUnderstoodHeaders) {
         try {
-            SOAPFault fault = soapVersion.saajSoapFactory.createFault(
+            SOAPFault fault = soapVersion.getSOAPFactory().createFault(
                 MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
                 soapVersion.faultCodeMustUnderstand);
             fault.setFaultString("MustUnderstand headers:" +
@@ -180,7 +180,7 @@ abstract class MUTube extends AbstractFilterTubeImpl {
 
     private static void addHeader(Message m, Set<QName> notUnderstoodHeaders) throws SOAPException {
         for (QName qname : notUnderstoodHeaders) {
-            SOAPElement soapEl = SOAP_12.saajSoapFactory.createElement(MU_HEADER_DETAIL);
+            SOAPElement soapEl = SOAP_12.getSOAPFactory().createElement(MU_HEADER_DETAIL);
             soapEl.addNamespaceDeclaration("abc", qname.getNamespaceURI());
             soapEl.setAttribute("qname", "abc:" + qname.getLocalPart());
             Header header = new DOMHeader<Element>(soapEl);

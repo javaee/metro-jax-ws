@@ -73,18 +73,15 @@ public class CustomExceptionGenerator extends GeneratorBase {
     public static void generate(Model model,
         WsimportOptions options,
         ErrorReceiver receiver){
-        CustomExceptionGenerator exceptionGen = new CustomExceptionGenerator(model, options, receiver);
+        CustomExceptionGenerator exceptionGen = new CustomExceptionGenerator();
+        exceptionGen.init(model, options, receiver);
         exceptionGen.doGeneration();        
     }
-    private CustomExceptionGenerator(
-        Model model,
-        WsimportOptions options,
-        ErrorReceiver receiver) {
-        super(model, options, receiver);
-    }
-
+    
     public GeneratorBase getGenerator(Model model, WsimportOptions options, ErrorReceiver receiver) {
-        return new CustomExceptionGenerator(model, options, receiver);
+        GeneratorBase g = new CustomExceptionGenerator();
+        g.init(model, options, receiver);
+        return g;
     }
 
     @Override

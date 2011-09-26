@@ -63,7 +63,7 @@ import javax.xml.bind.JAXBException;
  *
  * @author Kohsuke Kawaguchi
  */
-abstract class ValueSetter {
+public abstract class ValueSetter {
     private ValueSetter() {}
 
     /**

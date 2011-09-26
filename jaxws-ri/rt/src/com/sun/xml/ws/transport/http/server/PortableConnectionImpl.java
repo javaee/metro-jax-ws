@@ -60,7 +60,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 
 /**
  * {@link WSHTTPConnection} used with Java SE endpoints. It provides connection
@@ -104,6 +104,21 @@ final class PortableConnectionImpl extends WSHTTPConnection implements WebServic
             }
         }
     }
+
+    @Override
+	public void setResponseHeader(String key, List<String> value) {
+		httpExchange.getResponseHeaders().put(key, value);
+	}
+
+	@Override
+	public Set<String> getRequestHeaderNames() {
+        return httpExchange.getRequestHeaders().keySet();
+	}
+
+	@Override
+	public List<String> getRequestHeaderValues(String headerName) {
+		return httpExchange.getRequestHeaders().get(headerName);
+	}
 
     @Override
     @Property({MessageContext.HTTP_RESPONSE_HEADERS,Packet.OUTBOUND_TRANSPORT_HEADERS})
@@ -232,6 +247,26 @@ final class PortableConnectionImpl extends WSHTTPConnection implements WebServic
         httpExchange.addResponseHeader("Content-Length", ""+value);
     }
 
+	@Override
+	public String getRequestURI() {
+		return httpExchange.getRequestURI().toString();
+	}
+
+	@Override
+	public String getRequestScheme() {
+		return httpExchange.getScheme();
+	}
+
+	@Override
+	public String getServerName() {
+		return httpExchange.getLocalAddress().getHostName();
+	}
+
+	@Override
+	public int getServerPort() {
+		return httpExchange.getLocalAddress().getPort();
+	}
+	
     protected PropertyMap getPropertyMap() {
         return model;
     }

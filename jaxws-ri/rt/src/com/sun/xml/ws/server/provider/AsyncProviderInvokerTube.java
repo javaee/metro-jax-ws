@@ -77,28 +77,61 @@ class AsyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
     */
     public @NotNull NextAction processRequest(@NotNull Packet request) {
         T param = argsBuilder.getParameter(request);
-        AsyncProviderCallback callback = new AsyncProviderInvokerTube.AsyncProviderCallbackImpl(request);
+        NoSuspendResumer resumer = new NoSuspendResumer();
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+		AsyncProviderCallbackImpl callback = new AsyncProviderInvokerTube.AsyncProviderCallbackImpl(request, resumer);
         AsyncWebServiceContext ctxt = new AsyncWebServiceContext(getEndpoint(),request);
 
         AsyncProviderInvokerTube.LOGGER.fine("Invoking AsyncProvider Endpoint");
         try {
             getInvoker(request).invokeAsyncProvider(request, param, callback, ctxt);
-        } catch(Exception e) {
+        } catch(Throwable e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             return doThrow(e);
         }
-        // Suspend the Fiber. AsyncProviderCallback will resume the Fiber after
-        // it receives response.
-        return doSuspend();
+        
+        synchronized(callback) {
+        	if (resumer.response != null)
+        		return doReturnWith(resumer.response);
+        
+	        // Suspend the Fiber. AsyncProviderCallback will resume the Fiber after
+	        // it receives response.
+        	callback.resumer = new FiberResumer();
+	        return doSuspend();
+        }
+    }
+    
+    private interface Resumer {
+    	public void onResume(Packet response);
+    }
+    
+    private class FiberResumer implements Resumer {
+    	private final Fiber fiber;
+    	
+    	public FiberResumer() {
+            this.fiber = Fiber.current();
+    	}
+    	
+    	public void onResume(Packet response) {
+    		fiber.resume(response);
+    	}
+    }
+    
+    private class NoSuspendResumer implements Resumer {
+    	protected Packet response = null;
+
+		public void onResume(Packet response) {
+			this.response = response;
+		}
     }
 
     private class AsyncProviderCallbackImpl implements AsyncProviderCallback<T> {
         private final Packet request;
-        private final Fiber fiber;
+        private Resumer resumer;
 
-        public AsyncProviderCallbackImpl(Packet request) {
+        public AsyncProviderCallbackImpl(Packet request, Resumer resumer) {
             this.request = request;
-            this.fiber = Fiber.current();
+            this.resumer = resumer;
         }
 
         public void send(@Nullable T param) {
@@ -108,7 +141,9 @@ class AsyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
                 }
             }
             Packet packet = argsBuilder.getResponse(request, param, getEndpoint().getPort(), getEndpoint().getBinding());
-            fiber.resume(packet);
+            synchronized(this) {
+            	resumer.onResume(packet);
+            }
         }
 
         public void sendError(@NotNull Throwable t) {
@@ -119,7 +154,9 @@ class AsyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
                 e = new RuntimeException(t);
             }
             Packet packet = argsBuilder.getResponse(request, e, getEndpoint().getPort(), getEndpoint().getBinding());
-            fiber.resume(packet);
+            synchronized(this) {
+            	resumer.onResume(packet);
+            }
         }
     }
 

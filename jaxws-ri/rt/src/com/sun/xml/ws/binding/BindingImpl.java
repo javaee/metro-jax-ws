@@ -59,6 +59,7 @@ import javax.xml.ws.handler.Handler;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 /**
@@ -117,6 +118,10 @@ public abstract class BindingImpl implements WSBinding {
         this.serviceMode = mode;
     }
 
+    public Set<QName> getKnownHeaders() {
+    	return handlerConfig.getHandlerKnownHeaders();
+    }
+    
     public
     @NotNull
     BindingID getBindingId() {

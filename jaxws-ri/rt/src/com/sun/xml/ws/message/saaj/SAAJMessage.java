@@ -153,7 +153,7 @@ public class SAAJMessage extends Message {
             }
         }
     }
-
+    
     private void access() {
         if (!accessedMessage) {
             try {
@@ -252,8 +252,9 @@ public class SAAJMessage extends Message {
                 return new DOMSource(se);
 
             } else {
-                SOAPMessage msg = soapVersion.saajMessageFactory.createMessage();
+				SOAPMessage msg = soapVersion.getMessageFactory().createMessage();
                 addAttributes(msg.getSOAPPart().getEnvelope(),envelopeAttrs);
+
                 SOAPBody newBody = msg.getSOAPPart().getEnvelope().getBody();
                 addAttributes(newBody, bodyAttrs);
                 for (Element part : bodyParts) {
@@ -270,13 +271,13 @@ public class SAAJMessage extends Message {
         } catch (SOAPException e) {
             throw new WebServiceException(e);
         }
-    }
+    } 
 
     public SOAPMessage readAsSOAPMessage() throws SOAPException {
         if (!parsedMessage) {
             return sm;
         } else {
-            SOAPMessage msg = soapVersion.saajMessageFactory.createMessage();
+            SOAPMessage msg = soapVersion.getMessageFactory().createMessage();
             addAttributes(msg.getSOAPPart().getEnvelope(),envelopeAttrs);
             SOAPBody newBody = msg.getSOAPPart().getEnvelope().getBody();
             addAttributes(newBody, bodyAttrs);
@@ -286,13 +287,13 @@ public class SAAJMessage extends Message {
             }
             addAttributes(msg.getSOAPHeader(),headerAttrs);
             for (Header header : headers) {
-                header.writeTo(msg);
+              header.writeTo(msg);
             }
             for (Attachment att : getAttachments()) {
-                AttachmentPart part = msg.createAttachmentPart();
-                part.setDataHandler(att.asDataHandler());
-                part.setContentId('<' + att.getContentId() + '>');
-                msg.addAttachmentPart(part);
+              AttachmentPart part = msg.createAttachmentPart();
+              part.setDataHandler(att.asDataHandler());
+              part.setContentId('<' + att.getContentId() + '>');
+              msg.addAttachmentPart(part);
             }
             msg.saveChanges();
             return msg;
@@ -512,7 +513,7 @@ public class SAAJMessage extends Message {
             if (!parsedMessage) {
                 return new SAAJMessage(readAsSOAPMessage());
             } else {
-                SOAPMessage msg = soapVersion.saajMessageFactory.createMessage();
+                SOAPMessage msg = soapVersion.getMessageFactory().createMessage();
                 SOAPBody newBody = msg.getSOAPPart().getEnvelope().getBody();
                 for (Element part : bodyParts) {
                     Node n = newBody.getOwnerDocument().importNode(part, true);

@@ -66,7 +66,7 @@ import java.util.Set;
  *
  * @author WS Development Team
  */
-class SOAPMessageContextImpl extends MessageUpdatableContext implements SOAPMessageContext {
+public class SOAPMessageContextImpl extends MessageUpdatableContext implements SOAPMessageContext {
 
     private Set<String> roles;
     private SOAPMessage soapMsg = null;
@@ -81,7 +81,8 @@ class SOAPMessageContextImpl extends MessageUpdatableContext implements SOAPMess
     public SOAPMessage getMessage() {
         if(soapMsg == null) {
             try {
-                soapMsg = packet.getMessage().readAsSOAPMessage();
+            	Message m = packet.getMessage();
+            	soapMsg = m != null ? m.readAsSOAPMessage() : null;
             } catch (SOAPException e) {
                 throw new WebServiceException(e);
             }

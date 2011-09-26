@@ -42,6 +42,9 @@ package com.sun.xml.ws.util;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.Component;
+import com.sun.xml.ws.api.ComponentEx;
+import com.sun.xml.ws.api.server.ContainerResolver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,6 +53,9 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -148,7 +154,16 @@ public final class ServiceFinder<T> implements Iterable<T> {
 
     private final Class<T> serviceClass;
     private final @Nullable ClassLoader classLoader;
+    private final @Nullable ComponentEx component;
 
+    public static <T> ServiceFinder<T> find(@NotNull Class<T> service, @Nullable ClassLoader loader, Component component) {
+        return new ServiceFinder<T>(service,loader,component);
+    }
+    
+    public static <T> ServiceFinder<T> find(@NotNull Class<T> service, Component component) {
+        return find(service,Thread.currentThread().getContextClassLoader(),component);
+    }
+    
     /**
      * Locates and incrementally instantiates the available providers of a
      * given service using the given class loader.
@@ -175,7 +190,7 @@ public final class ServiceFinder<T> implements Iterable<T> {
      * @see #find(Class)
      */
     public static <T> ServiceFinder<T> find(@NotNull Class<T> service, @Nullable ClassLoader loader) {
-        return new ServiceFinder<T>(service,loader);
+        return find(service, loader, ContainerResolver.getInstance().getContainer());
     }
 
     /**
@@ -198,9 +213,10 @@ public final class ServiceFinder<T> implements Iterable<T> {
         return find(service,Thread.currentThread().getContextClassLoader());
     }
 
-    private ServiceFinder(Class<T> service, ClassLoader loader) {
+    private ServiceFinder(Class<T> service, ClassLoader loader, Component component) {
         this.serviceClass = service;
         this.classLoader = loader;
+        this.component = getComponentEx(component);
     }
 
     /**
@@ -212,8 +228,13 @@ public final class ServiceFinder<T> implements Iterable<T> {
      *         file violates the specified format or if a provider class cannot
      *         be found and instantiated.
      */
-    public Iterator<T> iterator() {
-        return new LazyIterator<T>(serviceClass,classLoader);
+    @SuppressWarnings("unchecked")
+	public Iterator<T> iterator() {
+        Iterator<T> it = new LazyIterator<T>(serviceClass,classLoader);
+        return component != null ? 
+        		new CompositeIterator<T>(
+        				component.getIterableSPI(serviceClass).iterator(),it) :
+        		it;
     }
 
     /**
@@ -323,7 +344,68 @@ public final class ServiceFinder<T> implements Iterable<T> {
         }
         return names.iterator();
     }
+    
+    private static ComponentEx getComponentEx(Component component) {
+    	if (component instanceof ComponentEx)
+    		return (ComponentEx) component;
+    	
+    	return component != null ? new ComponentExWrapper(component) : null;
+    }
+    
+    private static class ComponentExWrapper implements ComponentEx {
+    	private final Component component;
+    	
+    	public ComponentExWrapper(Component component) {
+    		this.component = component;
+    	}
 
+		public <S> S getSPI(Class<S> spiType) {
+			return component.getSPI(spiType);
+		}
+
+		public <S> Iterable<S> getIterableSPI(Class<S> spiType) {
+	    	S item = getSPI(spiType);
+	    	if (item != null) {
+	    		Collection<S> c = Collections.singletonList(item);
+	    		return c;
+	    	}
+	    	return Collections.emptySet();
+		}
+    }
+
+    private static class CompositeIterator<T> implements Iterator<T> {
+    	private final Iterator<Iterator<T>> it;
+    	private Iterator<T> current = null;
+    	
+    	public CompositeIterator(Iterator<T>... iterators) {
+    		it = Arrays.asList(iterators).iterator();
+    	}
+
+		public boolean hasNext() {
+			if (current != null && current.hasNext())
+				return true;
+			
+			while (it.hasNext()) {
+				current = it.next();
+				if (current.hasNext())
+					return true;
+				
+			}
+			
+			return false;
+		}
+
+		public T next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+
+			return current.next();
+		}
+
+		public void remove() {
+            throw new UnsupportedOperationException();
+		}
+    }
 
     /**
      * Private inner class implementing fully-lazy provider lookup

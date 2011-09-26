@@ -88,6 +88,9 @@ public class WsaClientTube extends WsaTube {
         if (response.getMessage() != null) {
             response = validateInboundHeaders(response);
             response.addSatellite(new WsaPropertyBag(addressingVersion,soapVersion,response));
+            String msgId = response.getMessage().getHeaders().
+              getMessageID(addressingVersion, soapVersion);
+            response.put(WsaPropertyBag.WSA_MSGID_FROM_REQUEST, msgId);
         }
 
         return doReturnWith(response);

@@ -66,6 +66,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -112,6 +113,22 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
             }
         }
     }
+
+    @Override
+	public void setResponseHeader(String key, List<String> value) {
+		httpExchange.getResponseHeaders().put(key, value);
+	}
+
+	@Override
+	public Set<String> getRequestHeaderNames() {
+        return httpExchange.getRequestHeaders().keySet();
+	}
+
+	@Override
+	public List<String> getRequestHeaderValues(String headerName) {
+		return httpExchange.getRequestHeaders().get(headerName);
+	}
+
     @Override
     @Property({MessageContext.HTTP_RESPONSE_HEADERS,Packet.OUTBOUND_TRANSPORT_HEADERS})
     public Map<String,List<String>> getResponseHeaders() {
@@ -315,6 +332,26 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
         httpExchange.getResponseHeaders().set("Content-Length", ""+value);
     }
 
+	@Override
+	public String getRequestURI() {
+		return httpExchange.getRequestURI().toString();
+	}
+
+	@Override
+	public String getRequestScheme() {
+		return (httpExchange instanceof HttpsExchange) ? "https" : "http";
+	}
+
+	@Override
+	public String getServerName() {
+		return httpExchange.getLocalAddress().getHostName();
+	}
+
+	@Override
+	public int getServerPort() {
+		return httpExchange.getLocalAddress().getPort();
+	}
+	
     protected PropertyMap getPropertyMap() {
         return model;
     }

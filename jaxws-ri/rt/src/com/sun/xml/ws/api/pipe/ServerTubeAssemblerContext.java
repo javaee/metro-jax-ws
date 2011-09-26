@@ -120,7 +120,7 @@ public class ServerTubeAssemblerContext {
      * {@link com.sun.xml.ws.api.pipe.Pipe}s.
      *  @return Always non-null.
      */
-    public @NotNull WSEndpoint getEndpoint() {
+    public @NotNull WSEndpoint<?> getEndpoint() {
         return endpoint;
     }
 

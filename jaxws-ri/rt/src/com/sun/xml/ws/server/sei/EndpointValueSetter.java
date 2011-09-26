@@ -59,7 +59,7 @@ import javax.xml.ws.Holder;
  *
  * @author Jitendra Kotamraju
  */
-abstract class EndpointValueSetter {
+public abstract class EndpointValueSetter {
     private EndpointValueSetter() {}
 
     /**

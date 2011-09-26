@@ -58,7 +58,7 @@ import javax.xml.ws.Holder;
  *
  * @author Kohsuke Kawaguchi
  */
-enum ValueGetter {
+public enum ValueGetter {
     /**
      * {@link ValueGetter} that works for {@link Mode#IN}  parameter.
      *
@@ -67,7 +67,7 @@ enum ValueGetter {
      * therefore the parameter itself is a value.
      */
     PLAIN() {
-        Object get(Object parameter) {
+        public Object get(Object parameter) {
             return parameter;
         }
     },
@@ -80,7 +80,7 @@ enum ValueGetter {
      * so the value to be sent is obtained by getting the value of the holder.
      */
     HOLDER() {
-        Object get(Object parameter) {
+        public Object get(Object parameter) {
             if(parameter==null)
                 // the user is allowed to pass in null where a Holder is expected.
                 return null;
@@ -91,12 +91,12 @@ enum ValueGetter {
     /**
      * Gets the value to be sent, from a parameter given as a method argument.
      */
-    abstract Object get(Object parameter);
+    public abstract Object get(Object parameter);
 
     /**
      * Returns a {@link ValueGetter} suitable for the given {@link Parameter}.
      */
-    static ValueGetter get(ParameterImpl p) {
+    public static ValueGetter get(ParameterImpl p) {
         // return value is always PLAIN
         if(p.getMode() == Mode.IN || p.getIndex() == -1) {
             return PLAIN;

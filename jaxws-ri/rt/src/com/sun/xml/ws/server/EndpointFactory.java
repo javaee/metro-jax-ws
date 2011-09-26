@@ -49,7 +49,9 @@ import com.sun.xml.ws.api.policy.PolicyResolver;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.server.*;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver;
@@ -102,7 +104,12 @@ import java.util.logging.Logger;
  * @author Jitendra Kotamraju
  */
 public class EndpointFactory {
-
+	private static final EndpointFactory instance = new EndpointFactory();
+	
+	public static EndpointFactory getInstance() {
+		return instance;
+	}
+	
     /**
      * Implements {@link WSEndpoint#create}.
      *
@@ -120,11 +127,62 @@ public class EndpointFactory {
         @Nullable SDDocumentSource primaryWsdl,
         @Nullable Collection<? extends SDDocumentSource> metadata,
         EntityResolver resolver, boolean isTransportSynchronous) {
+    	return createEndpoint(implType, processHandlerAnnotation, invoker, serviceName,
+    			portName, container, binding, primaryWsdl, metadata, resolver, isTransportSynchronous, true);
+    }
+    
+    public static <T> WSEndpoint<T> createEndpoint(
+            Class<T> implType, boolean processHandlerAnnotation, @Nullable Invoker invoker,
+            @Nullable QName serviceName, @Nullable QName portName,
+            @Nullable Container container, @Nullable WSBinding binding,
+            @Nullable SDDocumentSource primaryWsdl,
+            @Nullable Collection<? extends SDDocumentSource> metadata,
+            EntityResolver resolver, boolean isTransportSynchronous, boolean isStandard) {
+    	EndpointFactory factory = container != null ? container.getSPI(EndpointFactory.class) : null;
+    	if (factory == null)
+    		factory = EndpointFactory.getInstance();
+
+    	return factory.create(
+                implType,processHandlerAnnotation, invoker,serviceName,portName,container,binding,primaryWsdl,metadata,resolver,isTransportSynchronous,isStandard);
+    }
+    
+    /**
+     * Implements {@link WSEndpoint#create}.
+     *
+     * No need to take WebServiceContext implementation. When InvokerPipe is
+     * instantiated, it calls InstanceResolver to set up a WebServiceContext.
+     * We shall only take delegate to getUserPrincipal and isUserInRole from adapter.
+     *
+     * <p>
+     * Nobody else should be calling this method.
+     */
+    public <T> WSEndpoint<T> create(
+            Class<T> implType, boolean processHandlerAnnotation, @Nullable Invoker invoker,
+            @Nullable QName serviceName, @Nullable QName portName,
+            @Nullable Container container, @Nullable WSBinding binding,
+            @Nullable SDDocumentSource primaryWsdl,
+            @Nullable Collection<? extends SDDocumentSource> metadata,
+            EntityResolver resolver, boolean isTransportSynchronous) {
+    	return create(implType, processHandlerAnnotation, invoker, serviceName,
+    			portName, container, binding, primaryWsdl, metadata, resolver, isTransportSynchronous,
+    			true);
+    	
+    }
+
+    public <T> WSEndpoint<T> create(
+        Class<T> implType, boolean processHandlerAnnotation, @Nullable Invoker invoker,
+        @Nullable QName serviceName, @Nullable QName portName,
+        @Nullable Container container, @Nullable WSBinding binding,
+        @Nullable SDDocumentSource primaryWsdl,
+        @Nullable Collection<? extends SDDocumentSource> metadata,
+        EntityResolver resolver, boolean isTransportSynchronous, boolean isStandard) {
 
         if(implType ==null)
             throw new IllegalArgumentException();
 
-        verifyImplementorClass(implType);
+        if (isStandard) {
+        	verifyImplementorClass(implType);
+        }
 
         if (invoker == null) {
             invoker = InstanceResolver.createDefault(implType).createInvoker();
@@ -158,12 +216,12 @@ public class EndpointFactory {
         if (binding == null)
             binding = BindingImpl.create(BindingID.parse(implType));
 
-        if (primaryWsdl != null) {
+        if ( isStandard && primaryWsdl != null) {
             verifyPrimaryWSDL(primaryWsdl, serviceName);
         }
 
         QName portTypeName = null;
-        if (implType.getAnnotation(WebServiceProvider.class)==null) {
+        if (isStandard && implType.getAnnotation(WebServiceProvider.class)==null) {
             portTypeName = RuntimeModeler.getPortTypeName(implType);
         }
 
@@ -173,7 +231,7 @@ public class EndpointFactory {
         // two concrete or abstract WSDLs
         SDDocumentImpl primaryDoc = findPrimary(docList);
 
-        InvokerTube terminal;
+        EndpointAwareTube terminal;
         WSDLPortImpl wsdlPort = null;
         AbstractSEIModelImpl seiModel = null;
         // create WSDL model
@@ -182,10 +240,12 @@ public class EndpointFactory {
         }
 
         WebServiceFeatureList features=((BindingImpl)binding).getFeatures();
-        features.parseAnnotations(implType);
+        if (isStandard) {
+        	features.parseAnnotations(implType);
+        }
         PolicyMap policyMap = null;
         // create terminal pipe that invokes the application
-        if (implType.getAnnotation(WebServiceProvider.class)!=null) {
+        if (isUseProviderTube(implType, isStandard)) {
             //TODO incase of Provider, provide a way to User for complete control of the message processing by giving
             // ability to turn off the WSDL/Policy based features and its associated tubes.
 
@@ -202,7 +262,7 @@ public class EndpointFactory {
                 configFtrs = PolicyUtil.getPortScopedFeatures(policyMap,serviceName,portName);
             }
             features.mergeFeatures(configFtrs, true);
-            terminal = ProviderInvokerTube.create(implType,binding,invoker);
+            terminal = createProviderInvokerTube(implType,binding,invoker);
         } else {
             // Create runtime model for non Provider endpoints
             seiModel = createSEIModel(wsdlPort, implType, serviceName, portName, binding);
@@ -223,7 +283,7 @@ public class EndpointFactory {
             //Merge features from WSDL and other policy configuration
             // This sets only the wsdl features that are not already set(enabled/disabled)
             features.mergeFeatures(wsdlPort.getFeatures(), true);
-            terminal= new SEIInvokerTube(seiModel,invoker,binding);
+            terminal = createSEIInvokerTube(seiModel,invoker,binding);
         }
 
         // Process @HandlerChain, if handler-chain is not set via Deployment Descriptor
@@ -236,10 +296,27 @@ public class EndpointFactory {
         }
         ServiceDefinitionImpl serviceDefiniton = (primaryDoc != null) ? new ServiceDefinitionImpl(docList, primaryDoc) : null;
 
-        return new WSEndpointImpl<T>(serviceName, portName, binding,container,seiModel,wsdlPort,implType, serviceDefiniton,terminal, isTransportSynchronous, policyMap);
+        return create(serviceName, portName, binding, container, seiModel, wsdlPort, implType, serviceDefiniton, 
+        		terminal, isTransportSynchronous, policyMap);
+    }
+    
+    protected <T> WSEndpoint<T> create(QName serviceName, QName portName, WSBinding binding, Container container, SEIModel seiModel, WSDLPort wsdlPort, Class<T> implType, ServiceDefinitionImpl serviceDefinition, EndpointAwareTube terminal, boolean isTransportSynchronous, PolicyMap policyMap) {
+        return new WSEndpointImpl<T>(serviceName, portName, binding, container, seiModel, 
+        		wsdlPort, implType, serviceDefinition, terminal, isTransportSynchronous, policyMap);
     }
 
-
+    protected boolean isUseProviderTube(Class<?> implType, boolean isStandard) {
+    	return !isStandard || implType.getAnnotation(WebServiceProvider.class)!=null;
+    }
+    
+    protected EndpointAwareTube createSEIInvokerTube(AbstractSEIModelImpl seiModel, Invoker invoker, WSBinding binding) {
+    	return new SEIInvokerTube(seiModel,invoker,binding);
+    }
+    
+    protected <T> EndpointAwareTube createProviderInvokerTube(Class<T> implType, WSBinding binding, Invoker invoker) {
+    	return ProviderInvokerTube.create(implType, binding, invoker);
+    }
+    
     /**
      * Goes through the original metadata documents and collects the required ones.
      * This done traversing from primary WSDL and its imports until it builds a
@@ -381,6 +458,10 @@ public class EndpointFactory {
      * @return non-null service name
      */
     public static @NotNull QName getDefaultServiceName(Class<?> implType) {
+    	return getDefaultServiceName(implType, true);
+    }
+    
+    public static @NotNull QName getDefaultServiceName(Class<?> implType, boolean isStandard) {
         QName serviceName;
         WebServiceProvider wsProvider = implType.getAnnotation(WebServiceProvider.class);
         if (wsProvider!=null) {
@@ -388,7 +469,7 @@ public class EndpointFactory {
             String local = wsProvider.serviceName();
             serviceName = new QName(tns, local);
         } else {
-            serviceName = RuntimeModeler.getServiceName(implType);
+            serviceName = RuntimeModeler.getServiceName(implType, isStandard);
         }
         assert serviceName != null;
         return serviceName;
@@ -401,6 +482,10 @@ public class EndpointFactory {
      * @return non-null port name
      */
     public static @NotNull QName getDefaultPortName(QName serviceName, Class<?> implType) {
+    	return getDefaultPortName(serviceName, implType, true);
+    }
+    
+    public static @NotNull QName getDefaultPortName(QName serviceName, Class<?> implType, boolean isStandard) {
         QName portName;
         WebServiceProvider wsProvider = implType.getAnnotation(WebServiceProvider.class);
         if (wsProvider!=null) {
@@ -408,7 +493,7 @@ public class EndpointFactory {
             String local = wsProvider.portName();
             portName = new QName(tns, local);
         } else {
-            portName = RuntimeModeler.getPortName(implType, serviceName.getNamespaceURI());
+            portName = RuntimeModeler.getPortName(implType, serviceName.getNamespaceURI(), isStandard);
         }
         assert portName != null;
         return portName;

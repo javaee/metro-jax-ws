@@ -42,6 +42,7 @@ package com.sun.xml.ws.api.server;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.Component;
 
 /**
  * Interface that allows components around {@link WSEndpoint} to hook up
@@ -50,6 +51,7 @@ import com.sun.istack.Nullable;
  * @author Kohsuke Kawaguchi
  * @since 2.1.2
  * @see WSEndpoint#getComponentRegistry()
+ * @deprecated replaced by {@link Component}
  */
 public interface EndpointComponent {
     /**

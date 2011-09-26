@@ -89,8 +89,34 @@ abstract class ProviderArgumentsBuilder<T> {
     }
 
     public static ProviderArgumentsBuilder<?> create(ProviderEndpointModel model, WSBinding binding) {
+    	if (model.datatype == Packet.class)
+    		return new PacketProviderArgumentsBuilder();
         return (binding instanceof SOAPBinding) ? SOAPProviderArgumentBuilder.create(model, binding.getSOAPVersion())
                 : XMLProviderArgumentBuilder.createBuilder(model, binding);
     }
+    
+    private static class PacketProviderArgumentsBuilder extends ProviderArgumentsBuilder<Packet> {
 
+		@Override
+		protected Message getResponseMessage(Exception e) {
+			// Should never be called
+			throw new IllegalStateException();
+		}
+
+		@Override
+		protected Packet getParameter(Packet packet) {
+			return packet;
+		}
+
+		@Override
+		protected Message getResponseMessage(Packet returnValue) {
+			// Should never be called
+			throw new IllegalStateException();
+		}
+
+		@Override
+	    protected Packet getResponse(Packet request, @Nullable Packet returnValue, WSDLPort port, WSBinding binding) {
+			return returnValue;
+	    }
+    }
 }

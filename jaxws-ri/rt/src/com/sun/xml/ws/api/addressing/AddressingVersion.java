@@ -72,6 +72,7 @@ import java.io.UnsupportedEncodingException;
 public enum AddressingVersion {
 
     W3C("http://www.w3.org/2005/08/addressing",
+    	"wsa",
         W3CAddressingConstants.ANONYMOUS_EPR,
         "http://www.w3.org/2006/05/addressing/wsdl",
         "http://www.w3.org/2006/05/addressing/wsdl",
@@ -82,7 +83,7 @@ public enum AddressingVersion {
                     "ServiceName",
                     "EndpointName",
                     "InterfaceName",
-                    new QName("http://www.w3.org/2005/08/addressing","Metadata"),
+                    new QName("http://www.w3.org/2005/08/addressing","Metadata","wsa"),
                     "ReferenceParameters",
                     null )) {
 
@@ -153,6 +154,7 @@ public enum AddressingVersion {
         }
     },
     MEMBER("http://schemas.xmlsoap.org/ws/2004/08/addressing",
+    	   "wsa",
            MemberSubmissionAddressingConstants.ANONYMOUS_EPR,
            "http://schemas.xmlsoap.org/ws/2004/08/addressing",
            "http://schemas.xmlsoap.org/ws/2004/08/addressing/policy",
@@ -398,10 +400,10 @@ public enum AddressingVersion {
      * This is a fault code not defined in the spec.
      */
     public static final QName fault_duplicateAddressInEpr = new QName(
-        EXTENDED_FAULT_NAMESPACE, "DuplicateAddressInEpr"
+        EXTENDED_FAULT_NAMESPACE, "DuplicateAddressInEpr", "wsa"
     );
 
-    private AddressingVersion(String nsUri, String anonymousEprString, String wsdlNsUri, String policyNsUri,
+    private AddressingVersion(String nsUri, String prefix, String anonymousEprString, String wsdlNsUri, String policyNsUri,
                               String anonymousUri, String noneUri,
                               EPR eprType ) {
         this.nsUri = nsUri;
@@ -409,32 +411,32 @@ public enum AddressingVersion {
         this.policyNsUri = policyNsUri;
         this.anonymousUri = anonymousUri;
         this.noneUri = noneUri;
-        toTag = new QName(nsUri,"To");
-        fromTag = new QName(nsUri,"From");
-        replyToTag = new QName(nsUri,"ReplyTo");
-        faultToTag = new QName(nsUri,"FaultTo");
-        actionTag = new QName(nsUri,"Action");
-        messageIDTag = new QName(nsUri,"MessageID");
-        relatesToTag = new QName(nsUri,"RelatesTo");
+        toTag = new QName(nsUri,"To", prefix);
+        fromTag = new QName(nsUri,"From", prefix);
+        replyToTag = new QName(nsUri,"ReplyTo", prefix);
+        faultToTag = new QName(nsUri,"FaultTo", prefix);
+        actionTag = new QName(nsUri,"Action", prefix);
+        messageIDTag = new QName(nsUri,"MessageID", prefix);
+        relatesToTag = new QName(nsUri,"RelatesTo", prefix);
 
-        mapRequiredTag = new QName(nsUri,getMapRequiredLocalName());
-        actionMismatchTag = new QName(nsUri,getActionMismatchLocalName());
-        actionNotSupportedTag = new QName(nsUri,"ActionNotSupported");
+        mapRequiredTag = new QName(nsUri,getMapRequiredLocalName(), prefix);
+        actionMismatchTag = new QName(nsUri,getActionMismatchLocalName(), prefix);
+        actionNotSupportedTag = new QName(nsUri,"ActionNotSupported", prefix);
         actionNotSupportedText = "The \"%s\" cannot be processed at the receiver";
-        invalidMapTag = new QName(nsUri,getInvalidMapLocalName());
-        invalidAddressTag = new QName(nsUri,getInvalidAddressLocalName());
-        invalidCardinalityTag = new QName(nsUri,getInvalidCardinalityLocalName());
-        faultDetailTag = new QName(nsUri,"FaultDetail");
+        invalidMapTag = new QName(nsUri,getInvalidMapLocalName(), prefix);
+        invalidAddressTag = new QName(nsUri,getInvalidAddressLocalName(), prefix);
+        invalidCardinalityTag = new QName(nsUri,getInvalidCardinalityLocalName(), prefix);
+        faultDetailTag = new QName(nsUri,"FaultDetail", prefix);
 
-        problemHeaderQNameTag = new QName(nsUri,"ProblemHeaderQName");
-        problemActionTag = new QName(nsUri, "ProblemAction");
+        problemHeaderQNameTag = new QName(nsUri,"ProblemHeaderQName", prefix);
+        problemActionTag = new QName(nsUri, "ProblemAction", prefix);
 
-        fault_missingAddressInEpr = new QName(nsUri,"MissingAddressInEPR","wsa");
-        isReferenceParameterTag = new QName(nsUri,getIsReferenceParameterLocalName());
+        fault_missingAddressInEpr = new QName(nsUri,"MissingAddressInEPR", prefix);
+        isReferenceParameterTag = new QName(nsUri,getIsReferenceParameterLocalName(), prefix);
 
-        wsdlActionTag = new QName(wsdlNsUri,"Action");
-        wsdlExtensionTag = new QName(wsdlNsUri, "UsingAddressing");
-        wsdlAnonymousTag = new QName(wsdlNsUri, getWsdlAnonymousLocalName());
+        wsdlActionTag = new QName(wsdlNsUri,"Action", prefix);
+        wsdlExtensionTag = new QName(wsdlNsUri, "UsingAddressing", prefix);
+        wsdlAnonymousTag = new QName(wsdlNsUri, getWsdlAnonymousLocalName(), prefix);
 
         // create stock anonymous EPR
         try {

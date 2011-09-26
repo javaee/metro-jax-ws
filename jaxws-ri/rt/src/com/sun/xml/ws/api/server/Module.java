@@ -41,6 +41,8 @@
 package com.sun.xml.ws.api.server;
 
 import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.transport.http.HttpAdapterList;
 
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
@@ -72,7 +74,7 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  * @since 2.1 EA3
  */
-public abstract class Module {
+public abstract class Module implements Component {
     /**
      * Gets the list of {@link BoundEndpoint} deployed in this module.
      *
@@ -85,4 +87,9 @@ public abstract class Module {
      *      always return the same non-null instance.
      */
     public abstract @NotNull List<BoundEndpoint> getBoundEndpoints();
+    
+    public @Nullable <S> S getSPI(@NotNull Class<S> spiType) {
+    	return null;
+    }
+
 }

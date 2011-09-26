@@ -141,6 +141,9 @@ final class SyncMethodHandler extends MethodHandler {
             throw new DeserializationException("failed.to.read.response",e);
         } catch (XMLStreamException e) {
             throw new DeserializationException("failed.to.read.response",e);
+        } finally {
+        	if (reply.transportBackChannel != null)
+        		reply.transportBackChannel.close();
         }
     }
 

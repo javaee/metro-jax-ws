@@ -93,7 +93,6 @@ public abstract class ServiceInterceptor {
         return Collections.emptyList();
     }
 
-
     /**
      * A callback to notify the event of creation of proxy object for SEI endpoint. The
      * callback could set some properties on the {@link BindingProvider}.
@@ -103,7 +102,6 @@ public abstract class ServiceInterceptor {
      */
     public void postCreateProxy(@NotNull WSBindingProvider bp,@NotNull Class<?> serviceEndpointInterface) {
     }
-
 
     /**
      * A callback to notify that a {@link Dispatch} object is created. The callback

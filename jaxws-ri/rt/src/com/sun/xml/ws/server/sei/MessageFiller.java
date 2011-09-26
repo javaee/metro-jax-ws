@@ -66,7 +66,7 @@ import com.sun.xml.ws.api.message.Attachment;
  * @author Kohsuke Kawaguchi
  * @author Jitendra Kotamraju
  */
-abstract class MessageFiller {
+public abstract class MessageFiller {
 
     /**
      * The index of the method invocation parameters that this object looks for.
@@ -80,12 +80,12 @@ abstract class MessageFiller {
     /**
      * Moves an argument of a method invocation into a {@link Message}.
      */
-    abstract void fillIn(Object[] methodArgs, Object returnValue, Message msg);
+    public abstract void fillIn(Object[] methodArgs, Object returnValue, Message msg);
     
     /**
      * Adds a parameter as an MIME attachment to {@link Message}.
      */
-    static abstract class AttachmentFiller extends MessageFiller {
+    public static abstract class AttachmentFiller extends MessageFiller {
         protected final ParameterImpl param;
         protected final ValueGetter getter;
         protected final String mimeType;
@@ -134,7 +134,8 @@ abstract class MessageFiller {
         protected ByteArrayFiller(ParameterImpl param, ValueGetter getter) {
             super(param, getter);
         }
-        void fillIn(Object[] methodArgs, Object returnValue, Message msg) {
+        
+        public void fillIn(Object[] methodArgs, Object returnValue, Message msg) {
             String contentId = getContentId();
             Object obj = (methodPos == -1) ? returnValue : getter.get(methodArgs[methodPos]);
             if (obj != null) {
@@ -148,7 +149,8 @@ abstract class MessageFiller {
         protected DataHandlerFiller(ParameterImpl param, ValueGetter getter) {
             super(param, getter);
         }
-        void fillIn(Object[] methodArgs, Object returnValue, Message msg) {
+        
+        public void fillIn(Object[] methodArgs, Object returnValue, Message msg) {
             String contentId = getContentId();
             Object obj = (methodPos == -1) ? returnValue : getter.get(methodArgs[methodPos]);
             DataHandler dh = (obj instanceof DataHandler) ? (DataHandler)obj : new DataHandler(obj,mimeType);
@@ -161,7 +163,8 @@ abstract class MessageFiller {
         protected JAXBFiller(ParameterImpl param, ValueGetter getter) {
             super(param, getter);
         }
-        void fillIn(Object[] methodArgs, Object returnValue, Message msg) {
+        
+        public void fillIn(Object[] methodArgs, Object returnValue, Message msg) {
             String contentId = getContentId();
             Object obj = (methodPos == -1) ? returnValue : getter.get(methodArgs[methodPos]);
             Attachment att = new JAXBAttachment(contentId, obj, param.getXMLBridge(), mimeType);
@@ -172,17 +175,17 @@ abstract class MessageFiller {
     /**
      * Adds a parameter as an header.
      */
-    static final class Header extends MessageFiller {
+    public static final class Header extends MessageFiller {
         private final XMLBridge bridge;
         private final ValueGetter getter;
 
-        protected Header(int methodPos, XMLBridge bridge, ValueGetter getter) {
+        public Header(int methodPos, XMLBridge bridge, ValueGetter getter) {
             super(methodPos);
             this.bridge = bridge;
             this.getter = getter;
         }
 
-        void fillIn(Object[] methodArgs, Object returnValue, Message msg) {
+        public void fillIn(Object[] methodArgs, Object returnValue, Message msg) {
             Object value = (methodPos == -1) ? returnValue : getter.get(methodArgs[methodPos]);
             msg.getHeaders().add(Headers.create(bridge,value));
         }

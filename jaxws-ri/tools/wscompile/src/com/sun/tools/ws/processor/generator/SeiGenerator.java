@@ -69,18 +69,19 @@ import java.util.List;
 
 import org.xml.sax.Locator;
 
-public class SeiGenerator extends GeneratorBase{
+public class SeiGenerator extends GeneratorBase {
     private String serviceNS;
     private TJavaGeneratorExtension extension;
     private List<TJavaGeneratorExtension> extensionHandlers;
 
     public static void generate(Model model, WsimportOptions options, ErrorReceiver receiver, TJavaGeneratorExtension... extensions){
-        SeiGenerator seiGenerator = new SeiGenerator(model, options, receiver, extensions);
+        SeiGenerator seiGenerator = new SeiGenerator();
+        seiGenerator.init(model, options, receiver, extensions);
         seiGenerator.doGeneration();
     }
 
-    private SeiGenerator(Model model, WsimportOptions options, ErrorReceiver receiver, TJavaGeneratorExtension... extensions) {
-        super(model, options, receiver);
+    public void init(Model model, WsimportOptions options, ErrorReceiver receiver, TJavaGeneratorExtension... extensions) {
+        init(model, options, receiver);
         extensionHandlers = new ArrayList<TJavaGeneratorExtension>();
 
         // register handlers for default extensions

@@ -94,6 +94,8 @@ public abstract class AbstractFilterTubeImpl extends AbstractTubeImpl {
     }
 
     public void preDestroy() {
-        next.preDestroy();
+        if (next != null) {
+          next.preDestroy();
+        }
     }
 }

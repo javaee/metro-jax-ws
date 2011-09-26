@@ -41,6 +41,7 @@
 package com.sun.xml.ws.api;
 
 import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ContainerResolver;
@@ -60,6 +61,9 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * JAX-WS implementation of {@link ServiceDelegate}.
@@ -80,8 +84,10 @@ import java.security.PrivilegedAction;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class WSService extends ServiceDelegate {
-    protected WSService() {
+public abstract class WSService extends ServiceDelegate implements ComponentRegistry {
+	private final Set<Component> components = new CopyOnWriteArraySet<Component>();
+	
+	protected WSService() {
     }
 
     /**
@@ -115,6 +121,20 @@ public abstract class WSService extends ServiceDelegate {
      */
     public abstract @NotNull Container getContainer();
 
+    public @Nullable <S> S getSPI(@NotNull Class<S> spiType) {
+    	for (Component c : components) {
+    		S s = c.getSPI(spiType);
+    		if (s != null)
+    			return s;
+    	}
+    	
+    	return null;
+    }
+    
+    public @NotNull Set<Component> getComponents() {
+    	return components;
+    }
+    
     /**
      * Create a <code>Service</code> instance.
      *

@@ -396,7 +396,7 @@ public abstract class Messages {
         SOAPFault fault;
         try {
             if (sv == SOAPVersion.SOAP_12) {
-                fault = SOAPVersion.SOAP_12.saajSoapFactory.createFault();
+                fault = SOAPVersion.SOAP_12.getSOAPFactory().createFault();
                 fault.setFaultCode(SOAPConstants.SOAP_SENDER_FAULT);
                 fault.appendFaultSubcode(subcode);
                 Detail detail = fault.addDetail();
@@ -404,7 +404,7 @@ public abstract class Messages {
                 se = se.addChildElement(av.actionTag);
                 se.addTextNode(unsupportedAction);
             } else {
-                fault = SOAPVersion.SOAP_11.saajSoapFactory.createFault();
+                fault = SOAPVersion.SOAP_11.getSOAPFactory().createFault();
                 fault.setFaultCode(subcode);
             }
             fault.setFaultString(faultstring);

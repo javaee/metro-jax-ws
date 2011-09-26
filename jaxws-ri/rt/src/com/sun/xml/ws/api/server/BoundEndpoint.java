@@ -41,6 +41,7 @@
 package com.sun.xml.ws.api.server;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.Component;
 
 import java.net.URI;
 
@@ -50,7 +51,7 @@ import java.net.URI;
  * @see Module#getBoundEndpoints() 
  * @author Kohsuke Kawaguchi
  */
-public interface BoundEndpoint {
+public interface BoundEndpoint extends Component {
     /**
      * The endpoint that was bound.
      *

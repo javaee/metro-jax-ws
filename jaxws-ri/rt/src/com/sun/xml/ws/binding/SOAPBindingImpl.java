@@ -102,7 +102,6 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         //setupSystemHandlerDelegate(serviceName);
 
         this.features.addAll(bindingId.createBuiltinFeatureList());
-        populateBindingUnderstoodHeaders();
     }
 
     /**
@@ -126,23 +125,6 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
                 || portKnownHeaders.contains(header)
                 || bindingUnderstoodHeaders.contains(header);
 
-    }
-
-    /**
-     * Understand WS-Addressing headers if WS-Addressing is enabled
-     *
-     */
-    private void populateBindingUnderstoodHeaders() {
-        AddressingVersion addressingVersion = getAddressingVersion();
-        if (addressingVersion != null) {
-            bindingUnderstoodHeaders.add(addressingVersion.actionTag);
-            bindingUnderstoodHeaders.add(addressingVersion.faultToTag);
-            bindingUnderstoodHeaders.add(addressingVersion.fromTag);
-            bindingUnderstoodHeaders.add(addressingVersion.messageIDTag);
-            bindingUnderstoodHeaders.add(addressingVersion.relatesToTag);
-            bindingUnderstoodHeaders.add(addressingVersion.replyToTag);
-            bindingUnderstoodHeaders.add(addressingVersion.toTag);
-        }
     }
 
     /**
@@ -190,15 +172,15 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
      * Client application can override if the MTOM optimization should be enabled
      */
     public void setMTOMEnabled(boolean b) {
-        setFeatures(new MTOMFeature(b));
+        features.setMTOMEnabled(b);
     }
 
     public SOAPFactory getSOAPFactory() {
-        return soapVersion.saajSoapFactory;
+        return soapVersion.getSOAPFactory();
     }
 
     public MessageFactory getMessageFactory() {
-        return soapVersion.saajMessageFactory;
+        return soapVersion.getMessageFactory();
     }
 
 }

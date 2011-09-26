@@ -45,8 +45,14 @@ import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.addressing.WSEPRExtension;
 import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.model.wsdl.WSDLDirectProperties;
+import com.sun.xml.ws.model.wsdl.WSDLPortProperties;
+import com.sun.xml.ws.model.wsdl.WSDLProperties;
+import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
+import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.client.WSPortInfo;
@@ -60,7 +66,6 @@ import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.developer.WSBindingProvider;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
-import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
@@ -81,6 +86,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import org.xml.sax.InputSource;
 
 /**
  * Base class for stubs, which accept method invocations from
@@ -93,7 +99,14 @@ import java.util.concurrent.Executor;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class Stub implements WSBindingProvider, ResponseContextReceiver {
+public abstract class Stub implements WSBindingProvider, ResponseContextReceiver, Component  {
+    /**
+     * Internal flag indicating async dispatch should be used even when the
+     * SyncStartForAsyncInvokeFeature is present on the binding associated
+     * with a stub. There is no type associated with this property on the
+     * request context. Its presence is what triggers the 'prevent' behavior.
+     */
+    public static final String PREVENT_SYNC_START_FOR_ASYNC_INVOKE = "com.sun.xml.ws.client.StubRequestSyncStartForAsyncInvoke";
 
     /**
      * Reuse pipelines as it's expensive to create.
@@ -130,9 +143,11 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     /**
      * represents AddressingVersion on binding if enabled, otherwise null;
      */
-    protected final AddressingVersion addrVersion;
+    protected AddressingVersion addrVersion;
 
-    public final RequestContext requestContext = new RequestContext();
+    public RequestContext requestContext = new RequestContext();
+    
+    private final RequestContext cleanRequestContext;
 
     /**
      * {@link ResponseContext} from the last synchronous operation.
@@ -140,6 +155,8 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     private ResponseContext responseContext;
     @Nullable
     protected final WSDLPort wsdlPort;
+    
+    protected QName portname;
 
     /**
      * {@link Header}s to be added to outbound {@link Packet}.
@@ -149,7 +166,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     private volatile Header[] userOutboundHeaders;
 
     private final
-    @Nullable
+    @NotNull
     WSDLProperties wsdlProperties;
     protected OperationDispatcher operationDispatcher = null;
     private final
@@ -170,11 +187,12 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
      */
     @Deprecated
     protected Stub(WSServiceDelegate owner, Tube master, BindingImpl binding, WSDLPort wsdlPort, EndpointAddress defaultEndPointAddress, @Nullable WSEndpointReference epr) {
-        this(owner, master, null, binding, wsdlPort, defaultEndPointAddress, epr);
+        this(owner, master, null, null, binding, wsdlPort, defaultEndPointAddress, epr);
     }
 
     /**
-     * @param portInfo               PortInfo  for this stub
+     * @param portname               The name of this port
+     * @param master                 The created stub will send messages to this pipe.
      * @param binding                As a {@link BindingProvider}, this object will
      *                               return this binding from {@link BindingProvider#getBinding()}.
      * @param defaultEndPointAddress The destination of the message. The actual destination
@@ -184,17 +202,56 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
      *                               Its address field will not be used, and that should be given
      *                               separately as the <tt>defaultEndPointAddress</tt>.
      */
-    protected Stub(WSPortInfo portInfo, BindingImpl binding, EndpointAddress defaultEndPointAddress, @Nullable WSEndpointReference epr) {
-        this((WSServiceDelegate) portInfo.getOwner(), null, portInfo, binding, portInfo.getPort(), defaultEndPointAddress, epr);
-
+    @Deprecated
+    protected Stub(QName portname, WSServiceDelegate owner, Tube master, BindingImpl binding, WSDLPort wsdlPort, EndpointAddress defaultEndPointAddress, @Nullable WSEndpointReference epr) {
+        this(owner, master, null, portname, binding, wsdlPort, defaultEndPointAddress, epr);
     }
 
-    private Stub(WSServiceDelegate owner, @Nullable Tube master, @Nullable WSPortInfo portInfo, BindingImpl binding, @Nullable WSDLPort wsdlPort, EndpointAddress defaultEndPointAddress, @Nullable WSEndpointReference epr) {
+    /**
+     * @param portInfo               PortInfo  for this stub
+     * @param binding                As a {@link BindingProvider}, this object will
+     *                               return this binding from {@link BindingProvider#getBinding()}.
+     * @param master                 The created stub will send messages to this pipe.
+     * @param defaultEndPointAddress The destination of the message. The actual destination
+     *                               could be overridden by {@link RequestContext}.
+     * @param epr                    To create a stub that sends out reference parameters
+     *                               of a specific EPR, give that instance. Otherwise null.
+     *                               Its address field will not be used, and that should be given
+     *                               separately as the <tt>defaultEndPointAddress</tt>.
+     */
+    protected Stub(WSPortInfo portInfo, BindingImpl binding, Tube master,EndpointAddress defaultEndPointAddress, @Nullable WSEndpointReference epr) {
+         this((WSServiceDelegate) portInfo.getOwner(), master, portInfo, null, binding,portInfo.getPort(), defaultEndPointAddress, epr);
+    }
+
+  /**
+   * @param portInfo               PortInfo  for this stub
+   * @param binding                As a {@link BindingProvider}, this object will
+   *                               return this binding from {@link BindingProvider#getBinding()}.
+   * @param defaultEndPointAddress The destination of the message. The actual destination
+   *                               could be overridden by {@link RequestContext}.
+   * @param epr                    To create a stub that sends out reference parameters
+   *                               of a specific EPR, give that instance. Otherwise null.
+   *                               Its address field will not be used, and that should be given
+   *                               separately as the <tt>defaultEndPointAddress</tt>.
+   */
+  protected Stub(WSPortInfo portInfo, BindingImpl binding, EndpointAddress defaultEndPointAddress, @Nullable WSEndpointReference epr) {
+       this(portInfo,binding,null, defaultEndPointAddress,epr);
+
+  }
+
+    private Stub(WSServiceDelegate owner, @Nullable Tube master, @Nullable WSPortInfo portInfo, QName portname, BindingImpl binding, @Nullable WSDLPort wsdlPort, EndpointAddress defaultEndPointAddress, @Nullable WSEndpointReference epr) {
         this.owner = owner;
         this.portInfo = portInfo;
-        this.wsdlPort = portInfo.getPort();
+        this.wsdlPort = wsdlPort != null ? wsdlPort : (portInfo != null ? portInfo.getPort() : null);
+        this.portname = portname;
+        if (portname == null) {
+        	if (portInfo != null)
+        		this.portname = portInfo.getPortName();
+        	else if (wsdlPort != null)
+        		this.portname = wsdlPort.getName();
+        }
         this.binding = binding;
-        addrVersion = binding.getAddressingVersion();
+
         // if there is an EPR, EPR's address should be used for invocation instead of default address
         if (epr != null)
             this.requestContext.setEndPointAddressString(epr.getAddress());
@@ -202,7 +259,9 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             this.requestContext.setEndpointAddress(defaultEndPointAddress);
         this.engine = new Engine(toString(), owner.getExecutor());
         this.endpointReference = epr;
-        wsdlProperties = (wsdlPort == null) ? null : new WSDLProperties(wsdlPort);
+        wsdlProperties = (wsdlPort == null) ? new WSDLDirectProperties(owner.getServiceName(), portname) : new WSDLPortProperties(wsdlPort);
+        
+        this.cleanRequestContext = this.requestContext.copy();
 
         // ManagedObjectManager MUST be created before the pipeline
         // is constructed.
@@ -213,6 +272,8 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             this.tubes = new TubePool(master);
         else
             this.tubes = new TubePool(createPipeline(portInfo, binding));
+
+        addrVersion = binding.getAddressingVersion();
 
         // This needs to happen after createPipeline.
         // TBD: Check if it needs to happen outside the Stub constructor.
@@ -226,8 +287,11 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         //Check all required WSDL extensions are understood
         checkAllWSDLExtensionsUnderstood(portInfo, binding);
         SEIModel seiModel = null;
+        Class sei = null;
         if (portInfo instanceof SEIPortInfo) {
-            seiModel = ((SEIPortInfo) portInfo).model;
+        	SEIPortInfo sp = (SEIPortInfo) portInfo;
+            seiModel = sp.model;
+            sei = sp.sei;
         }
         BindingID bindingId = portInfo.getBindingId();
 
@@ -239,9 +303,21 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
                 new ClientTubeAssemblerContext(
                         portInfo.getEndpointAddress(),
                         portInfo.getPort(),
-                        this, binding, owner.getContainer(), ((BindingImpl) binding).createCodec(), seiModel));
+                        this, binding, owner.getContainer(), ((BindingImpl) binding).createCodec(), seiModel, sei));
     }
-
+    
+    public WSDLPort getWSDLPort() {
+    	return wsdlPort;
+    }
+    
+    public WSService getService() {
+    	return owner;
+    }
+    
+    public Pool<Tube> getTubes() {
+    	return tubes;
+    }
+    
     /**
      * Checks only if RespectBindingFeature is enabled
      * checks if all required wsdl extensions in the
@@ -326,6 +402,8 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
      *                       So we take a setter that abstracts that away.
      */
     protected final Packet process(Packet packet, RequestContext requestContext, ResponseContextReceiver receiver) {
+        packet.isSynchronousMEP = true;
+        packet.component = this;
         configureRequestPacket(packet, requestContext);
         Pool<Tube> pool = tubes;
         if (pool == null)
@@ -346,7 +424,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             // ResponseContext is created.
             Packet reply = (fiber.getPacket() == null) ? packet : fiber.getPacket();
             receiver.setResponseContext(new ResponseContext(reply));
-
+            
             pool.recycle(tube);
         }
     }
@@ -362,9 +440,8 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             packet.getMessage().getHeaders().addAll(hl);
 
         requestContext.fill(packet, (binding.getAddressingVersion() != null));
-        if (wsdlProperties != null) {
-            packet.addSatellite(wsdlProperties);
-        }
+        packet.addSatellite(wsdlProperties);
+
         if (addrVersion != null) {
             // populate request WS-Addressing headers
             HeaderList headerList = packet.getMessage().getHeaders();
@@ -375,10 +452,9 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             // but the EPR has ReferenceParameters.
             // Current approach: Add ReferenceParameters only if addressing enabled.
             if (endpointReference != null) {
-                endpointReference.addReferenceParameters(packet.getMessage().getHeaders());
+                endpointReference.addReferenceParametersToList(packet.getMessage().getHeaders());
             }
         }
-
     }
 
     /**
@@ -391,6 +467,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
      * this method is thread-safe and can be invoked from
      * multiple threads concurrently.
      *
+     * @param receiver       The {@link Response} implementation
      * @param request         The message to be sent to the server
      * @param requestContext The {@link RequestContext} when this invocation is originally scheduled.
      *                       This must be the same object as {@link #requestContext} for synchronous
@@ -398,18 +475,31 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
      *                       captured at the point of invocation, to correctly satisfy the spec requirement.
      * @param completionCallback Once the processing is done, the callback is invoked.
      */
-    protected final void processAsync(Packet request, RequestContext requestContext, final Fiber.CompletionCallback completionCallback) {
+    protected final void processAsync(AsyncResponseImpl<?> receiver, Packet request, RequestContext requestContext, final Fiber.CompletionCallback completionCallback) {
         // fill in Packet
+    	request.component = this;
         configureRequestPacket(request, requestContext);
 
         final Pool<Tube> pool = tubes;
         if (pool == null)
             throw new WebServiceException("close method has already been invoked"); // TODO: i18n
 
-        Fiber fiber = engine.createFiber();
+        final Fiber fiber = engine.createFiber();
+        
+        receiver.setCancelable(fiber);
+        
+        // check race condition on cancel
+        if (receiver.isCancelled())
+        	return;
+        
+        FiberContextSwitchInterceptorFactory fcsif = owner.getSPI(FiberContextSwitchInterceptorFactory.class);
+        if(fcsif != null)
+            fiber.addInterceptor(fcsif.create());
+        
         // then send it away!
         final Tube tube = pool.take();
-        fiber.start(tube, request, new Fiber.CompletionCallback() {
+
+        Fiber.CompletionCallback fiberCallback = new Fiber.CompletionCallback() {
             public void onCompletion(@NotNull Packet response) {
                 pool.recycle(tube);
                 completionCallback.onCompletion(response);
@@ -420,7 +510,13 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
                 // calling pool.recycle()
                 completionCallback.onCompletion(error);
             }
-        });
+        };
+
+        // Check for SyncStartForAsyncInvokeFeature
+
+        fiber.start(tube, request, fiberCallback, 
+        		getBinding().isFeatureEnabled(SyncStartForAsyncFeature.class) &&
+        		!requestContext.containsKey(PREVENT_SYNC_START_FOR_ASYNC_INVOKE));
     }
 
     public void close() {
@@ -440,13 +536,17 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         }
 
     }
-
+    
     public final WSBinding getBinding() {
         return binding;
     }
 
     public final Map<String, Object> getRequestContext() {
         return requestContext.getMapView();
+    }
+    
+    public void resetRequestContext() {
+    	requestContext = cleanRequestContext.copy();
     }
 
     public final ResponseContext getResponseContext() {
@@ -553,5 +653,9 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 
     public final void setAddress(String address) {
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, address);
+    }
+    
+    public @Nullable <T> T getSPI(@NotNull Class<T> spiType) {
+    	return owner.getSPI(spiType);
     }
 }

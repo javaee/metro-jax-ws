@@ -48,6 +48,7 @@ import org.w3c.dom.Node;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -72,7 +73,9 @@ final class ExceptionBean {
      */
     public static void marshal( Throwable t, Node parent ) throws JAXBException {
         Marshaller m = JAXB_CONTEXT.createMarshaller();
-        m.setProperty("com.sun.xml.bind.namespacePrefixMapper",nsp);
+        try {
+        	m.setProperty("com.sun.xml.bind.namespacePrefixMapper",nsp);
+        } catch (PropertyException pe) {}
         m.marshal(new ExceptionBean(t), parent );
     }
 

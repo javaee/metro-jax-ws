@@ -45,6 +45,7 @@ import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
+import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLFault;
@@ -128,11 +129,13 @@ public abstract class WsaTubeHelper {
 
             QName wsdlOp = requestPacket.getWSDLOperation();
             JavaMethodImpl jm = (JavaMethodImpl) seiModel.getJavaMethodForWsdlOperation(wsdlOp);
-            for (CheckedExceptionImpl ce : jm.getCheckedExceptions()) {
-                if (ce.getDetailType().tagName.getLocalPart().equals(name) &&
-                        ce.getDetailType().tagName.getNamespaceURI().equals(ns)) {
-                    return ce.getFaultAction();
-                }
+            if (jm != null) {
+              for (CheckedExceptionImpl ce : jm.getCheckedExceptions()) {
+                  if (ce.getDetailType().tagName.getLocalPart().equals(name) &&
+                          ce.getDetailType().tagName.getNamespaceURI().equals(ns)) {
+                      return ce.getFaultAction();
+                  }
+              }
             }
             return action;
         } catch (SOAPException e) {
@@ -141,7 +144,11 @@ public abstract class WsaTubeHelper {
     }
 
     String getFaultAction(@Nullable WSDLBoundOperation wbo, Packet responsePacket) {
-        String action = addVer.getDefaultFaultAction();
+    	String action = responsePacket.getMessage().getHeaders().getAction(addVer, soapVer);
+    	if (action != null)
+    		return action;
+    	
+        action = addVer.getDefaultFaultAction();
         if (wbo == null)
             return action;
 
@@ -278,6 +285,7 @@ public abstract class WsaTubeHelper {
         }
         return action;
     }
+    
     public SOAPFault createInvalidAddressingHeaderFault(InvalidAddressingHeaderException e, AddressingVersion av) {
         QName name = e.getProblemHeader();
         QName subsubcode = e.getSubsubcode();
@@ -288,14 +296,14 @@ public abstract class WsaTubeHelper {
             SOAPFactory factory;
             SOAPFault fault;
             if (soapVer == SOAPVersion.SOAP_12) {
-                factory = SOAPVersion.SOAP_12.saajSoapFactory;
+                factory = SOAPVersion.SOAP_12.getSOAPFactory();
                 fault = factory.createFault();
                 fault.setFaultCode(SOAPConstants.SOAP_SENDER_FAULT);
                 fault.appendFaultSubcode(subcode);
                 fault.appendFaultSubcode(subsubcode);
                 getInvalidMapDetail(name, fault.addDetail());
             } else {
-                factory = SOAPVersion.SOAP_11.saajSoapFactory;
+                factory = SOAPVersion.SOAP_11.getSOAPFactory();
                 fault = factory.createFault();
                 fault.setFaultCode(subsubcode);
             }
@@ -317,14 +325,14 @@ public abstract class WsaTubeHelper {
             SOAPFactory factory;
             SOAPFault fault;
             if (soapVer == SOAPVersion.SOAP_12) {
-                factory = SOAPVersion.SOAP_12.saajSoapFactory;
+                factory = SOAPVersion.SOAP_12.getSOAPFactory();
                 fault = factory.createFault();
                 fault.setFaultCode(SOAPConstants.SOAP_SENDER_FAULT);
                 fault.appendFaultSubcode(subcode);
                 fault.appendFaultSubcode(subsubcode);
                 getMapRequiredDetail(e.getMissingHeaderQName(), fault.addDetail());
             } else {
-                factory = SOAPVersion.SOAP_11.saajSoapFactory;
+                factory = SOAPVersion.SOAP_11.getSOAPFactory();
                 fault = factory.createFault();
                 fault.setFaultCode(subsubcode);
             }

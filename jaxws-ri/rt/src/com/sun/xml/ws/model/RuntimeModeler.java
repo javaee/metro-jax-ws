@@ -51,6 +51,7 @@ import com.sun.xml.ws.api.model.MEP;
 import com.sun.xml.ws.api.model.Parameter;
 import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLPart;
+import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLInput;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
@@ -76,7 +77,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
-
 import org.jvnet.ws.databinding.DatabindingMode;
 
 import java.lang.annotation.Annotation;
@@ -99,7 +99,7 @@ import java.util.logging.Logger;
  * @author WS Developement Team
  */
 public class RuntimeModeler {
-    private final WebServiceFeature[] features;
+    private final WebServiceFeatureList features;
     private BindingID bindingId;
     private WSBinding wsBinding;
     private final Class portClass;
@@ -170,11 +170,11 @@ public class RuntimeModeler {
             this.bindingId = wsBinding.getBindingId();
         	if (config.getFeatures() != null) wsBinding.getFeatures().mergeFeatures(config.getFeatures(), false);
         	if (binding != null) wsBinding.getFeatures().mergeFeatures(binding.getFeatures(), false);
-        	this.features = wsBinding.getFeatures().toArray();
+        	this.features = WebServiceFeatureList.toList(wsBinding.getFeatures());
         } else {
             this.bindingId = config.getMappingInfo().getBindingID();
             if (binding != null) bindingId = binding.getBinding().getBindingId();
-            this.features = config.getFeatures();
+            this.features = WebServiceFeatureList.toList(config.getFeatures());
             this.wsBinding = bindingId.createBinding(features);
         }
         metadataReader = config.getMetadataReader();
@@ -302,7 +302,7 @@ public class RuntimeModeler {
 
         if (portName == null) portName = getPortName(portClass, serviceName.getNamespaceURI(), metadataReader);
         model.setPortName(portName);
-        
+
         // Check if databinding is overridden in annotation.
         DatabindingMode dbm = getAnnotation(portClass, DatabindingMode.class);
         if (dbm != null) model.databindingInfo.setDatabindingMode(dbm.value());
@@ -1406,7 +1406,15 @@ public class RuntimeModeler {
     	return getServiceName(implClass, null);
     }
     
+    public static QName getServiceName(Class<?> implClass, boolean isStandard) {
+    	return getServiceName(implClass, null, isStandard);
+    }
+    
     public static QName getServiceName(Class<?> implClass, MetadataReader reader) {
+    	return getServiceName(implClass, reader, true);
+    }
+    
+    public static QName getServiceName(Class<?> implClass, MetadataReader reader, boolean isStandard) {
         if (implClass.isInterface()) {
             throw new RuntimeModelerException("runtime.modeler.cannot.get.serviceName.from.interface",
                                     implClass.getCanonicalName());
@@ -1418,15 +1426,15 @@ public class RuntimeModeler {
             packageName = implClass.getPackage().getName();
 
         WebService webService = getAnnotation(WebService.class, implClass, reader);
-        if (webService == null) {
+        if (isStandard && webService == null) {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                 implClass.getCanonicalName());
         }
-        if (webService.serviceName().length() > 0) {
+        if (webService != null && webService.serviceName().length() > 0) {
             name = webService.serviceName();
         }
         String targetNamespace = getNamespace(packageName);
-        if (webService.targetNamespace().length() > 0) {
+        if (webService != null && webService.targetNamespace().length() > 0) {
             targetNamespace = webService.targetNamespace();
         } else if (targetNamespace == null) {
             throw new RuntimeModelerException("runtime.modeler.no.package",
@@ -1445,23 +1453,31 @@ public class RuntimeModeler {
         return getPortName(implClass, targetNamespace, null);
     }
     
+    public static QName getPortName(Class<?> implClass, String targetNamespace, boolean isStandard) {
+    	return getPortName(implClass, targetNamespace, null, isStandard);
+    }
+    
     public static QName getPortName(Class<?> implClass, String targetNamespace, MetadataReader reader) {
+    	return getPortName(implClass, targetNamespace, reader, true);
+    }
+    
+    public static QName getPortName(Class<?> implClass, String targetNamespace, MetadataReader reader, boolean isStandard) {
         WebService webService = getAnnotation(WebService.class, implClass, reader);  
-        if (webService == null) {
+        if (isStandard && webService == null) {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                 implClass.getCanonicalName());
         }
         String name;
-        if (webService.portName().length() > 0) {
+        if (webService != null && webService.portName().length() > 0) {
             name = webService.portName();
-        } else if (webService.name().length() > 0) {
+        } else if (webService != null && webService.name().length() > 0) {
             name = webService.name()+PORT;
         } else {
             name = implClass.getSimpleName()+PORT;
         }
 
         if (targetNamespace == null) {
-            if (webService.targetNamespace().length() > 0) {
+            if (webService != null && webService.targetNamespace().length() > 0) {
                 targetNamespace = webService.targetNamespace();
             } else {
                 String packageName = null;

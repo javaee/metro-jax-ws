@@ -40,12 +40,15 @@
 
 package com.sun.xml.ws.model.wsdl;
 
-import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.PropertySet;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.handler.MessageContext;
+
+import org.xml.sax.InputSource;
 
 /**
  * Properties exposed from {@link WSDLPort} for {@link MessageContext}.
@@ -53,32 +56,31 @@ import javax.xml.ws.handler.MessageContext;
  *
  * @author Jitendra Kotamraju
  */
-public final class WSDLProperties extends PropertySet {
+public abstract class WSDLProperties extends PropertySet {
 
     private static final PropertyMap model;
     static {
         model = parse(WSDLProperties.class);
     }
 
-    private final @NotNull WSDLPort port;
+    private final @Nullable SEIModel seiModel;
 
-    public WSDLProperties(@NotNull WSDLPort port) {
-        this.port = port;
+    protected WSDLProperties(@Nullable SEIModel seiModel) {
+        this.seiModel = seiModel;
     }
 
     @Property(MessageContext.WSDL_SERVICE)
-    public QName getWSDLService() {
-        return port.getOwner().getName();
-    }
+    public abstract QName getWSDLService();
 
     @Property(MessageContext.WSDL_PORT)
-    public QName getWSDLPort() {
-        return port.getName();
-    }
+    public abstract QName getWSDLPort();
 
     @Property(MessageContext.WSDL_INTERFACE)
-    public QName getWSDLPortType() {
-        return port.getBinding().getPortTypeName();
+    public abstract QName getWSDLPortType();
+    
+    @Property(MessageContext.WSDL_DESCRIPTION)
+    public InputSource getWSDLDescription() {
+    	return seiModel != null ? new InputSource(seiModel.getWSDLLocation()) : null;
     }
 
     @Override

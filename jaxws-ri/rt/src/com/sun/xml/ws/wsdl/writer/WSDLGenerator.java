@@ -236,6 +236,16 @@ public class WSDLGenerator {
         register(new W3CAddressingWSDLGeneratorExtension());
         register(new W3CAddressingMetadataWSDLGeneratorExtension());
         register(new PolicyWSDLGeneratorExtension());
+        
+        if (container!=null) { // on server
+            WSDLGeneratorExtension[] wsdlGeneratorExtensions = container.getSPI(WSDLGeneratorExtension[].class);
+            if (wsdlGeneratorExtensions!=null) {
+              for (WSDLGeneratorExtension wsdlGeneratorExtension:wsdlGeneratorExtensions) {
+                register(wsdlGeneratorExtension);
+              }
+            }
+        }
+
         for (WSDLGeneratorExtension w : extensions)
             register(w);
 
@@ -252,13 +262,17 @@ public class WSDLGenerator {
         this.endpointAddress = address;
     }
 
+    protected String mangleName(String name) {
+    	return BindingHelper.mangleNameToClassName(name);
+    }
+    
     /**
      * Performes the actual WSDL generation
      */
     public void doGeneration() {
         XmlSerializer serviceWriter;
         XmlSerializer portWriter = null;
-        String fileName = BindingHelper.mangleNameToClassName(model.getServiceQName().getLocalPart());
+        String fileName = mangleName(model.getServiceQName().getLocalPart());
         Result result = wsdlResolver.getWSDL(fileName+DOT_WSDL);
         wsdlLocation = result.getSystemId();
         serviceWriter = new CommentFilter(ResultFactory.createSerializer(result));
@@ -266,7 +280,7 @@ public class WSDLGenerator {
             portWriter = serviceWriter;
             schemaPrefix = fileName+"_";
         } else {
-            String wsdlName = BindingHelper.mangleNameToClassName(model.getPortTypeName().getLocalPart());
+            String wsdlName = mangleName(model.getPortTypeName().getLocalPart());
             if (wsdlName.equals(fileName))
                 wsdlName += "PortType";
             Holder<String> absWSDLName = new Holder<String>();
@@ -287,7 +301,7 @@ public class WSDLGenerator {
             int idx = schemaPrefix.lastIndexOf('.');
             if (idx > 0)
                 schemaPrefix = schemaPrefix.substring(0, idx);
-            schemaPrefix = BindingHelper.mangleNameToClassName(schemaPrefix)+"_";
+            schemaPrefix = mangleName(schemaPrefix)+"_";
         }    
         generateDocument(serviceWriter, portWriter);
     }

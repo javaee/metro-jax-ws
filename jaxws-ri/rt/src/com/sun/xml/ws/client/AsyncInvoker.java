@@ -59,12 +59,29 @@ public abstract class AsyncInvoker implements Runnable {
      * we can't take this as a constructor parameter.
      */
     protected AsyncResponseImpl responseImpl;
-
+    protected boolean nonNullAsyncHandlerGiven;
+    
     public void setReceiver(AsyncResponseImpl responseImpl) {
         this.responseImpl = responseImpl;
     }
-    
-    public void run () {
+
+  public AsyncResponseImpl getResponseImpl() {
+    return responseImpl;
+  }
+
+  public void setResponseImpl(AsyncResponseImpl responseImpl) {
+    this.responseImpl = responseImpl;
+  }
+
+  public boolean isNonNullAsyncHandlerGiven() {
+    return nonNullAsyncHandlerGiven;
+  }
+
+  public void setNonNullAsyncHandlerGiven(boolean nonNullAsyncHandlerGiven) {
+    this.nonNullAsyncHandlerGiven = nonNullAsyncHandlerGiven;
+  }
+
+  public void run () {
         try {
             do_run();
         }catch(WebServiceException e) {
@@ -76,5 +93,4 @@ public abstract class AsyncInvoker implements Runnable {
     }
 
     public abstract void do_run();
-
 }

@@ -246,4 +246,5 @@ public interface JAXWSProperties {
      * @since 2.1.4
      */
     public static final String REST_BINDING = "http://jax-ws.dev.java.net/rest";
+    
 }

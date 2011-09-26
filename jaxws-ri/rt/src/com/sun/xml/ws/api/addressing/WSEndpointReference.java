@@ -919,10 +919,26 @@ public final class WSEndpointReference  implements WSDLExtension {
      * Copies all the reference parameters in this EPR as headers
      * to the given {@link HeaderList}.
      */
-    public void addReferenceParameters(HeaderList outbound) {
+    public void addReferenceParametersToList(HeaderList outbound) {
         for (Header header : referenceParameters) {
             outbound.add(header);
         }
+    }
+
+    /**
+     * Copies all the reference parameters from the given {@link HeaderList}
+     * to this EPR
+     */
+    public void addReferenceParameters(HeaderList headers) {
+    	if (headers != null) {
+    		Header[] hs = new Header[referenceParameters.length + headers.size()];
+    		System.arraycopy(referenceParameters, 0, hs, 0, referenceParameters.length);
+    		int i = referenceParameters.length;
+    		for (Header h : headers) {
+    			hs[i++] = h;
+    		}
+    		referenceParameters = hs;
+    	}
     }
 
     /**

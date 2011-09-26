@@ -98,6 +98,7 @@ public class WebServiceAP implements AnnotationProcessor, ModelBuilder, WebServi
     private Set<TypeDeclaration> processedTypeDecls = new HashSet<TypeDeclaration>();
     protected Messager messager;
     private boolean doNotOverWrite = false;
+    private boolean ignoreNoWebServiceFoundWarning = false;
     private WsgenOptions options;
     private ErrorReceiver receiver;
     private PrintStream out;
@@ -134,6 +135,18 @@ public class WebServiceAP implements AnnotationProcessor, ModelBuilder, WebServi
         defHolderDecl = this.apEnv.getTypeDeclaration(HOLDER_CLASSNAME);
         if (options == null) {
             options = new WsgenOptions();
+            
+            Map<String, String> o = this.apEnv.getOptions();
+            final String a = "-AdoNotOverWrite=";
+            final String b = "-AignoreNoWebServiceFoundWarning=";
+            for (String key : o.keySet()) {
+            	if (key.startsWith(a)) {
+		            doNotOverWrite = options.doNotOverWrite = Boolean.valueOf(key.substring(a.length()));
+            	} else if (key.startsWith(b)) {
+            		ignoreNoWebServiceFoundWarning = Boolean.valueOf(key.substring(b.length()));
+            	}
+            }
+            
             out = new PrintStream(new ByteArrayOutputStream());
             class Listener extends WsimportListener {
                 ConsoleErrorReporter cer = new ConsoleErrorReporter(out);
@@ -335,8 +348,10 @@ public class WebServiceAP implements AnnotationProcessor, ModelBuilder, WebServi
             processedEndpoint = true;
         }
         if (!processedEndpoint) {
-            if (isAPTInvocation)
-                onWarning(WebserviceapMessages.WEBSERVICEAP_NO_WEBSERVICE_ENDPOINT_FOUND());
+            if (isAPTInvocation) {
+            	if (!ignoreNoWebServiceFoundWarning)
+            		onWarning(WebserviceapMessages.WEBSERVICEAP_NO_WEBSERVICE_ENDPOINT_FOUND());
+            }
             else
                 onError(WebserviceapMessages.WEBSERVICEAP_NO_WEBSERVICE_ENDPOINT_FOUND());
         }

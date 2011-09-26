@@ -64,13 +64,12 @@ import java.lang.reflect.Method;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class InvokerTube<T> extends AbstractTubeImpl {
+public abstract class InvokerTube<T> extends com.sun.xml.ws.server.sei.InvokerTube<Invoker> implements EndpointAwareTube {
 
-    private final Invoker invoker;
     private WSEndpoint endpoint;
 
     protected InvokerTube(Invoker invoker) {
-        this.invoker = invoker;
+        super(invoker);
     }
 
     public void setEndpoint(WSEndpoint endpoint) {

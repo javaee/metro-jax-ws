@@ -68,11 +68,14 @@ public class ManagedClientAssertion extends ManagementAssertion {
     /**
      * Return ManagedClient assertion if there is one associated with the client.
      *
-     * @param portInfo The client PortInfo. Must not be null.
+     * @param portInfo The client PortInfo.
      * @return The policy assertion if found. Null otherwise.
      * @throws WebServiceException If computing the effective policy of the port failed.
      */
     public static ManagedClientAssertion getAssertion(WSPortInfo portInfo) throws WebServiceException {
+    	if (portInfo == null)
+    		return null;
+    	
         LOGGER.entering(portInfo);
         // getPolicyMap is deprecated because it is only supposed to be used by Metro code
         // and not by other clients.

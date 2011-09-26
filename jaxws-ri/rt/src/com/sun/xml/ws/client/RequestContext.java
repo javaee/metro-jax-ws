@@ -41,12 +41,12 @@
 package com.sun.xml.ws.client;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.DistributedPropertySet;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.message.Packet;
 
 import javax.xml.ws.BindingProvider;
-import javax.xml.ws.WebServiceException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -117,8 +117,9 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  */
 @SuppressWarnings({"SuspiciousMethodCalls"})
-public final class RequestContext extends PropertySet {
+public final class RequestContext extends DistributedPropertySet {
     private static final Logger LOGGER = Logger.getLogger(RequestContext.class.getName());
+    
     /**
      * The default value to be use for {@link #contentNegotiation} obtained
      * from a system property.
@@ -151,7 +152,7 @@ public final class RequestContext extends PropertySet {
      */
     @Property(BindingProvider.ENDPOINT_ADDRESS_PROPERTY)
     public String getEndPointAddressString() {
-        return endpointAddress.toString();
+        return endpointAddress != null ? endpointAddress.toString() : null;
     }
 
     public void setEndPointAddressString(String s) {
@@ -263,10 +264,12 @@ public final class RequestContext extends PropertySet {
      */
     private RequestContext(RequestContext that) {
         others = new HashMap<String,Object>(that.others);
+        mapView.fallbackMap = that.mapView.fallbackMap != null ?
+          new HashMap<String, Object>(that.mapView.fallback()) : null;
         endpointAddress = that.endpointAddress;
         soapAction = that.soapAction;
         contentNegotiation = that.contentNegotiation;
-        // this is fragile, but it works faster
+        that.copySatelliteInto(this);
     }
 
     /**
@@ -318,10 +321,14 @@ public final class RequestContext extends PropertySet {
                     packet.soapAction = soapAction;
                 }
             }
+
             if((!isAddressingEnabled && (soapActionUse == null || !soapActionUse)) && soapAction != null) {
                 LOGGER.warning("BindingProvider.SOAPACTION_URI_PROPERTY is set in the RequestContext but is ineffective," +
                         " Either set BindingProvider.SOAPACTION_USE_PROPERTY to true or enable AddressingFeature"); 
             }
+
+            copySatelliteInto(packet);
+
             if(!others.isEmpty()) {
                 packet.invocationProperties.putAll(others);
                 //if it is not standard property it deafults to Scope.HANDLER
@@ -352,7 +359,6 @@ public final class RequestContext extends PropertySet {
         return new RequestContext(this);
     }
 
-
     private final class MapView implements Map<String,Object> {
         private Map<String,Object> fallbackMap;
 
@@ -361,9 +367,7 @@ public final class RequestContext extends PropertySet {
                 // has to fall back. fill in fallbackMap
                 fallbackMap = new HashMap<String,Object>(others);
                 // then put all known properties
-                for (Map.Entry<String,Accessor> prop : propMap.entrySet()) {
-                    fallbackMap.put(prop.getKey(),prop.getValue().get(RequestContext.this));
-                }
+                fallbackMap.putAll(createMapView());
             }
             return fallbackMap;
         }

@@ -42,15 +42,8 @@ package com.sun.xml.ws.api;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.util.ReadOnlyPropertyException;
 
-import javax.xml.ws.handler.MessageContext;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -76,33 +69,6 @@ public abstract class PropertySet implements org.jvnet.ws.message.PropertySet {
      * Creates a new instance of TypedMap.
      */
     protected PropertySet() {}
-
-    /**
-     * Marks a field on {@link PropertySet} as a
-     * property of {@link MessageContext}.
-     *
-     * <p>
-     * To make the runtime processing easy, this annotation
-     * must be on a public field (since the property name
-     * can be set through {@link Map} anyway, you won't be
-     * losing abstraction by doing so.)
-     *
-     * <p>
-     * For similar reason, this annotation can be only placed
-     * on a reference type, not primitive type.
-     *
-     * @see Packet
-     * @author Kohsuke Kawaguchi
-     */
-    @Inherited
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD,ElementType.METHOD})
-    public @interface Property {
-        /**
-         * Name of the property.
-         */
-        String[] value();
-    }
 
     /**
      * Represents the list of strongly-typed known propertyies
@@ -176,9 +142,10 @@ public abstract class PropertySet implements org.jvnet.ws.message.PropertySet {
                         Property cp = m.getAnnotation(Property.class);
                         if(cp!=null) {
                             String name = m.getName();
-                            assert name.startsWith("get");
+                            assert name.startsWith("get") || name.startsWith("is");
 
-                            String setName = 's'+name.substring(1);   // getFoo -> setFoo
+                            String setName = name.startsWith("is") ? "set"+name.substring(3) : // isFoo -> setFoo 
+                            	's'+name.substring(1);   // getFoo -> setFoo
                             Method setter;
                             try {
                                 setter = clazz.getMethod(setName,m.getReturnType());

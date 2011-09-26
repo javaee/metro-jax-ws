@@ -63,12 +63,17 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.handler.MessageContext;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.CookieHandler;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.net.HttpURLConnection;
@@ -82,6 +87,7 @@ import java.net.HttpURLConnection;
  * @author Jitendra Kotamraju
  */
 public class HttpTransportPipe extends AbstractTubeImpl {
+	private static final Logger LOGGER = Logger.getLogger(HttpTransportPipe.class.getName());
 
     private final Codec codec;
     private final WSBinding binding;
@@ -130,7 +136,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     }
 
     public NextAction processException(@NotNull Throwable t) {
-        throw new IllegalStateException("HttpTransportPipe's processException shouldn't be called.");
+        return doThrow(t);
     }
 
     public NextAction processRequest(@NotNull Packet request) {
@@ -138,9 +144,13 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     }
 
     public NextAction processResponse(@NotNull Packet response) {
-        throw new IllegalStateException("HttpTransportPipe's processResponse shouldn't be called.");
+        return doReturnWith(response);
     }
 
+    protected HttpClientTransport getTransport(Packet request, Map<String, List<String>> reqHeaders) {
+    	return new HttpClientTransport(request, reqHeaders);
+    }
+    
     @Override
     public Packet process(Packet request) {
         HttpClientTransport con;
@@ -165,7 +175,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             addBasicAuth(request, reqHeaders);
             addCookies(request, reqHeaders);
 
-            con = new HttpClientTransport(request,reqHeaders);
+            con = getTransport(request, reqHeaders);
             request.addSatellite(new HttpResponseProperties(con));
 
             ContentType ct = codec.getStaticContentType(request);
@@ -183,7 +193,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                     writeSOAPAction(reqHeaders, ct.getSOAPActionHeader());
                 }
                 
-                if(dump)
+                if(dump || LOGGER.isLoggable(Level.FINER))
                     dump(buf, "HTTP request", reqHeaders);
                 
                 buf.writeTo(con.getOutput());
@@ -197,7 +207,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                     writeSOAPAction(reqHeaders, ct.getSOAPActionHeader());
                 }
                 
-                if(dump) {
+                if(dump || LOGGER.isLoggable(Level.FINER)) {
                     ByteArrayBuffer buf = new ByteArrayBuffer();
                     codec.encode(request, buf);
                     dump(buf, "HTTP request - "+request.endpointAddress, reqHeaders);
@@ -228,7 +238,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         recordCookies(request, con);
 
         InputStream responseStream = con.getInput();
-        if (dump) {
+        if (dump || LOGGER.isLoggable(Level.FINER)) {
             ByteArrayBuffer buf = new ByteArrayBuffer();
             if (responseStream != null) {
                 buf.write(responseStream);
@@ -384,14 +394,33 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         return new HttpTransportPipe(this,cloner);
     }
 
+
     private void dump(ByteArrayBuffer buf, String caption, Map<String, List<String>> headers) throws IOException {
-        System.out.println("---["+caption +"]---");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(baos, true);
+        pw.println("---["+caption +"]---");
         for (Entry<String,List<String>> header : headers.entrySet()) {
-            System.out.println(header.getKey()+": "+header.getValue());
+            if(header.getValue().isEmpty()) {
+                // I don't think this is legal, but let's just dump it,
+                // as the point of the dump is to uncover problems.
+                pw.println(header.getValue());
+            } else {
+                for (String value : header.getValue()) {
+                    pw.println(header.getKey()+": "+value);
+                }
+            }
         }
 
-        buf.writeTo(System.out);
-        System.out.println("--------------------");
+        buf.writeTo(baos);
+        pw.println("--------------------");
+
+        String msg = baos.toString();
+        if (dump) {
+          System.out.println(msg);
+        }
+        if (LOGGER.isLoggable(Level.FINER)) {
+          LOGGER.log(Level.FINER, msg);
+        }
     }
 
     /**

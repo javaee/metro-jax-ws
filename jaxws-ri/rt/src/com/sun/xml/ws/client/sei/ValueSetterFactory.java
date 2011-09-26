@@ -49,36 +49,36 @@ import javax.xml.ws.WebServiceException;
  *
  * @author Jitendra Kotamraju
  */
-abstract class ValueSetterFactory {
+public abstract class ValueSetterFactory {
 
-    abstract ValueSetter get(ParameterImpl p);
+    public abstract ValueSetter get(ParameterImpl p);
 
-    static final ValueSetterFactory SYNC = new ValueSetterFactory() {
-        ValueSetter get(ParameterImpl p) {
+    public static final ValueSetterFactory SYNC = new ValueSetterFactory() {
+        public ValueSetter get(ParameterImpl p) {
             return ValueSetter.getSync(p);
         }
     };
 
-    static final ValueSetterFactory NONE = new ValueSetterFactory() {
-        ValueSetter get(ParameterImpl p) {
+    public static final ValueSetterFactory NONE = new ValueSetterFactory() {
+        public ValueSetter get(ParameterImpl p) {
             throw new WebServiceException("This shouldn't happen. No response parameters.");
         }
     };
 
-    static final ValueSetterFactory SINGLE = new ValueSetterFactory() {
-        ValueSetter get(ParameterImpl p) {
+    public static final ValueSetterFactory SINGLE = new ValueSetterFactory() {
+        public ValueSetter get(ParameterImpl p) {
             return ValueSetter.SINGLE_VALUE;
         }
     };
 
-    static final class AsyncBeanValueSetterFactory extends ValueSetterFactory {
+    public static final class AsyncBeanValueSetterFactory extends ValueSetterFactory {
         private Class asyncBean;
 
-        AsyncBeanValueSetterFactory(Class asyncBean) {
+        public AsyncBeanValueSetterFactory(Class asyncBean) {
             this.asyncBean = asyncBean;
         }
 
-        ValueSetter get(ParameterImpl p) {
+        public ValueSetter get(ParameterImpl p) {
             return new ValueSetter.AsyncBeanValueSetter(p, asyncBean);
         }
     }

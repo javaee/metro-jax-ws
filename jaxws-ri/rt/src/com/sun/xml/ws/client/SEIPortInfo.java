@@ -45,6 +45,7 @@ import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.SOAPBindingImpl;
+import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.model.SOAPSEIModel;
 
 import javax.xml.ws.WebServiceFeature;
@@ -56,9 +57,13 @@ import javax.xml.ws.WebServiceFeature;
  * This object is created statically when {@link WSServiceDelegate} is created
  * with an service interface.
  *
+ * NOTE: Made this class public so that Dispatch instances derived from a
+ *       'parent' SEI-based port instance (generally for sending protocol
+ *       messages or request retries) can still know what the parent's SEI was.
+ *
  * @author Kohsuke Kawaguchi
  */
-final class SEIPortInfo extends PortInfo {
+public final class SEIPortInfo extends PortInfo {
     public final Class sei;
     /**
      * Model of {@link #sei}.
@@ -72,7 +77,7 @@ final class SEIPortInfo extends PortInfo {
         assert sei!=null && model!=null;
     }
 
-    public BindingImpl createBinding(WebServiceFeature[] webServiceFeatures, Class<?> portInterface) {
+    public BindingImpl createBinding(WebServiceFeatureList webServiceFeatures, Class<?> portInterface) {
     	BindingImpl bindingImpl = super.createBinding(webServiceFeatures,portInterface, (BindingImpl) model.getWSBinding());
         if(bindingImpl instanceof SOAPBindingImpl) {
             ((SOAPBindingImpl)bindingImpl).setPortKnownHeaders(model.getKnownHeaders());

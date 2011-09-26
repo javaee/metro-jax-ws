@@ -61,7 +61,7 @@ import java.lang.reflect.Method;
  * @author Jitendra Kotamraju
  * @author Kohsuke Kawaguchi
  */
-public abstract class Invoker {
+public abstract class Invoker extends com.sun.xml.ws.server.sei.Invoker {
     /**
      * Called by {@link WSEndpoint} when it's set up.
      *
@@ -97,11 +97,6 @@ public abstract class Invoker {
      * This method is guaranteed to be only called once by {@link WSEndpoint}.
      */
     public void dispose() {}
-
-    /**
-     *
-     */
-    public abstract Object invoke( @NotNull Packet p, @NotNull Method m, @NotNull Object... args ) throws InvocationTargetException, IllegalAccessException;
 
     /**
      * Invokes {@link Provider#invoke(Object)}

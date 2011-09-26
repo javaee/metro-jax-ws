@@ -90,7 +90,7 @@ import java.util.Map;
  * @author Kohsuke Kawaguchi
  * @author Jitendra Kotamraju
  */
-abstract class ResponseBuilder {
+public abstract class ResponseBuilder {
     /**
      * Reads a response {@link Message}, disassembles it, and moves obtained Java values
      * to the expected places.
@@ -108,7 +108,7 @@ abstract class ResponseBuilder {
      * @throws XMLStreamException
      *      if there's an error during unmarshalling the reply message.
      */
-    abstract Object readResponse(Message reply, Object[] args) throws JAXBException, XMLStreamException;
+    public abstract Object readResponse(Message reply, Object[] args) throws JAXBException, XMLStreamException;
 
     static final class None extends ResponseBuilder {
         private None(){
@@ -153,7 +153,7 @@ abstract class ResponseBuilder {
     /**
      * {@link ResponseBuilder} that sets the VM uninitialized value to the type.
      */
-    static final class NullSetter extends ResponseBuilder {
+    public static final class NullSetter extends ResponseBuilder {
         private final ValueSetter setter;
         private final Object nullValue;
 
@@ -182,7 +182,7 @@ abstract class ResponseBuilder {
      * return a value as a return value (and everything else has to go to
      * {@link Holder}s.)
      */
-    static final class Composite extends ResponseBuilder {
+    public static final class Composite extends ResponseBuilder {
         private final ResponseBuilder[] builders;
 
         public Composite(ResponseBuilder... builders) {
@@ -210,7 +210,7 @@ abstract class ResponseBuilder {
     /**
      * Reads an Attachment into a Java parameter.
      */
-    static abstract class AttachmentBuilder extends ResponseBuilder {
+    public static abstract class AttachmentBuilder extends ResponseBuilder {
         protected final ValueSetter setter;
         protected final ParameterImpl param;
         private final String pname;
@@ -413,7 +413,7 @@ abstract class ResponseBuilder {
     /**
      * Reads a header into a JAXB object.
      */
-    static final class Header extends ResponseBuilder {
+    public static final class Header extends ResponseBuilder {
         private final XMLBridge<?> bridge;
         private final ValueSetter setter;
         private final QName headerName;
@@ -446,8 +446,9 @@ abstract class ResponseBuilder {
 
         private SOAPFaultException createDuplicateHeaderException() {
             try {
-                SOAPFault fault = soapVersion.saajSoapFactory.createFault(
-                        ServerMessages.DUPLICATE_PORT_KNOWN_HEADER(headerName), soapVersion.faultCodeServer);
+                SOAPFault fault = soapVersion.getSOAPFactory().createFault();
+                fault.setFaultCode(soapVersion.faultCodeServer);
+                fault.setFaultString(ServerMessages.DUPLICATE_PORT_KNOWN_HEADER(headerName));
                 return new SOAPFaultException(fault);
             } catch(SOAPException e) {
                 throw new WebServiceException(e);
@@ -476,7 +477,7 @@ abstract class ResponseBuilder {
     /**
      * Reads the whole payload into a single JAXB bean.
      */
-    static final class Body extends ResponseBuilder {
+    public static final class Body extends ResponseBuilder {
         private final XMLBridge<?> bridge;
         private final ValueSetter setter;
 
@@ -500,7 +501,7 @@ abstract class ResponseBuilder {
      * Treats a payload as multiple parts wrapped into one element,
      * and processes all such wrapped parts.
      */
-    static final class DocLit extends ResponseBuilder {
+    public static final class DocLit extends ResponseBuilder {
         /**
          * {@link PartBuilder} keyed by the element name (inside the wrapper element.)
          */
@@ -612,7 +613,7 @@ abstract class ResponseBuilder {
      * Treats a payload as multiple parts wrapped into one element,
      * and processes all such wrapped parts.
      */
-    static final class RpcLit extends ResponseBuilder {
+    public static final class RpcLit extends ResponseBuilder {
         /**
          * {@link PartBuilder} keyed by the element name (inside the wrapper element.)
          */

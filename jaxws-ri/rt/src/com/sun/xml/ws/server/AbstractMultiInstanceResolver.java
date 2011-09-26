@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.server;
 
+import com.sun.xml.ws.api.server.AbstractInstanceResolver;
 import com.sun.xml.ws.api.server.InstanceResolver;
 import com.sun.xml.ws.api.server.ResourceInjector;
 import com.sun.xml.ws.api.server.WSEndpoint;

@@ -119,6 +119,10 @@ public class ProviderImpl extends Provider {
         return new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass);
     }
 
+    public ServiceDelegate createServiceDelegate( Source wsdlSource, QName serviceName, Class serviceClass) {
+        return new WSServiceDelegate(wsdlSource, serviceName, serviceClass);
+   }
+
     @Override
     public Endpoint createAndPublishEndpoint(String address,
                                              Object implementor) {
@@ -176,7 +180,7 @@ public class ProviderImpl extends Provider {
         WSEndpointReference.Metadata metadata = wsepr.getMetaData();
         WSService service;
         if(metadata.getWsdlSource() != null)
-            service = new WSServiceDelegate(metadata.getWsdlSource(), metadata.getServiceName(), Service.class);
+            service = (WSService) createServiceDelegate(metadata.getWsdlSource(), metadata.getServiceName(), Service.class);
         else
             throw new WebServiceException("WSDL metadata is missing in EPR");
         return service.getPort(wsepr, clazz, webServiceFeatures);
@@ -247,6 +251,10 @@ public class ProviderImpl extends Provider {
             } catch (Exception e) {
                 throw new IllegalStateException(ProviderApiMessages.ERROR_WSDL(wsdlDocumentLocation),e);
             }
+        }
+        //wcf3.0/3.5 rejected empty metadata element.
+        if (metadata != null && metadata.size() == 0) {
+           metadata = null;
         }
         return new WSEndpointReference(
             AddressingVersion.fromSpecClass(W3CEndpointReference.class),

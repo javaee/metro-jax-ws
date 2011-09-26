@@ -48,10 +48,12 @@ import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.istack.NotNull;
 
+import javax.xml.namespace.QName;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.WebServiceFeature;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Supresses a feature from WSBinding 
@@ -92,6 +94,10 @@ public class FeatureSupressingWSBinding implements WSBinding {
 
     public void setHandlerChain(List<Handler> chain) {
         original.setHandlerChain(chain);
+    }
+    
+    public Set<QName> getKnownHeaders() {
+    	return original.getKnownHeaders();
     }
 
     public String getBindingID() {

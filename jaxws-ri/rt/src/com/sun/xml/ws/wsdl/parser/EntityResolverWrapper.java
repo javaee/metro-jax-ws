@@ -58,9 +58,15 @@ import java.net.URL;
  */
 final class EntityResolverWrapper implements XMLEntityResolver {
     private final EntityResolver core;
+    private boolean useStreamFromEntityResolver = false;
 
     public EntityResolverWrapper(EntityResolver core) {
         this.core = core;
+    }
+
+    public EntityResolverWrapper(EntityResolver core, boolean useStreamFromEntityResolver) {
+        this.core = core;
+        this.useStreamFromEntityResolver =  useStreamFromEntityResolver;
     }
 
     public Parser resolveEntity(String publicId, String systemId) throws SAXException, IOException {
@@ -75,7 +81,12 @@ final class EntityResolverWrapper implements XMLEntityResolver {
             systemId = source.getSystemId();
 
         URL url = new URL(systemId);
-        InputStream stream = url.openStream();
+        InputStream stream;
+        if (useStreamFromEntityResolver) {
+        	stream = source.getByteStream();
+        } else {
+        	stream = url.openStream();
+        }
         return new Parser(url,
                 new TidyXMLStreamReader(XMLStreamReaderFactory.create(url.toExternalForm(), stream, true), stream));
     }

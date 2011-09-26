@@ -98,7 +98,6 @@ final class WSHttpHandler implements HttpHandler {
             }
         } catch(Throwable e) {
             // Dont't propagate the exception otherwise it kills the httpserver
-            e.printStackTrace();
         }
     }
 

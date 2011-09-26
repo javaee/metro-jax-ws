@@ -38,13 +38,14 @@
  * holder.
  */
 
-package com.sun.xml.ws.server;
+package com.sun.xml.ws.api.server;
 
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.server.InstanceResolver;
 import com.sun.xml.ws.api.server.ResourceInjector;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.resources.ServerMessages;
+import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.util.localization.Localizable;
 
 import javax.annotation.Resource;
@@ -66,14 +67,15 @@ import java.util.List;
  * convenience methods to do the resource injection.
  *
  * @author Kohsuke Kawaguchi
+ * @since 2.2.6
  */
-abstract class AbstractInstanceResolver<T> extends InstanceResolver<T> {
+public abstract class AbstractInstanceResolver<T> extends InstanceResolver<T> {
 
     /**
      * Encapsulates which field/method the injection is done,
      * and performs the injection.
      */
-    protected static interface InjectionPlan<T,R> {
+    public static interface InjectionPlan<T,R> {
         void inject(T instance,R resource);
         /**
          * Gets the number of injections to be performed.
@@ -210,7 +212,7 @@ abstract class AbstractInstanceResolver<T> extends InstanceResolver<T> {
      *      Only look for static field/method
      *
      */
-    protected static <T,R>
+    public static <T,R>
     InjectionPlan<T,R> buildInjectionPlan(Class<? extends T> clazz, Class<R> resourceType, boolean isStatic) {
         List<InjectionPlan<T,R>> plan = new ArrayList<InjectionPlan<T,R>>();
 

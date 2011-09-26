@@ -45,6 +45,7 @@ import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
 import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Message;
@@ -57,16 +58,21 @@ import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
 import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
+import com.sun.xml.ws.developer.WSBindingProvider;
 import com.sun.xml.ws.message.FaultDetailHeader;
 import com.sun.xml.ws.resources.AddressingMessages;
+import com.sun.xml.ws.binding.BindingImpl;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPFault;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.Binding;
 import javax.xml.ws.soap.AddressingFeature;
 import javax.xml.ws.soap.SOAPBinding;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -98,6 +104,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         super(next);
         this.wsdlPort = wsdlPort;
         this.binding = binding;
+        addKnownHeadersToBinding(binding);
         addressingVersion = binding.getAddressingVersion();
         soapVersion = binding.getSOAPVersion();
         helper = getTubeHelper();
@@ -112,6 +119,20 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         addressingVersion = that.addressingVersion;
         soapVersion = that.soapVersion;
         addressingRequired = that.addressingRequired;
+    }
+
+    private void addKnownHeadersToBinding(WSBinding binding) {
+        Set<QName> headerQNames = binding.getKnownHeaders();
+        for (AddressingVersion addrVersion: AddressingVersion.values()) {
+          headerQNames.add(addrVersion.actionTag);
+          headerQNames.add(addrVersion.faultDetailTag);
+          headerQNames.add(addrVersion.faultToTag);
+          headerQNames.add(addrVersion.fromTag);
+          headerQNames.add(addrVersion.messageIDTag);
+          headerQNames.add(addrVersion.relatesToTag);
+          headerQNames.add(addrVersion.replyToTag);
+          headerQNames.add(addrVersion.toTag);
+        }
     }
 
     @Override

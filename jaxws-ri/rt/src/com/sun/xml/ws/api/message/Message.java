@@ -57,6 +57,7 @@ import com.sun.xml.ws.api.pipe.Pipe;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.client.dispatch.DispatchImpl;
 import com.sun.xml.ws.message.AttachmentSetImpl;
+import com.sun.xml.ws.message.StringHeader;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
@@ -72,7 +73,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.Detail;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -507,7 +507,7 @@ public abstract class Message {
      * @throws SOAPException
      *      if there's any error while creating a {@link SOAPMessage}.
      */
-    public abstract SOAPMessage readAsSOAPMessage() throws SOAPException ;
+    public abstract SOAPMessage readAsSOAPMessage() throws SOAPException;
 
     /**
      * Creates the equivalent {@link SOAPMessage} from this message. It also uses
@@ -698,8 +698,6 @@ public abstract class Message {
     // and move the discussion about life scope there.
     public abstract Message copy();
 
-    private String uuid;
-
     /**
      * Retuns a unique id for the message. The id can be used for various things,
      * like debug assistance, logging, and MIME encoding(say for boundary).
@@ -719,6 +717,7 @@ public abstract class Message {
      * @param binding object created by {@link BindingID#createBinding()}
      *
      * @return unique id for the message
+     * @deprecated
      */
     public @NotNull String getID(@NotNull WSBinding binding) {
         return getID(binding.getAddressingVersion(), binding.getSOAPVersion());
@@ -731,16 +730,25 @@ public abstract class Message {
      * @param av WS-Addressing version
      * @param sv SOAP version
      * @return unique id for the message
+     * @deprecated
      */
     public @NotNull String getID(AddressingVersion av, SOAPVersion sv) {
+    	String uuid = null;
+        if (av != null) {
+            uuid = getHeaders().getMessageID(av, sv);
+        }
         if (uuid == null) {
-            if (av != null) {
-                uuid = getHeaders().getMessageID(av, sv);
-            }
-            if (uuid == null) {
-                uuid = "uuid:" + UUID.randomUUID().toString();
-            }
+            uuid = generateMessageID();
+            getHeaders().add(new StringHeader(av.messageIDTag, uuid));
         }
         return uuid;
+    }
+    
+    /**
+     * Generates a UUID suitable for use as a MessageID value
+     * @return generated UUID
+     */
+    public static String generateMessageID() {
+    	return "uuid:" + UUID.randomUUID().toString();
     }
 }

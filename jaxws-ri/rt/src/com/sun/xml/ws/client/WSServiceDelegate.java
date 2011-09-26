@@ -51,6 +51,9 @@ import com.sun.xml.ws.api.client.ServiceInterceptor;
 import com.sun.xml.ws.api.client.ServiceInterceptorFactory;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
+import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.wsdl.WSDLService;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ContainerResolver;
@@ -75,6 +78,8 @@ import com.sun.xml.ws.util.ServiceConfigurationError;
 import com.sun.xml.ws.util.ServiceFinder;
 import static com.sun.xml.ws.util.xml.XmlUtil.createDefaultCatalogResolver;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
+
+import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
 import javax.jws.HandlerChain;
@@ -88,6 +93,7 @@ import javax.xml.ws.*;
 import javax.xml.ws.handler.HandlerResolver;
 import javax.xml.ws.soap.AddressingFeature;
 import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -139,7 +145,7 @@ public class WSServiceDelegate extends WSService {
      */
     private final Map<QName, PortInfo> ports = new HashMap<QName, PortInfo>();
     // For monitoring
-    Map<QName, PortInfo> getQNameToPortInfoMap() { return ports; }
+    protected Map<QName, PortInfo> getQNameToPortInfoMap() { return ports; }
 
     /**
      * Whenever we create {@link BindingProvider}, we use this to configure handlers.
@@ -191,6 +197,14 @@ public class WSServiceDelegate extends WSService {
      *      Either {@link Service}.class or other generated service-derived classes.
      */
     public WSServiceDelegate(@Nullable Source wsdl, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass) {
+    	this(wsdl, null, serviceName, serviceClass);
+    }
+    
+    /**
+     * @param serviceClass
+     *      Either {@link Service}.class or other generated service-derived classes.
+     */
+    public WSServiceDelegate(@Nullable Source wsdl, @Nullable WSDLServiceImpl service, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass) {
         //we cant create a Service without serviceName
         if (serviceName == null)
             throw new WebServiceException(ClientMessages.INVALID_SERVICE_NAME_NULL(serviceName));
@@ -215,36 +229,36 @@ public class WSServiceDelegate extends WSService {
         }
         this.serviceInterceptor = interceptor;
 
-
-        //if wsdl is null, try and get it from the WebServiceClient.wsdlLocation
-        if(wsdl == null){
-            if(serviceClass != Service.class){
-                WebServiceClient wsClient = AccessController.doPrivileged(new PrivilegedAction<WebServiceClient>() {
-                        public WebServiceClient run() {
-                            return serviceClass.getAnnotation(WebServiceClient.class);
-                        }
-                    });
-                String wsdlLocation = wsClient.wsdlLocation();
-                wsdlLocation = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation));
-                wsdl = new StreamSource(wsdlLocation);
-            }
-        }
-        WSDLServiceImpl service=null;
-        if (wsdl != null) {
-            try {
-                URL url = wsdl.getSystemId()==null ? null : new URL(wsdl.getSystemId());
-                WSDLModelImpl model = parseWSDL(url, wsdl);
-                service = model.getService(this.serviceName);
-                if (service == null)
-                    throw new WebServiceException(
-                        ClientMessages.INVALID_SERVICE_NAME(this.serviceName,
-                            buildNameList(model.getServices().keySet())));
-                // fill in statically known ports
-                for (WSDLPortImpl port : service.getPorts())
-                    ports.put(port.getName(), new PortInfo(this, port));
-            } catch (MalformedURLException e) {
-                throw new WebServiceException(ClientMessages.INVALID_WSDL_URL(wsdl.getSystemId()));
-            }
+        if (service == null) {
+	        //if wsdl is null, try and get it from the WebServiceClient.wsdlLocation
+	        if(wsdl == null){
+	            if(serviceClass != Service.class){
+	                WebServiceClient wsClient = AccessController.doPrivileged(new PrivilegedAction<WebServiceClient>() {
+	                        public WebServiceClient run() {
+	                            return serviceClass.getAnnotation(WebServiceClient.class);
+	                        }
+	                    });
+	                String wsdlLocation = wsClient.wsdlLocation();
+	                wsdlLocation = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation));
+	                wsdl = new StreamSource(wsdlLocation);
+	            }
+	        }
+	        if (wsdl != null) {
+	            try {
+	                URL url = wsdl.getSystemId()==null ? null : JAXWSUtils.getEncodedURL(wsdl.getSystemId());
+	                WSDLModelImpl model = parseWSDL(url, wsdl, serviceClass);
+	                service = model.getService(this.serviceName);
+	                if (service == null)
+	                    throw new WebServiceException(
+	                        ClientMessages.INVALID_SERVICE_NAME(this.serviceName,
+	                            buildNameList(model.getServices().keySet())));
+	                // fill in statically known ports
+	                for (WSDLPort port : service.getPorts())
+	                    ports.put(port.getName(), new PortInfo(this, port));
+	            } catch (MalformedURLException e) {
+	                throw new WebServiceException(ClientMessages.INVALID_WSDL_URL(wsdl.getSystemId()));
+	            }
+	        }
         }
         this.wsdlService = service;
 
@@ -268,10 +282,10 @@ public class WSServiceDelegate extends WSService {
      *      Either this or <tt>wsdl</tt> parameter must be given.
      *      Null location means the system won't be able to resolve relative references in the WSDL,
      */
-    private WSDLModelImpl parseWSDL(URL wsdlDocumentLocation, Source wsdlSource) {
+    private WSDLModelImpl parseWSDL(URL wsdlDocumentLocation, Source wsdlSource, Class serviceClass) {
         try {
-            return RuntimeWSDLParser.parse(wsdlDocumentLocation, wsdlSource, createDefaultCatalogResolver(),
-                true, getContainer(), ServiceFinder.find(WSDLParserExtension.class).toArray());
+            return RuntimeWSDLParser.parse(wsdlDocumentLocation, wsdlSource, createCatalogResolver(),
+                true, getContainer(), serviceClass, ServiceFinder.find(WSDLParserExtension.class).toArray());
         } catch (IOException e) {
             throw new WebServiceException(e);
         } catch (XMLStreamException e) {
@@ -283,8 +297,9 @@ public class WSServiceDelegate extends WSService {
         }
     }
 
-
-
+    protected EntityResolver createCatalogResolver() {
+    	return createDefaultCatalogResolver();
+    }
 
     public Executor getExecutor() {
         return executor;
@@ -325,7 +340,7 @@ public class WSServiceDelegate extends WSService {
 
         }
         WSDLPortImpl portModel = getPortModel(tWsdlService, portName);
-        return getPort(portModel.getEPR(), portName, portInterface, features);
+        return getPort(portModel.getEPR(), portName, portInterface, new WebServiceFeatureList(features));
     }
 
     public <T> T getPort(EndpointReference epr, Class<T> portInterface, WebServiceFeature... features) {
@@ -337,14 +352,15 @@ public class WSServiceDelegate extends WSService {
         QName portTypeName = RuntimeModeler.getPortTypeName(portInterface);
         //if port name is not specified in EPR, it will use portTypeName to get it from the WSDL model.
         QName portName = getPortNameFromEPR(wsepr, portTypeName);
-        return getPort(wsepr,portName,portInterface,features);
+        return getPort(wsepr,portName,portInterface,new WebServiceFeatureList(features));
     }
 
-    private <T> T getPort(WSEndpointReference wsepr, QName portName, Class<T> portInterface,
-                          WebServiceFeature... features) {
+    protected <T> T getPort(WSEndpointReference wsepr, QName portName, Class<T> portInterface,
+                          WebServiceFeatureList features) {
         SEIPortInfo spi = addSEI(portName, portInterface, features);
         return createEndpointIFBaseProxy(wsepr,portName,portInterface,features, spi);
     }
+    
     public <T> T getPort(Class<T> portInterface, WebServiceFeature... features) {
         //get the portType from SEI
         QName portTypeName = RuntimeModeler.getPortTypeName(portInterface);
@@ -369,7 +385,7 @@ public class WSServiceDelegate extends WSService {
     public <T> T getPort(Class<T> portInterface) throws WebServiceException {
         return getPort(portInterface, EMPTY_FEATURES);
     }
-
+    
     public void addPort(QName portName, String bindingId, String endpointAddress) throws WebServiceException {
         if (!ports.containsKey(portName)) {
             BindingID bid = (bindingId == null) ? BindingID.SOAP11_HTTP : BindingID.parse(bindingId);
@@ -387,8 +403,12 @@ public class WSServiceDelegate extends WSService {
 
     @Override
     public <T> Dispatch<T> createDispatch(QName portName, WSEndpointReference wsepr, Class<T> aClass, Service.Mode mode, WebServiceFeature... features) {
+    	return createDispatch(portName, wsepr, aClass, mode, new WebServiceFeatureList(features));
+    }
+    
+    public <T> Dispatch<T> createDispatch(QName portName, WSEndpointReference wsepr, Class<T> aClass, Service.Mode mode, WebServiceFeatureList features) {
         PortInfo port = safeGetPort(portName);
-        BindingImpl binding = port.createBinding(features,null);
+        BindingImpl binding = port.createBinding(features, null, null);
         binding.setMode(mode);
         Dispatch<T> dispatch = Stubs.createDispatch(port, this, binding, aClass, mode, wsepr);
         serviceInterceptor.postCreateDispatch((WSBindingProvider) dispatch);
@@ -396,9 +416,12 @@ public class WSServiceDelegate extends WSService {
     }
 
     public <T> Dispatch<T> createDispatch(QName portName, Class<T> aClass, Service.Mode mode, WebServiceFeature... features) {
-        WebServiceFeatureList featureList =  new WebServiceFeatureList(features);
+    	return createDispatch(portName, aClass, mode, new WebServiceFeatureList(features));
+    }
+    
+    public <T> Dispatch<T> createDispatch(QName portName, Class<T> aClass, Service.Mode mode, WebServiceFeatureList features) {
         WSEndpointReference wsepr = null;
-        if(featureList.isEnabled(AddressingFeature.class) && wsdlService != null && wsdlService.get(portName) != null) {
+        if(features.isEnabled(AddressingFeature.class) && wsdlService != null && wsdlService.get(portName) != null) {
             wsepr = wsdlService.get(portName).getEPR();
         }
         return createDispatch(portName, wsepr, aClass, mode, features);
@@ -433,7 +456,8 @@ public class WSServiceDelegate extends WSService {
     }
 
     public EndpointAddress getEndpointAddress(QName qName) {
-        return ports.get(qName).targetEndpoint;
+    	PortInfo p = ports.get(qName);
+        return p != null ? p.targetEndpoint : null;
     }
 
     public Dispatch<Object> createDispatch(QName portName, JAXBContext jaxbContext, Service.Mode mode) throws WebServiceException {
@@ -442,8 +466,12 @@ public class WSServiceDelegate extends WSService {
 
     @Override
     public Dispatch<Object> createDispatch(QName portName, WSEndpointReference wsepr, JAXBContext jaxbContext, Service.Mode mode, WebServiceFeature... features) {
+    	return createDispatch(portName, wsepr, jaxbContext, mode, new WebServiceFeatureList(features));
+    }
+    
+    protected Dispatch<Object> createDispatch(QName portName, WSEndpointReference wsepr, JAXBContext jaxbContext, Service.Mode mode, WebServiceFeatureList features) {
         PortInfo port = safeGetPort(portName);
-        BindingImpl binding = port.createBinding(features,null);
+        BindingImpl binding = port.createBinding(features, null, null);
         binding.setMode(mode);
         Dispatch<Object> dispatch = Stubs.createJAXBDispatch(
                 port, binding, jaxbContext, mode,wsepr);
@@ -457,9 +485,12 @@ public class WSServiceDelegate extends WSService {
     }
 
     public Dispatch<Object> createDispatch(QName portName, JAXBContext jaxbContext, Service.Mode mode, WebServiceFeature... webServiceFeatures) {
-        WebServiceFeatureList featureList =  new WebServiceFeatureList(webServiceFeatures);
+    	return createDispatch(portName, jaxbContext, mode, new WebServiceFeatureList(webServiceFeatures));
+    }
+    
+    protected Dispatch<Object> createDispatch(QName portName, JAXBContext jaxbContext, Service.Mode mode, WebServiceFeatureList webServiceFeatures) {
         WSEndpointReference wsepr = null;
-        if(featureList.isEnabled(AddressingFeature.class) && wsdlService != null && wsdlService.get(portName) != null) {
+        if(webServiceFeatures.isEnabled(AddressingFeature.class) && wsdlService != null && wsdlService.get(portName) != null) {
             wsepr = wsdlService.get(portName).getEPR();
         }
         return createDispatch(portName, wsepr, jaxbContext, mode, webServiceFeatures);
@@ -486,7 +517,7 @@ public class WSServiceDelegate extends WSService {
         }
         return eprPortName;
     }
-
+    
     /**
      *
      * @param wsepr EndpointReference from which portName will be extracted.
@@ -514,7 +545,7 @@ public class WSServiceDelegate extends WSService {
                 throw new WebServiceException(ProviderApiMessages.NULL_WSDL());
             }
             try {
-                WSDLModelImpl eprWsdlMdl = parseWSDL(new URL(wsepr.getAddress()), eprWsdlSource);
+                WSDLModelImpl eprWsdlMdl = parseWSDL(new URL(wsepr.getAddress()), eprWsdlSource, null);
                 wsdlService = eprWsdlMdl.getService(serviceName);
                 if (wsdlService == null)
                     throw new WebServiceException(ClientMessages.INVALID_SERVICE_NAME(serviceName,
@@ -556,7 +587,7 @@ public class WSServiceDelegate extends WSService {
 
         try {
             URL url = wsdl.getSystemId() == null ? null : new URL(wsdl.getSystemId());
-            WSDLModelImpl model = parseWSDL(url, wsdl);
+            WSDLModelImpl model = parseWSDL(url, wsdl, sei);
             service = model.getService(this.serviceName);
             if (service == null)
                 throw new WebServiceException(
@@ -572,7 +603,7 @@ public class WSServiceDelegate extends WSService {
         return serviceName;
     }
 
-    protected Class getServiceClass() {
+    public Class getServiceClass() {
         return serviceClass;
     }
 
@@ -592,7 +623,7 @@ public class WSServiceDelegate extends WSService {
     }
 
     private <T> T createEndpointIFBaseProxy(@Nullable WSEndpointReference epr,QName portName, Class<T> portInterface,
-                                            WebServiceFeature[] webServiceFeatures, SEIPortInfo eif) {
+                                            WebServiceFeatureList webServiceFeatures, SEIPortInfo eif) {
         //fail if service doesnt have WSDL
         if (wsdlService == null)
             throw new WebServiceException(ClientMessages.INVALID_SERVICE_NO_WSDL(serviceName));
@@ -603,14 +634,29 @@ public class WSServiceDelegate extends WSService {
         }
 
         BindingImpl binding = eif.createBinding(webServiceFeatures,portInterface);
-        SEIStub pis = new SEIStub(eif, binding, eif.model, epr);
+        InvocationHandler pis = getStubHandler(binding, eif, epr);
 
-        T proxy = portInterface.cast(Proxy.newProxyInstance(portInterface.getClassLoader(),
+        // When creating the proxy, use a ClassLoader that can load classes
+        // from both the interface class and also from this classes
+        // classloader. This is necessary when this code is used in systems
+        // such as OSGi where the class loader for the interface class may
+        // not be able to load internal JAX-WS classes like 
+        // "WSBindingProvider", but the class loader for this class may not
+        // be able to load the interface class.
+        ClassLoader loader = 
+            getDelegatingLoader(portInterface.getClassLoader(),
+                               WSServiceDelegate.class.getClassLoader());
+        T proxy = portInterface.cast(Proxy.newProxyInstance(loader,
                 new Class[]{portInterface, WSBindingProvider.class, Closeable.class}, pis));
         if (serviceInterceptor != null) {
             serviceInterceptor.postCreateProxy((WSBindingProvider)proxy, portInterface);
         }
         return proxy;
+    }
+    
+    protected InvocationHandler getStubHandler(BindingImpl binding, SEIPortInfo eif, @Nullable WSEndpointReference epr) {
+    	SEIPortInfo spi = (SEIPortInfo) eif;
+    	return new SEIStub(eif, binding, eif.model, epr);
     }
 
     /**
@@ -628,11 +674,11 @@ public class WSServiceDelegate extends WSService {
      *
      * @return guaranteed to be non-null.
      */
-    private @NotNull WSDLPortImpl getPortModel(WSDLServiceImpl wsdlService, QName portName) {
+    public @NotNull WSDLPortImpl getPortModel(WSDLServiceImpl wsdlService, QName portName) {
         WSDLPortImpl port = wsdlService.get(portName);
         if (port == null)
             throw new WebServiceException(
-                    ClientMessages.INVALID_PORT_NAME(portName, buildWsdlPortNames()));
+                ClientMessages.INVALID_PORT_NAME(portName,buildWsdlPortNames()));
         return port;
     }
 
@@ -641,7 +687,7 @@ public class WSServiceDelegate extends WSService {
      * {@link SEIPortInfo} about a given SEI (linked from the {@link Service}-derived class.)
      */
     //todo: valid port in wsdl
-    private SEIPortInfo addSEI(QName portName, Class portInterface, WebServiceFeature... features) throws WebServiceException {
+    private SEIPortInfo addSEI(QName portName, Class portInterface, WebServiceFeatureList features) throws WebServiceException {
         boolean ownModel = useOwnSEIModel(features);
         if (ownModel) {
             // Create a new model and do not cache it
@@ -656,14 +702,8 @@ public class WSServiceDelegate extends WSService {
         }
         return spi;
     }
-
-    private SEIPortInfo createSEIPortInfo(QName portName, Class portInterface, WebServiceFeature... features) {
-        WSDLPortImpl wsdlPort = getPortModel(wsdlService, portName);
-//        RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName, wsdlPort, features);
-//        modeler.setClassLoader(portInterface.getClassLoader());
-//        modeler.setPortName(portName);
-//        AbstractSEIModelImpl model = modeler.buildRuntimeModel();
-
+    
+    public SEIModel buildRuntimeModel(QName serviceName, QName portName, Class portInterface, WSDLPort wsdlPort, WebServiceFeatureList features) {
 		DatabindingFactory fac = DatabindingFactory.newInstance();
 		DatabindingConfig config = new DatabindingConfig();
 		config.setContractClass(portInterface);
@@ -675,11 +715,18 @@ public class WSServiceDelegate extends WSService {
 		
 		com.sun.xml.ws.db.DatabindingImpl rt = (com.sun.xml.ws.db.DatabindingImpl)fac.createRuntime(config);
 		
-        return new SEIPortInfo(this, portInterface, (SOAPSEIModel) rt.getModel(), wsdlPort);
+		return rt.getModel();
     }
 
-    private boolean useOwnSEIModel(WebServiceFeature... features) {
-        return WebServiceFeatureList.getFeature(features, UsesJAXBContextFeature.class) != null;
+    private SEIPortInfo createSEIPortInfo(QName portName, Class portInterface, WebServiceFeatureList features) {
+        WSDLPortImpl wsdlPort = getPortModel(wsdlService, portName);
+        SEIModel model = buildRuntimeModel(serviceName, portName, portInterface, wsdlPort, features);
+		
+        return new SEIPortInfo(this, portInterface, (SOAPSEIModel) model, wsdlPort);
+    }
+    
+    private boolean useOwnSEIModel(WebServiceFeatureList features) {
+        return features.contains(UsesJAXBContextFeature.class);
     }
 
     public WSDLServiceImpl getWsdlService() {
@@ -694,7 +741,35 @@ public class WSServiceDelegate extends WSService {
         }
     }
 
-    private static final WebServiceFeature[] EMPTY_FEATURES = new WebServiceFeature[0];
-}
+    protected static final WebServiceFeature[] EMPTY_FEATURES = new WebServiceFeature[0];
+  
+    private static ClassLoader getDelegatingLoader(ClassLoader loader1, ClassLoader loader2) {
+    	if (loader1 == null) return loader2;
+    	if (loader2 == null) return loader1;
+    	return new DelegatingLoader(loader1, loader2);
+    }
+    
+    private static final class DelegatingLoader
+      extends ClassLoader
+    {
+      private final ClassLoader loader;
 
+      DelegatingLoader(ClassLoader loader1, ClassLoader loader2)
+      {
+        super(loader2);
+        this.loader = loader1;
+      }
+
+      protected Class findClass(String name)
+        throws ClassNotFoundException
+      {
+        return loader.loadClass(name);
+      }
+
+      protected URL findResource(String name)
+      {
+        return loader.getResource(name);
+      }
+    }
+}
 

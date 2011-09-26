@@ -52,6 +52,7 @@ import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.handler.Handler;
 import java.util.List;
+import java.util.Set;
 
 /**
  * JAX-WS implementation of {@link Binding}.
@@ -201,4 +202,11 @@ public interface WSBinding extends Binding {
     @NotNull WSFeatureList getFaultMessageFeatures(@NotNull final QName operationName,
             @NotNull final QName messageName);
     
+    /**
+     * Returns set of header QNames known to be supported by this binding.  Tubes should use this
+     * Set to add QNames for headers they process so that must-understand processing can validate 
+     * headers on inbound messages
+     * @return Set of known QNames
+     */
+    @NotNull Set<QName> getKnownHeaders();
 }

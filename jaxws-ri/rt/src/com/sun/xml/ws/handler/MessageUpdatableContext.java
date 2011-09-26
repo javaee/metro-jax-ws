@@ -92,7 +92,7 @@ public abstract class MessageUpdatableContext implements MessageContext {
      * Updates the complete packet with user modfications to the message and 
      * properties cahnges in MessageContext
      */
-    final void updatePacket() {
+    public final void updatePacket() {
         updateMessage();
         fill(packet);
     }

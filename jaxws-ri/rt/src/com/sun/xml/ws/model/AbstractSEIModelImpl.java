@@ -96,7 +96,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractSEIModelImpl implements SEIModel {
 
-    protected AbstractSEIModelImpl(WebServiceFeature[] features) {
+    protected AbstractSEIModelImpl(WebServiceFeatureList features) {
         this.features = features;
         databindingInfo = new BindingInfo();
         databindingInfo.setSEIModel(this);
@@ -187,8 +187,8 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
                     if(LOGGER.isLoggable(Level.FINEST)) {
                         LOGGER.log(Level.FINEST,"Creating JAXBContext with classes="+cls+" and types="+types);
                     }
-                    UsesJAXBContextFeature f = WebServiceFeatureList.getFeature(features, UsesJAXBContextFeature.class);
-                    DatabindingModeFeature dbf = WebServiceFeatureList.getFeature(features, DatabindingModeFeature.class);  
+                    UsesJAXBContextFeature f = features.get(UsesJAXBContextFeature.class);
+					DatabindingModeFeature dbf = features.get(DatabindingModeFeature.class);
                     JAXBContextFactory factory = f!=null ? f.getFactory() : null;
                     if(factory==null)   factory=JAXBContextFactory.DEFAULT;
 
@@ -521,7 +521,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
     private String targetNamespace = "";
     private List<String> knownNamespaceURIs = null;
     private WSDLPort port;
-    private final WebServiceFeature[] features;
+    private final WebServiceFeatureList features;
     private Databinding databinding;
     BindingID bindingId;
     protected Class contractClass;

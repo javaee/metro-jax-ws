@@ -131,15 +131,15 @@ public class PortInfo implements WSPortInfo {
      *      The initialized BindingImpl
      */
     public BindingImpl createBinding(WebServiceFeature[] webServiceFeatures, Class<?> portInterface) {
-        return createBinding(webServiceFeatures, portInterface, null);
+        return createBinding(new WebServiceFeatureList(webServiceFeatures), portInterface, null);
     }
-    
-    protected BindingImpl createBinding(WebServiceFeature[] webServiceFeatures, Class<?> portInterface, 
-    		  BindingImpl existingBinding) {    	
-        WebServiceFeatureList r = (existingBinding == null)? new WebServiceFeatureList(webServiceFeatures) : existingBinding.getFeatures();
-        if (existingBinding != null) {
-        	r.mergeFeatures(webServiceFeatures, false);
-        }
+
+    public BindingImpl createBinding(WebServiceFeatureList webServiceFeatures, Class<?> portInterface,
+    		BindingImpl existingBinding) {
+		if (existingBinding != null) {
+			webServiceFeatures.addAll(existingBinding.getFeatures());
+		}
+
         Iterable<WebServiceFeature> configFeatures;
         //TODO incase of Dispatch, provide a way to User for complete control of the message processing by giving
         // ability to turn off the WSDL/Policy based features and its associated tubes.
@@ -155,12 +155,12 @@ public class PortInfo implements WSPortInfo {
         } else {
             configFeatures = PolicyUtil.getPortScopedFeatures(policyMap, owner.getServiceName(),portName);
         }
-        r.mergeFeatures(configFeatures, false);
+        webServiceFeatures.mergeFeatures(configFeatures, false);
 
         // merge features from interceptor
-        r.mergeFeatures(owner.serviceInterceptor.preCreateBinding(this, portInterface, r), false);
+        webServiceFeatures.mergeFeatures(owner.serviceInterceptor.preCreateBinding(this, portInterface, webServiceFeatures), false);
 
-        BindingImpl bindingImpl = BindingImpl.create(bindingId, r.toArray());
+        BindingImpl bindingImpl = BindingImpl.create(bindingId, webServiceFeatures.toArray());
         owner.getHandlerConfigurator().configureHandlers(this,bindingImpl);
         return bindingImpl;
     }
@@ -212,7 +212,6 @@ public class PortInfo implements WSPortInfo {
     }
 
     /**
-     * @deprecated
      *      Only meant to be used via {@link javax.xml.ws.handler.PortInfo}.
      *      Use {@link #portName}.
      */

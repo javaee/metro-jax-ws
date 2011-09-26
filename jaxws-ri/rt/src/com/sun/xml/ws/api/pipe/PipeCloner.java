@@ -40,7 +40,7 @@
 
 package com.sun.xml.ws.api.pipe;
 
-import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
+import java.util.Map;
 
 /**
  * Clones the whole pipeline.
@@ -54,44 +54,28 @@ import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
  *      Use {@link TubeCloner}.
  * @author Kohsuke Kawaguchi
  */
-public final class PipeCloner extends TubeCloner {
+public abstract class PipeCloner extends TubeCloner {
     /**
      * {@link Pipe} version of {@link #clone(Tube)}
      */
     public static Pipe clone(Pipe p) {
-        return new PipeCloner().copy(p);
+        return new PipeClonerImpl().copy(p);
     }
 
     // no need to be constructed publicly. always use the static clone method.
-    /*package*/ PipeCloner() {}
+    /*package*/ PipeCloner(Map<Object,Object> master2copy) {
+    	super(master2copy);
+    }
 
     /**
      * {@link Pipe} version of {@link #copy(Tube)}
      */
-    public <T extends Pipe> T copy(T p) {
-        Pipe r = (Pipe)master2copy.get(p);
-        if(r==null) {
-            r = p.copy(this);
-            // the pipe must puts its copy to the map by itself
-            assert master2copy.get(p)==r : "the pipe must call the add(...) method to register itself before start copying other pipes, but "+p+" hasn't done so";
-        }
-        return (T)r;
-    }
+    @SuppressWarnings("unchecked")
+	public abstract <T extends Pipe> T copy(T p);
 
 
     /**
      * The {@link Pipe} version of {@link #add(Tube, Tube)}.
      */
-    public void add(Pipe original, Pipe copy) {
-        assert !master2copy.containsKey(original);
-        assert original!=null && copy!=null;
-        master2copy.put(original,copy);
-    }
-
-    /**
-     * Disambiguation version.
-     */
-    public void add(AbstractTubeImpl original, AbstractTubeImpl copy) {
-        add((Tube)original,copy);
-    }
+    public abstract void add(Pipe original, Pipe copy);
 }

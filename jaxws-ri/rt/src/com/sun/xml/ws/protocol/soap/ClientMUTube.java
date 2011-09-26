@@ -84,19 +84,6 @@ public class ClientMUTube extends MUTube {
         }
         HandlerConfiguration handlerConfig = response.handlerConfig;
 
-//        Set<QName> knownHeaders;
-//        Set<String> roles;
-
-//        if (handlerConfig != null) {
-//            knownHeaders = handlerConfig.getKnownHeaders();
-//            roles = handlerConfig.getRoles();
-//        } else {
-//            roles = soapVersion.implicitRoleSet;
-//            knownHeaders = new HashSet<QName>();
-//        }
-//        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(
-//                response.getMessage().getHeaders(), roles,
-//                knownHeaders);
         if (handlerConfig == null) {
             //Use from binding instead of defaults in case response packet does not have it, 
             //may have been changed from the time of invocation, it ok as its only fallback case.

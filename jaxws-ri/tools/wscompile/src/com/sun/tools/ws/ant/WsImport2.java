@@ -106,9 +106,57 @@ public class WsImport2 extends MatchingTask {
     public boolean isXnocompile() {
         return xnocompile;
     }
+    
+    private boolean xuseBaseResourceAndURLToLoadWSDL = false;
+    public void setXUseBaseResourceAndURLToLoadWSDL(boolean xuseBaseResourceAndURLToLoadWSDL) {
+    	this.xuseBaseResourceAndURLToLoadWSDL = xuseBaseResourceAndURLToLoadWSDL;
+    }
+    
+    public boolean isXUseBaseResourceAndURLToLoadWSDL() {
+    	return xuseBaseResourceAndURLToLoadWSDL;
+    }
+    
+    /** 
+     * -implDestDir option. 
+     */
+    private File implDestDir = null;
+    
+    public File getImplDestDir() {
+        return this.implDestDir;
+    }
+
+    public void setImplDestDir(File base) {
+        this.implDestDir = base;
+    }
+    
+    /** 
+     * -implServiceName option. 
+     */
+    private String implServiceName = null;
+    
+    public String getImplServiceName() {
+        return this.implServiceName;
+    }
+
+    public void setImplServiceName(String base) {
+        this.implServiceName = base;
+    }
+    
+    /** 
+     * -implPortName option. 
+     */
+    private String implPortName = null;
+    
+    public String getImplPortName() {
+        return this.implPortName;
+    }
+
+    public void setImplPortName(String base) {
+        this.implPortName = base;
+    }
 
     public void setXnocompile(boolean xnocompile) {
-        this.xnocompile = xnocompile;
+      this.xnocompile = xnocompile;
     }
 
     /** do not compile generated classes **/
@@ -573,6 +621,10 @@ public class WsImport2 extends MatchingTask {
         if(isXendorsed()){
             cmd.createArgument().setValue("-Xendorsed");
         }
+        
+        if(isXUseBaseResourceAndURLToLoadWSDL()){
+        	cmd.createArgument().setValue("-XuseBaseResourceAndURLToLoadWSDL");
+        }
 
         // keep option
         if (getKeep()) {
@@ -642,15 +694,49 @@ public class WsImport2 extends MatchingTask {
         
         if(!bindingFiles.isEmpty()){
             for(File binding : bindingFiles){
-                cmd.createArgument().setValue("-b");
-                cmd.createArgument().setFile(binding);
+                cmd.createArgument().setValue("-b"); 
+
+		//Bug 10384615 - CLIENTGEN FAIL TO DEAL WITH BINGDING FILE USING SOFT LINK
+                boolean isLink = false;
+                try {
+                	isLink = !binding.getCanonicalPath().equals(binding.getAbsolutePath())
+                	  && !(binding.getAbsolutePath().indexOf("~1") >= 0 && 
+				binding.getCanonicalPath().indexOf(" ")>= 0 );
+		} catch (IOException e) {
+					// do nothing
+		}
+
+		if(isLink){
+			cmd.createArgument().setValue(binding.toURI().toString());
+		}else
+                	cmd.createArgument().setFile(binding);
             }
         }
 
         if((wsdlLocation != null) && (wsdlLocation.length() != 0)){
             cmd.createArgument().setValue("-wsdllocation");
             cmd.createArgument().setValue(wsdlLocation);
-        }         
+        }
+        
+        //implDestDir option
+        if (getImplDestDir() != null)
+        {
+        		cmd.createArgument().setValue("-implDestDir");
+        		cmd.createArgument().setFile(getImplDestDir());
+          
+          if (getImplServiceName() != null)
+          {
+          	cmd.createArgument().setValue("-implServiceName");
+          	cmd.createArgument().setValue(getImplServiceName());
+          }
+          
+          if (getImplPortName() != null)
+          {
+          	cmd.createArgument().setValue("-implPortName");
+          	cmd.createArgument().setValue(getImplPortName());
+          }
+        }
+         
     }
 
 

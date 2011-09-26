@@ -43,6 +43,7 @@ package com.sun.xml.ws.api.message;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.bind.marshaller.SAX2DOMEx;
+import com.sun.xml.ws.addressing.WsaPropertyBag;
 import com.sun.xml.ws.addressing.WsaTubeHelper;
 import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
 import com.sun.xml.ws.api.*;
@@ -53,13 +54,16 @@ import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Tube;
+import com.sun.xml.ws.api.server.Adapter;
 import com.sun.xml.ws.api.server.TransportBackChannel;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WebServiceContextDelegate;
+import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.message.RelatesToHeader;
 import com.sun.xml.ws.message.StringHeader;
+import com.sun.xml.ws.transport.http.WSHTTPConnection;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.server.WSEndpointImpl;
 import com.sun.xml.ws.util.DOMUtil;
@@ -73,6 +77,7 @@ import org.xml.sax.SAXException;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.WebServiceContext;
@@ -82,6 +87,7 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.*;
 import java.util.logging.Logger;
+import java.io.ByteArrayOutputStream;
 
 /**
  * Represents a container of a {@link Message}.
@@ -166,14 +172,14 @@ public final class Packet extends DistributedPropertySet {
         this();
         this.message = request;
     }
-
+    
     /**
      * Creates an empty {@link Packet} that doesn't have any {@link Message}.
      */
     public Packet() {
         this.invocationProperties = new HashMap<String, Object>();
     }
-
+    
     /**
      * Used by {@link #createResponse(Message)} and {@link #copy(boolean)}.
      */
@@ -184,15 +190,16 @@ public final class Packet extends DistributedPropertySet {
         this.handlerScopePropertyNames = that.handlerScopePropertyNames;
         this.contentNegotiation = that.contentNegotiation;
         this.wasTransportSecure = that.wasTransportSecure;
+        this.transportBackChannel = that.transportBackChannel;
         this.endpointAddress = that.endpointAddress;
         this.wsdlOperation = that.wsdlOperation;
-
         this.acceptableMimeTypes = that.acceptableMimeTypes;
         this.endpoint = that.endpoint;
         this.proxy = that.proxy;
         this.webServiceContextDelegate = that.webServiceContextDelegate;
         this.soapAction = that.soapAction;
         this.expectReply = that.expectReply;
+        this.component = that.component;
         // copy other properties that need to be copied. is there any?
     }
 
@@ -226,6 +233,13 @@ public final class Packet extends DistributedPropertySet {
         return message;
     }
 
+    public WSBinding getBinding() {
+    	if (endpoint != null)
+    		return endpoint.getBinding();
+    	if (proxy != null)
+    		return (WSBinding) proxy.getBinding();
+    	return null;
+    }
     /**
      * Sets a {@link Message} to this packet.
      *
@@ -502,6 +516,12 @@ public final class Packet extends DistributedPropertySet {
     }
 
     /**
+      * The governing owner of this packet.  On the service-side this is the {@link Adapter} and on the client it is the {@link Stub}.
+      *
+      */
+     public Component component;
+    
+    /**
      * The governing {@link WSEndpoint} in which this message is floating.
      *
      * <p>
@@ -611,6 +631,23 @@ public final class Packet extends DistributedPropertySet {
     @Deprecated
     public Boolean isOneWay;
 
+    /**
+     * Indicates whether is invoking a synchronous pattern. If true, no
+     * async client programming model (e.g. AsyncResponse or AsyncHandler)
+     * were used to make the request that created this packet.
+     */
+    public Boolean isSynchronousMEP;
+
+    /**
+     * Indicates whether a non-null AsyncHandler was given at the point of
+     * making the request that created this packet. This flag can be used
+     * by Tube implementations to decide how to react when isSynchronousMEP
+     * is false. If true, the client gave a non-null AsyncHandler instance
+     * at the point of request, and will be expecting a response on that
+     * handler when this request has been processed.
+     */
+    public Boolean nonNullAsyncHandlerGiven;
+    
     /**
      * Lazily created set of handler-scope property names.
      *
@@ -846,15 +883,14 @@ public final class Packet extends DistributedPropertySet {
 
         HeaderList hl = responsePacket.getMessage().getHeaders();
 
+        WsaPropertyBag wpb = getSatellite(WsaPropertyBag.class);
+        
         // wsa:To
-        WSEndpointReference replyTo;
-        try {
-            replyTo = message.getHeaders().getReplyTo(av, sv);
-            if (replyTo != null)
-                hl.add(new StringHeader(av.toTag, replyTo.getAddress()));
-        } catch (InvalidAddressingHeaderException e) {
-            replyTo = null;
-        }
+        WSEndpointReference replyTo = null;
+    	if (wpb != null)
+    		replyTo = wpb.getReplyToFromRequest();
+    	if (replyTo == null)
+    		replyTo = message.getHeaders().getReplyTo(av, sv);
 
         // wsa:Action, add if the message doesn't already contain it,
         // generally true for SEI case where there is SEIModel or WSDLModel
@@ -867,21 +903,28 @@ public final class Packet extends DistributedPropertySet {
         // wsa:MessageID
         if (responsePacket.getMessage().getHeaders().get(av.messageIDTag, false) == null) {
             // if header doesn't exist, method getID creates a new random id
-            String newID = responsePacket.getMessage().getID(av, sv);
+            String newID = Message.generateMessageID();
             hl.add(new StringHeader(av.messageIDTag, newID));
         }
 
         // wsa:RelatesTo
-        String mid = getMessage().getHeaders().getMessageID(av, sv);
+        String mid = null;
+        if (wpb != null)
+        	mid = wpb.getMessageID();
+        if (mid == null)
+        	mid = message.getHeaders().getMessageID(av, sv);
         if (mid != null)
             hl.add(new RelatesToHeader(av.relatesToTag, mid));
+		
 
         // populate reference parameters
-        WSEndpointReference refpEPR;
+        WSEndpointReference refpEPR = null;
         if (responsePacket.getMessage().isFault()) {
             // choose FaultTo
-            refpEPR = message.getHeaders().getFaultTo(av, sv);
-
+        	if (wpb != null)
+        		refpEPR = wpb.getFaultToFromRequest();
+        	if (refpEPR == null)
+        		refpEPR = message.getHeaders().getFaultTo(av, sv);
             // if FaultTo is null, then use ReplyTo
             if (refpEPR == null)
                 refpEPR = replyTo;
@@ -890,7 +933,8 @@ public final class Packet extends DistributedPropertySet {
             refpEPR = replyTo;
         }
         if (refpEPR != null) {
-            refpEPR.addReferenceParameters(hl);
+            hl.add(new StringHeader(av.toTag, refpEPR.getAddress()));
+            refpEPR.addReferenceParametersToList(hl);
         }
     }
 
@@ -908,6 +952,38 @@ public final class Packet extends DistributedPropertySet {
             return;
         }
         populateAddressingHeaders(responsePacket, addressingVersion, binding.getSOAPVersion(), action, addressingVersion.isRequired(binding));
+    }
+
+    public String toShortString() {
+      return super.toString();
+    }
+
+    // For use only in a debugger
+    public String toString() {
+      StringBuilder buf = new StringBuilder();
+      buf.append(super.toString());
+      String content;
+    	try {
+        if (message != null) {
+		        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		        XMLStreamWriter xmlWriter = XMLStreamWriterFactory.create(baos, "UTF-8");
+		        message.copy().writeTo(xmlWriter);
+		        xmlWriter.flush();
+		        xmlWriter.close();
+		        baos.flush();
+		        XMLStreamWriterFactory.recycle(xmlWriter);
+		        
+		        byte[] bytes = baos.toByteArray();
+		        //message = Messages.create(XMLStreamReaderFactory.create(null, new ByteArrayInputStream(bytes), "UTF-8", true));
+		        content = new String(bytes, "UTF-8");
+    		} else {
+    		    content = "<none>";
+        }
+    	} catch (Throwable t) {
+    		throw new WebServiceException(t);
+    	}
+      buf.append(" Content: ").append(content);
+      return buf.toString();
     }
 
     // completes TypedMap

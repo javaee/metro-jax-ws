@@ -44,6 +44,7 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.pipe.helper.PipeAdapter;
+import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.transport.http.client.HttpTransportPipe;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.pipe.StandaloneTubeAssembler;
@@ -109,6 +110,16 @@ public abstract class TransportTubeFactory {
      */
     public abstract Tube doCreate(@NotNull ClientTubeAssemblerContext context);
 
+    private static final TransportTubeFactory DEFAULT = new DefaultTransportTubeFactory();
+    private static class DefaultTransportTubeFactory extends TransportTubeFactory {
+
+		@Override
+		public Tube doCreate(ClientTubeAssemblerContext context) {
+			return createDefault(context);
+		}
+    	
+    }
+    
     /**
      * Locates {@link TransportTubeFactory}s and create a suitable transport {@link Tube}.
      *
@@ -118,7 +129,7 @@ public abstract class TransportTubeFactory {
      *      Always non-null, since we fall back to our default {@link Tube}.
      */
     public static Tube create(@Nullable ClassLoader classLoader, @NotNull ClientTubeAssemblerContext context) {
-        for (TransportTubeFactory factory : ServiceFinder.find(TransportTubeFactory.class,classLoader)) {
+        for (TransportTubeFactory factory : ServiceFinder.find(TransportTubeFactory.class,classLoader, context.getContainer())) {
             Tube tube = factory.doCreate(context);
             if(tube !=null) {
                 TransportTubeFactory.logger.fine(factory.getClass()+" successfully created "+tube);
@@ -138,18 +149,21 @@ public abstract class TransportTubeFactory {
             }
         }
 
+        return DEFAULT.createDefault(ctxt);
+    }
+    
+    protected Tube createDefault(ClientTubeAssemblerContext context) {
         // default built-in transports
         String scheme = context.getAddress().getURI().getScheme();
         if (scheme != null) {
             if(scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https"))
-                return new HttpTransportPipe(context.getCodec(), context.getBinding());
-        }
-        TransportTubeFactory f = context.getContainer().getSPI(TransportTubeFactory.class);
-        if (f != null) {
-            Tube tube = f.doCreate(context);
-            if(tube != null) return tube;
+                return createHttpTransport(context);
         }
         throw new WebServiceException("Unsupported endpoint address: "+context.getAddress());    // TODO: i18n
+    }
+    
+    protected Tube createHttpTransport(ClientTubeAssemblerContext context) {
+        return new HttpTransportPipe(context.getCodec(), context.getBinding());
     }
 
     private static final Logger logger = Logger.getLogger(TransportTubeFactory.class.getName());

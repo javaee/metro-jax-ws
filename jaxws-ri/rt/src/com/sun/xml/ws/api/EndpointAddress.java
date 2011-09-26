@@ -116,7 +116,7 @@ public final class EndpointAddress {
         this.uri = uri;
         this.stringForm = uri.toString();
         try {
-            this.url = uri.toURL();
+            initURL();
             proxy = chooseProxy();
         } catch (MalformedURLException e) {
             // ignore
@@ -131,10 +131,26 @@ public final class EndpointAddress {
         this.uri = new URI(url);
         this.stringForm = url;
         try {
-            this.url = new URL(url);
+            initURL();
             proxy = chooseProxy();
         } catch (MalformedURLException e) {
             // ignore
+        }
+    }
+
+
+    private void initURL() throws MalformedURLException {
+        String scheme = uri.getScheme();
+        //URI.toURL() only works when scheme is not null.
+        if (scheme == null) {
+            this.url = new URL(uri.toString());
+            return;
+        }
+        scheme =scheme.toLowerCase();
+        if ("http".equals(scheme) || "https".equals(scheme)) {
+            url = new URL(uri.toASCIIString());
+        } else {
+            this.url = uri.toURL();
         }
     }
 

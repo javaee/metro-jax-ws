@@ -43,6 +43,8 @@ package com.sun.xml.ws.api.server;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.Component;
+import com.sun.xml.ws.api.ComponentRegistry;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.config.management.EndpointCreationAttributes;
 import com.sun.xml.ws.api.config.management.ManagedEndpointFactory;
@@ -67,10 +69,15 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
+
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.Executor;
 
 /**
@@ -124,7 +131,7 @@ import java.util.concurrent.Executor;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class WSEndpoint<T> {
+public abstract class WSEndpoint<T> implements ComponentRegistry {
 
     /**
      * Gets the Endpoint's codec that is used to encode/decode {@link Message}s. This is a
@@ -372,6 +379,18 @@ public abstract class WSEndpoint<T> {
     public abstract @Nullable ServiceDefinition getServiceDefinition();
 
     /**
+     * Gets the list of {@link BoundEndpoint} that are associated
+     * with this endpoint.
+     *
+     * @return
+     *      always return the same set.
+     */
+    public List<BoundEndpoint> getBoundEndpoints() {
+    	Module m = getContainer().getSPI(Module.class);
+    	return m != null ? m.getBoundEndpoints() : null;
+    }
+    
+    /**
      * Gets the list of {@link EndpointComponent} that are associated
      * with this endpoint.
      *
@@ -386,9 +405,26 @@ public abstract class WSEndpoint<T> {
      *
      * @return
      *      always return the same set.
+     * @deprecated
      */
     public abstract @NotNull Set<EndpointComponent> getComponentRegistry();
 
+	public @NotNull Set<Component> getComponents() {
+    	return Collections.emptySet();
+    }
+    
+	public @Nullable <S> S getSPI(@NotNull Class<S> spiType) {
+		Set<Component> componentRegistry = getComponents();
+		if (componentRegistry != null) {
+			for (Component c : componentRegistry) {
+				S s = c.getSPI(spiType);
+				if (s != null)
+					return s;
+			}
+		}
+		return getContainer().getSPI(spiType);
+	}
+    
     /**
      * Gets the {@link com.sun.xml.ws.api.model.SEIModel} that represents the relationship
      * between WSDL and Java SEI.
@@ -498,6 +534,21 @@ public abstract class WSEndpoint<T> {
      *      if the endpoint set up fails.
      */
     public static <T> WSEndpoint<T> create(
+            @NotNull Class<T> implType,
+            boolean processHandlerAnnotation,
+            @Nullable Invoker invoker,
+            @Nullable QName serviceName,
+            @Nullable QName portName,
+            @Nullable Container container,
+            @Nullable WSBinding binding,
+            @Nullable SDDocumentSource primaryWsdl,
+            @Nullable Collection<? extends SDDocumentSource> metadata,
+            @Nullable EntityResolver resolver,
+            boolean isTransportSynchronous) {
+    	return create(implType, processHandlerAnnotation, invoker, serviceName, portName, container, binding, primaryWsdl, metadata, resolver, isTransportSynchronous, true);
+    }
+    
+    public static <T> WSEndpoint<T> create(
         @NotNull Class<T> implType,
         boolean processHandlerAnnotation,
         @Nullable Invoker invoker,
@@ -508,11 +559,12 @@ public abstract class WSEndpoint<T> {
         @Nullable SDDocumentSource primaryWsdl,
         @Nullable Collection<? extends SDDocumentSource> metadata,
         @Nullable EntityResolver resolver,
-        boolean isTransportSynchronous) 
+        boolean isTransportSynchronous,
+        boolean isStandard) 
     {
-	final WSEndpoint<T> endpoint = 
+    	final WSEndpoint<T> endpoint = 
             EndpointFactory.createEndpoint(
-                implType,processHandlerAnnotation, invoker,serviceName,portName,container,binding,primaryWsdl,metadata,resolver,isTransportSynchronous);
+                implType,processHandlerAnnotation, invoker,serviceName,portName,container,binding,primaryWsdl,metadata,resolver,isTransportSynchronous,isStandard);
         endpoint.getManagedObjectManager().resumeJMXRegistration();
 
         final Iterator<ManagedEndpointFactory> managementFactories = ServiceFinder.find(ManagedEndpointFactory.class).iterator();
@@ -574,13 +626,22 @@ public abstract class WSEndpoint<T> {
      * Gives the wsdl:service default name computed from the endpoint implementaiton class
      */
     public static @NotNull QName getDefaultServiceName(Class endpointClass){
-        return EndpointFactory.getDefaultServiceName(endpointClass);
+        return getDefaultServiceName(endpointClass, true);
+    }
+
+    public static @NotNull QName getDefaultServiceName(Class endpointClass, boolean isStandard){
+        return EndpointFactory.getDefaultServiceName(endpointClass, isStandard);
     }
 
     /**
      * Gives the wsdl:service/wsdl:port default name computed from the endpoint implementaiton class
      */
     public static @NotNull QName getDefaultPortName(@NotNull QName serviceName, Class endpointClass){
-        return EndpointFactory.getDefaultPortName(serviceName, endpointClass);
+    	return getDefaultPortName(serviceName, endpointClass, true);
     }
+    
+    public static @NotNull QName getDefaultPortName(@NotNull QName serviceName, Class endpointClass, boolean isStandard){
+        return EndpointFactory.getDefaultPortName(serviceName, endpointClass, isStandard);
+    }
+    
 }

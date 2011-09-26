@@ -88,12 +88,15 @@ public abstract class GeneratorBase
     private String targetVersion;
     protected boolean donotOverride;
     protected JCodeModel cm;
-    protected final Model model;
-    protected final String wsdlLocation;
-    protected final ErrorReceiver receiver;
-    protected final WsimportOptions options;
+    protected Model model;
+    protected String wsdlLocation;
+    protected ErrorReceiver receiver;
+    protected WsimportOptions options;
 
-    protected GeneratorBase(Model model, WsimportOptions options, ErrorReceiver receiver){
+    protected GeneratorBase() {    	
+    }
+    
+    public void init(Model model, WsimportOptions options, ErrorReceiver receiver){
         this.model = model;
         this.options = options;
         this.destDir = options.destDir;
@@ -103,7 +106,7 @@ public abstract class GeneratorBase
         this.cm = options.getCodeModel();
     }
 
-    protected void doGeneration() {
+    public void doGeneration() {
         try {
             model.accept(this);
         } catch (Exception e) {

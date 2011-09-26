@@ -41,42 +41,41 @@
 package com.sun.xml.ws.handler;
 
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.message.Attachment;
-import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.pipe.Tube;
+import com.sun.xml.ws.api.message.AttachmentSet;
+import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.pipe.TubeCloner;
+import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
-import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.client.HandlerConfiguration;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.message.DataHandlerAttachment;
 
-import javax.activation.DataHandler;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.Handler;
-import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.Handler;
+import javax.xml.ws.WebServiceException;
+import javax.activation.DataHandler;
 import java.util.*;
 
 /**
+ *
  * @author WS Development Team
  */
 public class ServerSOAPHandlerTube extends HandlerTube {
 
-    private WSBinding binding;
     private Set<String> roles;
 
     /**
      * Creates a new instance of SOAPHandlerTube
      */
     public ServerSOAPHandlerTube(WSBinding binding, WSDLPort port, Tube next) {
-        super(next, port);
+        super(next, port, binding);
         if (binding.getSOAPVersion() != null) {
             // SOAPHandlerTube should n't be used for bindings other than SOAP.
             // TODO: throw Exception
         }
-        this.binding = binding;
         setUpHandlersOnce();
     }
 
@@ -89,8 +88,7 @@ public class ServerSOAPHandlerTube extends HandlerTube {
      * With this handle, SOAPHandlerTube can call LogicalHandlerTube.closeHandlers()
      */
     public ServerSOAPHandlerTube(WSBinding binding, Tube next, HandlerTube cousinTube) {
-        super(next, cousinTube);
-        this.binding = binding;
+        super(next, cousinTube, binding);
         setUpHandlersOnce();
     }
 
@@ -99,7 +97,6 @@ public class ServerSOAPHandlerTube extends HandlerTube {
      */
     private ServerSOAPHandlerTube(ServerSOAPHandlerTube that, TubeCloner cloner) {
         super(that, cloner);
-        this.binding = that.binding;
         this.handlers = that.handlers;
         this.roles = that.roles;
     }
@@ -111,8 +108,8 @@ public class ServerSOAPHandlerTube extends HandlerTube {
 
     private void setUpHandlersOnce() {
         handlers = new ArrayList<Handler>();
-        HandlerConfiguration handlerConfig = ((BindingImpl) binding).getHandlerConfig();
-        List<SOAPHandler> soapSnapShot = handlerConfig.getSoapHandlers();
+        HandlerConfiguration handlerConfig = ((BindingImpl) getBinding()).getHandlerConfig();
+        List<SOAPHandler> soapSnapShot= handlerConfig.getSoapHandlers();
         if (!soapSnapShot.isEmpty()) {
             handlers.addAll(soapSnapShot);
             roles = new HashSet<String>();
@@ -120,13 +117,16 @@ public class ServerSOAPHandlerTube extends HandlerTube {
         }
     }
 
-    void setUpProcessor() {
-        if (!handlers.isEmpty())
-            processor = new SOAPHandlerProcessor(false, this, binding, handlers);
+    protected void resetProcessor() {
+    	processor = null;
     }
-
+    
+    void setUpProcessor() {
+        if(!handlers.isEmpty() && processor == null)
+            processor = new SOAPHandlerProcessor(false, this, getBinding(), handlers);
+    }
     MessageUpdatableContext getContext(Packet packet) {
-        SOAPMessageContextImpl context = new SOAPMessageContextImpl(binding, packet, roles);
+        SOAPMessageContextImpl context = new SOAPMessageContextImpl(getBinding(), packet,roles);
         return context;
     }
 
@@ -153,7 +153,7 @@ public class ServerSOAPHandlerTube extends HandlerTube {
         //Lets copy all the MessageContext.OUTBOUND_ATTACHMENT_PROPERTY to the message
         Map<String, DataHandler> atts = (Map<String, DataHandler>) context.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
         AttachmentSet attSet = context.packet.getMessage().getAttachments();
-        for (String cid : atts.keySet()) {
+        for(String cid : atts.keySet()){
             if (attSet.get(cid) == null) { // Otherwise we would be adding attachments twice
                 Attachment att = new DataHandlerAttachment(cid, atts.get(cid));
                 attSet.add(att);

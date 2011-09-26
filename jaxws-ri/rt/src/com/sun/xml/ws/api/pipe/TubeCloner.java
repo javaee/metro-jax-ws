@@ -40,7 +40,6 @@
 
 package com.sun.xml.ws.api.pipe;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -53,18 +52,15 @@ import java.util.Map;
  *
  * @author Kohsuke Kawaguchi
  */
-public class TubeCloner {
+public abstract class TubeCloner {
     // Pipe to pipe, or tube to tube
-    protected final Map<Object,Object> master2copy = new HashMap<Object,Object>();
-
-    /*package*/ TubeCloner() {
-    }
+    public final Map<Object,Object> master2copy;
 
     /**
      * Invoked by a client of a tube to clone the whole pipeline.
      *
      * <p>
-     * {@link Tube}s implementing the {@link Tube#copy(TubeCloner)} method
+     * {@link Tube}s implementing the {@link Tube#copy(TubeClonerImpl)} method
      * shall use {@link #copy(Tube)} method.
      *
      * @param p
@@ -72,14 +68,20 @@ public class TubeCloner {
      * @return
      *      The cloned pipeline. Always non-null.
      */
-    public static Tube clone(Tube p) {
+    @SuppressWarnings("deprecation")
+	public static Tube clone(Tube p) {
         // we often want to downcast TubeCloner to PipeCloner,
         // so let's create PipeCloner to make that possible
-        return new PipeCloner().copy(p);
+        return new PipeClonerImpl().copy(p);
+    }
+
+    // no need to be constructed publicly. always use the static clone method.
+    /*package*/ TubeCloner(Map<Object,Object> master2copy) {
+    	this.master2copy = master2copy;
     }
 
     /**
-     * Invoked by a {@link Tube#copy(TubeCloner)} implementation
+     * Invoked by a {@link Tube#copy(TubeClonerImpl)} implementation
      * to copy a reference to another pipe.
      *
      * <p>
@@ -100,15 +102,7 @@ public class TubeCloner {
      * @return
      *      The cloned tube. Always non-null.
      */
-    public <T extends Tube> T copy(T t) {
-        Tube r = (Tube)master2copy.get(t);
-        if(r==null) {
-            r = t.copy(this);
-            // the pipe must puts its copy to the map by itself
-            assert master2copy.get(t)==r : "the tube must call the add(...) method to register itself before start copying other pipes, but "+t +" hasn't done so";
-        }
-        return (T)r;
-    }
+	public abstract <T extends Tube> T copy(T t);
 
     /**
      * This method must be called from within the copy constructor
@@ -120,9 +114,5 @@ public class TubeCloner {
      * before you start copying the pipes you refer to,
      * or else there's a chance of inifinite loop.
      */
-    public void add(Tube original, Tube copy) {
-        assert !master2copy.containsKey(original);
-        assert original!=null && copy!=null;
-        master2copy.put(original,copy);
-    }
+    public abstract void add(Tube original, Tube copy);
 }

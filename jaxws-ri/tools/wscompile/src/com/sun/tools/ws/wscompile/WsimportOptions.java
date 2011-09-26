@@ -41,6 +41,7 @@
 package com.sun.tools.ws.wscompile;
 
 import com.sun.codemodel.JCodeModel;
+import com.sun.tools.ws.processor.generator.GeneratorExtension;
 import com.sun.tools.ws.resources.ConfigurationMessages;
 import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.util.ForkEntityResolver;
@@ -52,6 +53,7 @@ import com.sun.tools.xjc.api.XJC;
 import com.sun.tools.xjc.reader.Util;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Element;
@@ -61,13 +63,18 @@ import org.xml.sax.helpers.LocatorImpl;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.Authenticator;
+import java.io.InputStream;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 /**
  * @author Vivek Pandey
@@ -100,12 +107,41 @@ public class WsimportOptions extends Options {
      * -XadditionalHeaders
      */
     public boolean additionalHeaders;
-
+    
+    /**
+     * The option indicates the dir where the jwsImpl will be generated. 
+     */
+    public File implDestDir = null;
+    
+    /**
+     * optional, generated impl file only for the ordered serviceName
+     * Note: It is a QName string, formatted as: "{" + Namespace URI + "}" + local part
+     */
+    public String implServiceName = null;
+    
+    /**
+     * optional, generated impl file only for the ordered portName
+     * Note: It is a QName string, formatted as: "{" + Namespace URI + "}" + local part
+     */
+    public String implPortName = null;
+    
+    /**
+     * optional, if true JWS file is generated
+     */
+    public boolean isGenerateJWS = false;
+    
     /**
      * Setting disableSSLHostVerification to true disables the SSL Hostname verification while fetching the wsdls.
      * -XdisableSSLHostVerification
      */
     public boolean disableSSLHostnameVerification;
+
+    /**
+     * Setting useBaseResourceAndURLToLoadWSDL to true causes generated Service classes to load the WSDL file from
+     * a URL generated from the base resource.
+     * -XuseBaseResourceAndURLToLoadWSDL
+     */
+    public boolean useBaseResourceAndURLToLoadWSDL = false;
 
     /**
      * JAXB's {@link SchemaCompiler} to be used for handling the schema portion.
@@ -117,6 +153,11 @@ public class WsimportOptions extends Options {
      * Authentication file
      */
     public File authFile;
+
+    /**
+     * Additional arguments
+     */
+    public HashMap<String, String> extensionOptions = new HashMap<String, String>();
 
     public JCodeModel getCodeModel() {
         if(codeModel == null)
@@ -268,6 +309,31 @@ public class WsimportOptions extends Options {
         } else if (args[i].equals("-clientjar")) {
             clientjar = requireArgument("-clientjar", args, ++i);
             return 2;
+        } else if (args[i].equals("-implDestDir")) {
+        		implDestDir = new File(requireArgument("-implDestDir", args, ++i));
+            if (!implDestDir.exists())
+              throw new BadCommandLineException(WscompileMessages.WSCOMPILE_NO_SUCH_DIRECTORY(implDestDir.getPath()));
+        		return 2;
+        } else if (args[i].equals("-implServiceName")) {
+        	implServiceName = requireArgument("-implServiceName", args, ++i);
+          return 2;
+        } else if (args[i].equals("-implPortName")) {
+      		implPortName = requireArgument("-implPortName", args, ++i);
+          return 2;
+        } else if (args[i].equals("-generateJWS")) {
+            isGenerateJWS = true;
+            return 1;
+        } else if (args[i].equals("-XuseBaseResourceAndURLToLoadWSDL")) {
+        	useBaseResourceAndURLToLoadWSDL = true;
+            return 1;
+        } 
+
+        // handle additional options
+        for (GeneratorExtension f:ServiceFinder.find(GeneratorExtension.class)) {
+            if (f.validateOption(args[i])) {
+                extensionOptions.put(args[i], requireArgument(args[i], args, ++i));
+                return 2;
+            }
         }
 
         return 0; // what's this option?
@@ -369,11 +435,11 @@ public class WsimportOptions extends Options {
      * Adds a new input schema.
      */
     public void addWSDLBindFile(InputSource is) {
-        jaxwsCustomBindings.add(absolutize(is));
+        jaxwsCustomBindings.add(new RereadInputSource(absolutize(is)));
     }
 
     public void addSchemmaBindFile(InputSource is) {
-        jaxbCustomBindings.add(absolutize(is));
+        jaxbCustomBindings.add(new RereadInputSource(absolutize(is)));
     }
 
     private void addRecursive(File dir, String suffix, List<InputSource> result) {
@@ -446,10 +512,10 @@ public class WsimportOptions extends Options {
                     XMLStreamReaderFactory.create(is,true);
             XMLStreamReaderUtil.nextElementContent(reader);
             if (reader.getName().equals(JAXWSBindingsConstants.JAXWS_BINDINGS)) {
-                jaxwsCustomBindings.add(is);
+                jaxwsCustomBindings.add(new RereadInputSource(is));
             } else if (reader.getName().equals(JAXWSBindingsConstants.JAXB_BINDINGS) ||
                     reader.getName().equals(new QName(SchemaConstants.NS_XSD, "schema"))) {
-                jaxbCustomBindings.add(is);
+                jaxbCustomBindings.add(new RereadInputSource(is));
             } else {
                 LocatorImpl locator = new LocatorImpl();
                 locator.setSystemId(reader.getLocation().getSystemId());
@@ -459,5 +525,146 @@ public class WsimportOptions extends Options {
                 receiver.warning(locator, ConfigurationMessages.CONFIGURATION_NOT_BINDING_FILE(is.getSystemId()));
             }
         }
+    }
+ 
+    /**
+     * Get extension argument 
+     */
+    public String getExtensionOption(String argument) {
+        return extensionOptions.get(argument);
+    }
+
+    private static final class ByteStream extends ByteArrayOutputStream {
+    	byte[] getBuffer() {
+    		return buf;
+    	}
+    }
+    
+    private static final class RereadInputStream extends InputStream {
+    	private InputStream is;
+    	private ByteStream bs;
+    	
+    	RereadInputStream(InputStream is) {
+    		this.is = is;
+    		this.bs = new ByteStream();
+    	}
+    	
+		@Override
+		public int available() throws IOException {
+			return is.available();
+		}
+
+		@Override
+		public void close() throws IOException {
+			if (bs != null) {
+				InputStream i = new ByteArrayInputStream(bs.getBuffer());
+				bs = null;
+				is.close();
+				is = i;
+			}
+		}
+
+		@Override
+		public synchronized void mark(int readlimit) {
+			is.mark(readlimit);
+		}
+
+		@Override
+		public boolean markSupported() {
+			return is.markSupported();
+		}
+
+		@Override
+		public int read() throws IOException {
+			int r = is.read();
+			if (bs != null)
+				bs.write(r);
+			return r;
+		}
+
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			int r = is.read(b, off, len);
+			if (r > 0 && bs != null)
+				bs.write(b, off, r);
+			return r;
+		}
+
+		@Override
+		public int read(byte[] b) throws IOException {
+			int r = is.read(b);
+			if (r > 0 && bs != null)
+				bs.write(b, 0, r);
+			return r;
+		}
+
+		@Override
+		public synchronized void reset() throws IOException {
+			is.reset();
+		}
+    }
+    
+    private static final class RereadInputSource extends InputSource {
+    	private InputSource is;
+    	
+    	RereadInputSource(InputSource is) {
+    		this.is = is;
+    	}
+    	
+		@Override
+		public InputStream getByteStream() {
+			InputStream i = is.getByteStream();
+			if (i != null && !(i instanceof RereadInputStream)) {
+				i = new RereadInputStream(i);
+				is.setByteStream(i);
+			}
+			return i;
+		}
+
+		@Override
+		public Reader getCharacterStream() {
+			// TODO Auto-generated method stub
+			return is.getCharacterStream();
+		}
+
+		@Override
+		public String getEncoding() {
+			return is.getEncoding();
+		}
+
+		@Override
+		public String getPublicId() {
+			return is.getPublicId();
+		}
+
+		@Override
+		public String getSystemId() {
+			return is.getSystemId();
+		}
+
+		@Override
+		public void setByteStream(InputStream byteStream) {
+			is.setByteStream(byteStream);
+		}
+
+		@Override
+		public void setCharacterStream(Reader characterStream) {
+			is.setCharacterStream(characterStream);
+		}
+
+		@Override
+		public void setEncoding(String encoding) {
+			is.setEncoding(encoding);
+		}
+
+		@Override
+		public void setPublicId(String publicId) {
+			is.setPublicId(publicId);
+		}
+
+		@Override
+		public void setSystemId(String systemId) {
+			is.setSystemId(systemId);
+		}
     }
 }

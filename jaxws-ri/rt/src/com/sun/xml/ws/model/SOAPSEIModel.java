@@ -41,6 +41,7 @@
 package com.sun.xml.ws.model;
 
 import com.sun.xml.ws.api.model.ParameterBinding;
+import com.sun.xml.ws.binding.WebServiceFeatureList;
 
 import javax.jws.WebParam.Mode;
 import javax.xml.namespace.QName;
@@ -56,7 +57,7 @@ import java.util.Set;
  */
 public class SOAPSEIModel extends AbstractSEIModelImpl {
 
-    public SOAPSEIModel(WebServiceFeature[] features) {
+    public SOAPSEIModel(WebServiceFeatureList features) {
         super(features);
     }
 

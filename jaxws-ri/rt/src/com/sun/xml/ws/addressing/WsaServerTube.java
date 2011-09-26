@@ -49,7 +49,7 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.client.WSPortInfo;
-
+import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
@@ -59,15 +59,21 @@ import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.client.Stub;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.developer.WSBindingProvider;
+import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.message.FaultDetailHeader;
 import com.sun.xml.ws.resources.AddressingMessages;
 import com.sun.xml.ws.binding.BindingImpl;
 
 import javax.xml.soap.SOAPFault;
+import javax.xml.ws.AsyncHandler;
+import javax.xml.ws.Dispatch;
+import javax.xml.ws.Response;
 import javax.xml.ws.WebServiceException;
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -85,6 +91,11 @@ public class WsaServerTube extends WsaTube {
     private WSEndpointReference replyTo;
     private WSEndpointReference faultTo;
     private boolean isAnonymousRequired = false;
+    // Used by subclasses to avoid this class closing the transport back
+    // channel based on the ReplyTo/FaultTo addrs being non-anonymous. False
+    // can be useful in cases where special back-channel handling is required.
+    protected boolean isEarlyBackchannelCloseAllowed = true;
+    
     /**
      * WSDLBoundOperation calculated on the Request payload.
      * Used for determining ReplyTo or Fault Action for non-anonymous responses     * 
@@ -118,9 +129,11 @@ public class WsaServerTube extends WsaTube {
         // These properties are used if a fault is thrown from the subsequent Pipe/Tubes.
 
         HeaderList hl = request.getMessage().getHeaders();
+        String msgId;
         try {
             replyTo = hl.getReplyTo(addressingVersion, soapVersion);
             faultTo = hl.getFaultTo(addressingVersion, soapVersion);
+            msgId = hl.getMessageID(addressingVersion, soapVersion);
         } catch (InvalidAddressingHeaderException e) {
             LOGGER.log(Level.WARNING,
                     addressingVersion.getInvalidMapText()+", Problem header:" + e.getProblemHeader()+ ", Reason: "+ e.getSubsubcode(),e);
@@ -145,6 +158,13 @@ public class WsaServerTube extends WsaTube {
         if (replyTo == null)    replyTo = addressingVersion.anonymousEpr;
         if (faultTo == null)    faultTo = replyTo;
 
+        // Save a copy into the packet such that we can save it with that
+        // packet if we're going to deliver the response at a later time
+        // (async from the request).
+        request.put(WsaPropertyBag.WSA_REPLYTO_FROM_REQUEST, replyTo);
+        request.put(WsaPropertyBag.WSA_FAULTTO_FROM_REQUEST, faultTo);
+        request.put(WsaPropertyBag.WSA_MSGID_FROM_REQUEST, msgId);
+
         wbo = getWSDLBoundOperation(request);
         isAnonymousRequired = isAnonymousRequired(wbo);
 
@@ -159,17 +179,21 @@ public class WsaServerTube extends WsaTube {
         if (p.getMessage().isFault()) {
             // close the transportBackChannel if we know that
             // we'll never use them
-            if (!(isAnonymousRequired) &&
-                    !faultTo.isAnonymous() && request.transportBackChannel != null)
+            if (isEarlyBackchannelCloseAllowed &&
+                !(isAnonymousRequired) &&
+                    !faultTo.isAnonymous() && request.transportBackChannel != null) {
                 request.transportBackChannel.close();
+            }
             return processResponse(p);
         }
         // close the transportBackChannel if we know that
         // we'll never use them
-        if (!(isAnonymousRequired) &&
+        if (isEarlyBackchannelCloseAllowed &&
+            !(isAnonymousRequired) &&
                 !replyTo.isAnonymous() && !faultTo.isAnonymous() &&
-                request.transportBackChannel != null)
+                request.transportBackChannel != null) {
             request.transportBackChannel.close();
+        }
         return doInvoke(next,p);
     }
 
@@ -183,12 +207,49 @@ public class WsaServerTube extends WsaTube {
     }
 
     @Override
+    public @NotNull NextAction processException(Throwable t) {
+    	Packet response = Fiber.current().getPacket();
+        return processResponse(response.createServerResponse(
+        		SOAPFaultBuilder.createSOAPFaultMessage(soapVersion, null, t), 
+        		wsdlPort, response.endpoint.getSEIModel(), binding));
+    }
+    
+    @Override
     public @NotNull NextAction processResponse(Packet response) {
         Message msg = response.getMessage();
         if (msg ==null)
             return doReturnWith(response);  // one way message. Nothing to see here. Move on.
 
+        String to = msg.getHeaders().getTo(addressingVersion, soapVersion);
+        if (to != null) {
+        	replyTo = faultTo = new WSEndpointReference(to, addressingVersion);
+        }
+        
+        if (replyTo == null) {
+            // This is an async response or we're not processing the response in
+            // the same tube instance as we processed the request. Get the ReplyTo
+            // now, from the properties we stored into the request packet. We
+            // assume anyone that interrupted the request->response flow will have
+            // saved the ReplyTo and put it back into the packet for our use.
+            replyTo = (WSEndpointReference)response.
+                get(WsaPropertyBag.WSA_REPLYTO_FROM_REQUEST);
+        }
+
+        if (faultTo == null) {
+            // This is an async response or we're not processing the response in
+            // the same tube instance as we processed the request. Get the FaultTo
+            // now, from the properties we stored into the request packet. We
+            // assume anyone that interrupted the request->response flow will have
+            // saved the FaultTo and put it back into the packet for our use.
+            faultTo = (WSEndpointReference)response.
+                get(WsaPropertyBag.WSA_FAULTTO_FROM_REQUEST);
+        }
+
         WSEndpointReference target = msg.isFault()?faultTo:replyTo;
+        
+        if (target == null && response.proxy instanceof Stub) {
+        	target = ((Stub) response.proxy).getWSEndpointReference();
+        }
 
         if(target.isAnonymous() || isAnonymousRequired )
             // the response will go back the back channel. most common case
@@ -200,11 +261,14 @@ public class WsaServerTube extends WsaTube {
             return doReturnWith(response);
         }
 
-        // send the response to this EPR.
-        processNonAnonymousReply(response,target);
+        // send the response to this EPR. This *can* generate a response, and
+        // if so, we leave it to Fiber.CompletionCallback to deliver it to
+        // whoever started this fiber. The 'new' fiber is linked into the old
+        // Fiber's completion callback.
+        processNonAnonymousReply(response, target);
 
         // then we'll proceed the rest like one-way.
-        response.setMessage(null);
+        response = response.copy(false);
         return doReturnWith(response);
     }
 
@@ -241,19 +305,53 @@ public class WsaServerTube extends WsaTube {
             throw new WebServiceException(e);
         }
 
+        packet.endpointAddress = adrs;
+        // MTU: If we're not sending a response that corresponds to a WSDL op,
+        //      then take whatever soapAction is set on the packet (as allowing
+        //      helper.getOutputAction() will only result in a bogus 'unset'
+        //      action value.
+        if (wbo != null || packet.soapAction == null) {
+          String action = packet.getMessage().isFault() ?
+                  helper.getFaultAction(wbo, packet) :
+                  helper.getOutputAction(wbo);
+          //set the SOAPAction, as its got to be same as wsa:Action
+          if (packet.soapAction == null ||
+              (action != null &&
+               !action.equals(AddressingVersion.UNSET_OUTPUT_ACTION))) {
+            packet.soapAction = action;
+          }
+        }
+        packet.expectReply = false;
+
+        // Link completion of the current fiber to the new fiber that will
+        // deliver the async response. This allows access to the response
+        // packet that may be generated by sending a new message for the
+        // current async response.
+
+        Fiber currentFiber = Fiber.current();
+        final Fiber.CompletionCallback currentFiberCallback =
+            currentFiber.getCompletionCallback();
+        
+        Fiber.CompletionCallback fiberCallback = null;
+		if (currentFiberCallback != null) {
+	          fiberCallback = new Fiber.CompletionCallback() {
+	          public void onCompletion(@NotNull Packet response) {
+	            currentFiberCallback.onCompletion(response);
+	          }
+	
+	          public void onCompletion(@NotNull Throwable error) {
+	            currentFiberCallback.onCompletion(error);
+	          }
+	        };
+	        currentFiber.setCompletionCallback(null);
+        }
+
         // we need to assemble a pipeline to talk to this endpoint.
         // TODO: what to pass as WSService?
         Tube transport = TransportTubeFactory.create(Thread.currentThread().getContextClassLoader(),
-            new ClientTubeAssemblerContext(adrs, wsdlPort, (WSService) null, binding,endpoint.getContainer(),((BindingImpl)binding).createCodec(),null));
-
-        packet.endpointAddress = adrs;
-        String action = packet.getMessage().isFault() ?
-                helper.getFaultAction(wbo, packet) :
-                helper.getOutputAction(wbo);
-        //set the SOAPAction, as its got to be same as wsa:Action
-        packet.soapAction = action;
-        packet.expectReply = false;
-        Fiber.current().runSync(transport, packet);
+            new ClientTubeAssemblerContext(adrs, wsdlPort, (WSService) null, binding,endpoint.getContainer(),((BindingImpl)binding).createCodec(),null,null));
+        Fiber fiber = currentFiber.owner.createFiber();
+        fiber.start(transport, packet, fiberCallback);
     }
 
     @Override

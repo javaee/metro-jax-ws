@@ -90,7 +90,7 @@ import java.util.Map;
  *
  * @author Jitendra Kotamraju
  */
-abstract class EndpointArgumentsBuilder {
+public abstract class EndpointArgumentsBuilder {
     /**
      * Reads a request {@link Message}, disassembles it, and moves obtained
      * Java values to the expected places.
@@ -105,7 +105,7 @@ abstract class EndpointArgumentsBuilder {
      * @throws XMLStreamException
      *      if there's an error during unmarshalling the request message.
      */
-    abstract void readRequest(Message request, Object[] args)
+    public abstract void readRequest(Message request, Object[] args)
         throws JAXBException, XMLStreamException;
 
     static final class None extends EndpointArgumentsBuilder {
@@ -150,7 +150,7 @@ abstract class EndpointArgumentsBuilder {
     /**
      * {@link EndpointArgumentsBuilder} that sets the VM uninitialized value to the type.
      */
-    static final class NullSetter extends EndpointArgumentsBuilder {
+    public static final class NullSetter extends EndpointArgumentsBuilder {
         private final EndpointValueSetter setter;
         private final Object nullValue;
 
@@ -179,7 +179,7 @@ abstract class EndpointArgumentsBuilder {
      * return a value as a return value (and everything else has to go to
      * {@link Holder}s.)
      */
-    static final class Composite extends EndpointArgumentsBuilder {
+    public static final class Composite extends EndpointArgumentsBuilder {
         private final EndpointArgumentsBuilder[] builders;
 
         public Composite(EndpointArgumentsBuilder... builders) {
@@ -201,7 +201,7 @@ abstract class EndpointArgumentsBuilder {
     /**
      * Reads an Attachment into a Java parameter.
      */
-    static abstract class AttachmentBuilder extends EndpointArgumentsBuilder {
+    public static abstract class AttachmentBuilder extends EndpointArgumentsBuilder {
         protected final EndpointValueSetter setter;
         protected final ParameterImpl param;
         protected final String pname;
@@ -360,7 +360,6 @@ abstract class EndpointArgumentsBuilder {
         }
     }
 
-    
     /**
      * Gets the WSDL part name of this attachment.
      *
@@ -411,7 +410,7 @@ abstract class EndpointArgumentsBuilder {
     /**
      * Reads a header into a JAXB object.
      */
-    static final class Header extends EndpointArgumentsBuilder {
+    public static final class Header extends EndpointArgumentsBuilder {
         private final XMLBridge<?> bridge;
         private final EndpointValueSetter setter;
         private final QName headerName;
@@ -443,8 +442,9 @@ abstract class EndpointArgumentsBuilder {
 
         private SOAPFaultException createDuplicateHeaderException() {
             try {
-                SOAPFault fault = soapVersion.saajSoapFactory.createFault(
-                        ServerMessages.DUPLICATE_PORT_KNOWN_HEADER(headerName), soapVersion.faultCodeClient);
+                SOAPFault fault = soapVersion.getSOAPFactory().createFault();
+                fault.setFaultCode(soapVersion.faultCodeClient);
+                fault.setFaultString(ServerMessages.DUPLICATE_PORT_KNOWN_HEADER(headerName));
                 return new SOAPFaultException(fault);
             } catch(SOAPException e) {
                 throw new WebServiceException(e);
@@ -473,7 +473,7 @@ abstract class EndpointArgumentsBuilder {
     /**
      * Reads the whole payload into a single JAXB bean.
      */
-    static final class Body extends EndpointArgumentsBuilder {
+    public static final class Body extends EndpointArgumentsBuilder {
         private final XMLBridge<?> bridge;
         private final EndpointValueSetter setter;
 
@@ -497,7 +497,7 @@ abstract class EndpointArgumentsBuilder {
      * Treats a payload as multiple parts wrapped into one element,
      * and processes all such wrapped parts.
      */
-    static final class DocLit extends EndpointArgumentsBuilder {
+    public static final class DocLit extends EndpointArgumentsBuilder {
         /**
          * {@link PartBuilder} keyed by the element name (inside the wrapper element.)
          */
@@ -604,7 +604,7 @@ abstract class EndpointArgumentsBuilder {
      * Treats a payload as multiple parts wrapped into one element,
      * and processes all such wrapped parts.
      */
-    static final class RpcLit extends EndpointArgumentsBuilder {
+    public static final class RpcLit extends EndpointArgumentsBuilder {
         /**
          * {@link PartBuilder} keyed by the element name (inside the wrapper element.)
          */

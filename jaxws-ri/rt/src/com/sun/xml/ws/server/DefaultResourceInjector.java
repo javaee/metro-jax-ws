@@ -41,6 +41,7 @@
 package com.sun.xml.ws.server;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.server.AbstractInstanceResolver;
 import com.sun.xml.ws.api.server.ResourceInjector;
 import com.sun.xml.ws.api.server.WSWebServiceContext;
 
@@ -57,4 +58,5 @@ public final class DefaultResourceInjector extends ResourceInjector {
         AbstractInstanceResolver.buildInjectionPlan(
             instance.getClass(),WebServiceContext.class,false).inject(instance,context);
     }
+
 }

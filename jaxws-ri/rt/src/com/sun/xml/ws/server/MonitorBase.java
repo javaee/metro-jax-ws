@@ -42,6 +42,7 @@ package com.sun.xml.ws.server;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.config.management.policy.ManagedClientAssertion;
 import com.sun.xml.ws.api.config.management.policy.ManagedServiceAssertion;
 import com.sun.xml.ws.api.config.management.policy.ManagementAssertion.Setting;
@@ -176,7 +177,12 @@ public abstract class MonitorBase {
      * </pre>
     */
     @NotNull public ManagedObjectManager createManagedObjectManager(final Stub stub) {
-        String rootName = stub.requestContext.getEndpointAddress().toString();
+    	EndpointAddress ea = stub.requestContext.getEndpointAddress();
+    	if (ea == null) {
+            return ManagedObjectManagerFactory.createNOOP();
+    	}
+    	
+        String rootName = ea.toString();
 
         final ManagedClientAssertion assertion = 
             ManagedClientAssertion.getAssertion(stub.getPortInfo());

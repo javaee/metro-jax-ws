@@ -49,6 +49,8 @@ import com.sun.xml.ws.resources.ServerMessages;
 
 import javax.xml.ws.EndpointReference;
 import java.util.concurrent.Executor;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.w3c.dom.Element;
 
@@ -103,11 +105,16 @@ public final class HttpEndpoint extends com.sun.xml.ws.api.server.HttpEndpoint {
      * @return address of the Endpoint
      */
     private String getEPRAddress() {
-        if(address == null) {
-            // Application created its own HttpContext
-            return httpContext.getServer().getAddress().toString();
-        } else
-            return address;
+    	if (address == null)
+    		return httpContext.getServer().getAddress().toString();
+    	try {
+    		URL u = new URL(address);
+    		if (u.getPort() == 0) {
+    			return new URL(u.getProtocol(),u.getHost(),
+    					httpContext.getServer().getAddress().getPort(),u.getFile()).toString();
+    		}
+    	} catch (MalformedURLException murl) {}
+    	return address;
     }
 
     public void stop() {
