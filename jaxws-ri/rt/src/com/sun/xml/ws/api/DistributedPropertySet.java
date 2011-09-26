@@ -90,7 +90,10 @@ import java.util.Set;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class DistributedPropertySet extends PropertySet implements org.jvnet.ws.message.MessageContext {
+public abstract class DistributedPropertySet
+    extends PropertySet
+    implements org.jvnet.ws.message.DistributedPropertySet
+{
     /**
      * All {@link PropertySet}s that are bundled into this {@link PropertySet}.
      */
@@ -186,6 +189,10 @@ public abstract class DistributedPropertySet extends PropertySet implements org.
         addSatellite((PropertySet)satellite);       
     }
 
+    public void addSatellite(@NotNull Class keyClass, @NotNull org.jvnet.ws.message.PropertySet satellite) {
+        addSatellite(keyClass, (PropertySet)satellite);
+    }
+
     public void removeSatellite(org.jvnet.ws.message.PropertySet satellite) {
         removeSatellite((PropertySet)satellite);       
     }
@@ -193,12 +200,4 @@ public abstract class DistributedPropertySet extends PropertySet implements org.
     public void copySatelliteInto(org.jvnet.ws.message.MessageContext r) {
         copySatelliteInto((DistributedPropertySet)r);    
     }
-    
-	public SOAPMessage getSOAPMessage() throws SOAPException {
-		throw new UnsupportedOperationException();
-	}
-
-	public void setSOAPMessage(SOAPMessage message) {
-		throw new UnsupportedOperationException();
-	}
 }

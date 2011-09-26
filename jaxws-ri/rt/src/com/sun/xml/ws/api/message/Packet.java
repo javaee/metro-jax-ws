@@ -156,7 +156,10 @@ import java.io.ByteArrayOutputStream;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class Packet extends DistributedPropertySet {
+public final class Packet
+    extends DistributedPropertySet
+    implements org.jvnet.ws.message.MessageContext
+{
 
     /**
      * Creates a {@link Packet} that wraps a given {@link Message}.

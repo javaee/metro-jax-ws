@@ -58,7 +58,7 @@ import javax.xml.soap.SOAPMessage;
  * 
  * @author shih-chang.chen@oracle.com
  */
-public interface MessageContext extends PropertySet {
+public interface MessageContext extends DistributedPropertySet {
 	
 	/**
 	 * Gets the SAAJ SOAPMessage representation of the SOAP message.
