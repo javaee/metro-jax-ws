@@ -102,7 +102,7 @@ public class Test extends TestCase {
             Message message = useStream12Codec(requestStr);
             WSEndpointReference wsepr = message.getHeaders().getFaultTo(AddressingVersion.MEMBER, SOAPVersion.SOAP_12);
             Message m2 = Messages.create("Test Unsupported", AddressingVersion.MEMBER, SOAPVersion.SOAP_12);
-            wsepr.addReferenceParameters(m2.getHeaders());
+            wsepr.addReferenceParametersToList(m2.getHeaders());
             ByteArrayBuffer baos = new ByteArrayBuffer();
             XMLStreamWriter writer = XMLStreamWriterFactory.create(baos);
             m2.writeTo(writer);
@@ -159,7 +159,7 @@ public class Test extends TestCase {
             Message message = useStream12Codec(requestStr);
             WSEndpointReference wsepr = message.getHeaders().getFaultTo(AddressingVersion.W3C, SOAPVersion.SOAP_12);
             Message m2 = Messages.create("Test Unsupported", AddressingVersion.W3C, SOAPVersion.SOAP_12);
-            wsepr.addReferenceParameters(m2.getHeaders());
+            wsepr.addReferenceParametersToList(m2.getHeaders());
             ByteArrayBuffer baos = new ByteArrayBuffer();
             XMLStreamWriter writer = XMLStreamWriterFactory.create(baos);
             m2.writeTo(writer);

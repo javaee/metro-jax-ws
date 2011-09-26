@@ -99,7 +99,7 @@ public class ReferenceParametersTest extends TestCase {
         refparams.add((Element)n1.getFirstChild());
         refparams.add((Element)n2.getFirstChild());
         WSEndpointReference wsepr = new WSEndpointReference(AddressingVersion.W3C,"http://foo.bar",null,null,null,null,null,refparams);
-        wsepr.addReferenceParameters(p.getMessage().getHeaders());
+        wsepr.addReferenceParametersToList(p.getMessage().getHeaders());
         //p.getMessage().writeTo(XMLOutputFactory.newInstance().createXMLStreamWriter(System.out));
 
         List<Element> refParams = p.getReferenceParameters();
@@ -173,7 +173,7 @@ public class ReferenceParametersTest extends TestCase {
         SOAPMessage soapMsg1 = messageFactory.createMessage(headers1,
                         new ByteArrayInputStream(responseStr.getBytes()));
         Message m2 = new SAAJMessage(soapMsg1);
-        wsepr.addReferenceParameters(m2.getHeaders());
+        wsepr.addReferenceParametersToList(m2.getHeaders());
         Packet response = new Packet(m2);
         List<Element> refParams = response.getReferenceParameters();
         assertEquals("Did n't get expected ReferenceParameters",2,refParams.size());
@@ -224,7 +224,7 @@ public class ReferenceParametersTest extends TestCase {
         SOAPMessage soapMsg1 = messageFactory.createMessage(headers1,
                         new ByteArrayInputStream(responseStr.getBytes()));
         Message m2 = new SAAJMessage(soapMsg1);
-        wsepr.addReferenceParameters(m2.getHeaders());
+        wsepr.addReferenceParametersToList(m2.getHeaders());
         Packet response = new Packet(m2);
         List<Element> refParams = response.getReferenceParameters();
         assertEquals("Did n't get expected ReferenceParameters",2,refParams.size());
@@ -267,7 +267,7 @@ public class ReferenceParametersTest extends TestCase {
                 "<faultstring>The echo string was empty.</faultstring>" +
                 "</S:Fault></S:Body></S:Envelope>";
         Message m2 = useStreamCodec(responseStr);
-        wsepr.addReferenceParameters(m2.getHeaders());
+        wsepr.addReferenceParametersToList(m2.getHeaders());
         ByteArrayBuffer baos = new ByteArrayBuffer();
         XMLStreamWriter writer = XMLStreamWriterFactory.create(baos);
         m2.writeTo(writer);
@@ -306,7 +306,7 @@ public class ReferenceParametersTest extends TestCase {
         Message message = useStreamCodec(requestStr);
         WSEndpointReference wsepr = message.getHeaders().getFaultTo(AddressingVersion.W3C, SOAPVersion.SOAP_11);
         Message m2 = Messages.create("Test Unsupported",AddressingVersion.W3C,SOAPVersion.SOAP_11);
-        wsepr.addReferenceParameters(m2.getHeaders());
+        wsepr.addReferenceParametersToList(m2.getHeaders());
         ByteArrayBuffer baos = new ByteArrayBuffer();
         XMLStreamWriter writer = XMLStreamWriterFactory.create(baos);
         m2.writeTo(writer);
