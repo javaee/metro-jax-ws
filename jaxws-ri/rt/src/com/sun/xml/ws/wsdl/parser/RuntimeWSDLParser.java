@@ -393,6 +393,13 @@ public class RuntimeWSDLParser {
         	} else if (wsdlLoc != null) {
         		parser = new Parser(wsdlLoc, createReader(wsdlLoc, serviceClass));
         	}
+        	
+        	//parser could still be null if isKnownReadableSource returns
+        	//false and wsdlLoc is also null. Fall back to using Source based 
+        	//parser since Source is not null
+        	if (parser == null) {
+        		parser = new Parser(wsdlLoc, createReader(wsdlSource));
+        	}
         }
         return parser;
     }
