@@ -49,6 +49,7 @@ import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
 import com.sun.xml.ws.api.*;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
+import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
@@ -1008,7 +1009,7 @@ public final class Packet
 
     public void setSOAPMessage(SOAPMessage soap) {
         if (soap != null) {
-            message = new SAAJMessage(soap);
+            message = SAAJFactory.create(soap);
         } else {
             message = null;
         }

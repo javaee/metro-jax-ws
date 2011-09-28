@@ -42,6 +42,7 @@ package com.sun.xml.ws.handler;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
@@ -109,7 +110,7 @@ public class SOAPMessageContextImpl extends MessageUpdatableContext implements S
         //Check if SOAPMessage has changed, if so construct new one,
         // Packet are handled through MessageContext
         if(soapMsg != null) {
-            packet.setMessage(new SAAJMessage(soapMsg));
+            packet.setMessage(SAAJFactory.create(soapMsg));
             soapMsg = null;
         }
     }

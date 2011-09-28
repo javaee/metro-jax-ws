@@ -41,8 +41,7 @@
 package com.sun.xml.ws.api;
 
 import com.sun.xml.bind.util.Which;
-import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.server.ContainerResolver;
+import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 
 import javax.xml.namespace.QName;
@@ -202,10 +201,7 @@ public enum SOAPVersion {
 
     public SOAPFactory getSOAPFactory() {
     	try {
-	    	Container c = ContainerResolver.getInstance().getContainer();
-	    	SAAJFactory s = (c != null) ? c.getSPI(SAAJFactory.class) : null;
-	        return (s != null) ? s.createSOAPFactory(saajFactoryString) : 
-	        	SOAPFactory.newInstance(saajFactoryString);
+	    	return SAAJFactory.getSOAPFactory(saajFactoryString);
         } catch (SOAPException e) {
             throw new Error(e);
         } catch (NoSuchMethodError e) {
@@ -218,10 +214,7 @@ public enum SOAPVersion {
 
     public MessageFactory getMessageFactory() {
     	try {
-	    	Container c = ContainerResolver.getInstance().getContainer();
-	    	SAAJFactory s = (c != null) ? c.getSPI(SAAJFactory.class) : null;
-            return (s != null) ? s.createMessageFactory(saajFactoryString) : 
-            	MessageFactory.newInstance(saajFactoryString); 
+	    	return SAAJFactory.getMessageFactory(saajFactoryString); 
         } catch (SOAPException e) {
             throw new Error(e);
         } catch (NoSuchMethodError e) {

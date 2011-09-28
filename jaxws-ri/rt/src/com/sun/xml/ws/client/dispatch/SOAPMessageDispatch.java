@@ -42,6 +42,7 @@ package com.sun.xml.ws.client.dispatch;
 
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.binding.BindingImpl;
@@ -88,7 +89,7 @@ public class SOAPMessageDispatch extends com.sun.xml.ws.client.dispatch.Dispatch
             MimeHeader mh = (MimeHeader) iter.next();
             ch.add(mh.getName(), mh.getValue());
         }
-        Packet packet = new Packet(new SAAJMessage(arg));
+        Packet packet = new Packet(SAAJFactory.create(arg));
         packet.invocationProperties.put(MessageContext.HTTP_REQUEST_HEADERS, ch);
         return packet;
     }

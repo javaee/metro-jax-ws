@@ -46,6 +46,7 @@ import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
+import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.Codecs;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
@@ -155,7 +156,7 @@ public abstract class Messages {
      *      never be touched directly.
      */
     public static Message create(SOAPMessage saaj) {
-        return new SAAJMessage(saaj);
+        return SAAJFactory.create(saaj);
     }
 
     /**

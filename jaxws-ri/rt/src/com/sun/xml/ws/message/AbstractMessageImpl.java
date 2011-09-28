@@ -41,15 +41,12 @@
 package com.sun.xml.ws.message;
 
 import com.sun.xml.bind.api.Bridge;
-import com.sun.xml.bind.marshaller.SAX2DOMEx;
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.spi.db.XMLBridge;
-import com.sun.xml.ws.util.xml.XmlUtil;
-import javax.xml.soap.AttachmentPart;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -197,27 +194,7 @@ public abstract class AbstractMessageImpl extends Message {
      * Default implementation that uses {@link #writeTo(ContentHandler, ErrorHandler)}
      */
     public SOAPMessage readAsSOAPMessage() throws SOAPException {
-        SOAPMessage msg = soapVersion.getMessageFactory().createMessage();
-
-        SAX2DOMEx s2d = new SAX2DOMEx(msg.getSOAPPart());
-        try {
-            writeTo(s2d, XmlUtil.DRACONIAN_ERROR_HANDLER);
-        } catch (SAXException e) {
-            throw new SOAPException(e);
-        }
-
-        for(Attachment att : getAttachments()) {
-            AttachmentPart part = msg.createAttachmentPart();
-            part.setDataHandler(att.asDataHandler());
-            part.setContentId('<'+att.getContentId()+'>');
-            msg.addAttachmentPart(part);
-
-
-        }
-        
-        if (msg.saveRequired())
-        	msg.saveChanges();
-        return msg;
+        return SAAJFactory.read(soapVersion, this);
     }
 
     /**
