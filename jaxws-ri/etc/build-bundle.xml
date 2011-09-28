@@ -260,16 +260,71 @@
         <delete dir="${build.home}/javadocs/rt/"/>
 
         <ant dir="${basedir}/httpspi-servlet" target="jar"/>
-
-    	<jar jarfile="${build.home}/plugins_lib/jaxws-eclipselink-plugin.jar">
-    		<!-- <service type="com.sun.xml.ws.spi.db.BindingContextFactory"
-    			provider="com.sun.xml.ws.db.toplink.JAXBContextFactory"/>-->
+    	<copy file="${basedir}/eclipselink_jaxb/etc/manifest" todir="${basedir}/eclipselink_jaxb/build"/>
+        <updateManifestWithVersion file="${basedir}/eclipselink_jaxb/build/manifest"/>
+    	<jar jarfile="${build.home}/plugins_lib/jaxws-eclipselink-plugin.jar"
+    		manifest="${basedir}/eclipselink_jaxb/build/manifest">
     	    <fileset dir="${basedir}/eclipselink_jaxb/build/classes"/>
     	</jar>
     	
-    	<jar jarfile="${build.home}/plugins_lib/sdo-eclipselink-plugin.jar">
+    	<javadoc
+    	        packagenames="com.sun.xml.ws.db.toplink"
+    	        sourcepath="${basedir}/eclipselink_jaxb/src"
+    	        destdir="${build.home}/javadocs/eclipselink_jaxb/"
+    	        use="true"
+    	        author="false"
+    	        version="false"
+    	        access="package"
+    	        windowtitle="${Name} Runtime Documentation"
+    	        doctitle="${Name}"
+    	        bottom="Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.">
+    	    <classpath>
+    	        <path refid="runtime.compile.classpath"/>
+    	    </classpath>
+    	    <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
+    	        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
+    	    <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
+    	        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxws-api"/>
+    	    <link href="http://download.oracle.com/javase/1.5.0/docs/api/"
+    	        offline="true" packagelistloc="${basedir}/tools/javadoc-link/j2se5.0"/>
+    	</javadoc>
+    	<zip zipfile="${build.home}/plugins_lib/jaxws-eclipselink-plugin-javadoc.jar">
+    	    <fileset dir="${build.home}/javadocs/eclipselink_jaxb"/>
+    	</zip>
+    	<delete dir="${build.home}/javadocs/eclipselink_jaxb"/>
+    	
+    	<copy file="${basedir}/eclipselink_sdo/etc/manifest" todir="${basedir}/eclipselink_sdo/build"/>
+    	<updateManifestWithVersion file="${basedir}/eclipselink_sdo/build/manifest"/>
+    	<jar jarfile="${build.home}/plugins_lib/sdo-eclipselink-plugin.jar"
+            manifest="${basedir}/eclipselink_sdo/build/manifest">
             <fileset dir="${basedir}/eclipselink_sdo/build/classes"/>
         </jar>
+    	
+    	<javadoc
+    	    	packagenames="com.sun.xml.ws.db.sdo"
+    	    	sourcepath="${basedir}/eclipselink_sdo/src"
+    	    	destdir="${build.home}/javadocs/eclipselink_sdo/"
+    	    	use="true"
+    	    	author="false"
+    	    	version="false"
+    	    	access="package"
+    	    	windowtitle="${Name} Runtime Documentation"
+    	    	doctitle="${Name}"
+    	    	bottom="Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.">
+    	     <classpath>
+    	         <path refid="runtime.compile.classpath"/>
+    	     </classpath>
+    	     <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
+    	         offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
+    	     <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
+    	         offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxws-api"/>
+    	     <link href="http://download.oracle.com/javase/1.5.0/docs/api/"
+    	         offline="true" packagelistloc="${basedir}/tools/javadoc-link/j2se5.0"/>
+    	</javadoc>
+    	<zip zipfile="${build.home}/plugins_lib/sdo-eclipselink-plugin-javadoc.jar">
+    	    <fileset dir="${build.home}/javadocs/eclipselink_sdo"/>
+    	</zip>
+    	<delete dir="${build.home}/javadocs/eclipselink_sdo"/>
     </target>
     <!-- runtime must be built before tools -->
     <target name="tools-compile" depends="runtime-build">

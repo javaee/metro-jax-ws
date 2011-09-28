@@ -304,6 +304,14 @@
     <zip file="${dist20.home}/lib/jaxws-libs.src.zip">
       <fileset dir="${basedir}/lib" includes="*src.zip" excludes="jaxws-asm-src.zip,junit-src.zip,htmlmacro.src.zip"/>
     </zip>
+  	<zip file="${dist20.home}/lib/jaxws-eclipselink-plugin.src.zip">
+      <fileset dir="${basedir}/eclipselink_jaxb/src"/>
+      <fileset dir="${basedir}/eclipselink_jaxb/build/classes" includes="META-INF/services/*"/>
+  	</zip>
+  	<zip file="${dist20.home}/lib/sdo-eclipselink-plugin.src.zip">
+      <fileset dir="${basedir}/eclipselink_sdo/src"/>
+      <fileset dir="${basedir}/eclipselink_sdo/build/classes" includes="META-INF/services/*"/>
+  	</zip>
   </target>
 
     <target name="jdk-jaxws-src.zip" description="create source zip bundles of the JAX-WS in JDK" depends="src.zip">
@@ -415,6 +423,10 @@
     <property name="java.net.maven2.repo.push.url" value="java-net:/maven2-repository~svn/trunk/repository/"/>
     <!--property name="java.net.maven2.repo.push.url" value="svn:https://svn.java.net/svn/maven2-repository~svn/trunk/repository"/-->
     <!--property name="java.net.maven2.repo.push.url" value="dav:http://glassfish-maven-repository.us.oracle.com/maven/repositories/glassfish/"/-->
+	
+	<!-- TODO - come up with a better scheme than using hard-coded value shere. -->
+	<property name="eclipselink.version" value="2.3.1-M6"/>
+	<property name="common.sdo.version" value="2.1.1"/>
 
     <target name="check-maven-ant-task">
         <available property="maven.ant.task.available" value="true" file="${lib.home}/${maven.ant.task.jar}"
@@ -989,6 +1001,8 @@
                         <filter token="POLICY_VERSION" value="${policy.version}"/>
                         <filter token="GMBAL_API_VERSION" value="${gmbal.version}"/>
                         <filter token="HA_API_VERSION" value="${ha-api.version}"/>
+                    	<filter token="ECLIPSELINK_VERSION" value="${eclipselink.version}"/>
+                    	<filter token="COMMON_SDO_VERSION" value="${common.sdo.version}"/>
                         <filter token="VERSION" value="${jar.suffix}"/>
                     </filterset>
                 </copy>
@@ -1114,6 +1128,8 @@
         <mvn.publish.snapshot.module module="jaxws-rt"/>
         <mvn.publish.snapshot.module module="jaxws-tools"/>
         <mvn.publish.snapshot.zip module="jaxws-ri"/>
+    	<mvn.publish.snapshot.module module="jaxws-eclipselink-plugin"/>
+    	<mvn.publish.snapshot.module module="sdo-eclipselink-plugin"/>
     </target>
     
     <target name="mvn.publish.release.local">
@@ -1121,6 +1137,8 @@
         <mvn.publish.release.module module="jaxws-rt"/>
         <mvn.publish.release.module module="jaxws-tools"/>
         <mvn.publish.release.zip module="jaxws-ri"/>
+    	<mvn.publish.release.module module="jaxws-eclipselink-plugin"/>
+    	<mvn.publish.release.module module="sdo-eclipselink-plugin"/>
     </target>
 
     <target  name="mvn.publish.promoted.local">
@@ -1133,12 +1151,16 @@
         <mvn.publish.snapshot.module module="jaxws-rt" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.module module="jaxws-tools" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.zip module="jaxws-ri" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
+    	<mvn.publish.release.module module="jaxws-eclipselink-plugin" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.release.module module="sdo-eclipselink-plugin" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
     </target>
 
     <target name="mvn.publish.release.remote">
         <mvn.publish.release.module module="jaxws-rt" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="jaxws-tools" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.zip module="jaxws-ri" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
+    	<mvn.publish.release.module module="jaxws-eclipselink-plugin" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
+    	<mvn.publish.release.module module="sdo-eclipselink-plugin" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
     </target>
 
 
