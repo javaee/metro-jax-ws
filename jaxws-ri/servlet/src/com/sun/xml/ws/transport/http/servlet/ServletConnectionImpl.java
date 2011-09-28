@@ -165,10 +165,6 @@ public class ServletConnectionImpl extends WSHTTPConnection implements WebServic
     @Override
     @Property({MessageContext.HTTP_RESPONSE_HEADERS, Packet.OUTBOUND_TRANSPORT_HEADERS})
     public Map<String,List<String>> getResponseHeaders() {
-        if (responseHeaders == null) {
-            responseHeaders = new Headers();
-        }
-    	
         return responseHeaders;
     }
 
