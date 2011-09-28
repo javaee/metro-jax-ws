@@ -117,6 +117,19 @@ public class WsImport2 extends MatchingTask {
     }
     
     /** 
+     * -generateJWS option. 
+     */
+    private boolean isGenerateJWS = false;
+    
+    public boolean isGenerateJWS() {
+        return this.isGenerateJWS;
+    }
+
+    public void setGenerateJWS(boolean isGenerateJWS) {
+        this.isGenerateJWS = isGenerateJWS;
+    }
+    
+    /** 
      * -implDestDir option. 
      */
     private File implDestDir = null;
@@ -719,11 +732,15 @@ public class WsImport2 extends MatchingTask {
         }
         
         //implDestDir option
-        if (getImplDestDir() != null)
+        if (isGenerateJWS())
         {
-        		cmd.createArgument().setValue("-implDestDir");
-        		cmd.createArgument().setFile(getImplDestDir());
-          
+          cmd.createArgument().setValue("-generateJWS");
+
+          if (getImplDestDir() != null)
+          {
+        	cmd.createArgument().setValue("-implDestDir");
+        	cmd.createArgument().setFile(getImplDestDir());
+          }          
           if (getImplServiceName() != null)
           {
           	cmd.createArgument().setValue("-implServiceName");
