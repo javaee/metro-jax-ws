@@ -365,10 +365,10 @@
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
         <loadresource property="last.sucessful.jaxb.build">
-          <url url="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/lastSuccessfulBuild/buildNumber"/>
+          <url url="http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/lastSuccessfulBuild/buildNumber"/>
         </loadresource>
-      <echo message="Integrating jaxb artifacts from http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}"/>
-      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/jaxb-ri.zip"
+      <echo message="Integrating jaxb artifacts from http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}"/>
+      <get src="http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/jaxb-ri.zip"
            dest="${build.home}/jaxb-ri.zip" />
       <mkdir dir="${build.home}/jaxb" />
       <unzip src="${build.home}/jaxb-ri.zip" dest="${build.home}/jaxb"/>
@@ -376,11 +376,11 @@
         <fileset dir="${build.home}/jaxb/jaxb-ri/lib" includes="*.zip,*.jar"
                  excludes="activation.jar, jsr173_1.0_api.jar, jaxb1-impl*" />
       </copy>
-      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-osgi.jar"
+      <get src="http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-osgi.jar"
            dest="${v3-osgi.dir}/jaxb-osgi.jar" />
-      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/tools/lib/osgi/jaxb-api-osgi.jar"
+      <get src="http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/tools/lib/osgi/jaxb-api-osgi.jar"
            dest="${v3-osgi.dir}/jaxb-api-osgi.jar" />
-      <get src="http://sysifos-sol.czech.sun.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/tools/lib/osgi/jaxb-api-osgi-sources.jar"
+      <get src="http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/tools/lib/osgi/jaxb-api-osgi-sources.jar"
            dest="${v3-osgi.dir}/jaxb-api-osgi-sources.jar" />
   <!--<delete dir="${build.home}/jaxb" /> -->
     </target>
@@ -1122,7 +1122,7 @@
     <property name="java.net.staging.repo" value="https://maven.java.net/service/local/staging/deploy/maven2/"/>
     <property name="java.net.snapshot.repo" value="https://maven.java.net/content/repositories/snapshots/"/>
     <property name="mvn.proxy.args" value="-Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80"/>
-    
+
     <target  name="mvn.publish.snapshots.local">
         <fail unless="maven.repo.local">maven.repo.local property needs to be set</fail>
         <mvn.publish.snapshot.module module="jaxws-rt"/>
