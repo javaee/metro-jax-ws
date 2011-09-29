@@ -381,6 +381,10 @@
             <fileset dir="${basedir}/tools/resourcegen/build/classes"/>
         </jar>
 
+        <ant dir="${basedir}/tools/wscompile"
+             target="test-ant-tasks"
+             inheritrefs="true" />
+             
         <javadoc
                 packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
                 sourcepathref="jaxws-tools-source-path"

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -117,6 +117,7 @@
                 <fileset dir="${build.dir}/test-classes">
                     <include name="**/AllTests.class"/>
                     <include name="**/*Test.class"/>
+                    <exclude name="**/*TaskTest.class"/>
                 </fileset>
             </batchtest>
         </junit>
@@ -129,4 +130,33 @@
         </junitreport>
     </target>
 
+    <target name="test-ant-tasks">
+        <path id="test.classpath">
+            <path refid="tools.compile.classpath"/>
+            <pathelement path="${build.dir}/classes"/>
+            <pathelement path="${build.dir}/test-classes"/>
+            <!-- so that resources can be found -->
+            <pathelement path="${basedir}/test"/>
+        </path>
+        
+        <junit haltonfailure="yes">
+            <classpath refid="test.classpath"/>
+            <jvmarg line="-Djaxws-ri.home=../../"/>
+            <formatter type="xml"/>
+            <!-- This formatter allows NetBeans to display the test results -->
+            <formatter type="brief" usefile="false"/>
+            <batchtest todir="${build.dir}/test-reports" haltonerror="false">
+                <fileset dir="${build.dir}/test-classes">
+                    <include name="**/*TaskTest.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <junitreport todir="${build.dir}/test-reports">
+            <fileset dir="${build.dir}/test-reports">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${build.dir}/test-reports/report/html"/>
+        </junitreport>
+    </target>
 </project> 
