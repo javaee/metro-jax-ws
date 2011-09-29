@@ -293,12 +293,27 @@ public class SAAJMessage extends Message {
               AttachmentPart part = msg.createAttachmentPart();
               part.setDataHandler(att.asDataHandler());
               part.setContentId('<' + att.getContentId() + '>');
+              addCustomMimeHeaders(att, part);
               msg.addAttachmentPart(part);
             }
             msg.saveChanges();
             return msg;
         }
     }
+
+	private void addCustomMimeHeaders(Attachment att, AttachmentPart part) {
+		if (att instanceof AttachmentEx) {
+			Iterator<AttachmentEx.MimeHeader> allMimeHeaders = ((AttachmentEx) att).getMimeHeaders();
+			while (allMimeHeaders.hasNext()) {
+				AttachmentEx.MimeHeader mh = allMimeHeaders.next();
+				String name = mh.getName();
+				if (!"Content-Type".equalsIgnoreCase(name)
+						&& !"Content-Id".equalsIgnoreCase(name)) {
+					part.addMimeHeader(name, mh.getValue());
+				}
+			}
+		}
+	}
 
     public Source readPayloadAsSource() {
         access();
@@ -529,7 +544,7 @@ public class SAAJMessage extends Message {
     private static final AttributesImpl EMPTY_ATTS = new AttributesImpl();
     private static final LocatorImpl NULL_LOCATOR = new LocatorImpl();
 
-    private class SAAJAttachment implements Attachment {
+    private class SAAJAttachment implements AttachmentEx {
 
         final AttachmentPart ap;
 
@@ -613,6 +628,38 @@ public class SAAJMessage extends Message {
         AttachmentPart asAttachmentPart(){
             return ap;
         }
+
+		@Override
+		public Iterator<MimeHeader> getMimeHeaders() {
+			final Iterator it = ap.getAllMimeHeaders();
+			return new Iterator<MimeHeader>() {
+				@Override
+				public boolean hasNext() {
+					return it.hasNext();
+				}
+
+				@Override
+				public MimeHeader next() {
+					final javax.xml.soap.MimeHeader mh = (javax.xml.soap.MimeHeader) it.next();
+					return new MimeHeader() {
+						@Override
+						public String getName() {
+							return mh.getName();
+						}
+
+						@Override
+						public String getValue() {
+							return mh.getValue();
+						}
+					};
+				}
+
+				@Override
+				public void remove() {
+					throw new UnsupportedOperationException();
+				}
+			};
+		}
     }
 
     /**

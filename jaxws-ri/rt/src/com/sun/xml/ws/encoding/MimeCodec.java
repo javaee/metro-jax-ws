@@ -43,6 +43,7 @@ package com.sun.xml.ws.encoding;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Attachment;
+import com.sun.xml.ws.api.message.AttachmentEx;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Codec;
@@ -56,6 +57,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
+import java.util.Iterator;
 import java.util.UUID;
 
 /**
@@ -151,6 +153,7 @@ abstract class MimeCodec implements Codec {
                     cid = '<' + cid + '>';
                 writeln("Content-Id:" + cid, out);
                 writeln("Content-Type: " + att.getContentType(), out);
+                writeCustomMimeHeaders(att, out);
                 writeln("Content-Transfer-Encoding: binary", out);
                 writeln(out);                    // write \r\n
                 att.writeTo(out);
@@ -163,6 +166,20 @@ abstract class MimeCodec implements Codec {
         return hasAttachments ? new ContentTypeImpl(messageContentType, packet.soapAction, null) : primaryCt;
     }
     
+    private void writeCustomMimeHeaders(Attachment att, OutputStream out) throws IOException {
+        if (att instanceof AttachmentEx) {
+            Iterator<AttachmentEx.MimeHeader> allMimeHeaders = ((AttachmentEx) att).getMimeHeaders();
+            while (allMimeHeaders.hasNext()) {
+                AttachmentEx.MimeHeader mh = allMimeHeaders.next();
+                String name = mh.getName();
+
+                if (!"Content-Type".equalsIgnoreCase(name) && !"Content-Id".equalsIgnoreCase(name)) {
+                    writeln(name +": " + mh.getValue(), out);
+                }
+            }
+        }
+    }
+
     public ContentType getStaticContentType(Packet packet) {
         Message msg = packet.getMessage();
         hasAttachments = !msg.getAttachments().isEmpty();
