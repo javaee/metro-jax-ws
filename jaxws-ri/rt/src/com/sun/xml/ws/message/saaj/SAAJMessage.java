@@ -629,32 +629,26 @@ public class SAAJMessage extends Message {
             return ap;
         }
 
-		@Override
 		public Iterator<MimeHeader> getMimeHeaders() {
 			final Iterator it = ap.getAllMimeHeaders();
 			return new Iterator<MimeHeader>() {
-				@Override
 				public boolean hasNext() {
 					return it.hasNext();
 				}
 
-				@Override
 				public MimeHeader next() {
 					final javax.xml.soap.MimeHeader mh = (javax.xml.soap.MimeHeader) it.next();
 					return new MimeHeader() {
-						@Override
 						public String getName() {
 							return mh.getName();
 						}
 
-						@Override
 						public String getValue() {
 							return mh.getValue();
 						}
 					};
 				}
 
-				@Override
 				public void remove() {
 					throw new UnsupportedOperationException();
 				}
