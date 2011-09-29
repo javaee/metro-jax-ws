@@ -68,18 +68,17 @@
         <copy file="${libs.folder}/jsr181-api.jar" todir="${api.dir}"/>
         <copy todir="${lib.dir}">
             <fileset dir="${libs.folder}">
-<!--                <exclude name="jaxb-api.jar"/>
+                <exclude name="jaxb-api.jar"/>
                 <exclude name="jaxws-api.jar"/>
-                <exclude name="jsr181-api.jar"/>-->
             </fileset>
         </copy>
         <path id="task.cp">
             <fileset dir="${lib.dir}">
                 <include name="jaxws-tools.jar"/>
             </fileset>
-<!--            <fileset dir="${api.dir}">
+            <fileset dir="${api.dir}">
                 <include name="*.jar"/>
-            </fileset>-->
+            </fileset>
         </path>
     </target>
 
