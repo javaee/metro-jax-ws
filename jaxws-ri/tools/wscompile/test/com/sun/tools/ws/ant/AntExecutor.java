@@ -66,10 +66,10 @@ public class AntExecutor {
         }
         try {
             File f = new File(AntExecutor.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            while (!"jaxws-ri".equals(f.getName())) {
+            while (!"tools".equals(f.getName())) {
                 f = f.getParentFile();
             }
-            return f;
+            return f.getParentFile();
         } catch (URISyntaxException ex) {
             return null;
         }
