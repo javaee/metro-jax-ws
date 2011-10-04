@@ -90,7 +90,7 @@ public class MultiThreadTest extends TestCase {
         }
         doTestWithThreadPool(service, noReqs);
         service.shutdown();
-        while(!service.awaitTermination(5L, TimeUnit.SECONDS));
+        while(!service.awaitTermination(7L, TimeUnit.SECONDS));
         synchronized(this) {
             assertEquals(noReqs, noResps);
         }
