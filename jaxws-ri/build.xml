@@ -101,15 +101,15 @@
       </doclet>
 
     <!--doclet name="wrappertaglet.WrapperTaglet" path="${basedir}/tools/lib/wrappertaglet.jar:${build.home}/lib/UmlGraph-4.4.jar:${basedir}/tools/lib/taglets.jar">
-		<param name="-inferrel"/>
-		<param name="-inferdep"/>
-		<param name="-hide" value="java.*"/>
-		<param name="-collpackages" value="java.util.*"/>
-		<param name="-qualify"/>
-		<param name="-postfixpackage"/>
-		<param name="-nodefontsize" value="9"/>
-		<param name="-nodefontpackagesize" value="7"/>
-	</doclet-->
+        <param name="-inferrel"/>
+        <param name="-inferdep"/>
+        <param name="-hide" value="java.*"/>
+        <param name="-collpackages" value="java.util.*"/>
+        <param name="-qualify"/>
+        <param name="-postfixpackage"/>
+        <param name="-nodefontsize" value="9"/>
+        <param name="-nodefontpackagesize" value="7"/>
+    </doclet-->
       <packageset dir="${basedir}/javadoc"/>
       <group title="Root Architecture Document" packages="jaxws" />
 
@@ -228,11 +228,11 @@
     <copy    todir="${dist20.home}/lib">
       <fileset dir="${build.home}/lib" includes="*.jar"/>
     </copy>
-  	
-  	<copy    todir="${dist20.home}/lib">
-  	  <fileset dir="${build.home}/plugins_lib" includes="*.jar"/>
-  	</copy>
-    	
+
+    <copy    todir="${dist20.home}/lib">
+      <fileset dir="${build.home}/plugins_lib" includes="*.jar"/>
+    </copy>
+ 
     <copy    todir="${dist20.home}/docs">
       <fileset dir="${build.home}/docs"/>
     </copy>
@@ -242,7 +242,7 @@
       <fileset dir="samples" includes="**/certs/**" excludes="**/CVS/**"/>  
     </copy>
 
-     <copy todir="${dist20.home}/samples">
+    <copy todir="${dist20.home}/samples">
         <fileset dir="samples" includes="**" excludes="**/certs/**, **/common_resources/**,**/CVS/**" />
         <filterset begintoken="@@" endtoken="@@">
           <filter token="SPEC_VERSION" 
@@ -252,14 +252,14 @@
           <filter token="IMPL_VERSION_SUFFIX"
                   value="${release.impl.version.suffix}"/>
         </filterset>
-	</copy>
+    </copy>
 
     <copy todir="${dist20.home}/samples/restful/etc">
         <fileset dir="lib" includes="servlet.jar"/>
     </copy>
 
-     <copy todir="${dist20.home}">
-  	<fileset dir="${build.home}" includes="*.txt"/>
+    <copy todir="${dist20.home}">
+        <fileset dir="${build.home}" includes="*.txt"/>
     </copy>
 
     <!-- add a copy of the license and README files to the top level -->
@@ -304,14 +304,14 @@
     <zip file="${dist20.home}/lib/jaxws-libs.src.zip">
       <fileset dir="${basedir}/lib" includes="*src.zip" excludes="jaxws-asm-src.zip,junit-src.zip,htmlmacro.src.zip"/>
     </zip>
-  	<zip file="${dist20.home}/lib/jaxws-eclipselink-plugin.src.zip">
+    <zip file="${dist20.home}/lib/jaxws-eclipselink-plugin.src.zip">
       <fileset dir="${basedir}/eclipselink_jaxb/src"/>
       <fileset dir="${basedir}/eclipselink_jaxb/build/classes" includes="META-INF/services/*"/>
-  	</zip>
-  	<zip file="${dist20.home}/lib/sdo-eclipselink-plugin.src.zip">
+    </zip>
+    <zip file="${dist20.home}/lib/sdo-eclipselink-plugin.src.zip">
       <fileset dir="${basedir}/eclipselink_sdo/src"/>
       <fileset dir="${basedir}/eclipselink_sdo/build/classes" includes="META-INF/services/*"/>
-  	</zip>
+    </zip>
   </target>
 
     <target name="jdk-jaxws-src.zip" description="create source zip bundles of the JAX-WS in JDK" depends="src.zip">
@@ -423,10 +423,10 @@
     <property name="java.net.maven2.repo.push.url" value="java-net:/maven2-repository~svn/trunk/repository/"/>
     <!--property name="java.net.maven2.repo.push.url" value="svn:https://svn.java.net/svn/maven2-repository~svn/trunk/repository"/-->
     <!--property name="java.net.maven2.repo.push.url" value="dav:http://glassfish-maven-repository.us.oracle.com/maven/repositories/glassfish/"/-->
-	
-	<!-- TODO - come up with a better scheme than using hard-coded value shere. -->
-	<property name="eclipselink.version" value="2.3.1-M6"/>
-	<property name="common.sdo.version" value="2.1.1"/>
+
+  <!-- TODO - come up with a better scheme than using hard-coded value shere. -->
+  <property name="eclipselink.version" value="2.3.1-M6"/>
+  <property name="common.sdo.version" value="2.1.1"/>
 
     <target name="check-maven-ant-task">
         <available property="maven.ant.task.available" value="true" file="${lib.home}/${maven.ant.task.jar}"
@@ -958,7 +958,7 @@
             </fileset>
         </subant>
     </target>
-	
+
     <target name="overlay-eclipselink" depends="init-maven-ant"
         description="fetch the latest eclipselink.jar from the Maven repository">
         <path id="maven-ant-tasks.classpath" path="${lib.home}/${maven.ant.task.jar}"/>
@@ -969,14 +969,14 @@
                 version="2.3.1-SNAPSHOT"/>
             <remoteRepository url="http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo"/>
         </artifact:dependencies>
-		
+
         <copy todir="${basedir}/eclipselink_jaxb/lib">
             <fileset refid="dependency.fileset"/>
                 <mapper>
                     <mergemapper to="eclipselink.jar"/>
                     <flattenmapper/>
                 </mapper>
-        </copy>			
+        </copy>
     </target>
 
     <macrodef name="prepare-pom">
@@ -1001,13 +1001,33 @@
                         <filter token="POLICY_VERSION" value="${policy.version}"/>
                         <filter token="GMBAL_API_VERSION" value="${gmbal.version}"/>
                         <filter token="HA_API_VERSION" value="${ha-api.version}"/>
-                    	<filter token="ECLIPSELINK_VERSION" value="${eclipselink.version}"/>
-                    	<filter token="COMMON_SDO_VERSION" value="${common.sdo.version}"/>
+                        <filter token="ECLIPSELINK_VERSION" value="${eclipselink.version}"/>
+                        <filter token="COMMON_SDO_VERSION" value="${common.sdo.version}"/>
                         <filter token="VERSION" value="${jar.suffix}"/>
                     </filterset>
                 </copy>
             </sequential>
         </macrodef>
+
+   <macrodef name="mvn.install.file">
+        <attribute name="command" default="install:install-file"/>
+        <attribute name="repo" default="${maven.repo.local}"/>
+
+        <attribute name="jar"/>
+        <attribute name="pom"/>
+        <attribute name="classifier" default=""/>
+        <attribute name="extra-args" default=""/>
+        <sequential>
+            <exec executable="mvn" failonerror="true">
+                <arg line="@{command}"/>
+                <arg line="-Dfile=@{jar}"/>
+                <arg line="-Dclassifier=@{classifier}"/>
+                <arg line="-DpomFile=@{pom}"/>
+                <arg line="-DlocalRepositoryPath=@{repo}"/>
+                <arg line="@{extra-args}"/>
+            </exec>
+        </sequential>
+    </macrodef>
 
    <macrodef name="mvn.publish.snapshot.file">
         <attribute name="command" default="deploy:deploy-file"/>
@@ -1059,6 +1079,24 @@
         </sequential>
     </macrodef>
 
+    <macrodef name="mvn.install.snapshot.module">
+        <attribute name="module"/>
+        <attribute name="extra-args" default=""/>
+        <attribute name="repo" default="${maven.repo.local}"/>
+        <sequential>
+            <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
+            <prepare-pom module="@{module}"/>
+            <mvn.install.file jar="${dist20.home}/lib/@{module}.jar" pom="build/maven2-repo/@{module}.pom"
+                              repo="@{repo}" extra-args="@{extra-args}"/>
+            <mvn.install.file jar="${dist20.home}/lib/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom"
+                              repo="@{repo}" extra-args="@{extra-args}"
+                              classifier="sources"/>
+            <mvn.install.file jar="${dist20.home}/lib/@{module}-javadoc.jar"
+                              pom="build/maven2-repo/@{module}.pom" repo="@{repo}" extra-args="@{extra-args}"
+                              classifier="javadoc"/>
+        </sequential>
+    </macrodef>
+
     <macrodef name="mvn.publish.snapshot.module">
         <attribute name="module"/>
         <attribute name="extra-args" default=""/>
@@ -1074,6 +1112,18 @@
             <mvn.publish.snapshot.file jar="${dist20.home}/lib/@{module}-javadoc.jar"
                                        pom="build/maven2-repo/@{module}.pom" repo="@{repo}" extra-args="@{extra-args}"
                                        classifier="javadoc"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="mvn.install.snapshot.zip">
+        <attribute name="module"/>
+        <attribute name="extra-args" default=""/>
+        <attribute name="repo" default="${maven.repo.local}"/>
+        <sequential>
+            <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
+            <prepare-pom module="@{module}"/>
+            <mvn.install.file jar="${build.home}/@{module}.zip" pom="build/maven2-repo/@{module}.pom"
+                              repo="@{repo}" extra-args="@{extra-args}"/>
         </sequential>
     </macrodef>
 
@@ -1123,13 +1173,22 @@
     <property name="java.net.snapshot.repo" value="https://maven.java.net/content/repositories/snapshots/"/>
     <property name="mvn.proxy.args" value="-Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80"/>
 
+    <target  name="mvn.install.snapshots.local">
+        <fail unless="maven.repo.local">maven.repo.local property needs to be set</fail>
+        <mvn.install.snapshot.module module="jaxws-rt"/>
+        <mvn.install.snapshot.module module="jaxws-tools"/>
+        <mvn.install.snapshot.zip module="jaxws-ri"/>
+        <mvn.install.snapshot.module module="jaxws-eclipselink-plugin"/>
+        <mvn.install.snapshot.module module="sdo-eclipselink-plugin"/>
+    </target>
+    
     <target  name="mvn.publish.snapshots.local">
         <fail unless="maven.repo.local">maven.repo.local property needs to be set</fail>
         <mvn.publish.snapshot.module module="jaxws-rt"/>
         <mvn.publish.snapshot.module module="jaxws-tools"/>
         <mvn.publish.snapshot.zip module="jaxws-ri"/>
-    	<mvn.publish.snapshot.module module="jaxws-eclipselink-plugin"/>
-    	<mvn.publish.snapshot.module module="sdo-eclipselink-plugin"/>
+        <mvn.publish.snapshot.module module="jaxws-eclipselink-plugin"/>
+        <mvn.publish.snapshot.module module="sdo-eclipselink-plugin"/>
     </target>
     
     <target name="mvn.publish.release.local">
@@ -1137,8 +1196,8 @@
         <mvn.publish.release.module module="jaxws-rt"/>
         <mvn.publish.release.module module="jaxws-tools"/>
         <mvn.publish.release.zip module="jaxws-ri"/>
-    	<mvn.publish.release.module module="jaxws-eclipselink-plugin"/>
-    	<mvn.publish.release.module module="sdo-eclipselink-plugin"/>
+        <mvn.publish.release.module module="jaxws-eclipselink-plugin"/>
+        <mvn.publish.release.module module="sdo-eclipselink-plugin"/>
     </target>
 
     <target  name="mvn.publish.promoted.local">
@@ -1151,7 +1210,7 @@
         <mvn.publish.snapshot.module module="jaxws-rt" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.module module="jaxws-tools" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.zip module="jaxws-ri" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
-    	<mvn.publish.release.module module="jaxws-eclipselink-plugin" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.release.module module="jaxws-eclipselink-plugin" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="sdo-eclipselink-plugin" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
     </target>
 
@@ -1159,8 +1218,8 @@
         <mvn.publish.release.module module="jaxws-rt" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="jaxws-tools" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.zip module="jaxws-ri" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
-    	<mvn.publish.release.module module="jaxws-eclipselink-plugin" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
-    	<mvn.publish.release.module module="sdo-eclipselink-plugin" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.release.module module="jaxws-eclipselink-plugin" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.release.module module="sdo-eclipselink-plugin" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
     </target>
 
 
