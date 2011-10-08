@@ -65,11 +65,13 @@ public class AntExecutor {
             return new File(System.getProperty("jaxws-ri.home"));
         }
         try {
-            File f = new File(AntExecutor.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            while (!"tools".equals(f.getName())) {
+            //see: https://issues.apache.org/bugzilla/show_bug.cgi?id=20174
+            //File f = new File(AntExecutor.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            File f = new File(AntExecutor.class.getResource("AntExecutor.class").toURI());
+            while (!"wscompile".equals(f.getName())) {
                 f = f.getParentFile();
             }
-            return f.getParentFile();
+            return f.getParentFile().getParentFile();
         } catch (URISyntaxException ex) {
             return null;
         }

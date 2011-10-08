@@ -49,6 +49,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
 import junit.framework.TestCase;
 
 /**
@@ -130,6 +132,18 @@ public abstract class WsAntTaskTestBase extends TestCase {
             return version < 1.6;
         } catch (NumberFormatException nfe) {
             return false;
+        }
+    }
+
+    protected boolean isAntPre18() {
+        try {
+            Properties p = new Properties();
+            p.load(WsAntTaskTestBase.class.getResourceAsStream("/org/apache/tools/ant/version.txt"));
+            int version = Integer.parseInt(p.getProperty("VERSION").substring(2, 3));
+            return version < 8;
+        } catch (Exception e) {
+            Logger.getLogger(WsAntTaskTestBase.class.getName()).warning("Cannot detect Ant version.");
+            return true;
         }
     }
 }

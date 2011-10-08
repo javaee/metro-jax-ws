@@ -66,7 +66,11 @@ public class WsGenTaskTest extends WsAntTaskTestBase{
 
     public void testWsGenLockJars() throws IOException, URISyntaxException {
         if (isOldJDK()) {
-            Logger.getLogger(WsGenTaskTest.class.getName()).warning("Old JDK - skipping jar locking test");
+            Logger.getLogger(WsGenTaskTest.class.getName()).warning("Old JDK - 6+ is required - skipping jar locking test");
+            return;
+        }
+        if (isAntPre18()) {
+            Logger.getLogger(WsGenTaskTest.class.getName()).warning("Old Ant - 1.8+ is required - skipping jar locking test");
             return;
         }
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-server", "clean"));
