@@ -1009,6 +1009,10 @@
             </sequential>
         </macrodef>
 
+    <condition property="mvn.exec" value="mvn.bat" else="mvn">
+        <os family="windows"/>
+    </condition>
+
    <macrodef name="mvn.install.file">
         <attribute name="command" default="install:install-file"/>
         <attribute name="repo" default="${maven.repo.local}"/>
@@ -1018,7 +1022,7 @@
         <attribute name="classifier" default=""/>
         <attribute name="extra-args" default=""/>
         <sequential>
-            <exec executable="mvn" failonerror="true">
+            <exec executable="${mvn.exec}" failonerror="true">
                 <arg line="@{command}"/>
                 <arg line="-Dfile=@{jar}"/>
                 <arg line="-Dclassifier=@{classifier}"/>
@@ -1040,7 +1044,7 @@
         <attribute name="password" default=""/>
         <attribute name="extra-args" default=""/>
         <sequential>
-            <exec executable="mvn" failonerror="true">
+            <exec executable="${mvn.exec}" failonerror="true">
                 <arg line="@{command}"/>
                 <arg line="-Dfile=@{jar}"/>
                 <arg line="-Dclassifier=@{classifier}"/>
@@ -1065,7 +1069,7 @@
         <attribute name="password" default="${gpg.password}"/>
         <attribute name="extra-args" default=""/>
         <sequential>
-            <exec executable="mvn" failonerror="true">
+            <exec executable="${mvn.exec}" failonerror="true">
                 <arg line="@{command}"/>
                 <arg line="-Dfile=@{jar}"/>
                 <arg line="-Dclassifier=@{classifier}"/>
