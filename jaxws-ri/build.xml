@@ -1052,7 +1052,6 @@
                 <arg line="-DuniqueVersion=false"/>
                 <arg line="-Durl=@{repo}"/>
                 <arg line="-DrepositoryId=@{repoid}"/>
-                <arg line="-Dgpg.passphrase=@{password}"/>
                 <arg line="@{extra-args}"/>
             </exec>
         </sequential>
@@ -1214,8 +1213,8 @@
         <mvn.publish.snapshot.module module="jaxws-rt" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.module module="jaxws-tools" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.zip module="jaxws-ri" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
-        <mvn.publish.release.module module="jaxws-eclipselink-plugin" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
-        <mvn.publish.release.module module="sdo-eclipselink-plugin" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.snapshot.module module="jaxws-eclipselink-plugin" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.snapshot.module module="sdo-eclipselink-plugin" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
     </target>
 
     <target name="mvn.publish.release.remote">
