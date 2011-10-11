@@ -135,8 +135,12 @@ public class WsaServerTube extends WsaTube {
             faultTo = hl.getFaultTo(addressingVersion, soapVersion);
             msgId = hl.getMessageID(addressingVersion, soapVersion);
         } catch (InvalidAddressingHeaderException e) {
-            LOGGER.log(Level.WARNING,
-                    addressingVersion.getInvalidMapText()+", Problem header:" + e.getProblemHeader()+ ", Reason: "+ e.getSubsubcode(),e);
+
+            LOGGER.log(Level.WARNING, addressingVersion.getInvalidMapText()+", Problem header:" + e.getProblemHeader()+ ", Reason: "+ e.getSubsubcode(),e);
+
+            // problematic header must be removed since it can fail during Fault message processing
+            hl.remove(e.getProblemHeader());
+
             SOAPFault soapFault = helper.createInvalidAddressingHeaderFault(e, addressingVersion);
             // WS-A fault processing for one-way methods
             if ((wsdlPort!=null) && request.getMessage().isOneWay(wsdlPort)) {
