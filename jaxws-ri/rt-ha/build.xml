@@ -56,7 +56,7 @@
         source="1.5">
       <classpath>
         <path refid="runtime.compile.classpath"/>
-        <fileset dir="${basedir}/lib" includes="ha-api.jar" />
+        <fileset dir="${basedir}/../lib" includes="ha-api.jar" />
         <pathelement path="../rt/build/classes" />
       </classpath>
     </javac>
