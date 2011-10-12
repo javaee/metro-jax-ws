@@ -44,7 +44,6 @@
 <project name="JAXWS-RI" default="main" basedir="." xmlns:artifact="urn:maven-artifact-ant">
   <import file="etc/build-bundle.xml"/>
   <import file="build-taskdefs.xml" />  
-  <property name="v3-osgi.dir" value="${basedir}/v3-osgi"/>
 
   <target name="runtime-compile-mustang" depends="prepare">
     <ant dir="${basedir}/rt"
