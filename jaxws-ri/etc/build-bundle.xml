@@ -43,7 +43,7 @@
 <!-- ************ JAXWS build file ************************************** -->
 
 
-<project name="jax-ws" default="main" basedir=".">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="jax-ws" default="main" basedir=".">
 
     <property name="Name" value="JAX-WS RI"/>
 
@@ -77,33 +77,34 @@
     <echo message="The build id is: ${build.version}"/>
 	
     <mkdir dir="${build.home}"/>
-	<exec failonerror="false" failifexecutionfails="false" errorproperty="svnversion.failed"
+    <exec failonerror="false" failifexecutionfails="false" errorproperty="svnversion.failed"
           executable="svn" output="build/svn.properties">
         <arg value="info" />
     </exec>			
     <property prefix="svn" file="build/svn.properties"/>
     <echo>svn Revision: ${svn.Revision}</echo>
-	<loadfile property="svn.Last.Changed.Rev" srcFile="build/svn.properties" failonerror="false">
-		<filterchain>
-		    <linecontains>
-				<contains value="Last Changed Rev: " />
-			</linecontains>
-			<deletecharacters chars="Last Changed Rev: " />
-			<striplinebreaks />
-		</filterchain>
-	</loadfile>
+    <loadfile property="svn.Last.Changed.Rev" srcFile="build/svn.properties" failonerror="false">
+        <filterchain>
+            <linecontains>
+                <contains value="Last Changed Rev: " />
+            </linecontains>
+            <deletecharacters chars="Last Changed Rev: " />
+            <striplinebreaks />
+        </filterchain>
+    </loadfile>
     <echo>svn Last Changed Rev: ${svn.Last.Changed.Rev}</echo>	
 
     <path id="runtime.compile.classpath">
         <fileset dir="${lib.home}">
-            <include name="**/*.jar"/>
+            <include name="*.jar"/>
+            <exclude name="*-source.jar"/>
+            <exclude name="*-javadoc.jar"/>
         </fileset>
-        <!--<pathelement location="${basedir}/ws-api/build/classes"/>-->
     </path>
 
     <path id="boot.classpath">
         <fileset dir="${lib.home}">
-            <include name="**/jaxws-api.jar"/>
+            <include name="jaxws-api.jar"/>
         </fileset>
     </path>
   
@@ -117,7 +118,33 @@
         <echo message="-------- ${Name} ${release.impl.version} --------"/>
     </target>
 
-    <target name="prepare" depends="init">
+    <property name="ivy.jar.dir" value="${basedir}/ivy"/>
+    <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
+    
+    <target name="download-ivy" unless="skip.download">
+    	<mkdir dir="${ivy.jar.dir}"/>
+        <echo message="installing ivy..."/>
+    	<get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.jar.file}" usetimestamp="true"/>
+    </target>
+    
+    <target name="install-ivy" depends="download-ivy" description="--&gt; install ivy">
+    	<path id="ivy.lib.path">
+    	    <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+    	</path>
+    	<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+    </target>	
+
+    <target name="retrieve-deps" depends=" install-ivy">
+        <ivy:retrieve pattern="lib/[artifact]-[type].[ext]" sync="true"/>
+        <move todir="${lib.home}">
+            <fileset dir="${lib.home}">
+                <include name="**/*-jar.jar"/>
+            </fileset>
+            <mapper type="regexp" from="^(.*)-jar.jar" to="\1.jar"/>
+        </move>
+    </target>
+    
+    <target name="prepare" depends="init, retrieve-deps">
         <mkdir dir="${build.home}"/>
         <mkdir dir="${build.home}/lib"/>
     	<mkdir dir="${build.home}/plugins_lib"/>
@@ -158,6 +185,13 @@
     	<pathelement path="${basedir}/eclipselink_sdo/src"/>
     </path>
 
+    <target name="clean-ivy" description="--&gt; clean the ivy installation">
+        <delete dir="${ivy.jar.dir}"/>
+    </target>
+	
+    <target name="clean-cache" depends="install-ivy" description="--&gt; clean the ivy cache">
+        <ivy:cleancache/>
+    </target>
 
     <target name="javadocs" depends="image">
         <javadoc
@@ -245,7 +279,7 @@
             <classpath>
                 <path refid="runtime.compile.classpath"/>
                 <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
-                <fileset dir="${basedir}/rt-ha/lib" includes="ha-api.jar" />
+                <fileset dir="${basedir}/lib" includes="ha-api.jar" />
             </classpath>
             <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
                   offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
@@ -350,9 +384,7 @@
 
         <copy todir="${build.home}/lib">
             <fileset dir="${lib.home}/"
-                     includes="FastInfoset.jar, activation.jar, gmbal-api-only.jar, management-api.jar, http.jar, jaxb-api.jar, jaxb-impl.jar, jaxb-xjc.jar, jaxws-api.jar, jaxws-rt.jar, jaxws-tools.jar, jsr173_api.jar, jsr181-api.jar, jsr250-api.jar, resolver.jar, saaj-api.jar, saaj-impl.jar, stax-ex.jar, streambuffer.jar, mimepull.jar, policy.jar"/>
-            <fileset dir="${basedir}/rt-ha/lib"
-                     includes="ha-api.jar"/>
+                     includes="FastInfoset.jar, gmbal-api-only.jar, management-api.jar, jaxb-api.jar, jaxb-impl.jar, jaxb-xjc.jar, jaxws-api.jar, jaxws-rt.jar, jaxws-tools.jar, jsr181-api.jar, javax.annotation.jar, saaj-api.jar, saaj-impl.jar, stax-ex.jar, streambuffer.jar, mimepull.jar, policy.jar, ha-api.jar"/>
         </copy>
 
     	<copy todir="${build.home}/lib">
@@ -365,7 +397,6 @@
     	    	             includes="common.sdo.jar"/>
         </copy>
 
-        <antcall target="copy-sjsxp-libs"/>
         <antcall target="copy-woodstox-libs"/>
 
         <!-- Copying the manifest -->
@@ -399,7 +430,7 @@
             <classpath>
                 <path refid="runtime.compile.classpath"/>
                 <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
-                <fileset dir="${basedir}/rt-ha/lib" includes="ha-api.jar" />
+                <fileset dir="${basedir}/lib" includes="ha-api.jar" />
             </classpath>
             <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
                   offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
@@ -416,15 +447,8 @@
 
     <target name="copy-woodstox-libs" description="Copies woodstox.jar into distribution jars" if="woodstox">
         <copy todir="${build.home}/lib">
-            <fileset dir="${lib.home}/"
-                     includes="woodstox.jar"/>
-        </copy>
-    </target>
-
-    <target name="copy-sjsxp-libs" description="Copies woodstox.jar into distribution jars" unless="woodstox">
-        <copy todir="${build.home}/lib">
-            <fileset dir="${lib.home}/"
-                     includes="sjsxp.jar"/>
+            <fileset dir="${lib.home}/" includes="stax2-api*.jar"/>
+            <fileset dir="${lib.home}/" includes="woodstox*.jar"/>
         </copy>
     </target>
 

@@ -87,6 +87,26 @@
             <email>rama.pulavarthi@oracle.com</email>
             <organization>Oracle Corporation</organization>
         </developer>
+        <developer>
+            <name>Martin Grebac</name>
+            <email>martin.grebac@oracle.com</email>
+            <organization>Oracle Corporation</organization>
+        </developer>
+        <developer>
+            <name>Lukas Jungmann</name>
+            <email>lukas.jungmann@oracle.com</email>
+            <organization>Oracle Corporation</organization>
+        </developer>
+        <developer>
+            <name>Miroslav Kos</name>
+            <email>miroslav.kos@oracle.com</email>
+            <organization>Oracle Corporation</organization>
+        </developer>
+        <developer>
+            <name>Jaroslav Savytskyi</name>
+            <email>iaroslav.savytskyi@oracle.com</email>
+            <organization>Oracle Corporation</organization>
+        </developer>
     </developers>
 
     <scm>
@@ -156,11 +176,6 @@
             <groupId>org.jvnet.staxex</groupId>
             <artifactId>stax-ex</artifactId>
             <version>@STAX_EX_VERSION@</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.org.apache.xml.internal</groupId>
-            <artifactId>resolver</artifactId>
-            <version>@RESOLVER_VERSION@</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.mimepull</groupId>

@@ -41,15 +41,11 @@
 
 -->
 
-<!-- ************ JAXWS build file ************************************** -->
-
-
-
 <project name="JAXWS-RI" default="main" basedir="." xmlns:artifact="urn:maven-artifact-ant">
   <import file="etc/build-bundle.xml"/>
   <import file="build-taskdefs.xml" />  
   <property name="v3-osgi.dir" value="${basedir}/v3-osgi"/>
-  <property name="jn.m2" value="http://download.java.net/maven/2"/>
+
   <target name="runtime-compile-mustang" depends="prepare">
     <ant dir="${basedir}/rt"
         target="compile-mustang"
@@ -58,7 +54,6 @@
         target="compile-mustang"
         inheritrefs="true"/>
   </target>
-
 
   <target name="javadocs-spi" depends="image">
     <javadoc packagenames="com.sun.xml.ws.spi.runtime.*, com.sun.tools.ws.spi.*"
@@ -72,7 +67,6 @@
         <classpath refid="tools.compile.classpath"/>
     </javadoc>
   </target>
-
 
     <target name="architecture-document" depends="prepare"
             description="generate architecture documents (which is just a glorified javadoc)">
@@ -100,16 +94,6 @@
         path="${basedir}/tools/lib/taglets.jar">
       </doclet>
 
-    <!--doclet name="wrappertaglet.WrapperTaglet" path="${basedir}/tools/lib/wrappertaglet.jar:${build.home}/lib/UmlGraph-4.4.jar:${basedir}/tools/lib/taglets.jar">
-        <param name="-inferrel"/>
-        <param name="-inferdep"/>
-        <param name="-hide" value="java.*"/>
-        <param name="-collpackages" value="java.util.*"/>
-        <param name="-qualify"/>
-        <param name="-postfixpackage"/>
-        <param name="-nodefontsize" value="9"/>
-        <param name="-nodefontpackagesize" value="7"/>
-    </doclet-->
       <packageset dir="${basedir}/javadoc"/>
       <group title="Root Architecture Document" packages="jaxws" />
 
@@ -140,8 +124,6 @@
     <ant dir="${basedir}/rt"              target="generate-code" inheritrefs="true"/>
     <ant dir="${basedir}/tools/wscompile" target="generate-code" inheritrefs="true"/>
   </target>
-
-
 
   <target name="runtime-build-mustang" depends="runtime-compile-mustang">
     <!-- Copy resource files etc -->
@@ -194,18 +176,6 @@
     <mkdir dir="${dist20.home}/lib"/>
     <mkdir dir="${dist20.home}/docs"/>
     <mkdir dir="${dist20.home}/samples"/>
-    <!--
-    <copy tofile="${dist20.home}/build.xml" file="${build.home}/../etc/istackonsjsas.xml">
-        <filterset begintoken="@@" endtoken="@@">
-          <filter token="SPEC_VERSION"
-                  value="${release.spec.version}" />
-          <filter token="IMPL_VERSION"
-                  value="${release.impl.version}"/>
-          <filter token="IMPL_VERSION_SUFFIX"
-                  value="${release.impl.version.suffix}"/>
-        </filterset>
-    </copy>
-    -->
       <copy tofile="${dist20.home}/build.xml" file="${build.home}/../etc/istackontomcat.xml">
           <filterset begintoken="@@" endtoken="@@">
             <filter token="SPEC_VERSION"
@@ -225,14 +195,14 @@
     <chmod perm="+x" file="${dist20.home}/bin/wsimport.sh"/>
     <chmod perm="+x" file="${dist20.home}/bin/wsgen.sh"/>
 
-    <copy    todir="${dist20.home}/lib">
+    <copy todir="${dist20.home}/lib">
       <fileset dir="${build.home}/lib" includes="*.jar"/>
     </copy>
-
-    <copy    todir="${dist20.home}/lib">
+  	
+    <copy todir="${dist20.home}/lib">
       <fileset dir="${build.home}/plugins_lib" includes="*.jar"/>
     </copy>
- 
+    	
     <copy    todir="${dist20.home}/docs">
       <fileset dir="${build.home}/docs"/>
     </copy>
@@ -302,7 +272,7 @@
       <zipfileset dir="${basedir}/tools/etc/" includes="com.sun.*" prefix="META-INF/services"/>
     </zip>
     <zip file="${dist20.home}/lib/jaxws-libs.src.zip">
-      <fileset dir="${basedir}/lib" includes="*src.zip" excludes="jaxws-asm-src.zip,junit-src.zip,htmlmacro.src.zip"/>
+      <fileset dir="${basedir}/lib" includes="*-source.jar" excludes="jaxws-asm-source.jar,junit-source.jar"/>
     </zip>
     <zip file="${dist20.home}/lib/jaxws-eclipselink-plugin.src.zip">
       <fileset dir="${basedir}/eclipselink_jaxb/src"/>
@@ -319,10 +289,10 @@
         <zip file="${dist.home}/jdk-jaxws-libs.src.zip">
             <fileset dir="${dist20.home}/lib" includes="jaxws-rt.src.zip"/>
             <fileset dir="${dist20.home}/lib" includes="jaxws-tools.src.zip"/>
-            <fileset dir="${basedir}/lib" includes="FastInfoset.src.zip,jaxb-impl.src.zip, jaxb-xjc.src.zip,
-                saaj-impl.src.zip, stax-ex-src.zip, streambuffer.src.zip,
-                jaxws-api-src.zip, jaxb-api-src.zip, jsr181-api.src.zip, saaj-api-src.zip, jsr250-api.src.zip,
-                mimepull-src.zip, jaxws-asm-src.zip, policy-src.zip,gmbal-api-only-src.zip,management-api-src.zip"/>
+            <fileset dir="${basedir}/lib" includes="FastInfoset-source.jar,jaxb-impl-source.jar, jaxb-xjc-source.jar,
+                saaj-impl-source.jar, stax-ex-source.jar, streambuffer-source.jar,
+                jaxws-api-source.jar, jaxb-api-source.jar, jsr181-api-source.jar, saaj-api-source.jar, javax.annotation-source.jar,
+                mimepull-source.jar, jaxws-asm-source.jar, policy-source.jar, gmbal-api-only-source.jar,management-api-sources.jar"/>
         </zip>
         <delete file="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <delete file="${dist20.home}/lib/jaxws-tools.src.zip"/>
@@ -339,91 +309,13 @@
       <get src="${JAXWS_RE_BUILD}/jaxws-tools.jar" dest="${dist20.home}/lib/jaxws-tools.jar"/>
       <get src="${JAXWS_RE_BUILD}/jsr181-api.jar" dest="${dist20.home}/lib/jsr181-api.jar"/>
   </target>
-  <!--
-  <target name="push-to-maven1" depends="dist-zip-with-src, replace-binaries-with-re-build"
-    description="publish artifacts into the maven repository">
-    <property name="jar.suffix" value="${release.impl.version}" />
-    <property name="release.api.version" value="${release.spec.version}" />
-
-    <antcall target="push-to-maven-prepare"/>
-    <echo>importing to CVS...</echo>
-    <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
-  </target>
-
-  <target name="push-snapshot-to-maven1" depends="dist-zip-with-src"
-      description="publish snapshot jars into the maven repository">
-      <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT" />
-      <property name="release.api.version" value="${release.spec.version}-SNAPSHOT" />
-      <antcall target="push-to-maven-prepare"/>
-      <echo>importing to CVS...</echo>
-      <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver;proxy=www-proxy.us.oracle.com;proxyport=80:ramapulavarthi@cvs.dev.java.net:/cvs" />
-  </target>
-
-    <target  name="push-snapshot-to-maven" depends="push-snapshot-to-maven1, push-snapshot-to-maven2"/>
-    -->
-
-    <target name="integrate-jaxb-hudson" depends="prepare"
-            description="integrate the last successful JAXB Hudson build">
-        <loadresource property="last.sucessful.jaxb.build">
-          <url url="http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/lastSuccessfulBuild/buildNumber"/>
-        </loadresource>
-      <echo message="Integrating jaxb artifacts from http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}"/>
-      <get src="http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/jaxb-ri.zip"
-           dest="${build.home}/jaxb-ri.zip" />
-      <mkdir dir="${build.home}/jaxb" />
-      <unzip src="${build.home}/jaxb-ri.zip" dest="${build.home}/jaxb"/>
-      <copy todir="lib" overwrite="true">
-        <fileset dir="${build.home}/jaxb/jaxb-ri/lib" includes="*.zip,*.jar"
-                 excludes="activation.jar, jsr173_1.0_api.jar, jaxb1-impl*" />
-      </copy>
-      <get src="http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/osgi/build/jaxb-osgi.jar"
-           dest="${v3-osgi.dir}/jaxb-osgi.jar" />
-      <get src="http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/tools/lib/osgi/jaxb-api-osgi.jar"
-           dest="${v3-osgi.dir}/jaxb-api-osgi.jar" />
-      <get src="http://sysifos-sol.cz.oracle.com/hudson/job/jaxb-ri-2.2/${last.sucessful.jaxb.build}/artifact/tools/lib/osgi/jaxb-api-osgi-sources.jar"
-           dest="${v3-osgi.dir}/jaxb-api-osgi-sources.jar" />
-  <!--<delete dir="${build.home}/jaxb" /> -->
-    </target>
-
-    <!-- Integrates 181 -->
-    <target name="integrate-181-hudson" depends="prepare"
-            description="integrate the last successful 181 Hudson build">
-      <get src="http://hudson-sca.us.oracle.com/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.jar" dest="lib/jsr181-api.jar"/>
-      <get src="http://hudson-sca.us.oracle.com/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.src.zip" dest="lib/jsr181-api.src.zip"/>
-    </target>
-
-    <target name="integrate-policy-hudson"
-            description="integrate the last successful policy-core Hudson build">
-
-        <get src="http://hudson-sca.us.oracle.com/job/policy-core/lastSuccessfulBuild/artifact/target/policy.jar"
-             dest="lib/policy.jar"/>
-        <get src="http://hudson-sca.us.oracle.com/job/policy-core/lastSuccessfulBuild/artifact/target/policy-src.zip"
-             dest="lib/policy-src.zip"/>
-
-    </target>
-
-    <target name="integrate-policy-maven"
-            description="integrate the last successful policy-core maven">
-         <get src="${mavenrepo.url}/com/sun/xml/ws/policy/${policy.version}/policy-${policy.version}.jar"
-             dest="lib/policy.jar" />
-         <get src="${mavenrepo.url}/com/sun/xml/ws/policy/${policy.version}/policy-${policy.version}-sources.jar"
-             dest="lib/policy-src.zip" />
-    </target>
-
-    <target name="integrate-ha-api-maven" description="integrate the latest GF HA API">
-        <get src="http://download.java.net/maven/glassfish/org/glassfish/ha/ha-api/${ha-api.version}/ha-api-${ha-api.version}.jar"
-             dest="rt-ha/lib/ha-api.jar" />
-        <get src="http://download.java.net/maven/glassfish/org/glassfish/ha/ha-api/${ha-api.version}/ha-api-${ha-api.version}-sources.jar"
-             dest="rt-ha/lib/ha-api.src.zip" />
-    </target>
-
 
     <property name="maven.ant.task.jar" value="maven-ant-tasks-2.0.10.jar"/>
-    <property name="java.net.maven2.repo" value="http://download.java.net/maven/2"/>
-    <property name="java.net.maven2.repo.push.url" value="java-net:/maven2-repository~svn/trunk/repository/"/>
-    <!--property name="java.net.maven2.repo.push.url" value="svn:https://svn.java.net/svn/maven2-repository~svn/trunk/repository"/-->
-    <!--property name="java.net.maven2.repo.push.url" value="dav:http://glassfish-maven-repository.us.oracle.com/maven/repositories/glassfish/"/-->
-
+    <property name="java.net.staging.repo" value="https://maven.java.net/service/local/staging/deploy/maven2/"/>
+    <property name="java.net.snapshot.repo" value="https://maven.java.net/content/repositories/snapshots/"/>
+    <property name="mvn.proxy.args" value="-Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80"/>
+    <property name="mavenrepo.url" value="https://maven.java.net/content/groups/public"/>
+	
   <!-- TODO - come up with a better scheme than using hard-coded value shere. -->
   <property name="eclipselink.version" value="2.3.1-M6"/>
   <property name="common.sdo.version" value="2.1.1"/>
@@ -446,239 +338,6 @@
              dest="${lib.home}/${maven.ant.task.jar}" verbose="true"/>
     </target>
 
-    <target name="mavenize" depends="init-maven-ant">
-        <path id="maven-ant-tasks.classpath" path="${lib.home}/${maven.ant.task.jar}"/>
-        <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
-                 classpathref="maven-ant-tasks.classpath"/>
-        <mkdir dir="build/maven2-repo/test"/>
-        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.12">
-            <artifact:remoteRepository url="${java.net.maven2.repo}"></artifact:remoteRepository>        
-        </artifact:install-provider>
-        <artifact:install-provider artifactId="wagon-webdav" groupId="org.apache.maven.wagon" version="1.0-beta-2">
-        </artifact:install-provider>
-        <!--
-        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.11-SNAPSHOT">
-            <artifact:remoteRepository url="${java.net.maven2.repo}"></artifact:remoteRepository>        
-        </artifact:install-provider>
-        -->
-
-
-    </target>
-
-    <target name="warn-gmbal-version-param" unless="gmbal.version">
-        <echo message="gmbal.version propery must be specified for running integrate-gmbal target"/>
-    </target>
-
-    <target name="integrate-gmbal" depends="mavenize, warn-gmbal-version-param" if="gmbal.version">
-        <artifact:dependencies filesetId="dependency.fileset"
-                               sourcesFilesetId="sources.dependency.fileset"
-                               versionsId="dependency.versions" useScope="runtime" addArtifactFileSetRefs="true">
-            <dependency groupId="org.glassfish.gmbal" artifactId="gmbal-api-only" version="${gmbal.version}"/>
-            <remoteRepository url="${java.net.maven2.repo}"/>
-        </artifact:dependencies>
-
-        <copy todir="${lib.home}">
-            <fileset refid="dependency.fileset"/>
-            <mapper classpathref="maven-ant-tasks.classpath"
-                    classname="org.apache.maven.artifact.ant.VersionMapper"
-                    from="${dependency.versions}" to="flatten"/>
-        </copy>
-        <copy todir="${lib.home}">
-            <fileset refid="sources.dependency.fileset"/>
-            <mapper classpathref="maven-ant-tasks.classpath"
-                    classname="org.apache.maven.artifact.ant.VersionMapper"
-                    from="${dependency.versions}" to="flatten"/>
-        </copy>
-        
-        <!-- Ugly Workaround for Gmbal source bundle inconsistency -->
-                <!--
-                <echo message="${org.glassfish.external:management-api:jar}"/>
-                <echo message="${dependency.versions}"/>
-                -->
-
-        <get src="${java.net.maven2.repo}/org/glassfish/gmbal/gmbal-api-only-source/${gmbal.version}/gmbal-api-only-source-${gmbal.version}.jar"
-             dest="${lib.home}/gmbal-api-only-src.jar" verbose="true"/>
-        <zip destfile="${lib.home}/gmbal-api-only-src.zip">
-                    <zipfileset src="${lib.home}/gmbal-api-only-src.jar"/>
-                </zip>
-                <delete file="${lib.home}/gmbal-api-only-src.jar"/>
-
-        <!-- Now get the management-api version from the gmbal-api pom -->
-        <pathconvert pathsep="," property="management-api.version">
-            <path location="${dependency.versions}"/>
-            <chainedmapper>
-                <flattenmapper/>
-                <mapper type="regexp" from="^(.*):(.*)$$" to="\2"/>
-            </chainedmapper>
-        </pathconvert>
-
-        <get src="${java.net.maven2.repo}/org/glassfish/external/management-api-sources/${management-api.version}/management-api-sources-${management-api.version}.jar"
-                     dest="${lib.home}/management-api-src.jar" verbose="true"/>
-        <zip destfile="${lib.home}/management-api-src.zip">
-            <zipfileset src="${lib.home}/management-api-src.jar"/>
-        </zip>
-        <delete file="${lib.home}/management-api-src.jar"/>
-
-    </target>
-
-    <target name="integrate-maven-repository-importer">
-    <get src="http://hudson-sca.us.oracle.com/job/maven-repository-importer/lastSuccessfulBuild/artifact/build/maven-repository-importer.jar"
-         dest="tools/lib/maven-repository-importer.jar" />
-  </target>
-
-    <property name="mavenrepo.url" value="https://maven.java.net/content/groups/public"/>
-
-    <target name="integrate-saaj-maven" depends="prepare" description="integrate saaj from maven">
-        <get src="${mavenrepo.url}/com/sun/xml/messaging/saaj/saaj-impl/${saaj-impl.version}/saaj-impl-${saaj-impl.version}.jar"
-             dest="lib/saaj-impl.jar"/>
-        <get src="${mavenrepo.url}/com/sun/xml/messaging/saaj/saaj-impl/${saaj-impl.version}/saaj-impl-${saaj-impl.version}-sources.jar"
-             dest="lib/saaj-impl.src.zip"/>
-    </target>
-
-    <target name="integrate-saaj-api-maven" depends="prepare" description="integrate saaj api from maven">
-        <get src="${mavenrepo.url}/javax/xml/soap/saaj-api/${saaj-api.version}/saaj-api-${saaj-api.version}.jar"
-             dest="lib/saaj-api.jar"/>
-        <get src="${mavenrepo.url}/javax/xml/soap/saaj-api/${saaj-api.version}/saaj-api-${saaj-api.version}-sources.jar"
-             dest="lib/saaj-api-src.zip"/>
-    </target>
-
-    <target name="integrate-saaj-hudson" depends="prepare"
-            description="integrate the last successful SAAJ RI Hudson build">
-        <get src="http://hudson-sca.us.oracle.com/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/build/lib/saaj-impl.jar"
-             dest="lib/saaj-impl.jar"/>
-        <get src="http://hudson-sca.us.oracle.com/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.4.src.zip"                  
-             dest="lib/saaj-impl.src.zip"/>
-        <get src="http://hudson-sca.us.oracle.com/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
-             dest="lib/saaj-api.jar"/>
-        <get src="http://hudson-sca.us.oracle.com/job/saaj-ri-1.3.4/lastSuccessfulBuild/artifact/zip-dist/saaj-api-src.zip"
-             dest="lib/saaj-api-src.zip"/>
-    </target>
-
-    <target name="integrate-xmlstreambuffer-hudson" depends="prepare"
-            description="integrate the last successful XmlStreamBuffer Hudson build">
-    <get src="http://hudson-sca.us.oracle.com/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/package/streambuffer.src.zip"
-         dest="lib/streambuffer.src.zip" />
-    <get src="http://hudson-sca.us.oracle.com/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/streambuffer/dist/streambuffer.jar"
-         dest="lib/streambuffer.jar" />
-  </target>
-
-  <target name="integrate-xmlstreambuffer-maven" depends="prepare" description="integrate xmlstreambuffer from maven">
-    <get src="${mavenrepo.url}/com/sun/xml/stream/buffer/streambuffer/${xmlstreambuffer.version}/streambuffer-${xmlstreambuffer.version}.jar"
-             dest="lib/streambuffer.jar" />
-    <get src="${mavenrepo.url}/com/sun/xml/stream/buffer/streambuffer/${xmlstreambuffer.version}/streambuffer-${xmlstreambuffer.version}-sources.jar"
-             dest="lib/streambuffer.src.zip" />
-  </target>
-
-  <target name="integrate-stax-ex-maven" depends="prepare" description="integrate stax-ex from maven">
-    <get src="http://download.java.net/maven/2/org/jvnet/staxex/stax-ex/${stax-ex.version}/stax-ex-${stax-ex.version}.jar"
-             dest="lib/stax-ex.jar" />
-    <get src="http://download.java.net/maven/2/org/jvnet/staxex/stax-ex/${stax-ex.version}/stax-ex-${stax-ex.version}-sources.jar"
-             dest="lib/stax-ex-src.zip" />
-  </target>
-  
-  <target name="integrate-stax-ex-hudson" depends="prepare"
-          description="integrate the last successful stax-ex Hudson build">
-    <get src="http://hudson-sca.us.oracle.com/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex.jar"
-         dest="lib/stax-ex.jar" />
-    <get src="http://hudson-sca.us.oracle.com/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex-src.zip"
-         dest="lib/stax-ex-src.zip" />
-  </target>
-
-  <target name="integrate-jsr250-maven" depends="prepare" description="integrate jsr250 from maven">
-    <get src="http://download.java.net/maven/glassfish/org/glassfish/javax.annotation/${jsr250.version}/javax.annotation-${jsr250.version}.jar"
-             dest="lib/jsr250-api.jar" />
-    <get src="http://download.java.net/maven/glassfish/org/glassfish/javax.annotation/${jsr250.version}/javax.annotation-${jsr250.version}-sources.jar"
-             dest="lib/jsr250-api.src.zip" />
-  </target>
-
-  <target name="integrate-mimepull-maven" depends="prepare" description="integrate mimepull from maven">
-    <get src="${mavenrepo.url}/org/jvnet/mimepull/mimepull/${mimepull.version}/mimepull-${mimepull.version}.jar"
-             dest="lib/mimepull.jar" />
-    <get src="${mavenrepo.url}/org/jvnet/mimepull/mimepull/${mimepull.version}/mimepull-${mimepull.version}-sources.jar"
-             dest="lib/mimepull-src.zip" />
-  </target>
-
-  <target name="integrate-mimepull" depends="prepare"
-          description="integrate the last successful mimepull Hudson build">
-    <get src="http://hudson-sca.us.oracle.com/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT.jar"
-         dest="lib/mimepull.jar" />
-    <get src="http://hudson-sca.us.oracle.com/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT-sources.jar"
-         dest="lib/mimepull-src.zip" />
-  </target>
-
-    <target name="integrate-wom" depends="prepare"
-            description="integrate the last successful wom Hudson build">
-      <get src="http://hudson-sca.us.oracle.com/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT.jar"
-           dest="lib/wom.jar" />
-      <get src="http://hudson-sca.us.oracle.com/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT-sources.jar"
-           dest="lib/wom-src.zip" />
-    </target>
-
-  <target name="integrate-sjsxp-hudson" depends="prepare"
-          description="integrate the last successful sjsxp Hudson build">
-    <get src="http://hudson-sca.us.oracle.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_2/sjsxp.jar"
-         dest="lib/sjsxp.jar" />
-    <get src="http://hudson-sca.us.oracle.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_2.zip"
-         dest="lib/sjsxp-src.zip" />
-  </target>
-
-  <target name="integrate-jaxws22-api-hudson" depends="prepare"
-          description="integrate the last successful jaxws 2.2 API from Hudson build">
-    <get src="http://hudson-sca.us.oracle.com/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
-         dest="lib/jaxws-api.jar" />
-    <get src="http://hudson-sca.us.oracle.com/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
-         dest="lib/jaxws-api-src.zip" />
-  </target>
-
-  <target name="integrate-jaxws22-api-maven" depends="prepare"
-          description="integrate the last successful jaxws 2.2 API from Hudson build">
-    <get src="${mavenrepo.url}/javax/xml/ws/jaxws-api/${release.api.version}/jaxws-api-${release.api.version}.jar"
-         dest="lib/jaxws-api.jar" />
-    <get src="${mavenrepo.url}/javax/xml/ws/jaxws-api/${release.api.version}/jaxws-api-${release.api.version}-sources.jar"
-         dest="lib/jaxws-api-src.zip" />
-  </target>
-
-    <target name="integrate-fastinfoset-maven" depends="prepare"
-            description="integrate the last successful FastInfoset 1.2.x Hudson build">
-        <get src="${mavenrepo.url}/com/sun/xml/fastinfoset/FastInfoset/${fi.version}/FastInfoset-${fi.version}.jar"
-             dest="lib/FastInfoset.jar"/>
-        <get src="${mavenrepo.url}/com/sun/xml/fastinfoset/FastInfoset/${fi.version}/FastInfoset-${fi.version}-sources.jar"
-             dest="lib/FastInfoset.src.zip"/>
-    </target>
-
-  <target name="integrate-fastinfoset-hudson" depends="prepare"
-          description="integrate the last successful FastInfoset 1.2 Hudson build">
-      <echo  message="Use target:integrate-FastInfoset-maven"/>
-     <!--
-      <get src="http://hudson-sca.us.oracle.com/job/fi-1.2/lastSuccessfulBuild/artifact/code/fastinfoset/target/FastInfoset-${fi.version}.jar"
-         dest="lib/FastInfoset.jar" />
-    <get src="http://hudson-sca.us.oracle.com/job/fi-1.2/lastSuccessfulBuild/artifact/code/fastinfoset/target/FastInfoset-${fi.version}-sources.jar"
-         dest="lib/FastInfoset.src.zip" />
-         -->
-  </target>
-
-    <target name="integrate-htmlmacro-hudson" depends="prepare"
-             description="integrate the last successful htmlmacro Hudson build">
-       <get src="http://hudson-sca.us.oracle.com/job/htmlmacro/lastSuccessfulBuild/artifact/htmlmacro/build/htmlmacro.zip"
-            dest="${lib.home}/htmlmacro.zip" />
-       <mkdir dir="${lib.home}/htmlmacro" />
-       <unzip src="${lib.home}/htmlmacro.zip" dest="${lib.home}/htmlmacro"/>
-       <copy todir="lib" overwrite="true">
-         <fileset dir="${lib.home}/htmlmacro/" includes="*.zip,*.jar"/>
-       </copy>
-        <delete dir="${lib.home}/htmlmacro" />
-        <delete file="${lib.home}/htmlmacro.zip"/>
-     </target>
-
-    <!--
-    <taskdef name="installerBuilder"
-        classname="com.sun.tools.xjc.installer.builder.BuilderTask">
-      <classpath>
-        <fileset dir="${basedir}/tools/lib" includes="installer-builder.jar, sfx4j-1.0.jar"/>
-      </classpath>
-    </taskdef>
-    -->
-    
     <target name="re-build"
         description="RE build target">
       <antcall target="generate-binary">
@@ -688,13 +347,6 @@
         <param name="compile.debug" value="true"/>
       </antcall>
       <antcall target="generate-bundle-for-licensee" />
-      <!--
-        This is no longer needed as we dont need to create a click thru license jar
-        <move tofile="${build.home}/jaxws-${release.jar.version}.jar"
-         file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_${DSTAMP}.jar"/>
-      <move tofile="${build.home}/jaxws-${release.jar.version}-src.jar"
-         file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.jar"/>
-      -->
       <copy tofile="${build.home}/jaxws-${release.jar.version}.zip"
          file="${build.home}/jaxws-ri.zip"/>
       <move tofile="${build.home}/jaxws-${release.jar.version}-src.zip"
@@ -707,14 +359,6 @@
         <param name="compile.debug" value="true"/>
       </antcall>
       <tstamp/>
-      <!-- generate the class -->
-      <!--
-        This is no longer needed as we dont need to create a click thru license jar
-
-        <installerBuilder classFile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_${DSTAMP}.jar"
-          licenseFile="${basedir}/CDDL+GPLv2.txt"
-          zipFile="${build.home}/jaxws-ri.zip" />
-      -->
     </target>
     
     <target name="generate-weekly-binary"
@@ -724,7 +368,6 @@
       </antcall>
       <delete file="${build.home}/jaxws-ri.zip" />
     </target>
-
 
     <patternset id="src-includes"
                 description="This pattern set defines which files will be in/excluded in the src bundle">
@@ -768,20 +411,12 @@
             <zipfileset dir="servlet/src" prefix="${source.dist.dir.name}/src" defaultexcludes="true">
                 <patternset refid="src-includes"/>
             </zipfileset>
-            <!--
-            <zipfileset dir="transports/local/src" prefix="${source.dist.dir.name}/src" defaultexcludes="true">
-                <patternset refid="src-includes"/>
-            </zipfileset>
-            -->
             <zipfileset dir="${basedir}/etc" includes="src-bundle.xml"
                         fullpath="${source.dist.dir.name}/build.xml"/>
 
             <!-- additional jar files -->
             <zipfileset dir="${basedir}/build/lib" includes="*.jar" excludes="ant*.* junit.jar" prefix="${source.dist.dir.name}/lib"/>
             <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/>
-            <!-- ha-api.jar is already copied to build/lib, so it is part of zip
-            <zipfileset dir="rt-ha/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/>
-            -->
 
             <!-- license files -->
             <zipfileset dir="." includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, LICENSE.txt"
@@ -805,13 +440,6 @@
       </zip>
 
       <copy file="${source.drop.dir}/jaxws-src.zip" tofile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.zip"/>  
-      <!-- generate the installer -->
-      <!--
-        This is no longer needed as we dont need to create a click thru license jar
-        <installerBuilder classFile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.jar"
-          licenseFile="${basedir}/CDDL+GPLv2.txt"
-          zipFile="${source.drop.dir}/jaxws-src-installer.zip"/>
-          -->
       <delete dir="${source.drop.dir}"/>
     </target>
 
@@ -843,11 +471,8 @@
             <zipfileset dir="${basedir}/etc" includes="src-build-readme.txt"
                         fullpath="${source.dist.dir.name}/README"/>
             <!-- additional jar files -->
-            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.*, junit.jar, commons-jelly-tags-jsl-1.0.jar, sjsxp.jar, maven-ant-tasks-2.0.10.jar, javax.mail_1.4.jar, html*.jar"
+            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.jar, junit*.jar, *-javadoc.jar, commons-jelly-tags-jsl-1.0.jar, sjsxp.jar, maven-ant-tasks-2.0.10.jar, javax.mail_1.4.jar, html*.jar"
                         prefix="${source.dist.dir.name}/lib"/>
-            <zipfileset dir="${basedir}/lib" includes="*.zip" excludes="ant*.zip, junit-*.zip, commons-jelly-tags-jsl-1.0.zip, sjsxp-*.zip, maven-ant-tasks-2.0.10.zip, *-doc.zip, html*.zip "
-                        prefix="${source.dist.dir.name}/lib"/>
-          <!--  <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/> -->
 
             <!-- license files -->
             <zipfileset dir="."
@@ -953,8 +578,7 @@
         <subant target="test" inheritrefs="true">
             <fileset dir="${basedir}">
                 <include name="rt/build.xml"/>
-                <!-- tools/wscompile has a test target but no tests -->
-                <!-- include name="tools/wscompile/build.xml"/      -->
+                <include name="tools/wscompile/build.xml"/>
             </fileset>
         </subant>
     </target>
@@ -996,7 +620,6 @@
                         <filter token="WOODSTOX_CORE_VERSION" value="${woodstox.version}"/>
                         <filter token="STAX2_API_VERSION" value="${stax2-api.version}"/>
                         <filter token="STAX_EX_VERSION" value="${stax-ex.version}"/>
-                        <filter token="RESOLVER_VERSION" value="${resolver.version}"/>
                         <filter token="MIMEPULL_VERSION" value="${mimepull.version}"/>
                         <filter token="POLICY_VERSION" value="${policy.version}"/>
                         <filter token="GMBAL_API_VERSION" value="${gmbal.version}"/>
@@ -1171,10 +794,6 @@
                                       repo="@{repo}" extra-args="@{extra-args}"/>
         </sequential>
     </macrodef>
-
-    <property name="java.net.staging.repo" value="https://maven.java.net/service/local/staging/deploy/maven2/"/>
-    <property name="java.net.snapshot.repo" value="https://maven.java.net/content/repositories/snapshots/"/>
-    <property name="mvn.proxy.args" value="-Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80"/>
 
     <target  name="mvn.install.snapshots.local">
         <fail unless="maven.repo.local">maven.repo.local property needs to be set</fail>

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -54,7 +54,7 @@
   <!-- package rename task -->
   <taskdef name="prename" classname="com.sun.wts.tools.ant.PackageRenameTask">
     <classpath>
-      <pathelement path="lib/package-rename-task.jar" />
+      <pathelement path="tools/lib/package-rename-task.jar" />
     </classpath>
   </taskdef>
 
@@ -77,11 +77,6 @@
       </prename>
     </sequential>
   </macrodef>
-
-  <target name="integrate-package-rename-task">
-    <get src="http://kohsuke.sfbay/hudson/job/package-rename-task/lastSuccessfulBuild/artifact/target/package-rename-task-1.0.jar"
-         dest="lib/package-rename-task.jar"/>
-  </target>
 
   <!--
   Use target j2se-integration from build.xml, which calls tools-build before renaming
@@ -139,13 +134,13 @@
             destdir="build/j2se-servlet/classes" >
            <classpath>
                <pathelement location="servlet/lib/javax.servlet.jar"/>
-               <pathelement location="rt-ha/lib/ha-api.jar"/>
+               <pathelement location="lib/ha-api.jar"/>
            </classpath>
         </javac>
 
         <jar destfile="build/j2se-servlet/jdk7-jaxws-http-transport.jar">
             <fileset dir="build/j2se-servlet/classes"/>
-            <zipfileset src="rt-ha/lib/ha-api.jar"/>            
+            <zipfileset src="lib/ha-api.jar"/>            
         </jar>
 
 
@@ -155,7 +150,7 @@
 
        <delete dir="build/ant-j2se"/>
        <mkdir dir="build/ant-j2se/classes"/>
-       <unzip src="lib/jaxb-xjc.src.zip" dest="build/ant-j2se/jaxb-src"/>
+       <unzip src="lib/jaxb-xjc-source.jar" dest="build/ant-j2se/jaxb-src"/>
        <mkdir dir="build/ant-j2se/tempsrc"/>
        <copy todir="build/ant-j2se/tempsrc">
             <fileset dir="build/ant-j2se/jaxb-src"

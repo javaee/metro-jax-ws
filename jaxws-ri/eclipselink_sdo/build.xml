@@ -46,6 +46,8 @@
   <property name="build.dir" value="${basedir}/build"/>
   <property file="../project.properties"/>
 
+  <import file="../etc/build-bundle.xml"/>
+
   <target name="compile">
     <mkdir dir="${build.dir}/classes"/>
     <mkdir dir="${build.dir}/test-classes"/>

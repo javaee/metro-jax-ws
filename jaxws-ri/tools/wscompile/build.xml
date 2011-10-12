@@ -84,7 +84,7 @@
     </target>
 
     <target name="check-tests">
-            <available file="${basedir}/test" property="tests.exist"/>
+        <available file="${basedir}/test" property="tests.exist"/>
     </target>
 
     <target name="clean">

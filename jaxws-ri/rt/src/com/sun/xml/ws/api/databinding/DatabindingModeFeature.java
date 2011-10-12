@@ -42,17 +42,17 @@ package com.sun.xml.ws.api.databinding;
 import javax.xml.ws.WebServiceFeature;
 
 public class DatabindingModeFeature extends WebServiceFeature {
-    /**
-     * Constant value identifying the DatabindingFeature
-     */
-    static public final String ID = "http://jax-ws.java.net/features/databinding";
+        /**
+         * Constant value identifying the DatabindingFeature
+         */
+        static public final String ID = "http://jax-ws.java.net/features/databinding";
 	static public final String GLASSFISH_JAXB = "glassfish.jaxb";
 	static public final String ECLIPSELINK_JAXB = "eclipselink.jaxb";
 	static public final String ECLIPSELINK_SDO  = "eclipselink.sdo";
 	static public final String TOPLINK_JAXB = "toplink.jaxb";
 	static public final String TOPLINK_SDO  = "toplink.sdo";
 
-    private String mode;
+        private String mode;
     
 	public DatabindingModeFeature(String mode) {
 		super();

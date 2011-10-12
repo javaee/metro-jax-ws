@@ -24,29 +24,18 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/jaxws-api-src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/jaxws-api-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/jsr250-api.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/javax.annotation.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/jsr250-api.src.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/jsr173_api.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/jsr173_1.0_src.zip!/src" />
+          <root url="jar://$MODULE_DIR$/../lib/javax.annotation-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

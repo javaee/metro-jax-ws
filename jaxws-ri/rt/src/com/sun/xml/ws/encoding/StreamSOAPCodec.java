@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -249,7 +249,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         XMLStreamReaderUtil.nextElementContent(reader);
         return new StreamMessage(envelopeTag,headerTag,attachmentSet,headers,bodyTag,reader,soapVersion);
         // when there's no payload,
-        // it's tempting to use EmptyMessageImpl, but it doesn't presere the infoset
+        // it's tempting to use EmptyMessageImpl, but it doesn't preserve the infoset
         // of <envelope>,<header>, and <body>, so we need to stick to StreamMessage.
     }
 

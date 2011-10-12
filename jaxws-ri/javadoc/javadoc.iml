@@ -13,33 +13,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/activation.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/activation-src.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/FastInfoset.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/FastInfoset.src.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/http.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/httpsrc.zip!/src/share/classes" />
+          <root url="jar://$MODULE_DIR$/../lib/FastInfoset-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -50,7 +28,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/jaxb-api-src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/jaxb-api-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -61,7 +39,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/jaxb-impl.src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/jaxb-impl-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -72,7 +50,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/jaxb-xjc.src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/jaxb-xjc-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -83,18 +61,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/jaxws-api-src.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/jsr173_api.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/jsr173_1.0_src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/jaxws-api-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -105,28 +72,17 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/jsr181-api.src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/jsr181-api-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/jsr250-api.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/javax.annotation.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/resolver.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/resolver-src.zip!/" />
-        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
@@ -136,7 +92,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/saaj-api-src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/saaj-api-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -147,18 +103,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/saaj-impl.src.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/sjsxp.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/sjsxp-src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/saaj-impl-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -169,7 +114,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/stax-ex-src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/stax-ex-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -180,7 +125,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/streambuffer.src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/streambuffer-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

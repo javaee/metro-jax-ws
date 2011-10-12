@@ -16,7 +16,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/FastInfoset.src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/FastInfoset-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

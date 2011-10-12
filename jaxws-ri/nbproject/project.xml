@@ -391,8 +391,7 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>rt-ha/src</package-root>
-<!--                <classpath mode="boot">${ri.nb.boot.cp}</classpath>-->
-                <classpath mode="compile">rt/src:rt/build/gen-src:rt-ha/lib/ha-api.jar:${ri.nb.common.cp}</classpath>
+                <classpath mode="compile">rt/src:rt/build/gen-src:lib/ha-api.jar:${ri.nb.common.cp}</classpath>
                 <built-to>rt-ha/build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
