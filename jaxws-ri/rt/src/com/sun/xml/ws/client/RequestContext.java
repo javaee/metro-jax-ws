@@ -45,11 +45,15 @@ import com.sun.xml.ws.api.DistributedPropertySet;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.transport.Headers;
 
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.MessageContext;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -330,6 +334,28 @@ public final class RequestContext extends DistributedPropertySet {
             copySatelliteInto((DistributedPropertySet)packet);
 
             if(!others.isEmpty()) {
+                //for bug 12883765
+                //retrieve headers which is set in soap message
+                Headers headerFromPacketProperty = (Headers)packet.invocationProperties.get(MessageContext.HTTP_REQUEST_HEADERS);
+                //retrieve headers from request context
+                Map<String,List<String>>  headerFromOthers =(Map<String,List<String>>) others.get(MessageContext.HTTP_REQUEST_HEADERS);
+                if((headerFromPacketProperty != null) && (headerFromOthers != null) ) {
+                    //update the headers set in soap message with those in request context
+                    for(String key: headerFromOthers.keySet()) {
+                          if(key!=null && key.trim().length()!=0) {
+                              List<String> valueFromPacketProperty = headerFromPacketProperty.get(key);
+                              //if the two headers contain the same key, combine the value
+                              if(valueFromPacketProperty!=null) {
+                                  valueFromPacketProperty.addAll(headerFromOthers.get(key));
+                              }else{
+                                //add the headers  in request context to those set in soap message
+                                  headerFromPacketProperty.put(key, headerFromOthers.get(key));
+                              }
+                          }
+                    }
+                     // update headers in request context with those set in soap message since 'others' may contain other properties..
+                     others.put(MessageContext.HTTP_REQUEST_HEADERS, headerFromPacketProperty);
+                }
                 packet.invocationProperties.putAll(others);
                 //if it is not standard property it deafults to Scope.HANDLER
                 packet.getHandlerScopePropertyNames(false).addAll(others.keySet());
