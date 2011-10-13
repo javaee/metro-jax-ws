@@ -40,8 +40,11 @@
 
 package com.sun.xml.ws.api.message.saaj;
 
+import java.util.Iterator;
+
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.MessageFactory;
+import javax.xml.soap.MimeHeader;
 import javax.xml.soap.SAAJMetaFactory;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
@@ -52,6 +55,7 @@ import org.xml.sax.SAXException;
 import com.sun.xml.bind.marshaller.SAX2DOMEx;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Attachment;
+import com.sun.xml.ws.api.message.AttachmentEx;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.util.ServiceFinder;
@@ -236,10 +240,30 @@ public class SAAJFactory {
         for(Attachment att : message.getAttachments()) {
             AttachmentPart part = msg.createAttachmentPart();
             part.setDataHandler(att.asDataHandler());
-            part.setContentId('<'+att.getContentId()+'>');
+            
+            // Be safe and avoid double angle-brackets.
+            String cid = att.getContentId();
+            if (cid != null) {
+                if (cid.startsWith("<") && cid.endsWith(">"))
+                    part.setContentId(cid);
+                else
+                    part.setContentId('<' + cid + '>');
+            }
+            
+            // Add any MIME headers beside Content-ID, which is already
+            // accounted for above, and Content-Type, which is provided
+            // by the DataHandler above.
+            if (att instanceof AttachmentEx) {
+                AttachmentEx ax = (AttachmentEx) att;
+                Iterator<AttachmentEx.MimeHeader> imh = ax.getMimeHeaders();
+                while (imh.hasNext()) {
+                    AttachmentEx.MimeHeader ame = imh.next();
+                    if ((!"Content-ID".equals(ame.getName()))
+                            && (!"Content-Type".equals(ame.getName())))
+                        part.addMimeHeader(ame.getName(), ame.getValue());
+                }
+            }
             msg.addAttachmentPart(part);
-
-
         }
         
         if (msg.saveRequired())

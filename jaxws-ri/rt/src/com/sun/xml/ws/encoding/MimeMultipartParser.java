@@ -44,10 +44,13 @@ package com.sun.xml.ws.encoding;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.message.Attachment;
+import com.sun.xml.ws.api.message.AttachmentEx;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 import com.sun.xml.ws.developer.StreamingDataHandler;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.ByteArrayDataSource;
+
+import org.jvnet.mimepull.Header;
 import org.jvnet.mimepull.MIMEMessage;
 import org.jvnet.mimepull.MIMEPart;
 
@@ -62,6 +65,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -154,7 +158,7 @@ public final class MimeMultipartParser {
         return attach;
     }
 
-    static class PartAttachment implements Attachment {
+    static class PartAttachment implements AttachmentEx {
 
         final MIMEPart part;
         byte[] buf;
@@ -217,6 +221,33 @@ public final class MimeMultipartParser {
 
         public void writeTo(SOAPMessage saaj) throws SOAPException {
             saaj.createAttachmentPart().setDataHandler(asDataHandler());
+        }
+
+        // AttachmentEx methods begin here
+        public Iterator<MimeHeader> getMimeHeaders() {
+            final Iterator<? extends Header> ih = part.getAllHeaders()
+                    .iterator();
+            return new Iterator<MimeHeader>() {
+                public boolean hasNext() {
+                    return ih.hasNext();
+                }
+
+                public MimeHeader next() {
+                    final Header hdr = ih.next();
+                    return new AttachmentEx.MimeHeader() {
+                        public String getValue() {
+                            return hdr.getValue();
+                        }
+                        public String getName() {
+                            return hdr.getName();
+                        }
+                    };
+                }
+
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+            };
         }
     }
 
