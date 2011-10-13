@@ -48,7 +48,6 @@ import java.util.Iterator;
 import javax.xml.namespace.QName;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.MessageFactory;
-import javax.xml.soap.MimeHeader;
 import javax.xml.soap.SOAPMessage;
 
 import com.sun.xml.ws.api.BindingID;

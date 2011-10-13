@@ -44,7 +44,6 @@ import java.util.Iterator;
 
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.MessageFactory;
-import javax.xml.soap.MimeHeader;
 import javax.xml.soap.SAAJMetaFactory;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
