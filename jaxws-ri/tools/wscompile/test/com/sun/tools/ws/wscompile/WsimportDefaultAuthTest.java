@@ -82,13 +82,14 @@ public class WsimportDefaultAuthTest extends TestCase {
     public void testGetDefaultAuth() throws Exception {
         URL url = getResourceAsUrl("com/sun/tools/ws/wscompile/.auth");
         DefaultAuthenticator da = new MyAuthenticator(new ConsoleErrorReporter(System.out), new File(url.toURI()));
-//        assertNull(DefaultAuthenticator.getCurrentAuthenticator());
+        Authenticator orig = DefaultAuthenticator.getCurrentAuthenticator();
         Authenticator.setDefault(da);
+        assertFalse(da.equals(orig));
         Authenticator auth = DefaultAuthenticator.getCurrentAuthenticator();
         assertNotNull(auth);
         assertEquals(da, auth);
-        Authenticator.setDefault(null);
-        assertNull(DefaultAuthenticator.getCurrentAuthenticator());
+        Authenticator.setDefault(orig);
+        assertEquals(orig, DefaultAuthenticator.getCurrentAuthenticator());
     }
     
     private static URL getResourceAsUrl(String resourceName) throws RuntimeException {
