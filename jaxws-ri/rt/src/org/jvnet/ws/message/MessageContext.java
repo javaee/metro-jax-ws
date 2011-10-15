@@ -55,49 +55,41 @@ import javax.xml.soap.SOAPMessage;
  * all properties exposed from other "satellite" {@link PropertySet}s.
  * (A satellite may itself be a {@link DistributedPropertySet}, so
  * in general this can form a tree.)
- * 
+ *
  * @author shih-chang.chen@oracle.com
  */
 public interface MessageContext extends DistributedPropertySet {
-	
-	/**
-	 * Gets the SAAJ SOAPMessage representation of the SOAP message.
-	 * 
-	 * @return The SOAPMessage
-	 */
-	SOAPMessage getSOAPMessage() throws SOAPException;
+    /**
+     * Gets the SAAJ SOAPMessage representation of the SOAP message.
+     *
+     * @return The SOAPMessage
+     */
+    SOAPMessage getSOAPMessage() throws SOAPException;
 
-	/**
-	 * Sets the SAAJ SOAPMessage to be the SOAP message.
-	 * 
-	 * @param message The SOAP message to set
-	 */
-	void setSOAPMessage(SOAPMessage message);
-
-	/**
-	 * Adds the {@link PropertySet} 
-	 * 
-	 * @param satellite the PropertySet
-	 */
+    /**
+     * Adds the {@link PropertySet}
+     *
+     * @param satellite the PropertySet
+     */
     void addSatellite(PropertySet satellite);
 
     /**
-     * Removes the {@link PropertySet} 
-     * 
+     * Removes the {@link PropertySet}
+     *
      * @param satellite the PropertySet
      */
     void removeSatellite(PropertySet satellite);
 
     /**
      * Copies all the {@link PropertySet} of this MessageContext into the other MessageContext
-     * 
+     *
      * @param otherMessageContext the MessageContext
      */
     void copySatelliteInto(MessageContext otherMessageContext);
 
     /**
      * Gets the {@link PropertySet}
-     * 
+     *
      * @param satellite the PropertySet type
      */
     <T extends PropertySet> T getSatellite(Class<T> satelliteClass);

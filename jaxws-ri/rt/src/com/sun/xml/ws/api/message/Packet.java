@@ -1006,12 +1006,4 @@ public final class Packet
     public SOAPMessage getSOAPMessage() throws SOAPException {
         return (message != null) ? message.readAsSOAPMessage() : null;
     }
-
-    public void setSOAPMessage(SOAPMessage soap) {
-        if (soap != null) {
-            message = SAAJFactory.create(soap);
-        } else {
-            message = null;
-        }
-    }
 }
