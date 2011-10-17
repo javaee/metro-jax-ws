@@ -602,6 +602,16 @@
         </copy>
     </target>
 
+	<target name="prepare-endorsed" depends="prepare"
+	        description="prepare the endorsed folder for a JDK 1.6 build">
+		<mkdir dir="${java.endorsed.dirs}"/>
+		<copy todir="${java.endorsed.dirs}">
+			<fileset
+				dir="${basedir}/lib"
+			    includes="jaxws-api.jar jaxb-api.jar javax.annotation.jar"/>
+	    </copy>
+	</target>
+
     <macrodef name="prepare-pom">
             <attribute name="module"/>
             <sequential>
