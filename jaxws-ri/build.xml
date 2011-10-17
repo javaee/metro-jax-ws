@@ -602,7 +602,7 @@
         </copy>
     </target>
 
-	<target name="prepare-endorsed" depends="prepare"
+	<target name="prepare-endorsed" depends="init"
 	        description="prepare the endorsed folder for a JDK 1.6 build">
 		<mkdir dir="${java.endorsed.dirs}"/>
 		<copy todir="${java.endorsed.dirs}">
