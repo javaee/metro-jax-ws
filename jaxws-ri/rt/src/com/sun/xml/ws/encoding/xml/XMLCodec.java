@@ -79,10 +79,22 @@ public final class XMLCodec implements Codec {
     }
 
     public ContentType encode(Packet packet, OutputStream out) {
-        XMLStreamWriter writer = XMLStreamWriterFactory.create(out);
+		String encoding = (String) packet.invocationProperties
+                .get(XMLConstants.OUTPUT_XML_CHARACTER_ENCODING);
+				
+        XMLStreamWriter writer = null;
+		
+		if (encoding != null && encoding.length() > 0) {
+            writer = XMLStreamWriterFactory.create(out, encoding);
+        } else {
+            writer = XMLStreamWriterFactory.create(out);
+        }
+		
         try {
             if (packet.getMessage().hasPayload()){
+				writer.writeStartDocument();
                 packet.getMessage().writePayloadTo(writer);
+				writer.writeEndDocument();
                 writer.flush();
             }
         } catch (XMLStreamException e) {
