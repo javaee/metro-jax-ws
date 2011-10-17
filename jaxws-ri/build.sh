@@ -41,14 +41,10 @@
 # holder.
 #
 
-if [ -z "$JAVA_HOME" ]
+if [ -z "$ANT_HOME" ]
 then
-echo "Cannot find JAVA_HOME. Please set your JAVA_HOME."
+echo "Cannot find ANT_HOME. Please set your ANT_HOME."
 exit 1
 fi
 
-JAVACMD=$JAVA_HOME/bin/java
-
-cp=$JAVA_HOME/lib/tools.jar:./lib/ant.jar:./lib/ant-junit.jar:./lib/ant-launcher.jar:./lib/ant-nodeps.jar:./lib/ant-trax.jar:./lib/junit.jar
-
-$JAVACMD -Dfile.extension=sh -classpath $cp:$CLASSPATH org.apache.tools.ant.Main -emacs "$@"
+$ANT_HOME/bin/ant 
