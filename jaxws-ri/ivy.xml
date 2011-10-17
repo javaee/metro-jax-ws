@@ -68,9 +68,9 @@
             <artifact name="ha-api" type="source" ext="jar"/>
             <artifact name="ha-api" type="javadoc" ext="jar"/>
         </dependency>
-        <dependency org="asm" name="jaxws-asm" rev="${asm.version}" transitive="false">
+        <!--dependency org="asm" name="jaxws-asm" rev="${asm.version}" transitive="false">
             <artifact name="jaxws-asm" type="jar" url="file://${basedir}/tools/lib/jaxws-asm.jar"/>
             <artifact name="jaxws-asm" type="source" ext="jar" url="file://${basedir}/tools/lib/jaxws-asm-source.jar"/>
-        </dependency>
+        </dependency-->
     </dependencies>
 </ivy-module>

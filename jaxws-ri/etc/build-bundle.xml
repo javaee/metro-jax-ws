@@ -142,6 +142,9 @@
             </fileset>
             <mapper type="regexp" from="^(.*)-jar.jar" to="\1.jar"/>
         </move>
+        <copy todir="${lib.home}">
+            <fileset dir="tools/lib" includes="jaxws-asm*"/>
+        </copy>
     </target>
     
     <target name="prepare" depends="init, retrieve-deps">
