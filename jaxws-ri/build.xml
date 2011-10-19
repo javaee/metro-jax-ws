@@ -628,6 +628,7 @@
                         <filter token="XMLSTREAMBUFFER_VERSION" value="${xmlstreambuffer.version}"/>
                         <filter token="WOODSTOX_CORE_VERSION" value="${woodstox.version}"/>
                         <filter token="STAX2_API_VERSION" value="${stax2-api.version}"/>
+                        <filter token="FI_VERSION" value="${fi.version}"/>
                         <filter token="STAX_EX_VERSION" value="${stax-ex.version}"/>
                         <filter token="MIMEPULL_VERSION" value="${mimepull.version}"/>
                         <filter token="POLICY_VERSION" value="${policy.version}"/>
