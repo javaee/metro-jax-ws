@@ -92,9 +92,7 @@ public final class XMLCodec implements Codec {
 		
         try {
             if (packet.getMessage().hasPayload()){
-				writer.writeStartDocument();
                 packet.getMessage().writePayloadTo(writer);
-				writer.writeEndDocument();
                 writer.flush();
             }
         } catch (XMLStreamException e) {
