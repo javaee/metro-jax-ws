@@ -104,7 +104,7 @@ public class MtomCodec extends MimeCodec {
     private String messageContentType;
     private final MTOMFeature mtomFeature;
     private final SerializationFeature sf;
-    private String decodedMessageCharset;
+    private final static String DECODED_MESSAGE_CHARSET = "decodedMessageCharset";
 
     MtomCodec(SOAPVersion version, StreamSOAPCodec codec, WSBinding binding, WebServiceFeature mtomFeature){
         super(version, binding);
@@ -160,7 +160,7 @@ public class MtomCodec extends MimeCodec {
         if(packet.getMessage() != null){
             try {
                 String encoding = getPacketEncoding(packet);
-                decodedMessageCharset = null;
+                packet.invocationProperties.remove(DECODED_MESSAGE_CHARSET);
                 String soapXopContentType = XOP_XML_MIME_TYPE +";charset="+encoding+";type=\""+version.contentType+"\"";
 
                 writeln("--"+boundary, out);
@@ -264,12 +264,16 @@ public class MtomCodec extends MimeCodec {
             throw new UnsupportedMediaException(charset);
         }
 
-        decodedMessageCharset = charset;
+        if (charset != null) {
+            packet.invocationProperties.put(DECODED_MESSAGE_CHARSET, charset);
+        } else {
+            packet.invocationProperties.remove(DECODED_MESSAGE_CHARSET);
+        }
 
         // we'd like to reuse those reader objects but unfortunately decoder may be reused
         // before the decoded message is completely used.
         XMLStreamReader mtomReader = new MtomXMLStreamReaderEx( mpp,
-            XMLStreamReaderFactory.create(null, mpp.getRootPart().asInputStream(), decodedMessageCharset, true)
+            XMLStreamReaderFactory.create(null, mpp.getRootPart().asInputStream(), charset, true)
         );
 
         packet.setMessage(codec.decode(mtomReader, new MimeAttachmentSet(mpp)));
@@ -278,17 +282,19 @@ public class MtomCodec extends MimeCodec {
 
     private String getPacketEncoding(Packet packet) {
         // If SerializationFeature is set, just use that encoding
-        if (sf != null) {
+        if (sf != null && sf.getEncoding() != null) {
             return sf.getEncoding().equals("") ? SOAPBindingCodec.DEFAULT_ENCODING : sf.getEncoding();
         }
 
-        if (packet.endpoint != null) {
+        if (packet != null && packet.endpoint != null) {
             // Use request message's encoding for Server-side response messages
-            return decodedMessageCharset == null ? SOAPBindingCodec.DEFAULT_ENCODING : decodedMessageCharset;
-        } else {
-            // Use default encoding for client-side request messages
-            return SOAPBindingCodec.DEFAULT_ENCODING;
-        }
+            String charset = (String)packet.invocationProperties.get(DECODED_MESSAGE_CHARSET);
+            return charset == null
+                    ? SOAPBindingCodec.DEFAULT_ENCODING : charset;
+        } 
+        
+        // Use default encoding for client-side request messages
+        return SOAPBindingCodec.DEFAULT_ENCODING;
     }
 
     private class MtomStreamWriterImpl extends XMLStreamWriterFilter implements XMLStreamWriterEx,

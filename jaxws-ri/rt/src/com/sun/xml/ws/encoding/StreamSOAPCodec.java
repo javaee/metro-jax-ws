@@ -97,7 +97,8 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
     // charset of last decoded message. Will be used for encoding server's
     // response messages with the request message's encoding
-    protected String decodedMessageCharset;
+    // it will stored in the packet.invocationProperties
+    private final static String DECODED_MESSAGE_CHARSET = "decodedMessageCharset";
 
     /*package*/ StreamSOAPCodec(SOAPVersion soapVersion) {
         this(soapVersion, null);
@@ -120,7 +121,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
     public ContentType encode(Packet packet, OutputStream out) {
         if (packet.getMessage() != null) {
             String encoding = getPacketEncoding(packet);
-            decodedMessageCharset = null;
+            packet.invocationProperties.remove(DECODED_MESSAGE_CHARSET);
             XMLStreamWriter writer = XMLStreamWriterFactory.create(out, encoding);
             try {
                 packet.getMessage().writeTo(writer);
@@ -317,7 +318,11 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         if (charset != null && !Charset.isSupported(charset)) {
             throw new UnsupportedMediaException(charset);
         }
-        decodedMessageCharset = charset;
+        if (charset != null) {
+            packet.invocationProperties.put(DECODED_MESSAGE_CHARSET, charset);
+        } else {
+            packet.invocationProperties.remove(DECODED_MESSAGE_CHARSET);
+        }
         XMLStreamReader reader = XMLStreamReaderFactory.create(null, in, charset, true);
         reader =  new TidyXMLStreamReader(reader, in);
         packet.setMessage(decode(reader, att));
@@ -364,24 +369,25 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
     private String getPacketEncoding(Packet packet) {
         // If SerializationFeature is set, just use that encoding
-        if (serializationFeature != null) {
+        if (serializationFeature != null && serializationFeature.getEncoding() != null) {
             return serializationFeature.getEncoding().equals("")
                     ? SOAPBindingCodec.DEFAULT_ENCODING : serializationFeature.getEncoding();
         }
 
-        if (packet.endpoint != null) {
+        if (packet != null && packet.endpoint != null) {
             // Use request message's encoding for Server-side response messages
-            return decodedMessageCharset == null
-                    ? SOAPBindingCodec.DEFAULT_ENCODING : decodedMessageCharset;
-        } else {
-            // Use default encoding for client-side request messages
-            return SOAPBindingCodec.DEFAULT_ENCODING;
-        }
+            String charset = (String)packet.invocationProperties.get(DECODED_MESSAGE_CHARSET);
+            return charset == null
+                    ? SOAPBindingCodec.DEFAULT_ENCODING : charset;
+        } 
+        
+        // Use default encoding for client-side request messages
+        return SOAPBindingCodec.DEFAULT_ENCODING;
     }
 
     protected String getContenTypeStr(Packet packet) {
         String encoding = getPacketEncoding(packet);
-        if (encoding.equalsIgnoreCase(SOAPBindingCodec.DEFAULT_ENCODING)) {
+        if (SOAPBindingCodec.DEFAULT_ENCODING.equalsIgnoreCase(encoding)) {
             return getDefaultContentType();
         }
         return getMimeType()+" ;charset="+encoding;
