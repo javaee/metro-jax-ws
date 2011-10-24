@@ -112,4 +112,34 @@
             <archive>http://java.net/projects/jax-ws/lists/dev/archive</archive>
         </mailingList>
     </mailingLists>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-osgi</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>@JAXB_VERSION@</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-osgi</artifactId>
+                <version>@JAXB_VERSION@</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <repositories>
+        <repository>
+            <id>releases.java.net</id>
+            <url>https://maven.java.net/content/repositories/releases/</url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>staging.java.net</id>
+            <url>https://maven.java.net/content/groups/staging/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>    
 </project>

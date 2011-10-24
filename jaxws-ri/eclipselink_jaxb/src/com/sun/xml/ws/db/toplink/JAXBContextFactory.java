@@ -69,8 +69,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.WebServiceException;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
@@ -79,7 +77,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 
 import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.ParameterImpl;

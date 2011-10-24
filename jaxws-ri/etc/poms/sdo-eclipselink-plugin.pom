@@ -100,17 +100,22 @@
         </mailingList>
     </mailingLists>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>eclipselink</artifactId>
+                <version>@ECLIPSELINK_VERSION@</version>
+            </dependency>
+            <dependency>
+                <groupId>commonj.sdo</groupId>
+                <artifactId>commonj.sdo</artifactId>
+                <version>@COMMON_SDO_VERSION@</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>eclipselink</artifactId>
-            <version>@ECLIPSELINK_VERSION@</version>
-        </dependency>
-        <dependency>
-            <groupId>commonj.sdo</groupId>
-            <artifactId>commonj.sdo</artifactId>
-            <version>@COMMON_SDO_VERSION@</version>
-        </dependency>
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-tools</artifactId>

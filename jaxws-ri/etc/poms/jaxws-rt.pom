@@ -142,8 +142,8 @@
                 <version>@API_VERSION@</version>
             </dependency>
             <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>jsr250-api</artifactId>
+                <groupId>org.glassfish</groupId>
+                <artifactId>javax.annotation</artifactId>
                 <version>@JSR_250_API_VERSION@</version>
             </dependency>
             <dependency>
@@ -157,14 +157,23 @@
                 <version>@JAXB_VERSION@</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.xml.fastinfoset</groupId>
-                <artifactId>FastInfoset</artifactId>
-                <version>@FI_VERSION@</version>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>@JAXB_VERSION@</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.messaging.saaj</groupId>
                 <artifactId>saaj-impl</artifactId>
                 <version>@SAAJ_VERSION@</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.messaging.saaj</groupId>
+                <artifactId>saaj-impl</artifactId>
+                <version>@SAAJ_VERSION@</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.stream.buffer</groupId>
@@ -218,4 +227,17 @@
             <version>@HA_API_VERSION@</version>
         </dependency>
     </dependencies>
+    
+    <repositories>
+        <repository>
+            <id>releases.java.net</id>
+            <url>https://maven.java.net/content/repositories/releases/</url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>staging.java.net</id>
+            <url>https://maven.java.net/content/groups/staging/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>    
 </project>
