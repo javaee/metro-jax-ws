@@ -190,13 +190,6 @@
                 <artifactId>stax2-api</artifactId>
                 <version>@STAX2_API_VERSION@</version>
             </dependency>
-            <!-- If you want to use SJSXP StAX parser, uncomment this and comment woodstox one
-           <dependency>
-           <groupId>com.sun.xml.stream</groupId>
-           <artifactId>sjsxp</artifactId>
-           <version>1.0.1</version>
-           </dependency>
-            -->
             <dependency>
                 <groupId>org.jvnet.mimepull</groupId>
                 <artifactId>mimepull</artifactId>
@@ -216,6 +209,58 @@
     </dependencyManagement>
     
     <dependencies>
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <version>@API_VERSION@</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>@JAXB_VERSION@</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>@SAAJ_VERSION@</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.stream.buffer</groupId>
+            <artifactId>streambuffer</artifactId>
+            <version>@XMLSTREAMBUFFER_VERSION@</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+            <version>@WOODSTOX_CORE_VERSION@</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>stax2-api</artifactId>
+            <version>@STAX2_API_VERSION@</version>
+        </dependency>
+        <!-- If you want to use SJSXP StAX parser, uncomment this and comment woodstox one
+       <dependency>
+       <groupId>com.sun.xml.stream</groupId>
+       <artifactId>sjsxp</artifactId>
+       <version>1.0.1</version>
+       </dependency>
+        -->
+        <dependency>
+            <groupId>org.jvnet.mimepull</groupId>
+            <artifactId>mimepull</artifactId>
+            <version>@MIMEPULL_VERSION@</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>policy</artifactId>
+            <version>@POLICY_VERSION@</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.staxex</groupId>
+            <artifactId>stax-ex</artifactId>
+            <version>@STAX_EX_VERSION@</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.gmbal</groupId>
             <artifactId>gmbal-api-only</artifactId>

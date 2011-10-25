@@ -112,6 +112,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
+            <version>@ECLIPSELINK_VERSION@</version>
+        </dependency>
+        <dependency>
             <groupId>org.jvnet.staxex</groupId>
             <artifactId>stax-ex</artifactId>
             <version>@STAX_EX_VERSION@</version>
