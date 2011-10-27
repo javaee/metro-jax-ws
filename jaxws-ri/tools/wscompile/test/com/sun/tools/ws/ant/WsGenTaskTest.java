@@ -40,6 +40,7 @@
 package com.sun.tools.ws.ant;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -49,7 +50,9 @@ import java.util.logging.Logger;
  *
  * @author Lukas Jungmann
  */
-public class WsGenTaskTest extends WsAntTaskTestBase{
+public class WsGenTaskTest extends WsAntTaskTestBase {
+
+    private static final File pkg = new File(srcDir, "test");
 
     @Override
     public String getBuildScript() {
@@ -59,9 +62,7 @@ public class WsGenTaskTest extends WsAntTaskTestBase{
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        File pkg = new File(srcDir, "test");
-        pkg.mkdirs();
-        copy(pkg, "TestWs.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs.java_"));
+        assertTrue(pkg.mkdirs());
     }
 
     public void testWsGenLockJars() throws IOException, URISyntaxException {
@@ -73,8 +74,27 @@ public class WsGenTaskTest extends WsAntTaskTestBase{
             Logger.getLogger(WsGenTaskTest.class.getName()).warning("Old Ant - 1.8+ is required - skipping jar locking test");
             return;
         }
+        copy(pkg, "TestWs.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs.java_"));
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-server", "clean"));
         List<String> files = listDirs(apiDir, libDir);
         assertTrue("Locked jars: " + files, files.isEmpty());
+    }
+
+    public void testEncoding() throws IOException, URISyntaxException {
+        //UTF-16BE
+        String enc = "UTF-16BE";
+        copy(pkg, "TestWs.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs.java_"), enc);
+        assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-server-utf16be"));
+        File f = new File(srcDir, "test/jaxws/Hello.java");
+        FileInputStream fis = new FileInputStream(f);
+        byte[] in = new byte[22];
+        fis.read(in);
+        fis.close();
+        String inStr = new String(in, enc);
+        assertTrue("Got: '" + inStr + "'", inStr.endsWith("package t"));
+    }
+
+    public void testInvalidEncoding() throws IOException, URISyntaxException {
+        assertEquals(1, AntExecutor.exec(script, apiDir, "wsgen-server-encoding-invalid"));
     }
 }

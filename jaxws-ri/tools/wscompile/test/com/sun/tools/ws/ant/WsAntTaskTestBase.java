@@ -46,6 +46,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -86,15 +88,22 @@ public abstract class WsAntTaskTestBase extends TestCase {
     }
 
     protected static File copy(File dest, String name, InputStream is) throws FileNotFoundException, IOException {
+        return copy(dest, name, is, null);
+    }
+
+    protected static File copy(File dest, String name, InputStream is, String targetEncoding)
+            throws FileNotFoundException, IOException {
         File destFile = new File(dest, name);
         OutputStream os = new BufferedOutputStream(new FileOutputStream(destFile));
+        Writer w = targetEncoding != null ?
+                new OutputStreamWriter(os, targetEncoding) : new OutputStreamWriter(os);
         byte[] b = new byte[4096];
         int len = -1;
         while ((len = is.read(b)) > 0) {
-            os.write(b, 0, len);
+            w.write(new String(b), 0, len);
         }
-        os.flush();
-        os.close();
+        w.flush();
+        w.close();
         is.close();
         return destFile;
     }

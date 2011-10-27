@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,6 +48,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -85,6 +87,11 @@ public class Options {
      * -s
      */
     public File sourceDir;
+
+    /**
+     * -encoding
+     */
+    public String encoding;
 
     public String classpath = System.getProperty("java.class.path");
 
@@ -337,6 +344,16 @@ public class Options {
             nocompile = true;
             keep = true;
             return 1;
+        } else if (args[i].equals("-encoding")) {
+            encoding = requireArgument("-encoding", args, ++i);
+            try {
+                if (!Charset.isSupported(encoding)) {
+                    throw new BadCommandLineException(WscompileMessages.WSCOMPILE_UNSUPPORTED_ENCODING(encoding));
+                }
+            } catch (IllegalCharsetNameException icne) {
+                throw new BadCommandLineException(WscompileMessages.WSCOMPILE_UNSUPPORTED_ENCODING(encoding));
+            }
+            return 2;
         }
         return 0;
     }

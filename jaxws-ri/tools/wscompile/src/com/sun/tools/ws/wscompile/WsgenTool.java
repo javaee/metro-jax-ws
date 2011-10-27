@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -203,7 +203,8 @@ public class WsgenTool implements AnnotationProcessorFactory {
 
         boolean bootCP = useBootClasspath(EndpointReference.class) || useBootClasspath(XmlSeeAlso.class);
 
-        String[] args = new String[8 + (bootCP ? 1 :0) + (options.nocompile?1:0)];
+        String[] args = new String[8 + (bootCP ? 1 :0) + (options.nocompile?1:0)
+                + (options.encoding != null ? 2 : 0)];
         int i = 0;
         args[i++] = "-d";
         args[i++] = options.destDir.getAbsolutePath();
@@ -215,6 +216,11 @@ public class WsgenTool implements AnnotationProcessorFactory {
         if(options.nocompile) {
             args[i++] = "-nocompile";
         }
+        if (options.encoding != null) {
+            args[i++] = "-encoding";
+            args[i++] = options.encoding;
+        }
+
         args[i++] = endpoint;
         if (bootCP) {
             args[i++] = "-Xbootclasspath/p:"+JavaCompilerHelper.getJarFile(EndpointReference.class)+File.pathSeparator+JavaCompilerHelper.getJarFile(XmlSeeAlso.class);

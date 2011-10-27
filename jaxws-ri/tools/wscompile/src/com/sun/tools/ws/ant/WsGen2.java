@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -261,6 +261,19 @@ public class WsGen2 extends MatchingTask {
         return sourceDestDir;
     }
 
+    /*************************  -encoding option *************************/
+    private String encoding;
+
+    /** Sets the encoding for generated source java files. **/
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    /** Gets the encoding for generated source java files. **/
+    public String getEncoding() {
+        return encoding;
+    }
+
     /*************************  -verbose option *************************/
     protected boolean verbose = false;
 
@@ -496,6 +509,11 @@ public class WsGen2 extends MatchingTask {
         if (null != getSourcedestdir() && !getSourcedestdir().getName().equals("")) {
             cmd.createArgument().setValue("-s");
             cmd.createArgument().setFile(getSourcedestdir());
+        }
+
+        if (getEncoding() != null) {
+            cmd.createArgument().setValue("-encoding");
+            cmd.createArgument().setValue(getEncoding());
         }
 
         // verbose option

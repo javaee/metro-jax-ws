@@ -40,6 +40,7 @@
 package com.sun.tools.ws.ant;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -82,5 +83,30 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-client", "clean"));
         List<String> files = listDirs(apiDir, libDir);
         assertTrue("Locked jars: " + files, files.isEmpty());
+    }
+
+    public void testEncoding() throws IOException {
+        //this fails because one task uses invalid attributte
+        assertEquals(1, AntExecutor.exec(script, apiDir, "wsimport-client-encoding"));
+        //UTF-8
+        File f = new File(buildDir, "client/utf8/Hello.java");
+        FileInputStream fis = new FileInputStream(f);
+        byte[] in = new byte[11];
+        fis.read(in);
+        fis.close();
+        String inStr = new String(in, "UTF-8");
+        assertTrue("Got: '" + inStr + "'", inStr.endsWith("package c"));
+
+        //UTF-16LE
+        f = new File(buildDir, "client/utf16LE/Hello.java");
+        fis = new FileInputStream(f);
+        in = new byte[22];
+        fis.read(in);
+        fis.close();
+        inStr = new String(in, "UTF-16LE");
+        assertTrue("Got: '" + inStr + "'", inStr.endsWith("package c"));
+
+        //UTF-74
+        assertFalse(new File(buildDir, "client/invalid").exists());
     }
 }

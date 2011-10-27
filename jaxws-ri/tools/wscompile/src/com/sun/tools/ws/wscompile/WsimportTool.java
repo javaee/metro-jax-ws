@@ -461,7 +461,7 @@ public class WsimportTool {
             String classpathString = createClasspathString();
             boolean bootCP = useBootClasspath(EndpointContext.class) || useBootClasspath(JAXBPermission.class);
             String[] args = new String[4 + (bootCP ? 1 : 0) + (options.debug ? 1 : 0)
-                    + sourceFiles.size()];
+                    + (options.encoding != null ? 2 : 0) + sourceFiles.size()];
             args[0] = "-d";
             args[1] = classDir;
             args[2] = "-classpath";
@@ -475,6 +475,12 @@ public class WsimportTool {
             if (options.debug) {
                 args[baseIndex++] = "-g";
             }
+
+            if (options.encoding != null) {
+                args[baseIndex++] = "-encoding";
+                args[baseIndex++] = options.encoding;
+            }
+
             for (int i = 0; i < sourceFiles.size(); ++i) {
                 args[baseIndex + i] = sourceFiles.get(i);
             }

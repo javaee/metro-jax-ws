@@ -100,6 +100,42 @@
         </wsimport>
     </target>
 
+    <target name="wsimport-client-encoding" depends="wsimport-init">
+        <wsimport
+            sourcedestdir="${build.dir}"
+            destdir="${build.dir}"
+            wsdl="${wsdl}"
+            extension="true"
+            verbose="true"
+            xendorsed="true"
+            encoding="UTF-8"
+            package="client.utf8"
+            xnocompile="true">
+        </wsimport>
+        <wsimport
+            sourcedestdir="${build.dir}"
+            destdir="${build.dir}"
+            wsdl="${wsdl}"
+            extension="true"
+            verbose="true"
+            xendorsed="true"
+            encoding="UTF-16LE"
+            package="client.utf16LE"
+            xnocompile="false">
+        </wsimport>
+        <wsimport
+            sourcedestdir="${build.dir}"
+            destdir="${build.dir}"
+            wsdl="${wsdl}"
+            extension="true"
+            verbose="true"
+            xendorsed="true"
+            encoding="utf-74"
+            package="client.invalid"
+            xnocompile="true">
+        </wsimport>
+    </target>
+
     <target name="clean">
         <delete dir="${src.dir}" verbose="true" failonerror="false"/>
         <delete dir="${build.dir}" verbose="true" failonerror="false"/>
