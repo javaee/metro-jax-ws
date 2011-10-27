@@ -95,7 +95,7 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
         fis.read(in);
         fis.close();
         String inStr = new String(in, "UTF-8");
-        assertTrue("Got: '" + inStr + "'", inStr.endsWith("package c"));
+        assertTrue("Got: '" + inStr + "'", inStr.contains("package c"));
 
         //UTF-16LE
         f = new File(buildDir, "client/utf16LE/Hello.java");
@@ -104,7 +104,7 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
         fis.read(in);
         fis.close();
         inStr = new String(in, "UTF-16LE");
-        assertTrue("Got: '" + inStr + "'", inStr.endsWith("package c"));
+        assertTrue("Got: '" + inStr + "'", inStr.contains("package c"));
 
         //UTF-74
         assertFalse(new File(buildDir, "client/invalid").exists());

@@ -91,7 +91,7 @@ public class WsGenTaskTest extends WsAntTaskTestBase {
         fis.read(in);
         fis.close();
         String inStr = new String(in, enc);
-        assertTrue("Got: '" + inStr + "'", inStr.endsWith("package t"));
+        assertTrue("Got: '" + inStr + "'", inStr.contains("package t"));
     }
 
     public void testInvalidEncoding() throws IOException, URISyntaxException {
