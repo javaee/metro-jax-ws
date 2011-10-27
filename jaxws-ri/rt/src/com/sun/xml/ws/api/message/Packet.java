@@ -424,6 +424,9 @@ public final class Packet
     @NotNull
     List<Element> getReferenceParameters() {
         List<Element> refParams = new ArrayList<Element>();
+        if (message == null) {
+            return refParams;
+        }
         HeaderList hl = message.getHeaders();
         for (Header h : hl) {
             String attr = h.getAttribute(AddressingVersion.W3C.nsUri, "IsReferenceParameter");
