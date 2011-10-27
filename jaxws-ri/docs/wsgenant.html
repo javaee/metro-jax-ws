@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -66,6 +66,7 @@ The attributes and elements supported by the Ant task are listed below:</p>
     resourcedestdir="directory for generated resource files such as WSDLs"
     sourcedestdir="directory for generated source files"
     keep="true|false"
+    encoding="..."
     verbose="true|false"
     genwsdl="true|false"
     protocol="soap1.1|Xsoap1.2"
@@ -154,6 +155,17 @@ The attributes and elements supported by the Ant task are listed below:</p>
     </td>
     <td width="15%">
         <p><code>-s</code></p>
+    </td>
+</tr>
+<tr valign="top">
+    <td width="15%">
+        <p><code>encoding</code></p>
+    </td>
+    <td width="70%">
+        <p>Set the encoding name for generated sources, such as UTF-8</p>
+    </td>
+    <td width="15%">
+        <p><code>-encoding</code></p>
     </td>
 </tr>
 <tr valign="top">
