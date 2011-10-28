@@ -293,6 +293,11 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> {
 	public void setExecutor(Executor exec) {
 		engine.setExecutor(exec);
 	}
+	
+	@Override
+	public Engine getEngine() {
+		return engine;
+	}
 
     public void schedule(final Packet request, final CompletionCallback callback, FiberContextSwitchInterceptor interceptor) {
         processAsync(request, callback, interceptor, true);

@@ -54,6 +54,7 @@ import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Engine;
+import com.sun.xml.ws.api.pipe.Fiber;
 import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
 import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
 import com.sun.xml.ws.api.pipe.Tube;
@@ -259,6 +260,14 @@ public abstract class WSEndpoint<T> implements ComponentRegistry {
 
     public void process(@NotNull Packet request, @NotNull CompletionCallback callback, @Nullable FiberContextSwitchInterceptor interceptor ) {
        schedule(request,callback,interceptor);
+    }
+    
+    /**
+     * Returns {@link Engine} for this endpoint
+     * @return Engine
+     */
+    public Engine getEngine() {
+    	throw new UnsupportedOperationException();
     }
 
     /**

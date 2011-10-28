@@ -43,6 +43,7 @@ package com.sun.xml.ws.transport.http;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.addressing.NonAnonymousResponseProcessor;
 import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.ha.HaInfo;
@@ -326,6 +327,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         packet.acceptableMimeTypes = con.getRequestHeader("Accept");
         packet.addSatellite(con);
         addSatellites(packet);
+        packet.isAdapterDeliversNonAnonymousResponse = true;
         packet.component = this;
         packet.transportBackChannel = new Oneway(con);
         packet.webServiceContextDelegate = con.getWebServiceContextDelegate();
@@ -364,8 +366,19 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         return soapAction;
     }
 
+    protected NonAnonymousResponseProcessor getNonAnonymousResponseProcessor() {
+    	return NonAnonymousResponseProcessor.getDefault();
+    }
 
     private void encodePacket(@NotNull Packet packet, @NotNull WSHTTPConnection con, @NotNull Codec codec) throws IOException {
+    	if (packet.endpointAddress != null) {
+    		// Message is targeted to non-anonymous response endpoint.
+    		// After call to non-anonymous processor, typically, packet.getMessage() will be null
+    		// however, processors could use this pattern to modify the response sent on the back-channel,
+    		// e.g. send custom HTTP headers with the HTTP 202
+    		packet = getNonAnonymousResponseProcessor().process(packet);
+    	}
+    	
         if (con.isClosed()) {
             return;                 // Connection is already closed
         }

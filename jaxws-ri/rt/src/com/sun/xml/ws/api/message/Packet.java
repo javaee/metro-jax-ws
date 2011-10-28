@@ -196,6 +196,7 @@ public final class Packet
         this.wasTransportSecure = that.wasTransportSecure;
         this.transportBackChannel = that.transportBackChannel;
         this.endpointAddress = that.endpointAddress;
+        this.isAdapterDeliversNonAnonymousResponse = that.isAdapterDeliversNonAnonymousResponse;
         this.wsdlOperation = that.wsdlOperation;
         this.acceptableMimeTypes = that.acceptableMimeTypes;
         this.endpoint = that.endpoint;
@@ -352,6 +353,13 @@ public final class Packet
     @com.sun.xml.ws.api.PropertySet.Property(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY)
     public BindingProvider proxy;
 
+    /**
+     * Determines if the governing {@link Adapter} or {@link Fiber.CompletionCallback} will handle delivering
+     * response messages targeted at non-anonymous endpoint addresses.  Prior to the introduction of this
+     * flag the {@link WsaServerTube} would deliver non-anonymous responses.
+     */
+    public boolean isAdapterDeliversNonAnonymousResponse;
+    
     /**
      * The endpoint address to which this message is sent to.
      *
