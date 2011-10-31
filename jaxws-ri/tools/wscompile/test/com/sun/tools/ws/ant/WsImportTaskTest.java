@@ -62,7 +62,7 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        wsdl = copy(projectDir, "hello.wsdl", WsGenTaskTest.class.getResourceAsStream("resources/hello.wsdl"));
+        wsdl = copy(projectDir, "hello.wsdl", WsImportTaskTest.class.getResourceAsStream("resources/hello.wsdl"));
     }
 
     @Override
