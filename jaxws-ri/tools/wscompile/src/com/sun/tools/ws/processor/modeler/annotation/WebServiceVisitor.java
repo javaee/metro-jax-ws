@@ -619,6 +619,8 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     protected boolean methodsAreLegal(ClassDeclaration classDecl) {
         hasWebMethods = hasWebMethods(classDecl);
         for (MethodDeclaration method : classDecl.getMethods()) {
+            if (!method.getModifiers().contains(Modifier.PUBLIC))
+                continue; // let's validate only public methods
             if (!isLegalMethod(method, classDecl))
                 return false;
         }
