@@ -55,6 +55,7 @@ import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.encoding.TagInfoset;
 import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.AttachmentUnmarshallerImpl;
+import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.xml.DummyLocation;
 import com.sun.xml.ws.util.xml.StAXSource;
@@ -269,6 +270,18 @@ public final class StreamMessage extends AbstractMessageImpl {
         XMLStreamReaderFactory.recycle(reader);
         return r;
     }
+
+    public <T> T readPayloadAsJAXB(XMLBridge<T> bridge) throws JAXBException {
+        if(!hasPayload())
+            return null;
+        assert unconsumed();
+        T r = bridge.unmarshal(reader,
+            hasAttachments() ? new AttachmentUnmarshallerImpl(getAttachments()) : null);
+        XMLStreamReaderUtil.readRest(reader);
+        XMLStreamReaderUtil.close(reader);
+        XMLStreamReaderFactory.recycle(reader);
+        return r;
+    } 
 
     @Override
     public void consume() {
