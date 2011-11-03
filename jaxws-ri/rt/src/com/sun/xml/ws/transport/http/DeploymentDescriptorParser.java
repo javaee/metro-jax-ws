@@ -43,6 +43,7 @@ package com.sun.xml.ws.transport.http;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.SDDocumentSource;
@@ -240,15 +241,17 @@ public class DeploymentDescriptorParser<A> {
             //get enable-mtom attribute value
             String enable_mtom = getAttribute(attrs, ATTR_ENABLE_MTOM);
             String mtomThreshold = getAttribute(attrs, ATTR_MTOM_THRESHOLD_VALUE);
+            String dbMode = getAttribute(attrs, ATTR_DATABINDING);
             String bindingId = getAttribute(attrs, ATTR_BINDING);
             if (bindingId != null)
                 // Convert short-form tokens to API's binding ids
                 bindingId = getBindingIdForToken(bindingId);
             WSBinding binding = createBinding(bindingId,implementorClass,
-                    enable_mtom,mtomThreshold);
+                    enable_mtom, mtomThreshold, dbMode);
             String urlPattern =
                     getMandatoryNonEmptyAttribute(reader, attrs, ATTR_URL_PATTERN);
 
+            
             // TODO use 'docs' as the metadata. If wsdl is non-null it's the primary.
 
             boolean handlersSetInDD = setHandlersAndRoles(binding, reader, serviceName, portName);
@@ -280,7 +283,7 @@ public class DeploymentDescriptorParser<A> {
      *      is returned with only MTOMFeature set resolving the various precendece rules
      */
     private static WSBinding createBinding(String ddBindingId,Class implClass,
-                                          String mtomEnabled, String mtomThreshold) {
+                                          String mtomEnabled, String mtomThreshold, String dataBindingMode) {
         // Features specified through DD
         WebServiceFeatureList features;
 
@@ -292,7 +295,6 @@ public class DeploymentDescriptorParser<A> {
             else
                 mtomfeature = new MTOMFeature(Boolean.valueOf(mtomEnabled));
         }
-
 
         BindingID bindingID;
         if (ddBindingId != null) {
@@ -311,6 +313,10 @@ public class DeploymentDescriptorParser<A> {
             if(mtomfeature != null)
                 features.add(mtomfeature); // this wins over MTOM setting in bindingID
             features.addAll(bindingID.createBuiltinFeatureList());
+        }
+        
+        if (dataBindingMode != null) {
+            features.add(new DatabindingModeFeature(dataBindingMode));
         }
 
         return bindingID.createBinding(features.toArray());
@@ -574,6 +580,7 @@ public class DeploymentDescriptorParser<A> {
     public static final String ATTR_ENABLE_MTOM = "enable-mtom";
     public static final String ATTR_MTOM_THRESHOLD_VALUE = "mtom-threshold-value";
     public static final String ATTR_BINDING = "binding";
+    public static final String ATTR_DATABINDING = "databinding";
 
     public static final String ATTRVALUE_VERSION_1_0 = "2.0";
     private static final Logger logger =
