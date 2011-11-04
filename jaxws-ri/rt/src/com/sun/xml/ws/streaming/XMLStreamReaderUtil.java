@@ -109,6 +109,50 @@ public class XMLStreamReaderUtil {
         return state;
     }
 
+    /**
+     * Moves next and read spaces from the reader as long as to the next element.
+     * Comments are ignored
+     * @param reader
+     * @return
+     */
+    public static String nextWhiteSpaceContent(XMLStreamReader reader) {
+        next(reader);
+        return currentWhiteSpaceContent(reader);
+    }
+
+    /**
+     * Read spaces from the reader as long as to the next element, starting from
+     * current position. Comments are ignored.
+     * @param reader
+     * @return
+     */
+    public static String currentWhiteSpaceContent(XMLStreamReader reader) {
+
+        // since the there might be several valid chunks (spaces/comment/spaces)
+        // StringBuilder must be used; it's initialized lazily, only when needed
+        StringBuilder whiteSpaces = null;
+
+        for (;;) {
+            switch (reader.getEventType()) {
+                case START_ELEMENT:
+                case END_ELEMENT:
+                case END_DOCUMENT:
+                    return whiteSpaces == null ? null : whiteSpaces.toString();
+                case CHARACTERS:
+                    if (reader.isWhiteSpace()) {
+                        if (whiteSpaces == null) {
+                            whiteSpaces = new StringBuilder();
+                        }
+                        whiteSpaces.append(reader.getText());
+                    } else {
+                        throw new XMLStreamReaderException(
+                                "xmlreader.unexpectedCharacterContent", reader.getText());
+                    }
+            }
+            next(reader);
+        }
+    }
+
     public static int nextContent(XMLStreamReader reader) {
         for (;;) {
             int state = next(reader);
