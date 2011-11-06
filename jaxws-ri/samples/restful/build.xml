@@ -54,10 +54,6 @@
         </fileset>
     </path>
 
-    <taskdef name="apt" classname="com.sun.tools.ws.ant.Apt">
-        <classpath refid="jaxws.classpath"/>
-    </taskdef>
-
     <target name="setup">
         <mkdir dir="${build.home}"/>
         <mkdir dir="${build.classes.home}"/>

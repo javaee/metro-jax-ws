@@ -45,13 +45,12 @@ package com.sun.tools.ws.processor.modeler;
  *
  * @author WS Development Team
  */
-public interface ModelerConstants {
+public enum ModelerConstants {
 
-    public static final String BRACKETS  = "[]";
-    public static final String FALSE_STR = "false";
-    public static final String ZERO_STR  = "0";
-    public static final String NULL_STR  = "null";
-    public static final String ARRAY_STR = "Array";
+    FALSE_STR("false"),
+    ZERO_STR("0"),
+    NULL_STR("null"),
+    ARRAY_STR("Array"),
 
     /*
      * Java ClassNames
@@ -59,60 +58,69 @@ public interface ModelerConstants {
     /*
       * Java ClassNames
       */
-     public static final String IOEXCEPTION_CLASSNAME         = "java.io.IOException";
-     public static final String BOOLEAN_CLASSNAME             = "boolean";
-     public static final String BOXED_BOOLEAN_CLASSNAME       = "java.lang.Boolean";
-     public static final String BYTE_CLASSNAME                = "byte";
-     public static final String BYTE_ARRAY_CLASSNAME          = BYTE_CLASSNAME+BRACKETS;
-     public static final String BOXED_BYTE_CLASSNAME          = "java.lang.Byte";
-     public static final String BOXED_BYTE_ARRAY_CLASSNAME    = BOXED_BYTE_CLASSNAME+BRACKETS;
-     public static final String CLASS_CLASSNAME               = "java.lang.Class";
-     public static final String CHAR_CLASSNAME                = "char";
-     public static final String BOXED_CHAR_CLASSNAME          = "java.lang.Character";
-     public static final String DOUBLE_CLASSNAME              = "double";
-     public static final String BOXED_DOUBLE_CLASSNAME        = "java.lang.Double";
-     public static final String FLOAT_CLASSNAME               = "float";
-     public static final String BOXED_FLOAT_CLASSNAME         = "java.lang.Float";
-     public static final String INT_CLASSNAME                 = "int";
-     public static final String BOXED_INTEGER_CLASSNAME       = "java.lang.Integer";
-     public static final String LONG_CLASSNAME                = "long";
-     public static final String BOXED_LONG_CLASSNAME          = "java.lang.Long";
-     public static final String SHORT_CLASSNAME               = "short";
-     public static final String BOXED_SHORT_CLASSNAME         = "java.lang.Short";
-     public static final String BIGDECIMAL_CLASSNAME          = "java.math.BigDecimal";
-     public static final String BIGINTEGER_CLASSNAME          = "java.math.BigInteger";
-     public static final String CALENDAR_CLASSNAME            = "java.util.Calendar";
-     public static final String DATE_CLASSNAME                = "java.util.Date";
-     public static final String STRING_CLASSNAME              = "java.lang.String";
-     public static final String STRING_ARRAY_CLASSNAME        = STRING_CLASSNAME+BRACKETS;
-     public static final String QNAME_CLASSNAME               = "javax.xml.namespace.QName";
-     public static final String VOID_CLASSNAME                = "void";
-     public static final String OBJECT_CLASSNAME              = "java.lang.Object";
-     public static final String SOAPELEMENT_CLASSNAME         = "javax.xml.soap.SOAPElement";
-     public static final String IMAGE_CLASSNAME               = "java.awt.Image";
-     public static final String MIME_MULTIPART_CLASSNAME      = "javax.mail.internet.MimeMultipart";
-     public static final String SOURCE_CLASSNAME              = "javax.xml.transform.Source";
-     public static final String DATA_HANDLER_CLASSNAME        = "javax.activation.DataHandler";
-     public static final String URI_CLASSNAME                 = "java.net.URI";
-//     public static final String URI_CLASSNAME                  = "java.lang.String";
-     // Collections
-     public static final String COLLECTION_CLASSNAME          = "java.util.Collection";
-     public static final String LIST_CLASSNAME                = "java.util.List";
-     public static final String SET_CLASSNAME                 = "java.util.Set";
-     public static final String VECTOR_CLASSNAME              = "java.util.Vector";
-     public static final String STACK_CLASSNAME               = "java.util.Stack";
-     public static final String LINKED_LIST_CLASSNAME         = "java.util.LinkedList";
-     public static final String ARRAY_LIST_CLASSNAME          = "java.util.ArrayList";
-     public static final String HASH_SET_CLASSNAME            = "java.util.HashSet";
-     public static final String TREE_SET_CLASSNAME            = "java.util.TreeSet";
+    IOEXCEPTION_CLASSNAME("java.io.IOException"),
+    BOOLEAN_CLASSNAME("boolean"),
+    BOXED_BOOLEAN_CLASSNAME("java.lang.Boolean"),
+    BYTE_CLASSNAME("byte"),
+    BYTE_ARRAY_CLASSNAME("byte[]"),
+    BOXED_BYTE_CLASSNAME("java.lang.Byte"),
+    BOXED_BYTE_ARRAY_CLASSNAME("java.lang.Byte[]"),
+    CLASS_CLASSNAME("java.lang.Class"),
+    CHAR_CLASSNAME("char"),
+    BOXED_CHAR_CLASSNAME("java.lang.Character"),
+    DOUBLE_CLASSNAME("double"),
+    BOXED_DOUBLE_CLASSNAME("java.lang.Double"),
+    FLOAT_CLASSNAME("float"),
+    BOXED_FLOAT_CLASSNAME("java.lang.Float"),
+    INT_CLASSNAME("int"),
+    BOXED_INTEGER_CLASSNAME("java.lang.Integer"),
+    LONG_CLASSNAME("long"),
+    BOXED_LONG_CLASSNAME("java.lang.Long"),
+    SHORT_CLASSNAME("short"),
+    BOXED_SHORT_CLASSNAME("java.lang.Short"),
+    BIGDECIMAL_CLASSNAME("java.math.BigDecimal"),
+    BIGINTEGER_CLASSNAME("java.math.BigInteger"),
+    CALENDAR_CLASSNAME("java.util.Calendar"),
+    DATE_CLASSNAME("java.util.Date"),
+    STRING_CLASSNAME("java.lang.String"),
+    STRING_ARRAY_CLASSNAME("java.lang.String[]"),
+    QNAME_CLASSNAME("javax.xml.namespace.QName"),
+    VOID_CLASSNAME("void"),
+    OBJECT_CLASSNAME("java.lang.Object"),
+    SOAPELEMENT_CLASSNAME("javax.xml.soap.SOAPElement"),
+    IMAGE_CLASSNAME("java.awt.Image"),
+    MIME_MULTIPART_CLASSNAME("javax.mail.internet.MimeMultipart"),
+    SOURCE_CLASSNAME("javax.xml.transform.Source"),
+    DATA_HANDLER_CLASSNAME("javax.activation.DataHandler"),
+    URI_CLASSNAME("java.net.URI"),
+    //     URI_CLASSNAME                ("java.lang.String"),
+    // Collections
+    COLLECTION_CLASSNAME("java.util.Collection"),
+    LIST_CLASSNAME("java.util.List"),
+    SET_CLASSNAME("java.util.Set"),
+    VECTOR_CLASSNAME("java.util.Vector"),
+    STACK_CLASSNAME("java.util.Stack"),
+    LINKED_LIST_CLASSNAME("java.util.LinkedList"),
+    ARRAY_LIST_CLASSNAME("java.util.ArrayList"),
+    HASH_SET_CLASSNAME("java.util.HashSet"),
+    TREE_SET_CLASSNAME("java.util.TreeSet"),
 
-     // Maps
-     public static final String MAP_CLASSNAME                 = "java.util.Map";
-     public static final String HASH_MAP_CLASSNAME            = "java.util.HashMap";
-     public static final String TREE_MAP_CLASSNAME            = "java.util.TreeMap";
-     public static final String HASHTABLE_CLASSNAME           = "java.util.Hashtable";
-     public static final String PROPERTIES_CLASSNAME          = "java.util.Properties";
-//     public static final String WEAK_HASH_MAP_CLASSNAME       = "java.util.WeakHashMap";
-     public static final String JAX_WS_MAP_ENTRY_CLASSNAME   = "com.sun.xml.ws.encoding.soap.JAXWSMapEntry";
+    // Maps
+    MAP_CLASSNAME("java.util.Map"),
+    HASH_MAP_CLASSNAME("java.util.HashMap"),
+    TREE_MAP_CLASSNAME("java.util.TreeMap"),
+    HASHTABLE_CLASSNAME("java.util.Hashtable"),
+    PROPERTIES_CLASSNAME("java.util.Properties"),
+    //     WEAK_HASH_MAP_CLASSNAME     ("java.util.WeakHashMap"),
+    JAX_WS_MAP_ENTRY_CLASSNAME("com.sun.xml.ws.encoding.soap.JAXWSMapEntry");
 
+    private String value;
+
+    private ModelerConstants(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

@@ -7,7 +7,7 @@ See the javadoc of the server and the client for more details.
 
 * To run
     * set JAXWS_HOME to the JAX-WS installation directory
-    * ant server - runs apt to generate server side artifacts and
+    * ant server - runs annotation processing to generate server side artifacts and
       does the deployment
     * ant client run - compiles the client application and runs it.
     * This sample imports a remote schema. If you are running this sample from

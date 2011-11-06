@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,8 +41,6 @@
 package com.sun.tools.ws.processor.modeler.annotation;
 
 import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -51,7 +49,7 @@ import java.util.List;
 public class FaultInfo {
     public String beanName;
     public TypeMoniker beanTypeMoniker;
-    public boolean isWSDLException;
+    public boolean isWsdlException;
     public QName elementName;
 
     /** Creates a new instance of FaultInfo */
@@ -60,21 +58,21 @@ public class FaultInfo {
     public FaultInfo(String beanName) {
         this.beanName = beanName;
     }
-    public FaultInfo(String beanName, boolean isWSDLException) {
+    public FaultInfo(String beanName, boolean isWsdlException) {
         this.beanName = beanName;
-        this.isWSDLException = isWSDLException;
+        this.isWsdlException = isWsdlException;
     }
-    public FaultInfo(TypeMoniker typeMoniker, boolean isWSDLException) {
+    public FaultInfo(TypeMoniker typeMoniker, boolean isWsdlException) {
         this.beanTypeMoniker = typeMoniker;
-        this.isWSDLException = isWSDLException;
+        this.isWsdlException = isWsdlException;
     }
 
-    public void setIsWSDLException(boolean isWSDLException) {
-        this.isWSDLException = isWSDLException;
+    public void setIsWsdlException(boolean isWsdlException) {
+        this.isWsdlException = isWsdlException;
     }
 
-    public boolean isWSDLException() {
-        return isWSDLException;
+    public boolean isWsdlException() {
+        return isWsdlException;
     }
 
     public void setBeanName(String beanName) {

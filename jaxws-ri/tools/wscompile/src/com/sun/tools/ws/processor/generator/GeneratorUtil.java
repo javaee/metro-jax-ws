@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@ import com.sun.tools.ws.wscompile.Options;
  *
  * @author WS Development Team
  */
-public class GeneratorUtil implements GeneratorConstants {
+public class GeneratorUtil {
 
     public static boolean classExists(
         Options options,
@@ -69,9 +69,9 @@ public class GeneratorUtil implements GeneratorConstants {
         try {
             Class.forName(className, true, classLoader);
         } catch (ClassNotFoundException e) {
-            int idx = className.lastIndexOf(DOTC);
+            int idx = className.lastIndexOf(GeneratorConstants.DOTC.getValue());
             if (idx > -1) {
-                String tmp = className.substring(0, idx) + SIG_INNERCLASS;
+                String tmp = className.substring(0, idx) + GeneratorConstants.SIG_INNERCLASS.getValue();
                 tmp += className.substring(idx + 1);
                 return getLoadableClassName(tmp, classLoader);
             }

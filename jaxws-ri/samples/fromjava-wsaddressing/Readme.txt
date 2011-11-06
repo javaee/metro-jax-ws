@@ -24,12 +24,12 @@ log SOAP messages.
     * server/AddNumberImpl.java - server implementation
     * server/AddNumberException.java - server implementation
 
-* apt ant task is run to compile AddNumbersImpl and create server
+* annotationProcessing ant task is run to compile AddNumbersImpl and create server
   objects used during deployment and runtime.
 
 * To run in servlet container
     * set JAXWS_HOME to the JAX-WS installation directory
-    * ant clean server - runs apt to generate server side artifacts and
+    * ant clean server - runs annotation processing to generate server side artifacts and
       does the deployment
     * ant clean client run - runs wsimport on the published wsdl by the deplyed
       endpoint, compiles the generated artifacts and the client application

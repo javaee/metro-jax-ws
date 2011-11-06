@@ -39,7 +39,7 @@ The annotations.server.AddNumbersIF class uses the following annotations:
     * client/AddNumbersClient.java - client application
     * server/AddNumberImpl.java, AddNumbersIF.java, AddNumbersException.java - server implementation
 
-* apt ant task to compile the server code and generated JAX-WS artifacts
+* annotationProcessing ant task to compile the server code and generated JAX-WS artifacts
 
 * wsimport ant task is run to compile the generated WSDL file
     * generates

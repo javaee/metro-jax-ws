@@ -64,7 +64,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Invokes JAX-WS tools in a special class loader that can pick up APT classes,
+ * Invokes JAX-WS tools in a special class loader that can pick up annotation processing classes,
  * even if it's not available in the tool launcher classpath.
  *
  * @author Kohsuke Kawaguchi
@@ -257,7 +257,6 @@ public final class Invoker {
     private static void findToolsJar(ClassLoader cl, List<URL> urls) throws ToolsJarNotFoundException, MalformedURLException {
         try {
             Class.forName("com.sun.tools.javac.Main",false,cl);
-            Class.forName("com.sun.tools.apt.Main",false,cl);
             // we can already load them in the parent class loader.
             // so no need to look for tools.jar.
             // this happens when we are run inside IDE/Ant, or

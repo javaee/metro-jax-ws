@@ -45,7 +45,7 @@
  * {@DotDiagram
      digraph G {
        // tools
-       APT; 
+       "Annotation Processor";
        // Products
        node [style=filled,color=lightyellow];
        "Java EE";
@@ -62,7 +62,7 @@
        "JAX-WS" -> Runtime;
        "JAX-WS" -> SPI;
        "JAX-WS" -> "Annotation Processor";
-       APT -> "Annotation Processor" -> Tools -> APT;
+       annotationProcessing -> "Annotation Processor" -> Tools -> "Annotation Processor";
        Tools -> "JAXB XJC API";
        Runtime -> SAAJ;
        Runtime -> StAX
@@ -94,9 +94,9 @@
  *  <dt><a href="http://java.sun.com/j2se/1.5.0/docs/tooldocs/share/apt.html">APT</a>
  *  <dd>A Java SE tool and framework for processing annotations.
  *
- *  <dt>{@link com.sun.istack.ws Annotation Processor}
+ *  <dt>{@link com.sun.tools.ws.processor.modeler.annotation.WebServiceAp Annotation Processor}
  *  <dd>
- *    An APT {@link com.sun.mirror.apt.AnnotationProcessor AnnotationProcessor} for 
+ *    An {@link http://download.oracle.com/javase/6/docs/api/javax/annotation/processing/Processor.html AnnotationProcessor} for
  *    processing Java source files with javax.jws.* annotations and making them web services.
  *
  *  <dt>{@link com.sun.xml.ws.spi.runtime Runtime SPI}

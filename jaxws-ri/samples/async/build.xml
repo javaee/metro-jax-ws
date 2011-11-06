@@ -44,7 +44,7 @@
 <project basedir="." default="help" name="async">
 
     <import file="etc/deploy-targets.xml"/>
-    
+
     <path id="jaxws.classpath">
         <pathelement location="${java.home}/../lib/tools.jar"/>
         <fileset dir="${lib.home}">
@@ -54,7 +54,7 @@
     </path>
 
 
-    <taskdef name="apt" classname="com.sun.tools.ws.ant.Apt">
+    <taskdef name="annotationProcessing" classname="com.sun.tools.ws.ant.Ap">
         <classpath refid="jaxws.classpath"/>
     </taskdef>
 
@@ -70,23 +70,21 @@
     </target>
 
     <target name="build-server-java" depends="setup">
-        <apt
+        <annotationProcessing
                 fork="true"
-                debug="${debug}"
+                debug="true"
                 verbose="${verbose}"
                 destdir="${build.classes.home}"
-                sourcedestdir="${build.classes.home}"
+                srcdir="${basedir}/src"
+                includes="**/server/**,**/common/**"
+                s="${build.classes.home}"
+                procOnly="false"
                 sourcepath="${basedir}/src">
             <classpath>
                 <path refid="jaxws.classpath"/>
                 <pathelement location="${basedir}/src"/>
             </classpath>
-            <option key="r" value="${build.home}"/>
-            <source dir="${basedir}/src">
-                <include name="**/server/*.java"/>
-                <include name="**/common/*.java"/>
-            </source>
-        </apt>
+        </annotationProcessing>
         <!-- copy handlers descriptor file -->
         <copy todir="${build.classes.home}">
             <fileset dir="${basedir}/src">

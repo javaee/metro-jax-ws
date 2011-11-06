@@ -40,18 +40,34 @@
 
 package com.sun.tools.ws.processor.generator;
 
-import com.sun.tools.ws.processor.modeler.ModelerConstants;
-
 /**
  * @author WS Development Team
  */
-public interface GeneratorConstants extends ModelerConstants {
-    public static final char DOTC = '.';
-    public static final String SIG_INNERCLASS = "$";
-    public static final String JAVA_SRC_SUFFIX = ".java";
-    public static final String QNAME_SUFFIX = "_QNAME";
-    public static final String GET = "get";
-    public static final String IS = "is";
-    public static final String RESPONSE = "Response";
-    public static final String FAULT_CLASS_MEMBER_NAME = "faultInfo";
+public enum GeneratorConstants {
+
+    DOTC("."),
+
+    SIG_INNERCLASS("$"),
+
+    JAVA_SRC_SUFFIX(".java"),
+
+    QNAME_SUFFIX("_QNAME"),
+
+    GET("get"),
+
+    IS("is"),
+
+    RESPONSE("Response"),
+
+    FAULT_CLASS_MEMBER_NAME("faultInfo");
+
+    private String value;
+
+    private GeneratorConstants(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

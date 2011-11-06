@@ -746,7 +746,6 @@ public abstract class WSDLModelerBase implements Modeler {
     private Set _conflictingClassNames;
     protected Map<String,JavaException> _javaExceptions;
     protected Map _faultTypeToStructureMap;
-    protected JavaSimpleTypeCreator _javaTypes;
     protected Map<QName, Port> _bindingNameToPortMap;
     protected boolean useWSIBasicProfile = true;
 

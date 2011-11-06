@@ -55,29 +55,29 @@ import org.apache.tools.ant.types.Path;
  *
  * @author Lukas Jungmann
  */
-public class AptTest extends TestCase {
+public class ApTest extends TestCase {
 
     public void testSetupAptArgs() throws URISyntaxException {
-        Apt apt = getApt();
+        Ap ap = getAp();
         String vmArg = "-Xmx2048M";
         String testedMethod = "setupAptArgs";
-        apt.setFork(false);
-        apt.createJvmarg().setValue(vmArg);
-        Commandline cmd = getCommandLine(testedMethod, apt);
+        ap.setFork(false);
+        ap.createCompilerArg().setValue(vmArg);
+        Commandline cmd = getCommandLine(testedMethod, ap);
         assertTrue("Option for runtime system must be prefixed with '-J'", containsArgument(cmd.getArguments(), "-J" + vmArg));
-        apt.setFork(true);
-        cmd = getCommandLine(testedMethod, apt);
+        ap.setFork(true);
+        cmd = getCommandLine(testedMethod, ap);
         assertFalse("Option for forked process should not be prefixed with '-J'", containsArgument(cmd.getArguments(), "-J" + vmArg));
     }
 
-    private Apt getApt() {
-        Apt apt = new Apt();
+    private Ap getAp() {
+        Ap ap = new Ap();
         Project p = new Project();
         p.init();
         Path src = new Path(p);
         src.setPath(System.getProperty("java.io.tmpdir"));
-        apt.setSourcepath(src);
-        return apt;
+        ap.setSourcepath(src);
+        return ap;
     }
     
     private static Commandline getCommandLine(String name, Object a) {
@@ -94,11 +94,11 @@ public class AptTest extends TestCase {
 
             return (Commandline) m.invoke(a);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(AptTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(AptTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvocationTargetException ex) {
-            Logger.getLogger(AptTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApTest.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (m != null && m.isAccessible()) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
@@ -115,11 +115,11 @@ public class AptTest extends TestCase {
 
     private static Method getMethod(String name) {
         try {
-            return Apt.class.getDeclaredMethod(name);
+            return Ap.class.getDeclaredMethod(name);
         } catch (NoSuchMethodException ex) {
-            Logger.getLogger(AptTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
-            Logger.getLogger(AptTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ApTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }

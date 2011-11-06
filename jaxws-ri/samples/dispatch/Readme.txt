@@ -16,8 +16,6 @@ This sample will build, deploy an invoke a simple Web service.
     * client/AddNumbersClient.java - client application
     * server/AddNumberImpl.java - server implementation
 
-* apt ant task to compile the server code and generated JAX-WS artifacts
-
 * wsimport ant task is run to compile the generated WSDL file
     * generates
       SEI - AddNumbersPortType

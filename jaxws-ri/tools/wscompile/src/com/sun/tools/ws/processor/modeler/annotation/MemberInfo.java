@@ -40,7 +40,7 @@
 
 package com.sun.tools.ws.processor.modeler.annotation;
 
-import com.sun.mirror.type.TypeMirror;
+import javax.lang.model.type.TypeMirror;
 
 import java.lang.annotation.Annotation;
 import java.util.List;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,16 +40,15 @@
 
 package com.sun.tools.ws.processor.generator;
 
+import com.sun.istack.NotNull;
 import com.sun.tools.ws.processor.model.Fault;
 import com.sun.tools.ws.processor.model.ModelProperties;
 import com.sun.tools.ws.processor.model.Port;
-import com.sun.tools.ws.processor.model.Service;
 import com.sun.tools.ws.processor.model.java.JavaInterface;
 import com.sun.tools.ws.processor.model.java.JavaStructureMember;
+import com.sun.tools.ws.processor.modeler.ModelerConstants;
 import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.xml.ws.util.StringUtils;
-import com.sun.istack.Nullable;
-import com.sun.istack.NotNull;
 
 import javax.xml.namespace.QName;
 import java.util.HashMap;
@@ -61,7 +60,10 @@ import java.util.Map;
  *
  * @author WS Development Team
  */
-public class Names implements GeneratorConstants{
+public final class Names {
+
+    private Names() {
+    }
 
     public static String getPortName(Port port) {
         String javaPortName =
@@ -101,18 +103,18 @@ public class Names implements GeneratorConstants{
     }
 
     public static String getExceptionClassMemberName(){
-        return FAULT_CLASS_MEMBER_NAME;
+        return GeneratorConstants.FAULT_CLASS_MEMBER_NAME.getValue();
     }
 
     public static boolean isJavaReservedWord(String name) {
-        return reservedWords.get(name) != null;
+        return RESERVED_WORDS.get(name) != null;
     }
 
     /**
      * See if its a java keyword name, if so then mangle the name
      */
     public static @NotNull String getJavaReserverVarialbeName(@NotNull String name){
-        return (reservedWords.get(name) == null)?name:reservedWords.get(name);
+        return (RESERVED_WORDS.get(name) == null) ? name : RESERVED_WORDS.get(name);
     }
 
     /* here we check on wether return values datatype is
@@ -121,74 +123,73 @@ public class Names implements GeneratorConstants{
        Pattern spec */
     public static String getJavaMemberReadMethod(JavaStructureMember member) {
         String return_value;
-        if (member.getType().getRealName().equals("boolean")) {
-            return_value = IS + StringUtils.capitalize(member.getName());
+        if (member.getType().getRealName().equals(ModelerConstants.BOOLEAN_CLASSNAME.getValue())) {
+            return_value = GeneratorConstants.IS.getValue() + StringUtils.capitalize(member.getName());
         } else {
-            return_value = GET + StringUtils.capitalize(member.getName());
+            return_value = GeneratorConstants.GET.getValue() + StringUtils.capitalize(member.getName());
         }
         return (return_value);
     }
 
     public static String getResponseName(String messageName) {
-        return messageName + RESPONSE;
+        return messageName + GeneratorConstants.RESPONSE.getValue();
     }
 
-    private static final Map<String, String> reservedWords;
+    private static final Map<String, String> RESERVED_WORDS = new HashMap<String, String>(53);
 
     static {
-        reservedWords = new HashMap<String, String>();
-        reservedWords.put("abstract", "_abstract");
-        reservedWords.put("assert", "_assert");
-        reservedWords.put("boolean", "_boolean");
-        reservedWords.put("break", "_break");
-        reservedWords.put("byte", "_byte");
-        reservedWords.put("case", "_case");
-        reservedWords.put("catch", "_catch");
-        reservedWords.put("char", "_char");
-        reservedWords.put("class", "_class");
-        reservedWords.put("const", "_const");
-        reservedWords.put("continue", "_continue");
-        reservedWords.put("default", "_default");
-        reservedWords.put("do", "_do");
-        reservedWords.put("double", "_double");
-        reservedWords.put("else", "_else");
-        reservedWords.put("extends", "_extends");
-        reservedWords.put("false", "_false");
-        reservedWords.put("final", "_final");
-        reservedWords.put("finally", "_finally");
-        reservedWords.put("float", "_float");
-        reservedWords.put("for", "_for");
-        reservedWords.put("goto", "_goto");
-        reservedWords.put("if", "_if");
-        reservedWords.put("implements", "_implements");
-        reservedWords.put("import", "_import");
-        reservedWords.put("instanceof", "_instanceof");
-        reservedWords.put("int", "_int");
-        reservedWords.put("interface", "_interface");
-        reservedWords.put("long", "_long");
-        reservedWords.put("native", "_native");
-        reservedWords.put("new", "_new");
-        reservedWords.put("null", "_null");
-        reservedWords.put("package", "_package");
-        reservedWords.put("private", "_private");
-        reservedWords.put("protected", "_protected");
-        reservedWords.put("public", "_public");
-        reservedWords.put("return", "_return");
-        reservedWords.put("short", "_short");
-        reservedWords.put("static", "_static");
-        reservedWords.put("strictfp", "_strictfp");
-        reservedWords.put("super", "_super");
-        reservedWords.put("switch", "_switch");
-        reservedWords.put("synchronized", "_synchronized");
-        reservedWords.put("this", "_this");
-        reservedWords.put("throw", "_throw");
-        reservedWords.put("throws", "_throws");
-        reservedWords.put("transient", "_transient");
-        reservedWords.put("true", "_true");
-        reservedWords.put("try", "_try");
-        reservedWords.put("void", "_void");
-        reservedWords.put("volatile", "_volatile");
-        reservedWords.put("while", "_while");
-        reservedWords.put("enum", "_enum");
+        RESERVED_WORDS.put("abstract", "_abstract");
+        RESERVED_WORDS.put("assert", "_assert");
+        RESERVED_WORDS.put("boolean", "_boolean");
+        RESERVED_WORDS.put("break", "_break");
+        RESERVED_WORDS.put("byte", "_byte");
+        RESERVED_WORDS.put("case", "_case");
+        RESERVED_WORDS.put("catch", "_catch");
+        RESERVED_WORDS.put("char", "_char");
+        RESERVED_WORDS.put("class", "_class");
+        RESERVED_WORDS.put("const", "_const");
+        RESERVED_WORDS.put("continue", "_continue");
+        RESERVED_WORDS.put("default", "_default");
+        RESERVED_WORDS.put("do", "_do");
+        RESERVED_WORDS.put("double", "_double");
+        RESERVED_WORDS.put("else", "_else");
+        RESERVED_WORDS.put("extends", "_extends");
+        RESERVED_WORDS.put("false", "_false");
+        RESERVED_WORDS.put("final", "_final");
+        RESERVED_WORDS.put("finally", "_finally");
+        RESERVED_WORDS.put("float", "_float");
+        RESERVED_WORDS.put("for", "_for");
+        RESERVED_WORDS.put("goto", "_goto");
+        RESERVED_WORDS.put("if", "_if");
+        RESERVED_WORDS.put("implements", "_implements");
+        RESERVED_WORDS.put("import", "_import");
+        RESERVED_WORDS.put("instanceof", "_instanceof");
+        RESERVED_WORDS.put("int", "_int");
+        RESERVED_WORDS.put("interface", "_interface");
+        RESERVED_WORDS.put("long", "_long");
+        RESERVED_WORDS.put("native", "_native");
+        RESERVED_WORDS.put("new", "_new");
+        RESERVED_WORDS.put("null", "_null");
+        RESERVED_WORDS.put("package", "_package");
+        RESERVED_WORDS.put("private", "_private");
+        RESERVED_WORDS.put("protected", "_protected");
+        RESERVED_WORDS.put("public", "_public");
+        RESERVED_WORDS.put("return", "_return");
+        RESERVED_WORDS.put("short", "_short");
+        RESERVED_WORDS.put("static", "_static");
+        RESERVED_WORDS.put("strictfp", "_strictfp");
+        RESERVED_WORDS.put("super", "_super");
+        RESERVED_WORDS.put("switch", "_switch");
+        RESERVED_WORDS.put("synchronized", "_synchronized");
+        RESERVED_WORDS.put("this", "_this");
+        RESERVED_WORDS.put("throw", "_throw");
+        RESERVED_WORDS.put("throws", "_throws");
+        RESERVED_WORDS.put("transient", "_transient");
+        RESERVED_WORDS.put("true", "_true");
+        RESERVED_WORDS.put("try", "_try");
+        RESERVED_WORDS.put("void", "_void");
+        RESERVED_WORDS.put("volatile", "_volatile");
+        RESERVED_WORDS.put("while", "_while");
+        RESERVED_WORDS.put("enum", "_enum");
     }
 }

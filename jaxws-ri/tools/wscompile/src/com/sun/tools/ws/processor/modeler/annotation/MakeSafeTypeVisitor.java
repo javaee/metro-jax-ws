@@ -40,69 +40,54 @@
 
 package com.sun.tools.ws.processor.modeler.annotation;
 
-import com.sun.istack.tools.APTTypeVisitor;
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.type.*;
-import com.sun.mirror.util.Types;
-
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.NoType;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleTypeVisitor7;
+import javax.lang.model.util.Types;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  *
  * @author dkohlert
  */
-public class MakeSafeTypeVisitor extends APTTypeVisitor<TypeMirror, Types> implements WebServiceConstants {
-    TypeDeclaration collectionDecl;
-    TypeDeclaration mapDecl;
+public class MakeSafeTypeVisitor extends SimpleTypeVisitor7<TypeMirror, Types> {
+
+    TypeElement collectionType;
+    TypeElement mapType;
 
     /**
      * Creates a new instance of MakeSafeTypeVisitor
      */
-    public MakeSafeTypeVisitor(AnnotationProcessorEnvironment apEnv) {
-        collectionDecl = apEnv.getTypeDeclaration(COLLECTION_CLASSNAME);        
-        mapDecl = apEnv.getTypeDeclaration(MAP_CLASSNAME);
+    public MakeSafeTypeVisitor(ProcessingEnvironment processingEnvironment) {
+        collectionType = processingEnvironment.getElementUtils().getTypeElement(Collection.class.getName());
+        mapType = processingEnvironment.getElementUtils().getTypeElement(Map.class.getName());
     }
-    
-    protected TypeMirror onArrayType(ArrayType type, Types apTypes) {
-        return apTypes.getErasure(type);   
-    }
-    
-    protected TypeMirror onPrimitiveType(PrimitiveType type, Types apTypes) {
-        return apTypes.getErasure(type);   
-    }
-     
-    protected TypeMirror onClassType(ClassType type, Types apTypes) {
-        return processDeclaredType(type, apTypes);
-    }
-    
-    protected TypeMirror onInterfaceType(InterfaceType type, Types apTypes) {
-        return processDeclaredType(type, apTypes);        
-    }
-    
-    private TypeMirror processDeclaredType(DeclaredType type, Types apTypes) {
-        if (TypeModeler.isSubtype(type.getDeclaration(), collectionDecl) ||
-            TypeModeler.isSubtype(type.getDeclaration(), mapDecl)) {
-            Collection<TypeMirror> args = type.getActualTypeArguments();
+
+    @Override
+    public TypeMirror visitDeclared(DeclaredType t, Types types) {
+        if (TypeModeler.isSubElement((TypeElement) t.asElement(), collectionType)
+                || TypeModeler.isSubElement((TypeElement) t.asElement(), mapType)) {
+            Collection<? extends TypeMirror> args = t.getTypeArguments();
             TypeMirror[] safeArgs = new TypeMirror[args.size()];
             int i = 0;
             for (TypeMirror arg : args) {
-                safeArgs[i++]= apply(arg, apTypes);                    
+                safeArgs[i++] = visit(arg, types);
             }
-            return apTypes.getDeclaredType(type.getDeclaration(), safeArgs);
+            return types.getDeclaredType((TypeElement) t.asElement(), safeArgs);
         }
-        return apTypes.getErasure(type);
-    }
-    
-    protected TypeMirror onTypeVariable(TypeVariable type, Types apTypes) {
-        return apTypes.getErasure(type);        
-    }
-    
-    protected TypeMirror onVoidType(VoidType type, Types apTypes) {
-        return type;        
+        return types.erasure(t);
     }
 
-    protected TypeMirror onWildcard(WildcardType type, Types apTypes) {
-        return apTypes.getErasure(type);   
+    @Override
+    public TypeMirror visitNoType(NoType type, Types types) {
+        return type;
+    }
+    @Override
+    protected TypeMirror defaultAction(TypeMirror e, Types types) {
+        return types.erasure(e);
     }
 }

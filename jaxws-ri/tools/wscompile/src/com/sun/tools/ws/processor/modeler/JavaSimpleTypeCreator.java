@@ -45,135 +45,92 @@ import com.sun.tools.ws.processor.model.java.JavaSimpleType;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.sun.tools.ws.processor.modeler.ModelerConstants.*;
 /**
  *
  * @author WS Development Team
  */
-public class JavaSimpleTypeCreator implements ModelerConstants {
+public final class JavaSimpleTypeCreator {
 
     /*
      * Mapped JavaSimpleTypes
      */
-    public JavaSimpleType BOOLEAN_JAVATYPE;
-    public JavaSimpleType BOXED_BOOLEAN_JAVATYPE;
-    public JavaSimpleType BYTE_JAVATYPE;
-    public JavaSimpleType BYTE_ARRAY_JAVATYPE;
-    public JavaSimpleType BOXED_BYTE_JAVATYPE;
-    public JavaSimpleType BOXED_BYTE_ARRAY_JAVATYPE;
-    public JavaSimpleType DOUBLE_JAVATYPE;
-    public JavaSimpleType BOXED_DOUBLE_JAVATYPE;
-    public JavaSimpleType FLOAT_JAVATYPE;
-    public JavaSimpleType BOXED_FLOAT_JAVATYPE;
-    public JavaSimpleType INT_JAVATYPE;
-    public JavaSimpleType BOXED_INTEGER_JAVATYPE;
-    public JavaSimpleType LONG_JAVATYPE;
-    public JavaSimpleType BOXED_LONG_JAVATYPE;
-    public JavaSimpleType SHORT_JAVATYPE;
-    public JavaSimpleType BOXED_SHORT_JAVATYPE;
-    public JavaSimpleType DECIMAL_JAVATYPE;
-    public JavaSimpleType BIG_INTEGER_JAVATYPE;
-    public JavaSimpleType CALENDAR_JAVATYPE;
-    public JavaSimpleType DATE_JAVATYPE;
-    public JavaSimpleType STRING_JAVATYPE;
-    public JavaSimpleType STRING_ARRAY_JAVATYPE;
-    public JavaSimpleType QNAME_JAVATYPE;
-    public JavaSimpleType VOID_JAVATYPE;
-    public JavaSimpleType OBJECT_JAVATYPE;
-    public JavaSimpleType SOAPELEMENT_JAVATYPE;
-    public JavaSimpleType URI_JAVATYPE;
+    public static final JavaSimpleType BOOLEAN_JAVATYPE = new JavaSimpleType(BOOLEAN_CLASSNAME.getValue(), FALSE_STR.getValue());
+    public static final JavaSimpleType BOXED_BOOLEAN_JAVATYPE = new JavaSimpleType(BOXED_BOOLEAN_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType BYTE_JAVATYPE = new JavaSimpleType(BYTE_CLASSNAME.getValue(), "(byte)" + ZERO_STR.getValue());
+    public static final JavaSimpleType BYTE_ARRAY_JAVATYPE = new JavaSimpleType(BYTE_ARRAY_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType BOXED_BYTE_JAVATYPE = new JavaSimpleType(BOXED_BYTE_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType BOXED_BYTE_ARRAY_JAVATYPE = new JavaSimpleType(BOXED_BYTE_ARRAY_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType DOUBLE_JAVATYPE = new JavaSimpleType(DOUBLE_CLASSNAME.getValue(), ZERO_STR.getValue());
+    public static final JavaSimpleType BOXED_DOUBLE_JAVATYPE = new JavaSimpleType(BOXED_DOUBLE_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType FLOAT_JAVATYPE = new JavaSimpleType(FLOAT_CLASSNAME.getValue(), ZERO_STR.getValue());
+    public static final JavaSimpleType BOXED_FLOAT_JAVATYPE = new JavaSimpleType(BOXED_FLOAT_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType INT_JAVATYPE = new JavaSimpleType(INT_CLASSNAME.getValue(), ZERO_STR.getValue());
+    public static final JavaSimpleType BOXED_INTEGER_JAVATYPE = new JavaSimpleType(BOXED_INTEGER_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType LONG_JAVATYPE = new JavaSimpleType(LONG_CLASSNAME.getValue(), ZERO_STR.getValue());
+    public static final JavaSimpleType BOXED_LONG_JAVATYPE = new JavaSimpleType(BOXED_LONG_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType SHORT_JAVATYPE = new JavaSimpleType(SHORT_CLASSNAME.getValue(), "(short)" + ZERO_STR.getValue());
+    public static final JavaSimpleType BOXED_SHORT_JAVATYPE = new JavaSimpleType(BOXED_SHORT_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType DECIMAL_JAVATYPE = new JavaSimpleType(BIGDECIMAL_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType BIG_INTEGER_JAVATYPE = new JavaSimpleType(BIGINTEGER_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType CALENDAR_JAVATYPE = new JavaSimpleType(CALENDAR_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType DATE_JAVATYPE = new JavaSimpleType(DATE_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType STRING_JAVATYPE = new JavaSimpleType(STRING_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType STRING_ARRAY_JAVATYPE = new JavaSimpleType(STRING_ARRAY_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType QNAME_JAVATYPE = new JavaSimpleType(QNAME_CLASSNAME.getValue(), NULL_STR.getValue());
+    public static final JavaSimpleType VOID_JAVATYPE = new JavaSimpleType(VOID_CLASSNAME.getValue(), null);
+    public static final JavaSimpleType OBJECT_JAVATYPE = new JavaSimpleType(OBJECT_CLASSNAME.getValue(), null);
+    public static final JavaSimpleType SOAPELEMENT_JAVATYPE = new JavaSimpleType(SOAPELEMENT_CLASSNAME.getValue(), null);
+    public static final JavaSimpleType URI_JAVATYPE = new JavaSimpleType(URI_CLASSNAME.getValue(), null);
 
     // Attachment types
-    public JavaSimpleType IMAGE_JAVATYPE;
-    public JavaSimpleType MIME_MULTIPART_JAVATYPE;
-    public JavaSimpleType SOURCE_JAVATYPE;
-    public JavaSimpleType DATA_HANDLER_JAVATYPE;
+    public static final JavaSimpleType IMAGE_JAVATYPE = new JavaSimpleType(IMAGE_CLASSNAME.getValue(), null);
+    public static final JavaSimpleType MIME_MULTIPART_JAVATYPE = new JavaSimpleType(MIME_MULTIPART_CLASSNAME.getValue(), null);
+    public static final JavaSimpleType SOURCE_JAVATYPE = new JavaSimpleType(SOURCE_CLASSNAME.getValue(), null);
+    public static final JavaSimpleType DATA_HANDLER_JAVATYPE = new JavaSimpleType(DATA_HANDLER_CLASSNAME.getValue(), null);
 
     // bug fix: 4923650
-    private Map javaTypes = new HashMap();
+    private static final Map<String, JavaSimpleType> JAVA_TYPES = new HashMap<String, JavaSimpleType>(31);
 
-    public JavaSimpleTypeCreator() {
-        BOOLEAN_JAVATYPE = new JavaSimpleType(BOOLEAN_CLASSNAME, FALSE_STR);
-        javaTypes.put(BOOLEAN_CLASSNAME, BOOLEAN_JAVATYPE);
-        BOXED_BOOLEAN_JAVATYPE =
-            new JavaSimpleType(BOXED_BOOLEAN_CLASSNAME, NULL_STR);
-        javaTypes.put(BOXED_BOOLEAN_CLASSNAME, BOXED_BOOLEAN_JAVATYPE);
-        BYTE_JAVATYPE = new JavaSimpleType(BYTE_CLASSNAME, "(byte)"+ZERO_STR);
-        javaTypes.put(BYTE_CLASSNAME, BYTE_JAVATYPE);
-        BYTE_ARRAY_JAVATYPE =
-            new JavaSimpleType(BYTE_ARRAY_CLASSNAME, NULL_STR);
-        javaTypes.put(BYTE_ARRAY_CLASSNAME, BYTE_ARRAY_JAVATYPE);
-        BOXED_BYTE_JAVATYPE =
-            new JavaSimpleType(BOXED_BYTE_CLASSNAME, NULL_STR);
-        javaTypes.put(BOXED_BYTE_CLASSNAME, BOXED_BYTE_JAVATYPE);
-        BOXED_BYTE_ARRAY_JAVATYPE =
-            new JavaSimpleType(BOXED_BYTE_ARRAY_CLASSNAME, NULL_STR);
-        javaTypes.put(BOXED_BYTE_ARRAY_CLASSNAME, BOXED_BYTE_ARRAY_JAVATYPE);
-        DOUBLE_JAVATYPE = new JavaSimpleType(DOUBLE_CLASSNAME, ZERO_STR);
-        javaTypes.put(DOUBLE_CLASSNAME, DOUBLE_JAVATYPE);
-        BOXED_DOUBLE_JAVATYPE =
-            new JavaSimpleType(BOXED_DOUBLE_CLASSNAME, NULL_STR);
-        javaTypes.put(BOXED_DOUBLE_CLASSNAME, BOXED_DOUBLE_JAVATYPE);
-        FLOAT_JAVATYPE = new JavaSimpleType(FLOAT_CLASSNAME, ZERO_STR);
-        javaTypes.put(FLOAT_CLASSNAME, FLOAT_JAVATYPE);
-        BOXED_FLOAT_JAVATYPE =
-            new JavaSimpleType(BOXED_FLOAT_CLASSNAME, NULL_STR);
-        javaTypes.put(BOXED_FLOAT_CLASSNAME, BOXED_FLOAT_JAVATYPE);
-        INT_JAVATYPE = new JavaSimpleType(INT_CLASSNAME, ZERO_STR);
-        javaTypes.put(INT_CLASSNAME, INT_JAVATYPE);
-        BOXED_INTEGER_JAVATYPE =
-            new JavaSimpleType(BOXED_INTEGER_CLASSNAME, NULL_STR);
-        javaTypes.put(BOXED_INTEGER_CLASSNAME, BOXED_INTEGER_JAVATYPE);
-        LONG_JAVATYPE = new JavaSimpleType(LONG_CLASSNAME, ZERO_STR);
-        javaTypes.put(LONG_CLASSNAME, LONG_JAVATYPE);
-        BOXED_LONG_JAVATYPE =
-            new JavaSimpleType(BOXED_LONG_CLASSNAME, NULL_STR);
-        javaTypes.put(BOXED_LONG_CLASSNAME, BOXED_LONG_JAVATYPE);
-        SHORT_JAVATYPE =
-            new JavaSimpleType(SHORT_CLASSNAME, "(short)"+ZERO_STR);
-        javaTypes.put(SHORT_CLASSNAME, SHORT_JAVATYPE);
-        BOXED_SHORT_JAVATYPE =
-            new JavaSimpleType(BOXED_SHORT_CLASSNAME, NULL_STR);
-        javaTypes.put(BOXED_SHORT_CLASSNAME, BOXED_SHORT_JAVATYPE);
-        DECIMAL_JAVATYPE = new JavaSimpleType(BIGDECIMAL_CLASSNAME, NULL_STR);
-        javaTypes.put(BIGDECIMAL_CLASSNAME, DECIMAL_JAVATYPE);
-        BIG_INTEGER_JAVATYPE =
-            new JavaSimpleType(BIGINTEGER_CLASSNAME, NULL_STR);
-        javaTypes.put(BIGINTEGER_CLASSNAME, BIG_INTEGER_JAVATYPE);
-        CALENDAR_JAVATYPE = new JavaSimpleType(CALENDAR_CLASSNAME, NULL_STR);
-        javaTypes.put(CALENDAR_CLASSNAME, CALENDAR_JAVATYPE);
-        DATE_JAVATYPE = new JavaSimpleType(DATE_CLASSNAME, NULL_STR);
-        javaTypes.put(DATE_CLASSNAME, DATE_JAVATYPE);
-        STRING_JAVATYPE = new JavaSimpleType(STRING_CLASSNAME, NULL_STR);
-        javaTypes.put(STRING_CLASSNAME, STRING_JAVATYPE);
-        STRING_ARRAY_JAVATYPE =
-            new JavaSimpleType(STRING_ARRAY_CLASSNAME, NULL_STR);
-        javaTypes.put(STRING_ARRAY_CLASSNAME, STRING_ARRAY_JAVATYPE);
-        QNAME_JAVATYPE = new JavaSimpleType(QNAME_CLASSNAME, NULL_STR);
-        javaTypes.put(QNAME_CLASSNAME, QNAME_JAVATYPE);
+    static {
+        JAVA_TYPES.put(BOOLEAN_CLASSNAME.getValue(), BOOLEAN_JAVATYPE);
+        JAVA_TYPES.put(BOXED_BOOLEAN_CLASSNAME.getValue(), BOXED_BOOLEAN_JAVATYPE);
+        JAVA_TYPES.put(BYTE_CLASSNAME.getValue(), BYTE_JAVATYPE);
+        JAVA_TYPES.put(BYTE_ARRAY_CLASSNAME.getValue(), BYTE_ARRAY_JAVATYPE);
+        JAVA_TYPES.put(BOXED_BYTE_CLASSNAME.getValue(), BOXED_BYTE_JAVATYPE);
+        JAVA_TYPES.put(BOXED_BYTE_ARRAY_CLASSNAME.getValue(), BOXED_BYTE_ARRAY_JAVATYPE);
+        JAVA_TYPES.put(DOUBLE_CLASSNAME.getValue(), DOUBLE_JAVATYPE);
+        JAVA_TYPES.put(BOXED_DOUBLE_CLASSNAME.getValue(), BOXED_DOUBLE_JAVATYPE);
+        JAVA_TYPES.put(FLOAT_CLASSNAME.getValue(), FLOAT_JAVATYPE);
+        JAVA_TYPES.put(BOXED_FLOAT_CLASSNAME.getValue(), BOXED_FLOAT_JAVATYPE);
+        JAVA_TYPES.put(INT_CLASSNAME.getValue(), INT_JAVATYPE);
+        JAVA_TYPES.put(BOXED_INTEGER_CLASSNAME.getValue(), BOXED_INTEGER_JAVATYPE);
+        JAVA_TYPES.put(LONG_CLASSNAME.getValue(), LONG_JAVATYPE);
+        JAVA_TYPES.put(BOXED_LONG_CLASSNAME.getValue(), BOXED_LONG_JAVATYPE);
+        JAVA_TYPES.put(SHORT_CLASSNAME.getValue(), SHORT_JAVATYPE);
+        JAVA_TYPES.put(BOXED_SHORT_CLASSNAME.getValue(), BOXED_SHORT_JAVATYPE);
+        JAVA_TYPES.put(BIGDECIMAL_CLASSNAME.getValue(), DECIMAL_JAVATYPE);
+        JAVA_TYPES.put(BIGINTEGER_CLASSNAME.getValue(), BIG_INTEGER_JAVATYPE);
+        JAVA_TYPES.put(CALENDAR_CLASSNAME.getValue(), CALENDAR_JAVATYPE);
+        JAVA_TYPES.put(DATE_CLASSNAME.getValue(), DATE_JAVATYPE);
+        JAVA_TYPES.put(STRING_CLASSNAME.getValue(), STRING_JAVATYPE);
+        JAVA_TYPES.put(STRING_ARRAY_CLASSNAME.getValue(), STRING_ARRAY_JAVATYPE);
+        JAVA_TYPES.put(QNAME_CLASSNAME.getValue(), QNAME_JAVATYPE);
+        JAVA_TYPES.put(VOID_CLASSNAME.getValue(), VOID_JAVATYPE);
+        JAVA_TYPES.put(OBJECT_CLASSNAME.getValue(), OBJECT_JAVATYPE);
+        JAVA_TYPES.put(SOAPELEMENT_CLASSNAME.getValue(), SOAPELEMENT_JAVATYPE);
+        JAVA_TYPES.put(URI_CLASSNAME.getValue(), URI_JAVATYPE);
+        JAVA_TYPES.put(IMAGE_CLASSNAME.getValue(), IMAGE_JAVATYPE);
+        JAVA_TYPES.put(MIME_MULTIPART_CLASSNAME.getValue(), MIME_MULTIPART_JAVATYPE);
+        JAVA_TYPES.put(SOURCE_CLASSNAME.getValue(), SOURCE_JAVATYPE);
+        JAVA_TYPES.put(DATA_HANDLER_CLASSNAME.getValue(), DATA_HANDLER_JAVATYPE);
+    }
 
-
-        VOID_JAVATYPE = new JavaSimpleType(VOID_CLASSNAME, null);
-        javaTypes.put(VOID_CLASSNAME, VOID_JAVATYPE);
-        OBJECT_JAVATYPE = new JavaSimpleType(OBJECT_CLASSNAME, null);
-        javaTypes.put(OBJECT_CLASSNAME, OBJECT_JAVATYPE);
-        SOAPELEMENT_JAVATYPE = new JavaSimpleType(SOAPELEMENT_CLASSNAME, null);
-        javaTypes.put(SOAPELEMENT_CLASSNAME, SOAPELEMENT_JAVATYPE);
-        URI_JAVATYPE = new JavaSimpleType(URI_CLASSNAME, null);
-        javaTypes.put(URI_CLASSNAME, URI_JAVATYPE);
-
-        // Attachment types
-        IMAGE_JAVATYPE = new JavaSimpleType(IMAGE_CLASSNAME, null);
-        javaTypes.put(IMAGE_CLASSNAME, IMAGE_JAVATYPE);
-        MIME_MULTIPART_JAVATYPE = new JavaSimpleType(MIME_MULTIPART_CLASSNAME, null);
-        javaTypes.put(MIME_MULTIPART_CLASSNAME, MIME_MULTIPART_JAVATYPE);
-        SOURCE_JAVATYPE = new JavaSimpleType(SOURCE_CLASSNAME, null);
-        javaTypes.put(SOURCE_CLASSNAME, SOURCE_JAVATYPE);
-        DATA_HANDLER_JAVATYPE = new JavaSimpleType(DATA_HANDLER_CLASSNAME, null);
-        javaTypes.put(DATA_HANDLER_CLASSNAME, DATA_HANDLER_JAVATYPE);
+    private JavaSimpleTypeCreator() {
     }
 
     //  bug fix: 4923650
-    public JavaSimpleType getJavaSimpleType(String classname) {
-        return (JavaSimpleType) javaTypes.get(classname);
+    public static JavaSimpleType getJavaSimpleType(String className) {
+        return JAVA_TYPES.get(className);
     }
 }

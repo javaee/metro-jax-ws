@@ -16,7 +16,7 @@ is not published in this case.
 
 * To run
     * set JAXWS_HOME to the JAX-WS installation directory
-    * ant clean server - runs apt to generate server side artifacts and
+    * ant clean server - runs annotation processing to generate server side artifacts and
       does the deployment
     * ant clean client run - compiles the Dispatch based client application
       and executes it

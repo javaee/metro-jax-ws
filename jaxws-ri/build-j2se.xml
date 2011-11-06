@@ -95,7 +95,7 @@
     <package-rename srcdir="tools/wscompile/build/gen-src/" destdir="j2se-integration/tools/src" />
     <prename srcdir="tools/etc" destdir="j2se-integration/tools/etc/META-INF/services">
       <pattern from="com.sun.istack" to="com.sun.istack.internal" />
-      <include name="com.sun.mirror.apt.AnnotationProcessorFactory" />
+      <include name="javax.annotation.processing.Processor"/>
     </prename>
     <package-rename srcdir="rt-fi/src" destdir="j2se-integration/rt/src" />
     <!-- delete ant tasks -->
@@ -172,7 +172,7 @@
             <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc"
                      excludes="com.sun.tools.xjc.XJCTask,com.sun.tools.xjc.XJC2Task, com.sun.tools.xjc.Messages,
                      com.sun.tools.xjc.XJCFacade, com.sun.tools.xjc.ClassLoaderBuilder"/>
-            <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" excludes="com.sun.tools.jxc.AptBasedTask,
+            <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" excludes="com.sun.tools.jxc.ApBasedTask,
                     com.sun.tools.jxc.SchemaGenTask, com.sun.tools.jxc.SchemaGeneratorFacade"/>
         </prename>
 
@@ -213,7 +213,7 @@ import com.sun.istack.internal.tools.*;]]></replacevalue>
             <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc"
                      excludes="com.sun.tools.xjc.XJCTask,com.sun.tools.xjc.XJC2Task, com.sun.tools.xjc.Messages,
                      com.sun.tools.xjc.XJCFacade, com.sun.tools.xjc.ClassLoaderBuilder"/>
-            <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" excludes="com.sun.tools.jxc.AptBasedTask,
+            <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" excludes="com.sun.tools.jxc.ApBasedTask,
                     com.sun.tools.jxc.SchemaGenTask, com.sun.tools.jxc.SchemaGeneratorFacade"/>
             <include name="**/ant/*.java"/>
         </prename>

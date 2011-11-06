@@ -40,56 +40,51 @@
 
 package com.sun.tools.ws.processor.modeler.annotation;
 
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.*;
-import com.sun.mirror.type.*;
-import com.sun.xml.ws.util.StringUtils;
-
-import java.util.*;
-
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
+import java.util.Collection;
 
 /**
- *
  * @author WS Development Team
  */
-public class TypeModeler implements WebServiceConstants {
+final class TypeModeler {
 
-    public static TypeDeclaration getDeclaration(TypeMirror typeMirror) {
-        if (typeMirror instanceof DeclaredType)
-            return ((DeclaredType)typeMirror).getDeclaration();
+    private TypeModeler() {
+    }
+
+    public static TypeElement getDeclaration(TypeMirror typeMirror) {
+        if (typeMirror != null && typeMirror.getKind().equals(TypeKind.DECLARED))
+            return (TypeElement) ((DeclaredType) typeMirror).asElement();
         return null;
     }
 
-    public static TypeDeclaration getDeclaringClassMethod(
-        TypeMirror theClass,
-        String methodName,
-        TypeMirror[] args) {
-
+    public static TypeElement getDeclaringClassMethod(TypeMirror theClass, String methodName, TypeMirror[] args) {
         return getDeclaringClassMethod(getDeclaration(theClass), methodName, args);
     }
 
-    public static TypeDeclaration getDeclaringClassMethod(
-        TypeDeclaration theClass,
-        String methodName,
-        TypeMirror[] args) {
+    public static TypeElement getDeclaringClassMethod(TypeElement theClass, String methodName, TypeMirror[] args) {
 
-        TypeDeclaration retClass = null;
-        if (theClass instanceof ClassDeclaration) {
-            ClassType superClass = ((ClassDeclaration)theClass).getSuperclass();
-            if (superClass != null)
+        TypeElement retClass = null;
+        if (theClass.getKind().equals(ElementKind.CLASS)) {
+            TypeMirror superClass = theClass.getSuperclass();
+            if (!superClass.getKind().equals(TypeKind.NONE))
                 retClass = getDeclaringClassMethod(superClass, methodName, args);
         }
         if (retClass == null) {
-            for (InterfaceType interfaceType : theClass.getSuperinterfaces())
-                retClass =
-                    getDeclaringClassMethod(interfaceType, methodName, args);
+            for (TypeMirror interfaceType : theClass.getInterfaces())
+                retClass = getDeclaringClassMethod(interfaceType, methodName, args);
         }
         if (retClass == null) {
-            Collection<? extends MethodDeclaration> methods;
-            methods = theClass.getMethods();
-            for (MethodDeclaration method : methods) {
-                if (method.getSimpleName().equals(methodName) &&
-                    method.getDeclaringType().equals(theClass)) {
+            Collection<? extends ExecutableElement> methods = ElementFilter.methodsIn(theClass.getEnclosedElements());
+            for (ExecutableElement method : methods) {
+                if (method.getSimpleName().toString().equals(methodName)) {
                     retClass = theClass;
                     break;
                 }
@@ -98,52 +93,37 @@ public class TypeModeler implements WebServiceConstants {
         return retClass;
     }
 
-    public static Collection<InterfaceType> collectInterfaces(TypeDeclaration type) {
-        Collection<InterfaceType> superInterfaces = type.getSuperinterfaces();
-        Collection<InterfaceType> interfaces = type.getSuperinterfaces();
-        for (InterfaceType interfaceType : superInterfaces) {
+    public static Collection<DeclaredType> collectInterfaces(TypeElement type) {
+        @SuppressWarnings({"unchecked"})
+        Collection<DeclaredType> interfaces = (Collection<DeclaredType>) type.getInterfaces();
+        for (TypeMirror interfaceType : type.getInterfaces()) {
             interfaces.addAll(collectInterfaces(getDeclaration(interfaceType)));
         }
         return interfaces;
     }
 
-    public static boolean isSubclass(String subTypeName, String superTypeName,
-        AnnotationProcessorEnvironment env) {
-        return isSubclass(env.getTypeDeclaration(subTypeName),
-                          env.getTypeDeclaration(superTypeName));
+    public static boolean isSubclass(String subTypeName, String superTypeName, ProcessingEnvironment env) {
+        return isSubclass(env.getElementUtils().getTypeElement(subTypeName), env.getElementUtils().getTypeElement(superTypeName), env);
     }
 
-    public static boolean isSubclass(
-        TypeDeclaration subType,
-        TypeDeclaration superType) {
-
-        if (subType.equals(superType))
-            return false;
-        return isSubtype(subType, superType);
+    public static boolean isSubclass(TypeElement subType, TypeElement superType, ProcessingEnvironment env) {
+        return !subType.equals(superType) && isSubElement(subType, superType);
     }
 
-    public static TypeMirror getHolderValueType(
-        TypeMirror type,
-        TypeDeclaration defHolder
-    ) {
-
-        TypeDeclaration typeDecl = getDeclaration(type);
-        if (typeDecl == null)
+    public static TypeMirror getHolderValueType(TypeMirror type, TypeElement defHolder, ProcessingEnvironment env) {
+        TypeElement typeElement = getDeclaration(type);
+        if (typeElement == null)
             return null;
 
-        if (isSubtype(typeDecl, defHolder)) {
-            if  (type instanceof DeclaredType) {
-                Collection<TypeMirror> argTypes = ((DeclaredType)type).getActualTypeArguments();
+        if (isSubElement(typeElement, defHolder)) {
+            if (type.getKind().equals(TypeKind.DECLARED)) {
+                Collection<? extends TypeMirror> argTypes = ((DeclaredType) type).getTypeArguments();
                 if (argTypes.size() == 1) {
-                    TypeMirror mirror = argTypes.iterator().next();
-//                        System.out.println("argsTypes.iterator().next(): "+mirror);
-                    return mirror;
-                }
-                else if (argTypes.size() == 0) {
-                    FieldDeclaration member = getValueMember(typeDecl);
+                    return argTypes.iterator().next();
+                } else if (argTypes.size() == 0) {
+                    VariableElement member = getValueMember(typeElement);
                     if (member != null) {
-//                            System.out.println("member: "+member+" getType(): "+member.getType());
-                        return member.getType();
+                        return member.asType();
                     }
                 }
             }
@@ -151,46 +131,43 @@ public class TypeModeler implements WebServiceConstants {
         return null;
     }
 
-    public static FieldDeclaration getValueMember(TypeMirror classType) {
+    public static VariableElement getValueMember(TypeMirror classType) {
         return getValueMember(getDeclaration(classType));
     }
 
-    public static FieldDeclaration getValueMember(TypeDeclaration type) {
-        FieldDeclaration member = null;
-        for (FieldDeclaration field : type.getFields()){
-            if (field.getSimpleName().equals("value")) {
+    public static VariableElement getValueMember(TypeElement type) {
+        VariableElement member = null;
+        for (VariableElement field : ElementFilter.fieldsIn(type.getEnclosedElements())) {
+            if ("value".equals(field.getSimpleName().toString())) {
                 member = field;
                 break;
             }
         }
-        if (member == null) {
-            if (type instanceof ClassDeclaration)
-                member = getValueMember(((ClassDeclaration)type).getSuperclass());
-        }
+        if (member == null && type.getKind().equals(ElementKind.CLASS))
+            member = getValueMember(type.getSuperclass());
         return member;
     }
 
-
-    /* is d1 a subtype of d2 */
-    public static boolean isSubtype(TypeDeclaration d1, TypeDeclaration d2) {
+    public static boolean isSubElement(TypeElement d1, TypeElement d2) {
         if (d1.equals(d2))
             return true;
-        ClassDeclaration superClassDecl = null;
-        if (d1 instanceof ClassDeclaration) {
-            ClassType superClass = ((ClassDeclaration)d1).getSuperclass();
-            if (superClass != null) {
-                superClassDecl = superClass.getDeclaration();
+        TypeElement superClassDecl = null;
+        if (d1.getKind().equals(ElementKind.CLASS)) {
+            TypeMirror superClass = d1.getSuperclass();
+            if (!superClass.getKind().equals(TypeKind.NONE)) {
+                superClassDecl = (TypeElement) ((DeclaredType) superClass).asElement();
                 if (superClassDecl.equals(d2))
                     return true;
             }
         }
-        for (InterfaceType superIntf : d1.getSuperinterfaces()) {
-            if (superIntf.getDeclaration().equals(d2)) {
+        for (TypeMirror superIntf : d1.getInterfaces()) {
+            DeclaredType declaredSuperIntf = (DeclaredType) superIntf;
+            if (declaredSuperIntf.asElement().equals(d2)) {
                 return true;
             }
-            if (isSubtype(superIntf.getDeclaration(), d2)) {
+            if (isSubElement((TypeElement) declaredSuperIntf.asElement(), d2)) {
                 return true;
-            } else if (superClassDecl != null && isSubtype(superClassDecl, d2)) {
+            } else if (superClassDecl != null && isSubElement(superClassDecl, d2)) {
                 return true;
             }
         }

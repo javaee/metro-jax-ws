@@ -23,7 +23,7 @@ The endpint impleentation starts from java and a wsdl is generated dynamically. 
 
 * To run
     * set JAXWS_HOME to the JAX-WS installation directory
-    * ant clean server - runs apt to compile AddNumbersImpl.java and
+    * ant clean server - runs annotation processing to compile AddNumbersImpl.java and
       AddNumbersException.java, creates war file and deplys them.
 
     * ant clean client run - runs wsimport on the published wsdl by the deployed

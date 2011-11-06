@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,30 +40,32 @@
 
 package com.sun.tools.ws.processor.modeler.annotation;
 
-
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.type.ArrayType;
-import com.sun.mirror.type.DeclaredType;
-import com.sun.mirror.type.PrimitiveType;
-import com.sun.mirror.type.TypeMirror;
-
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- *
- * @author  dkohlert
+ * @author dkohlert
  */
 public class TypeMonikerFactory {
 
     public static TypeMoniker getTypeMoniker(TypeMirror typeMirror) {
-        if (typeMirror instanceof PrimitiveType)
-            return new PrimitiveTypeMoniker((PrimitiveType)typeMirror);
-        else if (typeMirror instanceof ArrayType)
-            return new ArrayTypeMoniker((ArrayType)typeMirror);
-        else if (typeMirror instanceof DeclaredType)
-            return new DeclaredTypeMoniker((DeclaredType)typeMirror);
+        if (typeMirror == null)
+            throw new NullPointerException();
+
+        if (typeMirror.getKind().isPrimitive())
+            return new PrimitiveTypeMoniker((PrimitiveType) typeMirror);
+        else if (typeMirror.getKind().equals(TypeKind.ARRAY))
+            return new ArrayTypeMoniker((ArrayType) typeMirror);
+        else if (typeMirror.getKind().equals(TypeKind.DECLARED))
+            return new DeclaredTypeMoniker((DeclaredType) typeMirror);
         return getTypeMoniker(typeMirror.toString());
     }
 
@@ -78,22 +80,22 @@ public class TypeMonikerFactory {
             arrayType = TypeMonikerFactory.getTypeMoniker(type.getComponentType());
         }
 
-        public TypeMirror create(AnnotationProcessorEnvironment apEnv) {
+        public TypeMirror create(ProcessingEnvironment apEnv) {
             return apEnv.getTypeUtils().getArrayType(arrayType.create(apEnv));
         }
     }
     static class DeclaredTypeMoniker implements TypeMoniker {
-        private String typeDeclName;
+        private Name typeDeclName;
         private Collection<TypeMoniker> typeArgs = new ArrayList<TypeMoniker>();
 
         public DeclaredTypeMoniker(DeclaredType type) {
-            typeDeclName = type.getDeclaration().getQualifiedName();
-            for (TypeMirror arg : type.getActualTypeArguments())
+            typeDeclName = ((TypeElement) type.asElement()).getQualifiedName();
+            for (TypeMirror arg : type.getTypeArguments())
                 typeArgs.add(TypeMonikerFactory.getTypeMoniker(arg));
         }
 
-        public TypeMirror create(AnnotationProcessorEnvironment apEnv) {
-            TypeDeclaration typeDecl = apEnv.getTypeDeclaration(typeDeclName);
+        public TypeMirror create(ProcessingEnvironment apEnv) {
+            TypeElement typeDecl = apEnv.getElementUtils().getTypeElement(typeDeclName);
             TypeMirror[] tmpArgs = new TypeMirror[typeArgs.size()];
             int idx = 0;
             for (TypeMoniker moniker : typeArgs)
@@ -103,13 +105,13 @@ public class TypeMonikerFactory {
         }
     }
     static class PrimitiveTypeMoniker implements TypeMoniker {
-        private PrimitiveType.Kind kind;
+        private TypeKind kind;
 
         public PrimitiveTypeMoniker(PrimitiveType type) {
             kind = type.getKind();
         }
 
-        public TypeMirror create(AnnotationProcessorEnvironment apEnv) {
+        public TypeMirror create(ProcessingEnvironment apEnv) {
             return apEnv.getTypeUtils().getPrimitiveType(kind);
         }
     }
@@ -120,8 +122,8 @@ public class TypeMonikerFactory {
             this.typeName = typeName;
         }
 
-        public TypeMirror create(AnnotationProcessorEnvironment apEnv) {
-            return apEnv.getTypeUtils().getDeclaredType(apEnv.getTypeDeclaration(typeName));
+        public TypeMirror create(ProcessingEnvironment apEnv) {
+            return apEnv.getTypeUtils().getDeclaredType(apEnv.getElementUtils().getTypeElement(typeName));
         }
     }
 }

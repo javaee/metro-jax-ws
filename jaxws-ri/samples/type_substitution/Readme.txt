@@ -23,16 +23,16 @@ This sample demonstrates type substitution and sending java types that are not d
     * server/Toyota - Derived class
     * server/CarDealer - Endpoint implementation class
 
-* apt ant task is run to compile server side Java files and create server
+* annotationProcessing ant task is run to compile server side Java files and create server
   objects used during deployment and runtime.
 
 * To run in servlet container
     * To run on Glassfish, set AS_HOME to the Glassfish installation
     * To run on tomcat, set CATALINA_HOME to tomcat installation directory
     * set JAXWS_HOME to the JAX-WS installation directory
-    * ant clean server - runs apt to generate server side artifacts and
+    * ant clean server - runs annotation processing to generate server side artifacts and
       does the deployment on Glassfish (AS_HOME)
-    * ant clean server -Dtomcat=true - runs apt to generate server side
+    * ant clean server -Dtomcat=true - runs annotation processing to generate server side
       artifacts and does the deployment on Tomcat (CATALINA_HOME)
     * ant clean client run - runs wsimport on the published wsdl by the deplyed
       endpoint, compiles the generated artifacts and the client application

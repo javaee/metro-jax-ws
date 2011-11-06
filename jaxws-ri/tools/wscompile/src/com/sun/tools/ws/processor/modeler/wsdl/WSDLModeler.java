@@ -136,7 +136,7 @@ public class WSDLModeler extends WSDLModelerBase {
             document.validateLocally();
             Model model = internalBuildModel(document);
             if(model == null || errReceiver.hadError())
-                return null;                    
+                return null;
             //ClassNameCollector classNameCollector = new ClassNameCollector();
             classNameCollector.process(model);
             if (classNameCollector.getConflictingClassNames().isEmpty()) {
@@ -146,7 +146,7 @@ public class WSDLModeler extends WSDLModelerBase {
             }
             // do another pass, this time with conflict resolution enabled
             model = internalBuildModel(document);
-            
+
             classNameCollector.process(model);
             if (classNameCollector.getConflictingClassNames().isEmpty()) {
                 // we're done
@@ -207,7 +207,6 @@ public class WSDLModeler extends WSDLModelerBase {
                 ModelProperties.PROPERTY_MODELER_NAME,
                 ModelProperties.WSDL_MODELER_NAME);
 
-        _javaTypes = new JavaSimpleTypeCreator();
         _javaExceptions = new HashMap<String, JavaException>();
         _bindingNameToPortMap = new HashMap<QName, Port>();
 
@@ -508,7 +507,7 @@ public class WSDLModeler extends WSDLModelerBase {
     }
 
     /**
-     * Returns an operation purely from abstract operation 
+     * Returns an operation purely from abstract operation
      */
     private Operation processNonSOAPOperation() {
         Operation operation =
@@ -610,7 +609,7 @@ public class WSDLModeler extends WSDLModelerBase {
      *
      * We assume that the message parts could have either all of them with type attribute (RPC)
      * or element (DOCUMENT)
-     * 
+     *
      * Shall this check if parts are mixed and throw error message?
      */
     private void setNonSoapStyle(Message inputMessage, Message outputMessage) {
@@ -2412,8 +2411,7 @@ public class WSDLModeler extends WSDLModelerBase {
             JavaType parameterType = returnParam.getType().getJavaType();
             method.setReturnType(parameterType);
         } else {
-            JavaType ret = new JavaSimpleTypeCreator().VOID_JAVATYPE;
-            method.setReturnType(ret);
+            method.setReturnType(JavaSimpleTypeCreator.VOID_JAVATYPE);
         }
         List<Parameter> parameterOrder = (List<Parameter>) operation.getProperty(WSDL_PARAMETER_ORDER);
         for (Parameter param : parameterOrder) {

@@ -80,10 +80,7 @@ import java.util.List;
  *
  * @author WS Development Team
  */
-public abstract class GeneratorBase
-    implements
-        GeneratorConstants,
-        ModelVisitor{
+public abstract class GeneratorBase implements ModelVisitor {
     private File destDir;
     private String targetVersion;
     protected boolean donotOverride;

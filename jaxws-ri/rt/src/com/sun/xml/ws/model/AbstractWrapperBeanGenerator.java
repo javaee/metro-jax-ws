@@ -63,7 +63,7 @@ import java.util.logging.Logger;
  *
  * <p>
  * It uses JAXB's {@link AnnotationReader}, {@link Navigator} so that
- * tools can use this with APT, and the runtime can use this with
+ * tools can use this with annotation processing, and the runtime can use this with
  * reflection.
  *
  * @author Jitendra Kotamraju
@@ -144,7 +144,7 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
      * parameters as request bean fields. In this process, if a parameter
      * has any known JAXB annotations they are collected as well.
      * Special processing for @XmlElement annotation is done.
-     * 
+     *
      * @param method SEI method for which request bean members are computed
      * @return List of request bean members
      */
@@ -308,7 +308,7 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
      * But if the exception has @XmlType its values are honored. Only the
      * propOrder properties are considered. The returned collection is sorted
      * as per the given propOrder.
-     * 
+     *
      * @param exception
      * @return list of properties in the correct order for an exception bean
      */
@@ -352,7 +352,7 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
             // 2.1.x is doing the following: no final static, transient, non-public
             // transient cannot used as modifier for method, so not doing it now
             if (!nav.isPublicMethod(method)
-                || (nav.isStaticMethod(method) && nav.isFinalMethod(method))) { 
+                || (nav.isStaticMethod(method) && nav.isFinalMethod(method))) {
                  continue;
             }
 

@@ -40,15 +40,16 @@
 
 package com.sun.tools.ws.processor.modeler.annotation;
 
-import com.sun.mirror.declaration.MethodDeclaration;
-import com.sun.mirror.declaration.ParameterDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.model.Operation;
 import com.sun.tools.ws.processor.model.Port;
 import com.sun.tools.ws.processor.model.Service;
 import com.sun.tools.ws.wsdl.document.soap.SOAPUse;
 
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,34 +61,28 @@ import java.util.Map;
  */
 public class AnnotationProcessorContext {
 
-    private Map<String, SEIContext> seiContextMap;
+    private Map<Name, SeiContext> seiContextMap = new HashMap<Name, SeiContext>();
     private int round = 1;
     private boolean modelCompleted = false;
 
-    /** Creates a new instance of AnnotationProcessorContext */
-    public AnnotationProcessorContext() {
-        seiContextMap = new HashMap<String, SEIContext>();
-    }
-
-    public void addSEIContext(String seiName, SEIContext seiContext) {
+    public void addSeiContext(Name seiName, SeiContext seiContext) {
         seiContextMap.put(seiName, seiContext);
     }
 
-    public SEIContext getSEIContext(String seiName) {
-        SEIContext context =  seiContextMap.get(seiName);
+    public SeiContext getSeiContext(Name seiName) {
+        SeiContext context = seiContextMap.get(seiName);
         if (context == null) {
-            context = new SEIContext(seiName);
-            addSEIContext(seiName, context);
+            context = new SeiContext(seiName);
+            addSeiContext(seiName, context);
         }
         return context;
     }
 
-    public SEIContext getSEIContext(TypeDeclaration d) {
-        SEIContext context = getSEIContext(d.getQualifiedName());
-        return context;
+    public SeiContext getSeiContext(TypeElement d) {
+        return getSeiContext(d.getQualifiedName());
     }
 
-    public Collection<SEIContext> getSEIContexts() {
+    public Collection<SeiContext> getSeiContexts() {
         return seiContextMap.values();
     }
 
@@ -121,67 +116,65 @@ public class AnnotationProcessorContext {
         return modelCompleted;
     }
 
-    public static class SEIContext {
-        private Map<String, WrapperInfo> reqOperationWrapperMap;
-        private Map<String, WrapperInfo> resOperationWrapperMap;
-        private Map<String, FaultInfo> exceptionBeanMap;
+    public static class SeiContext {
 
-        private String seiName;
-        private String seiImplName;
-        private boolean implementsSEI = false;
-        private String namespaceURI = null;
+        private Map<String, WrapperInfo> reqOperationWrapperMap = new HashMap<String, WrapperInfo>();
+        private Map<String, WrapperInfo> resOperationWrapperMap = new HashMap<String, WrapperInfo>();
+        private Map<Name, FaultInfo> exceptionBeanMap = new HashMap<Name, FaultInfo>();
 
-        public SEIContext(String seiName) {
-            reqOperationWrapperMap = new HashMap<String, WrapperInfo>();
-            resOperationWrapperMap = new HashMap<String, WrapperInfo>();
-            exceptionBeanMap = new HashMap<String,FaultInfo>();
+        private Name seiName;
+        private Name seiImplName;
+        private boolean implementsSei;
+        private String namespaceUri;
+
+        public SeiContext(Name seiName) {
             this.seiName = seiName;
         }
 
-        public void setImplementsSEI(boolean implementsSEI) {
-            this.implementsSEI = implementsSEI;
+        public void setImplementsSei(boolean implementsSei) {
+            this.implementsSei = implementsSei;
         }
 
-        public boolean getImplementsSEI() {
-            return implementsSEI;
+        public boolean getImplementsSei() {
+            return implementsSei;
         }
 
-        public void setNamespaceURI(String namespaceURI) {
-            this.namespaceURI = namespaceURI;
+        public void setNamespaceUri(String namespaceUri) {
+            this.namespaceUri = namespaceUri;
         }
 
-        public String getNamespaceURI() {
-            return namespaceURI;
+        public String getNamespaceUri() {
+            return namespaceUri;
         }
 
-        public String getSEIImplName() {
+        public Name getSeiImplName() {
             return seiImplName;
         }
 
-        public void setSEIImplName(String implName) {
+        public void setSeiImplName(Name implName) {
             seiImplName = implName;
         }
 
-        public void setReqWrapperOperation(MethodDeclaration method, WrapperInfo wrapperInfo) {
+        public void setReqWrapperOperation(ExecutableElement method, WrapperInfo wrapperInfo) {
             reqOperationWrapperMap.put(methodToString(method), wrapperInfo);
         }
 
-        public WrapperInfo getReqOperationWrapper(MethodDeclaration method) {
+        public WrapperInfo getReqOperationWrapper(ExecutableElement method) {
             return reqOperationWrapperMap.get(methodToString(method));
         }
 
-        public void setResWrapperOperation(MethodDeclaration method, WrapperInfo wrapperInfo) {
+        public void setResWrapperOperation(ExecutableElement method, WrapperInfo wrapperInfo) {
             resOperationWrapperMap.put(methodToString(method), wrapperInfo);
         }
 
-        public WrapperInfo getResOperationWrapper(MethodDeclaration method) {
+        public WrapperInfo getResOperationWrapper(ExecutableElement method) {
             return resOperationWrapperMap.get(methodToString(method));
         }
 
-        public String methodToString(MethodDeclaration method) {
-            StringBuffer buf = new StringBuffer(method.getSimpleName());
-            for (ParameterDeclaration param : method.getParameters())
-                buf.append(";"+param.getType().toString());
+        public String methodToString(ExecutableElement method) {
+            StringBuilder buf = new StringBuilder(method.getSimpleName());
+            for (VariableElement param : method.getParameters())
+                buf.append(';').append(param.asType());
             return buf.toString();
         }
 
@@ -189,11 +182,11 @@ public class AnnotationProcessorContext {
             exceptionBeanMap.clear();
         }
 
-        public void addExceptionBeanEntry(String exception, FaultInfo faultInfo, ModelBuilder builder) {
-            exceptionBeanMap.put(exception,faultInfo);
+        public void addExceptionBeanEntry(Name exception, FaultInfo faultInfo, ModelBuilder builder) {
+            exceptionBeanMap.put(exception, faultInfo);
         }
 
-        public FaultInfo getExceptionBeanName(String exception) {
+        public FaultInfo getExceptionBeanName(Name exception) {
             return exceptionBeanMap.get(exception);
         }
     }

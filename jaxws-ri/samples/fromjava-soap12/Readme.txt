@@ -27,7 +27,7 @@ fromjava-saop12 sample demonstrates the Java->WSDL programming model using SOAP 
       standard SOAP 1.2 namespace instead.
     * server/AddNumberException.java - server implementation
 
-* apt ant task is run to compile AddNumbersImpl and create server
+* annotationProcessing ant task is run to compile AddNumbersImpl and create server
   objects used during deployment and runtime.
 
 * To specify use of SOAP 1.2, you can either specify it in the deployment descriptor
@@ -37,7 +37,7 @@ fromjava-saop12 sample demonstrates the Java->WSDL programming model using SOAP 
 
 * To run
     * set JAXWS_HOME to the JAX-WS installation directory
-    * ant clean server - runs apt to generate server side artifacts and
+    * ant clean server - runs annotation processing to generate server side artifacts and
       does the deployment
     * ant clean client run - runs wsimport on the published wsdl by the deplyed
       endpoint, compiles the generated artifacts and the client application

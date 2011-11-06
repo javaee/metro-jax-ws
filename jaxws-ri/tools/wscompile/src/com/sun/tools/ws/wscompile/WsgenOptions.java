@@ -40,7 +40,7 @@
 
 package com.sun.tools.ws.wscompile;
 
-import com.sun.mirror.apt.Filer;
+import javax.annotation.processing.Filer;
 import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.api.WsgenExtension;
 import com.sun.tools.ws.api.WsgenProtocol;
@@ -218,12 +218,12 @@ public class WsgenOptions extends Options {
         if (protocol == null || protocol.equalsIgnoreCase(X_SOAP12) && !isExtensionMode()) {
             throw new BadCommandLineException(WscompileMessages.WSGEN_SOAP_12_WITHOUT_EXTENSION());
         }
-        
+
         if (nonstdProtocols.containsKey(protocol) && !isExtensionMode()) {
-            throw new BadCommandLineException(WscompileMessages.WSGEN_PROTOCOL_WITHOUT_EXTENSION(protocol));            
+            throw new BadCommandLineException(WscompileMessages.WSGEN_PROTOCOL_WITHOUT_EXTENSION(protocol));
         }
         if (inlineSchemas && !genWsdl) {
-            throw new BadCommandLineException(WscompileMessages.WSGEN_INLINE_SCHEMAS_ONLY_WITH_WSDL());                        
+            throw new BadCommandLineException(WscompileMessages.WSGEN_INLINE_SCHEMAS_ONLY_WITH_WSDL());
         }
 
         validateEndpointClass();

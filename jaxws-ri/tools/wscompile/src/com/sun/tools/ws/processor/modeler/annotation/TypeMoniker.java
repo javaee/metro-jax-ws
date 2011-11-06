@@ -40,8 +40,8 @@
 
 package com.sun.tools.ws.processor.modeler.annotation;
 
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.type.TypeMirror;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.type.TypeMirror;
 
 /**
  *
@@ -49,5 +49,5 @@ import com.sun.mirror.type.TypeMirror;
  */
 public interface TypeMoniker {
 
-    public TypeMirror create(AnnotationProcessorEnvironment apEnv);
+    public TypeMirror create(ProcessingEnvironment apEnv);
 }
