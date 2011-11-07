@@ -45,7 +45,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.SimpleTypeVisitor7;
+import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 import java.util.Collection;
 import java.util.Map;
@@ -54,7 +54,7 @@ import java.util.Map;
  *
  * @author dkohlert
  */
-public class MakeSafeTypeVisitor extends SimpleTypeVisitor7<TypeMirror, Types> {
+public class MakeSafeTypeVisitor extends SimpleTypeVisitor6<TypeMirror, Types> {
 
     TypeElement collectionType;
     TypeElement mapType;
