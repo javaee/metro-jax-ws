@@ -100,7 +100,7 @@ import java.util.Set;
         "javax.xml.ws.WebServiceRef"
 })
 @SupportedOptions({WebServiceAp.DO_NOT_OVERWRITE, WebServiceAp.IGNORE_NO_WEB_SERVICE_FOUND_WARNING})
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
 
     public static final String DO_NOT_OVERWRITE = "doNotOverWrite";
