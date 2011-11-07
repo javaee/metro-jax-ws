@@ -97,4 +97,9 @@ public class WsGenTaskTest extends WsAntTaskTestBase {
     public void testInvalidEncoding() throws IOException, URISyntaxException {
         assertEquals(1, AntExecutor.exec(script, apiDir, "wsgen-server-encoding-invalid"));
     }
+
+    public void testMemoryArgs() throws IOException, URISyntaxException {
+        copy(pkg, "TestWs.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs.java_"));
+        assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-server-memory"));
+    }
 }

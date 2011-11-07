@@ -157,6 +157,30 @@
         </wsgen>
     </target>
 
+    <target name="wsgen-server-memory" depends="wsgen-init">
+        <javac srcdir="${src.dir}" destdir="${src.dir}" fork="true">
+            <compilerarg line="-J-Djava.endorsed.dirs=${api.dir}"/>
+            <classpath refid="task.cp"/>
+        </javac>
+
+        <wsgen
+            sei="test.TestWs"
+            resourcedestdir="${build.dir}"
+            destdir="${build.dir}"
+            sourcedestdir="${src.dir}"
+            genwsdl="true"
+            keep="true"
+            verbose="true"
+            xendorsed="true"
+            fork="true"
+            inlineSchemas="true">
+            <classpath>
+                <pathelement location="${src.dir}"/>
+            </classpath>
+            <jvmArg line="-Xmx256m"/>
+        </wsgen>
+    </target>
+
     <target name="clean">
         <delete dir="${src.dir}" verbose="true" failonerror="false"/>
         <delete dir="${build.dir}" verbose="true" failonerror="false"/>
