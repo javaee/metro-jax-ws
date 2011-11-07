@@ -303,10 +303,9 @@ public class HttpClientTransport {
 
         // set the properties on HttpURLConnection
         for (Map.Entry<String, List<String>> entry : reqHeaders.entrySet()) {
-        	if (!"Content-length".equals(entry.getKey())) {
-	            for(String value : entry.getValue()) {
-	                httpConnection.addRequestProperty(entry.getKey(), value);
-	            }
+            if ("Content-Length".equals(entry.getKey())) continue;
+        	for(String value : entry.getValue()) {
+	            httpConnection.addRequestProperty(entry.getKey(), value);
         	}
         }
     }
