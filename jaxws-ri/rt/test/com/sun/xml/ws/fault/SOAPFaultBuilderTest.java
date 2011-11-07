@@ -99,7 +99,7 @@ public class SOAPFaultBuilderTest extends TestCase {
     }
 
     private static SOAPFault createFault(SOAPVersion soapVersion) throws Exception {
-        SOAPFactory fac = soapVersion.saajSoapFactory;
+        SOAPFactory fac = soapVersion.getSOAPFactory();
         SOAPFault sf = fac.createFault("This is a fault.", soapVersion.faultCodeClient);
         Detail d = sf.addDetail();
         SOAPElement de = d.addChildElement(DETAIL1_QNAME);

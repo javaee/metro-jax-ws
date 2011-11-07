@@ -59,7 +59,7 @@ import java.util.Iterator;
 public class jaxws413 extends TestCase {
 
     public void test1() throws SOAPException, IOException {
-        SOAPFault fault = SOAPVersion.SOAP_11.saajSoapFactory.createFault();
+        SOAPFault fault = SOAPVersion.SOAP_11.getSOAPFactory().createFault();
 
         fault.setFaultCode(new QName("http://foo/bar", "mycode", "myprefix"));
         fault.setFaultString("Some exception");
@@ -80,7 +80,7 @@ public class jaxws413 extends TestCase {
     }
 
     public void test2() throws SOAPException, IOException {
-        SOAPFault fault = SOAPVersion.SOAP_12.saajSoapFactory.createFault();
+        SOAPFault fault = SOAPVersion.SOAP_12.getSOAPFactory().createFault();
 
         fault.setFaultCode(new QName("http://www.w3.org/2003/05/soap-envelope", "Sender", "myprefix"));
         fault.setFaultString("Some exception");

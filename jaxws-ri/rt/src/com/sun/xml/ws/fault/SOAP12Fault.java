@@ -202,7 +202,7 @@ class SOAP12Fault extends SOAPFaultBuilder {
 
      protected Throwable getProtocolException() {
         try {
-            SOAPFault fault = SOAPVersion.SOAP_12.saajSoapFactory.createFault();;
+            SOAPFault fault = SOAPVersion.SOAP_12.getSOAPFactory().createFault();;
             if(reason != null){
                 for(TextType tt : reason.texts()){
                     fault.setFaultString(tt.getText());

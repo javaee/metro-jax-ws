@@ -87,14 +87,14 @@ public class SOAPFaultBuilder1Test extends TestCase {
     }
 
     public void testFault1() throws Throwable {
-        SOAPMessage msg = SOAPVersion.SOAP_11.saajMessageFactory.createMessage(null, new ByteArrayInputStream(fault1.getBytes()));
+        SOAPMessage msg = SOAPVersion.SOAP_11.getMessageFactory().createMessage(null, new ByteArrayInputStream(fault1.getBytes()));
         SOAPFaultBuilder sfb = SOAPFaultBuilder.create(new SAAJMessage(msg));
         Throwable t = sfb.createException(null);
         assertTrue(t instanceof SOAPFaultException);
     }
 
     public void testFault2() throws Throwable {
-        SOAPMessage msg = SOAPVersion.SOAP_12.saajMessageFactory.createMessage(null, new ByteArrayInputStream(fault2.trim().getBytes()));
+        SOAPMessage msg = SOAPVersion.SOAP_12.getMessageFactory().createMessage(null, new ByteArrayInputStream(fault2.trim().getBytes()));
         SOAPFaultBuilder sfb = SOAPFaultBuilder.create(new SAAJMessage(msg));
         Throwable t = sfb.createException(null);
         assertTrue(t instanceof SOAPFaultException);
