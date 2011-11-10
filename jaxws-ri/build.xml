@@ -299,6 +299,7 @@
                 <exclude name="junit-source.jar" />
                 <exclude name="jaxws-asm-source.jar" />
                 <exclude name="ant-source.jar" />
+                <exclude name="woodstox-core-asl-source.jar" />
             </fileset>
         </zip>
         <delete file="${dist20.home}/lib/jaxws-rt.src.zip"/>
