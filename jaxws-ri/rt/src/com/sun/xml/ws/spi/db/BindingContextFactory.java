@@ -83,6 +83,9 @@ abstract public class BindingContextFactory {
                     } catch (ServiceConfigurationError e) {
                         LOGGER.warning("skipping factory: ServiceConfigurationError: "
                                 + e.getMessage());
+                    } catch (NoClassDefFoundError ncdfe) {
+                        LOGGER.fine("skipping factory: NoClassDefFoundError: "
+                                + ncdfe.getMessage());
                     }
                 }
             }
