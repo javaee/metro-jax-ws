@@ -293,12 +293,12 @@
         <zip file="${dist.home}/jdk-jaxws-libs.src.zip">
             <fileset dir="${dist20.home}/lib" includes="jaxws-rt.src.zip"/>
             <fileset dir="${dist20.home}/lib" includes="jaxws-tools.src.zip"/>
-            <!-- include everything except jaxws-asm-source.jar, junit-source.jar -->
+            <!-- include everything except jaxws-asm-source.jar, junit-source.jar, ant-source.jar -->
             <fileset dir="${basedir}/lib">
                 <include name="*source*.jar" />
                 <exclude name="junit-source.jar" />
                 <exclude name="jaxws-asm-source.jar" />
-                <exclude name="woodstox-core-asl-source.jar" />
+                <exclude name="ant-source.jar" />
             </fileset>
         </zip>
         <delete file="${dist20.home}/lib/jaxws-rt.src.zip"/>
