@@ -293,11 +293,12 @@
         <zip file="${dist.home}/jdk-jaxws-libs.src.zip">
             <fileset dir="${dist20.home}/lib" includes="jaxws-rt.src.zip"/>
             <fileset dir="${dist20.home}/lib" includes="jaxws-tools.src.zip"/>
-            <!-- include everything except jaxws-asm-source.jar, junit-source.jar, ant-source.jar -->
+            <!-- include everything except jaxws-asm-source.jar, junit-source.jar -->
             <fileset dir="${basedir}/lib">
                 <include name="*source*.jar" />
                 <exclude name="junit-source.jar" />
                 <exclude name="jaxws-asm-source.jar" />
+                <exclude name="woodstox-core-asl-source.jar" />
             </fileset>
         </zip>
         <delete file="${dist20.home}/lib/jaxws-rt.src.zip"/>
@@ -316,6 +317,7 @@
       <get src="${JAXWS_RE_BUILD}/jsr181-api.jar" dest="${dist20.home}/lib/jsr181-api.jar"/>
   </target>
 
+    <!--<property name="maven.repo.local" value="c:/Users/mkos/.m2/repository"/>-->
     <property name="maven.ant.task.jar" value="maven-ant-tasks-2.0.10.jar"/>
     <property name="java.net.staging.repo" value="https://maven.java.net/service/local/staging/deploy/maven2/"/>
     <property name="java.net.snapshot.repo" value="https://maven.java.net/content/repositories/snapshots/"/>
