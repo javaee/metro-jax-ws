@@ -72,51 +72,51 @@ import java.util.logging.Logger;
 /**
  * Represents a list of {@link WebServiceFeature}s that has bunch of utility
  * methods pertaining to web service features.
- * 
+ *
  * @author Rama Pulavarthi
  */
 public final class WebServiceFeatureList extends AbstractMap<Class<? extends WebServiceFeature>, WebServiceFeature> implements WSFeatureList {
-	public static WebServiceFeatureList toList(Iterable<WebServiceFeature> features) {
-		if (features instanceof WebServiceFeatureList)
-			return (WebServiceFeatureList) features;
-		WebServiceFeatureList w = new WebServiceFeatureList();
-		if (features != null)
-			w.addAll(features);
-		return w;
-	}
-	
-	private Map<Class<? extends WebServiceFeature>, WebServiceFeature> wsfeatures = new HashMap<Class<? extends WebServiceFeature>, WebServiceFeature>();
+    public static WebServiceFeatureList toList(Iterable<WebServiceFeature> features) {
+        if (features instanceof WebServiceFeatureList)
+            return (WebServiceFeatureList) features;
+        WebServiceFeatureList w = new WebServiceFeatureList();
+        if (features != null)
+            w.addAll(features);
+        return w;
+    }
 
-	public WebServiceFeatureList() {
-	}
+    private Map<Class<? extends WebServiceFeature>, WebServiceFeature> wsfeatures = new HashMap<Class<? extends WebServiceFeature>, WebServiceFeature>();
 
-	/**
-	 * Delegate to this parent if non-null.
-	 */
-	private @Nullable
+    public WebServiceFeatureList() {
+    }
+
+    /**
+     * Delegate to this parent if non-null.
+     */
+    private @Nullable
 	WSDLFeaturedObject parent;
 
-	public WebServiceFeatureList(@NotNull WebServiceFeature... features) {
-		if (features != null) {
-			for (WebServiceFeature f : features) {
-				add(f);
-			}
-		}
-	}
-	
-	public WebServiceFeatureList(WebServiceFeatureList features) {
-		if (features != null) {
-			wsfeatures.putAll(features.wsfeatures);
-			parent = features.parent;
-		}
-	}
-	
-	/**
-	 * Creates a list by reading featuers from the annotation on a class.
-	 */
-	public WebServiceFeatureList(@NotNull Class<?> endpointClass) {
-		parseAnnotations(endpointClass);
-	}
+    public WebServiceFeatureList(@NotNull WebServiceFeature... features) {
+        if (features != null) {
+            for (WebServiceFeature f : features) {
+                add(f);
+            }
+        }
+    }
+
+    public WebServiceFeatureList(WebServiceFeatureList features) {
+        if (features != null) {
+            wsfeatures.putAll(features.wsfeatures);
+            parent = features.parent;
+        }
+    }
+
+    /**
+     * Creates a list by reading featuers from the annotation on a class.
+     */
+    public WebServiceFeatureList(@NotNull Class<?> endpointClass) {
+        parseAnnotations(endpointClass);
+    }
 
     /**
      * Adds the corresponding features to the list for feature annotations(i.e
@@ -136,7 +136,7 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
     /**
      * Returns a corresponding feature for a feature annotation(i.e which has
      * {@link WebServiceFeatureAnnotation} meta annotation)
-     * 
+     *
      * @return corresponding feature for the annotation
      *         null, if the annotation is nota feature annotation
      */
@@ -196,123 +196,119 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
         return url.substring(0,url.lastIndexOf('!'));    // cut off everything after '!'
     }
 
-	private static WebServiceFeature getWebServiceFeatureBean(Annotation a) {
-		WebServiceFeatureAnnotation wsfa = a.annotationType().getAnnotation(
-				WebServiceFeatureAnnotation.class);
-		Class<? extends WebServiceFeature> beanClass = wsfa.bean();
-		WebServiceFeature bean;
+    private static WebServiceFeature getWebServiceFeatureBean(Annotation a) {
+        WebServiceFeatureAnnotation wsfa = a.annotationType().getAnnotation(WebServiceFeatureAnnotation.class);
+        Class<? extends WebServiceFeature> beanClass = wsfa.bean();
+        WebServiceFeature bean;
 
-		Constructor ftrCtr = null;
-		String[] paramNames = null;
-		for (Constructor con : beanClass.getConstructors()) {
-			FeatureConstructor ftrCtrAnn = (FeatureConstructor) con.getAnnotation(FeatureConstructor.class);
-			if (ftrCtrAnn != null) {
-				if (ftrCtr == null) {
-					ftrCtr = con;
-					paramNames = ftrCtrAnn.value();
-				} else {
-					throw new WebServiceException(
-							ModelerMessages.RUNTIME_MODELER_WSFEATURE_MORETHANONE_FTRCONSTRUCTOR(
-									a, beanClass));
-				}
-			}
-		}
-		if (ftrCtr == null) {
-			throw new WebServiceException(
-					ModelerMessages.RUNTIME_MODELER_WSFEATURE_NO_FTRCONSTRUCTOR(
-							a, beanClass));
-		}
-		if (ftrCtr.getParameterTypes().length != paramNames.length) {
-			throw new WebServiceException(
-					ModelerMessages.RUNTIME_MODELER_WSFEATURE_ILLEGAL_FTRCONSTRUCTOR(
-							a, beanClass));
-		}
+        Constructor ftrCtr = null;
+        String[] paramNames = null;
+        for (Constructor con : beanClass.getConstructors()) {
+            FeatureConstructor ftrCtrAnn = (FeatureConstructor) con.getAnnotation(FeatureConstructor.class);
+            if (ftrCtrAnn != null) {
+                if (ftrCtr == null) {
+                    ftrCtr = con;
+                    paramNames = ftrCtrAnn.value();
+                } else {
+                    throw new WebServiceException(
+                        ModelerMessages.RUNTIME_MODELER_WSFEATURE_MORETHANONE_FTRCONSTRUCTOR(a, beanClass));
+                }
+            }
+        }
+        if (ftrCtr == null) {
+            throw new WebServiceException(
+                ModelerMessages.RUNTIME_MODELER_WSFEATURE_NO_FTRCONSTRUCTOR(a, beanClass));
+        }
+        if (ftrCtr.getParameterTypes().length != paramNames.length) {
+            throw new WebServiceException(
+                ModelerMessages.RUNTIME_MODELER_WSFEATURE_ILLEGAL_FTRCONSTRUCTOR(a, beanClass));
+        }
 
-		try {
-			Object[] params = new Object[paramNames.length];
-			for (int i = 0; i < paramNames.length; i++) {
-				Method m = a.annotationType().getDeclaredMethod(paramNames[i]);
-				params[i] = m.invoke(a);
-			}
-			bean = (WebServiceFeature) ftrCtr.newInstance(params);
-		} catch (Exception e) {
-			throw new WebServiceException(e);
-		}
-		return bean;
-	}
+        try {
+            Object[] params = new Object[paramNames.length];
+            for (int i = 0; i < paramNames.length; i++) {
+                Method m = a.annotationType().getDeclaredMethod(paramNames[i]);
+                params[i] = m.invoke(a);
+            }
+            bean = (WebServiceFeature) ftrCtr.newInstance(params);
+        } catch (Exception e) {
+            throw new WebServiceException(e);
+        }
+        return bean;
+    }
 
-	public Iterator<WebServiceFeature> iterator() {
-		if (parent != null)
-			return new MergedFeatures(parent.getFeatures());
-		return wsfeatures.values().iterator();
-	}
+    public Iterator<WebServiceFeature> iterator() {
+        if (parent != null)
+            return new MergedFeatures(parent.getFeatures());
+        return wsfeatures.values().iterator();
+    }
 
-	public @NotNull
+    public @NotNull
 	WebServiceFeature[] toArray() {
-		if (parent != null)
-			return new MergedFeatures(parent.getFeatures()).toArray();
-		return wsfeatures.values().toArray(new WebServiceFeature[] {});
-	}
+        if (parent != null)
+            return new MergedFeatures(parent.getFeatures()).toArray();
+        return wsfeatures.values().toArray(new WebServiceFeature[] {});
+    }
 
-	public boolean isEnabled(@NotNull Class<? extends WebServiceFeature> feature) {
-		WebServiceFeature ftr = get(feature);
-		return ftr != null && ftr.isEnabled();
-	}
+    public boolean isEnabled(@NotNull Class<? extends WebServiceFeature> feature) {
+        WebServiceFeature ftr = get(feature);
+        return ftr != null && ftr.isEnabled();
+    }
 
-	public boolean contains(@NotNull Class<? extends WebServiceFeature> feature) {
-		WebServiceFeature ftr = get(feature);
-		return ftr != null;
-	}
+    public boolean contains(@NotNull Class<? extends WebServiceFeature> feature) {
+        WebServiceFeature ftr = get(feature);
+        return ftr != null;
+    }
 
-	public @Nullable
+    public @Nullable
 	<F extends WebServiceFeature> F get(@NotNull Class<F> featureType) {
-		WebServiceFeature f = featureType.cast(wsfeatures.get(featureType));
-		if (f == null && parent != null) {
-			return parent.getFeatures().get(featureType);
-		}
-		return (F) f;
-	}
+        WebServiceFeature f = featureType.cast(wsfeatures.get(featureType));
+        if (f == null && parent != null) {
+            return parent.getFeatures().get(featureType);
+        }
+        return (F) f;
+    }
 
-	/**
-	 * Adds a feature to the list if it's not already added.
-	 */
-	public void add(@NotNull WebServiceFeature f) {
-		if (!wsfeatures.containsKey(f.getClass())) {
-			wsfeatures.put(f.getClass(), f);
-			
-			if (f instanceof ImpliesWebServiceFeature)
-				((ImpliesWebServiceFeature) f).implyFeatures(this);
-		}
-	}
+    /**
+     * Adds a feature to the list if it's not already added.
+     */
+    public void add(@NotNull WebServiceFeature f) {
+        if (!wsfeatures.containsKey(f.getClass())) {
+            wsfeatures.put(f.getClass(), f);
 
-	/**
-	 * Adds features to the list if it's not already added.
-	 */
-	public void addAll(@NotNull Iterable<WebServiceFeature> list) {
-		for (WebServiceFeature f : list)
-			add(f);
-	}
-	
-	/**
-	 * Sets MTOM feature, overriding any existing feature.  This is necessary for compatibility
-	 * with the existing {@link SOAPBinding.setMTOMEnabled}.
-	 * @param b if MTOM will be enabled
-	 */
+            if (f instanceof ImpliesWebServiceFeature)
+                ((ImpliesWebServiceFeature) f).implyFeatures(this);
+        }
+    }
+
+    /**
+     * Adds features to the list if it's not already added.
+     */
+    public void addAll(@NotNull Iterable<WebServiceFeature> list) {
+        for (WebServiceFeature f : list)
+            add(f);
+    }
+
+    /**
+     * Sets MTOM feature, overriding any existing feature.  This is necessary for compatibility
+     * with the existing {@link SOAPBinding.setMTOMEnabled}.
+     * @param b if MTOM will be enabled
+     */
     void setMTOMEnabled(boolean b) {
     	wsfeatures.put(MTOMFeature.class, new MTOMFeature(b));
     }
 
-	public boolean equals(Object other) {
+    public boolean equals(Object other) {
     	if (!(other instanceof WebServiceFeatureList))
-    		return false;
-    	
+            return false;
+
     	WebServiceFeatureList w = (WebServiceFeatureList) other;
     	return wsfeatures.equals(w.wsfeatures) && (parent == w.parent);
     }
-	
-	public String toString() {
-		return wsfeatures.toString();
-	}
+
+    public String toString() {
+        return wsfeatures.toString();
+    }
 
     /**
      * Merges the extra features that are not already set on binding.
@@ -331,147 +327,146 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
             } else if (reportConflicts) {
                 if (isEnabled(wsdlFtr.getClass()) != wsdlFtr.isEnabled()) {
                     LOGGER.warning(ModelerMessages.RUNTIME_MODELER_FEATURE_CONFLICT(
-                            get(wsdlFtr.getClass()), wsdlFtr));
+                                       get(wsdlFtr.getClass()), wsdlFtr));
                 }
             }
         }
     }
-    
-	public void mergeFeatures(WebServiceFeature[] features, boolean reportConflicts) {
+
+    public void mergeFeatures(WebServiceFeature[] features, boolean reportConflicts) {
         for (WebServiceFeature wsdlFtr : features) {
             if (get(wsdlFtr.getClass()) == null) {
                 add(wsdlFtr);
             } else if (reportConflicts) {
                 if (isEnabled(wsdlFtr.getClass()) != wsdlFtr.isEnabled()) {
                     LOGGER.warning(ModelerMessages.RUNTIME_MODELER_FEATURE_CONFLICT(
-                            get(wsdlFtr.getClass()), wsdlFtr));
+                                       get(wsdlFtr.getClass()), wsdlFtr));
                 }
             }
-        }		
-	}
+        }
+    }
 
     /**
-	 * Extracts features from {@link WSDLPortImpl#getFeatures()}. Extra features
-	 * that are not already set on binding. i.e, if a feature is set already on
-	 * binding through someother API the coresponding wsdlFeature is not set.
-	 * 
-	 * @param wsdlPort
-	 *            WSDLPort model
-	 * @param honorWsdlRequired
-	 *            If this is true add WSDL Feature only if wsd:Required=true In
-	 *            SEI case, it should be false In Provider case, it should be
-	 *            true
-	 * @param reportConflicts
-	 *            If true, checks if the feature setting in WSDL (wsdl extension
-	 *            or policy configuration) colflicts with feature setting in
-	 *            Deployed Service and logs warning if there are any conflicts.
-	 */
-	public void mergeFeatures(@NotNull WSDLPort wsdlPort,
-			boolean honorWsdlRequired, boolean reportConflicts) {
-		if (honorWsdlRequired && !isEnabled(RespectBindingFeature.class))
-			return;
-		if (!honorWsdlRequired) {
-			addAll(wsdlPort.getFeatures());
-			return;
-		}
-		// Add only if isRequired returns true, when honorWsdlRequired is true
-		for (WebServiceFeature wsdlFtr : wsdlPort.getFeatures()) {
-			if (get(wsdlFtr.getClass()) == null) {
-				try {
-					// if it is a WSDL Extension , it will have required
-					// attribute
-					Method m = (wsdlFtr.getClass().getMethod("isRequired"));
-					try {
-						boolean required = (Boolean) m.invoke(wsdlFtr);
-						if (required)
-							add(wsdlFtr);
-					} catch (IllegalAccessException e) {
-						throw new WebServiceException(e);
-					} catch (InvocationTargetException e) {
-						throw new WebServiceException(e);
-					}
-				} catch (NoSuchMethodException e) {
-					// this wsdlFtr is not an WSDL extension, just add it
-					add(wsdlFtr);
-				}
-			} else if (reportConflicts) {
-				if (isEnabled(wsdlFtr.getClass()) != wsdlFtr.isEnabled()) {
-					LOGGER.warning(ModelerMessages.RUNTIME_MODELER_FEATURE_CONFLICT(
-							get(wsdlFtr.getClass()), wsdlFtr));
-				}
+     * Extracts features from {@link WSDLPortImpl#getFeatures()}. Extra features
+     * that are not already set on binding. i.e, if a feature is set already on
+     * binding through someother API the coresponding wsdlFeature is not set.
+     *
+     * @param wsdlPort
+     *            WSDLPort model
+     * @param honorWsdlRequired
+     *            If this is true add WSDL Feature only if wsd:Required=true In
+     *            SEI case, it should be false In Provider case, it should be
+     *            true
+     * @param reportConflicts
+     *            If true, checks if the feature setting in WSDL (wsdl extension
+     *            or policy configuration) colflicts with feature setting in
+     *            Deployed Service and logs warning if there are any conflicts.
+     */
+    public void mergeFeatures(@NotNull WSDLPort wsdlPort,
+                              boolean honorWsdlRequired, boolean reportConflicts) {
+        if (honorWsdlRequired && !isEnabled(RespectBindingFeature.class))
+            return;
+        if (!honorWsdlRequired) {
+            addAll(wsdlPort.getFeatures());
+            return;
+        }
+        // Add only if isRequired returns true, when honorWsdlRequired is true
+        for (WebServiceFeature wsdlFtr : wsdlPort.getFeatures()) {
+            if (get(wsdlFtr.getClass()) == null) {
+                try {
+                    // if it is a WSDL Extension , it will have required
+                    // attribute
+                    Method m = (wsdlFtr.getClass().getMethod("isRequired"));
+                    try {
+                        boolean required = (Boolean) m.invoke(wsdlFtr);
+                        if (required)
+                            add(wsdlFtr);
+                    } catch (IllegalAccessException e) {
+                        throw new WebServiceException(e);
+                    } catch (InvocationTargetException e) {
+                        throw new WebServiceException(e);
+                    }
+                } catch (NoSuchMethodException e) {
+                    // this wsdlFtr is not an WSDL extension, just add it
+                    add(wsdlFtr);
+                }
+            } else if (reportConflicts) {
+                if (isEnabled(wsdlFtr.getClass()) != wsdlFtr.isEnabled()) {
+                    LOGGER.warning(ModelerMessages.RUNTIME_MODELER_FEATURE_CONFLICT(
+                                       get(wsdlFtr.getClass()), wsdlFtr));
+                }
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	/**
-	 * Set the parent features. Basically the parent feature list will be
-	 * overriden by this feature list.
-	 */
-	public void setParentFeaturedObject(@NotNull WSDLFeaturedObject parent) {
-		this.parent = parent;
-	}
+    /**
+     * Set the parent features. Basically the parent feature list will be
+     * overriden by this feature list.
+     */
+    public void setParentFeaturedObject(@NotNull WSDLFeaturedObject parent) {
+        this.parent = parent;
+    }
 
-	public static @Nullable
-	<F extends WebServiceFeature> F getFeature(
-			@NotNull WebServiceFeature[] features, @NotNull Class<F> featureType) {
-		for (WebServiceFeature f : features) {
-			if (f.getClass() == featureType)
-				return (F) f;
-		}
-		return null;
-	}
+    public static @Nullable <F extends WebServiceFeature> F getFeature(@NotNull WebServiceFeature[] features,
+                                                                       @NotNull Class<F> featureType) {
+        for (WebServiceFeature f : features) {
+            if (f.getClass() == featureType)
+                return (F) f;
+        }
+        return null;
+    }
 
-	/**
-	 * A Union of this WebServiceFeatureList and the parent.
-	 */
-	private final class MergedFeatures implements Iterator<WebServiceFeature> {
-		private final Stack<WebServiceFeature> features = new Stack<WebServiceFeature>();
+    /**
+     * A Union of this WebServiceFeatureList and the parent.
+     */
+    private final class MergedFeatures implements Iterator<WebServiceFeature> {
+        private final Stack<WebServiceFeature> features = new Stack<WebServiceFeature>();
 
-		public MergedFeatures(@NotNull WSFeatureList parent) {
+        public MergedFeatures(@NotNull WSFeatureList parent) {
 
-			for (WebServiceFeature f : wsfeatures.values()) {
-				features.push(f);
-			}
+            for (WebServiceFeature f : wsfeatures.values()) {
+                features.push(f);
+            }
 
-			for (WebServiceFeature f : parent) {
-				if (!wsfeatures.containsKey(f.getClass())) {
-					features.push(f);
-				}
-			}
-		}
+            for (WebServiceFeature f : parent) {
+                if (!wsfeatures.containsKey(f.getClass())) {
+                    features.push(f);
+                }
+            }
+        }
 
-		public boolean hasNext() {
-			return !features.empty();
-		}
+        public boolean hasNext() {
+            return !features.empty();
+        }
 
-		public WebServiceFeature next() {
-			if (!features.empty()) {
-				return features.pop();
-			}
-			throw new NoSuchElementException();
-		}
+        public WebServiceFeature next() {
+            if (!features.empty()) {
+                return features.pop();
+            }
+            throw new NoSuchElementException();
+        }
 
-		public void remove() {
-			if (!features.empty()) {
-				features.pop();
-			}
-		}
+        public void remove() {
+            if (!features.empty()) {
+                features.pop();
+            }
+        }
 
-		public WebServiceFeature[] toArray() {
-			return features.toArray(new WebServiceFeature[] {});
-		}
-	}
+        public WebServiceFeature[] toArray() {
+            return features.toArray(new WebServiceFeature[] {});
+        }
+    }
 
-	private static final Logger LOGGER = Logger.getLogger(WebServiceFeatureList.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(WebServiceFeatureList.class.getName());
 
-	@Override
-	public Set<java.util.Map.Entry<Class<? extends WebServiceFeature>, WebServiceFeature>> entrySet() {
-		return wsfeatures.entrySet();
-	}
-	
-	@Override
+    @Override
+    public Set<java.util.Map.Entry<Class<? extends WebServiceFeature>, WebServiceFeature>> entrySet() {
+        return wsfeatures.entrySet();
+    }
+
+    @Override
     public WebServiceFeature put(Class<? extends WebServiceFeature> key, WebServiceFeature value) {
-		return wsfeatures.put(key, value);
-	}
+        return wsfeatures.put(key, value);
+    }
 }
