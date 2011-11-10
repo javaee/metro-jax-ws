@@ -296,7 +296,6 @@
             <!-- include everything except jaxws-asm-source.jar, junit-source.jar, ant-source.jar -->
             <fileset dir="${basedir}/lib">
                 <include name="*source*.jar" />
-                <exclude name="ant-source.jar" />
                 <exclude name="junit-source.jar" />
                 <exclude name="jaxws-asm-source.jar" />
             </fileset>
