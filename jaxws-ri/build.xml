@@ -270,9 +270,11 @@
       <fileset dir="${basedir}/tools/wscompile/build/classes" includes="**/*.properties"/>
       <zipfileset dir="${basedir}/tools/etc/" includes="com.sun.*" prefix="META-INF/services"/>
     </zip>
-    <zip file="${dist20.home}/lib/jaxws-libs.src.zip">
-      <fileset dir="${basedir}/lib" includes="*-source.jar" excludes="jaxws-asm-source.jar,junit-source.jar"/>
-    </zip>
+    <!--
+        <zip file="${dist20.home}/lib/jaxws-libs.src.zip">
+          <fileset dir="${basedir}/lib" includes="*-source.jar" excludes="jaxws-asm-source.jar,junit-source.jar"/>
+        </zip>
+    -->
     <zip file="${dist20.home}/lib/jaxws-eclipselink-plugin.src.zip">
       <fileset dir="${basedir}/eclipselink_jaxb/src"/>
       <fileset dir="${basedir}/eclipselink_jaxb/build/classes" includes="META-INF/services/*"/>
@@ -284,14 +286,20 @@
   </target>
 
     <target name="jdk-jaxws-src.zip" description="create source zip bundles of the JAX-WS in JDK" depends="src.zip">
-        <delete file="${dist20.home}/lib/jaxws-libs.src.zip"/> <!-- not needed as we create another bundle with all libs -->
+        <!-- not needed as we create another bundle with all libs -->
+        <!--<delete file="${dist20.home}/lib/jaxws-libs.src.zip"/> -->
+        <echo message="dist.home=${dist.home}" />
+        <echo message="basedir=${basedir}" />
         <zip file="${dist.home}/jdk-jaxws-libs.src.zip">
             <fileset dir="${dist20.home}/lib" includes="jaxws-rt.src.zip"/>
             <fileset dir="${dist20.home}/lib" includes="jaxws-tools.src.zip"/>
-            <fileset dir="${basedir}/lib" includes="FastInfoset-source.jar,jaxb-impl-source.jar, jaxb-xjc-source.jar,
-                saaj-impl-source.jar, stax-ex-source.jar, streambuffer-source.jar,
-                jaxws-api-source.jar, jaxb-api-source.jar, jsr181-api-source.jar, saaj-api-source.jar, javax.annotation-source.jar,
-                mimepull-source.jar, jaxws-asm-source.jar, policy-source.jar, gmbal-api-only-source.jar,management-api-sources.jar"/>
+            <!-- include everything except jaxws-asm-source.jar, junit-source.jar, ant-source.jar -->
+            <fileset dir="${basedir}/lib">
+                <include name="*source*.jar" />
+                <exclude name="ant-source.jar" />
+                <exclude name="junit-source.jar" />
+                <exclude name="jaxws-asm-source.jar" />
+            </fileset>
         </zip>
         <delete file="${dist20.home}/lib/jaxws-rt.src.zip"/>
         <delete file="${dist20.home}/lib/jaxws-tools.src.zip"/>
