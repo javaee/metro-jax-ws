@@ -141,6 +141,7 @@ public abstract class TransportTubeFactory {
         ClientPipeAssemblerContext ctxt = new ClientPipeAssemblerContext(
                 context.getAddress(), context.getWsdlModel(), context.getService(),
                 context.getBinding(), context.getContainer());
+        ctxt.setCodec(context.getCodec());
         for (TransportPipeFactory factory : ServiceFinder.find(TransportPipeFactory.class,classLoader)) {
             Pipe pipe = factory.doCreate(ctxt);
             if (pipe!=null) {
