@@ -66,7 +66,7 @@ public class PacketDispatch extends DispatchImpl<Packet> {
 
 
     public PacketDispatch(WSPortInfo portInfo, Tube pipe, BindingImpl binding, WSEndpointReference epr) {
-        this(portInfo, pipe, binding, epr, false);
+        this(portInfo, pipe, binding, epr, true);
     }
 
     public PacketDispatch(WSPortInfo portInfo, Tube pipe, BindingImpl binding, WSEndpointReference epr, boolean allowFaultResponseMsg) {

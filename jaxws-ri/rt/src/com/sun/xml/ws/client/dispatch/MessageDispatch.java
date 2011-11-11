@@ -66,7 +66,7 @@ public class MessageDispatch extends DispatchImpl<Message> {
     }
 
     public MessageDispatch(WSPortInfo portInfo, BindingImpl binding, WSEndpointReference epr) {
-            super(portInfo, Mode.MESSAGE, binding, epr);
+            super(portInfo, Mode.MESSAGE, binding, epr, true);
     }
 
     @Override

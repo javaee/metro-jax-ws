@@ -139,10 +139,20 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
      * @param binding  Binding of this Dispatch instance, current one of SOAP/HTTP or XML/HTTP
      */
     protected DispatchImpl(WSPortInfo portInfo, Service.Mode mode, BindingImpl binding, @Nullable WSEndpointReference epr) {
-     this(portInfo, mode, binding, null,epr, false);
+        this(portInfo, mode, binding, epr, false);
     }
 
-      /**
+    /**
+     * @param portInfo dispatch instance is associated with this portInfo
+     * @param mode     Service.mode associated with this Dispatch instance - Service.mode.MESSAGE or Service.mode.PAYLOAD
+     * @param binding  Binding of this Dispatch instance, current one of SOAP/HTTP or XML/HTTP
+     * @param allowFaultResponseMsg A packet containing a SOAP fault message is allowed as the response to a request on this dispatch instance.
+     */
+    protected DispatchImpl(WSPortInfo portInfo, Service.Mode mode, BindingImpl binding, @Nullable WSEndpointReference epr, boolean allowFaultResponseMsg) {
+        this(portInfo, mode, binding, null, epr, allowFaultResponseMsg);
+    }
+
+    /**
      * @param portInfo dispatch instance is associated with this portInfo
      * @param mode     Service.mode associated with this Dispatch instance - Service.mode.MESSAGE or Service.mode.PAYLOAD
      * @param binding  Binding of this Dispatch instance, current one of SOAP/HTTP or XML/HTTP
