@@ -297,7 +297,8 @@
             <fileset dir="${basedir}/lib">
                 <include name="*source*.jar" />
                 <exclude name="junit-source.jar" />
-                <exclude name="jaxws-asm-source.jar" />
+                <!--TODO: seems to be we have to integrate ....-->
+                <!--<exclude name="jaxws-asm-source.jar" />-->
                 <exclude name="ant-source.jar" />
                 <exclude name="woodstox-core-asl-source.jar" />
             </fileset>
