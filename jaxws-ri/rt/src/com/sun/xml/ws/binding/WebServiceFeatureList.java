@@ -141,7 +141,7 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
      *         null, if the annotation is nota feature annotation
      */
     public static WebServiceFeature getFeature(Annotation a) {
-        WebServiceFeature ftr;
+        WebServiceFeature ftr = null;
         if (!(a.annotationType().isAnnotationPresent(WebServiceFeatureAnnotation.class))) {
             ftr = null;
         } else if (a instanceof Addressing) {
@@ -216,8 +216,13 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
             }
         }
         if (ftrCtr == null) {
-            throw new WebServiceException(
-                ModelerMessages.RUNTIME_MODELER_WSFEATURE_NO_FTRCONSTRUCTOR(a, beanClass));
+            bean = getWebServiceFeatureBeanViaBuilder(a, beanClass);
+            if (bean != null) {
+                return bean;
+            } else {
+                throw new WebServiceException(
+                    ModelerMessages.RUNTIME_MODELER_WSFEATURE_NO_FTRCONSTRUCTOR(a, beanClass));
+            }
         }
         if (ftrCtr.getParameterTypes().length != paramNames.length) {
             throw new WebServiceException(
@@ -235,6 +240,40 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
             throw new WebServiceException(e);
         }
         return bean;
+    }
+
+    private static WebServiceFeature getWebServiceFeatureBeanViaBuilder(
+        final Annotation annotation,
+        final Class<? extends WebServiceFeature> beanClass)
+    {
+        try {
+            final Method featureBuilderMethod = beanClass.getDeclaredMethod("builder");
+            final Object builder = featureBuilderMethod.invoke(beanClass);
+            final Method buildMethod = builder.getClass().getDeclaredMethod("build");
+
+            for (Method builderMethod : builder.getClass().getDeclaredMethods()) {
+                if (!builderMethod.equals(buildMethod)) {
+                    final String methodName = builderMethod.getName();
+                    final Method annotationMethod = annotation.annotationType().getDeclaredMethod(methodName);
+                    final Object annotationFieldValue = annotationMethod.invoke(annotation);
+                    final Object[] arg = { annotationFieldValue };
+                    builderMethod.invoke(builder, arg);
+                }
+            }
+
+            final Object result = buildMethod.invoke(builder);
+            if (result instanceof WebServiceFeature) {
+                return (WebServiceFeature) result;
+            } else {
+                throw new WebServiceException("Not a WebServiceFeature: " + result);
+            }
+        } catch (final NoSuchMethodException e) {
+            return null;
+        } catch (final IllegalAccessException e) {
+            throw new WebServiceException(e);
+        } catch (final InvocationTargetException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     public Iterator<WebServiceFeature> iterator() {
