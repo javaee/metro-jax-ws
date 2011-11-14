@@ -195,7 +195,7 @@ public class WsgenTool {
                 fileManager,
                 diagnostics,
                 args,
-                Collections.singleton(endpoint),
+                Collections.singleton(endpoint.replaceAll("\\$", ".")),
                 null);
         task.setProcessors(Collections.singleton(new WebServiceAp(options, out)));
         boolean result = task.call();
