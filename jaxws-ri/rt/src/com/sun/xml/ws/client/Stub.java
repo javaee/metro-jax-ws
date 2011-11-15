@@ -50,6 +50,7 @@ import com.sun.xml.ws.model.wsdl.WSDLPortProperties;
 import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
 import com.sun.xml.ws.api.Component;
+import com.sun.xml.ws.api.ComponentRegistry;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSService;
@@ -85,6 +86,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import org.xml.sax.InputSource;
 
@@ -99,7 +102,7 @@ import org.xml.sax.InputSource;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class Stub implements WSBindingProvider, ResponseContextReceiver, Component  {
+public abstract class Stub implements WSBindingProvider, ResponseContextReceiver, ComponentRegistry  {
     /**
      * Internal flag indicating async dispatch should be used even when the
      * SyncStartForAsyncInvokeFeature is present on the binding associated
@@ -173,6 +176,8 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     @NotNull
     ManagedObjectManager managedObjectManager;
     private boolean managedObjectManagerClosed = false;
+
+    private final Set<Component> components = new CopyOnWriteArraySet<Component>();
 
     /**
      * @param master                 The created stub will send messages to this pipe.
@@ -655,7 +660,16 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, address);
     }
     
-    public @Nullable <T> T getSPI(@NotNull Class<T> spiType) {
+    public <S> S getSPI(Class<S> spiType) {
+	for (Component c : components) {
+	    S s = c.getSPI(spiType);
+	    if (s != null)
+		return s;
+	}
     	return owner.getSPI(spiType);
+    }
+    
+    public Set<Component> getComponents() {
+	return components;
     }
 }
