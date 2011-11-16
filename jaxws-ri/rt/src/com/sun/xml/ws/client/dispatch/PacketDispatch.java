@@ -74,7 +74,7 @@ public class PacketDispatch extends DispatchImpl<Packet> {
     }
 
     public PacketDispatch(WSPortInfo portInfo, BindingImpl binding, WSEndpointReference epr) {
-        super(portInfo, Mode.MESSAGE, binding, epr);
+        super(portInfo, Mode.MESSAGE, binding, epr, true);
     }
 
     @Override
