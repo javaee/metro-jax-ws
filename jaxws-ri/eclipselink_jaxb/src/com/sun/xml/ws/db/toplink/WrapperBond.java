@@ -69,7 +69,8 @@ public class WrapperBond<T> implements XMLBridge<T> {
 	JAXBContextWrapper parent;
 	TypeInfo typeInfo;
 	TypeMappingInfo mappingInfo;
-	static final String WrapperPrefix = "W:";
+	static final String WrapperPrefix = "W";
+        static final String WrapperPrefixColon = WrapperPrefix + ":";
 	
 	public WrapperBond(JAXBContextWrapper p, TypeInfo ti) {
 		this.parent = p;
@@ -102,7 +103,8 @@ public class WrapperBond<T> implements XMLBridge<T> {
 			public String getValue(String qName)  { return null; }
 		};
 		try {
-			contentHandler.startElement(typeInfo.tagName.getNamespaceURI(), typeInfo.tagName.getLocalPart(), WrapperPrefix + typeInfo.tagName.getLocalPart(), att);
+                    contentHandler.startPrefixMapping(WrapperPrefix, typeInfo.tagName.getNamespaceURI());
+			contentHandler.startElement(typeInfo.tagName.getNamespaceURI(), typeInfo.tagName.getLocalPart(), WrapperPrefixColon + typeInfo.tagName.getLocalPart(), att);
 		} catch (SAXException e) {
 			throw new JAXBException(e);
 		}
@@ -111,6 +113,7 @@ public class WrapperBond<T> implements XMLBridge<T> {
 		}
 		try {
 			contentHandler.endElement(typeInfo.tagName.getNamespaceURI(), typeInfo.tagName.getLocalPart(), null);
+			contentHandler.endPrefixMapping(WrapperPrefix);
 		} catch (SAXException e) {
 			throw new JAXBException(e);
 		}
@@ -139,8 +142,8 @@ public class WrapperBond<T> implements XMLBridge<T> {
 //			System.out.println(typeInfo.tagName.getNamespaceURI());
 			
 			//The prefix is to workaround an eclipselink bug
-			output.writeStartElement("rpc", typeInfo.tagName.getLocalPart(), typeInfo.tagName.getNamespaceURI());
-			output.writeNamespace("rpc", typeInfo.tagName.getNamespaceURI());
+			output.writeStartElement(WrapperPrefix, typeInfo.tagName.getLocalPart(), typeInfo.tagName.getNamespaceURI());
+			output.writeNamespace(WrapperPrefix, typeInfo.tagName.getNamespaceURI());
 
 //			output.writeStartElement("", typeInfo.tagName.getLocalPart(), typeInfo.tagName.getNamespaceURI());
 //			output.writeDefaultNamespace(typeInfo.tagName.getNamespaceURI());

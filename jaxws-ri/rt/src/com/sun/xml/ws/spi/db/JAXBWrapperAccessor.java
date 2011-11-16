@@ -48,8 +48,10 @@ import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElement;
@@ -57,45 +59,47 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.namespace.QName;
 
 /**
- * JAXBWrapperAccessor 
+ * JAXBWrapperAccessor
  * 
  * @author shih-chang.chen@oracle.com
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class JAXBWrapperAccessor extends WrapperAccessor {
 
-	protected Class<?> contentClass;
-	protected HashMap<Object, Class> elementDeclaredTypes;
+    protected Class<?> contentClass;
+    protected HashMap<Object, Class> elementDeclaredTypes;
 
-	public JAXBWrapperAccessor(Class<?> wrapperBean) {
-		contentClass = (Class<?>) wrapperBean;
-	      
-        HashMap<Object, PropertySetter> setByQName     = new HashMap<Object, PropertySetter>();
+    public JAXBWrapperAccessor(Class<?> wrapperBean) {
+        contentClass = (Class<?>) wrapperBean;
+
+        HashMap<Object, PropertySetter> setByQName = new HashMap<Object, PropertySetter>();
         HashMap<Object, PropertySetter> setByLocalpart = new HashMap<Object, PropertySetter>();
         HashMap<String, Method> publicSetters = new HashMap<String, Method>();
 
-        HashMap<Object, PropertyGetter> getByQName     = new HashMap<Object, PropertyGetter>();
+        HashMap<Object, PropertyGetter> getByQName = new HashMap<Object, PropertyGetter>();
         HashMap<Object, PropertyGetter> getByLocalpart = new HashMap<Object, PropertyGetter>();
         HashMap<String, Method> publicGetters = new HashMap<String, Method>();
-        
-        HashMap<Object, Class> elementDeclaredTypesByQName     = new HashMap<Object, Class>();
+
+        HashMap<Object, Class> elementDeclaredTypesByQName = new HashMap<Object, Class>();
         HashMap<Object, Class> elementDeclaredTypesByLocalpart = new HashMap<Object, Class>();
-        
+
         for (Method method : contentClass.getMethods()) {
             if (PropertySetterBase.setterPattern(method)) {
-                String key = method.getName().substring(3, method.getName().length()).toLowerCase();
+                String key = method.getName()
+                        .substring(3, method.getName().length()).toLowerCase();
                 publicSetters.put(key, method);
             }
             if (PropertyGetterBase.getterPattern(method)) {
                 String methodName = method.getName();
-                String key = methodName.startsWith("is") ? 
-                    methodName.substring(2, method.getName().length()).toLowerCase() :
-                    methodName.substring(3, method.getName().length()).toLowerCase();
+                String key = methodName.startsWith("is") ? methodName
+                        .substring(2, method.getName().length()).toLowerCase()
+                        : methodName.substring(3, method.getName().length())
+                                .toLowerCase();
                 publicGetters.put(key, method);
             }
-        }   
+        }
         HashSet<String> elementLocalNames = new HashSet<String>();
-        for (Field field : getDeclaredFields(contentClass) ) {
+        for (Field field : getAllFields(contentClass)) {
             XmlElement xmlElem = field.getAnnotation(XmlElement.class);
             XmlElementRef xmlElemRef = field.getAnnotation(XmlElementRef.class);
             String fieldName = field.getName().toLowerCase();
@@ -103,17 +107,19 @@ public class JAXBWrapperAccessor extends WrapperAccessor {
             String localName = field.getName();
             if (xmlElem != null) {
                 namespace = xmlElem.namespace();
-                if (xmlElem.name() != null && !xmlElem.name().equals("") && !xmlElem.name().equals("##default")) {
+                if (xmlElem.name() != null && !xmlElem.name().equals("")
+                        && !xmlElem.name().equals("##default")) {
                     localName = xmlElem.name();
                 }
             } else if (xmlElemRef != null) {
                 namespace = xmlElemRef.namespace();
-                if (xmlElemRef.name() != null && !xmlElemRef.name().equals("") && !xmlElemRef.name().equals("##default")) {
+                if (xmlElemRef.name() != null && !xmlElemRef.name().equals("")
+                        && !xmlElemRef.name().equals("##default")) {
                     localName = xmlElemRef.name();
                 }
-            } 
+            }
             if (elementLocalNames.contains(localName)) {
-            	this.elementLocalNameCollision = true;
+                this.elementLocalNameCollision = true;
             } else {
                 elementLocalNames.add(localName);
             }
@@ -122,24 +128,29 @@ public class JAXBWrapperAccessor extends WrapperAccessor {
             if (field.getType().equals(JAXBElement.class)) {
                 Class elementDeclaredType = Object.class;
                 if (field.getGenericType() instanceof ParameterizedType) {
-                    Type arg = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+                    Type arg = ((ParameterizedType) field.getGenericType())
+                            .getActualTypeArguments()[0];
                     if (arg instanceof Class) {
                         elementDeclaredTypesByQName.put(qname, (Class) arg);
-                        elementDeclaredTypesByLocalpart.put(localName, (Class) arg);
+                        elementDeclaredTypesByLocalpart.put(localName,
+                                (Class) arg);
                     } else if (arg instanceof GenericArrayType) {
-                        Type componentType = ((GenericArrayType) arg).getGenericComponentType();
+                        Type componentType = ((GenericArrayType) arg)
+                                .getGenericComponentType();
                         if (componentType instanceof Class) {
-                            Class arrayClass = Array.newInstance((Class) componentType, 0).getClass();
+                            Class arrayClass = Array.newInstance(
+                                    (Class) componentType, 0).getClass();
                             elementDeclaredTypesByQName.put(qname, arrayClass);
-                            elementDeclaredTypesByLocalpart.put(localName, arrayClass);    
-                        }                    
+                            elementDeclaredTypesByLocalpart.put(localName,
+                                    arrayClass);
+                        }
                     }
                 }
-                
+
             }
-            //_return
+            // _return
             if (fieldName.startsWith("_") && !localName.startsWith("_")) {
-            	fieldName = fieldName.substring(1);
+                fieldName = fieldName.substring(1);
             }
             Method setMethod = publicSetters.get(fieldName);
             Method getMethod = publicGetters.get(fieldName);
@@ -151,31 +162,39 @@ public class JAXBWrapperAccessor extends WrapperAccessor {
             getByLocalpart.put(localName, getter);
         }
         if (this.elementLocalNameCollision) {
-        	this.propertySetters = setByQName;
-        	this.propertyGetters = getByQName;
+            this.propertySetters = setByQName;
+            this.propertyGetters = getByQName;
             elementDeclaredTypes = elementDeclaredTypesByQName;
         } else {
-        	this.propertySetters = setByLocalpart;
-        	this.propertyGetters = getByLocalpart;
+            this.propertySetters = setByLocalpart;
+            this.propertyGetters = getByLocalpart;
             elementDeclaredTypes = elementDeclaredTypesByLocalpart;
         }
-	}
+    }
+
+    static protected List<Field> getAllFields(Class<?> clz) {
+        List<Field> list = new ArrayList<Field>();
+        while (!Object.class.equals(clz)) {
+            for (Field f : getDeclaredFields(clz)) list.add(f);
+            clz = clz.getSuperclass();
+        }
+        return list;
+    }
     
-    //oracle.j2ee.ws.common.jaxws.AccessControllHelper   
     static protected Field[] getDeclaredFields(final Class<?> clz) {
         try {
-            return (System.getSecurityManager() == null) ? clz.getDeclaredFields() :
+            return (System.getSecurityManager() == null) ? clz .getDeclaredFields() : 
                 AccessController.doPrivileged(new PrivilegedExceptionAction<Field[]>() {
-                public Field[] run() throws IllegalAccessException {
-                    return clz.getDeclaredFields();
-                }
-            });
+                        public Field[] run() throws IllegalAccessException {
+                            return clz.getDeclaredFields();
+                        }
+                    });
         } catch (PrivilegedActionException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             return null;
         }
-    }    
+    }
 
     static protected PropertyGetter createPropertyGetter(Field field, Method getMethod) {
         if (!field.isAccessible()) {
@@ -191,7 +210,8 @@ public class JAXBWrapperAccessor extends WrapperAccessor {
         return new FieldGetter(field);
     }
 
-    static protected PropertySetter createPropertySetter(Field field, Method setter) {
+    static protected PropertySetter createPropertySetter(Field field,
+            Method setter) {
         if (!field.isAccessible()) {
             if (setter != null) {
                 MethodSetter injection = new MethodSetter(setter);
@@ -205,42 +225,47 @@ public class JAXBWrapperAccessor extends WrapperAccessor {
         return new FieldSetter(field);
     }
 
-	private Class getElementDeclaredType(QName name) {
-        Object key = (this.elementLocalNameCollision) ? name : name.getLocalPart();
+    private Class getElementDeclaredType(QName name) {
+        Object key = (this.elementLocalNameCollision) ? name : name
+                .getLocalPart();
         return elementDeclaredTypes.get(key);
     }
-    
-	public PropertyAccessor getPropertyAccessor(String ns, String name) {
-		final QName n = new QName(ns, name);
-		final PropertySetter setter = getPropertySetter(n);
-		final PropertyGetter getter = getPropertyGetter(n);	
-        final boolean isJAXBElement = setter.getType().equals(JAXBElement.class);
-        final boolean isListType = java.util.List.class.isAssignableFrom(setter.getType());
-        final Class elementDeclaredType = isJAXBElement? getElementDeclaredType(n) : null;
-		return new PropertyAccessor() {
-			public Object get(Object bean) throws DatabindingException {
-				Object val = null;
-				if (isJAXBElement) {
-	                JAXBElement<Object> jaxbElement = (JAXBElement<Object>) getter.get(bean);
-	                val = (jaxbElement == null) ? null : jaxbElement.getValue();
-				} else {
-					val = getter.get(bean);
-				}
-				if (val == null && isListType) {
-					val = new java.util.ArrayList();
-					set(bean, val); 
-				}
-				return val;
-			}
 
-			public void set(Object bean, Object value) throws DatabindingException {
-				if (isJAXBElement) {
-                    JAXBElement<Object> jaxbElement =  new JAXBElement<Object>( n, elementDeclaredType, contentClass, value );
-                    setter.set(bean, jaxbElement);	
-				} else {
-					setter.set(bean, value);		
-				}
-			}			
-		};		
-	}
+    public PropertyAccessor getPropertyAccessor(String ns, String name) {
+        final QName n = new QName(ns, name);
+        final PropertySetter setter = getPropertySetter(n);
+        final PropertyGetter getter = getPropertyGetter(n);
+        final boolean isJAXBElement = setter.getType()
+                .equals(JAXBElement.class);
+        final boolean isListType = java.util.List.class.isAssignableFrom(setter
+                .getType());
+        final Class elementDeclaredType = isJAXBElement ? getElementDeclaredType(n)
+                : null;
+        return new PropertyAccessor() {
+            public Object get(Object bean) throws DatabindingException {
+                Object val = null;
+                if (isJAXBElement) {
+                    JAXBElement<Object> jaxbElement = (JAXBElement<Object>) getter.get(bean);
+                    val = (jaxbElement == null) ? null : jaxbElement.getValue();
+                } else {
+                    val = getter.get(bean);
+                }
+                if (val == null && isListType) {
+                    val = new java.util.ArrayList();
+                    set(bean, val);
+                }
+                return val;
+            }
+
+            public void set(Object bean, Object value) throws DatabindingException {
+                if (isJAXBElement) {
+                    JAXBElement<Object> jaxbElement = new JAXBElement<Object>(
+                            n, elementDeclaredType, contentClass, value);
+                    setter.set(bean, jaxbElement);
+                } else {
+                    setter.set(bean, value);
+                }
+            }
+        };
+    }
 }
