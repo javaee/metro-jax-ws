@@ -5,8 +5,8 @@ import javax.xml.ws.WebServiceFeature;
 
 import org.jvnet.ws.databinding.Databinding;
 import org.jvnet.ws.databinding.DatabindingFactory;
+import org.jvnet.ws.databinding.DatabindingModeFeature;
 
-import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.spi.db.JAXBWrapperAccessor;
 import com.sun.xml.ws.test.*;
 import junit.framework.TestCase;

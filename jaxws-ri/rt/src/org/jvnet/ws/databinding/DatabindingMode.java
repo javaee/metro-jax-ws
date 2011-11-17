@@ -42,6 +42,9 @@ package org.jvnet.ws.databinding;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import javax.xml.ws.spi.WebServiceFeatureAnnotation;
+
+@WebServiceFeatureAnnotation(id="", bean=org.jvnet.ws.databinding.DatabindingModeFeature.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DatabindingMode {	
 	String value();

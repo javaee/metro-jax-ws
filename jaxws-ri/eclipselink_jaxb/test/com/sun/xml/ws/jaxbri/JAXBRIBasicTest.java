@@ -41,9 +41,10 @@ package com.sun.xml.ws.jaxbri;
 
 import javax.xml.ws.WebServiceFeature;
 
+import org.jvnet.ws.databinding.DatabindingModeFeature;
+
 import com.sun.xml.ws.DummyAnnotations;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
-import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingContextFactory;
 import com.sun.xml.ws.spi.db.DatabindingException;

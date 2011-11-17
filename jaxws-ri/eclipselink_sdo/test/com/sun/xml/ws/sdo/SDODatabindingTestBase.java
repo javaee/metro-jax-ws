@@ -55,13 +55,13 @@ import javax.xml.ws.WebServiceFeature;
 
 import junit.framework.TestCase;
 
+import org.jvnet.ws.databinding.DatabindingModeFeature;
 import org.jvnet.ws.databinding.JavaCallInfo;
 
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;
-import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;

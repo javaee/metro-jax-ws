@@ -37,33 +37,43 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.xml.ws.api.databinding;
+package org.jvnet.ws.databinding;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.ws.WebServiceFeature;
 
 public class DatabindingModeFeature extends WebServiceFeature {
-        /**
-         * Constant value identifying the DatabindingFeature
-         */
-        static public final String ID = "http://jax-ws.java.net/features/databinding";
-	static public final String GLASSFISH_JAXB = "glassfish.jaxb";
-	static public final String ECLIPSELINK_JAXB = "eclipselink.jaxb";
-	static public final String ECLIPSELINK_SDO  = "eclipselink.sdo";
-	static public final String TOPLINK_JAXB = "toplink.jaxb";
-	static public final String TOPLINK_SDO  = "toplink.sdo";
-
-        private String mode;
+    /**
+     * Constant value identifying the DatabindingFeature
+     */
+    static public final String ID = "http://jax-ws.java.net/features/databinding";
     
-	public DatabindingModeFeature(String mode) {
-		super();
-		this.mode = mode;
-	}
+    static public final String GLASSFISH_JAXB = "glassfish.jaxb";
+    static public final String ECLIPSELINK_JAXB = "eclipselink.jaxb";
+    static public final String ECLIPSELINK_SDO = "eclipselink.sdo";
+    static public final String TOPLINK_JAXB = "toplink.jaxb";
+    static public final String TOPLINK_SDO = "toplink.sdo";
 
-	public String getMode() {
-		return mode;
-	}
+    private String mode;
+    private Map<String, Object> properties;
 
-	public String getID() {
-		return ID;
-	}
+    public DatabindingModeFeature(String mode) {
+        super();
+        this.mode = mode;
+        properties = new HashMap<String, Object>();
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public String getID() {
+        return ID;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
 }

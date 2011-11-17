@@ -46,7 +46,6 @@ import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.ParameterBinding;
@@ -74,6 +73,8 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
+
+import org.jvnet.ws.databinding.DatabindingModeFeature;
 
 import java.lang.reflect.Method;
 import java.security.AccessController;

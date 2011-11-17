@@ -9,10 +9,10 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
 
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
+import org.jvnet.ws.databinding.DatabindingModeFeature;
 
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;
-import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.db.sdo.HelperContextResolver;
 import com.sun.xml.ws.db.sdo.SDOContextWrapper;
 import com.sun.xml.ws.db.sdo.SDOUtils;

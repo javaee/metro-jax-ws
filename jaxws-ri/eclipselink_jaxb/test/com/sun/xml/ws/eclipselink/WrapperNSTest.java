@@ -15,11 +15,11 @@ import junit.framework.TestCase;
 
 import org.jvnet.ws.databinding.Databinding;
 import org.jvnet.ws.databinding.DatabindingFactory;
+import org.jvnet.ws.databinding.DatabindingModeFeature;
 import org.jvnet.ws.databinding.JavaCallInfo;
 import org.jvnet.ws.message.MessageContext;
 import org.w3c.dom.Node;
 
-import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
 
 public class WrapperNSTest extends TestCase {
 

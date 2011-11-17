@@ -43,7 +43,6 @@ package com.sun.xml.ws.transport.http;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.SDDocumentSource;
@@ -61,6 +60,8 @@ import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.exception.LocatableWebServiceException;
 import com.sun.xml.ws.util.xml.XmlUtil;
+
+import org.jvnet.ws.databinding.DatabindingModeFeature;
 import org.xml.sax.EntityResolver;
 
 import javax.xml.namespace.QName;

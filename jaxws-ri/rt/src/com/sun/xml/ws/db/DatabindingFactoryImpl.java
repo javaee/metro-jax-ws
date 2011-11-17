@@ -54,6 +54,7 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 
 import org.jvnet.ws.databinding.Databinding;
+import org.jvnet.ws.databinding.DatabindingModeFeature;
 import org.jvnet.ws.databinding.Databinding.Builder;
 import org.jvnet.ws.databinding.Databinding.WSDLGenerator;
 import org.xml.sax.EntityResolver;
@@ -62,7 +63,6 @@ import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;
-import com.sun.xml.ws.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.spi.db.DatabindingException;
