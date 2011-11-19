@@ -59,6 +59,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceProvider;
@@ -67,6 +68,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -148,11 +150,13 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
             doNotOverWrite = getOption(DO_NOT_OVERWRITE);
             ignoreNoWebServiceFoundWarning = getOption(IGNORE_NO_WEB_SERVICE_FOUND_WARNING);
 
-            options.verbose = System.getProperty("sun.java.command").contains("-verbose");
+            String property = System.getProperty("sun.java.command"); // todo: check if property can be null
+            options.verbose = property != null && property.contains("-verbose");
             // todo: check how to get -s and -d, -classpath options
             String classDir = ".";
             sourceDir = new File(classDir);
-            options.classpath = classDir + File.pathSeparator + System.getProperty("java.class.path");
+            property = System.getProperty("java.class.path");
+            options.classpath = classDir + File.pathSeparator + (property != null ? property : "");
             isCommandLineInvocation = true;
         }
         options.filer = processingEnv.getFiler();
@@ -176,16 +180,14 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
         WebServiceProvider webServiceProvider;
         WebServiceVisitor webServiceVisitor = new WebServiceWrapperGenerator(this, context);
         boolean processedEndpoint = false;
-        for (Element element : roundEnv.getRootElements()) {
-            if (element.getKind() != ElementKind.CLASS) {
-                continue;
-            }
+        Collection<TypeElement> classes = new ArrayList<TypeElement>();
+        filterClasses(classes, roundEnv.getRootElements());
+        for (TypeElement element : classes) {
             webServiceProvider = element.getAnnotation(WebServiceProvider.class);
             webService = element.getAnnotation(WebService.class);
             if (webServiceProvider != null) {
                 if (webService != null) {
-                    processError(WebserviceapMessages.WEBSERVICEAP_WEBSERVICE_AND_WEBSERVICEPROVIDER(
-                            ((TypeElement) element).getQualifiedName()));
+                    processError(WebserviceapMessages.WEBSERVICEAP_WEBSERVICE_AND_WEBSERVICEPROVIDER(element.getQualifiedName()));
                 }
                 processedEndpoint = true;
             }
@@ -206,6 +208,15 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
             }
         }
         return true;
+    }
+
+    private void filterClasses(Collection<TypeElement> classes, Collection<? extends Element> elements) {
+        for (Element element : elements) {
+            if (element.getKind().equals(ElementKind.CLASS)) {
+                classes.add((TypeElement) element);
+                filterClasses(classes, ElementFilter.typesIn(element.getEnclosedElements()));
+            }
+        }
     }
 
     @Override
