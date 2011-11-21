@@ -226,7 +226,7 @@ class SOAP12Fault extends SOAPFaultBuilder {
                 fault.setFaultNode(node);
             }
 
-            return new SOAPFaultException(fault);
+            return new ServerSOAPFaultException(fault);
         } catch (SOAPException e) {
             throw new WebServiceException(e);
         }

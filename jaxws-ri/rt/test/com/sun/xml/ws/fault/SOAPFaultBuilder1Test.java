@@ -91,6 +91,7 @@ public class SOAPFaultBuilder1Test extends TestCase {
         SOAPFaultBuilder sfb = SOAPFaultBuilder.create(new SAAJMessage(msg));
         Throwable t = sfb.createException(null);
         assertTrue(t instanceof SOAPFaultException);
+        assertTrue(t.getMessage().contains("Client received SOAP Fault from server:"));
     }
 
     public void testFault2() throws Throwable {

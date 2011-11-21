@@ -86,5 +86,6 @@ public class ExceptionBeanTest extends TestCase {
 
         ServerSideException se = ExceptionBean.unmarshal(d.getDocumentElement());
         assertTrue(se!=null);
+        assertTrue(se.getMessage().contains("Client received an exception from server"));
     }
 }

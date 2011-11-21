@@ -190,7 +190,7 @@ class SOAP11Fault extends SOAPFaultBuilder {
                     d.appendChild(n);
                 }
             }
-            return new SOAPFaultException(fault);
+            return new ServerSOAPFaultException(fault);
         } catch (SOAPException e) {
             throw new WebServiceException(e);
         }
