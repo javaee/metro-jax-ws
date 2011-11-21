@@ -50,6 +50,8 @@ import com.sun.xml.ws.model.wsdl.WSDLPortProperties;
 import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
 import com.sun.xml.ws.api.Component;
+import com.sun.xml.ws.api.ComponentFeature;
+import com.sun.xml.ws.api.ComponentFeature.Target;
 import com.sun.xml.ws.api.ComponentRegistry;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.WSBinding;
@@ -256,6 +258,11 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         		this.portname = wsdlPort.getName();
         }
         this.binding = binding;
+
+        ComponentFeature cf = binding.getFeature(ComponentFeature.class);
+        if (cf != null && Target.STUB.equals(cf.getTarget())) {
+            components.add(cf.getComponent());
+        }
 
         // if there is an EPR, EPR's address should be used for invocation instead of default address
         if (epr != null)

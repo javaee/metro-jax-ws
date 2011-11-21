@@ -163,6 +163,19 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> {
 		if (serviceDef != null) {
 			serviceDef.setOwner(this);
 		}
+		
+		ComponentFeature cf = binding.getFeature(ComponentFeature.class);
+		if (cf != null) {
+		    switch(cf.getTarget()) {
+		        case ENDPOINT:
+	                    componentRegistry.add(cf.getComponent());
+	                    break;
+		        case CONTAINER:
+		            container.getComponents().add(cf.getComponent());
+		        default:
+		            throw new IllegalArgumentException();
+		    }
+		}
 
         TubelineAssembler assembler = TubelineAssemblerFactory.create(
                 Thread.currentThread().getContextClassLoader(), binding.getBindingId(), container);

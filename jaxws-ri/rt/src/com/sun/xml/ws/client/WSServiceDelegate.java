@@ -44,6 +44,8 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.Closeable;
 import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.ComponentFeature;
+import com.sun.xml.ws.api.ComponentFeature.Target;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
@@ -63,6 +65,7 @@ import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.client.HandlerConfigurator.AnnotationConfigurator;
 import com.sun.xml.ws.client.HandlerConfigurator.HandlerResolverImpl;
 import com.sun.xml.ws.client.sei.SEIStub;
+import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
 import com.sun.xml.ws.developer.WSBindingProvider;
 import com.sun.xml.ws.developer.UsesJAXBContextFeature;
 import com.sun.xml.ws.model.RuntimeModeler;
@@ -153,6 +156,8 @@ public class WSServiceDelegate extends WSService {
     private @NotNull HandlerConfigurator handlerConfigurator = new HandlerResolverImpl(null);
 
     private final Class<? extends Service> serviceClass;
+    
+    private final WebServiceFeatureList features;
 
     /**
      * Name of the service for which this {@link WSServiceDelegate} is created for.
@@ -186,29 +191,31 @@ public class WSServiceDelegate extends WSService {
     /*package*/ final @NotNull ServiceInterceptor serviceInterceptor;
 
 
-    public WSServiceDelegate(URL wsdlDocumentLocation, QName serviceName, Class<? extends Service> serviceClass) {
+    public WSServiceDelegate(URL wsdlDocumentLocation, QName serviceName, Class<? extends Service> serviceClass, WebServiceFeature... features) {
         this(
             wsdlDocumentLocation==null ? null : new StreamSource(wsdlDocumentLocation.toExternalForm()),
-            serviceName,serviceClass);
+            serviceName,serviceClass, features);
     }
 
     /**
      * @param serviceClass
      *      Either {@link Service}.class or other generated service-derived classes.
      */
-    public WSServiceDelegate(@Nullable Source wsdl, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass) {
-    	this(wsdl, null, serviceName, serviceClass);
+    public WSServiceDelegate(@Nullable Source wsdl, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass, WebServiceFeature... features) {
+    	this(wsdl, null, serviceName, serviceClass, features);
     }
     
     /**
      * @param serviceClass
      *      Either {@link Service}.class or other generated service-derived classes.
      */
-    public WSServiceDelegate(@Nullable Source wsdl, @Nullable WSDLServiceImpl service, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass) {
+    public WSServiceDelegate(@Nullable Source wsdl, @Nullable WSDLServiceImpl service, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass, WebServiceFeature... features) {
         //we cant create a Service without serviceName
         if (serviceName == null)
             throw new WebServiceException(ClientMessages.INVALID_SERVICE_NAME_NULL(serviceName));
 
+        this.features = new WebServiceFeatureList(features);
+        
         InitParams initParams = INIT_PARAMS.get();
         INIT_PARAMS.set(null);  // mark it as consumed
         if(initParams==null)    initParams = EMPTY_PARAMS;
@@ -220,6 +227,19 @@ public class WSServiceDelegate extends WSService {
             tContainer = new ClientContainer();
         }
         this.container = tContainer;
+
+        ComponentFeature cf = this.features.get(ComponentFeature.class);
+        if (cf != null) {
+            switch(cf.getTarget()) {
+                case SERVICE:
+                    getComponents().add(cf.getComponent());
+                    break;
+                case CONTAINER:
+                    this.container.getComponents().add(cf.getComponent());
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
 
         // load interceptor
         ServiceInterceptor interceptor = ServiceInterceptorFactory.load(this, Thread.currentThread().getContextClassLoader());
@@ -357,6 +377,12 @@ public class WSServiceDelegate extends WSService {
 
     protected <T> T getPort(WSEndpointReference wsepr, QName portName, Class<T> portInterface,
                           WebServiceFeatureList features) {
+        ComponentFeature cf = features.get(ComponentFeature.class);
+        if (cf != null && !Target.STUB.equals(cf.getTarget())) {
+            throw new IllegalArgumentException();
+        }
+        features.addAll(this.features);
+
         SEIPortInfo spi = addSEI(portName, portInterface, features);
         return createEndpointIFBaseProxy(wsepr,portName,portInterface,features, spi);
     }
@@ -408,6 +434,13 @@ public class WSServiceDelegate extends WSService {
     
     public <T> Dispatch<T> createDispatch(QName portName, WSEndpointReference wsepr, Class<T> aClass, Service.Mode mode, WebServiceFeatureList features) {
         PortInfo port = safeGetPort(portName);
+        
+        ComponentFeature cf = features.get(ComponentFeature.class);
+        if (cf != null && !Target.STUB.equals(cf.getTarget())) {
+            throw new IllegalArgumentException();
+        }
+        features.addAll(this.features);
+        
         BindingImpl binding = port.createBinding(features, null, null);
         binding.setMode(mode);
         Dispatch<T> dispatch = Stubs.createDispatch(port, this, binding, aClass, mode, wsepr);
@@ -421,7 +454,20 @@ public class WSServiceDelegate extends WSService {
     
     public <T> Dispatch<T> createDispatch(QName portName, Class<T> aClass, Service.Mode mode, WebServiceFeatureList features) {
         WSEndpointReference wsepr = null;
-        if(features.isEnabled(AddressingFeature.class) && wsdlService != null && wsdlService.get(portName) != null) {
+        boolean isAddressingEnabled = false;
+        AddressingFeature af = features.get(AddressingFeature.class);
+        if (af == null) {
+            af = this.features.get(AddressingFeature.class);
+        }
+        if (af != null && af.isEnabled())
+            isAddressingEnabled = true;
+        MemberSubmissionAddressingFeature msa = features.get(MemberSubmissionAddressingFeature.class);
+        if (msa == null) {
+            msa = this.features.get(MemberSubmissionAddressingFeature.class);
+        }
+        if (msa != null && msa.isEnabled())
+            isAddressingEnabled = true;
+        if(isAddressingEnabled && wsdlService != null && wsdlService.get(portName) != null) {
             wsepr = wsdlService.get(portName).getEPR();
         }
         return createDispatch(portName, wsepr, aClass, mode, features);
@@ -471,6 +517,13 @@ public class WSServiceDelegate extends WSService {
     
     protected Dispatch<Object> createDispatch(QName portName, WSEndpointReference wsepr, JAXBContext jaxbContext, Service.Mode mode, WebServiceFeatureList features) {
         PortInfo port = safeGetPort(portName);
+
+        ComponentFeature cf = features.get(ComponentFeature.class);
+        if (cf != null && !Target.STUB.equals(cf.getTarget())) {
+            throw new IllegalArgumentException();
+        }
+        features.addAll(this.features);
+        
         BindingImpl binding = port.createBinding(features, null, null);
         binding.setMode(mode);
         Dispatch<Object> dispatch = Stubs.createJAXBDispatch(
@@ -488,12 +541,25 @@ public class WSServiceDelegate extends WSService {
     	return createDispatch(portName, jaxbContext, mode, new WebServiceFeatureList(webServiceFeatures));
     }
     
-    protected Dispatch<Object> createDispatch(QName portName, JAXBContext jaxbContext, Service.Mode mode, WebServiceFeatureList webServiceFeatures) {
+    protected Dispatch<Object> createDispatch(QName portName, JAXBContext jaxbContext, Service.Mode mode, WebServiceFeatureList features) {
         WSEndpointReference wsepr = null;
-        if(webServiceFeatures.isEnabled(AddressingFeature.class) && wsdlService != null && wsdlService.get(portName) != null) {
+        boolean isAddressingEnabled = false;
+        AddressingFeature af = features.get(AddressingFeature.class);
+        if (af == null) {
+            af = this.features.get(AddressingFeature.class);
+        }
+        if (af != null && af.isEnabled())
+            isAddressingEnabled = true;
+        MemberSubmissionAddressingFeature msa = features.get(MemberSubmissionAddressingFeature.class);
+        if (msa == null) {
+            msa = this.features.get(MemberSubmissionAddressingFeature.class);
+        }
+        if (msa != null && msa.isEnabled())
+            isAddressingEnabled = true;
+        if(isAddressingEnabled && wsdlService != null && wsdlService.get(portName) != null) {
             wsepr = wsdlService.get(portName).getEPR();
         }
-        return createDispatch(portName, wsepr, jaxbContext, mode, webServiceFeatures);
+        return createDispatch(portName, wsepr, jaxbContext, mode, features);
     }
 
     public Dispatch<Object> createDispatch(EndpointReference endpointReference, JAXBContext context, Service.Mode mode, WebServiceFeature... features) {

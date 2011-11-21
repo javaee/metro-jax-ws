@@ -113,10 +113,7 @@ public class ProviderImpl extends Provider {
 
     public ServiceDelegate createServiceDelegate( URL wsdlDocumentLocation, QName serviceName, Class serviceClass,
                                                   WebServiceFeature ... features) {
-        if (features.length > 0) {
-            throw new WebServiceException("Doesn't support any Service specific features");
-        }
-        return new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass);
+        return new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass, features);
     }
 
     public ServiceDelegate createServiceDelegate( Source wsdlSource, QName serviceName, Class serviceClass) {
