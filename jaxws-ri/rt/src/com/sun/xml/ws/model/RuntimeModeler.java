@@ -44,17 +44,17 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.databinding.MetadataReader;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
+import com.sun.xml.ws.api.databinding.MetadataReader;
 import com.sun.xml.ws.api.model.ExceptionType;
 import com.sun.xml.ws.api.model.MEP;
 import com.sun.xml.ws.api.model.Parameter;
 import com.sun.xml.ws.api.model.ParameterBinding;
-import com.sun.xml.ws.api.model.wsdl.WSDLPart;
-import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLInput;
+import com.sun.xml.ws.api.model.wsdl.WSDLPart;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.model.soap.SOAPBindingImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
 import com.sun.xml.ws.resources.ServerMessages;
@@ -63,35 +63,29 @@ import com.sun.xml.ws.spi.db.BindingHelper;
 import com.sun.xml.ws.spi.db.TypeInfo;
 import com.sun.xml.ws.spi.db.WrapperComposite;
 import com.sun.xml.ws.util.localization.Localizable;
-
-import javax.jws.Oneway;
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebParam.Mode;
-import javax.jws.WebResult;
-import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
-import static javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED;
-import javax.jws.soap.SOAPBinding.Style;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.namespace.QName;
-import javax.xml.ws.*;
 import org.jvnet.ws.databinding.DatabindingMode;
 
+import javax.jws.*;
+import javax.jws.WebParam.Mode;
+import javax.jws.soap.SOAPBinding;
+import javax.jws.soap.SOAPBinding.Style;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.namespace.QName;
+import javax.xml.ws.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.rmi.RemoteException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
+
+import static javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED;
 
 /**
  * Creates a runtime model of a SEI (portClass).
@@ -647,7 +641,7 @@ public class RuntimeModeler {
         boolean methodIsWrapped = isWrapped;
         Style style = defaultBinding.getStyle();
         if (methodBinding != null) {
-            com.sun.xml.ws.model.soap.SOAPBindingImpl mySOAPBinding = createBinding(methodBinding);
+            SOAPBindingImpl mySOAPBinding = createBinding(methodBinding);
             style = mySOAPBinding.getStyle();
             if (action != null)
                 mySOAPBinding.setSOAPAction(action);
@@ -655,11 +649,13 @@ public class RuntimeModeler {
                 WRAPPED);
             javaMethod.setBinding(mySOAPBinding);
         } else {
-            com.sun.xml.ws.model.soap.SOAPBindingImpl sb = new com.sun.xml.ws.model.soap.SOAPBindingImpl(defaultBinding);
-            if (action != null)
+            SOAPBindingImpl sb = new SOAPBindingImpl(defaultBinding);
+            if (action != null) {
                 sb.setSOAPAction(action);
-            else
-                sb.setSOAPAction("");
+            } else {
+                String defaults = SOAPVersion.SOAP_11 == sb.getSOAPVersion() ? "" : null;
+                sb.setSOAPAction(defaults);
+            }
             javaMethod.setBinding(sb);
         }
         if (!methodIsWrapped) {

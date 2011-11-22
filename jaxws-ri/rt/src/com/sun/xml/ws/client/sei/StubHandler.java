@@ -99,10 +99,11 @@ public class StubHandler implements ClientCallBridge {
             checkedExceptions.put(ce.getBond().getTypeInfo().tagName, ce);
         }
         //If a non-"" soapAction is specified, wsa:action the SOAPAction
-        if(method.getInputAction() != null && !method.getBinding().getSOAPAction().equals("") ) {
+        String soapActionFromBinding = method.getBinding().getSOAPAction();
+        if(method.getInputAction() != null && soapActionFromBinding != null && !soapActionFromBinding.equals("") ) {
             this.soapAction = method.getInputAction();
         } else {
-            this.soapAction = method.getBinding().getSOAPAction();
+            this.soapAction = soapActionFromBinding;
         }
         this.javaMethod = method;
         
