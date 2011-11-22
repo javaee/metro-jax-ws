@@ -600,8 +600,8 @@ public class HandleFaultTest extends TestCaseBase {
             testStub.testInt(42);
             fail("did not receive an exception");
         } catch (ProtocolException e) {
-            assertEquals("did not get correct message",
-                MESSAGE_IN_FAULT, e.getMessage());
+            assertTrue("did not get correct message",
+                e.getMessage().contains("MESSAGE_IN_FAULT"));
         } catch (Exception oops) {
             fail("did not receive WebServiceException. received: " + oops);
         }
