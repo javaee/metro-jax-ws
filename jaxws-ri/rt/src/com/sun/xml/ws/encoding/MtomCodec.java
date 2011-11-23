@@ -94,14 +94,16 @@ import java.util.UUID;
  * @author Jitendra Kotamraju
  */
 public class MtomCodec extends MimeCodec {
+
     public static final String XOP_XML_MIME_TYPE = "application/xop+xml";
-    
+    private static final String XOP_LOCALNAME = "Include";
+    private static final String XOP_NAMESPACEURI = "http://www.w3.org/2004/08/xop/include";
+
     private final StreamSOAPCodec codec;
 
     // encoding related parameters
     private String boundary;
     private String rootId;
-    private String messageContentType;
     private final MTOMFeature mtomFeature;
     private final SerializationFeature sf;
     private final static String DECODED_MESSAGE_CHARSET = "decodedMessageCharset";
@@ -122,13 +124,23 @@ public class MtomCodec extends MimeCodec {
         String uuid = UUID.randomUUID().toString();
         boundary = "uuid:" + uuid;
         rootId = "<rootpart*"+uuid+"@example.jaxws.sun.com>";
-        String boundaryParameter = "boundary=\"" + boundary +"\"";
-        messageContentType = MULTIPART_RELATED_MIME_TYPE +
-                ";start=\""+rootId +"\"" +
-                ";type=\"" + XOP_XML_MIME_TYPE + "\";" + 
-                boundaryParameter + 
-                ";start-info=\"" + version.contentType + "\"";
     }
+
+    private String createMessageContentType() {
+        return createMessageContentType(null);
+    }
+
+    private String createMessageContentType(String soapActionParameter) {
+        String boundaryParameter = "boundary=\"" + boundary +"\"";
+        return MULTIPART_RELATED_MIME_TYPE +
+                ";start=\""+rootId +"\"" +
+                ";type=\"" + XOP_XML_MIME_TYPE + "\";" +
+                boundaryParameter +
+                ";start-info=\"" + version.contentType +
+                (soapActionParameter == null? "" : soapActionParameter) +
+                "\"";
+    }
+
     
     /**
      * Return the soap 1.1 and soap 1.2 specific XOP packaged ContentType
@@ -142,15 +154,16 @@ public class MtomCodec extends MimeCodec {
     private ContentType getContentType(Packet packet){
         switch(version){
             case SOAP_11:
-                return new ContentTypeImpl(messageContentType, (packet.soapAction == null)?"":packet.soapAction, null);
+                return new ContentTypeImpl(createMessageContentType(), (packet.soapAction == null)?"":packet.soapAction, null);
             case SOAP_12:
-                if(packet.soapAction != null){
-                    messageContentType += ";action=\""+packet.soapAction+"\"";
-                }
-                return new ContentTypeImpl(messageContentType, null, null);
+                return new ContentTypeImpl(createMessageContentType(createActionParameter(packet)), null, null);
         }
         //never happens
         return null;
+    }
+
+    private String createActionParameter(Packet packet) {
+        return packet.soapAction != null? ";action=\\\""+packet.soapAction+"\\\"" : "";
     }
 
     public ContentType encode(Packet packet, OutputStream out) throws IOException {
@@ -161,7 +174,9 @@ public class MtomCodec extends MimeCodec {
             try {
                 String encoding = getPacketEncoding(packet);
                 packet.invocationProperties.remove(DECODED_MESSAGE_CHARSET);
-                String soapXopContentType = XOP_XML_MIME_TYPE +";charset="+encoding+";type=\""+version.contentType+"\"";
+
+                String actionParameter = version == SOAPVersion.SOAP_11? "" : createActionParameter(packet);
+                String soapXopContentType = XOP_XML_MIME_TYPE +";charset="+encoding+";type=\""+version.contentType+ actionParameter + "\"";
 
                 writeln("--"+boundary, out);
                 writeln("Content-Id: " + rootId, out);
@@ -600,8 +615,5 @@ public class MtomCodec extends MimeCodec {
             return reader.getText();
         }
     }
-
-    private static final String XOP_LOCALNAME = "Include";
-    private static final String XOP_NAMESPACEURI = "http://www.w3.org/2004/08/xop/include";
 
 }
