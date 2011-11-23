@@ -43,6 +43,7 @@ package com.sun.xml.ws.spi;
 
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSService;
+import com.sun.xml.ws.api.ServiceSharedFeatureMarker;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
@@ -113,6 +114,10 @@ public class ProviderImpl extends Provider {
 
     public ServiceDelegate createServiceDelegate( URL wsdlDocumentLocation, QName serviceName, Class serviceClass,
                                                   WebServiceFeature ... features) {
+        for (WebServiceFeature feature : features) {
+            if (!(feature instanceof ServiceSharedFeatureMarker))
+            throw new WebServiceException("Doesn't support any Service specific features");
+        }
         return new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass, features);
     }
 
