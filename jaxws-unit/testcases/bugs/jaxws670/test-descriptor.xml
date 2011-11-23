@@ -1,0 +1,5 @@
+<descriptor since="2.2.6" bugs="jaxws-670">
+    <description>JAXWS-670: Incorrect encoding of action parameter in MIME multipart/related entity body's Content-Type header</description>
+    <service basedir="./server" />
+    <wsgen-options>-wsdl:Xsoap1.2 -extension</wsgen-options>
+</descriptor>
