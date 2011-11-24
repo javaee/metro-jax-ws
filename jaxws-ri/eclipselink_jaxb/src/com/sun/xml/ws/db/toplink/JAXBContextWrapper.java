@@ -96,7 +96,7 @@ public class JAXBContextWrapper implements BindingContext {
 	}
 
 	public XMLBridge createBridge(TypeInfo ref) {
-		return WrapperComposite.class.equals(ref.type) ? new WrapperBond(this, ref) : new JAXBBond(this, ref);
+		return (XMLBridge) (WrapperComposite.class.equals(ref.type) ? new WrapperBond(this, ref) : new JAXBBond(this, ref));
 	}
 
 	public XMLBridge createFragmentBridge() {
