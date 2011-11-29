@@ -83,7 +83,9 @@ final class StreamSOAP11Codec extends StreamSOAPCodec {
 
     @Override
     protected ContentType getContentType(Packet packet) {
-        return new ContentTypeImpl(getContenTypeStr(packet), packet.soapAction);
+        ContentTypeImpl.Builder b = getContenTypeBuilder(packet);
+        b.soapAction = packet.soapAction;
+        return b.build();
     }
 
     @Override

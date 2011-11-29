@@ -385,12 +385,17 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         return SOAPBindingCodec.DEFAULT_ENCODING;
     }
 
-    protected String getContenTypeStr(Packet packet) {
+    protected ContentTypeImpl.Builder getContenTypeBuilder(Packet packet) {
+        ContentTypeImpl.Builder b = new ContentTypeImpl.Builder();
         String encoding = getPacketEncoding(packet);
         if (SOAPBindingCodec.DEFAULT_ENCODING.equalsIgnoreCase(encoding)) {
-            return getDefaultContentType();
+            b.contentType = getDefaultContentType();
+            b.charset = SOAPBindingCodec.DEFAULT_ENCODING;
+            return b;
         }
-        return getMimeType()+" ;charset="+encoding;
+        b.contentType = getMimeType()+" ;charset="+encoding;
+        b.charset = encoding;
+        return b;
     }
 
 }

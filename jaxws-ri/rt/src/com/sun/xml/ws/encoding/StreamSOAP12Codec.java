@@ -85,11 +85,13 @@ final class StreamSOAP12Codec extends StreamSOAPCodec {
 
     @Override
     protected ContentType getContentType(Packet packet) {
+        ContentTypeImpl.Builder b = getContenTypeBuilder(packet);
         // TODO: set accept header
         if (packet.soapAction == null) {
-            return new ContentTypeImpl(getContenTypeStr(packet));
+            return b.build();
         } else {
-            return new ContentTypeImpl(getContenTypeStr(packet) + ";action="+fixQuotesAroundSoapAction(packet.soapAction));
+            b.contentType = b.contentType + ";action="+fixQuotesAroundSoapAction(packet.soapAction);
+            return b.build();
         }
     }
 

@@ -61,16 +61,24 @@ public final class ContentTypeImpl implements com.sun.xml.ws.api.pipe.ContentTyp
     }
     
     public ContentTypeImpl(String contentType, @Nullable String soapAction, @Nullable String accept) {
+        this(contentType, soapAction, accept, null);
+    }
+    
+    public ContentTypeImpl(String contentType, @Nullable String soapAction, @Nullable String accept, String charsetParam) {
         this.contentType = contentType;
         this.accept = accept;
         this.soapAction = getQuotedSOAPAction(soapAction);
-        String tmpCharset = null;
-        try {
-            tmpCharset = new ContentType(contentType).getParameter("charset");
-        } catch(Exception e) {
-            //Ignore the parsing exception.
+        if (charsetParam == null) {
+            String tmpCharset = null;
+            try {
+                tmpCharset = new ContentType(contentType).getParameter("charset");
+            } catch(Exception e) {
+                //Ignore the parsing exception.
+            }
+            charset = tmpCharset;
+        } else {
+            charset = charsetParam;
         }
-        charset = tmpCharset;
     }
 
     /**
@@ -104,5 +112,15 @@ public final class ContentTypeImpl implements com.sun.xml.ws.api.pipe.ContentTyp
 
     public String getAcceptHeader() {
         return accept;
+    }
+    
+    public static class Builder {
+        public String contentType;
+        public String soapAction;
+        public String accept;
+        public String charset;
+        public ContentTypeImpl build() {
+            return new ContentTypeImpl(contentType, soapAction, accept, charset);
+        }
     }
 }
