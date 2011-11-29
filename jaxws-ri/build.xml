@@ -301,6 +301,10 @@
                 <!--<exclude name="jaxws-asm-source.jar" />-->
                 <exclude name="ant-source.jar" />
                 <exclude name="woodstox-core-asl-source.jar" />
+
+                <!--also weren't integrated before ...-->
+                <exclude name="ha-api-source.jar" />
+                <exclude name="stax2-api-source.jar" />
             </fileset>
         </zip>
         <delete file="${dist20.home}/lib/jaxws-rt.src.zip"/>
