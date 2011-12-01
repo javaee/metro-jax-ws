@@ -21,7 +21,8 @@ public abstract class MessageContextFactory
             return new Packet();
         }
         public MessageContext doCreate(final SOAPMessage m) {
-            return p(Messages.create(m));
+            // null soap message means no message should be on packet so set it to null
+            return p(m == null ? null : Messages.create(m));
         }
         public MessageContext doCreate(final Source m, SOAPVersion v) {
             return p(Messages.create(m, v));
