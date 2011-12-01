@@ -39,9 +39,7 @@
  */
 package com.sun.tools.ws.ant;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -108,5 +106,31 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
 
         //UTF-74
         assertFalse(new File(buildDir, "client/invalid").exists());
+    }
+    
+    public void testPlugin() throws IOException {
+        assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-plugin"));
+        File f = new File(buildDir, "test/Hello_Service.java");
+        BufferedReader br = new BufferedReader(new FileReader(f));
+        String line;
+        boolean found = false;
+        while ((line = br.readLine()) != null) {
+            if (line.contains("@Generated(value = \"com.sun.tools.ws.wscompile.WsimportTool\", ")) {
+                found = true;
+                break;
+            }
+        }
+        br.close();
+        assertFalse("Plugin invoked", found);
+        f = new File(srcDir, "test/Hello_Service.java");
+        br = new BufferedReader(new FileReader(f));
+        while ((line = br.readLine()) != null) {
+            if (line.contains("@Generated(value = \"com.sun.tools.ws.wscompile.WsimportTool\", ")) {
+                found = true;
+                break;
+            }
+        }
+        br.close();
+        assertTrue("Plugin not invoked", found);
     }
 }

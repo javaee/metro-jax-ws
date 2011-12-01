@@ -136,6 +136,26 @@
         </wsimport>
     </target>
 
+    <target name="wsimport-plugin" depends="wsimport-init">
+        <wsimport
+            sourcedestdir="${build.dir}"
+            destdir="${build.dir}"
+            wsdl="${wsdl}"
+            extension="true"
+            xendorsed="true"
+            xnocompile="true">
+        </wsimport>
+        <wsimport
+            sourcedestdir="${src.dir}"
+            destdir="${build.dir}"
+            wsdl="${wsdl}"
+            extension="true"
+            xendorsed="true"
+            xnocompile="true">
+                <arg line="-mark-generated"/>
+        </wsimport>
+    </target>
+    
     <target name="clean">
         <delete dir="${src.dir}" verbose="true" failonerror="false"/>
         <delete dir="${build.dir}" verbose="true" failonerror="false"/>
