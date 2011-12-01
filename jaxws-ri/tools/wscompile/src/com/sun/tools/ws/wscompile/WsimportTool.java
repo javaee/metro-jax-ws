@@ -73,6 +73,7 @@ import java.util.*;
 import java.net.Authenticator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
+import org.xml.sax.SAXException;
 
 /**
  * @author Vivek Pandey
@@ -417,6 +418,15 @@ public class WsimportTool {
        if (options.isGenerateJWS) {
 	        implFiles = JwsImplGenerator.generate(wsdlModel, options, receiver);
        }
+
+        for (Plugin plugin: options.activePlugins) {
+            try {
+                plugin.run(wsdlModel, options, receiver);
+            } catch (SAXException sex) {
+                // fatal error. error should have been reported
+                return false;
+            }
+        }
 
        CodeWriter cw = new WSCodeWriter(options.sourceDir, options);
         if (options.verbose)

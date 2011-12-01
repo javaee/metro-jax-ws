@@ -75,9 +75,9 @@
             <classpath refid="tools.compile.classpath"/>
         </javac>
 
-        <!-- Copy AnnotationProcessor factory info -->
+        <!-- Copy services -->
         <copy todir="${build.dir}/classes/META-INF/services">
-            <fileset dir="${basedir}/../etc/" includes="com.sun.*"/>
+            <fileset dir="src/META-INF/services/" includes="com.sun.*"/>
         </copy>
 
         <antcall target="test" inheritrefs="true"/>

@@ -320,7 +320,10 @@ public class Options {
             if(target == null)
                 throw new BadCommandLineException(WscompileMessages.WSIMPORT_ILLEGAL_TARGET_VERSION(token));
             return 2;
-        }else if (args[i].equals("-d")) {
+        } else if (args[i].equals("-classpath") || args[i].equals("-cp")) {
+            classpath = requireArgument("-classpath", args, ++i) + File.pathSeparator + System.getProperty("java.class.path");
+            return 2;
+        } else if (args[i].equals("-d")) {
             destDir = new File(requireArgument("-d", args, ++i));
             if (!destDir.exists())
                 throw new BadCommandLineException(WscompileMessages.WSCOMPILE_NO_SUCH_DIRECTORY(destDir.getPath()));

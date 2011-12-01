@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -70,9 +70,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
 
@@ -159,6 +161,19 @@ public class WsimportOptions extends Options {
      */
     public HashMap<String, String> extensionOptions = new HashMap<String, String>();
 
+    /**
+     * All discovered {@link Plugin}s.
+     * This is lazily parsed, so that we can take '-cp' option into account.
+     *
+     * @see #getAllPlugins()
+     */
+    private List<Plugin> allPlugins;
+
+    /**
+     * {@link Plugin}s that are enabled in this compilation.
+     */
+    public final List<Plugin> activePlugins = new ArrayList<Plugin>();
+
     public JCodeModel getCodeModel() {
         if(codeModel == null)
             codeModel = new JCodeModel();
@@ -184,6 +199,22 @@ public class WsimportOptions extends Options {
      * This captures jars passed on the commandline and passes them to XJC and puts them in the classpath for compilation
      */
     public List<String> cmdlineJars = new ArrayList<String>();
+
+    /**
+     * Gets all the {@link Plugin}s discovered so far.
+     *
+     * <p>
+     * A plugins are enumerated when this method is called for the first time,
+     * by taking {@link #classpath} into account. That means
+     * "-cp plugin.jar" has to come before you specify options to enable it.
+     */
+    public List<Plugin> getAllPlugins() {
+        if(allPlugins==null) {
+            allPlugins = new ArrayList<Plugin>();
+            allPlugins.addAll(Arrays.asList(findServices(Plugin.class, getClassLoader())));
+        }
+        return allPlugins;
+    }
 
     /**
      * Parses arguments and fill fields of this object.
@@ -333,6 +364,23 @@ public class WsimportOptions extends Options {
             if (f.validateOption(args[i])) {
                 extensionOptions.put(args[i], requireArgument(args[i], args, ++i));
                 return 2;
+            }
+        }
+
+        // see if this is one of the extensions
+        for( Plugin plugin : getAllPlugins() ) {
+            try {
+                if(('-' + plugin.getOptionName()).equals(args[i])) {
+                    activePlugins.add(plugin);
+                    plugin.onActivated(this);
+                    return 1;
+                }
+                int r = plugin.parseArgument(this, args, i);
+                if (r != 0) {
+                    return r;
+                }
+            } catch (IOException e) {
+                throw new BadCommandLineException(e.getMessage(),e);
             }
         }
 
@@ -532,6 +580,19 @@ public class WsimportOptions extends Options {
      */
     public String getExtensionOption(String argument) {
         return extensionOptions.get(argument);
+    }
+
+    /**
+     * Looks for all "META-INF/services/[className]" files and
+     * create one instance for each class name found inside this file.
+     */
+    private static <T> T[] findServices(Class<T> clazz, ClassLoader classLoader) {
+        ServiceFinder<T> serviceFinder = ServiceFinder.find(clazz, classLoader);
+        List<T> r = new ArrayList<T>();
+        for (T t : serviceFinder) {
+            r.add(t);
+        }
+        return r.toArray((T[]) Array.newInstance(clazz, r.size()));
     }
 
     private static final class ByteStream extends ByteArrayOutputStream {

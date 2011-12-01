@@ -268,7 +268,7 @@
       <fileset dir="${basedir}/tools/wscompile/build/gen-src/"/>
       <!-- the following is needed as some properties file are generated dynamically -->
       <fileset dir="${basedir}/tools/wscompile/build/classes" includes="**/*.properties"/>
-      <zipfileset dir="${basedir}/tools/etc/" includes="com.sun.*" prefix="META-INF/services"/>
+      <zipfileset dir="${basedir}/tools/wscompile/src/META-INF/services" includes="com.sun.*" prefix="META-INF/services"/>
     </zip>
     <!--
         <zip file="${dist20.home}/lib/jaxws-libs.src.zip">
