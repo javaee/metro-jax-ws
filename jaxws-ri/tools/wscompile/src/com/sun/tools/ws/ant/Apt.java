@@ -1,6 +1,6 @@
 package com.sun.tools.ws.ant;
 
-import com.sun.tools.apt.Main;
+import com.sun.tools.ws.processor.modeler.annotation.WebServiceAp;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * OLD apt task for use with the JAXWS project.
- * <p/>
- * In case factories is set - old APT functionality will be called
- * After this new javax.annotation processing will be run
+ * Reincarnation of old APT task
+ * The task has the same API as old one, with only difference that it isn't possible to set additional annotation factories
+ *
+ * Ant task which will process JAX-WS annotations
  */
 @Deprecated
 public class Apt extends Task {
@@ -148,58 +148,6 @@ public class Apt extends Task {
     }
 
     /**
-     * ***************** -factorypath option *********************
-     */
-    private File factoryPath = null;
-
-    public File getFactorypath() {
-        return factoryPath;
-    }
-
-    public void setFactorypath(File factoryPath) {
-        this.factoryPath = factoryPath;
-    }
-
-    /**
-     * ***************** -factory option *********************
-     */
-    private String factory = null;
-
-    public String getFactory() {
-        return factory;
-    }
-
-    public void setFactory(String factory) {
-        this.factory = factory;
-    }
-
-    /**
-     * ***************** -XListAnnotationTypes option *********************
-     */
-    private boolean xListAnnotationTypes = false;
-
-    public boolean isXlistannotationtypes() {
-        return xListAnnotationTypes;
-    }
-
-    public void setXlistannotationtypes(boolean xListAnnotationTypes) {
-        this.xListAnnotationTypes = xListAnnotationTypes;
-    }
-
-    /**
-     * ***************** -XListDeclarations option *********************
-     */
-    private boolean xListDeclarations = false;
-
-    public boolean isXlistdeclarations() {
-        return xListDeclarations;
-    }
-
-    public void setXlistdeclarations(boolean xListDeclarations) {
-        this.xListDeclarations = xListDeclarations;
-    }
-
-    /**
      * ***************** -XPrintAptRounds option *********************
      */
     private boolean xPrintAptRounds = false;
@@ -223,19 +171,6 @@ public class Apt extends Task {
 
     public void setXprintfactoryinfo(boolean xPrintFactoryInfo) {
         this.xPrintFactoryInfo = xPrintFactoryInfo;
-    }
-
-    /**
-     * ***************** -XclassesAsDecls option *********************
-     */
-    private boolean xClassesAsDecls = false;
-
-    public boolean isXclassesasdecls() {
-        return xClassesAsDecls;
-    }
-
-    public void setXclassesasdecls(boolean xClassesAsDecls) {
-        this.xClassesAsDecls = xClassesAsDecls;
     }
 
     /** Inherited from javac */
@@ -404,201 +339,153 @@ public class Apt extends Task {
         sourceFileset.add(fileset);
     }
 
-    private Container setupAptCommand() {
-        Container c = setupAptArgs();
+    private Commandline setupAptCommand() {
+        Commandline cmd = setupAptArgs();
 
         // classpath option (cp option just uses classpath option)
         Path classpath = getClasspath();
 
         if (classpath != null && !classpath.toString().equals("")) {
-            addValue(c.cmd, c.ap, "-classpath", classpath);
+            addValue(cmd, "-classpath", classpath);
         }
-        return c;
+        return cmd;
     }
 
-    private Container setupAptForkCommand() {
+    private Commandline setupAptForkCommand() {
         CommandlineJava forkCmd = new CommandlineJava();
 
         Path classpath = getClasspath();
         forkCmd.createClasspath(getProject()).append(classpath);
-        forkCmd.setClassname("com.sun.tools.apt.Main");
-        if (null != getJvmargs()) {
-            for (Jvmarg jvmarg : jvmargs) {
-                forkCmd.createVmArgument().setLine(jvmarg.getValue());
-            }
-        }
-
-        Container c = setupAptArgs();
-        c.cmd.createArgument(true).setLine(forkCmd.toString());
-
-        forkCmd = new CommandlineJava();
-        forkCmd.createClasspath(getProject()).append(classpath);
         forkCmd.setClassname("com.sun.tools.javac.Main");
-        if (null != getJvmargs()) {
+        if (getJvmargs() != null) {
             for (Jvmarg jvmarg : jvmargs) {
                 forkCmd.createVmArgument().setLine(jvmarg.getValue());
             }
         }
 
-        c.ap.createArgument(true).setLine(forkCmd.toString());
-        return c;
+        Commandline cmd = setupAptArgs();
+        cmd.createArgument(true).setLine(forkCmd.toString());
+
+        return cmd;
     }
 
-    private Container setupAptArgs() {
-        Commandline cmd = new Commandline();
+    private Commandline setupAptArgs() {
         Commandline ap = new Commandline();
 
-        if (null != getDestdir() && !getDestdir().getName().equals("")) {
-            addValue(cmd, ap, "-d", getDestdir());
+        if (getDestdir() != null && !getDestdir().getName().equals("")) {
+            addValue(ap, "-d", getDestdir());
         }
 
-        if (null != getSourcedestdir() && !getSourcedestdir().getName().equals("")) {
-            addValue(cmd, ap, "-s", getSourcedestdir());
+        if (getSourcedestdir() != null && !getSourcedestdir().getName().equals("")) {
+            addValue(ap, "-s", getSourcedestdir());
         }
 
         if (getSourcepath() == null)
             throw new BuildException("\"sourcePath\" attribute must be set.");
 
         if (getSourcepath() != null && !getSourcepath().toString().equals("")) {
-            addValue(cmd, ap, "-sourcepath", getSourcepath().toString());
+            addValue(ap, "-sourcepath", getSourcepath().toString());
         }
 
         if (getBootclasspath() != null && !getBootclasspath().toString().equals("")) {
-            addValue(cmd, ap, "-bootclasspath", getBootclasspath().toString());
+            addValue(ap, "-bootclasspath", getBootclasspath().toString());
         }
 
         if (getExtdirs() != null && !getExtdirs().equals("")) {
-            addValue(cmd, ap, "-extdirs", getExtdirs());
+            addValue(ap, "-extdirs", getExtdirs());
         }
 
         if (getEndorseddirs() != null && !getEndorseddirs().equals("")) {
-            addValue(cmd, ap, "-endorseddirs", getEndorseddirs());
+            addValue(ap, "-endorseddirs", getEndorseddirs());
         }
 
         if (isDebug()) {
             String debugOption = "-g";
             if (getDebuglevel() != null && !getDebuglevel().equals(""))
                 debugOption += ":" + getDebuglevel();
-            cmd.createArgument().setValue(debugOption);
-            ap.createArgument().setValue(debugOption);
+            addValue(ap, debugOption);
         } else
-            addValue(cmd, ap, "-g:none");
+            addValue(ap, "-g:none");
 
         if (isVerbose())
-            addValue(cmd, ap, "-verbose");
+            addValue(ap, "-verbose");
 
         if (getEncoding() != null && !getEncoding().equals("")) {
-            addValue(cmd, ap, "-encoding", getEncoding());
+            addValue(ap, "-encoding", getEncoding());
         }
 
         if (getTarget() != null && !getTarget().equals("")) {
-            addValue(cmd, ap, "-target", getTarget());
+            addValue(ap, "-target", getTarget());
         }
 
         //if fork, these arguments will appear twice
         if (!fork) {
             for (Jvmarg jvmarg : jvmargs) {
-                addValue(cmd, ap, "-J" + jvmarg.getValue());
+                addValue(ap, "-J" + jvmarg.getValue());
             }
         }
 
         for (Option option : options) {
-            addValue(cmd, ap, "-A" + option.getKey() + "=" + option.getValue());
+            addValue(ap, "-A" + option.getKey() + "=" + option.getValue());
         }
 
         if (isNowarn()) {
-            addValue(cmd, ap, "-nowarn");
+            addValue(ap, "-nowarn");
         }
 
         if (isNocompile()) {
-            cmd.createArgument().setValue("-nocompile");
-            ap.createArgument().setValue("-proc:only");
+            addValue(ap, "-proc:only");
         }
 
         if (isDeprecation()) {
-            addValue(cmd, ap, "-deprecation");
+            addValue(ap, "-deprecation");
         }
 
         if (isPrint()) {
-            cmd.createArgument().setValue("-print");
-            ap.createArgument().setValue("-Xprint");
+            addValue(ap, "-Xprint");
         }
 
-        if (getFactorypath() != null) {
-            cmd.createArgument().setValue("-factorypath");
-            cmd.createArgument().setValue(getFactorypath().toString());
-        }
+        if (isXprintaptrounds())
+            addValue(ap, "-XprintRounds");
 
-        if (getFactory() != null) {
-            cmd.createArgument().setValue("-factory");
-            cmd.createArgument().setValue(getFactory());
-        }
-
-        if (isXlistannotationtypes()) {
-            cmd.createArgument().setValue("-XListAnnotationTypes");
-        }
-
-        if (isXlistdeclarations()) {
-            cmd.createArgument().setValue("-XListDeclarations");
-        }
-
-        if (isXprintaptrounds()) {
-            cmd.createArgument().setValue("-XPrintAptRounds");
-            ap.createArgument().setValue("-XprintRounds");
-        }
-
-        if (isXprintfactoryinfo()) {
-            cmd.createArgument().setValue("-XPrintFactoryInfo");
-            ap.createArgument().setValue("-XprintProcessorInfo");
-        }
-
-        if (isXprintfactoryinfo()) {
-            cmd.createArgument().setValue("-XclassesAsDecls");
-        }
+        if (isXprintfactoryinfo())
+            addValue(ap, "-XprintProcessorInfo");
 
         Set<File> sourceFiles = new HashSet<File>();
         prepareSourceList(sourceFiles);
 
         if (!sourceFiles.isEmpty()) {
             for (File source : sourceFiles) {
-                cmd.createArgument().setFile(source);
                 ap.createArgument().setFile(source);
             }
         }
 
-        ap.createArgument().setValue("-processor");
-        ap.createArgument().setValue("com.sun.tools.ws.processor.modeler.annotation.WebServiceAp");
+        addValue(ap, "-processor", WebServiceAp.class.getName());
 
-        return new Container(cmd, ap);
+        return ap;
     }
 
-    private static void addValue(Commandline cmd, Commandline ap, String name) {
-        addValue(cmd, ap, name, (String) null);
+    private static void addValue(Commandline ap, String name) {
+        addValue(ap, name, (String) null);
     }
 
-    private static void addValue(Commandline cmd, Commandline ap, String name, String value) {
-        cmd.createArgument().setValue(name);
+    private static void addValue(Commandline ap, String name, String value) {
         ap.createArgument().setValue(name);
         if (value != null) {
-            cmd.createArgument().setValue(value);
             ap.createArgument().setValue(value);
         }
     }
 
-    private static void addValue(Commandline cmd, Commandline ap, String name, Path value) {
-        cmd.createArgument().setValue(name);
+    private static void addValue(Commandline ap, String name, Path value) {
         ap.createArgument().setValue(name);
         if (value != null) {
-            cmd.createArgument().setPath(value);
             ap.createArgument().setPath(value);
         }
     }
 
-    private static void addValue(Commandline cmd, Commandline ap, String name, File value) {
-        cmd.createArgument().setValue(name);
+    private static void addValue(Commandline ap, String name, File value) {
         ap.createArgument().setValue(name);
         if (value != null) {
-            cmd.createArgument().setFile(value);
             ap.createArgument().setFile(value);
         }
     }
@@ -623,51 +510,32 @@ public class Apt extends Task {
 
         PrintWriter writer = null;
         try {
-            Container c = fork ? setupAptForkCommand() : setupAptCommand();
+            Commandline cmd = fork ? setupAptForkCommand() : setupAptCommand();
 
             if (verbose) {
-                log("command line: " + "apt " + c.cmd.toString());
+                log("command line: apt " + cmd.toString());
             }
             int status = 0;
-            if (fork) {
-                status = run(c.cmd.getCommandline());
-                if (status == 0)
-                    status = run(c.ap.getCommandline());
-            } else {
+            if (fork)
+                status = run(cmd.getCommandline());
+            else {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 writer = new PrintWriter(baos);
 
                 ClassLoader old = Thread.currentThread().getContextClassLoader();
                 Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
                 try {
-                    com.sun.tools.apt.Main aptTool = new com.sun.tools.apt.Main();
-                    status = Main.process(writer, c.cmd.getArguments());
+                    status = com.sun.tools.javac.Main.compile(cmd.getArguments(), writer);
                     writer.flush();
                     if (verbose || baos.size() != 0)
                         log(baos.toString());
                 } finally {
                     Thread.currentThread().setContextClassLoader(old);
                 }
-                if (status == 0) {
-                    baos = new ByteArrayOutputStream();
-                    writer = new PrintWriter(baos);
-
-                    old = Thread.currentThread().getContextClassLoader();
-                    Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                    try {
-                        com.sun.tools.javac.Main mainTool = new com.sun.tools.javac.Main();
-                        status = com.sun.tools.javac.Main.compile(c.ap.getArguments(), writer);
-                        writer.flush();
-                        if (verbose || baos.size() != 0)
-                            log(baos.toString());
-                    } finally {
-                        Thread.currentThread().setContextClassLoader(old);
-                    }
-                }
             }
             if (status != 0) {
                 if (!verbose) {
-                    log("Command invoked: " + "apt " + c.cmd.toString());
+                    log("Command invoked: apt " + cmd.toString());
                 }
                 throw new BuildException("apt failed", location);
             }
@@ -737,17 +605,6 @@ public class Apt extends Task {
 
         public void setValue(String value) {
             this.value = value;
-        }
-    }
-
-    private static class Container {
-
-        private Commandline cmd;
-        private Commandline ap;
-
-        private Container(Commandline commandline, Commandline ap) {
-            this.cmd = commandline;
-            this.ap = ap;
         }
     }
 }

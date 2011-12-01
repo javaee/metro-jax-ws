@@ -81,7 +81,7 @@ WebServiceAp->CodeModel
  *
  * <h2>ANT Tasks</h2>
    <d1>
- *  <dt>{@link com.sun.tools.ws.ant.Ap AnnotationProcessing}
+ *  <dt>{@link com.sun.tools.ws.ant.AnnotationProcessingTask AnnotationProcessing}
  *  <dd>An ANT task to invoke <a href="http://download.oracle.com/javase/6/docs/api/javax/annotation/processing/package-summary.html">Annotation Processing</a>.
 
  *  <dt>{@link com.sun.tools.ws.ant.WsGen2 WsGen}

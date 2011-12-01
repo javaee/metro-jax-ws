@@ -68,40 +68,30 @@ import java.util.regex.Pattern;
 /**
  * annotation processing task for use with the JAXWS project.
  */
-public class Ap extends Javac {
+public class AnnotationProcessingTask extends Javac {
 
-    private String processor = WebServiceAp.class.getName();
     private boolean procOnly = false;
-    private File s;
+    private File sourceDestDir;
 
     private static final Pattern VERSION_PATTERN = Pattern.compile("^\\D+(\\d+(\\.?\\d+)?)$");
 
     /**
-     * Get the s attribute.
+     * Get the sourceDestDir attribute (-s javac parameter)
      * The default value is null.
      *
      * @return directory where to place generated source files.
      */
-    public File getS() {
-        return s;
+    public File getSourceDestDir() {
+        return sourceDestDir;
     }
 
     /**
-     * Set the s attribute.
+     * Set the sourceDestDir attribute. (-s javac parameter)
      *
-     * @param s directory where to place processor generated source files.
+     * @param sourceDestDir directory where to place processor generated source files.
      */
-    public void setS(File s) {
-        this.s = s;
-    }
-
-    /**
-     * Get the compiler class name.
-     *
-     * @return the compiler class name.
-     */
-    public String getCompiler() {
-        return super.getCompiler();
+    public void setSourceDestDir(File sourceDestDir) {
+        this.sourceDestDir = sourceDestDir;
     }
 
     /**
@@ -124,24 +114,15 @@ public class Ap extends Javac {
         this.procOnly = procOnly;
     }
 
-    /**
-     * Get the processor attribute.
-     * The default value is WebServiceAp.
-     *
-     * @return name of Annotation Processor
-     */
-    public String getProcessor() {
-        return processor;
-    }
-
     @Override
     protected void checkParameters() throws BuildException {
         super.checkParameters();
-        if (s == null) {
+        if (sourceDestDir == null) {
             throw new BuildException("destination source directory must be set", getLocation());
         }
-        if (!s.isDirectory()) {
-            throw new BuildException("destination source directory \"" + s + "\" does not exist or is not a directory", getLocation());
+        if (!sourceDestDir.isDirectory()) {
+            throw new BuildException("destination source directory \"" + sourceDestDir + "\" does not exist or is not a directory",
+                    getLocation());
         }
         try {
             Matcher matcher = VERSION_PATTERN.matcher(super.getCompilerVersion());
@@ -163,9 +144,9 @@ public class Ap extends Javac {
      */
     public void execute() throws BuildException {
         ImplementationSpecificArgument argument = super.createCompilerArg();
-        argument.setLine("-processor " + processor);
+        argument.setLine("-processor " + WebServiceAp.class.getName());
         argument = super.createCompilerArg();
-        argument.setLine("-s " + s);
+        argument.setLine("-s " + sourceDestDir);
         if (procOnly) {
             argument = super.createCompilerArg();
             argument.setLine("-proc:only");

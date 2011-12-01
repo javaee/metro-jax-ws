@@ -91,7 +91,7 @@
  *  <dd>
  *    Tools for converting WSDLs and Java source/class files to Web Services.
  *
- *  <dt><a href="http://java.sun.com/j2se/1.5.0/docs/tooldocs/share/apt.html">APT</a>
+ *  <dt><a href="http://download.oracle.com/javase/6/docs/api/index.html?javax/annotation/processing/package-summary.html">Annotation Processing</a>
  *  <dd>A Java SE tool and framework for processing annotations.
  *
  *  <dt>{@link com.sun.tools.ws.processor.modeler.annotation.WebServiceAp Annotation Processor}

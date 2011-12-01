@@ -53,7 +53,7 @@
     </path>
 
 
-    <taskdef name="annotationProcessing" classname="com.sun.tools.ws.ant.Ap">
+    <taskdef name="annotationProcessing" classname="com.sun.tools.ws.ant.AnnotationProcessingTask">
         <classpath refid="jaxws.classpath"/>
     </taskdef>
 
@@ -76,7 +76,7 @@
                 destdir="${build.classes.home}"
                 srcdir="${basedir}/src"
                 includes="**/server/**,**/common/**"
-                s="${build.classes.home}"
+                sourceDestDir="${build.classes.home}"
                 procOnly="false"
                 sourcepath="${basedir}/src">
             <classpath>
