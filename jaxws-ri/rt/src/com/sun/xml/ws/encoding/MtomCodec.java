@@ -354,6 +354,8 @@ public class MtomCodec extends MimeCodec {
         private void writeBinary(ByteArrayBuffer bab) {
             try {
                 mtomAttachments.add(bab);
+                writer.setPrefix("xop", XOP_NAMESPACEURI);
+                writer.writeNamespace("xop", XOP_NAMESPACEURI);
                 writer.writeStartElement(XOP_NAMESPACEURI, XOP_LOCALNAME);
                 writer.writeAttribute("href", "cid:"+bab.contentId);
                 writer.writeEndElement();
