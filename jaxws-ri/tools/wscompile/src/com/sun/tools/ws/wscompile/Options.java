@@ -43,6 +43,7 @@ package com.sun.tools.ws.wscompile;
 import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.Invoker;
 
+import javax.annotation.processing.Filer;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -87,6 +88,11 @@ public class Options {
      * -s
      */
     public File sourceDir;
+
+    /**
+     * The filer that can use used to write out the generated files
+     */
+    public Filer filer;
 
     /**
      * -encoding

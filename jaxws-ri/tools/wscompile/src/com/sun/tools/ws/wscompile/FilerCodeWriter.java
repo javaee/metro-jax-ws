@@ -59,11 +59,10 @@ public class FilerCodeWriter extends WSCodeWriter {
 
     private Writer w;
 
-    public FilerCodeWriter(File outDir, WsgenOptions options) throws IOException {
+    public FilerCodeWriter(File outDir, Options options) throws IOException {
         super(outDir, options);
         this.filer = options.filer;
     }
-
 
     public Writer openSource(JPackage pkg, String fileName) throws IOException {
         String tmp = fileName.substring(0, fileName.length()-5);

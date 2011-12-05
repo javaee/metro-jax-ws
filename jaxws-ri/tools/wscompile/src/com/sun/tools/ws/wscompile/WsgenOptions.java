@@ -40,7 +40,6 @@
 
 package com.sun.tools.ws.wscompile;
 
-import javax.annotation.processing.Filer;
 import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.api.WsgenExtension;
 import com.sun.tools.ws.api.WsgenProtocol;
@@ -100,9 +99,6 @@ public class WsgenOptions extends Options {
      * -Xdonotoverwrite
      */
     public boolean doNotOverWrite;
-
-    public Filer filer;
-
 
     /**
      * Tells if user specified a specific protocol

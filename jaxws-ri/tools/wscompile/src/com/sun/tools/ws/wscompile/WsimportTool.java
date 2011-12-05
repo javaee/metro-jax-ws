@@ -428,7 +428,13 @@ public class WsimportTool {
             }
         }
 
-       CodeWriter cw = new WSCodeWriter(options.sourceDir, options);
+        CodeWriter cw;
+        if (options.filer != null) {
+            cw = new FilerCodeWriter(options.sourceDir, options);
+        } else {
+            cw = new WSCodeWriter(options.sourceDir, options);
+        }
+
         if (options.verbose)
             cw = new ProgressCodeWriter(cw, out);
         options.getCodeModel().build(cw);
