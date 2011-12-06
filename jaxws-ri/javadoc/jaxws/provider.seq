@@ -1,0 +1,98 @@
+#
+# Sequence Diagram for the most basic server case
+#
+# a message that came through HTTP will eventually
+# cause a provider to be invoked
+#
+
+# graph properties
+boxht = 0.6;
+
+# Define the objects
+pobject(A,"Actor");
+object(T,":Acceptor");
+object(D,":Decoder");
+object(E,":Encoder");
+pobject(M1);
+object(C1,"c1:Pipe");
+object(C2,"c2:Pipe");
+object(I,"pInvoker:" "Pipe");
+pobject(M2);
+pobject(S);
+object(U,"provider impl");
+pobject(DUMMY);
+
+step();
+
+# Message sequences
+message(A,T,"HTTP");
+active(T);
+	message(T,D,"decode(response)");
+	active(D);
+		cmessage(D,M1,"msg1:" "StreamMessage","");
+		rmessage(D,T,"msg1");
+	inactive(D);
+	
+	message(T,C1,"process(msg1)");
+	active(C1);
+		message(C1,C2,"process(msg1)");
+		active(C2);
+			message(C2,I,"process(msg1)");
+			active(I);
+				step();
+				cmessage(I,S,"s:SAXSource");
+				
+				message(I,U,"invoke(s)");
+				active(U);
+					message(U,S,"consume");
+					active(S);
+						message(S,M1,"writeTo");
+						active(M1);
+							step();
+							message(M1,U,"SAX events converted from StAX");
+							step();
+							message(M1,U);
+							step();
+							message(M1,U);
+						inactive(M1);
+					inactive(S);
+					
+					step();
+					cmessage(U,S,"r:" "Source");
+					
+					rmessage(U,I,"r");
+				inactive(U);
+				
+				step();
+				cmessage(I,M2,"msg2:" "SourceMessage");
+				
+				rmessage(I,C2,"msg2");
+			inactive(I);
+			rmessage(C2,C1,"msg2");
+		inactive(C2);
+		rmessage(C1,T,"msg2");
+	inactive(C1);
+	
+	message(T,E,"encode(msg2,socket)");
+	active(E);
+		message(E,M2,"writeTo(...)");
+		active(M2);
+			step();
+			message(M2,S,"consume");
+			active(S);
+				step();
+			inactive(S);
+		inactive(M2);
+	inactive(E);
+	
+	rmessage(T,A,"HTTP");
+inactive(T);
+
+step();
+complete(T);
+complete(D);
+complete(E);
+complete(C1);
+complete(C2);
+complete(I);
+complete(U);

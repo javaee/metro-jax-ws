@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+ Copyright 1997-2011 Oracle. All rights reserved.
+
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Oracle. in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+
+ Contributor(s):
+
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.ant.freeform</type>
+    <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>JAXWS-RI-2.2</name>
+        </general-data>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
+            <!--
+                !!! Do NOT use Project Properties customizer to edit this file
+                    edit it manually instead. !!!
+             -->
+            <name>JAXWS-RI-2.2</name>
+            <properties>
+                <property-file>nbproject/private/private.properties</property-file>
+                <property-file>nbproject/project.properties</property-file>
+            </properties>
+            <folders>
+                <source-folder>
+                    <label>JAXWS-RI-2.2</label>
+                    <location>.</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>rt/src</label>
+                    <type>java</type>
+                    <location>rt/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>rt/build/gen-src</label>
+                    <type>java</type>
+                    <location>rt/build/gen-src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>rt/test</label>
+                    <type>java</type>
+                    <location>rt/test</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>rt-fi/src</label>
+                    <type>java</type>
+                    <location>rt-fi/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>rt-ha/src</label>
+                    <type>java</type>
+                    <location>rt-ha/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>servlet/src</label>
+                    <type>java</type>
+                    <location>servlet/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>httpspi-servlet/src</label>
+                    <type>java</type>
+                    <location>httpspi-servlet/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>eclipselink_jaxb/src</label>
+                    <type>java</type>
+                    <location>eclipselink_jaxb/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>eclipselink_jaxb/test</label>
+                    <type>java</type>
+                    <location>eclipselink_jaxb/test</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>eclipselink_sdo/src</label>
+                    <type>java</type>
+                    <location>eclipselink_sdo/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>eclipselink_sdo/test</label>
+                    <type>java</type>
+                    <location>eclipselink_sdo/test</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>tools/wscompile/src</label>
+                    <type>java</type>
+                    <location>tools/wscompile/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>tools/wscompile/build/gen-src</label>
+                    <type>java</type>
+                    <location>tools/wscompile/build/gen-src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>tools/wscompile/test</label>
+                    <type>java</type>
+                    <location>tools/wscompile/test</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>transports/local/src</label>
+                    <type>java</type>
+                    <location>transports/local/src</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+            </folders>
+            <ide-actions>
+                <action name="build">
+                    <target>dist</target>
+                </action>
+                <action name="clean">
+                    <target>clean</target>
+                </action>
+                <action name="rebuild">
+                    <target>clean</target>
+                    <target>dist</target>
+                </action>
+                <action name="compile.single">
+                    <target>tools-compile</target>
+                </action>
+                <action name="javadoc">
+                    <target>javadocs</target>
+                </action>
+                <action name="test">
+                    <target>test</target>
+                </action>
+                <action name="test.single">
+                    <script>nbproject/ide-file-targets.xml</script>
+                    <target>run-selected-file-in-test</target>
+                    <context>
+                        <property>test.class</property>
+                        <folder>tools/wscompile/test</folder>
+                        <pattern>\.java$</pattern>
+                        <format>java-name</format>
+                        <arity>
+                            <one-file-only/>
+                        </arity>
+                    </context>
+                </action>
+                <action name="debug.test.single">
+                    <script>nbproject/ide-file-targets.xml</script>
+                    <target>debug-selected-file-in-test</target>
+                    <context>
+                        <property>debug.class</property>
+                        <folder>tools/wscompile/test</folder>
+                        <pattern>\.java$</pattern>
+                        <format>java-name</format>
+                        <arity>
+                            <one-file-only/>
+                        </arity>
+                    </context>
+                </action>
+            </ide-actions>
+            <export>
+                <type>folder</type>
+                <location>rt/build/classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>rt/build/classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>rt/build/test-classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>tools/wscompile/build/classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>tools/wscompile/build/classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>tools/wscompile/build/test-classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>servlet/build/classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>transports/local/build/classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>rt-fi/build/classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>rt-ha/build/classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>httpspi-servlet/build/classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>eclipselink_jaxb/build/classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>eclipselink_jaxb/build/test-classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>eclipselink_sdo/build/classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <export>
+                <type>folder</type>
+                <location>eclipselink_sdo/build/test-classes</location>
+                <build-target>dist</build-target>
+            </export>
+            <view>
+                <items>
+                    <source-folder style="packages">
+                        <label>rt/src</label>
+                        <location>rt/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>rt/build/gen-src</label>
+                        <location>rt/build/gen-src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>rt/test</label>
+                        <location>rt/test</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>rt-fi/src</label>
+                        <location>rt-fi/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>rt-ha/src</label>
+                        <location>rt-ha/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>servlet/src</label>
+                        <location>servlet/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>httpspi-servlet/src</label>
+                        <location>httpspi-servlet/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>eclipselink_jaxb/src</label>
+                        <location>eclipselink_jaxb/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>eclipselink_jaxb/test</label>
+                        <location>eclipselink_jaxb/test</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>eclipselink_sdo/src</label>
+                        <location>eclipselink_sdo/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>eclipselink_sdo/test</label>
+                        <location>eclipselink_sdo/test</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>tools/wscompile/src</label>
+                        <location>tools/wscompile/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>tools/wscompile/build/gen-src</label>
+                        <location>tools/wscompile/build/gen-src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>tools/wscompile/test</label>
+                        <location>tools/wscompile/test</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>transports/local/src</label>
+                        <location>transports/local/src</location>
+                    </source-folder>
+                    <source-file>
+                        <label>etc/build-bundle.xml</label>
+                        <location>etc/build-bundle.xml</location>
+                    </source-file>
+                    <source-file>
+                        <location>build-taskdefs.xml</location>
+                    </source-file>
+                    <source-file>
+                        <location>build.xml</location>
+                    </source-file>
+                    <source-file>
+                        <location>project.properties</location>
+                    </source-file>
+                    <source-file>
+                        <location>nbproject/private/private.properties</location>
+                    </source-file>
+                </items>
+                <context-menu>
+                    <ide-action name="build"/>
+                    <ide-action name="rebuild"/>
+                    <ide-action name="clean"/>
+                    <!--                    <ide-action name="javadoc"/>-->
+                    <ide-action name="test"/>
+                    <!--                    <ide-action name="compile.single"/>-->
+                </context-menu>
+            </view>
+            <subprojects/>
+        </general-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
+            <compilation-unit>
+                <package-root>rt/src</package-root>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">rt/build/gen-src:rt/build/classes:${ri.nb.common.cp}</classpath>
+                <built-to>rt/build/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>rt/build/gen-src</package-root>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">rt/src:${ri.nb.common.cp}</classpath>
+                <built-to>rt/build/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>rt/test</package-root>
+                <unit-tests/>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">rt/build/classes:${ri.nb.test.cp}</classpath>
+                <built-to>rt/build/test-classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>rt-fi/src</package-root>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">rt/src:rt/build/gen-src:lib/FastInfoset.jar:${ri.nb.common.cp}</classpath>
+                <built-to>rt-fi/build/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>rt-ha/src</package-root>
+                <classpath mode="compile">rt/src:rt/build/gen-src:lib/ha-api.jar:${ri.nb.common.cp}</classpath>
+                <built-to>rt-ha/build/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>servlet/src</package-root>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">rt/src:rt/build/gen-src:rt-ha/src:servlet/lib/javax.servlet.jar:${ri.nb.common.cp}</classpath>
+                <built-to>servlet/build/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>httpspi-servlet/src</package-root>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">httpspi-servlet/lib/servlet.jar:${ri.nb.common.cp}</classpath>
+                <built-to>httpspi-servlet/build/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>eclipselink_jaxb/src</package-root>
+<!--                <classpath mode="boot">${ri.nb.boot.cp}</classpath>-->
+                <classpath mode="compile">rt/src:eclipselink_jaxb/lib/eclipselink.jar:eclipselink_jaxb/lib/javax.mail_1.4.jar:${ri.nb.common.cp}</classpath>
+                <built-to>eclipselink_jaxb/build/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>eclipselink_jaxb/test</package-root>
+                <unit-tests/>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">rt/build/classes:eclipselink_jaxb/build/classes:${ri.nb.test.cp}</classpath>
+                <built-to>eclipselink_jaxb/build/test-classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>eclipselink_sdo/src</package-root>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">eclipselink_sdo/lib/common.sdo.jar:eclipselink_jaxb/lib/eclipselink.jar:eclipselink_jaxb/lib/javax.mail_1.4.jar:rt/build/classes:${ri.nb.common.cp}</classpath>
+                <built-to>eclipselink_sdo/build/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>eclipselink_sdo/test</package-root>
+                <unit-tests/>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">eclipselink_sdo/src:rt/src:eclipselink_jaxb/lib/eclipselink.jar:eclipselink_sdo/lib/common.sdo.jar:${ri.nb.test.cp}</classpath>
+                <built-to>eclipselink_sdo/build/test-classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>tools/wscompile/src</package-root>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">tools/wscompile/build/classes:tools/wscompile/build/gen-src:rt/src:rt/build/gen-src:build/lib/jaxws-rt.jar:${ri.nb.common.cp}:${ri.nb.ant.cp}:${ri.nb.tools.jar}</classpath>
+                <built-to>tools/wscompile/build/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>tools/wscompile/build/gen-src</package-root>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">rt/src:${ri.nb.common.cp}</classpath>
+                <built-to>tools/wscompile/build/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>tools/wscompile/test</package-root>
+                <unit-tests/>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">tools/wscompile/src:rt/src:${ri.nb.test.cp}:${ri.nb.tools.jar}:${ri.nb.ant.cp}</classpath>
+                <built-to>tools/wscompile/build/test-classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>transports/local/src</package-root>
+                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
+                <classpath mode="compile">rt/src:${ri.nb.common.cp}</classpath>
+                <built-to>transports/local/build/classes</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+        </java-data>
+        <preferences xmlns="http://www.netbeans.org/ns/auxiliary-configuration-preferences/1">
+            <module name="org-netbeans-modules-editor-indent"/>
+        </preferences>
+    </configuration>
+</project>

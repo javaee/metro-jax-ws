@@ -1,0 +1,16 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.sun.xml.ws</groupId>
+  <artifactId>jaxws-async-client-transport</artifactId>
+  <version>@JAXWS_VERSION@</version>
+  
+  <dependencies>
+    <dependency>
+
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <version>@JAXWS_VERSION@</version>
+    </dependency>
+  </dependencies>
+</project>
+

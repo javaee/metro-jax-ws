@@ -1,0 +1,511 @@
+<html>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<head caption="WSDL Customization">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
+</head>
+
+<body>
+
+<H2>Contents</H2>
+
+<div>
+	<A HREF="#1._Declaring_customizations_">1. Declaring Customizations</A>
+</div>
+
+<div style="margin-left:1em">
+	<A HREF="#1.1_External_binding_declaration">1.1 External Binding Declaration</A>
+</div>
+
+<div style="margin-left:2em">
+	<A HREF="#1.1.1_Root_binding_element">1.1.1 Root Binding Element</A><br/>
+	<A HREF="#1.1.2_Child_binding_elements">1.1.2 Child Binding Elements</A>
+</div>
+<div style="margin-left:1em">
+	<A HREF="#1.2_Embedded_binding_declarations">1.2 Embedded Binding Declarations</A>
+</div>
+<div>
+	<A HREF="#2._Standard_customizations">2. Standard Customizations</A>
+</div>
+<div style="margin-left:1em">
+	<A HREF="#2.1_Global_bindings">2.1 Global Customizations</A><br/>
+	<A HREF="#2.1_Package_customization">2.2 Package Customization</A><br/>
+	<A HREF="#2.2_Wrapper_Style">2.3 Wrapper Style</A><br/>
+	<A HREF="#2.3_Asynchrony">2.4 Asynchrony</A><br/>
+	<A HREF="#2.5_Provider_interface">2.5 The Provider Interface</A><br/>
+	<A HREF="#2.6_Class_Customization">2.6 Class Customization</A>
+</div>
+<div style="margin-left:2em">
+	<A HREF="#2.6.1_SEI_class">2.6.1 The Service Endpoint Interface Class</A><br/>
+	<A HREF="#2.6.2_Exception_class">2.6.2 The Exception Class</A><br/>
+	<A HREF="#2.6.3_Service_class_">2.6.3 The Service Class</A>
+</div>
+
+<div style="margin-left:1em">
+	<A HREF="#2.7_Java_Method_customization">2.7 Java Method Customization</A>
+</div>
+<div style="margin-left:2em">
+	<A HREF="#2.7.1_SEI_method">2.7.1 Service Endpoint Interface Methods</A><br/>
+	<A HREF="#2.7.2_Port_accessor_Method_in_Service">2.7.2 Port Accessor Methods in the Service Class</A>
+</div>
+<div style="margin-left:1em">
+	<A HREF="#2.8_Java_parameter_customization">2.8 Java Parameter Customization</A><br/>
+	<A HREF="#2.9_Javadoc_customization">2.9 Javadoc Customization</A><br/>
+	<A HREF="#2.9_XML_schema_customization">2.10 XML Schema Customization</A><br/>
+	<A HREF="#2.10_Handler_chain_customization">2.11 Handler Chain Customization</A>
+</div>
+
+<p>
+The JAX-WS 2.0 specification defines standard XML-based
+customization for WSDL to Java mapping and to control certain
+features. These customizations, or <I>binding declarations</I>, can
+customize almost all WSDL components that can be mapped to Java, such
+as the service endpoint interface class, method name, parameter name,
+exception class, etc. The other important thing you can do with these
+binding declarations is control certain features, such as asynchrony,
+provider, wrapper style, and additional headers. For example, a
+client application can enable asynchrony for a particular operation
+in a <code>portType</code> or all operations in a <code>portType</code>
+or all <code>portType</code> operations defined in the WSDL file.</p>
+<p>The JAX-RPC 1.1 specification did not define a standard
+customization architecture. However JAX-RPC 1.x SI had limited WSDL
+to Java customization support. It allowed a JAX-RPC 1.x application
+to:</p>
+<ul>
+	<li><p>Define a package where Java artifacts mapped from a WSDL file
+	will be generated.</p>
+	</li><li><p>Customize the package for the value classes mapped from the
+	imported XML schema by the WSDL document.</p>
+	</li><li><p>Customize handler chains.</p>
+</li></ul>
+<p>But these customizations were not portable and could not be used
+across other JAX-RPC implementations. ${PRODUCT_NAME}
+provides complete support for all the binding declarations defined by
+the specification.</p>
+<h2><a name="1._Declaring_customizations_"></a>1. Declaring
+Customizations</h2>
+<p>All the binding declaration elements live in
+<code>http://java.sun.com/xml/ns/jaxws</code> namespace. There are
+two ways to specify binding declarations. In the first approach, all
+binding declarations pertaining to a given WSDL document are grouped
+together in a standalone document, called an <i>external binding
+file</i>. The second approach consists of embedding binding
+declarations directly inside a WSDL document. In either case, the
+<code>jaxws:bindings</code> element is used as a container for JAX-WS
+binding declarations. The <code>jaxws</code> prefix maps to the
+<code>http://java.sun.com/xml/ns/jaxws</code> namespace.</p>
+<h3><a name="1.1_External_binding_declaration"></a>1.1 External
+Binding Declaration</h3>
+<p>External binding files are semantically equivalent to embedded
+binding declarations. When <code>wsimport</code> processes the WSDL
+document for which there is an external binding file, it internalizes
+the binding declarations defined in the external binding file on the
+nodes in the WSDL document they target using the <code>wsdlLocation</code>
+attribute. The embedded binding declarations can exist in a WSDL file
+and an external binding file targeting that WSDL, but <code>wsimport</code>
+may give an error if, upon embedding the binding declarations defined
+in the external binding files, the resulting WSDL document contains
+conflicting binding declarations.</p>
+<h4><a name="1.1.1_Root_binding_element"></a>1.1.1 Root Binding
+Element</h4>
+<p>The <code>jaxws:bindings</code> declaration appears as the root of
+all other binding declarations. This top-level <code>jaxws:bindings</code>
+element must specify the location of the WSDL file as a URI in the
+value of <code>wsdlLocation</code> attribute.</p>
+<p>Its important that the <code>wsdlLocation</code> attribute on the
+root <code>jaxws:bindings</code> declaration is same as the WSDL
+location URI given to <code>wsimport</code>.</p>
+<pre>&lt;jaxws:bindings<br>    wsdlLocation="http://localhost:8080/jaxws-external-customize/addnumbers?WSDL"<br>    jaxws:xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>...<br>&lt;/jaxws:bindings&gt;</pre><h4>
+<a name="1.1.2_Child_binding_elements"></a>1.1.2 Child Binding
+Elements</h4>
+<p>The root <code>jaxws:bindings</code> element may contain child
+<code>jaxws:bindings</code> elements. In this case the child
+<code>jaxws:bindings</code> element must carry an XPath expression in
+the <span style="font-style: italic;">node</span> attribute to refer to the WSDL node it customizes.</p>
+<p>Here is an excerpt from an external binding file <a href="../samples/external-customize/etc/custom-client.xml">custom-client.xml</a>
+in the <code>external-customize</code> sample:</p>
+<pre>&lt;jaxws:bindings<br>    wsdlLocation="http://localhost:8080/jaxws-external-customize/addnumbers?WSDL"<br>    jaxws:xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>    &lt;jaxws:bindings <span style="font-weight: bold;">node</span>="wsdl:definitions" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"&gt;<br>        &lt;jaxws:package name="external_customize.client"/&gt;<br>        ...<br>&lt;/jaxws:bindings&gt;</pre><p>
+In this example the child <code>jaxws:bindings</code> applies package
+customization. An XPath expression in the node attribute refers to
+the root node of the WSDL document, which is <code>wsdl:definitions</code>
+and declares the package <code>external_customize.client</code> for
+all the generated Java classes mapped from the WSDL file.</p>
+<h3><a name="1.2_Embedded_binding_declarations"></a>1.2 Embedded
+Binding Declarations</h3>
+<p>Embedded binding declarations directly inside the WSDL follow different rules compared to
+the binding declarations declared in the external binding file. Here
+are some important facts and rules as defined in the JAX-WS 2.0
+specification:</p>
+<ul>
+	<li><p style="margin-bottom: 0in;">An embedded binding declaration is
+	specified by using the <code>jaxws:bindings</code> element as a WSDL
+	extension inside the wsdl node that is to be customized.
+	</p>
+	</li><li><p style="margin-bottom: 0in;">When a <code>jaxws:bindings</code>
+	element is used as a WSDL extension, the&nbsp; <code>jaxws:bindings </code>element should not have <span style="font-style: italic;">node</span>
+	attribute (the <span style="font-style: italic;">node</span> attribute is only used in external customization file to scope the custmization to a wsdl element).
+	</p>
+	</li><li><p>A binding declaration embedded in a WSDL can only affect the
+	WSDL element it extends.
+	</p>
+</li></ul>
+<p>Here's an example of embedded binding declarations in the WSDL
+<code><a href="../samples/inline-customize/etc/AddNumbers.wsdl">AddNumbers.wsdl</a></code>
+from the <code>inline-customize</code> sample:</p>
+<pre>&lt;wsdl:portType name="AddNumbersImpl"&gt;<br>    &lt;!-- wsdl:portType customizations --&gt;<br>    &lt;jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"&gt;<br>        &lt;!-- rename the generated SEI from AddNumbersImpl to MathUtil --&gt;<br>        &lt;jaxws:class name="MathUtil"/&gt;<br>        ...<br>    &lt;/jaxws:bindings&gt;<br>    &lt;wsdl:operation name="addNumber"&gt;<br>    ...<br>&lt;/wsdl:portType&gt;</pre><p>
+The above WSDL file excerpt shows the <code>wsdl:portType</code>
+customization. <code>jaxws:bindings</code> appears as extension
+element of <code>portType</code>. It customizes the class name of the
+generated service endpoint interface. Without this customization, or
+by default, the service endpoint interface class is named after the
+<code>wsdl:portType</code> name. The binding declaration <code>jaxws:class</code>
+customizes the generated class to be named <code>MathUtil</code>
+instead of <code>AddNumberImpl</code>.</p>In
+the following section, all the possible standard customizations and
+their scope is described. Global customizations can be specified under
+&lt;wsdl:definitions&gt; element and other customizations can be
+specified &nbsp;under&nbsp;the node of its scope.
+<h2><a name="2._Standard_customizations"></a>2. Standard
+Customizations</h2>
+<p>This section provides the details of all the possible WSDL binding
+declarations.</p>
+<h3><a name="2.1_Global_bindings"></a>2.1 Global bindings</h3>
+<p>The global customizations are the customizations that applies to
+the entire scope of wsdl:definition in the wsdl referenced by the root
+jaxws:bindings@wsdlLocation.<br><br>Following customizations have the
+global scopes:<br><br>&lt;jaxws:package
+name="..."/&gt;<br>&lt;jaxws:enableWrapperStyle/&gt;<br>&lt;jaxws:enableAsyncMapping/&gt;<br><br>These
+can appear as direct child of the <a href="#1.1.1_Root_binding_element">root
+binding</a> declarations in the external customization file.
+For example:</p>
+<pre>&lt;bindings<br>    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"<br>    wsdlLocation="http://localhost:8080/jaxws-external-customize/addnumbers?WSDL"<br>    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>        &lt;package name="external_customize.client"/&gt;<br>       &lt;enableWrapperStyle&gt;true&lt;/enableWrapperStyle&gt;<br>        &lt;enableAsyncMapping&gt;false&lt;/enableAsyncMapping&gt;<br>&lt;/bindings&gt;<br><br></pre><p>In embedded usage, the global customization can be specified under &lt;wsdl:definitions&gt; node of the wsdl.</p><h3>
+<A NAME="2.1_Package_customization"></A>2.2 Package Customization</H3>
+<P>By default <CODE>wscompile</CODE> generates WSDL artifacts in a
+package computed from the WSDL <CODE>targetNamespace</CODE>. For
+example, a WSDL file with the <CODE>targetNamespace</CODE>
+<CODE><FONT COLOR="#0000cc">http://duke.example.org</FONT></CODE> without any
+package customization will be mapped to the <CODE>org.duke</CODE>
+package. To customize the default package mapping you would use a
+<CODE>jaxws:package</CODE> customization on the <CODE>wsdl:definitions</CODE>
+node or it can directly appear inside the top level bindings element.</P>
+<P>An important thing to note is that -p option on commandline
+wsimport.sh tool (package attribute on wsimport ant task), overrides
+the jaxws:package customization,it also overrides the schema package
+customization specified using jaxb schema customization.</P>
+<P>For example:</P>
+<PRE>&lt;bindings
+    xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;
+    wsdlLocation=&quot;http://localhost:8080/jaxws-external-customize/addnumbers?WSDL&quot;
+    xmlns=&quot;http://java.sun.com/xml/ns/jaxws&quot;&gt;
+        &lt;package name=&quot;external_customize.client&quot;&gt;
+            &lt;javadoc&gt;Mathutil package&lt;/javadoc&gt;
+        &lt;/package&gt;
+...
+<B>or</B>
+&lt;bindings
+    xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;
+    wsdlLocation=&quot;http://localhost:8080/jaxws-external-customize/addnumbers?WSDL&quot;
+    xmlns=&quot;http://java.sun.com/xml/ns/jaxws&quot;&gt;
+    &lt;bindings node=&quot;wsdl:definitions&quot;&gt;
+        &lt;package name=&quot;external_customize.client&quot;&gt;
+            &lt;javadoc&gt;Mathutil package&lt;/javadoc&gt;
+        &lt;/package&gt;
+...</PRE><H3>
+<A NAME="2.2_Wrapper_Style"></A>2.3 Wrapper Style</H3>
+<P><CODE>wsimport</CODE> by default applies wrapper style rules to
+the abstract operation defined in the <CODE>wsdl:portType</CODE>, and
+if an operation qualifies the Java method signature is generated
+accordingly. Wrapper style Java method generation can be disabled by
+using <CODE>jaxws:enableWrapperStyle</CODE>.</P>
+<P><CODE>jaxws:enableWrapperStyle</CODE> can appear on the toplevel
+bindings element (with @wsdlLocation attribute), it can also appear
+on the following target nodes:</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"></P>
+	<LI><P STYLE="margin-bottom: 0in"><CODE>wsdl:definitions</CODE>:
+	global scope, applies to all the <CODE>wsdl:operations</CODE> of all
+	<CODE>wsdl:portType</CODE> attributes
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><CODE>wsdl:portType</CODE> applies
+	to all the <CODE>wsdl:operations</CODE> in the <CODE>portType</CODE>
+		</P>
+	<LI><P><CODE>wsdl:operation</CODE> applies to only this
+	<CODE>wsdl:operation</CODE>
+	</P>
+</UL>
+<P>For example:</P>
+<PRE>&lt;bindings
+    xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;
+    wsdlLocation=&quot;http://localhost:8080/jaxws-external-customize/addnumbers?WSDL&quot;
+    xmlns=&quot;http://java.sun.com/xml/ns/jaxws&quot;&gt;
+        &lt;!-- applies to wsdl:definitions node, that would mean the entire wsdl --&gt;
+        &lt;enableWrapperStyle&gt;true&lt;/enableWrapperStyle&gt;
+    &lt;!-- wsdl:portType operation customization --&gt;
+    &lt;bindings node=&quot;wsdl:definitions/wsdl:portType[@name='AddNumbersImpl']/wsdl:operation[@name='addNumbers']&quot;&gt;
+        &lt;!-- change java method name from addNumbers() to add() --&gt;
+        &lt;enableWrapperStyle&gt;false&lt;/enableWrapperStyle&gt;
+    ...</PRE><P>
+In the example above the wrapper style is disabled for the <CODE>addNumbers</CODE>
+operation in <CODE>AddNumbersImpl</CODE> <CODE>portType</CODE> .This
+is because <CODE>wsimport</CODE> processes this binding in the
+following order: first <CODE>wsdl:operation</CODE>, then its parent
+<CODE>wsdl:portType</CODE>, and finally <CODE>wsdl:definitions</CODE>.
+Here <CODE>wsdl:operation</CODE> <CODE>addNumbers</CODE> has this
+customization disabled so this is what is applied by <CODE>wsimport</CODE>
+to generate a bare Java method signature.</P>
+<H3><A NAME="2.3_Asynchrony"></A>2.4 Asynchrony</H3>
+<P>A client application can use the <CODE>jaxws:enableAsyncMapping</CODE>binding
+declaration so that <CODE>wsimport</CODE> will generate async polling
+and callback operations along with the normal synchronous method when
+it compiles a WSDL file.</P>
+<P>It has the same target nodes as the wrapper style binding
+declaration described above in section 2.2.</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><CODE>wsdl:definitions</CODE> or
+	toplevel bindings element: global scope, applies to all the
+	<CODE>wsdl:operations</CODE> of all <CODE>wsdl:portType</CODE>
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><CODE>wsdl:portType</CODE>:
+	applies to all the <CODE>wsdl:operations</CODE> in the <CODE>portType</CODE>
+		</P>
+	<LI><P><CODE>wsdl:operation</CODE>: applies to only this
+	<CODE>wsdl:operation</CODE>
+	</P>
+</UL>
+<P>Example :</P>
+<PRE>&lt;bindings
+    xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;
+    wsdlLocation=&quot;http://localhost:8080/jaxws-external-customize/addnumbers?WSDL&quot;
+    xmlns=&quot;http://java.sun.com/xml/ns/jaxws&quot;&gt;
+        &lt;!-- applies to wsdl:definitions node, that would mean the entire wsdl --&gt;
+        &lt;enableAsyncMapping&gt;false&lt;/enableAsyncMapping&gt;
+    &lt;!-- wsdl:portType operation customization --&gt;
+    &lt;bindings node=&quot;wsdl:definitions/wsdl:portType[@name='AddNumbersImpl']/wsdl:operation[@name='addNumbers']&quot;&gt;
+        &lt;!-- change java method name from addNumbers() to add() --&gt;
+        &lt;enableAsyncMapping&gt;true&lt;/enableAsyncMapping&gt;
+    ...</PRE><P>
+In the above example <CODE>wsimport</CODE> will generate async
+polling and callback methods for the <CODE>addNumbers</CODE>
+operation. In the <CODE>wsdl:definition</CODE> node, the async
+customization is disabled or false but the <CODE>wsdl:operation</CODE>
+node has it enabled or true, and so <CODE>wsimport</CODE> generates
+the async methods of the <CODE>wsdl:operation</CODE> <CODE>addNumbers</CODE>.</P>
+<P>This is how the generated signatures look (annotations are removed
+from synchronous method for reading simplicity):</P>
+<PRE>    //synchronous method
+    public int addNumbers(int number1, int number2) throws
+        org.duke.AddNumbersFault_Exception,  java.rmi.RemoteException;
+    //async polling Method
+    public Response&lt;AddNumbersResponse&gt; addNumbers(int number1, int number2);
+    //async callback Method
+    public Future&lt;?&gt; addNumbers(int number1, int number2, AsyncHandler&lt;AddNumbersResponse&gt;);
+...</PRE><H3>
+<A NAME="2.5_Provider_interface"></A>2.5 The Provider Interface</H3>
+<P>By default the value of <CODE>jaxws:provider</CODE> binding is
+false. That is, provider interface generation is disabled. In order
+to mark a port as provider interface this binding declaration should
+refer to the <CODE>wsdl:port</CODE> node using an XPath expression.
+Please note that provider binding declaration applies only when
+developing a server starting from a WSDL file.</P>
+<H3><A NAME="2.6_Class_Customization"></A>2.6 Class Customization</H3>
+<P>The generated class for <CODE>wsdl:portType</CODE>, <CODE>wsdl:fault</CODE>,
+<CODE>soap:headerfault</CODE>, and <CODE>wsdl:server</CODE> can be
+customized using the <CODE>jaxws:class</CODE> binding declaration.
+Refer to the external binding declaration file <CODE><A HREF="../samples/external-customize/etc/custom-client.xml">custom-client.xml</A></CODE>
+in the <CODE>external-customize</CODE> sample.</P>
+<H4><A NAME="2.6.1_SEI_class"></A>2.6.1 The Service Endpoint
+Interface Class</H4>
+<P><CODE>wscompile</CODE> will generate the service endpoint
+interface class <CODE>MathUtil</CODE> instead of the default
+<CODE>AddNumbersImpl</CODE> in this example:</P>
+<PRE>    &lt;!-- wsdl:portType customization --&gt;
+    &lt;bindings node=&quot;wsdl:definitions/wsdl:portType[@name='AddNumbersImpl']&quot;&gt;
+        &lt;!-- change the generated SEI class --&gt;
+        &lt;class name=&quot;MathUtil&quot;&gt;
+            &lt;javadoc&gt;Perform mathematical computations&lt;/javadoc&gt;
+        &lt;/class&gt;</PRE><H4>
+<A NAME="2.6.2_Exception_class"></A>2.6.2 The Exception Class</H4>
+<P><CODE>wsimport</CODE> will generate the <CODE>MathUtilException</CODE>class
+instead of the default <CODE>AddNumbersExeption</CODE> in this
+example:</P>
+<PRE>    &lt;!-- change the generated exception class name --&gt;
+    &lt;bindings node=&quot;wsdl:definitions/wsdl:portType[@name='AddNumbersImpl']/wsdl:operation[@name='addNumbers']/wsdl:fault[@name='AddNumbersException']&quot;&gt;
+        &lt;class name=&quot;MathUtilException&quot;&gt;
+            &lt;javadoc&gt;Exception generated during computation&lt;/javadoc&gt;
+        &lt;/class&gt;
+    &lt;/bindings&gt;</PRE><H4>
+<A NAME="2.6.3_Service_class_"></A>2.6.3 The Service Class</H4>
+<P><CODE>wsimport</CODE> will generate <CODE>MathUtilService</CODE>instead
+of the default <CODE>AddNumbersService</CODE> in this example:</P>
+<PRE>    &lt;!-- wsdl:service customization --&gt;
+    &lt;bindings node=&quot;wsdl:definitions/wsdl:service[@name='AddNumbersService']&quot;&gt;
+        &lt;!-- change the generated service class --&gt;
+        &lt;class name=&quot;MathUtilService&quot;&gt;
+            &lt;javadoc&gt;Service to perform mathematical computations&lt;/javadoc&gt;
+        &lt;/class&gt;
+    &lt;/bindings&gt;</PRE><H3>
+<A NAME="2.7_Java_Method_customization"></A>2.7 Java Method
+Customization</H3>
+<P>The <CODE>jaxws:method</CODE> binding declaration is used to
+customize the generated Java method name of a service endpoint
+interface and to customize the port accessor method in the generated
+<CODE>Service</CODE> class. Refer to the external binding declaration
+file <CODE><A HREF="../samples/external-customize/etc/custom-client.xml">custom-client.xml</A></CODE>
+in the <CODE>external-customize</CODE> sample.</P>
+<H4><A NAME="2.7.1_SEI_method"></A>2.7.1 Service Endpoint Interface
+Methods</H4>
+<P><CODE>wsimport</CODE> will generate a method named <CODE>add</CODE>instead
+of the default <CODE>addNumbers</CODE> in this example:</P>
+<PRE>    &lt;!-- wsdl:portType operation customization --&gt;
+    &lt;bindings node=&quot;wsdl:definitions/wsdl:portType[@name='AddNumbersImpl']/wsdl:operation[@name='addNumbers']&quot;&gt;
+        &lt;!-- change java method name from addNumbers() to add() --&gt;
+        &lt;method name=&quot;add&quot;&gt;
+            &lt;javadoc&gt;Adds the numbers&lt;/javadoc&gt;
+        &lt;/method&gt;
+        ...</PRE><H4>
+<A NAME="2.7.2_Port_accessor_Method_in_Service"></A>2.7.2 Port
+Accessor Methods in the Service Class</H4>
+<P><CODE>wsimport</CODE> will generate the <CODE>getMathUtil</CODE>
+port accessor method in the generated <CODE>Service</CODE> class
+instead of the default <CODE>getAddNumbersImplPort</CODE> method in
+this example:</P>
+<PRE>    &lt;!-- change the port accessor method --&gt;
+    &lt;bindings node=&quot;wsdl:definitions/wsdl:service[@name='AddNumbersService']/wsdl:port[@name='AddNumbersImplPort']&quot;&gt;
+        &lt;method name=&quot;getMathUtil&quot;&gt;
+            &lt;javadoc&gt;Returns MathUtil port&lt;/javadoc&gt;
+        &lt;/method&gt;
+    &lt;/bindings&gt;</PRE><H3>
+<A NAME="2.8_Java_parameter_customization"></A>2.8 Java Parameter
+Customization</H3>
+<P>The <CODE>jaxws:parameter</CODE> binding declaration is used to
+change the parameter name of generated Java methods. It can be used
+to change the method parameter of a <CODE>wsdl:operation</CODE> in a
+<CODE>wsdl:portType. </CODE>Refer to the external binding declaration
+file <CODE><A HREF="../samples/external-customize/etc/custom-client.xml">custom-client.xml</A></CODE>
+of the <CODE>external-customize</CODE> sample.</P>
+<PRE>&lt;bindings node=&quot;wsdl:definitions/wsdl:portType[@name='AddNumbersImpl']/wsdl:operation[@name='addNumbers']&quot;&gt;
+        &lt;!-- rename method parameters--&gt;
+        &lt;parameter part=&quot;definitions/message[@name='addNumbers']/part[@name='parameters']&quot; element=&quot;tns:number1&quot; name=&quot;num1&quot;/&gt;
+...</PRE><P>
+The above sample renames the default parameter name of the Java
+method <CODE>addNumbers</CODE> from <CODE>number1</CODE> to <CODE>num1</CODE>.</P>
+<H3><A NAME="2.9_Javadoc_customization"></A>2.9 Javadoc customization</H3>
+<P>jaxws:javadoc customization can be used to specify javadoc text for
+java package, class(SEI, Service or Exception class) and on the
+methods in SEI and service class. Inorder to do it,it should appear
+on the corresponding wsdl nodes.<BR><BR>For package level
+javadoc:<BR><BR>&lt;jaxws:package name=&quot;xs:string&quot;&gt;?<BR>
+&lt;jaxws:javadoc&gt;xs:string&lt;/jaxws:javadoc&gt;?<BR>&lt;/jaxws:package&gt;<BR><BR>For
+class level javadoc:<BR><BR>&lt;jaxws:class name=&quot;xs:string&quot;&gt;?<BR>
+&lt;jaxws:javadoc&gt;xs:string&lt;/jaxws:javadoc&gt;?<BR>&lt;/jaxws:class&gt;<BR><BR>For
+method level javadoc:<BR><BR>&lt;jaxws:method name=&quot;xs:string&quot;&gt;?<BR>
+&lt;jaxws:javadoc&gt;xs:string&lt;/jaxws:javadoc&gt;?<BR>&lt;/jaxws:method&gt;<BR><BR>For
+specific samples on javadoc customization for class, refer <A HREF="#2.6.1_SEI_class">SEI</A>,
+<A HREF="#2.6.2_Exception_class">exception </A>and <A HREF="#2.6.3_Service_class_">service
+</A>customization. For javadoc customization on method refer <A HREF="#2.7.1_SEI_method">SEI
+method</A> and <A HREF="#2.7.2_Port_accessor_Method_in_Service">service
+class port accessor method</A> customization and for package level
+customization refer <A HREF="#2.1_Package_customization">package
+customization</A>.</P>
+<H3><A NAME="2.9_XML_schema_customization"></A>2.10 XML Schema
+Customization</H3>
+<P>An XML schema inlined inside a compiled WSDL file can be
+customized by using standard JAXB bindings. These JAXB bindings can
+live inside the schema or as the child of a <CODE>jaxws:bindings</CODE>
+element in an external binding declaration file:</P>
+<PRE>    &lt;jaxws:bindings node=&quot;wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.example.org']&quot;&gt;
+        &lt;jaxb:schemaBindings&gt;
+            &lt;jaxb:package name=&quot;fromwsdl.server&quot;/&gt;
+        &lt;/jaxb:schemaBindings&gt;
+    &lt;/jaxws:bindings&gt;</PRE><P>
+External XML schema files imported by the WSDL file can be customized
+using a JAXB external binding declaration file:</P>
+<PRE>&lt;jxb:bindings
+    xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;
+    xmlns:jxb=&quot;http://java.sun.com/xml/ns/jaxb&quot;
+    version=&quot;1.0&quot;&gt;
+    &lt;jxb:bindings schemaLocation=&quot;http://localhost:8080/jaxws-external-customize/schema1.xsd&quot; node=&quot;/xsd:schema&quot;&gt;
+        &lt;jxb:schemaBindings&gt;
+            &lt;jxb:package name=&quot;fromjava.client&quot;/&gt;
+        &lt;/jxb:schemaBindings&gt;
+    &lt;/jxb:bindings&gt;
+...</PRE><P>
+The external JAXB binding declaration file can be passed to <CODE>wsimport</CODE>
+using the <CODE>-b</CODE> switch. See the JAX-WS <A HREF="jaxws-tools.html#wscompiletool">tools</A>
+documentation for details.</P>
+<H3><A NAME="2.10_Handler_chain_customization"></A>2.11 Handler Chain
+Customization</H3>
+<P><CODE>jaxws:bindings</CODE> customization can be used to customize
+or add handlers. All that is needed is to inline a handler chain
+configuration conforming to JSR 181 Handler Chain configuration
+schema inside <CODE>jaxws:bindings</CODE> element.</P>
+<P>Below is a sample JAX-WS binding declaration file with JSR 181
+handler chain configuration: 
+</P>
+<PRE>&lt;jaxws:bindings
+    xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;
+    xmlns:jaxb=&quot;http://java.sun.com/xml/ns/jaxb&quot;
+    xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;
+    wsdlLocation=&quot;http://localhost:8080/jaxws-fromwsdlhandler/addnumbers?WSDL&quot;
+    xmlns:jaxws=&quot;http://java.sun.com/xml/ns/jaxws&quot;
+    xmlns:javaee=<A HREF="http://java.sun.com/xml/ns/j2ee">&quot;http://java.sun.com/xml/ns/javaee&quot;</A>&gt;
+    &lt;jaxws:bindings node=&quot;wsdl:definitions&quot;&gt;
+        &lt;javaee:handler-chain&gt;
+            &lt;javaee:handler-chain-name&gt;LoggingHandlers&lt;/javaee:handler-chain-name&gt;
+            &lt;javaee:handler&gt;
+                &lt;javaee:handler-name&gt;Logger&lt;/javaee:handler-name&gt;
+                &lt;javaee:handler-class&gt;fromwsdlhandler.common.LoggingHandler&lt;/javaee:handler-class&gt;
+            &lt;/javaee:handler&gt;
+        &lt;/javaee:handler-chain&gt;
+    &lt;/jaxws:bindings&gt;
+&lt;/jaxws:bindings&gt;</PRE><P STYLE="margin-bottom: 0in">
+When this customization file is passed on to wsimport tool using -b
+switch together with the WSDL, wsimport generates all the artifacts
+togather with a handler configuration file which has everything
+inside <CODE>jaxws:bindings</CODE> element enclosing the
+<CODE>jws:handler-chain</CODE> element. It also add
+@javax.jws.HandlerChain annotation in the generated SEI class. JAXWS
+runtime uses the @HandlerChain annotation from the SEI to find the
+handlers that has to be added into the handle chain.</P>
+</body>
+</html>

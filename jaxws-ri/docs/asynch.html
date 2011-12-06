@@ -1,0 +1,167 @@
+<html>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<head caption="Asynchronous Client">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
+</head>
+
+<body>
+  <p>This document describes how a client application can invoke a remote web service asynchronously. It can do so either by generating a static stub or using the Dispatch API.</p>
+
+  <h2>1. Asynchronous Invocation Using Static Stub</h2>
+
+  <p>Client application should apply <code>jaxws:enableAsyncMapping</code>binding declaration to the WSDL file to generate asynchronous method in the service endpoint interface. Please refer to <a href="customizations.html#2.3_Asynchrony">async customization</a> for details on how this can be applied to the WSDL file.</p>
+
+  <p>Lets look at the following WSDL excerpt:</p>
+  <pre>
+&lt;portType name="AddNumbersImpl"&gt;
+    &lt;operation name="addNumbers"&gt;
+      &lt;input message="tns:addNumbers"/&gt;
+      &lt;output message="tns:addNumbersResponse"/&gt;
+    &lt;/operation&gt;
+&lt;/portType&gt;
+&lt;binding name="AddNumbersImplBinding" type="tns:AddNumbersImpl"&gt;
+    &lt;soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/&gt;
+    &lt;operation name="addNumbers"&gt;
+      &lt;soap:operation soapAction=""/&gt;
+      &lt;input&gt;
+        &lt;soap:body use="literal"/&gt;&lt;/input&gt;
+      &lt;output&gt;
+        &lt;soap:body use="literal"/&gt;
+      &lt;/output&gt;
+    &lt;/operation&gt;
+&lt;/binding&gt;
+</pre>
+
+  <p>In order to generate a service endpoint interface with asynchronous methods the following binding declaration file will be passed to <code>wsimport</code>:</p>
+  <pre>
+&lt;bindings
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    wsdlLocaption="http://localhost:8080/jaxws-async/addnumbers?WSDL"
+    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;
+    &lt;bindings node="wsdl:definitions"&gt;
+        &lt;package name="async.client"/&gt;
+        &lt;enableAsyncMapping&gt;true&lt;/enableAsyncMapping&gt;
+    &lt;/bindings&gt;
+&lt;/bindings&gt;
+</pre>
+
+  <p>It produces the following service endpoint interface (annotations are removed from the synchronous method for better readability):</p>
+  <pre>
+    //synchronous method
+    public int addNumbers(int number1, int number2) throws java.rmi.RemoteException;
+    //async polling Method
+    public Response&lt;AddNumbersResponse&gt; addNumbers(int number1, int number2);
+    //async callback Method
+    public Future&lt;?&gt; addNumbers(int number1, int number2, AsyncHandler&lt;AddNumbersResponse&gt;);
+</pre>
+
+  <h3>1.1 Async Polling</h3>
+  <pre>
+    //async polling Method
+    public Response&lt;AddNumbersResponse&gt; addNumbers(int number1, int number2);
+</pre>
+
+  <p>Typically a client application will invoke the async polling operation on the stub and check for a response on the returned <code>Response</code> object. The response is available when <code>Response.isDone</code> returns true.</p>
+  <pre>
+        javax.xml.ws.Response&lt;AddNumbersResponse&gt; resp = port.addNumbersAsync(10, 20);
+        while(!resp.isDone()){
+           //do something
+        }
+        System.out.println("The sum is: " + resp.get().getReturn());
+        ...
+</pre>
+
+  <h3>1.2 Async Callback</h3>
+  <pre>
+    //async callback Method
+    public Future&lt;?&gt; addNumbers(int number1, int number2, AsyncHandler&lt;AddNumbersResponse&gt;);
+</pre>
+
+  <p>Here the client application provides an <code>AsyncHandler</code> by implementing the <code>javax.xml.ws.AsyncHandler&lt;T&gt;</code> interface.</p>
+  <pre>
+    /**
+     *
+     * Async callback handler
+     */
+    class AddNumbersCallbackHandler implements AsyncHandler&lt;AddNumbersResponse&gt; {
+        private AddNumbersResponse output;
+        /*
+         *
+         * @see javax.xml.ws.AsyncHandler#handleResponse(javax.xml.ws.Response)
+         */
+        public void handleResponse(Response&lt;AddNumbersResponse&gt; response) {
+            try {
+                output = response.get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        AddNumbersResponse getResponse(){
+            return output;
+        }
+    }
+</pre>
+
+  <p>The async handler is then passed as the last parameter of the async callback method:</p>
+  <pre>
+    //instantiates the callback handler
+    AddNumbersCallbackHandler callbackHandler = new AddNumbersCallbackHandler();
+
+    //invoke the async callback method
+    Future&lt;?&gt; resp = port.addNumbersAsync(number1, number2, callbackHandler);
+    while(!resp.isDone()){
+           //do something
+    }
+    System.out.println("The sum is: " + callbackHandler .getResponse().getReturn());
+</pre>
+
+  <h2>2. Asynchronous Invocation Using Dispatch</h2>
+
+  <h2>For information on the Dispatch API and asynchronous invocations see <a href="dispatch.html"><font size="3">Dispatch and Asynchronous Invocations</font></a></h2>
+</body>
+</html>

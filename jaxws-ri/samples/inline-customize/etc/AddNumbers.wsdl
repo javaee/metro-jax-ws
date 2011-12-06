@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:tns="http://duke.example.org" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+    name="AddNumbersService" 
+    targetNamespace="http://duke.example.org">
+
+  <!-- customizations with global scope below it shows the default customizations -->
+  <jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
+      <jaxws:enableWrapperStyle>true</jaxws:enableWrapperStyle>
+      <jaxws:enableAsyncMapping>false</jaxws:enableAsyncMapping>
+  </jaxws:bindings>
+
+  <types>
+      <xs:schema version="1.0" targetNamespace="http://duke.example.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+        <xs:element name="addNumbers" type="ns1:addNumbers" xmlns:ns1="http://duke.example.org"/>
+  
+        <xs:complexType name="addNumbers">
+            <xs:sequence>
+                <xs:element name="number1" type="xs:int"/>
+                <xs:element name="number2" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+
+        <xs:element name="addNumbersResponse" type="ns2:addNumbersResponse" xmlns:ns2="http://duke.example.org"/>
+
+        <xs:complexType name="addNumbersResponse">
+          <xs:sequence>
+            <xs:element name="return" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+
+        <xs:element name="AddNumbersException" type="xs:string"/>
+      </xs:schema>
+  </types>
+
+  <message name="addNumbers">
+    <part name="parameters" element="tns:addNumbers"/>
+  </message>
+  <message name="addNumbersResponse">
+    <part name="result" element="tns:addNumbersResponse"/>
+  </message>
+  <message name="AddNumbersException">
+    <part name="AddNumbersException" element="tns:AddNumbersException"/>
+  </message>
+
+  <portType name="AddNumbersImpl">
+    <!-- wsdl:portType customizations -->
+    <jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
+        <!-- rename the generated SEI from AddNumbersImpl to MathUtil -->
+        <jaxws:class name="MathUtil"/>
+
+        <!-- you can also override the following default customization settings: -->
+        <jaxws:enableWrapperStyle>true</jaxws:enableWrapperStyle>
+        <jaxws:enableAsyncMapping>false</jaxws:enableAsyncMapping>
+    </jaxws:bindings>
+
+    <operation name="addNumbers">
+      <!-- wsdl:portType operation customizations -->
+      <jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+          <!-- change java method name from addNumbers() to add() -->
+          <jaxws:method name="add"/>
+          <!-- rename method parameters-->
+          <jaxws:parameter part="wsdl:definitions/wsdl:message[@name='addNumbers']/wsdl:part[@name='parameters']" childElementName="tns:number1" name="num1"/>
+          <jaxws:parameter part="wsdl:definitions/wsdl:message[@name='addNumbers']/wsdl:part[@name='parameters']" childElementName="tns:number2" name="num2"/>
+
+           <!-- you can also override the following customization settings: -->
+          <jaxws:enableWrapperStyle>true</jaxws:enableWrapperStyle>
+          <jaxws:enableAsyncMapping>false</jaxws:enableAsyncMapping>
+      </jaxws:bindings>
+
+      <input message="tns:addNumbers"/>
+      <output message="tns:addNumbersResponse"/>
+
+      <fault name="AddNumbersException" message="tns:AddNumbersException">
+        <!-- wsdl:fault customization -->
+        <jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
+            <!-- change the generated exception class name -->
+            <jaxws:class name="MathUtilException"/>
+        </jaxws:bindings>
+      </fault>
+    </operation>
+  </portType>
+
+  <binding name="AddNumbersImplBinding" type="tns:AddNumbersImpl">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="addNumbers">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/></input>
+      <output>
+        <soap:body use="literal"/></output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+    </operation>
+  </binding>
+
+  <service name="AddNumbersService">
+    <!-- wsdl:service customization -->
+    <jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
+        <!-- change the generated service class -->
+        <jaxws:class name="MathUtilService"/>        
+    </jaxws:bindings>
+
+    <port name="AddNumbersPort" binding="tns:AddNumbersImplBinding">
+      <!-- change the port accessor method -->
+      <jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
+          <jaxws:method name="getMathUtil"/>
+      </jaxws:bindings>
+      <soap:address location="http://localhost:8080/jaxws-inline-customize/addnumbers"/>
+    </port>
+  </service>
+</definitions>

@@ -1,0 +1,439 @@
+<html>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<head caption="MTOM and Swaref">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
+</head>
+
+<body>
+
+</p>
+
+<h2>Contents</h2>
+
+<div>
+    1. <a href="#1._MTOM_and_XOP">MTOM and XOP</a><br/>
+    2. <a href="#2_MTOM_in_JAXWS_2.0">MTOM in JAX-WS 2.0</a>
+</div>
+
+<div style="margin-left:1em">
+    2.1<a href="#2.1_xmmime:expectedMediaType_to_Java">xmime:expectedContentTypes to Java type mapping</a><br/>
+    2.2 <a href="#2.2_xmime:contentType_schema_annotation">xmime:contentType schema annotation</a><br/>
+    2.3 <a href="#2.2_How_to_enable_MTOM_in_JAXWS_2.0">How to enable MTOM in JAX-WS 2.0</a><br/>
+    2.4 <a href="#2.3_Attach_vs_In-line">Attach vs In-line</a><br>
+    2.5 <a href="#2.4_MTOM_Samples">MTOM Samples</a><br/>
+</div>
+
+<div>
+    3. <a href="#3._swaRef">swaRef</a><br>
+</div>
+
+<div style="margin-left:1em">
+    3.1 <a href="#3.1_swaRef_in_JAXWS_2.0">swaRef in JAX-WS 2.0</a><br>
+    3.2 <a href="#3.2_How_to_use_swaRef">How to use swaRef </a><br>
+    3.3 <a href="#3.3_swaRef_Samples">swaRef Sample</a>
+</div>
+
+<h2><a name="1._MTOM_and_XOP"></a>1. MTOM and XOP</h2>
+<a href="http://www.w3.org/TR/soap12-mtom/">MTOM </a>(Message
+Transmission and Optimization Mechanism) together with <a
+        href="http://www.w3.org/TR/xop10/">XOP </a>(XML Binary Optimized
+Packaging) defines how an XML binary data such as xs:base64Binary or
+xs:hexBinary can be optimally transmitted over the wire.<br>
+<br>
+XML type, such as xs:base64Binary is sent in lined inside the SOAP
+envelope. This gets quite in-efficient when the data size is more, for
+example a SOAP endpoint that exchanges images/songs etc. MTOM specifies
+how XOP packaging can be used to send the binary data optimally.<br>
+
+<h2><a name="2_MTOM_in_JAXWS_2.0"></a>2. MTOM in JAX-WS 2.0</h2>
+MTOM feature is disabled in JAX-WS by default. It can be enabled on the
+client and server. Once enabled all the XML binary data, XML elements
+of type xs:base64Binary and xs:hexBinary is optimally transmitted.
+Currently MTOM works only with proxy port.<br>
+
+<h3><a name="2.1_xmmime:expectedMediaType_to_Java"></a>2.1
+    xmime:expectedContentType to Java type mapping</h3>
+An schema element of type xs:bas64Binary or xs:hexBinary can be
+annotated by using attribute reference using
+<a href="http://www.w3.org/TR/xml-media-types/">xmime:expectedContentType</a><br>
+JAXB 2.0 specification defines xmime:expectedContentType to Java type
+mapping in Table 9-1. Here is this table:<br>
+<br>
+<table style="text-align: left; width: 559px; height: 172px;" border="1"
+       cellpadding="2" cellspacing="2">
+    <tbody>
+        <tr>
+            <td
+                    style="vertical-align: top; text-align: center; font-weight: bold;">MIME
+                Type</td>
+            <td
+                    style="vertical-align: top; text-align: center; font-weight: bold;">Java
+                Type<br>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top; text-align: center;">image/gif<br>
+            </td>
+            <td style="vertical-align: top; text-align: center;">java.awt.Image<br>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top; text-align: center;">image/jpeg<br>
+            </td>
+            <td style="vertical-align: top; text-align: center;">java.awt.Image<br>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top; text-align: center;">text/plain<br>
+            </td>
+            <td style="vertical-align: top; text-align: center;">java.lang.String<br>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top; text-align: center;">text/xml or
+                application/xml<br>
+            </td>
+            <td style="vertical-align: top; text-align: center;">javax.xml.transform.Source<br>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top; text-align: center;">*/*<br>
+            </td>
+            <td style="vertical-align: top; text-align: center;">javax.activation.DataHandler<br>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<span style="font-family: monospace;"></span><br>
+<pre>&lt;element name="image" type="base64Binary"/&gt;<br><br>is mapped to <span
+        style="font-weight: bold;">byte[]</span><br><br>&lt;element name="image" type="base64Binary" <span
+        style="color: rgb(0, 0, 153);">xmime:expectedContentTypes</span>="<span
+        style="color: rgb(153, 0, 0);">image/jpeg</span>" xmlns:xmime="http://www.w3.org/2005/05/xmlmime"/&gt;<br><br>is
+    mapped to <span
+        style="font-weight: bold;">java.awt.Image</span></pre>
+
+<h3><a name="2.2_xmime:contentType_schema_annotation">2.2 xmime:contentType
+    schema annotation</a></h3>
+
+<p><a href="http://www.w3.org/TR/xml-media-types/">xmime:contentType</a>
+    schema annotation indicates the content-type of an XML element content whose
+    type is <em>xs:base64Binary</em> or <em>xs:hexBinary</em>. The value of the
+    attribute is a valid content-type string (e.g., &quot;text/xml; charset=utf-16&quot;).
+    This attribute specifies the content-type of the element content on which it
+    occurs. This annotation can be primarily used to indicate the Content-Type
+    of binary data. </p>
+
+<p>For example the schema type</p>
+
+<p><code>&lt;element name=&quot;TestMtomXmimeContentType&quot; type=&quot;types:PictureType&quot;/&gt;</code></p>
+
+<p><code>&lt;complexType name=&quot;PictureType&quot;&gt;<br>
+    &lt;simpleContent&gt;<br>
+    &lt;restriction
+    base=&quot;xmime:base64Binary&quot; &gt;<br>
+    &lt;attribute
+    ref=&quot;xmime:contentType&quot; use=&quot;required&quot; /&gt;<br>
+    &lt;/restriction&gt;<br>
+    &lt;/simpleContent&gt;<br>
+    &lt;/complexType&gt;</code><br>
+</p>
+
+<p>Here xmime:base64Binary is defined by
+    <a href="http://www.w3.org/TR/xml-media-types/#schema">Describing Media
+        Content of Binary Data in XML</a>. </p>
+
+<p>Gets mapped to PicutreType bean by wsimport:</p>
+
+<p><code>PictureType req = new PictureType();<br>
+    req.setValue(name.getBytes());<br>
+    req.setContentType("application/xml");</code></p>
+
+<p>On the wire this is how it looks:</p>
+
+<p><code>&lt;?xml version=&quot;1.0&quot; ?&gt;<br>
+    &lt;soapenv:Envelope xmlns:soapenv=&quot;<a href="http://schemas.xmlsoap.org/soap/envelope/">http://schemas.xmlsoap.org/soap/envelope/</a>&quot;
+    <br>
+    xmlns:xsd=&quot;<a href="http://www.w3.org/2001/XMLSchema">http://www.w3.org/2001/XMLSchema</a>&quot;
+    <br>
+    xmlns:ns1=&quot;<a href="http://example.org/mtom/data">http://example.org/mtom/data</a>&quot;
+    <br>
+
+    xmlns:ns2=&quot;http://www.w3.org/2005/05/xmlmime&quot;&gt;<br>
+    &lt;soapenv:Body&gt;<br>
+    &lt;ns1:TestMtomXmimeContentTypeResponse
+    <font color="#FF0000">ns2:contentType=&quot;application/xml&quot;</font>&gt;<br>
+    &lt;xop:Include
+    xmlns:xop=&quot;http://www.w3.org/2004/08/xop/include&quot; href=&quot;c<a
+        href="mailto:id:193ed174-d313-4325-8eed-16cc25595e4e@example.org">id:193ed174-d313-4325-8eed-16cc25595e4e@example.org</a>&quot;/&gt;
+    <br>
+
+    &lt;/ns1:TestMtomXmimeContentTypeResponse&gt;<br>
+    &lt;/soapenv:Body&gt;<br>
+    &lt;/soapenv:Envelope&gt;</code></p>
+
+<p><br></p>
+
+<h3><a name="2.2_How_to_enable_MTOM_in_JAXWS_2.0"></a>2.3 How to enable MTOM in
+    JAX-WS 2.0</h3>
+<br><b>Enabling MTOM on Server: </b><br>
+<ul>
+    <li>Enable using @javax.xml.ws.soap.MTOM annotation on the endpoint (SEI) implementation
+        class
+        <pre>
+        <span style="color: rgb(153, 0, 0);">@javax.xml.ws.soap.MTOM</span>
+        @WebService (endpointInterface = "mtom.server.Hello")
+        public class HelloImpl implements Hello {
+            ....
+            ....
+        }</pre></li>
+</ul>
+<ul>
+    <li>MTOM can be also be enabled on an endpoint by specifying enable-mtom attribute
+        to true on an endpoint element in
+        <a href="jaxws-war.html#The_sun-jaxws.xml_File">sun-jaxws.xml </a>deployment
+        descriptor.
+        <pre>
+            &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+            &lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;
+            &lt;endpoint name="Mtom" implementation="mtom.server.HelloImpl"
+            url-pattern="/hello"
+            <span style="color: rgb(153, 0, 0);">enable-mtom="true"</span>/&gt;
+            &lt;/endpoints&gt;</pre>
+    </li></ul>
+<ul>
+    <li>Enable using @BindingType on the endpoint (SEI) implementation
+        class<ul>
+        <li><code>@BindingType(value=javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING)</code> will
+            enable MTOM on the deployed endpoint for SOAP 1.1 binding</li>
+        <li><code>@BindingType(value=javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING)</code> will
+            enable MTOM on the deployed endpoint for SOAP 1.2 binding</li>
+    </ul></li>
+</ul>
+
+<br><b>Enabling MTOM on Client: </b><br>
+<ul>
+    <li>
+<p>
+    To enable MTOM on client-side, pass javax.xml.ws.soap.MTOMFeature as WebServiceFeature parameter while crating the
+   Proxy or Dispatch.
+    Here is the code snippet from the client <a href="../samples/mtom/src/mtom/client/MtomApp.java">MtomApp.java</a>
+of the mtom sample:
+    <ul><li>
+<span style="color: rgb(153, 0, 0);">Hello port = new HelloService().getHelloPort(new MTOMFeature());</span> gives a proxy with MTOM enabled</li>
+    <li>javax.xml.ws.Service.createDispatch(....,new javax.xml.ws.soap.MTOMFeature())
+	gives a Dispatch instance with MTOM enabled</li></ul>
+</p>
+</li>
+<li>
+
+    JAX-WS 2.0 specification has defined API to enable and to check if the
+    MTOM is enabled.
+    <ul><li>javax.xml.ws.soap.SOAPBinding.setMTOMEnabled(boolean enable) - enable or disable MTOM.</li>
+    <li>javax.xml.ws.soap.SOAPBinding.isMTOMEnabled() - returns true if MTOM is enabled otherwise false.</li></ul>
+    <pre>
+    Hello port = new HelloService.getHelloPort();
+    //get the binding and enable mtom
+    SOAPBinding binding = (SOAPBinding)((BindingProvider)port).getBinding();
+    boolean mtomEnabled = <span style="color: rgb(153, 0, 0);">binding.isMTOMEnabled();</span>
+    <span style="color: rgb(153, 0, 0);">binding.setMTOMEnabled(true);</span>
+    </pre>
+</li>
+</ul>
+<h3><a name="2.3_Attach_vs_In-line"></a>2.4 Attach vs In-line</h3>
+As defined by JAXB 2.0 specification xs:base64Binary and xs:hexBinary
+mapping to java is byte[]. JAX-WS implementation has set a threshold of
+1KB of byte[] size. This threshold can be modified using
+implementation specific property <code>com.sun.xml.ws.developer.JAXWSProperties.MTOM_THRESHOLD_VALUE</code>
+in the
+RequestContext on the client side and in the MessageContext on the
+server
+side.<br>
+<br>
+If the byte[] that is being sent is less than this threshold (default
+is 1KB) then the binary data is base64 encoded by JAXB and in lined
+inside the SOAP Body otherwise the
+binary data is sent as attachment mime part in Multipart/Related
+package and XML infoset for the binary data is XOP encoded
+by JAXB - &lt;xop:Include href=...&gt; is used to reference the
+attachment. The XOP encoding and packaging is done as per described by
+the <a href="http://www.w3.org/TR/xop10/#xop_packages">XOP packaging
+    rules</a>. The href is the the Content-ID of the attachment and is
+encoded as per CID URI scheme defined in <a
+        href="http://www.faqs.org/rfcs/rfc2111.html">RFC 2111</a>.
+xmime:contentType attribute may appear on the element that includes
+binary data to indicate preferred media type as annotated on the
+corresponding schema.<br>
+<h4><a name="2.4_MTOM_Samples"></a>2.4.1 How to specify MTOM data
+    Threshold<br>
+</h4>
+Default threshold value for MTOM feature is 0 bytes.  You can set a
+threshold value for MTOM by using @MTOM annotation on server-side or using MTOMFeature on client-side.
+Let's say you set MTOM threshold as 3000, this serves as hint to JAX-WS when to send binary dat as attachments.
+In this case, JAX-WS will send any byte array in the message thats equal to or larger than 3KB as attachment and the
+corresponding XML infoset will be XOP encoded (will contain reference
+to this attachment)
+
+<br>
+
+<ul>
+    <li>On Server-side, <span style="color: rgb(153, 0, 0);">@MTOM(threshold=3000)</span>
+    </li>
+    <li>On Client-side, pass <span style="color: rgb(153, 0, 0);">MTOMFeature(3000)</span> as WebServiceFeature as mentioned in section 2.3, while creating the proxy/dispatch.
+
+    </li>
+</ul>
+
+<h3><a name="2.4_MTOM_Samples"></a>2.5 MTOM Samples</h3>
+There are 2 samples:<br>
+<h4><a name="2.4.1_mtom"></a>2.5.1 mtom <br>
+</h4>
+This is SOAP 1.1 MTOM SampleThis is how the JAX-WS generated XOP
+packaged SOAP message looks on the wire:
+<pre>Content-Type: Multipart/Related; <span
+        style="color: rgb(204, 51, 204);">start-info="text/xml"</span>; <span
+        style="color: rgb(204, 51, 204);">type="application/xop+xml"</span>;
+    boundary="----=_Part_0_1744155.1118953559416"<br>Content-Length: 3453<br>SOAPAction: ""<br>
+    ------=_Part_1_4558657.1118953559446<br>Content-Type: <span
+        style="color: rgb(153, 51, 153);">application/xop+xml; type="text/xml"</span>; charset=utf-8<br><br>&lt;soapenv:Envelope
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"&gt;<br> &lt;soapenv:Body&gt;<br> &lt;Detail
+    xmlns="http://example.org/mtom/data"&gt;<br> &lt;<span
+        style="font-weight: bold;">Photo</span>&gt;RHVrZQ==&lt;/Photo&gt;<br> &lt;<span
+        style="font-weight: bold;">image</span>&gt;<br>                <span
+        style="color: rgb(153, 0, 0);">&lt;xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:5aeaa450-17f0-4484-b845-a8480c363444@example.org"&gt;</span>
+    <br> &lt;/xop:Include&gt;<br> &lt;/image&gt;<br> &lt;/Detail&gt;<br> &lt;/soapenv:Body&gt;<br>&lt;/soapenv:Envelope&gt;
+    <br><br>------=_Part_1_4558657.1118953559446<br>Content-Type: image/jpeg<br>Content-ID: &lt;<span
+        style="color: rgb(153, 0, 0);">5aeaa450-17f0-4484-b845-a8480c363444@example.org</span>&gt;<br><br> &#9578;
+    &#945; &#9658;JFIF &#9786;&#9787; &#9786; &#9786; &#9608; &#9824;&#9824;<br>&#9792;&#182;<br>&#9792;&#9794;&#9794;&#9792;&#8595;&#8597;&#8252;&#9788;&#182;&#8596;&#8594;&#9660;&#9650;&#8596;&#8594;&#8735;&#8735;
+    $.' ",#&#8735;&#8735;(7),01444&#9660;'9=82&lt;.342 &#9608; C&#9786; &#9792;&#9794;&#9792;&#8593;&#8593;2!&#8735;!22222222222222222222222222222222222222222222
+    <br>222222 &#9492; ) &#172;&#9829;&#9786;" &#9787;&#9668;&#9786;&#9829;&#9668;&#9786; &#9472; &#9660; &#9786;&#9827;&#9786;&#9786;&#9786;&#9786;&#9786;&#9786;
+    &#9786;&#9787;&#9829;&#9830; &#9794; &#9472; &#9569;&#9658; &#9787;&#9786;&#9829;&#9829;&#9787;&#9830;&#9829;&#9827;&#9827;&#9830;&#9830;
+    &#9786;}&#9786;&#9787;&#9829; &#9830;&#9668;&#9827;&#8597;!1A&#9824;&#8252;Qa"q&#182;2?#B&#9618;&#9524;&#167;R&#9572;&#8801;$3br&#233;
+    <br>&#9644;&#8616;&#8593;&#8595;&#8594;%&amp;'()*456789:CDEFGHIJSTUVWXYZcdefghijstuvwxyz&#226;&#228;&#224;&#229;&#231;&#234;&#235;&#232;&#198;&#244;&#246;&#242;&#251;&#249;&#255;&#214;&#220;&#243;&#250;&#241;&#209;&#170;&#186;&#191;&#8976;&#172;&#9619;&#9474;&#9508;&#9569;&#9570;&#9558;&#9557;&#9571;&#9553;&#9516;&#9500;&#9472;&#9532;&#9566;&#9567;&#9562;&#9556;&#9577;&#9573;&#9561;&#9560;&#9554;&#9555;&#9579;&#9578;&#9496;&#9484;&#223;&#915;&#960;&#931;&#963;&#181;&#964;&#934;&#920;&#937;&#177;&#8805;&#8804;&#8992;&#8993;&#247;&#8776;&#176;&#8729;&#183;
+    &#9472;<br></pre>
+<br>
+Above Photo is inlined binary data because its less than 1KB and image
+which is more than 1KB is sent as attachment.<br>
+<br>
+Here is the associated schema:<br>
+<pre><br>&lt;element name="Detail" type="types:DetailType"/&gt;<br>&lt;complexType name="DetailType"&gt;<br> &lt;sequence&gt;
+    <br> &lt;!-- mapped to byte[] --&gt;<br> &lt;element name="Photo" type="base64Binary"/&gt;<br> &lt;!-- mapped to
+    java.awt.Image --&gt;<br> &lt;element name="image" type="base64Binary" <span
+        style="color: rgb(153, 0, 0);">xmime:expectedContentTypes="image/jpeg"</span>/&gt;<br> &lt;/sequence&gt;<br>&lt;/complexType&gt;
+    <br></pre>
+<h4><a name="2.4.2_mtom-soap12"></a>2.5.2 mtom-soap12</h4>
+This is SOAP 1.2 MTOM Sample. Here is how the JAX-WS generated soap
+message looks on the wire:<br>
+<br>
+<pre>&lt;element name="image" type="base64Binary" <span
+        style="color: rgb(153, 0, 0);">xmime:expectedContentTypes="image/jpeg"</span>/&gt;<br><br>Content-Type:
+    Multipart/Related; <span
+        style="color: rgb(153, 51, 153);">start-info="application/soap+xml"</span>; <span
+        style="color: rgb(153, 51, 153);">type="application/xop+xml"</span>;
+    boundary="----=_Part_0_1744155.1118960238280"<br>Content-Length: 1946<br>SOAPAction: ""<br>
+    ------=_Part_1_4558657.1118960238320<br>Content-Type: <span
+        style="color: rgb(153, 51, 153);">application/xop+xml</span>; type="<span
+        style="color: rgb(153, 51, 153);">application/soap+xml</span>"; charset=utf-8<br><br>&lt;soapenv:Envelope
+    xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope"&gt;<br> &lt;soapenv:Body&gt;<br> &lt;Detail
+    xmlns="http://example.org/mtom/data"&gt;<br> &lt;Photo&gt;RHVrZQ==&lt;/Photo&gt;<br> &lt;image&gt;<br>                <span
+        style="color: rgb(153, 0, 0);">&lt;xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:42a7ee0a-20ee-426b-a135-094d72bc138f@example.org"&gt;</span>
+    <br> &lt;/xop:Include&gt;<br> &lt;/image&gt;<br> &lt;/Detail&gt;<br> &lt;/soapenv:Body&gt;<br>&lt;/soapenv:Envelope&gt;
+    <br>------=_Part_1_4558657.1118960238320<br>Content-Type: application/octet-stream<br>Content-ID: &lt;42a7ee0a-20ee-426b-a135-094d72bc138f@example.org&gt;
+    <br><br> &#9578; &#945; &#9658;JFIF &#9786;&#9787; &#9786; &#9786; &#9608; &#9824;&#9824;<br>&#9792;&#182;<br>
+    &#9792;&#9794;&#9794;&#9792;&#8595;&#8597;&#8252;&#9788;&#182;&#8596;&#8594;&#9660;&#9650;&#8596;&#8594;&#8735;&#8735;
+    $.' ",#&#8735;&#8735;(7),01444&#9660;'9=82&lt;.342 &#9608; C&#9786; &#9792;&#9794;&#9792;&#8593;&#8593;2!&#8735;!22222222222222222222222222222222222222222222
+    <br>222222 &#9492; ' )&#9829;&#9786;" &#9787;&#9668;&#9786;&#9829;&#9668;&#9786; &#9472; &#9660; &#9786;&#9827;&#9786;&#9786;&#9786;&#9786;&#9786;&#9786;
+    &#9786;&#9787;&#9829;&#9830; &#9794; &#9472; &#9569;&#9658; &#9787;&#9786;&#9829;&#9829;&#9787;&#9830;&#9829;&#9827;&#9827;&#9830;&#9830;
+    &#9786;}&#9786;&#9787;&#9829; &#9830;&#9668;&#9827;&#8597;!1A&#9824;&#8252;Qa"q&#182;2?#B&#9618;&#9524;&#167;R&#9572;&#8801;$3br&#233;
+    <br>&#9644;&#8616;&#8593;&#8595;&#8594;%&amp;'()*456789:CDEFGHIJSTUVWXYZcdefghijstuvwxyz&#226;&#228;&#224;&#229;&#231;&#234;&#235;&#232;&#198;&#244;&#246;&#242;&#251;&#249;&#255;&#214;&#220;&#243;&#250;&#241;&#209;&#170;&#186;&#191;&#8976;&#172;&#9619;&#9474;&#9508;&#9569;&#9570;&#9558;&#9557;&#9571;&#9553;&#9516;&#9500;&#9472;&#9532;&#9566;&#9567;&#9562;&#9556;&#9577;&#9573;&#9561;&#9560;&#9554;&#9555;&#9579;&#9578;&#9496;&#9484;&#223;&#915;&#960;&#931;&#963;&#181;&#964;&#934;&#920;&#937;&#177;&#8805;&#8804;&#8992;&#8993;&#247;&#8776;&#176;&#8729;&#183;
+    &#9472;<br> &#9660;&#9786; &#9829;&#9786;&#9786;&#9786;&#9786;&#9786;&#9786;&#9786;&#9786;&#9786; &#9786;&#9787;&#9829;&#9830;
+    <br><br></pre>
+
+<h2><a name="3._swaRef"></a>3. swaRef</h2>
+<a
+        href="http://www.ws-i.org/Profiles/AttachmentsProfile-1.0-2004-08-24.html">WS-I
+    Attachment Profile 1.0</a> defines mechanism to reference MIME
+attachment parts using <a
+        href="http://www.ws-i.org/Profiles/AttachmentsProfile-1.0-2004-08-24.html#Referencing_Attachments_from_the_SOAP_Envelope">swaRef</a>.
+In this mechanism the content of XML element of type <a
+        href="http://ws-i.org/profiles/basic/1.1/xsd/">wsi:swaRef</a> is sent
+as MIME attachment and the element inside SOAP Body holds the reference
+to this attachment in the CID URI scheme as defined by <a
+        href="http://www.faqs.org/rfcs/rfc2111.html">RFC 2111</a>.<br>
+
+<h3><a name="3.1_swaRef_in_JAXWS_2.0"></a>3.1 swaRef in JAX-WS 2.0</h3>
+JAXB 2.0 defines mapping of wsi:swaRef schema type to
+javax.activation.DataHandler. An application will construct the
+DataHandler with the data and the appropriate MIME type and JAX-WS will
+coordinate with JAXB and SAAJ to send it as attachment MIME part.<br>
+
+<h3><a name="3.2_How_to_use_swaRef"></a>3.2 How to use swaRef</h3>
+An XML element of type wsi:swaRef is mapped to a DataHandler and is
+sent as attachment over the wire.<br>
+For example, <br>
+<pre>&lt;element name="claimForm" type="<span
+        style="color: rgb(153, 0, 0);">wsi:swaRef</span>" xmlns:wsi="http://ws-i.org/profiles/basic/1.1/xsd"/&gt;</pre>
+will be sent over the wire as :<br>
+<pre>Content-Type: Multipart/Related; start-info="text/xml"; type="application/xop+xml";
+    boundary="----=_Part_4_32542424.1118953563492"<br>Content-Length: 1193<br>SOAPAction: ""<br>
+    ------=_Part_5_32550604.1118953563502<br>Content-Type: application/xop+xml; type="text/xml"; charset=utf-8<br><br>
+    &lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"&gt;<br> &lt;soapenv:Body&gt;<br> &lt;claimForm
+    xmlns="http://example.org/mtom/data"&gt;<span
+        style="color: rgb(153, 0, 0);">cid:b0a597fd-5ef7-4f0c-9d85-6666239f1d25@example.jaxws.sun.com</span>&lt;/claimForm&gt;
+    <br> &lt;/soapenv:Body&gt;<br>&lt;/soapenv:Envelope&gt;<br><br>------=_Part_5_32550604.1118953563502<br>
+    Content-Type: application/xml<br>Content-ID: &lt;<span
+        style="color: rgb(153, 0, 0);">b0a597fd-5ef7-4f0c-9d85-6666239f1d25@example.jaxws.sun.com</span>&gt;<br><br>&lt;?xml
+    version="1.0" encoding="UTF-8"?&gt;<br>&lt;application xmlns="http://java.sun.com/xml/ns/j2ee"<br>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"<br> xsi:schemaLocaption="http://java.sun.com/xml/ns/j2ee<br>
+    http://java.sun.com/xml/ns/j2ee/application_1_4.xsd"<br> version="1.4"&gt;<br> &lt;display-name&gt;Simple example of
+    application&lt;/display-name&gt;<br> &lt;description&gt;Simple example&lt;/description&gt;<br> &lt;module&gt;<br>
+    &lt;ejb&gt;ejb1.jar&lt;/ejb&gt;<br> &lt;/module&gt;<br> &lt;module&gt;<br> &lt;ejb&gt;ejb2.jar&lt;/ejb&gt;<br> &lt;/module&gt;
+    <br> &lt;module&gt;<br> &lt;web&gt;<br> &lt;web-uri&gt;web.war&lt;/web-uri&gt;<br> &lt;context-root&gt;web&lt;/context-root&gt;
+    <br> &lt;/web&gt;<br> &lt;/module&gt;<br>&lt;/application&gt;<br></pre>
+
+<h3><a name="3.3_swaRef_Samples"></a>3.3 swaRef Sample</h3>
+Refer to swaRef sample testSwaRef () method in
+<a href="../samples/mime/src/mime/client/MimeApp.java">MimeApp.java.</a><br>
+<br>
+</body>
+</html>

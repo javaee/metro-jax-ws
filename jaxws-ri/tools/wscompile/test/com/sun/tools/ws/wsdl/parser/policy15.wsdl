@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+
+ Contributor(s):
+
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                  xmlns:wsp="http://www.w3.org/ns/ws-policy"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:tns="http://example.org"
+                  name="DictService"
+                  targetNamespace="http://example.org">
+    <wsp:Policy wsu:Id="policy1">
+        <wsp:ExactlyOne>
+            <wsp:All>
+                <wspe:Utf816FFFECharacterEncoding xmlns:wspe="http://schemas.xmlsoap.org/ws/2004/09/policy/encoding"/>
+            </wsp:All>
+        </wsp:ExactlyOne>
+    </wsp:Policy>
+    <wsdl:types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://example.org">
+            <element name="Word" type="xsd:string"/>
+            <element name="FaultResponse">
+                <complexType>
+                    <sequence>
+                        <element name="ResponsePart" nillable="true" type="xsd:string"/>
+                    </sequence>
+                </complexType>
+            </element>
+        </schema>
+    </wsdl:types>
+    <wsdl:message name="DictRequest">
+        <wsdl:part name="TranslateIt" element="tns:Word"/>
+    </wsdl:message>
+    <wsdl:message name="DictResponse">
+        <wsdl:part name="Translated" element="tns:Word"/>
+    </wsdl:message>
+    <wsdl:message name="DictFault">
+        <wsdl:part name="Message" element="tns:FaultResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="DictPortType">
+        <wsdl:operation name="TranslateOperation">
+            <wsdl:input name="Input" message="tns:DictRequest"/>
+            <wsdl:output name="Output" message="tns:DictResponse"/>
+            <wsdl:fault name="Fault" message="tns:DictFault"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="MyBinding" type="tns:DictPortType">
+        <wsp:PolicyReference URI="#policy1"/>
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="TranslateOperation">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="Input"/>
+            <wsdl:output name="Output"/>
+            <wsdl:fault name="Fault"/>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="DictionaryService">
+        <wsdl:port name="CzechToEnglish" binding="tns:MyBinding">
+            <soap:address location="http://example.org/dict"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

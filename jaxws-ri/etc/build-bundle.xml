@@ -1,0 +1,494 @@
+<?xml version="1.0"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!-- ************ JAXWS build file ************************************** -->
+
+
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="jax-ws" default="main" basedir=".">
+
+    <property name="Name" value="JAX-WS RI"/>
+
+    <property name="build.home" value="${basedir}/build"/>
+    <property name="lib.home" value="${basedir}/lib"/>
+    <property name="ant.home" value="${basedir}/lib"/>
+    <!-- The base directory for docs -->
+    <property name="docs.home" value="${basedir}/docs"/>
+    <!-- The base directory for distribution targets -->
+    <property name="dist.home" value="${basedir}/dist"/>
+    <property name="dist20.home" value="${dist.home}/jaxws-ri"/>
+
+
+    <!-- this property is used by "wsgen/wsimport -version".
+ It should be set via the RE build
+ scripts via 'ant -Dbuild.id="b08"' otherwise the current date and time
+ will be used -->
+    <tstamp>
+        <format property="now" pattern="MM/dd/yyyy hh:mm aa" unit="hour" locale="en_US"/>
+    </tstamp>
+
+    <property file="${user.home}/build.properties"/>
+    <!-- User local        -->
+    <property file="build.properties"/>
+    <!-- Component local   -->
+    <property file="../build.properties"/>
+    <!-- Commons local     -->
+    <property file="project.properties"/>
+    <property name="build.id" value="b${promoted.version}"/>
+    <property name="build.version" value="${Name} ${release.impl.version}${build.id} ${release.impl.version.suffix}"/>
+    <echo message="The build id is: ${build.version}"/>
+	
+    <mkdir dir="${build.home}"/>
+    <exec failonerror="false" failifexecutionfails="false" errorproperty="svnversion.failed"
+          executable="svn" output="build/svn.properties">
+        <arg value="info" />
+    </exec>			
+    <property prefix="svn" file="build/svn.properties"/>
+    <echo>svn Revision: ${svn.Revision}</echo>
+    <loadfile property="svn.Last.Changed.Rev" srcFile="build/svn.properties" failonerror="false">
+        <filterchain>
+            <linecontains>
+                <contains value="Last Changed Rev: " />
+            </linecontains>
+            <deletecharacters chars="Last Changed Rev: " />
+            <striplinebreaks />
+        </filterchain>
+    </loadfile>
+    <echo>svn Last Changed Rev: ${svn.Last.Changed.Rev}</echo>	
+
+    <path id="runtime.compile.classpath">
+        <fileset dir="${lib.home}">
+            <include name="*.jar"/>
+            <exclude name="*-source.jar"/>
+            <exclude name="*-javadoc.jar"/>
+        </fileset>
+    </path>
+
+    <path id="boot.classpath">
+        <fileset dir="${lib.home}">
+            <include name="jaxws-api.jar"/>
+        </fileset>
+    </path>
+  
+    <path id="tools.compile.classpath">
+        <path refid="runtime.compile.classpath"/>
+        <pathelement location="${build.home}/lib/jaxws-rt.jar"/>
+        <pathelement location="${java.home}/../lib/tools.jar"/>
+    </path>
+
+    <target name="init">
+        <echo message="-------- ${Name} ${release.impl.version} --------"/>
+    </target>
+
+    <property name="ivy.jar.dir" value="${basedir}/ivy"/>
+    <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
+    
+    <target name="download-ivy" unless="skip.download">
+    	<mkdir dir="${ivy.jar.dir}"/>
+        <echo message="installing ivy..."/>
+    	<get src="http://maven.glassfish.org/content/groups/glassfish/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.jar.file}" usetimestamp="true"/>
+    </target>
+    
+    <target name="install-ivy" depends="download-ivy" description="--&gt; install ivy">
+    	<path id="ivy.lib.path">
+    	    <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+    	</path>
+    	<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+    </target>	
+
+    <target name="retrieve-deps" depends="install-ivy">
+        <ivy:retrieve pattern="lib/[artifact]-[type].[ext]" sync="true"/>
+        <move todir="${lib.home}">
+            <fileset dir="${lib.home}">
+                <include name="**/*-jar.jar"/>
+            </fileset>
+            <mapper type="regexp" from="^(.*)-jar.jar" to="\1.jar"/>
+        </move>
+        <copy todir="${lib.home}">
+            <fileset dir="tools/lib" includes="jaxws-asm*"/>
+        </copy>
+    </target>
+    
+    <target name="prepare" depends="init, retrieve-deps">
+        <mkdir dir="${build.home}"/>
+        <mkdir dir="${build.home}/lib"/>
+    	<mkdir dir="${build.home}/plugins_lib"/>
+        <mkdir dir="${build.home}/bin"/>
+        <mkdir dir="${build.home}/samples"/>
+    </target>
+
+    <target name="runtime-compile" depends="prepare">
+        <!--<ant dir="${basedir}/ws-api" target="compile" inheritrefs="true"/>-->
+        <ant dir="${basedir}/rt" target="compile" inheritrefs="true"/>
+        <ant dir="${basedir}/rt-fi" target="compile" inheritrefs="true"/>
+        <ant dir="${basedir}/rt-ha" target="compile" inheritrefs="true"/>
+        <ant dir="${basedir}/servlet" target="compile" inheritrefs="true"/>
+        <ant dir="${basedir}/httpspi-servlet" target="compile" inheritrefs="true"/>
+    	<ant dir="${basedir}/eclipselink_jaxb" target="compile" inheritrefs="true"/>
+    	<ant dir="${basedir}/eclipselink_sdo" target="compile" inheritrefs="true"/>
+    </target>
+
+    <path id="jaxws-rt-source-path">
+        <!--<pathelement path="${basedir}/ws-api/src"/>-->
+        <pathelement path="${basedir}/rt/src"/>
+        <pathelement path="${basedir}/rt/build/gen-src"/>
+        <pathelement path="${basedir}/rt-fi/src"/>
+        <pathelement path="${basedir}/rt-ha/src"/>
+        <pathelement path="${basedir}/servlet/src"/>
+    </path>
+
+    <path id="jaxws-tools-source-path">
+        <pathelement path="${basedir}/tools/wscompile/src"/>
+        <pathelement path="${basedir}/tools/wscompile/build/gen-src"/>
+    </path>
+
+    <path id="all-source-path">
+        <path  refid="jaxws-rt-source-path"/>
+        <path  refid="jaxws-tools-source-path"/>
+        <pathelement path="${basedir}/httpspi-servlet/src"/>
+        <pathelement path="${basedir}/eclipselink_jaxb/src"/>
+    	<pathelement path="${basedir}/eclipselink_sdo/src"/>
+    </path>
+
+    <target name="clean-ivy" description="--&gt; clean the ivy installation">
+        <delete dir="${ivy.jar.dir}"/>
+    </target>
+	
+    <target name="clean-cache" depends="install-ivy" description="--&gt; clean the ivy cache">
+        <ivy:cleancache/>
+    </target>
+
+    <target name="javadocs" depends="image">
+        <javadoc
+                packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
+                sourcepathref="all-source-path"
+                destdir="${build.home}/javadocs/"
+                author="false"
+                version="false"
+                windowtitle="${Name} Generated Documentation"
+                doctitle="${Name}"
+                bottom="Copyright &#169; 2005 Sun Microsystems, Inc. All Rights Reserved.">
+            <classpath>
+                <path refid="runtime.compile.classpath"/>
+                <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
+                <fileset file="${java.home}/../lib/tools.jar"/>
+            </classpath>
+        </javadoc>
+    </target>
+
+    <macrodef name="versionProp"
+              description="generates a version property file">
+        <attribute name="file"/>
+        <sequential>
+            <echo file="@{file}"
+                    >build-id=${build.id}
+                build-version=${build.version}
+                major-version=${release.impl.version}
+                svn-revision=${svn.Last.Changed.Rev}
+                svn-url=${svn.URL}
+            </echo>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="updateManifestWithVersion"
+              description="updates a jar manifest file with the version information">
+        <attribute name="file"/>
+        <sequential>
+            <manifest mode="update" file="@{file}">
+                <attribute name="Specification-Version" value="${release.spec.version}"/>
+                <attribute name="Implementation-Version" value="${release.impl.version}"/>
+                <attribute name="Build-Id" value="${build.id}"/>
+                <attribute name="SVN-Revision" value="${svn.Last.Changed.Rev}"/>
+                <attribute name="SVN-URL" value="${svn.URL}"/>
+                <attribute name="Build-Version" value="${build.version}"/>
+                <attribute name="Major-Version" value="${release.impl.version}"/>
+            </manifest>
+        </sequential>
+    </macrodef>
+
+
+    <target name="runtime-build" depends="runtime-compile">
+        <!-- Copy resource files etc -->
+        <copy todir="${basedir}/rt/build/classes">
+            <fileset dir="${basedir}/rt/src">
+                <include name="**/*.properties"/>
+            </fileset>
+        </copy>
+
+        <versionProp file="${basedir}/rt/build/classes/com/sun/xml/ws/util/version.properties"/>
+
+        <!-- Copying the manifest -->
+        <copy file="${basedir}/rt/etc/manifest" todir="${basedir}/rt/build"/>
+        <updateManifestWithVersion file="${basedir}/rt/build/manifest"/>
+
+        <jar jarfile="${build.home}/lib/jaxws-rt.jar"
+             manifest="${basedir}/rt/build/manifest">
+            <fileset dir="${basedir}/rt/build/classes"/>
+            <fileset dir="${basedir}/rt-fi/build/classes"/>
+            <fileset dir="${basedir}/rt-ha/build/classes"/>
+            <fileset dir="${basedir}/servlet/build/classes"/>
+            <fileset dir="${basedir}/rt/src" includes="**/*.xml"/>
+        </jar>
+
+        <javadoc
+                packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
+                sourcepathref="jaxws-rt-source-path"
+                destdir="${build.home}/javadocs/rt/"
+                use="true"
+                author="false"
+                version="false"
+                access="package"
+                windowtitle="${Name} Runtime Documentation"
+                doctitle="${Name}"
+                bottom="Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.">
+            <classpath>
+                <path refid="runtime.compile.classpath"/>
+                <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
+                <fileset dir="${basedir}/lib" includes="ha-api.jar" />
+            </classpath>
+            <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
+                  offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
+            <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
+                  offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxws-api"/>
+            <link href="http://download.oracle.com/javase/1.5.0/docs/api/"
+                  offline="true" packagelistloc="${basedir}/tools/javadoc-link/j2se5.0"/>
+        </javadoc>
+        <zip zipfile="${build.home}/lib/jaxws-rt-javadoc.jar">
+            <fileset dir="${build.home}/javadocs/rt"/>
+        </zip>
+        <delete dir="${build.home}/javadocs/rt/"/>
+
+        <ant dir="${basedir}/httpspi-servlet" target="jar"/>
+    	<copy file="${basedir}/eclipselink_jaxb/etc/manifest" todir="${basedir}/eclipselink_jaxb/build"/>
+        <updateManifestWithVersion file="${basedir}/eclipselink_jaxb/build/manifest"/>
+    	<jar jarfile="${build.home}/plugins_lib/jaxws-eclipselink-plugin.jar"
+    		manifest="${basedir}/eclipselink_jaxb/build/manifest">
+    	    <fileset dir="${basedir}/eclipselink_jaxb/build/classes"/>
+    	</jar>
+    	
+    	<javadoc
+    	        packagenames="com.sun.xml.ws.db.toplink"
+    	        sourcepath="${basedir}/eclipselink_jaxb/src"
+    	        destdir="${build.home}/javadocs/eclipselink_jaxb/"
+    	        use="true"
+    	        author="false"
+    	        version="false"
+    	        access="package"
+    	        windowtitle="${Name} Runtime Documentation"
+    	        doctitle="${Name}"
+    	        bottom="Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.">
+    	    <classpath>
+    	        <path refid="runtime.compile.classpath"/>
+    	    </classpath>
+    	    <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
+    	        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
+    	    <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
+    	        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxws-api"/>
+    	    <link href="http://download.oracle.com/javase/1.5.0/docs/api/"
+    	        offline="true" packagelistloc="${basedir}/tools/javadoc-link/j2se5.0"/>
+    	</javadoc>
+    	<zip zipfile="${build.home}/plugins_lib/jaxws-eclipselink-plugin-javadoc.jar">
+    	    <fileset dir="${build.home}/javadocs/eclipselink_jaxb"/>
+    	</zip>
+    	<delete dir="${build.home}/javadocs/eclipselink_jaxb"/>
+    	
+    	<copy file="${basedir}/eclipselink_sdo/etc/manifest" todir="${basedir}/eclipselink_sdo/build"/>
+    	<updateManifestWithVersion file="${basedir}/eclipselink_sdo/build/manifest"/>
+    	<jar jarfile="${build.home}/plugins_lib/sdo-eclipselink-plugin.jar"
+            manifest="${basedir}/eclipselink_sdo/build/manifest">
+            <fileset dir="${basedir}/eclipselink_sdo/build/classes"/>
+        </jar>
+    	
+    	<javadoc
+    	    	packagenames="com.sun.xml.ws.db.sdo"
+    	    	sourcepath="${basedir}/eclipselink_sdo/src"
+    	    	destdir="${build.home}/javadocs/eclipselink_sdo/"
+    	    	use="true"
+    	    	author="false"
+    	    	version="false"
+    	    	access="package"
+    	    	windowtitle="${Name} Runtime Documentation"
+    	    	doctitle="${Name}"
+    	    	bottom="Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.">
+    	     <classpath>
+    	         <path refid="runtime.compile.classpath"/>
+    	     </classpath>
+    	     <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
+    	         offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
+    	     <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
+    	         offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxws-api"/>
+    	     <link href="http://download.oracle.com/javase/1.5.0/docs/api/"
+    	         offline="true" packagelistloc="${basedir}/tools/javadoc-link/j2se5.0"/>
+    	</javadoc>
+    	<zip zipfile="${build.home}/plugins_lib/sdo-eclipselink-plugin-javadoc.jar">
+    	    <fileset dir="${build.home}/javadocs/eclipselink_sdo"/>
+    	</zip>
+    	<delete dir="${build.home}/javadocs/eclipselink_sdo"/>
+    </target>
+    <!-- runtime must be built before tools -->
+    <target name="tools-compile" depends="runtime-build">
+        <ant dir="${basedir}/tools/wscompile"
+             target="compile"
+             inheritrefs="true"/>
+    </target>
+
+    <target name="tools-build" depends="tools-compile">
+        <!-- Copy resource files etc -->
+        <copy todir="${basedir}/tools/wscompile/build/classes">
+            <fileset dir="${basedir}/tools/wscompile/src">
+                <include name="**/*.properties"/>
+            </fileset>
+        </copy>
+
+        <!-- copy bin scripts -->
+        <copy todir="${build.home}/bin">
+            <fileset dir="${basedir}/tools/bin"
+                     includes="wsimport.sh, wsimport.bat wsgen.bat wsgen.sh"/>
+        </copy>
+        <chmod perm="+x" file="${build.home}/bin/*.sh"/>
+
+        <copy todir="${build.home}/lib">
+            <fileset dir="${lib.home}/"
+                     includes="FastInfoset.jar, gmbal-api-only.jar, management-api.jar, jaxb-api.jar, jaxb-impl.jar, jaxb-xjc.jar, jaxws-api.jar, jaxws-rt.jar, jaxws-tools.jar, jsr181-api.jar, javax.annotation.jar, saaj-api.jar, saaj-impl.jar, stax-ex.jar, streambuffer.jar, mimepull.jar, policy.jar, ha-api.jar"/>
+        </copy>
+
+    	<copy todir="${build.home}/lib">
+    	    <fileset dir="${basedir}/eclipselink_jaxb/lib"
+    	             includes="eclipselink.jar, javax.mail_1.4.jar"/>
+    	</copy>
+    	
+    	<copy todir="${build.home}/lib">
+    	    	    <fileset dir="${basedir}/eclipselink_sdo/lib"
+    	    	             includes="common.sdo.jar"/>
+        </copy>
+
+        <antcall target="copy-woodstox-libs"/>
+
+        <!-- Copying the manifest -->
+        <copy file="${basedir}/tools/etc/manifest" todir="${basedir}/tools/wscompile/build"/>
+        <updateManifestWithVersion file="${basedir}/tools/wscompile/build/manifest"/>
+
+        <versionProp file="${basedir}/tools/wscompile/build/classes/com/sun/tools/ws/version.properties"/>
+
+        <jar jarfile="${build.home}/lib/jaxws-tools.jar"
+             manifest="${basedir}/tools/wscompile/build/manifest">
+            <fileset dir="${basedir}/tools/wscompile/build/classes"/>
+            <!-- sneaky but it's easy because this is just one class -->
+            <fileset dir="${basedir}/tools/resourcegen/build/classes"/>
+            <!-- if annotation processor would be set as service - it will be run automatically every time withing javac task in case jax-ws annotations have been found
+                     <service type="javax.annotation.processing.Processor" provider="com.sun.tools.ws.processor.modeler.annotation.WebServiceAp"/>-->
+        </jar>
+
+        <ant dir="${basedir}/tools/wscompile"
+             target="test-ant-tasks"
+             inheritrefs="true" />
+             
+        <javadoc
+                packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
+                sourcepathref="jaxws-tools-source-path"
+                destdir="${build.home}/javadocs/tools/"
+                use="true"
+                author="false"
+                version="false"
+                access="package"
+                windowtitle="${Name} Tools Documentation"
+                doctitle="${Name}"
+                bottom="Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.">
+            <classpath>
+                <path refid="runtime.compile.classpath"/>
+                <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
+                <fileset dir="${basedir}/lib" includes="ha-api.jar" />
+            </classpath>
+            <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
+                  offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
+            <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
+                  offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxws-api"/>
+            <link href="http://download.oracle.com/javase/1.5.0/docs/api/"
+                  offline="true" packagelistloc="${basedir}/tools/javadoc-link/j2se5.0"/>
+        </javadoc>
+        <zip zipfile="${build.home}/lib/jaxws-tools-javadoc.jar">
+            <fileset dir="${build.home}/javadocs/tools"/>
+        </zip>
+        <delete dir="${build.home}/javadocs/tools/"/>
+    </target>
+
+    <target name="copy-woodstox-libs" description="Copies woodstox.jar into distribution jars" if="woodstox">
+        <copy todir="${build.home}/lib">
+            <fileset dir="${lib.home}/" includes="stax2-api*.jar"/>
+            <fileset dir="${lib.home}/" includes="woodstox*.jar"/>
+        </copy>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.home}"/>
+        <delete dir="${dist.home}"/>
+        <delete dir="${basedir}/j2se-integration"/>
+        <ant dir="${basedir}/rt" target="clean"/>
+        <ant dir="${basedir}/rt-fi" target="clean"/>
+        <ant dir="${basedir}/rt-ha" target="clean"/>
+        <ant dir="${basedir}/tools/resourcegen" target="clean"/>
+        <ant dir="${basedir}/tools/wscompile" target="clean"/>
+        <ant dir="${basedir}/servlet" target="clean"/>
+        <ant dir="${basedir}/httpspi-servlet" target="clean"/>
+    	<ant dir="${basedir}/eclipselink_jaxb" target="clean"/>
+    	<ant dir="${basedir}/eclipselink_sdo" target="clean"/>
+    </target>
+
+    <!-- for now, this gets everything built -->
+    <target name="image" depends="tools-build">
+        <!-- Overriden by main project -->
+        <copy todir="${build.home}">
+            <fileset dir="."
+                     includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, distributionREADME_WMforJava2.0.txt"/>
+        </copy>
+    </target>
+
+    <target name="main" depends="image" description="build everything into the build directory"/>
+
+
+    <!-- =====================
+   J2SE renaming
+   ===================== -->
+    <!-- assumes the dist target has been run -->
+    <target name="j2se-integration" description="Prepare Sources for J2SE integration" depends="tools-build">
+        <ant antfile="build-j2se.xml" target="repackage-j2se-integration" inheritrefs="true"/>
+    </target>
+</project>

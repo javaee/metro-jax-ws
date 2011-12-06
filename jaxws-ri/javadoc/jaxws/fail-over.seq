@@ -1,0 +1,54 @@
+#
+# Sequence Diagram for the use of fail-over pipe
+# 
+# a special Pipe implementation can do a fail-over.
+#
+
+# graph properties
+# boxht = 0.8;
+
+# Define the objects
+pobject(A,"Actor");
+object(C1,"c1:Pipe");
+object(C2,"c2:FailoverPipe");
+object(C3,"c3:Pipe");
+object(C4,"c4:Pipe");
+
+step();
+
+# Message sequences
+message(A,C1,"process(msg1)");
+active(C1);
+	message(C1,C2,"process(msg1)");
+	active(C2);
+		
+		step();
+		message(C2,C2,"copy msg1 into msg1'");
+		
+		message(C2,C3,"process(msg1')");
+		active(C3);
+			step();
+			message(C3,C3,"more processing");
+			rmessage(C3,C2,"failure!");
+		inactive(C3);
+		
+		step();
+		message(C2,C2,"copy msg1 into msg1''");
+		
+		message(C2,C4,"process(msg1'')");
+		active(C4);
+			step();
+			message(C4,C4,"more processing");
+			rmessage(C4,C2,"success! msg2");
+		inactive(C4);
+		
+		rmessage(C2,C1,"msg2");
+	inactive(C2);
+	rmessage(C1,A,"msg2");
+inactive(C1);
+
+step();
+complete(C1);
+complete(C2);
+complete(C3);
+complete(C4);

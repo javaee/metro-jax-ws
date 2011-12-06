@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!-- ************  J2SE renaming ********************** -->
+
+
+<project name="JAXWS-RI-j2SE" basedir=".">
+
+  <path id="jdk.classpath">
+           <pathelement location="${java.home}/lib/rt.jar"/>
+	        <pathelement location="${java.home}/../lib/tools.jar"/>
+  </path>
+
+  <!-- package rename task -->
+  <taskdef name="prename" classname="com.sun.wts.tools.ant.PackageRenameTask">
+    <classpath>
+      <pathelement path="tools/lib/package-rename-task.jar" />
+    </classpath>
+  </taskdef>
+
+  <macrodef name="package-rename">
+    <attribute name="srcdir" />
+    <attribute name="destdir" />
+    <sequential>
+      <prename srcdir="@{srcdir}" destdir="@{destdir}">
+        <pattern from="com.sun.codemodel" to="com.sun.codemodel.internal" />
+        <pattern from="com.sun.xml" to="com.sun.xml.internal" />
+        <pattern from="com.sun.xsom" to="com.sun.xsom.internal" />
+        <pattern from="com.sun.txw2" to="com.sun.xsom.internal" />
+        <pattern from="com.sun.istack" to="com.sun.istack.internal" />
+        <pattern from="org.jvnet.fastinfoset" to="com.sun.xml.internal.org.jvnet.fastinfoset" />
+        <pattern from="org.jvnet.staxex" to="com.sun.xml.internal.org.jvnet.staxex" />
+        <pattern from="com.sun.tools.ws" to="com.sun.tools.internal.ws" />
+        <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc" />
+        <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" />
+        <pattern from="org.glassfish" to="com.sun.org.glassfish"/>          
+      </prename>
+    </sequential>
+  </macrodef>
+
+  <!--
+  Use target j2se-integration from build.xml, which calls tools-build before renaming
+
+      Invoke this target with build.id so that version.properties gets the right build id
+      This calls dist to get version.properties generated,
+      which are used by RuntimeVersion.java and ToolVersion.java
+      This also generates code in rt/build/gen-src and tools/wscompile/build/gen-src which needs to be integrated.
+    -->
+  <target name="repackage-j2se-integration"
+          description="prepare renamed source code for J2SE integration">
+
+    <package-rename srcdir="rt/src" destdir="j2se-integration/rt/src" />
+    <package-rename srcdir="rt/build/gen-src/" destdir="j2se-integration/rt/src" />
+    <package-rename srcdir="tools/wscompile/src" destdir="j2se-integration/tools/src" />
+    <package-rename srcdir="tools/wscompile/build/gen-src/" destdir="j2se-integration/tools/src" />
+    <prename srcdir="tools/etc" destdir="j2se-integration/tools/etc/META-INF/services">
+      <pattern from="com.sun.istack" to="com.sun.istack.internal" />
+      <include name="javax.annotation.processing.Processor"/>
+    </prename>
+    <package-rename srcdir="rt-fi/src" destdir="j2se-integration/rt/src" />
+    <!-- delete ant tasks -->
+    <delete dir="j2se-integration/tools/src/com/sun/tools/internal/ws/ant"/>
+    <copy file="${basedir}/rt/build/classes/com/sun/xml/ws/util/version.properties"
+          todir="j2se-integration/rt/src/com/sun/xml/internal/ws/util"/>
+    <copy file="${basedir}/tools/wscompile/build/classes/com/sun/tools/ws/version.properties"
+          todir="j2se-integration/tools/src/com/sun/tools/internal/ws"/>
+  </target>
+
+    <!-- target to rename everything in the servlet except classes in com.sun.xml.ws.transport.http.servlet.
+    This is to allow tests to deploy run on tomcat on top of jdk6u3, which has JAXWS/JAXB 2.1 -->
+   <target name="build-j2se-servlet">
+       <!--
+        <package-rename srcdir="servlet/src" destdir="build/j2se-servlet/src" />
+        -->
+       <prename srcdir="rt-ha/src" destdir="build/j2se-servlet/src">
+           <pattern from="com.sun.xml.ws" to="com.sun.xml.internal.ws"/>
+           <pattern from="com.sun.istack" to="com.sun.istack.internal" />
+           <pattern from="org.glassfish" to="com.sun.org.glassfish" excludes="org.glassfish.ha"/>
+           <pattern from="com.sun.xml.bind" to="com.sun.xml.internal.bind"/>
+       </prename>
+
+       <prename srcdir="servlet/src" destdir="build/j2se-servlet/src">
+           <pattern from="com.sun.xml.ws" to="com.sun.xml.internal.ws"
+                    excludes="com.sun.xml.ws.transport.http.servlet, com.sun.xml.ws.server.servlet, com.sun.xml.ws.developer.servlet"/>
+           <pattern from="com.sun.istack" to="com.sun.istack.internal" />
+           <pattern from="org.glassfish" to="com.sun.org.glassfish"/>
+           <pattern from="com.sun.xml.bind" to="com.sun.xml.internal.bind"/>
+       </prename>
+       
+       <mkdir dir="build/j2se-servlet/classes"/>
+       <!-- JAVA_HOME must be set to JDK 6 to compile -->
+       <javac bootclasspathref="jdk.classpath" srcdir="build/j2se-servlet/src"
+            debug="true"
+            destdir="build/j2se-servlet/classes" >
+           <classpath>
+               <pathelement location="servlet/lib/javax.servlet.jar"/>
+               <pathelement location="lib/ha-api.jar"/>
+           </classpath>
+        </javac>
+
+        <jar destfile="build/j2se-servlet/jdk7-jaxws-http-transport.jar">
+            <fileset dir="build/j2se-servlet/classes"/>
+            <zipfileset src="lib/ha-api.jar"/>            
+        </jar>
+
+
+    </target>
+
+    <target name="build-j2se-anttasks">
+
+       <delete dir="build/ant-j2se"/>
+       <mkdir dir="build/ant-j2se/classes"/>
+       <unzip src="lib/jaxb-xjc-source.jar" dest="build/ant-j2se/jaxb-src"/>
+       <mkdir dir="build/ant-j2se/tempsrc"/>
+       <copy todir="build/ant-j2se/tempsrc">
+            <fileset dir="build/ant-j2se/jaxb-src"
+                     includes="**/*Task.java,com/sun/tools/xjc/Messages.java, com/sun/tools/xjc/ClassLoaderBuilder.java,
+                     com/sun/tools/xjc/XJCFacade.java,
+                     com/sun/tools/jxc/SchemaGeneratorFacade.java, com/sun/istack/tools/*.java"/>
+       </copy>
+       <prename srcdir="build/ant-j2se/tempsrc" destdir="build/ant-j2se/src">
+            <pattern from="com.sun.codemodel" to="com.sun.codemodel.internal"/>
+            <pattern from="com.sun.xml" to="com.sun.xml.internal"/>
+            <pattern from="com.sun.xsom" to="com.sun.xsom.internal"/>
+            <pattern from="com.sun.txw2" to="com.sun.xsom.internal"/>
+            <pattern from="com.sun.istack" to="com.sun.istack.internal" excludes="com.sun.istack.tools.ProtectedTask"/>
+            <pattern from="org.jvnet.fastinfoset" to="com.sun.xml.internal.org.jvnet.fastinfoset"/>
+            <pattern from="org.jvnet.staxex" to="com.sun.xml.internal.org.jvnet.staxex"/>
+            <pattern from="com.sun.tools.ws" to="com.sun.tools.internal.ws" excludes="com.sun.tools.ws.ant"/>
+            <pattern from="org.glassfish.external" to="com.sun.org.glassfish.external"/>
+            <pattern from="org.glassfish.gmbal" to="com.sun.org.glassfish.gmbal"/>
+            <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc"
+                     excludes="com.sun.tools.xjc.XJCTask,com.sun.tools.xjc.XJC2Task, com.sun.tools.xjc.Messages,
+                     com.sun.tools.xjc.XJCFacade, com.sun.tools.xjc.ClassLoaderBuilder"/>
+            <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" excludes="com.sun.tools.jxc.ApBasedTask,
+                    com.sun.tools.jxc.SchemaGenTask, com.sun.tools.jxc.SchemaGeneratorFacade"/>
+        </prename>
+
+        <replace dir="build/ant-j2se/src/com/sun/tools/xjc">
+            <include name="*.java"/>
+            <replacetoken><![CDATA[package com.sun.tools.internal.xjc;]]></replacetoken>
+            <replacevalue><![CDATA[package com.sun.tools.xjc;
+import com.sun.tools.internal.xjc.*;]]></replacevalue>
+        </replace>
+        <replace dir="build/ant-j2se/src/com/sun/tools/jxc">
+            <include name="*.java"/>
+            <replacetoken><![CDATA[package com.sun.tools.internal.jxc;]]></replacetoken>
+            <replacevalue><![CDATA[package com.sun.tools.jxc;
+import com.sun.tools.internal.jxc.*;]]></replacevalue>
+        </replace>
+        <replace dir="build/ant-j2se/src/com/sun/istack/tools/">
+            <include name="*.java"/>
+            <replacetoken><![CDATA[package com.sun.istack.internal.tools;]]></replacetoken>
+            <replacevalue><![CDATA[package com.sun.istack.tools;
+import com.sun.istack.internal.tools.*;]]></replacevalue>
+        </replace>
+       <delete dir="build/ant-j2se/jaxb-src"/>
+       <delete dir="build/ant-j2se/tempsrc"/>
+       <mkdir dir="build/ant-j2se/tempsrc"/>
+       <copydir src="tools/wscompile/src" dest="build/ant-j2se/tempsrc"/>
+
+       <prename srcdir="build/ant-j2se/tempsrc" destdir="build/ant-j2se/src">
+            <pattern from="com.sun.codemodel" to="com.sun.codemodel.internal"/>
+            <pattern from="com.sun.xml" to="com.sun.xml.internal"/>
+            <pattern from="com.sun.xsom" to="com.sun.xsom.internal"/>
+            <pattern from="com.sun.txw2" to="com.sun.xsom.internal"/>
+            <pattern from="com.sun.istack" to="com.sun.istack.internal" excludes="com.sun.istack.tools.ProtectedTask"/>
+            <pattern from="org.jvnet.fastinfoset" to="com.sun.xml.internal.org.jvnet.fastinfoset"/>
+            <pattern from="org.jvnet.staxex" to="com.sun.xml.internal.org.jvnet.staxex"/>
+            <pattern from="com.sun.tools.ws" to="com.sun.tools.internal.ws" excludes="com.sun.tools.ws.ant"/>
+            <pattern from="org.glassfish.external" to="com.sun.org.glassfish.external"/>
+            <pattern from="org.glassfish.gmbal" to="com.sun.org.glassfish.gmbal"/>
+            <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc"
+                     excludes="com.sun.tools.xjc.XJCTask,com.sun.tools.xjc.XJC2Task, com.sun.tools.xjc.Messages,
+                     com.sun.tools.xjc.XJCFacade, com.sun.tools.xjc.ClassLoaderBuilder"/>
+            <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" excludes="com.sun.tools.jxc.ApBasedTask,
+                    com.sun.tools.jxc.SchemaGenTask, com.sun.tools.jxc.SchemaGeneratorFacade"/>
+            <include name="**/ant/*.java"/>
+        </prename>
+
+       <delete dir="build/ant-j2se/tempsrc"/>
+
+
+       <javac bootclasspathref="jdk.classpath" srcdir="build/ant-j2se/src"
+            debug="true"
+            destdir="build/ant-j2se/classes" >
+        </javac>
+
+        <jar destfile="build/ant-j2se/jdk7-jaxws-ant-tasks.jar"
+            basedir="build/ant-j2se/classes"/>
+    
+    </target>
+
+</project>

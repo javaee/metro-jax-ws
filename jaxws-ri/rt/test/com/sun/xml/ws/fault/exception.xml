@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<ns2:exception xmlns:ns2="http://jax-ws.dev.java.net/" class="java.lang.Exception">
+  <message>java.lang.NullPointerException</message>
+  <ns2:stackTrace>
+    <ns2:frame class="com.sun.xml.ws.fault.ExceptionBeanTest" file="ExceptionBeanTest.java" line="21" method="test1"/>
+    <ns2:frame class="sun.reflect.NativeMethodAccessorImpl" file="NativeMethodAccessorImpl.java" line="native"
+               method="invoke0"/>
+    <ns2:frame class="sun.reflect.NativeMethodAccessorImpl" file="NativeMethodAccessorImpl.java" line="39"
+               method="invoke"/>
+    <ns2:frame class="sun.reflect.DelegatingMethodAccessorImpl" file="DelegatingMethodAccessorImpl.java" line="25"
+               method="invoke"/>
+    <ns2:frame class="java.lang.reflect.Method" file="Method.java" line="585" method="invoke"/>
+    <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="154" method="runTest"/>
+    <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="127" method="runBare"/>
+    <ns2:frame class="junit.framework.TestResult$1" file="TestResult.java" line="106" method="protect"/>
+    <ns2:frame class="junit.framework.TestResult" file="TestResult.java" line="124" method="runProtected"/>
+    <ns2:frame class="junit.framework.TestResult" file="TestResult.java" line="109" method="run"/>
+    <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="118" method="run"/>
+    <ns2:frame class="junit.framework.TestSuite" file="TestSuite.java" line="208" method="runTest"/>
+    <ns2:frame class="junit.framework.TestSuite" file="TestSuite.java" line="203" method="run"/>
+    <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="116" method="doRun"/>
+    <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="172" method="start"/>
+    <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="138" method="main"/>
+  </ns2:stackTrace>
+  <ns2:cause class="java.lang.NullPointerException">
+    <ns2:stackTrace>
+      <ns2:frame class="com.sun.xml.ws.fault.ExceptionBeanTest" file="ExceptionBeanTest.java" line="18" method="test1"/>
+      <ns2:frame class="sun.reflect.NativeMethodAccessorImpl" file="NativeMethodAccessorImpl.java" line="native"
+                 method="invoke0"/>
+      <ns2:frame class="sun.reflect.NativeMethodAccessorImpl" file="NativeMethodAccessorImpl.java" line="39"
+                 method="invoke"/>
+      <ns2:frame class="sun.reflect.DelegatingMethodAccessorImpl" file="DelegatingMethodAccessorImpl.java" line="25"
+                 method="invoke"/>
+      <ns2:frame class="java.lang.reflect.Method" file="Method.java" line="585" method="invoke"/>
+      <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="154" method="runTest"/>
+      <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="127" method="runBare"/>
+      <ns2:frame class="junit.framework.TestResult$1" file="TestResult.java" line="106" method="protect"/>
+      <ns2:frame class="junit.framework.TestResult" file="TestResult.java" line="124" method="runProtected"/>
+      <ns2:frame class="junit.framework.TestResult" file="TestResult.java" line="109" method="run"/>
+      <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="118" method="run"/>
+      <ns2:frame class="junit.framework.TestSuite" file="TestSuite.java" line="208" method="runTest"/>
+      <ns2:frame class="junit.framework.TestSuite" file="TestSuite.java" line="203" method="run"/>
+      <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="116" method="doRun"/>
+      <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="172" method="start"/>
+      <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="138" method="main"/>
+    </ns2:stackTrace>
+  </ns2:cause>
+</ns2:exception>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." name="JAXWS-RI-2.2-IDE">
+
+    <import file="${basedir}/etc/build-bundle.xml"/>
+
+    <!-- TODO: edit the following target according to your needs -->
+    <!-- (more info: http://www.netbeans.org/kb/articles/freeform-config.html#runsingle) -->
+
+    <target name="run-selected-file-in-test">
+        <fail unless="test.class">Must set property 'test.class'</fail>
+        <path id="cp">
+            <pathelement path="rt/build/classes"/>
+            <pathelement path="tools/wscompile/build/classes"/>
+            <pathelement path="lib/junit.jar"/>
+            <pathelement path="${ant.home}/lib/ant.jar:${ant.home}/lib/ant-junit.jar"/>
+            <path refid="runtime.compile.classpath"/>
+            <pathelement location="rt/build/test-classes"/>
+            <pathelement location="tools/wscompile/build/test-classes"/>
+            <!-- Allows to load resources from the classpath -->
+            <pathelement location="rt/test"/>
+            <pathelement location="tools/wscompile/test"/>
+        </path>
+        <junit haltonfailure="yes">
+            <classpath refid="cp"/>
+            <formatter type="brief" usefile="false"/>
+            <test name="${test.class}" todir="${build.dir}/test-reports" haltonerror="false"/>
+        </junit>
+    </target>
+
+    <target name="debug-selected-file-in-test">
+        <fail unless="debug.class">Must set property 'debug.class'</fail>
+        <path id="cp">
+            <pathelement path="rt/build/classes"/>
+            <pathelement path="tools/wscompile/build/classes"/>
+            <pathelement path="lib/junit.jar"/>
+            <pathelement path="${ant.home}/lib/ant.jar:${ant.home}/lib/ant-junit.jar"/>
+            <path refid="runtime.compile.classpath"/>
+            <pathelement location="rt/build/test-classes"/>
+            <pathelement location="tools/wscompile/build/test-classes"/>
+            <!-- Allows to load resources from the classpath -->
+            <pathelement location="rt/test"/>
+            <pathelement location="tools/wscompile/test"/>
+        </path>
+        <nbjpdastart addressproperty="jpda.address" name="JAXWS-RI-2.2" transport="dt_socket">
+            <classpath refid="cp"/>
+        </nbjpdastart>
+        <junit haltonfailure="yes" fork="yes">
+            <classpath refid="cp"/>
+            <formatter type="brief" usefile="false"/>
+            <test name="${debug.class}" todir="${build.dir}/test-reports" haltonerror="false"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+        </junit>
+    </target>
+
+</project>

@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<project name="JAXWS-RI tools"  default="compile"  basedir=".">
+
+    <property name="build.dir" value="${basedir}/build"/>
+    <property file="../../project.properties"/>
+
+    <target name="prepare">
+        <mkdir dir="${build.dir}/classes/META-INF/services"/>
+        <mkdir dir="${build.dir}/test-classes"/>
+        <mkdir dir="${build.dir}/test-reports"/>
+    </target>
+
+    <target name="generate-code" depends="prepare"
+            description="run all the code generators">
+        <taskdef name="resgen" classname="com.sun.tools.resourcegen.ResourceGenTask">
+            <classpath>
+                <path refid="runtime.compile.classpath" />
+                <pathelement path="../../tools/resourcegen/build/resourcegen.jar" />
+            </classpath>
+        </taskdef>
+        <resgen destdir="build/gen-src" license="../../etc/CDDL+GPLv2.xml">
+            <resource dir="src" includes="com/sun/tools/ws/resources/*.properties" />
+        </resgen>
+    </target>
+
+    <target name="compile" depends="generate-code">
+        <javac srcdir="src:build/gen-src"
+               destdir="${basedir}/build/classes"
+               debug="${compile.debug}"
+               deprecation="${compile.deprecation}"
+               optimize="${compile.optimize}"
+               source="1.5">
+            <classpath refid="tools.compile.classpath"/>
+        </javac>
+
+        <!-- Copy services -->
+        <copy todir="${build.dir}/classes/META-INF/services">
+            <fileset dir="src/META-INF/services/" includes="com.sun.*"/>
+        </copy>
+
+        <antcall target="test" inheritrefs="true"/>
+    </target>
+
+    <target name="check-tests">
+        <available file="${basedir}/test" property="tests.exist"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="test" depends="check-tests" description="tools-whitebox-tests" if="tests.exist">
+        <path id="test.classpath">
+        <path refid="tools.compile.classpath"/>
+            <pathelement path="${build.dir}/classes"/>
+            <pathelement path="${build.dir}/test-classes"/>
+            <!-- so that resources can be found -->
+            <pathelement path="${basedir}/test"/>
+        </path>
+
+
+        <javac srcdir="${basedir}/test"
+               destdir="${build.dir}/test-classes"
+               debug="${compile.debug}"
+               optimize="${compile.optimize}">
+            <classpath refid="test.classpath"/>
+        </javac>
+
+        <junit haltonfailure="yes">
+            <classpath refid="test.classpath"/>
+            <formatter type="xml"/>
+            <!-- This formatter allows NetBeans to display the test results -->
+            <formatter type="brief" usefile="false"/>
+            <batchtest todir="${build.dir}/test-reports" haltonerror="false">
+                <fileset dir="${build.dir}/test-classes">
+                    <include name="**/AllTests.class"/>
+                    <include name="**/*Test.class"/>
+                    <exclude name="**/*TaskTest.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <junitreport todir="${build.dir}/test-reports">
+            <fileset dir="${build.dir}/test-reports">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${build.dir}/test-reports/report/html"/>
+        </junitreport>
+    </target>
+
+    <target name="test-ant-tasks">
+        <path id="test.classpath">
+            <path refid="tools.compile.classpath"/>
+            <pathelement path="${build.dir}/classes"/>
+            <pathelement path="${build.dir}/test-classes"/>
+            <!-- so that resources can be found -->
+            <pathelement path="${basedir}/test"/>
+        </path>
+        
+        <junit haltonfailure="yes">
+            <classpath refid="test.classpath"/>
+            <jvmarg line="-Djaxws-ri.home=../../"/>
+            <formatter type="xml"/>
+            <!-- This formatter allows NetBeans to display the test results -->
+            <formatter type="brief" usefile="false"/>
+            <batchtest todir="${build.dir}/test-reports" haltonerror="false">
+                <fileset dir="${build.dir}/test-classes">
+                    <include name="**/*TaskTest.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <junitreport todir="${build.dir}/test-reports">
+            <fileset dir="${build.dir}/test-reports">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${build.dir}/test-reports/report/html"/>
+        </junitreport>
+    </target>
+</project> 

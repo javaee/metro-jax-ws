@@ -1,0 +1,23 @@
+Manifest-Version: 1
+Bnd-LastModified: 1316523401586
+Bundle-ManifestVersion: 2
+Bundle-Name: jaxb-eclipselink-plugin
+Bundle-SymbolicName: jaxb-eclipselink-plugin
+Bundle-Version: 0
+Created-By: 1.6.0_26 (Sun Microsystems Inc.)
+Export-Package: com.sun.xml.ws.db.toplink;uses:="javax.activation,javax.
+ xml.stream,javax.xml.transform,javax.mail.internet,org.jvnet.staxex,org
+ .eclipse.persistence.internal.oxm.record,org.xml.sax,javax.xml.transfor
+ m.dom,org.w3c.dom,javax.xml.namespace,javax.xml.bind.attachment,com.sun
+ .xml.ws.spi.db,javax.xml.transform.stream,org.eclipse.persistence.jaxb,
+ javax.xml.transform.sax,javax.xml.bind,javax.xml.ws,javax.xml.parsers,j
+ avax.xml.bind.annotation,com.sun.xml.ws.model,org.eclipse.persistence";
+ version="1.0"
+Import-Package: com.sun.xml.ws.model,com.sun.xml.ws.spi.db,javax.activat
+ ion,javax.mail.internet,javax.xml.bind,javax.xml.bind.annotation,javax.
+ xml.bind.attachment,javax.xml.namespace,javax.xml.parsers,javax.xml.str
+ eam,javax.xml.transform,javax.xml.transform.dom,javax.xml.transform.sax
+ ,javax.xml.transform.stream,javax.xml.ws,org.eclipse.persistence,org.ec
+ lipse.persistence.internal.oxm.record,org.eclipse.persistence.jaxb,org.
+ jvnet.staxex,org.w3c.dom,org.xml.sax
+Tool: Bnd-1.44.0

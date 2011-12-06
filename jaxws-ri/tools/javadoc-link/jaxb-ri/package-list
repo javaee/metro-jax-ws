@@ -1,0 +1,10 @@
+jaxb
+com.sun.tools.xjc
+com.sun.tools.xjc.api
+com.sun.xml.bind
+com.sun.xml.bind.api
+com.sun.xml.bind.v2
+com.sun.xml.bind.v2.model
+com.sun.xml.bind.v2.model.nav
+com.sun.xml.bind.v2.model.nav.Navigator
+

@@ -1,0 +1,277 @@
+<html>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<head caption="Handler">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
+</head>
+
+<body>
+  
+  <h2>Handler Types</h2>
+
+  <p>JAX-WS 2.0 defines a <code>Handler</code> interface, with subinterfaces <code>LogicalHandler</code> and <code>SOAPHandler</code>. The <code>Handler</code> interface contains <code>handleMessage(C context)</code> and <code>handleFault(C context)</code> methods, where <code>C</code> extends <code>MessageContext</code>. A property in the <code>MessageContext</code> object is used to determine if the message is inbound or outbound. <code>SOAPHandler</code> objects have access to the full soap message including headers. Logical handlers are independent of protocol and have access to the payload of the message.</p>
+
+  <p>The new handler types can now be written without casting the message
+context object that is passed to them. For instance:</p>
+  <pre>
+public class MyLogicalHandler implements LogicalHandler&lt;LogicalMessageContext&gt; {
+    public boolean handleMessage(LogicalMessageContext messageContext) {
+        LogicalMessage msg = messageContext.getMessage();
+        return true;
+    }
+    // other methods
+}
+
+public class MySOAPHandler implements SOAPHandler&lt;SOAPMessageContext&gt; {
+
+    public boolean handleMessage(SOAPMessageContext messageContext) {
+        SOAPMessage msg = messageContext.getMessage();
+        return true;
+    }
+    // other methods
+}
+</pre>
+
+  <p>A <code>close(C context)</code> method has been added that is called on the
+handlers at the conclusion of a message exchange pattern. This allows handlers
+to clean up any resources that were used for the processing of a request-only
+or request/response exchange.</p>
+
+  <p>The <code>init()</code> and <code>destroy()</code> methods of the handler
+lifecycle no longer exist. Instead, a method may be annotated with the
+  <code>@PostConstruct</code> annotation to be called after the handler is
+  created or the <code>@PreDestroy</code> annotation to be called before the
+  handler is destroyed. Note that the annotated methods must return
+  <code>void</code> and take no arguments:</p>
+<pre>
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+public class MyLogicalHandler implements LogicalHandler&lt;LogicalMessageContext&gt; {
+    @PostConstruct
+    public void methodA() { }
+
+    @PreDestroy
+    public void methodB() {}
+
+    // other methods
+}
+</pre>
+
+  <h2>MessageContext</h2>
+
+  <p>In the examples above, the <code>LogicalMessage</code> object allows a
+handler to get and set the message payload either as a JAXB object or as a
+<code>javax.xml.transform.Source</code>. The <code>SOAPMessage</code> object
+allows access to headers and the SOAP body of the message.</p>
+
+  <p>Both context objects extend <code>MessageContext</code>, which holds
+properties that the handlers can use to communicate with each other. A standard
+property <code>MessageContext.MESSAGE_OUTBOUND_PROPERTY</code> holds a
+<code>Boolean</code> that is used to determine the direction of a message.
+For example, during a request, the property would be <code>Boolean.TRUE</code>
+when seen by a client handler and <code>Boolean.FALSE</code> when seen by a
+server handler.</p>
+
+  <p>The message context object can also hold properties set by the client or
+provider. For instance, port proxy and dispatch objects both extend
+<code>BindingProvider</code>. A message context object can be obtained from both
+to represent the request or response context. Properties set in the request
+context can be read by the handlers, and the handlers may set properties on the
+message context objects passed to them. If these properties are set with the
+scope <code>MessageContext.Scope.APPLICATION</code> then they will be
+available in the response context to the client. On the server end, a context
+object is passed into the <code>invoke</code> method of a
+<code>Provider</code>.</p>
+
+  <h2>Handler Chain Configuration</h2>
+
+  <h3>Handler Files</h3>
+
+  <p>Starting from a WSDL file, handler chain configuration is through WSDL customizations as defined by <a href="http://jcp.org/en/jsr/detail?id=109">JSR 109</a>. A <code>&lt;handler-chains&gt;</code> element is added to the customization file. The following is a simple handler chain with one handler (customization may be on server or client side):</p>
+  <pre>
+&lt;-- excerpt from customization file --&gt;
+&lt;bindings xmlns="http://java.sun.com/xml/ns/jaxws"&gt;
+  &lt;handler-chains xmlns="http://java.sun.com/xml/ns/javaee"&gt;
+    &lt;handler-chain&gt;
+      &lt;handler&gt;
+        &lt;handler-class&gt;fromwsdl.handler_simple.common.TestHandler&lt;/handler-class&gt;
+      &lt;/handler&gt;
+    &lt;/handler-chain&gt;
+  &lt;/handler-chains&gt;
+&lt;/bindings&gt;
+</pre>
+
+  <p>Multiple <code>handler-chain</code> elements may exist within the
+  <code>handler-chains</code> element. These may optionally use a service name,
+  port name, or protocol pattern in their description to apply some chains
+  to certain ports and protocols and not to others. For instance (note the
+  wildcard character used in the service name):</p>
+
+  <pre>
+  &lt;-- excerpt --&gt;
+  &lt;handler-chains xmlns="http://java.sun.com/xml/ns/javaee"&gt;
+    &lt;handler-chain&gt;
+      &lt;service-name-pattern xmlns:ns1="urn:namespace"&gt;ns1:My*Service&lt;/service-name-pattern&gt;
+      &lt;handler&gt;...&lt;/handler&gt;
+    &lt;/handler-chain&gt;
+
+    &lt;handler-chain&gt;
+      &lt;port-name-pattern xmlns:ns1="urn:namespace"&gt;ns1:HelloPort&lt;/port-name-pattern&gt;
+      &lt;handler&gt;...&lt;/handler&gt;
+    &lt;/handler-chain&gt;
+
+    &lt;handler-chain&gt;
+      &lt;protocol-bindings&gt;##SOAP11_HTTP&lt;/protocol-bindings&gt;
+      &lt;handler&gt;...&lt;/handler&gt;
+    &lt;/handler-chain&gt;
+  &lt;/handler-chains&gt;
+</pre>
+
+  <p>Handlers will appear in the final handler chain in the order that they are
+  included in the customization file. However, logical handlers will be sorted
+  out and called before protocol handlers during execution.</p>
+
+  <p>Starting from a Java class, annotations are used to describe the handler
+  chain as defined by <a href="http://jcp.org/en/jsr/detail?id=181">JSR 181</a>.
+  The following example uses the <code>@HandlerChain</code> annotation to refer
+  to a file describing the chain.</p>
+  <pre>
+import javax.jws.HandlerChain;
+import javax.jws.WebService;
+
+@WebService
+@HandlerChain( file="handlers.xml")
+public class MyServiceImpl {
+    // implementation of class
+}
+</pre>
+
+  <p>An example <code>handlers.xml</code> file is shown below. The schema is
+  the same that is used for the customization.</p>
+  <pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;jws:handler-chains xmlns:jws="http://java.sun.com/xml/ns/javaee"&gt;
+  &lt;jws:handler-chain&gt;
+    &lt;jws:handler&gt;
+      &lt;jws:handler-class&gt;fromjava.handler_simple.common.TestHandler&lt;/jws:handler-class&gt;
+    &lt;/jws:handler&gt;
+  &lt;/jws:handler-chain&gt;
+&lt;/jws:handler-chains&gt;
+  </pre>
+
+  <p>When packaging the service, the handlers.xml file must be in the classpath
+  within the WAR file, either directly under <code>WEB-INF/classes</code> or
+  further down in the same package as the service class file.</p>
+
+  <p>On the server side, the handlers may be configured in the sun-jaxws.xml
+  deployment descriptor as well. A handler chain specified here will override
+  handlers in WSDL customizations or annotated classes. The schema for the
+  handler section is the same as in the previous examples:</p>
+
+  <pre>
+&lt;endpoints ....&gt;
+  &lt;endpoint ....&gt;
+    &lt;handler-chains xmlns="http://java.sun.com/xml/ns/javaee"&gt;
+      &lt;handler-chain&gt;
+        ....
+      &lt;/handler-chain&gt;
+    &lt;/handler-chains&gt;
+  &lt;/endpoint&gt;
+&lt;/endpoints&gt;
+</pre>
+
+  <h3>Programmatic Case</h3>
+
+  <p>Handler chains may be configured on the client side at runtime by setting a
+  chain directly on a <code>BindingProvider</code> (e.g., a <code>Dispatch</code>
+  object or a port proxy) or by using a <code>HandlerResolver</code>. This
+  example shows how to add a handler chain to a port proxy:</p>
+  <pre>
+    // given proxy interface HelloPortType
+    HelloPortType myProxy = // create proxy
+
+    Binding binding = ((BindingProvider)myProxy).getBinding();
+
+    // can create new list or use existing one
+    List&lt;Handler&gt; handlerList = binding.getHandlerChain();
+
+    handlerList.add(new MyHandler());
+    binding.setHandlerChain(handlerList);
+</pre>
+
+  <p>To configure the handlers that are added to newly created <code>Binding</code>
+  objects, add a handler resolver to the service with <code>setHandlerResolver()</code>.
+  The new resolver will be used whenever a <code>BindingProvider</code> is
+  created from the service. An example resolver is as follows:</p>
+<pre>
+/*
+ * Add handlers to the returned list based on the information
+ * in info.getBindingID(), getPortName(), and/or getServiceName().
+ */
+public class MyResolver implements HandlerResolver {
+    public List&lt;Handler&gt; getHandlerChain(PortInfo info) {
+        List&lt;Handler&gt; handlers = new ArrayList&lt;Handler&gt;();
+        // add handlers to list based on PortInfo information
+        return handlers;
+    }
+}
+</pre>
+
+  <p>A resolver that modifies the initially configured handler chains could
+  be written by calling <code>service.getHandlerResolver()</code> and passing
+  the original resolver to a new one:</p>
+<pre>
+    // original HandlerResolver passed in constructor or setter method
+    public List&lt;Handler&gt; getHandlerChain(PortInfo info) {
+        List&lt;Handler&gt; handlers = originalResolver.getHandlerChain(info);
+        // alter list based on PortInfo information
+        return handlers;
+    }
+</pre>
+
+  <h2>Handler Samples</h2>
+
+  <p>The <code>fromjavahandler</code> and <code>fromwsdlhandler</code> samples set a <code>SOAPHandler</code> on the client and server. This handler simply outputs the contents of the SOAP message and can be used to see the requests and responses being passed back and forth. See the sample documentation for information on running the samples.</p>
+</body>
+</html>

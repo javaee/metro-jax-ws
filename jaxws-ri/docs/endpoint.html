@@ -1,0 +1,103 @@
+<html>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<head caption="Endpoint API">
+  <link rel="stylesheet" type="text/css" href="style/default.css"/>
+</head>
+
+<body>
+<p>Web Service endpoints can be created and published programmatically
+using javax.xml.ws.Endpoint API. An endpoint consists of a Web Service
+Implementation object and some configuration information. The
+implementation hosts the web service endpoint using a light weight http
+server and clients can access the
+web service as if the endpoint is deployed in a J2EE container. This
+means that there is no need to have any J2EE servlet or EJB container
+to host the endpoint.  The Endpoint API provides a way to
+configure the endpoint with the necessary binding, metadata(WSDL and
+schema documents), handlers etc.<br>
+</p>
+<h2><code>Endpoint</code></h2>
+An endpoint can be created using any of the following constructors: <br>
+<pre>Endpoint.create(implementor)<br>Endpoint.create(bindingId, implementor)<br>Endpoint.publish(address, implementor)</pre>
+Once the Endpoint object is created using the first two constructors,
+it can be published using Endpoint.publish(). Any published Endpoint
+can be stopped using Endpoint.stop(). <a
+ href="../samples/supplychain/src/supplychain/server/WarehouseLightWeight.java">supplychain</a>
+sample shows creating and publishing an Endpoint.<br>
+<h2><code>Endpoint and Properties</code><code></code></h2>
+<p>An endpoint can be configured to match service name and port name of
+WSDL using properties. This overwrites implementor object's
+serviceName, portName from @WebService annotation. The port address for
+an endpoint is patched only if the corresponding port's service name,
+and port name in WSDL are matched.</p>
+<p>For example:</p>
+<pre>  Endpoint endpoint = ...<br>  Map&lt;String, Object&gt; map = new HashMap&lt;String, Object&gt;();<br>  map.put(Endpoint.WSDL_SERVICE, new QName(...));<br>  map.put(Endpoint.WSDL_PORT, new QName(...));<br>  endpoint.setProperties(map);<br></pre>
+<h2><code>Endpoint and Binding</code><code></code></h2>
+<p>
+Endpoint can be configured for different bindings using
+binding ids. These binding ids are defined in JAX-WS API and endpoint
+can be configured by specifying @BindingType annotation or using
+binding id in the Endpoint() constructors. The parameter in constructor
+overwrites
+binding defined by @BindingType annotation. If the binding is not
+specified using @BindingType or using a parameter in Endpoint()
+constructor, the default binding
+is SOAP1.1/HTTP. Binding object is used to configure MTOM, handler
+chain etc. SOAP binding object is used to configure SOAP binding
+specifics like roles.</p>
+<p>For example:</p>
+<pre>  The following configures the endpoint for XML/HTTP binding.<br><br>  Endpoint endpoint = Endpoint.create(HTTPBinding.HTTP_BINDING, implementor);<br><br>For example:<br><br>  // setting MTOM<br>  SOAPBinding binding = (SOAPBinding)endpoint.getBinding();<br>  binding.setMTOMEnabled((true);<br><br>  // setting SOAP binding roles<br>  binding.setRoles(...);<br><br>  // setting handler chain<br>  binding.setHandlerChain(...);<br></pre>
+<h2><code>Endpoint</code> and <code>metadata</code></h2>
+When the service endpoint is created using existing java classes, the
+implementation dynamically generates and publishes WSDL and schema
+documents. But when the service endpoint is created using existing WSDL
+documents, the same WSDL documents can be used for publishing using
+metadata facility. When a Source object is created, set systemid always
+and make sure the imports are resolvable w.r.t systemids.<br>
+<br>
+For example:<br>
+<pre>   // metadata processing for WSDL, schema files<br>   List &lt;File&gt; metadataFile = ...<br>   List&lt;Source&gt; metadata = new ArrayList&lt;Source&gt;();<br>   for(File file : metadataFile) {<br>       Source source = new StreamSource(new FileInputStream(file));<br>       source.setSystemId(file.toURL().toExternalForm());<br>       metadata.add(source);<br>   }<br>   endpoint.setMetadata(metadata);</pre>
+
+</body>
+</html>

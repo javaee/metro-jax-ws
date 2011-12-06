@@ -1,0 +1,93 @@
+#
+# Sequence Diagram for the use of a pipe that invokes JAX-WS handlers
+# 
+# a special pipe implementation invokes handlers.
+#
+
+# graph properties
+# boxht = 0.8;
+
+# Define the objects
+pobject(A,"Actor");
+object(M,"msg1:Message");
+object(C1,"c1:Pipe");
+object(C2,"c2:HandlerPipe");
+object(H1,"h1:SOAPHandler");
+object(H2,"h2:SOAPHandler");
+object(C3,"c3:Pipe");
+pobject(DUMMY);
+
+step();
+
+# Message sequences
+message(A,C1,"process(msg1)");
+active(C1);
+	message(C1,C2,"process(msg1)");
+	active(C2);
+		
+		message(C2,M,"readAsSOAPMessage");
+		active(M);
+			rmessage(M,C2,"saaj");
+		inactive(M);
+		
+		message(C2,H1,"handleMessage(saaj)");
+		active(H1);
+			message(H1,H1,"make changes to 'saaj'");
+			rmessage(H1,C2,"true");
+		inactive(H1);
+		
+		message(C2,H2,"handleMessage(saaj)");
+		active(H2);
+			message(H2,H2,"make changes to 'saaj'");
+			rmessage(H2,C2,"true");
+		inactive(H2);
+		
+		cmessage(C2,M,"msg2:SOAPMessage");
+		message(C2,M,"set saaj");
+		active(M);
+			step();
+		inactive(M);
+		
+		message(C2,C3,"process(msg2)");
+		active(C3);
+			step();
+			complete(M);
+			cmessage(DUMMY,M,"msg3:Message");
+			rmessage(C3,C2,"msg3");
+		inactive(C3);
+		
+		message(C2,M,"readAsSOAPMessage");
+		active(M);
+			rmessage(M,C2,"saaj");
+		inactive(M);
+		
+		message(C2,H2,"handleMessage(saaj)");
+		active(H2);
+			message(H2,H2,"make changes to 'saaj'");
+			rmessage(H2,C2,"true");
+		inactive(H2);
+		
+		message(C2,H1,"handleMessage(saaj)");
+		active(H1);
+			message(H1,H1,"make changes to 'saaj'");
+			rmessage(H1,C2,"true");
+		inactive(H1);
+		
+		cmessage(C2,M,"msg4:SOAPMessage");
+		message(C2,M,"set saaj");
+		active(M);
+			step();
+		inactive(M);
+		
+		rmessage(C2,C1,"msg4");
+	inactive(C2);
+	rmessage(C1,A,"msg4");
+inactive(C1);
+
+step();
+complete(C1);
+complete(C2);
+complete(H1);
+complete(H2);
+complete(C3);
+complete(M);

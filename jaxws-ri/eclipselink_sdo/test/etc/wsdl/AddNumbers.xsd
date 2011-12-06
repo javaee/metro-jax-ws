@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+        targetNamespace="http://example.org"
+        xmlns:tns="http://example.org"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+        xmlns:sdoJava="commonj.sdo/java"
+        sdoJava:package="com.sun.xml.ws.sdo.test.add"
+        >
+	<!--
+        sdoJava:package="weblogic.wsee.databinding.internal.sdo.test.add"
+	-->
+
+    <xsd:complexType name="addNumbersResponse">
+        <xsd:sequence>
+            <xsd:element name="return" type="xsd:int"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="addNumbersResponse" type="tns:addNumbersResponse"/>
+
+    <xsd:complexType name="addNumbers">
+        <xsd:sequence>
+            <xsd:element name="arg0" type="xsd:int"/>
+            <xsd:element name="arg1" type="xsd:int"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="addNumbers" type="tns:addNumbers"/>
+</xsd:schema>
+	

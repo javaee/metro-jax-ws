@@ -1,0 +1,153 @@
+<html>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<head caption="Tools">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
+</head>
+<body>
+
+<h2>Contents</h2>
+<ol id="mozToc">
+  <li><a href="#mozTocId531996">apt</a></li>
+  <li><a href="#mozTocId497292">wsimport</a></li>
+  <li><a href="#mozTocId18364">wsgen</a></li>
+  <li><a href="#mozTocId344067">How do I pick a tool?</a></li>
+</ol>
+<h2><a class="mozTocH2" name="mozTocId531996"></a><a name="apttool"
+ id="apttool"></a><code>apt</code></h2>
+<p>The <code>apt</code> tool provides a facility for programmatically
+processing the annotations added to Java by <a
+ href="http://www.jcp.org/en/jsr/detail?id=175">JSR 175</a>, <i>Metadata
+Facility for the Java</i><font size="2"><sup>TM</sup></font><i>Programming
+Language</i>. In brief, JSR 175 allows programmers to declare new kinds
+of structured modifiers that can be associated with program elements,
+fields, methods, classes, etc.</p>
+<p>The <code>apt</code> tool generates the portable artifacts used in
+JAX-WS services. <br>
+</p>
+<p>For more information on this tool please see: <a href="apt.html">apt
+tool</a>.<br>
+</p>
+<h2><a class="mozTocH2" name="mozTocId497292"></a><a
+ name="wscompiletool" id="wscompiletool"></a>wsimport</h2>
+<p>The <code>wsimport</code> tool generates JAX-WS portable
+artifacts  used in JAX-WS clients and
+services. The tool reads a WSDL and
+generates all the required artifacts for web service development,
+deployment, and invocation.<br>
+</p>
+<p>For more information on this tool please see: <a
+ href="wsimport.html">wsimport
+tool</a>.<br>
+</p>
+<h2><a class="mozTocH2" name="mozTocId18364"></a><a name="wsdeploytool"
+ id="wsdeploytool"></a>wsgen</h2>
+<p>The <code>wsgen</code> tool reads a <code></code><code></code><code></code><code></code><code></code><code></code>service
+endpoint implementation class and generates all of the portable
+artifacts for a JAX-WS web service..</p>
+<p>For more information on this tool please see: <a href="wsgen.html">wsgen
+tool</a>.</p>
+<h3><a name="running_on_jdk6"></a>Running on JDK6</h3>
+<ul>
+	<li>Copy ${HOME}/lib/jaxws-api.jar to $JDK6_HOME/jre/lib/endorsed 
+	directory </li>
+	<li>Copy ${HOME}/lib/jaxb-api.jar to $JDK6_HOME/jre/lib/endorsed 
+	directory</li>
+</ul>
+<p>For details see
+<a href="http://java.sun.com/j2se/1.5.0/docs/guide/standards/">Endorsed 
+Directory Mechanism</a>. Above, ${HOME} points to the root directory of the 
+extracted ${PRODUCT_SHORT_NAME} bundle. JDK6_HOME points to JDK 6 installation directory.<br>
+</p>
+<h2><a class="mozTocH2" name="mozTocId344067"></a><a name="how" id="how"></a>How
+do I pick a tool?</h2>
+<p>The following lists the process to create a web service starting
+from Java sources, classes, and a WSDL file (server side):</p>
+<ol>
+  <li>Starting from Java sources:
+    <ol>
+      <li>Use <code>apt</code> to generate the artifacts required by the JAX-WS specification.</li>
+      <li>Package the <code>web.xml</code>, <code>sun-jaxws.xml</code>,
+service endpoint interface and
+implementation class, value types, and generated classes, if any, into
+a WAR file,<br>
+      </li>
+      <li>Deploy the WAR to a web container.</li>
+    </ol>
+  </li>
+  <li>Starting from Java classes:
+    <ol>
+      <li>Use <code>wsgen</code> to generate portable artifacts.</li>
+      <li>Package the <code>web.xml</code>, <code>sun-jaxws.xml</code>,
+service endpoint interface and
+implementation class, value types, and generated classes, if any, into
+a WAR file,<br>
+      </li>
+      <li>Deploy the WAR to a web container.</li>
+    </ol>
+  </li>
+  <li>Starting from a WSDL file:
+    <ol>
+      <li>Use <code>wsimport</code> to generate portable artifacts.</li>
+      <li>Implement the service endpoint.</li>
+      <li>Package the WSDL file, schema documents, <code>web.xml</code>,
+        <code>sun-jaxws.xml</code>, service endpoint interface and
+implementation class, value types, and generated classes,
+if any, into a WAR file.</li>
+      <li>Deploy the WAR to a web container.</li>
+    </ol>
+  </li>
+</ol>
+<p>The following lists the process to invoke a web service (client
+side):</p>
+<ol>
+  <li>Starting from deployed web service's WSDL
+    <ol>
+      <li>Use <code>wsimport</code> to generate the client-side
+artifacts.</li>
+      <li>Implement the client to invoke the web service.</li>
+    </ol>
+  </li>
+</ol>
+</body>
+</html>

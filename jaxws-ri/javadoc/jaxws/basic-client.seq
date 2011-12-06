@@ -1,0 +1,81 @@
+#
+# Sequence Diagram for the most basic case
+#
+# user invokes a service through a proxy, which eventually
+# produces an HTTP request/response to the server. The response
+# goes back normally.
+#
+
+# graph properties
+boxht = 0.8;
+
+# Define the objects
+pobject(A,"Actor");
+object(P,"proxy");
+pobject(M1);
+object(C1,"c1:Pipe");
+object(C2,"c2:Pipe");
+object(T,"transport:" "Pipe");
+object(E,":Encoder");
+object(D,":Decoder");
+pobject(M2);
+object(JRE,"JRE Lib");
+
+step();
+
+# Message sequences
+message(A,P,"stockQuote(\"Sun\")");
+active(P);
+	cmessage(P,M1,"msg1:" "JAXBMessage"," ");
+	
+	message(P,C1,"process(msg1)");
+	active(C1);
+		message(C1,C2,"process(msg1)");
+		active(C2);
+			message(C2,T,"process(msg1)");
+			active(T);
+				message(T,T,"open HTTP connection");
+				message(T,E,"encode(msg1,stream)");
+				active(E);
+					message(E,M1,"writeTo(...)");
+					active(M1);
+						step();
+						message(M1,M1,"JAXB marshalling");
+					inactive(M1);
+					rmessage(E,T,"");
+				inactive(E);
+				step();
+				message(T,T,"send request");
+				
+				step();
+				message(T,T,"receive reply");
+				message(T,D,"decode(response)");
+				active(D);
+					cmessage(D,M2,"msg2:" "StreamMessage","");
+					rmessage(D,T,"msg2");
+				inactive(D);
+				rmessage(T,C2,"msg2");
+			inactive(T);
+			rmessage(C2,C1,"msg2");
+		inactive(C2);
+		rmessage(C1,P,"msg2");
+	inactive(C1);
+	
+	message(P,M2,"readAsJAXB()");
+	active(M2);
+		message(M2,M2,"call JAXB with socket");
+		rmessage(M2,P,"JAXB bean");
+	inactive(M2);
+	complete(M2);
+	
+	rmessage(P,A,"4.10");
+inactive(P);
+
+step();
+complete(P);
+complete(C1);
+complete(C2);
+complete(T);
+complete(E);
+complete(D);
+complete(JRE);

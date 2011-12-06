@@ -1,0 +1,323 @@
+<?xml version="1.0"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!-- ************ JAXWS build file ************************************** -->
+
+
+
+<project name="JAXWS-RI-PKG" basedir=".">
+
+  <property name="pkg.version" value="2.0"/>
+  <property name="rpm.version" value="2.0"/>
+  <property name="version" value="${pkg.version}-INTERNAL"/>
+  <property name="rpm.release" value="1"/>
+
+  <!-- The package name -->
+  <property name="pkg.jaxws"    value="SUNWjaxws"/>
+
+  <!-- The package product name -->
+  <property name="pkg.prod.name"    value="Sun Java(TM) Enterprise System"/>
+
+  <!-- The package product version -->
+  <property name="pkg.prod.version"    value="5.0"/>
+
+  <!-- The package build directory -->
+  <property name="pkg.build.dir"    value="${build.home}/pkg"/>
+
+  <!-- The package distribution directory -->
+  <property name="pkg.release.dir"    value="${basedir}/pkg-dist"/>
+
+  <!-- The rpm build directory -->
+  <property name="rpm.build.dir"    value="${build.home}/rpm/JAXWS"/>
+
+  <!-- The rpm distribution directory -->
+  <property name="rpm.release.dir"    value="${basedir}/rpm-dist"/>
+
+  <!-- The zip build directory -->
+  <property name="zip.build.dir"    value="${build.home}/zip"/>
+
+  <!-- The zip distribution directory -->
+  <property name="zip.release.dir"    value="${basedir}/zip-dist"/>
+
+  <!-- svr4 package -->
+  <!-- assumes the dist target has been run -->
+  <target name="create.pkg" description="Create JAX-WS package">
+
+    <!-- copy pkginfo.tmpl to pkginfo in build dir and replace variables -->
+    <copy tofile="${pkg.build.dir}/${pkg.jaxws}/pkginfo" file="${basedir}/pkg/${pkg.jaxws}/pkginfo.tmpl"
+      overwrite="yes"/>
+
+    <!-- replace architecture value 
+    <exec executable="mach" failonerror="true" outputproperty="arch">
+    </exec>
+    -->
+
+    <replace file="${pkg.build.dir}/${pkg.jaxws}/pkginfo" value="all">
+      <replacetoken>@arch@</replacetoken>
+    </replace>
+
+    <!-- replace date stamp... 1st specify correct format  -->
+    <tstamp>
+      <format property="pkg.datestamp" pattern="yyyy.MM.dd.hh.mm"/>
+    </tstamp>
+
+    <replace file="${pkg.build.dir}/${pkg.jaxws}/pkginfo" value="${pkg.datestamp}">
+      <replacetoken>@datestamp@</replacetoken>
+    </replace>
+    
+    <!-- replace jaxws version -->
+    <replace file="${pkg.build.dir}/${pkg.jaxws}/pkginfo" value="${pkg.version}">
+      <replacetoken>@jaxws.version@</replacetoken>
+    </replace>
+
+    <!-- replace product version -->
+    <replace file="${pkg.build.dir}/${pkg.jaxws}/pkginfo" value="${pkg.prod.version}">
+      <replacetoken>@prod.version@</replacetoken>
+    </replace>
+
+    <!-- replace product name -->
+    <replace file="${pkg.build.dir}/${pkg.jaxws}/pkginfo" value="${pkg.prod.name}">
+      <replacetoken>@prod.name@</replacetoken>
+    </replace>
+
+    <!-- copy prototype, depend, copyright, installation script files -->
+    <copy todir="${pkg.build.dir}/${pkg.jaxws}" overwrite="yes">
+      <fileset dir="${basedir}/pkg/${pkg.jaxws}">
+        <include name="prototype*"/>
+        <include name="depend"/>
+        <include name="copyright"/>
+        <include name="i.jwsenv"/>
+      </fileset>
+    </copy>
+
+    <!-- copy jaxws bin files into the right directory structure -->
+    <copy todir="${pkg.build.dir}/${pkg.jaxws}/usr/share/lib/install/templates" overwrite="yes">
+      <fileset dir="${basedir}/pkg/${pkg.jaxws}">
+        <include name="*.template"/>
+      </fileset>
+    </copy>
+
+    <!-- copy jaxws specific jar files into the right directory structure -->
+    <copy todir="${pkg.build.dir}/${pkg.jaxws}/usr/share/lib" overwrite="yes">
+      <fileset dir="${dist20.home}/lib">
+        <include name="jaxws-api.jar"/>
+        <include name="jaxws-rt.jar"/>
+        <include name="jaxws-tools.jar"/>
+        <include name="jsr181-api.jar"/>
+      </fileset>
+    </copy>
+
+    <!-- make output directory -->
+    <mkdir dir="${pkg.release.dir}"/>
+
+    <!-- run pkgmk -f prototype_sparc -d tmp_dir -o PKGNAME -->
+    <exec executable="pkgmk" failonerror="true"
+     dir="${pkg.build.dir}/${pkg.jaxws}">
+      <arg value="-f"/>
+      <arg value="prototype_sparc"/>
+      <arg value="-d"/>
+      <arg value="${pkg.release.dir}"/>
+      <arg value="-r"/>
+      <arg value="."/>
+      <arg value="-o"/>
+      <arg value="${pkg.jaxws}"/>
+    </exec>
+
+  </target>
+
+
+
+ <!-- =====================
+       RPM DISTRIBUTION 
+      ===================== -->
+  <!-- assumes the dist target has been called -->
+  <target name="create.rpm" description="Create JAX-WS rpm">
+
+    <!-- assign prefix of where files will be installed on system -->
+    <property name="rpm.install.base"    value="/opt/sun"/>
+
+    <!-- make sure this directory is initially clean -->
+    <delete dir="${rpm.build.dir}/SOURCES"/>
+
+    <!-- Create build subdirectories -->
+    <mkdir dir="${rpm.build.dir}/BUILD"/>
+    <mkdir dir="${rpm.build.dir}/RPMS"/>
+    <mkdir dir="${rpm.build.dir}/SOURCES"/>
+    <mkdir dir="${rpm.build.dir}/SPECS"/>
+    <mkdir dir="${rpm.build.dir}/SRPMS"/>
+
+    <!-- copy template spec file to spec file in build dir and replace variables -->
+    <copy tofile="${rpm.build.dir}/SPECS/JAXWS.spec" file="${basedir}/rpm/JAXWS.spec.tmpl"
+      overwrite="yes"/>
+
+    <!-- replace jaxws version -->
+    <replace file="${rpm.build.dir}/SPECS/JAXWS.spec" value="${rpm.version}">
+      <replacetoken>@jaxws.version@</replacetoken>
+    </replace>
+
+    <!-- replace jaxws release -->
+    <replace file="${rpm.build.dir}/SPECS/JAXWS.spec" value="${rpm.release}">
+      <replacetoken>@jaxws.release@</replacetoken>
+    </replace>
+
+    <!-- replace product name -->
+    <replace file="${rpm.build.dir}/SPECS/JAXWS.spec" value="${pkg.prod.name}">
+      <replacetoken>@prod.name@</replacetoken>
+    </replace>
+
+    <!-- replace build dir  -->
+    <replace file="${rpm.build.dir}/SPECS/JAXWS.spec" value="${rpm.build.dir}">
+      <replacetoken>@build.dir@</replacetoken>
+    </replace>
+
+    <!-- replace prefix value  -->
+    <replace file="${rpm.build.dir}/SPECS/JAXWS.spec" value="${rpm.install.base}">
+      <replacetoken>@install.prefix@</replacetoken>
+    </replace>
+
+    <!-- copy jaxws bin files into the right directory structure -->
+    <copy tofile="${rpm.build.dir}/SOURCES/sun-jaxws-${rpm.version}${rpm.install.base}/bin/wsgen" overwrite="yes">
+      <fileset dir="${basedir}/rpm">
+        <include name="wsgen.template"/>
+      </fileset>
+    </copy>
+
+    <copy tofile="${rpm.build.dir}/SOURCES/sun-jaxws-${rpm.version}${rpm.install.base}/bin/wsimport" overwrite="yes">
+      <fileset dir="${basedir}/rpm">
+        <include name="wsimport.template"/>
+      </fileset>
+    </copy>
+
+    <!-- replace basedir of library locations in template files -->
+    <replace dir="${rpm.build.dir}/SOURCES/sun-jaxws-${rpm.version}${rpm.install.base}/bin" value="${rpm.install.base}/share/lib">
+      <replacetoken>%WEBSERVICES_LIB%</replacetoken>
+    </replace>
+
+    <!-- replace basedir of library locations in template files -->
+    <replace dir="${rpm.build.dir}/SOURCES/sun-jaxws-${rpm.version}${rpm.install.base}/bin" value="${rpm.install.base}/private/share/lib">
+      <replacetoken>%WEBSERVICES_PRIVATE_LIB%</replacetoken>
+    </replace>
+
+
+    <!-- copy jaxws specific jar files into the right directory structure -->
+    <copy todir="${rpm.build.dir}/SOURCES/sun-jaxws-${rpm.version}${rpm.install.base}/share/lib" overwrite="yes">
+      <fileset dir="${dist20.home}/lib">
+        <include name="jaxws-api.jar"/>
+        <include name="jaxws-rt.jar"/>
+        <include name="jaxws-tools.jar"/>
+        <include name="jsr181-api.jar"/>
+      </fileset>
+    </copy>
+
+    <!-- compress jaxws files -->
+    <tar destfile="${rpm.build.dir}/SOURCES/sun-jaxws-${rpm.version}.tar" basedir="${rpm.build.dir}/SOURCES"/>
+
+    <!-- build rpm -->
+    <exec executable="rpmbuild" failonerror="true"
+     dir="${rpm.build.dir}">
+      <arg value="-bb"/>
+      <arg value="SPECS/JAXWS.spec"/>
+    </exec>
+        
+    <!-- make output directory -->
+    <mkdir dir="${rpm.release.dir}"/>
+
+    <!-- copy rpm to dist directory -->
+    <copy todir="${rpm.release.dir}">
+      <fileset dir="${rpm.build.dir}/RPMS"/>
+    </copy>
+
+  </target>
+
+ <!-- =======================
+       ZIP FILE DISTRIBUTION 
+      ======================= -->
+  <!-- assumes the dist target has been called -->
+  <target name="create.zip" description="Create JAX-WS zip file">
+
+    <!-- make build and output directories -->
+    <mkdir dir="${zip.build.dir}"/>
+    <mkdir dir="${zip.release.dir}"/>
+
+    <!-- copy jaxws bin files into the right directory structure -->
+    <copy tofile="${zip.build.dir}/jaxws/bin/wsgen.bat" overwrite="yes">
+      <fileset dir="${basedir}/zip">
+        <include name="wsgen.bat"/>
+      </fileset>
+    </copy>
+
+    <copy tofile="${zip.build.dir}/jaxws/bin/wsimport.bat" overwrite="yes">
+      <fileset dir="${basedir}/zip">
+        <include name="wsimport.bat"/>
+      </fileset>
+    </copy>
+
+    <!-- copy jaxws bin files into the right directory structure -->
+    <copy tofile="${zip.build.dir}/jaxws/bin/wsgen.sh" overwrite="yes">
+      <fileset dir="${basedir}/zip">
+        <include name="wsgen.sh"/>
+      </fileset>
+    </copy>
+
+    <copy tofile="${zip.build.dir}/jaxws/bin/wsimport.sh" overwrite="yes">
+      <fileset dir="${basedir}/zip">
+        <include name="wsimport.sh"/>
+      </fileset>
+    </copy>
+
+    <!-- copy jaxws specific jar files into the right directory structure -->
+    <copy todir="${zip.build.dir}/jaxws/lib" overwrite="yes">
+      <fileset dir="${dist20.home}/lib">
+        <include name="jaxws-api.jar"/>
+        <include name="jaxws-rt.jar"/>
+        <include name="jaxws-tools.jar"/>
+        <include name="jsr181-api.jar"/>
+      </fileset>
+    </copy>
+
+    <!-- make zip file -->
+    <zip destfile="${zip.release.dir}/JAXWS-${pkg.version}.zip" basedir="${zip.build.dir}" whenempty="fail"/>
+
+
+  </target>
+</project>

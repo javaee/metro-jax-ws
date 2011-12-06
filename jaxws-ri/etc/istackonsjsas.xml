@@ -1,0 +1,231 @@
+<?xml version="1.0"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<project name="JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI On Sun Java System App Server 8.1/8.2/9.0/9.0 U1, GF v1, GF v2 " default="help" basedir=".">
+    <property environment="env"/>
+    <property name="as.home" value="${env.AS_HOME}"/>
+    <property name="as.lib.home" value="${as.home}/lib"/>
+    <property name="as.lib.endorsed.dir" value="${as.home}/lib/endorsed"/>
+    <property name="as.bin.home" value="${as.home}/bin"/>
+    <property name="domain" value="domain1"/>
+    <property name="backup.dir" value="${as.home}/.jaxws21"/>
+    <condition property="isNotWindows">
+      <not>
+        <os family="windows" />
+      </not>
+    </condition>
+
+    <condition property="notInstalled">
+        <not>
+            <available file="${as.home}/.jaxws21/${domain}-domain.xml"/>
+        </not>
+    </condition>
+            
+   <target name="init">
+        <mkdir dir="${backup.dir}"/>
+        <mkdir dir="${backup.dir}/bin"/>
+        <mkdir dir="${as.lib.endorsed.dir}"/>
+    </target>
+
+    <target name="install-AS8.X" depends="init">
+        <echo message="Installing JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI on ${as.home} ..." />
+        <copy toDir="${backup.dir}">
+            <fileset dir="${as.lib.home}">
+                <include name="saaj-*.jar"/>
+            </fileset>
+        </copy>
+
+        <copy toDir="${as.lib.home}" overwrite="true">
+            <fileset dir="lib">
+                <include name="*.jar"/>
+                <exclude name="*api*.jar"/>
+            </fileset>
+        </copy>
+
+        <copy toDir="${as.lib.endorsed.dir}" overwrite="true">
+            <fileset dir="lib">
+                <include name="*api*.jar"/>
+            </fileset>
+        </copy>
+
+        <antcall target="update-classpath-8.X"/>
+        <antcall target="install-tools"/>
+        <echo message="... done."/>
+    </target>
+
+    <target name="install" depends="init">
+        <echo message="Installing JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI on ${as.home} ..." />
+
+        <copy toDir="${as.lib.home}" overwrite="true">
+            <fileset dir="lib">
+                <include name="*.jar"/>
+                <exclude name="*api*.jar"/>
+            </fileset>
+        </copy>
+
+        <copy toDir="${as.lib.endorsed.dir}" overwrite="true">
+            <fileset dir="lib">
+                <include name="*api*.jar"/>
+            </fileset>
+        </copy>
+
+        <antcall target="update-classpath"/>
+        <antcall target="update-tools"/>
+        <echo message="... done."/>
+    </target>
+
+    <!-- Check if need to add classpath-prefix -->
+    <loadfile property="prefixLines" srcFile="${as.home}/domains/${domain}/config/domain.xml" />
+
+    <condition property="prefixUndefined">
+        <not>
+            <contains string="${prefixLines}" substring="classpath-prefix"/>
+        </not>
+    </condition>
+
+    <target name="create.classpath.prefix-8.X" if="prefixUndefined" >
+        <echo message="Adding classpath-prefix to ${as.home}/domains/${domain}/config/domain.xml" />
+        <replace file="${as.home}/domains/${domain}/config/domain.xml" >
+            <replacetoken><![CDATA[server-classpath="]]></replacetoken>
+            <replacevalue><![CDATA[classpath-prefix="" server-classpath="]]></replacevalue>
+        </replace>
+    </target>
+
+    <target name="create.classpath.prefix" if="prefixUndefined" >
+        <echo message="Adding classpath-prefix to ${as.home}/domains/${domain}/config/domain.xml" />
+        <replace file="${as.home}/domains/${domain}/config/domain.xml" >
+            <replacetoken><![CDATA[system-classpath="]]></replacetoken>
+            <replacevalue><![CDATA[classpath-prefix="" system-classpath="]]></replacevalue>
+        </replace>
+    </target>
+
+    <target name="update-classpath-8.X" if="notInstalled">
+
+        <!-- Add the JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ and dependent jars to classpath-prefix -->
+        <copy file="${as.home}/domains/${domain}/config/domain.xml" tofile="${backup.dir}/${domain}-domain.xml"/>
+        <!-- Add classpath-prefix, if not exists -->
+        <antcall target="create.classpath.prefix-8.X" />
+        <replace file="${as.home}/domains/${domain}/config/domain.xml" >
+            <replacetoken><![CDATA[classpath-prefix="]]></replacetoken>
+            <replacevalue><![CDATA[classpath-prefix="${com.sun.aas.installRoot}/lib/mimepull.jar${path.separator}${com.sun.aas.installRoot}/lib/stax2-api.jar${path.separator}${com.sun.aas.installRoot}/lib/woodstox-core-asl.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-rt.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-tools.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-xjc.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/streambuffer.jar${path.separator}${com.sun.aas.installRoot}/lib/stax-ex.jar${path.separator}${com.sun.aas.installRoot}/lib/FastInfoset.jar${path.separator}${com.sun.aas.installRoot}/lib/gmbal-api-only.jar${path.separator}${com.sun.aas.installRoot}/lib/policy.jar]]></replacevalue>
+        </replace>
+    </target>
+
+    <target name="update-classpath" if="notInstalled">
+
+        <!-- Add the JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ and dependent jars to classpath-prefix -->
+        <copy file="${as.home}/domains/${domain}/config/domain.xml" tofile="${backup.dir}/${domain}-domain.xml"/>
+        <!-- Add classpath-prefix, if not exists -->
+        <antcall target="create.classpath.prefix" />
+        <replace file="${as.home}/domains/${domain}/config/domain.xml" >
+            <replacetoken><![CDATA[classpath-prefix="]]></replacetoken>
+            <replacevalue><![CDATA[classpath-prefix="${com.sun.aas.installRoot}/lib/mimepull.jar${path.separator}${com.sun.aas.installRoot}/lib/stax2-api.jar${path.separator}${com.sun.aas.installRoot}/lib/woodstox-core-asl.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-rt.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-tools.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-xjc.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/streambuffer.jar${path.separator}${com.sun.aas.installRoot}/lib/stax-ex.jar${path.separator}${com.sun.aas.installRoot}/lib/FastInfoset.jar${path.separator}]]></replacevalue>
+        </replace>
+    </target>
+
+    <target name="install-tools" depends="install-on-windows, install-on-unix">
+        <echo message="Installed JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI tools (wsimport, wsgen) to ${as.bin.home}"/>
+    </target>
+    <target name="install-on-unix" if="isNotWindows">
+        <copy toDir="${as.bin.home}" overwrite="true">
+            <fileset dir="bin">
+                <include name="*.sh"/>
+            </fileset>
+        </copy>
+        <chmod perm="+x" file="${as.bin.home}/wsimport.sh" />
+        <chmod perm="+x" file="${as.bin.home}/wsgen.sh" />
+    </target>
+    <target name="install-on-windows" unless="isNotWindows">
+        <copy toDir="${as.bin.home}" overwrite="true">
+	    <fileset dir="bin">
+		<include name="*.bat"/>
+	    </fileset>
+	</copy>
+    </target>
+
+    <target name="update-tools" depends="update-on-windows, update-on-unix">
+        <echo message="Updated JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI tools (wsimport, wsgen) in ${as.bin.home}"/>
+    </target>
+    <target name="update-on-unix" if="isNotWindows">
+        <copy toDir="${backup.dir}/bin">
+            <fileset dir="${as.bin.home}">
+                <include name="wsgen"/>
+                <include name="wsimport"/>
+            </fileset>
+        </copy>
+	<chmod dir="${backup.dir}/bin" perm="775" includes="*"/>
+	<replace file="${as.bin.home}/wsimport" >
+	    <replacetoken><![CDATA[CLASSPATH="]]></replacetoken>
+	    <replacevalue><![CDATA[CLASSPATH="$AS_WEBSERVICES_LIB"/jaxws-tools.jar:"]]></replacevalue>
+	</replace>
+	<replace file="${as.bin.home}/wsgen" >
+	    <replacetoken><![CDATA[CLASSPATH="]]></replacetoken>
+	    <replacevalue><![CDATA[CLASSPATH="$AS_WEBSERVICES_LIB"/jaxws-tools.jar:"]]></replacevalue>
+	</replace>
+        <chmod perm="775" file="${as.bin.home}/wsimport" />
+        <chmod perm="775" file="${as.bin.home}/wsgen" />
+    </target>
+    <target name="update-on-windows" unless="isNotWindows">
+        <copy toDir="${backup.dir}/bin">
+            <fileset dir="${as.bin.home}">
+                <include name="wsgen.bat"/>
+                <include name="wsimport.bat"/>
+            </fileset>
+        </copy>
+	<replace file="${as.bin.home}/wsimport.bat" >
+	    <replacetoken><![CDATA[CLASSPATH=]]></replacetoken>
+	    <replacevalue><![CDATA[CLASSPATH=%AS_WEBSERVICES_LIB%\jaxws-tools.jar;]]></replacevalue>
+	</replace>
+	<replace file="${as.bin.home}/wsgen.bat" >
+	    <replacetoken><![CDATA[CLASSPATH=]]></replacetoken>
+	    <replacevalue><![CDATA[CLASSPATH=%AS_WEBSERVICES_LIB%\jaxws-tools.jar;]]></replacevalue>
+	</replace>
+    </target>
+
+    <target name="help">
+        <echo message="Installs JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI on the Application Server (Glassfish v1, v2 and Sun One AS 9.x)"/>
+        <echo message=""/>
+        <echo message="Usage: $ANT_HOME/bin/ant install"/>
+    </target>
+
+</project>

@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<project name="JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ On Tomcat" default="help" basedir=".">
+    <property environment="env"/>
+    <property name="tomcat.home" value="${env.CATALINA_HOME}"/>
+    <property name="catalina.home" value="${tomcat.home}"/>
+    <property name="catalina.lib.home" value="${catalina.home}/shared/lib"/>
+    <property name="catalina.endorsed" value="${catalina.home}/common/endorsed"/>
+    <property name="java.home" value="${env.JAVA_HOME}"/>
+
+     <!-- Check if we are running JAVA SE 6 update release 3 or older -->
+    <condition property="jdk6">
+        <or>
+            <contains string="${java.version}" substring="1.6.0"/>
+        </or>
+    </condition>
+
+    <target name="glassfish-message">
+        <echo message="NOTE: This script installs/uninstalls JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ on Tomcat. To install and use JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ with Glassfish V2 or V3, Download Metro bundle from https://metro.dev.java.net"/>
+        <echo/>
+    </target>
+    <target name="jdk6-message" if="jdk6">
+        <echo message="NOTE: JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ is being installed using JDK6."/>
+        <echo/>
+        <echo message="  The file 'jaxws-api.jar and jaxb-api.jar' must be installed"/>
+        <echo message="  into ${java.home}/lib/endorsed for JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ to prevent"/>
+        <echo message="  conflicts between the JAX-WS 2.1 classes"/>
+        <echo message="  bundled with JDK6 and JAX-WS 2.2 bundled with JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@."/>
+        <echo message="  See http://java.sun.com/j2se/1.5.0/docs/guide/standards/ for more on endorsed standards override mechanism"/>
+        <echo/>
+        <echo message="  You must have write-permissions on the JDK 6 directory."/>
+        <echo message="  This is a concern when using a system-wide JDK installation."/>
+        <echo/>
+        <echo message="  Invoke 'ant install-api' to install only"/>
+        <echo message="  jaxws-api.jar and jaxb-api.jar into the 'endorsed' directory."/>
+        <echo/>
+    </target>
+
+
+    <target name="install" depends="update-catalina-props" description="Install JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ jars">
+        <echo message="Installing JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ for ${catalina.home} ..."/>
+
+        <mkdir dir="${catalina.lib.home}"/>
+        <copy toDir="${catalina.lib.home}" overwrite="true">
+            <fileset dir="${basedir}/lib" includes="*.jar"/>
+        </copy>
+	<antcall target="jdk6-message"/>
+
+    </target>
+
+    <target name="install-api" description="Installs 'jaxws-api.jar and jaxb-api.jar' into $JAVA_HOME/lib/endorsed" if="jdk6">
+        <mkdir dir="${java.home}/lib/endorsed"/>
+        <copy toDir="${java.home}/lib/endorsed" overwrite="true">
+            <fileset dir="${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar"/>
+        </copy>
+        <antcall target="install-api-on-tomcat5"/>
+        <antcall target="install-api-on-tomcat6"/>        
+    </target>
+
+    <target name="install-api-on-tomcat6" unless="tomcat5">
+        <echo message="Install endorsed apis - jaxws-api.jar and jaxb-api.jar on tomcat6"/>
+
+        <mkdir dir="${catalina.home}/endorsed"/>
+        <copy toDir="${catalina.home}/endorsed" overwrite="true">
+            <fileset dir="${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar"/>
+        </copy>
+    </target>
+
+    <target name="install-api-on-tomcat5" if="tomcat5">
+        <echo message="Install endorsed apis - jaxws-api.jar and jaxb-api.jar on tomcat5"/>
+
+        <copy toDir="${catalina.endorsed}" overwrite="true">
+            <fileset dir="${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar"/>
+        </copy>
+    </target>
+
+    <condition property="tomcat5">
+        <available filepath="${catalina.home}/common" type="dir" file="endorsed"/>
+    </condition>
+
+
+    <target name="update-catalina-props">
+        <echo message="Backing up ${catalina.home}/conf/catalina.properties..."/>
+        <copy file="${catalina.home}/conf/catalina.properties" tofile="${catalina.home}/conf/catalina.properties.backup"/>
+        <echo message="Adding JAX-WS RI jars to shared.loader property in ${catalina.home}/conf/catalina.properties..."/>
+        <replace file="${catalina.home}/conf/catalina.properties" token="shared.loader=" value="shared.loader=$${catalina.home}/shared/lib/*.jar,"/>
+    </target>
+
+    <target name="uninstall">
+        <delete quiet="true">
+            <fileset dir="${catalina.lib.home}" includes="*.jar"/>
+        </delete>
+        <delete quiet="true">
+            <fileset dir="${catalina.endorsed}" includes="jaxws-api.jar, jaxb-api.jar"/>
+        </delete>
+        <delete quiet="true">
+            <fileset dir="${catalina.home}/endorsed" includes="jaxws-api.jar, jaxb-api.jar"/>
+        </delete>
+        <delete quiet="true">
+            <fileset dir="${java.home}/lib/endorsed" includes="jaxws-api.jar, jaxb-api.jar"/>
+        </delete>
+    </target>
+
+    <target name="help">
+        <antcall target="glassfish-message"/>
+        <echo message="Usage:"/>
+        <echo message="  ant {install,uninstall}"/>
+        <echo/>
+        <echo message="$CATALINA_HOME must be set to the installation directory of Tomcat."/>
+        <echo/>
+        <echo message="install:"/>
+        <echo message="  Installs JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ on Tomcat"/>
+        <echo/>
+        <echo message="uninstall: "/>
+        <echo message="  Uninstalls JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ from Tomcat"/>
+        <echo/>
+        <antcall target="jdk6-message"/>
+    </target>
+</project>

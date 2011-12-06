@@ -1,0 +1,23 @@
+Manifest-Version: 1
+Bnd-LastModified: 1316526830834
+Bundle-ManifestVersion: 2
+Bundle-Name: sdo-eclipselink-plugin
+Bundle-SymbolicName: sdo-eclipselink-plugin
+Bundle-Version: 0
+Created-By: 1.6.0_26 (Sun Microsystems Inc.)
+Export-Package: com.sun.xml.ws.db.sdo;uses:="commonj.sdo.helper,javax.xm
+ l.namespace,javax.xml.parsers,org.w3c.dom,org.xml.sax,javax.xml.stream,
+ javax.activation,org.eclipse.persistence.oxm.attachment,javax.xml.bind.
+ attachment,javax.xml.transform.dom,com.sun.xml.ws.spi.db,commonj.sdo,or
+ g.eclipse.persistence.sdo.helper,javax.xml.transform,com.sun.xml.ws.uti
+ l.xml,javax.xml.transform.stream,javax.xml.transform.sax,javax.xml.bind
+ ,org.eclipse.persistence,commonj.sdo.impl,org.eclipse.persistence.sdo,o
+ rg.xml.sax.helpers";version="1.0"
+Import-Package: com.sun.xml.ws.spi.db,com.sun.xml.ws.util.xml,commonj.sd
+ o,commonj.sdo.helper,commonj.sdo.impl,javax.activation,javax.xml.bind,j
+ avax.xml.bind.attachment,javax.xml.namespace,javax.xml.parsers,javax.xm
+ l.stream,javax.xml.transform,javax.xml.transform.dom,javax.xml.transfor
+ m.sax,javax.xml.transform.stream,org.eclipse.persistence,org.eclipse.pe
+ rsistence.oxm.attachment,org.eclipse.persistence.sdo,org.eclipse.persis
+ tence.sdo.helper,org.w3c.dom,org.xml.sax,org.xml.sax.helpers
+Tool: Bnd-1.44.0
