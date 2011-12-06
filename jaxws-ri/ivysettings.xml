@@ -44,7 +44,7 @@
     <resolvers>
         <chain name="jaxws-chain">
             <url name="javanet-releases" m2compatible="true">
-                <artifact pattern="https://maven.java.net/content/repositories/releases/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+                <artifact pattern="http://maven.java.net/content/repositories/releases/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
             </url>
             <ibiblio name="ibiblio" m2compatible="true"/>
         </chain>
