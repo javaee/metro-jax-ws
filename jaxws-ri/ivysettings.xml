@@ -43,10 +43,8 @@
     <settings defaultResolver="jaxws-chain" />
     <resolvers>
         <chain name="jaxws-chain" returnFirst="true">
-            <url name="javanet-releases" m2compatible="true">
-                <artifact pattern="https://maven.java.net/content/repositories/releases/[organisation]/[module]/[revision]/[artifact]-[revision](-[type]).[ext]" />
-            </url>
-            <ibiblio name="ibiblio" m2compatible="true"/>
+            <ibiblio name="javanet" m2compatible="true" root="https://maven.java.net/content/repositories/releases/"/>
+            <ibiblio name="central" m2compatible="true"/>
         </chain>
     </resolvers>
 </ivysettings>
