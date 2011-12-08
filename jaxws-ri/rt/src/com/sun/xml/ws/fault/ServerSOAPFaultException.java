@@ -24,6 +24,6 @@ public class ServerSOAPFaultException extends SOAPFaultException {
     public String getMessage() {
         return "Client received SOAP Fault from server: "
                 + super.getMessage()
-                + " Please see the server log to find more detail regarding exact cuase of the failure.";
+                + " Please see the server log to find more detail regarding exact cause of the failure.";
     }
 }
