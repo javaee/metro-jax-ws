@@ -80,6 +80,7 @@ import javax.xml.ws.WebServiceException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.sun.xml.ws.util.ServiceFinder;
 
 /**
  * @author WS Development Team
@@ -207,6 +208,12 @@ public class ServiceGenerator extends GeneratorBase {
         //@WebService
         JAnnotationUse webServiceClientAnn = cls.annotate(cm.ref(WebServiceClient.class));
         writeWebServiceClientAnnotation(service, webServiceClientAnn);
+
+        // additional annotations
+        for (GeneratorExtension f:ServiceFinder.find(GeneratorExtension.class)) {
+            f.writeWebServiceClientAnnotation(options, cm, cls);
+        }
+
 
         //@HandlerChain
         writeHandlerConfig(Names.customJavaTypeClassName(service.getJavaInterface()), cls, options);
