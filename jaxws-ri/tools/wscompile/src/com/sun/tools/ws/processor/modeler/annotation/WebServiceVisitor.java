@@ -647,8 +647,8 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
         if (typeElement.getKind().equals(ElementKind.INTERFACE) && webMethod != null && webMethod.exclude())
             builder.processError(WebserviceapMessages.WEBSERVICEAP_INVALID_SEI_ANNOTATION_ELEMENT_EXCLUDE("exclude=true", typeElement.getQualifiedName(), method.toString()), method);
         // With https://jax-ws.dev.java.net/issues/show_bug.cgi?id=577, hasWebMethods has no effect
-        // if (hasWebMethods && (webMethod == null))
-        // return true;
+        if (hasWebMethods && webMethod == null) // backwards compatibility (for legacyWebMethod computation)
+            return true;
 
         if ((webMethod != null) && webMethod.exclude()) {
             return true;

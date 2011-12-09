@@ -79,7 +79,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.rmi.RemoteException;
+import java.security.AccessController;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.concurrent.Future;
@@ -107,6 +110,7 @@ public class RuntimeModeler {
     private final WSDLPort binding;
     private QName serviceName;
     private QName portName;
+    private Set<Class> classUsesWebMethod;
     private DatabindingConfig config;
     private MetadataReader metadataReader;
     /**
@@ -381,7 +385,29 @@ public class RuntimeModeler {
         }
     }
 
+    protected void determineWebMethodUse(Class clazz) {
+        if (clazz == null)
+            return;
+        if (!clazz.isInterface()) {
+            if (clazz == Object.class)
+                return;
+            WebMethod webMethod;
+            for (Method method : clazz.getMethods()) {
+                if (method.getDeclaringClass()!=clazz)
+                    continue;
+                webMethod = getAnnotation(method, WebMethod.class);
+                if (webMethod != null && !webMethod.exclude()) {
+                    classUsesWebMethod.add(clazz);
+                    break;
+                }
+            }
+        }
+        determineWebMethodUse(clazz.getSuperclass());
+    }
+
     void processClass(Class clazz) {
+        classUsesWebMethod = new HashSet<Class>();
+        determineWebMethodUse(clazz);
         WebService webService = getAnnotation(clazz, WebService.class);
         QName portTypeName = getPortTypeName(clazz, targetNamespace, metadataReader);
 //        String portTypeLocalName  = clazz.getSimpleName();
@@ -433,8 +459,12 @@ public class RuntimeModeler {
 
         for (Method method : clazz.getMethods()) {
             if (!clazz.isInterface()) {     // if clazz is SEI, then all methods are web methods
-                if (!isWebMethodBySpec(method, clazz)) {
-                    continue;
+                if (!getBooleanSystemProperty("com.sun.xml.ws.legacyWebMethod")) {  // legacy webMethod computation behaviour to be used
+                    if (!isWebMethodBySpec(method, clazz))
+                        continue;
+                } else {
+                    if (method.getDeclaringClass() == Object.class || !isWebMethod(method))
+                        continue;
                 }
             }
             // TODO: binding can be null. We need to figure out how to post-process
@@ -483,6 +513,19 @@ public class RuntimeModeler {
 
         Class declClass = method.getDeclaringClass();
         return getAnnotation(declClass, WebService.class) != null;
+    }
+
+    private boolean isWebMethod(Method method) {
+        int modifiers = method.getModifiers();
+        if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers))
+            return false;
+
+        Class clazz = method.getDeclaringClass();
+        boolean declHasWebService = getAnnotation(clazz, WebService.class) != null;
+        WebMethod webMethod = getAnnotation(method, WebMethod.class);
+        if (webMethod != null && !webMethod.exclude() && declHasWebService)
+            return true;
+        return declHasWebService && !classUsesWebMethod.contains(clazz);
     }
 
     /**
@@ -545,9 +588,12 @@ public class RuntimeModeler {
      * creates the runtime model for a method on the <code>portClass</code>
      * @param method the method to model
      */
-    protected void processMethod(Method method) {
+    private void processMethod(Method method) {
         int mods = method.getModifiers();
         WebMethod webMethod = getAnnotation(method, WebMethod.class);
+/*
+        validations are already done
+
         if (!Modifier.isPublic(mods) || Modifier.isStatic(mods)) {
             if(webMethod != null) {
                 // if the user put @WebMethod on these non-qualifying method,
@@ -562,6 +608,7 @@ public class RuntimeModeler {
 
         if (webMethod != null && webMethod.exclude())
             return;
+*/
 
         String methodName = method.getName();
         boolean isOneway = (getAnnotation(method, Oneway.class) != null);
@@ -1566,6 +1613,17 @@ public class RuntimeModeler {
                 return bo.getPart(partName, mode);
         }
         return null;
+    }
+
+    private static Boolean getBooleanSystemProperty(final String prop) {
+        return AccessController.doPrivileged(
+            new java.security.PrivilegedAction<Boolean>() {
+                public Boolean run() {
+                    String value = System.getProperty(prop);
+                    return value != null ? Boolean.valueOf(value) : Boolean.FALSE;
+                }
+            }
+        );
     }
 
     private static QName getReturnQName(Method method, WebResult webResult, XmlElement xmlElem) {
