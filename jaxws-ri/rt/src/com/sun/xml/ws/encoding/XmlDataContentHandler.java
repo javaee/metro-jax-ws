@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 
 /**
  * JAF data handler for XML content
@@ -73,7 +74,7 @@ public class XmlDataContentHandler implements DataContentHandler {
     }
 
     public DataFlavor[] getTransferDataFlavors() {
-        return flavors;
+        return Arrays.copyOf(flavors, flavors.length);
     }
 
     public Object getTransferData(DataFlavor df, DataSource ds)
