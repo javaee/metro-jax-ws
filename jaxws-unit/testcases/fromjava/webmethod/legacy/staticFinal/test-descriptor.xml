@@ -1,0 +1,23 @@
+<descriptor since="2.2.6">
+    <description>This is static final WebMethod legacy test</description>
+
+    <system-properties>com.sun.xml.ws.legacyWebMethod=true</system-properties>
+
+    <client name="method_WebMethod" sideEffectFree="true">
+        <description>method_has_WebMethod</description>
+        <![CDATA[
+            assertEquals("str", testImplPort.method1("str"));
+        ]]>
+    </client>
+
+    <client name="static_final_no_WebMethod" sideEffectFree="true">
+        <description>static_final_no_WebMethod</description>
+        <![CDATA[
+            clazz = fromjava.webmethod.legacy.staticFinal.client.TestImpl.class;
+            methods = clazz.getMethods();
+            assertEquals(1, methods.length);
+        ]]>
+    </client>
+
+    <service basedir="./server"/>
+</descriptor>
