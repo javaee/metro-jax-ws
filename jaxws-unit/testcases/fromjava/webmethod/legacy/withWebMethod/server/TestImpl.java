@@ -19,4 +19,10 @@ public class TestImpl {
     public String method2(String str) {
         return str;
     }
+
+    @WebMethod
+    @Override
+    public String toString() {
+        return "str2";
+    }
 }

@@ -1,0 +1,26 @@
+<descriptor since="2.2.6">
+    <description>This is legacy inheritance WebMethod test</description>
+
+    <system-properties>com.sun.xml.ws.legacyWebMethod=true</system-properties>
+
+
+    <client name="inheritance_webMethods" sideEffectFree="true">
+        <description>inheritance_webMethods</description>
+        <![CDATA[
+            assertEquals("str", testImplPort.method1("str"));
+            assertEquals("str", testImplPort.method3("str"));
+        ]]>
+    </client>
+
+    <client name="inheritance_webMethods_reflection" sideEffectFree="true">
+        <description>inheritance_webMethods_reflection</description>
+        <![CDATA[
+            clazz = fromjava.webmethod.legacy.inheritance.client.TestImpl.class;
+            methods = clazz.getMethods();
+            assertEquals(3, methods.length);
+        ]]>
+    </client>
+
+    <service basedir="./server" class="fromjava.webmethod.legacy.inheritance.server.TestImpl"/>
+
+</descriptor>

@@ -15,7 +15,12 @@
         <![CDATA[
             clazz = fromjava.webmethod.legacy.withWebMethod.client.TestImpl.class;
             methods = clazz.getMethods();
-            assertEquals(1, methods.length);
+            assertEquals(2, methods.length);
+            try {
+              testImplPort.getClass().getMethod("method2", new Class[]{String.class});
+              fail("method2 shouldn't be a Web Method");
+            } catch(NoSuchMethodException e) {
+            }
         ]]>
     </client>
 

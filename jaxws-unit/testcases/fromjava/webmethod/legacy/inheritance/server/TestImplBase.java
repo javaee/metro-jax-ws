@@ -1,6 +1,5 @@
-package fromjava.webmethod.inheritance.server;
+package fromjava.webmethod.legacy.inheritance.server;
 
-import javax.jws.WebService;
 import javax.jws.WebMethod;
 
 /**

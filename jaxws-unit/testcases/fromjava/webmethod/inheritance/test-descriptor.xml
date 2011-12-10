@@ -8,6 +8,7 @@
     assertEquals("str", testImplPort.method3("str"));
     assertEquals("str", testImplPort.method4("str"));
     assertEquals("str", testImplPort.method5("str"));
+    assertEquals("str", testImplPort.method7("str"));
   ]]></client>
 
   <client name="inheritance_webMethods_reflection" sideEffectFree="true">
@@ -33,6 +34,14 @@
     assertEquals("TestImplBaseBase", testImplPort.toString());
   ]]></client>
   -->
+    <client name="inheritance_webMethods_reflection" sideEffectFree="true">
+        <description>inheritance_webMethods_reflection</description>
+        <![CDATA[
+            clazz = fromjava.webmethod.inheritance.client.TestImpl.class;
+            methods = clazz.getMethods();
+            assertEquals(6, methods.length);
+        ]]>
+    </client>
 
   <service basedir="./server" class="fromjava.webmethod.inheritance.server.TestImpl">
   </service>
