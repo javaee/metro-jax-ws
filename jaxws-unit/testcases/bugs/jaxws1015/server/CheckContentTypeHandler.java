@@ -39,8 +39,6 @@
  */
 package bugs.jaxws1015.server;
 
-import com.sun.istack.NotNull;
-
 import javax.xml.namespace.QName;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
@@ -83,7 +81,7 @@ public class CheckContentTypeHandler implements SOAPHandler<SOAPMessageContext> 
         return true;
     }
 
-    private List<String> getHTTPHeader(@NotNull Map<String, List<String>> headers, @NotNull String header) {
+    private List<String> getHTTPHeader(Map<String, List<String>> headers, String header) {
         for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
             String name = entry.getKey();
             if (name.equalsIgnoreCase(header))
