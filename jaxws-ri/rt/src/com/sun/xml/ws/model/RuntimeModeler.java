@@ -516,6 +516,10 @@ public class RuntimeModeler {
     }
 
     private boolean isWebMethod(Method method) {
+        int modifiers = method.getModifiers();
+        if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers))
+            return false;
+
         Class clazz = method.getDeclaringClass();
         boolean declHasWebService = getAnnotation(clazz, WebService.class) != null;
         WebMethod webMethod = getAnnotation(method, WebMethod.class);
