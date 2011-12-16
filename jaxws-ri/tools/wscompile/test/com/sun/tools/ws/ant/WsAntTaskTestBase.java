@@ -61,7 +61,7 @@ import junit.framework.TestCase;
  */
 public abstract class WsAntTaskTestBase extends TestCase {
 
-    protected static final File projectDir = new File(System.getProperty("java.io.tmpdir"), "test-lockedjars");
+    protected static final File projectDir = new File(System.getProperty("java.io.tmpdir"), "test-lockedjars" + System.currentTimeMillis());
     protected static final File apiDir = new File(projectDir, "api");
     protected static final File libDir = new File(projectDir, "lib");
     protected static final File srcDir = new File(projectDir, "src");
