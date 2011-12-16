@@ -100,6 +100,7 @@ public class ServletAdapter extends HttpAdapter implements BoundEndpoint {
                     break;
                 }
             }
+            disableJreplicaCookie = HighAvailabilityProvider.INSTANCE.isDisabledJreplica();
         }
         stickyCookie = sticky;
     }
