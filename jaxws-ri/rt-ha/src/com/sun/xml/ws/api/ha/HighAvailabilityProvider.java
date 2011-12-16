@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -80,22 +80,24 @@ public enum HighAvailabilityProvider {
     }
 
     private static class HaEnvironment {
-        public static final HaEnvironment NO_HA_ENVIRONMENT = new HaEnvironment(null, null);
+        public static final HaEnvironment NO_HA_ENVIRONMENT = new HaEnvironment(null, null, false);
 
         private final String clusterName;
         private final String instanceName;
+        private final boolean disableJreplica;
 
-        private HaEnvironment(final String clusterName, final String instanceName) {
+        private HaEnvironment(final String clusterName, final String instanceName, final boolean disableJreplica) {
             this.clusterName = clusterName;
             this.instanceName = instanceName;
+            this.disableJreplica = disableJreplica;
         }
 
-        public static HaEnvironment getInstance(final String clusterName, final String instanceName) {
+        public static HaEnvironment getInstance(final String clusterName, final String instanceName, final boolean disableJreplica) {
             if (clusterName == null && instanceName == null) {
                 return NO_HA_ENVIRONMENT;
             }
 
-            return new HaEnvironment(clusterName, instanceName);
+            return new HaEnvironment(clusterName, instanceName, disableJreplica);
         }
 
         public String getClusterName() {
@@ -106,6 +108,10 @@ public enum HighAvailabilityProvider {
             return instanceName;
         }
 
+        public boolean isDisabledJreplica() {
+            return disableJreplica;
+        }
+        
         @Override
         public boolean equals(Object obj) {
             if (this == obj) {
@@ -151,8 +157,16 @@ public enum HighAvailabilityProvider {
      * @param instanceName name of the cluster instance
      */
     public void initHaEnvironment(final String clusterName, final String instanceName) {
+        initHaEnvironment(clusterName, instanceName, false);
+    }
+
+    public void initHaEnvironment(final String clusterName, final String instanceName, final boolean disableJreplica) {
         System.out.println("initHaEnvironment is called: "+clusterName+" "+instanceName);
-        this.haEnvironment = HaEnvironment.getInstance(clusterName, instanceName);
+        this.haEnvironment = HaEnvironment.getInstance(clusterName, instanceName, disableJreplica);
+    }
+
+    public boolean isDisabledJreplica() {
+        return haEnvironment.isDisabledJreplica();
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -127,7 +127,8 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     public final String urlPattern;
 
     protected boolean stickyCookie;
-
+    
+    protected boolean disableJreplicaCookie = false;
 
     /**
      * Creates a lone {@link HttpAdapter} that does not know of any other
@@ -471,7 +472,9 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             }
             if (haInfo != null) {
                 con.setCookie("METRO_KEY", haInfo.getKey());
-                con.setCookie("JREPLICA", haInfo.getReplicaInstance());
+                if (!disableJreplicaCookie) {
+                    con.setCookie("JREPLICA", haInfo.getReplicaInstance());
+                }
             }
         }
     }
