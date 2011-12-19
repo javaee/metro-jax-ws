@@ -53,6 +53,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
 import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.DatabindingException;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.spi.db.JAXBWrapperAccessor;
 import com.sun.xml.ws.spi.db.PropertyAccessor;
@@ -79,12 +80,22 @@ public class JAXBContextWrapper implements BindingContext {
 		infoMap = map;
 	    mpool = new ObjectPool<JAXBMarshaller>() {
 			protected JAXBMarshaller newInstance() {
-				return (JAXBMarshaller) jaxbContext.createMarshaller();
+				try {
+                    return (JAXBMarshaller) jaxbContext.createMarshaller();
+                } catch (JAXBException e) {
+                    e.printStackTrace();
+                    throw new DatabindingException(e);
+                }
 			}
 		};
 	    upool = new ObjectPool<JAXBUnmarshaller>() {
 			protected JAXBUnmarshaller newInstance() {
-				return (JAXBUnmarshaller) jaxbContext.createUnmarshaller();
+                try {
+				    return (JAXBUnmarshaller) jaxbContext.createUnmarshaller();
+                } catch (JAXBException e) {
+                    e.printStackTrace();
+                    throw new DatabindingException(e);
+                }
 			}
 		};
 		wrapperAccessors = new HashMap<Class<?>, JAXBWrapperAccessor>();
