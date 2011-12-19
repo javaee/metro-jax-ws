@@ -90,7 +90,9 @@ public final class TypeInfo {
     
     private Type genericType;
     
-	public TypeInfo(QName tagName, Type type, Annotation... annotations) {
+    private boolean nillable = true;
+
+    public TypeInfo(QName tagName, Type type, Annotation... annotations) {
         if(tagName==null || type==null || annotations==null) {
             String nullArgs = "";
 
@@ -105,6 +107,7 @@ public final class TypeInfo {
 
         this.tagName = new QName(tagName.getNamespaceURI().intern(), tagName.getLocalPart().intern(), tagName.getPrefix());
         this.type = type;
+        if (type instanceof Class && ((Class<?>)type).isPrimitive()) nillable = false;
         this.annotations = annotations;
     }
 
@@ -168,6 +171,14 @@ public final class TypeInfo {
 	public void setGenericType(Type genericType) {
 		this.genericType = genericType;
 	}
+    
+    public boolean isNillable() {
+        return nillable;
+    }
+
+    public void setNillable(boolean nillable) {
+        this.nillable = nillable;
+    }
 	
     public String toString() {
         return new StringBuilder("TypeInfo: Type = ").append(type)

@@ -4,9 +4,11 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
 
 import org.jvnet.ws.databinding.Databinding;
+import org.jvnet.ws.databinding.DatabindingMode;
 import org.jvnet.ws.databinding.DatabindingFactory;
 import org.jvnet.ws.databinding.DatabindingModeFeature;
 
+import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.spi.db.JAXBWrapperAccessor;
 import com.sun.xml.ws.test.*;
 import junit.framework.TestCase;
@@ -47,5 +49,13 @@ public class JAXBWrapperAccessorTest extends TestCase {
         b.portName(new QName(ns, "DocServicePortTypePort"));
         assertNotNull(b.build());
 
+    }    
+
+    @DatabindingMode("eclipselink.jaxb")
+    static class SEB {}       
+    public void testDatabindingModeAnnotationToFeature() throws Exception {
+        DatabindingMode a = SEB.class.getAnnotation(DatabindingMode.class); 
+        DatabindingModeFeature f = (DatabindingModeFeature) WebServiceFeatureList.getFeature(a);
+        assertEquals(f.getMode(), a.value());
     }
 }

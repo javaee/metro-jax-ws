@@ -76,4 +76,14 @@ public class DatabindingModeFeature extends WebServiceFeature {
     public Map<String, Object> getProperties() {
         return properties;
     }
+
+    public static Builder builder() { return new Builder(new DatabindingModeFeature(null)); }
+    
+    public final static class Builder {
+        final private DatabindingModeFeature o;
+        Builder(final DatabindingModeFeature x) { o = x; }
+        public DatabindingModeFeature build() { return o; }
+//        public DatabindingModeFeature build() { return (DatabindingModeFeature) FeatureValidator.validate(o); }
+        public Builder value(final String x) { o.mode = x; return this; }
+    }
 }

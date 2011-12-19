@@ -351,8 +351,8 @@ public class JAXBContextFactory extends BindingContextFactory {
 			if (tmi == null) {
 				tmi = new TypeMappingInfo();
 				tmi.setXmlTagName(e.tagName);
-				tmi.setType((e.getGenericType() != null) ? e.getGenericType()
-						: e.type);
+				tmi.setType((e.getGenericType() != null) ? e.getGenericType() : e.type);
+				tmi.setNillable(e.isNillable());
 				if (e.getGenericType() != null) {
 					String gts = e.getGenericType().toString();
 					if (gts.startsWith("javax.xml.ws.Holder")) {

@@ -804,6 +804,7 @@ public class RuntimeModeler {
 
         TypeInfo typeRef =
                 new TypeInfo(reqElementName, requestClass);
+        typeRef.setNillable(false);
         WrapperParameter requestWrapper = new WrapperParameter(javaMethod, typeRef,
             Mode.IN, 0);
         requestWrapper.setPartName(reqPartName);
@@ -812,6 +813,7 @@ public class RuntimeModeler {
         WrapperParameter responseWrapper = null;
         if (!isOneway) {
             typeRef = new TypeInfo(resElementName, responseClass);
+            typeRef.setNillable(false);
             responseWrapper = new WrapperParameter(javaMethod, typeRef, Mode.OUT, -1);
             javaMethod.addParameter(responseWrapper);
             responseWrapper.setBinding(ParameterBinding.BODY);
