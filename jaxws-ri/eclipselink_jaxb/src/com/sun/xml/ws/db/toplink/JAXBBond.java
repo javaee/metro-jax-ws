@@ -112,50 +112,50 @@ public class JAXBBond<T> implements XMLBridge<T> {
 		return typeInfo;
 	}
 
-	public void marshal(T object, XMLStreamWriter output,
-			AttachmentMarshaller am) throws JAXBException {
-		JAXBMarshaller marshaller = null;
-		try {
-			marshaller = parent.mpool.allocate();
-			marshaller.setAttachmentMarshaller(am);
-			marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FRAGMENT,
-					true);
-            //boolean isEx = (output instanceof XMLStreamWriterEx);
+
+    public void marshal(T object, XMLStreamWriter output,
+            AttachmentMarshaller am) throws JAXBException {
+        JAXBMarshaller marshaller = null;
+        try {
+            marshaller = parent.mpool.allocate();
+            marshaller.setAttachmentMarshaller(am);
+            marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FRAGMENT,
+                    true);
+            boolean isEx = (output instanceof XMLStreamWriterEx);
             if (mappingInfo != null) {
                 if (isParameterizedType) {
                     JAXBTypeElement jte = new JAXBTypeElement(
                             mappingInfo.getXmlTagName(), object,
                             (ParameterizedType) mappingInfo.getType());
-                    /*
                     if (isEx)
                         marshaller.marshal(jte, new NewStreamWriterRecord(
                                 (XMLStreamWriterEx) output), mappingInfo);
-                    else*/
+                    else
                         marshaller.marshal(jte, output, mappingInfo);
                 } else {
                     JAXBElement<T> elt = new JAXBElement<T>(
                             mappingInfo.getXmlTagName(),
                             (Class<T>) typeInfo.type, object);
-                    /*if (isEx)
+                    if (isEx)
                         marshaller.marshal(elt, new NewStreamWriterRecord(
                                 (XMLStreamWriterEx) output), mappingInfo);
-                    else*/
+                    else
                         marshaller.marshal(elt, output, mappingInfo);
                 }
             } else {
-                /*if (isEx)
+                if (isEx)
                     marshaller.marshal(object, new NewStreamWriterRecord(
                             (XMLStreamWriterEx) output));
-                else*/
+                else
                     marshaller.marshal(object, output);
             }
-		} finally {
-			if (marshaller != null) {
-				marshaller.setAttachmentMarshaller(null);
-				parent.mpool.replace(marshaller);
-			}
-		}
-	}
+        } finally {
+            if (marshaller != null) {
+                marshaller.setAttachmentMarshaller(null);
+                parent.mpool.replace(marshaller);
+            }
+        }
+    }
 
 	// TODO NamespaceContext nsContext
 	public void marshal(T object, OutputStream output,
@@ -459,8 +459,7 @@ public class JAXBBond<T> implements XMLBridge<T> {
             return null;
         }
     }
-    
-    /*
+
     public class NewStreamWriterRecord extends XMLStreamWriterRecord {
         private XMLStreamWriterEx xsw;
 
@@ -469,20 +468,20 @@ public class JAXBBond<T> implements XMLBridge<T> {
             this.xsw = xsw;
         }
 
-        @Override
-        public void characters(QName schemaType, Object value, String mimeType, boolean isCData) {
-            if (mimeType != null) {
-                if (value instanceof DataHandler) {
-                    try {
-                        xsw.writeBinary((DataHandler) value);
-                    } catch (XMLStreamException e) {
-                        throw new WebServiceException(e);
-                    }
-                    return;
-                }
-            }
-            super.characters(schemaType, value, mimeType, isCData);
-         }
-     }
-     */
+
+      @Override
+      public void characters(QName schemaType, Object value, String mimeType, boolean isCData) {
+          if (mimeType != null) {
+              if (value instanceof DataHandler) {
+                  try {
+                      xsw.writeBinary((DataHandler) value);
+                  } catch (XMLStreamException e) {
+                      throw new WebServiceException(e);
+                  }
+                  return;
+              }
+          }
+          super.characters(schemaType, value, mimeType, isCData);
+       }
+   }
 }
