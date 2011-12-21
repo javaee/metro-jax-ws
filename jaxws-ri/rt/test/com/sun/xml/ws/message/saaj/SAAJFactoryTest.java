@@ -59,6 +59,7 @@ import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.encoding.SOAPBindingCodec;
+import static com.sun.xml.ws.binding.WebServiceFeatureList.toFeatureArray; 
 
 import junit.framework.TestCase;
 
@@ -105,7 +106,7 @@ public class SAAJFactoryTest extends TestCase {
             throws IOException {
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         WSBinding binding = BindingImpl.create(BindingID.SOAP11_HTTP);
-        Codec codec = new SOAPBindingCodec(binding);
+        Codec codec = new SOAPBindingCodec(toFeatureArray(binding));
         Packet packet = new Packet();
         codec.decode(in, contentType, packet);
         return packet.getMessage();

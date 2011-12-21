@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,7 @@ package com.sun.xml.ws.api.pipe;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import static com.sun.xml.ws.binding.WebServiceFeatureList.toFeatureArray; 
 
 /**
  * Factory methods for some of the {@link Codec} implementations.
@@ -79,7 +80,7 @@ public abstract class Codecs {
      * @return non null codec to parse entire SOAP message(including MIME parts)
      */
     public static @NotNull SOAPBindingCodec createSOAPBindingCodec(WSBinding binding, StreamSOAPCodec xmlEnvelopeCodec) {
-        return new com.sun.xml.ws.encoding.SOAPBindingCodec(binding, xmlEnvelopeCodec);
+        return new com.sun.xml.ws.encoding.SOAPBindingCodec(toFeatureArray(binding), xmlEnvelopeCodec);
     }
 
     /**

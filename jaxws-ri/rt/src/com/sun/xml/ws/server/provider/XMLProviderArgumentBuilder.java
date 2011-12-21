@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,6 +48,7 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.resources.ServerMessages;
+import static com.sun.xml.ws.binding.WebServiceFeatureList.toFeatureArray; 
 
 import javax.activation.DataSource;
 import javax.xml.transform.Source;
@@ -108,11 +109,11 @@ abstract class XMLProviderArgumentBuilder<T> extends ProviderArgumentsBuilder<T>
             Message msg = packet.getMessage();
             return (msg instanceof XMLMessage.MessageDataSource)
                     ? ((XMLMessage.MessageDataSource) msg).getDataSource()
-                    : XMLMessage.getDataSource(msg, binding);
+                    : XMLMessage.getDataSource(msg, toFeatureArray(binding));
         }
 
         public Message getResponseMessage(DataSource ds) {
-            return XMLMessage.create(ds, binding);
+            return XMLMessage.create(ds, toFeatureArray(binding));
         }
 
         protected Message getResponseMessage(Exception e) {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,7 @@ import com.sun.xml.ws.client.PortInfo;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.encoding.xml.XMLMessage.MessageDataSource;
 import com.sun.xml.ws.message.source.PayloadSourceMessage;
+import static com.sun.xml.ws.binding.WebServiceFeatureList.toFeatureArray; 
 
 import javax.activation.DataSource;
 import javax.xml.namespace.QName;
@@ -78,7 +79,7 @@ public class DataSourceDispatch extends DispatchImpl<DataSource> {
             case PAYLOAD:
                 throw new IllegalArgumentException("DataSource use is not allowed in Service.Mode.PAYLOAD\n");
             case MESSAGE:
-                return new Packet(XMLMessage.create(arg, binding));
+                return new Packet(XMLMessage.create(arg, toFeatureArray(binding)));
             default:
                 throw new WebServiceException("Unrecognized message mode");
         }
@@ -88,6 +89,6 @@ public class DataSourceDispatch extends DispatchImpl<DataSource> {
         Message message = response.getMessage();
         return (message instanceof MessageDataSource)
                 ? ((MessageDataSource)message).getDataSource()
-                : XMLMessage.getDataSource(message, binding);
+                : XMLMessage.getDataSource(message, toFeatureArray(binding));
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,10 @@ import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.ws.soap.SOAPBinding;
+
+import org.jvnet.ws.Enveloping;
+import org.jvnet.ws.EnvelopingFeature;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -265,5 +269,17 @@ public enum SOAPVersion {
             return SOAP_12;
         else
             return SOAP_11;
+    }
+    
+    public static SOAPVersion from(EnvelopingFeature f) {
+        Enveloping.Style[] style = f.getStyles();
+        if (style.length != 1) throw new IllegalArgumentException ("The EnvelopingFeature must has exactly one Enveloping.Style");
+        return style[0].isSOAP11() ? SOAP_11 : SOAP_12;
+    }
+    
+    public EnvelopingFeature toFeature() {
+        return SOAP_11.equals(this) ?
+            new EnvelopingFeature(new Enveloping.Style[]{Enveloping.Style.SOAP11}) :
+            new EnvelopingFeature(new Enveloping.Style[]{Enveloping.Style.SOAP12});
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,12 +41,10 @@
 package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.client.ContentNegotiation;
-import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 import com.sun.xml.ws.encoding.xml.XMLCodec;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.encoding.xml.XMLMessage.MessageDataSource;
@@ -57,6 +55,8 @@ import com.sun.xml.ws.util.ByteArrayBuffer;
 
 import javax.activation.DataSource;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -141,10 +141,10 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
     
     private AcceptContentType _adaptingContentType = new AcceptContentType();
     
-    public XMLHTTPBindingCodec(WSBinding binding) {
-        super(SOAPVersion.SOAP_11, binding);
+    public XMLHTTPBindingCodec(WebServiceFeature[] f) {
+        super(SOAPVersion.SOAP_11, f);
         
-        xmlCodec = new XMLCodec(binding);
+        xmlCodec = new XMLCodec(f);
         
         fiCodec = getFICodec();
     }
@@ -203,7 +203,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
         if (contentType == null) {
             xmlCodec.decode(in, contentType, packet);
         } else if (isMultipartRelated(contentType)) {
-            packet.setMessage(new XMLMultiPart(contentType, in, binding));
+            packet.setMessage(new XMLMultiPart(contentType, in, features));
         } else if(isFastInfoset(contentType)) {
             if (fiCodec == null) {
                 throw new RuntimeException(StreamingMessages.FASTINFOSET_NO_IMPLEMENTATION());
@@ -227,7 +227,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
     }
     
     public MimeCodec copy() {
-        return new XMLHTTPBindingCodec(binding);
+        return new XMLHTTPBindingCodec(features);
     }
     
     private boolean isMultipartRelated(String contentType) {
@@ -285,7 +285,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
             final boolean isFastInfoset = XMLMessage.isFastInfoset(
                     mds.getDataSource().getContentType());
             DataSource ds = transformDataSource(mds.getDataSource(), 
-                    isFastInfoset, useFastInfosetForEncoding, binding);
+                    isFastInfoset, useFastInfosetForEncoding, features);
             
             InputStream is = ds.getInputStream();
             byte[] buf = new byte[1024];
@@ -324,11 +324,11 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
     }
         
     public static DataSource transformDataSource(DataSource in, 
-            boolean isFastInfoset, boolean useFastInfoset, WSBinding binding) {
+            boolean isFastInfoset, boolean useFastInfoset, WebServiceFeature[] f) {
         try {
             if (isFastInfoset && !useFastInfoset) {
                 // Convert from Fast Infoset to XML
-                Codec codec = new XMLHTTPBindingCodec(binding);
+                Codec codec = new XMLHTTPBindingCodec(f);
                 Packet p = new Packet();
                 codec.decode(in.getInputStream(), in.getContentType(), p);
                 
@@ -340,7 +340,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
                 return XMLMessage.createDataSource(ct.getContentType(), bos.newInputStream());
             } else if (!isFastInfoset && useFastInfoset) {
                 // Convert from XML to Fast Infoset
-                Codec codec = new XMLHTTPBindingCodec(binding);
+                Codec codec = new XMLHTTPBindingCodec(f);
                 Packet p = new Packet();
                 codec.decode(in.getInputStream(), in.getContentType(), p);
                 

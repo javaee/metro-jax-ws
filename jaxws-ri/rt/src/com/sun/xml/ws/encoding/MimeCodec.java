@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,6 @@
 package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentEx;
 import com.sun.xml.ws.api.message.Message;
@@ -49,10 +48,11 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
-
+import static com.sun.xml.ws.binding.WebServiceFeatureList.getFeature; 
 import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
-import javax.activation.DataContentHandler;
+import javax.xml.ws.WebServiceFeature;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -113,11 +113,12 @@ abstract class MimeCodec implements Codec {
     private boolean hasAttachments;
     protected Codec rootCodec;
     protected final SOAPVersion version;
-    protected final WSBinding binding;
+//  protected final WSBinding binding;
+    protected final WebServiceFeature[] features;
 
-    protected MimeCodec(SOAPVersion version, WSBinding binding) {
+    protected MimeCodec(SOAPVersion version, WebServiceFeature[] f) {
         this.version = version;
-        this.binding = binding;
+        this.features = f;
     }
     
     public String getMimeType() {
@@ -202,11 +203,11 @@ abstract class MimeCodec implements Codec {
      */
     protected MimeCodec(MimeCodec that) {
         this.version = that.version;
-        this.binding = that.binding;
+        this.features = that.features;
     }
 
     public void decode(InputStream in, String contentType, Packet packet) throws IOException {
-        MimeMultipartParser parser = new MimeMultipartParser(in, contentType, binding.getFeature(StreamingAttachmentFeature.class));
+        MimeMultipartParser parser = new MimeMultipartParser(in, contentType, getFeature(features, StreamingAttachmentFeature.class));
         decode(parser,packet);
     }
 

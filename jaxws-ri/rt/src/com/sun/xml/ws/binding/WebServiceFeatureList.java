@@ -44,6 +44,8 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.ImpliesWebServiceFeature;
+import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.FeatureConstructor;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
@@ -62,6 +64,9 @@ import javax.xml.ws.soap.AddressingFeature;
 import javax.xml.ws.soap.MTOM;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.spi.WebServiceFeatureAnnotation;
+
+import org.jvnet.ws.EnvelopingFeature;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -507,5 +512,24 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
     @Override
     public WebServiceFeature put(Class<? extends WebServiceFeature> key, WebServiceFeature value) {
         return wsfeatures.put(key, value);
+    }
+    
+    static public SOAPVersion getSoapVersion(WebServiceFeature[] features) {
+        EnvelopingFeature env = getFeature(features, EnvelopingFeature.class);
+        return env != null ? SOAPVersion.from(env) : null;
+    }
+    
+    static public boolean isFeatureEnabled(Class<? extends WebServiceFeature> type, WebServiceFeature[] features) {
+        WebServiceFeature ftr = getFeature(features, type);
+        return ftr != null && ftr.isEnabled();
+    }
+    
+    static public WebServiceFeature[] toFeatureArray(WSBinding binding) {
+        //TODO scchen convert BindingID  to WebServiceFeature[]
+        if(!binding.isFeatureEnabled(EnvelopingFeature.class)) {
+            WebServiceFeature[] f = { binding.getSOAPVersion().toFeature() };
+            binding.getFeatures().mergeFeatures(f, false);
+        }
+        return binding.getFeatures().toArray();
     }
 }

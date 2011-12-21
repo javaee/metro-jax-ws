@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,17 +41,17 @@
 package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
-import com.sun.xml.ws.message.stream.StreamAttachment;
 import com.sun.xml.ws.message.MimeAttachmentSet;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 import java.util.Map;
+
+import javax.xml.ws.WebServiceFeature;
 
 /**
  * {@link Codec} that uses MIME/multipart as the base format.
@@ -60,8 +60,8 @@ import java.util.Map;
  */
 public final class SwACodec extends MimeCodec {
 
-    public SwACodec(SOAPVersion version, WSBinding binding, Codec rootCodec) {
-        super(version, binding);
+    public SwACodec(SOAPVersion version, WebServiceFeature[] f, Codec rootCodec) {
+        super(version, f);
         this.rootCodec = rootCodec;
     }
 

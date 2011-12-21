@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,8 @@ import com.sun.xml.ws.encoding.ContentTypeImpl;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -64,10 +66,12 @@ public final class XMLCodec implements Codec {
 
     private static final ContentType contentType = new ContentTypeImpl(XML_TEXT_MIME_TYPE);
 
-    private final WSBinding binding;
+//  private final WSBinding binding;
+    private WebServiceFeature[] features;
     
-    public XMLCodec(WSBinding binding) {
-        this.binding = binding;
+    public XMLCodec(WebServiceFeature[] f) {
+//        this.binding = binding;
+        features = f;
     }
 
     public String getMimeType() {
@@ -112,7 +116,7 @@ public final class XMLCodec implements Codec {
     }
 
     public void decode(InputStream in, String contentType, Packet packet) throws IOException {
-        Message message = XMLMessage.create(contentType, in, binding);
+        Message message = XMLMessage.create(contentType, in, features);
         packet.setMessage(message);
     }
 

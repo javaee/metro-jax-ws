@@ -51,11 +51,13 @@ import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Codecs;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.api.pipe.StreamSOAPCodec;
-import com.sun.xml.ws.binding.SOAPBindingImpl;
 import com.sun.xml.ws.client.ContentNegotiation;
 import com.sun.xml.ws.protocol.soap.MessageCreationException;
 import com.sun.xml.ws.resources.StreamingMessages;
 import com.sun.xml.ws.server.UnsupportedMediaException;
+import static com.sun.xml.ws.binding.WebServiceFeatureList.getFeature;
+import static com.sun.xml.ws.binding.WebServiceFeatureList.getSoapVersion;
+import static com.sun.xml.ws.binding.WebServiceFeatureList.isFeatureEnabled;    
 
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
@@ -147,7 +149,8 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
     // The Fast Infoset SWA codec
     private final MimeCodec fiSwaCodec;
     
-    private final SOAPBindingImpl binding;
+//  private final SOAPBindingImpl binding;
+//    private final WebServiceFeature[] feature;
     
     /**
      * The XML SOAP MIME type
@@ -202,30 +205,30 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
     
     private AcceptContentType _adaptingContentType = new AcceptContentType();
     
-    public SOAPBindingCodec(WSBinding binding) {
-        this(binding, Codecs.createSOAPEnvelopeXmlCodec(binding));
+    public SOAPBindingCodec(WebServiceFeature[] features) {
+        this(features, Codecs.createSOAPEnvelopeXmlCodec(getSoapVersion(features)));
     }
     
-    public SOAPBindingCodec(WSBinding binding, StreamSOAPCodec xmlSoapCodec) {
-        super(binding.getSOAPVersion(), binding);
+    public SOAPBindingCodec(WebServiceFeature[] features, StreamSOAPCodec xmlSoapCodec) {
+        super(getSoapVersion(features), features);
         
         this.xmlSoapCodec = xmlSoapCodec;
         xmlMimeType = xmlSoapCodec.getMimeType();
         
-        xmlMtomCodec = new MtomCodec(version, xmlSoapCodec, binding, binding.getFeature(MTOMFeature.class));
+        xmlMtomCodec = new MtomCodec(version, xmlSoapCodec, features);
         
-        xmlSwaCodec = new SwACodec(version, binding, xmlSoapCodec);
+        xmlSwaCodec = new SwACodec(version, features, xmlSoapCodec);
         
         String clientAcceptedContentTypes = xmlSoapCodec.getMimeType() + ", " +
                 xmlMtomCodec.getMimeType();
         
-        WebServiceFeature fi = binding.getFeature(FastInfosetFeature.class);
+        WebServiceFeature fi = getFeature(features, FastInfosetFeature.class);
         isFastInfosetDisabled = (fi != null && !fi.isEnabled());
         if (!isFastInfosetDisabled) {
             fiSoapCodec = getFICodec(xmlSoapCodec, version);
             if (fiSoapCodec != null) {
                 fiMimeType = fiSoapCodec.getMimeType();
-                fiSwaCodec = new SwACodec(version, binding, fiSoapCodec);
+                fiSwaCodec = new SwACodec(version, features, fiSoapCodec);
                 connegXmlAccept = fiMimeType + ", " + clientAcceptedContentTypes;
                 
                 /**
@@ -234,7 +237,7 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
                  * Fast Infoset is enabled on the client if the service
                  * explicitly supports Fast Infoset.
                  */
-                WebServiceFeature select = binding.getFeature(SelectOptimalEncodingFeature.class);
+                WebServiceFeature select = getFeature(features, SelectOptimalEncodingFeature.class);
                 if (select != null) { // if the client FI feature is set - ignore negotiation property
                     ignoreContentNegotiationProperty = true;
                     if (select.isEnabled()) {
@@ -266,9 +269,10 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
         
         xmlAccept = clientAcceptedContentTypes;
 
-        if(!(binding instanceof SOAPBindingImpl))
-            throw new WebServiceException("Expecting a SOAP binding but found "+binding);
-        this.binding = (SOAPBindingImpl)binding;
+//      if(!(binding instanceof SOAPBindingImpl))
+        if(getSoapVersion(features) == null)
+            throw new WebServiceException("Expecting a SOAP binding but found ");
+//        this.binding = (SOAPBindingImpl)binding;
     }
     
     public String getMimeType() {
@@ -329,7 +333,7 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
     private void postDecode(Packet p) {
         if(decodeFirst == TriState.UNSET)
             decodeFirst = TriState.TRUE;
-        if(binding.isFeatureEnabled(MTOMFeature.class))
+        if(isFeatureEnabled(MTOMFeature.class, features))
             acceptMtomMessages =isMtomAcceptable(p.acceptableMimeTypes);
         if (!useFastInfosetForEncoding) {
             useFastInfosetForEncoding = isFastInfosetAcceptable(p.acceptableMimeTypes);
@@ -363,7 +367,7 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
             if (we instanceof ExceptionHasMessage || we instanceof UnsupportedMediaException) {
                 throw we;
             } else {
-                throw new MessageCreationException(binding.getSOAPVersion(), we);
+                throw new MessageCreationException(version, we);
             }
         }
         postDecode(packet);
@@ -390,14 +394,14 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
             if (we instanceof ExceptionHasMessage || we instanceof UnsupportedMediaException) {
                 throw we;
             } else {
-                throw new MessageCreationException(binding.getSOAPVersion(), we);
+                throw new MessageCreationException(version, we);
             }
         }
         postDecode(packet);
     }
 
     public SOAPBindingCodec copy() {
-        return new SOAPBindingCodec(binding, (StreamSOAPCodec)xmlSoapCodec.copy());
+        return new SOAPBindingCodec(features, (StreamSOAPCodec)xmlSoapCodec.copy());
     }
     
     @Override
@@ -502,13 +506,13 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
         // Note: Using FI with MTOM does not make sense
         if (useFastInfosetForEncoding) {
             final Message m = p.getMessage();
-            if(m==null || m.getAttachments().isEmpty() || binding.isFeatureEnabled(MTOMFeature.class))
+            if(m==null || m.getAttachments().isEmpty() || isFeatureEnabled(MTOMFeature.class, features))
                 return fiSoapCodec;
             else
                 return fiSwaCodec;
         }
         
-        if(binding.isFeatureEnabled(MTOMFeature.class) ) {
+        if(isFeatureEnabled(MTOMFeature.class, features) ) {
             //On client, always use XOP encoding if MTOM is enabled
             // On Server, use XOP encoding if either request is XOP encoded or client accepts XOP encoding
             if(!isServerSide() || isRequestMtomMessage || acceptMtomMessages)

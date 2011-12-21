@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,6 +58,7 @@ import com.sun.xml.ws.message.MimeAttachmentSet;
 import com.sun.xml.ws.message.source.PayloadSourceMessage;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.StreamUtils;
+import static com.sun.xml.ws.binding.WebServiceFeatureList.getFeature;  
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -73,6 +74,8 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -86,11 +89,12 @@ public final class XMLMessage {
     private static final int PLAIN_XML_FLAG      = 1;       // 00001
     private static final int MIME_MULTIPART_FLAG = 2;       // 00010
     private static final int FI_ENCODED_FLAG     = 16;      // 10000
+    private WebServiceFeature[] features;
 
     /*
      * Construct a message given a content type and an input stream.
      */
-    public static Message create(final String ct, InputStream in, WSBinding binding) {
+    public static Message create(final String ct, InputStream in, WebServiceFeature[] f) {
         Message data;
         try {
             in = StreamUtils.hasSomeData(in);
@@ -102,9 +106,9 @@ public final class XMLMessage {
                 final ContentType contentType = new ContentType(ct);
                 final int contentTypeId = identifyContentType(contentType);
                 if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
-                    data = new XMLMultiPart(ct, in, binding);
+                    data = new XMLMultiPart(ct, in, f);
                 } else if ((contentTypeId & PLAIN_XML_FLAG) != 0) {
-                    data = new XmlContent(ct, in, binding);
+                    data = new XmlContent(ct, in, f);
                 } else {
                     data = new UnknownContent(ct, in);
                 }
@@ -126,11 +130,11 @@ public final class XMLMessage {
             Messages.createUsingPayload(source, SOAPVersion.SOAP_11);
     }
 
-    public static Message create(DataSource ds, WSBinding binding) {
+    public static Message create(DataSource ds, WebServiceFeature[] f) {
         try {
             return (ds == null) ? 
                 Messages.createEmpty(SOAPVersion.SOAP_11) : 
-                create(ds.getContentType(), ds.getInputStream(), binding);
+                create(ds.getContentType(), ds.getInputStream(), f);
         } catch(IOException ioe) {
             throw new WebServiceException(ioe);
         }
@@ -244,13 +248,15 @@ public final class XMLMessage {
         private boolean consumed;
         private Message delegate;
         private final HeaderList headerList;
-        private final WSBinding binding;
-
-        public XmlContent(String ct, InputStream in, WSBinding binding) {
+//      private final WSBinding binding;
+        private WebServiceFeature[] features;
+        
+        public XmlContent(String ct, InputStream in, WebServiceFeature[] f) {
             super(SOAPVersion.SOAP_11);
             dataSource = new XmlDataSource(ct, in);
             this.headerList = new HeaderList();
-            this.binding = binding;
+//            this.binding = binding;
+            features = f;
         }
 
         private Message getMessage() {
@@ -269,7 +275,7 @@ public final class XMLMessage {
 
         public DataSource getDataSource() {
             return hasUnconsumedDataSource() ? dataSource :
-                XMLMessage.getDataSource(getMessage(), binding);
+                XMLMessage.getDataSource(getMessage(), features);
         }
 
         public boolean hasHeaders() {
@@ -360,13 +366,14 @@ public final class XMLMessage {
         private final StreamingAttachmentFeature feature;
         private Message delegate;
         private final HeaderList headerList = new HeaderList();
-        private final WSBinding binding;
+//      private final WSBinding binding;
+        private final WebServiceFeature[] features;
 
-        public XMLMultiPart(final String contentType, final InputStream is, WSBinding binding) {
+        public XMLMultiPart(final String contentType, final InputStream is, WebServiceFeature[] f) {
             super(SOAPVersion.SOAP_11);
             dataSource = createDataSource(contentType, is);
-            this.feature = binding.getFeature(StreamingAttachmentFeature.class);
-            this.binding = binding;
+            this.feature = getFeature(f, StreamingAttachmentFeature.class);
+            this.features = f;
         }
 
         private Message getMessage() {
@@ -391,7 +398,7 @@ public final class XMLMessage {
 
         public DataSource getDataSource() {
             return hasUnconsumedDataSource() ? dataSource :
-                XMLMessage.getDataSource(getMessage(), binding);
+                XMLMessage.getDataSource(getMessage(), features);
         }
 
         public boolean hasHeaders() {
@@ -575,7 +582,7 @@ public final class XMLMessage {
 
     }
 
-    public static DataSource getDataSource(Message msg, WSBinding binding) {
+    public static DataSource getDataSource(Message msg, WebServiceFeature[] f) {
         if (msg == null)
             return null;
         if (msg instanceof MessageDataSource) {
@@ -585,7 +592,7 @@ public final class XMLMessage {
             if (atts != null && !atts.isEmpty()) {
                 final ByteArrayBuffer bos = new ByteArrayBuffer();
                 try {
-                    Codec codec = new XMLHTTPBindingCodec(binding);
+                    Codec codec = new XMLHTTPBindingCodec(f);
                     com.sun.xml.ws.api.pipe.ContentType ct = codec.getStaticContentType(new Packet(msg));
                     codec.encode(new Packet(msg), bos);
                     return createDataSource(ct.getContentType(), bos.newInputStream());

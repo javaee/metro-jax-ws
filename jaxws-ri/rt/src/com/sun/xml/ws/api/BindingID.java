@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,6 +53,7 @@ import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.developer.JAXWSProperties;
+import static com.sun.xml.ws.binding.WebServiceFeatureList.toFeatureArray; 
 
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceException;
@@ -367,7 +368,7 @@ public abstract class BindingID {
      */
     public static final BindingID XML_HTTP = new Impl(SOAPVersion.SOAP_11, HTTPBinding.HTTP_BINDING,false) {
         public Codec createEncoder(WSBinding binding) {
-            return new XMLHTTPBindingCodec(binding);
+            return new XMLHTTPBindingCodec(toFeatureArray(binding));
         }
     };
 
@@ -376,7 +377,7 @@ public abstract class BindingID {
      */
     private static final BindingID REST_HTTP = new Impl(SOAPVersion.SOAP_11, JAXWSProperties.REST_BINDING,true) {
         public Codec createEncoder(WSBinding binding) {
-            return new XMLHTTPBindingCodec(binding);
+            return new XMLHTTPBindingCodec(toFeatureArray(binding));
         }
     };
 
@@ -427,7 +428,7 @@ public abstract class BindingID {
         }
 
         public @NotNull Codec createEncoder(WSBinding binding) {
-            return new SOAPBindingCodec(binding);
+            return new SOAPBindingCodec(toFeatureArray(binding));
         }
 
         private Boolean isMTOMEnabled() {

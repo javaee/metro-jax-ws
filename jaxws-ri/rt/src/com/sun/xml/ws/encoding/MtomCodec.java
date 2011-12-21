@@ -43,7 +43,6 @@ package com.sun.xml.ws.encoding;
 import com.sun.istack.NotNull;
 import com.sun.xml.bind.DatatypeConverterImpl;
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.Packet;
@@ -60,6 +59,7 @@ import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
 import com.sun.xml.ws.streaming.MtomStreamWriter;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.server.UnsupportedMediaException;
+import static com.sun.xml.ws.binding.WebServiceFeatureList.getFeature;    
 import org.jvnet.staxex.Base64Data;
 import org.jvnet.staxex.NamespaceContextEx;
 import org.jvnet.staxex.XMLStreamReaderEx;
@@ -108,16 +108,16 @@ public class MtomCodec extends MimeCodec {
     private final SerializationFeature sf;
     private final static String DECODED_MESSAGE_CHARSET = "decodedMessageCharset";
 
-    MtomCodec(SOAPVersion version, StreamSOAPCodec codec, WSBinding binding, WebServiceFeature mtomFeature){
-        super(version, binding);
+    MtomCodec(SOAPVersion version, StreamSOAPCodec codec, WebServiceFeature[] feature){
+        super(version, feature);
         this.codec = codec;
         createConteTypeHeader();
-        sf = binding.getFeature(SerializationFeature.class);
-
-        if(mtomFeature == null)
+        sf = getFeature(feature, SerializationFeature.class);
+        MTOMFeature mtom = getFeature(feature, MTOMFeature.class);
+        if(mtom == null)
             this.mtomFeature = new MTOMFeature();
         else
-            this.mtomFeature = (MTOMFeature) mtomFeature;
+            this.mtomFeature = mtom;
     }
 
     private void createConteTypeHeader(){
@@ -257,7 +257,7 @@ public class MtomCodec extends MimeCodec {
     }
 
     public MtomCodec copy() {
-        return new MtomCodec(version, (StreamSOAPCodec)codec.copy(), binding, mtomFeature);
+        return new MtomCodec(version, (StreamSOAPCodec)codec.copy(), features);
     }
 
     private String encodeCid(){
