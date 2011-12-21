@@ -62,7 +62,7 @@ public class ServerSideException extends Exception {
     public String getMessage() {
         return "Client received an exception from server: "
                 + super.getMessage()
-                + " Please see the server log to find more detail regarding exact cuase of the failure.";
+                + " Please see the server log to find more detail regarding exact cause of the failure.";
     }
 
     public String toString() {
