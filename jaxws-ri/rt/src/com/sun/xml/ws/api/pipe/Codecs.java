@@ -80,7 +80,7 @@ public abstract class Codecs {
      * @return non null codec to parse entire SOAP message(including MIME parts)
      */
     public static @NotNull SOAPBindingCodec createSOAPBindingCodec(WSBinding binding, StreamSOAPCodec xmlEnvelopeCodec) {
-        return new com.sun.xml.ws.encoding.SOAPBindingCodec(toFeatureArray(binding), xmlEnvelopeCodec);
+        return new com.sun.xml.ws.encoding.SOAPBindingCodec(binding.getFeatures(), xmlEnvelopeCodec);
     }
 
     /**

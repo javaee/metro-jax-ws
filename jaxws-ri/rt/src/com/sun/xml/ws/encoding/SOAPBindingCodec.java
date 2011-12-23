@@ -41,7 +41,7 @@
 package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.client.SelectOptimalEncodingFeature;
 import com.sun.xml.ws.api.fastinfoset.FastInfosetFeature;
 import com.sun.xml.ws.api.message.Message;
@@ -55,9 +55,7 @@ import com.sun.xml.ws.client.ContentNegotiation;
 import com.sun.xml.ws.protocol.soap.MessageCreationException;
 import com.sun.xml.ws.resources.StreamingMessages;
 import com.sun.xml.ws.server.UnsupportedMediaException;
-import static com.sun.xml.ws.binding.WebServiceFeatureList.getFeature;
-import static com.sun.xml.ws.binding.WebServiceFeatureList.getSoapVersion;
-import static com.sun.xml.ws.binding.WebServiceFeatureList.isFeatureEnabled;    
+import static com.sun.xml.ws.binding.WebServiceFeatureList.getSoapVersion;   
 
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
@@ -205,11 +203,11 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
     
     private AcceptContentType _adaptingContentType = new AcceptContentType();
     
-    public SOAPBindingCodec(WebServiceFeature[] features) {
+    public SOAPBindingCodec(WSFeatureList features) {
         this(features, Codecs.createSOAPEnvelopeXmlCodec(getSoapVersion(features)));
     }
     
-    public SOAPBindingCodec(WebServiceFeature[] features, StreamSOAPCodec xmlSoapCodec) {
+    public SOAPBindingCodec(WSFeatureList features, StreamSOAPCodec xmlSoapCodec) {
         super(getSoapVersion(features), features);
         
         this.xmlSoapCodec = xmlSoapCodec;
@@ -222,7 +220,7 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
         String clientAcceptedContentTypes = xmlSoapCodec.getMimeType() + ", " +
                 xmlMtomCodec.getMimeType();
         
-        WebServiceFeature fi = getFeature(features, FastInfosetFeature.class);
+        WebServiceFeature fi = features.get(FastInfosetFeature.class);
         isFastInfosetDisabled = (fi != null && !fi.isEnabled());
         if (!isFastInfosetDisabled) {
             fiSoapCodec = getFICodec(xmlSoapCodec, version);
@@ -237,7 +235,7 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
                  * Fast Infoset is enabled on the client if the service
                  * explicitly supports Fast Infoset.
                  */
-                WebServiceFeature select = getFeature(features, SelectOptimalEncodingFeature.class);
+                WebServiceFeature select = features.get(SelectOptimalEncodingFeature.class);
                 if (select != null) { // if the client FI feature is set - ignore negotiation property
                     ignoreContentNegotiationProperty = true;
                     if (select.isEnabled()) {
@@ -333,7 +331,7 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
     private void postDecode(Packet p) {
         if(decodeFirst == TriState.UNSET)
             decodeFirst = TriState.TRUE;
-        if(isFeatureEnabled(MTOMFeature.class, features))
+        if(features.isEnabled(MTOMFeature.class))
             acceptMtomMessages =isMtomAcceptable(p.acceptableMimeTypes);
         if (!useFastInfosetForEncoding) {
             useFastInfosetForEncoding = isFastInfosetAcceptable(p.acceptableMimeTypes);
@@ -506,13 +504,13 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
         // Note: Using FI with MTOM does not make sense
         if (useFastInfosetForEncoding) {
             final Message m = p.getMessage();
-            if(m==null || m.getAttachments().isEmpty() || isFeatureEnabled(MTOMFeature.class, features))
+            if(m==null || m.getAttachments().isEmpty() || features.isEnabled(MTOMFeature.class))
                 return fiSoapCodec;
             else
                 return fiSwaCodec;
         }
         
-        if(isFeatureEnabled(MTOMFeature.class, features) ) {
+        if(features.isEnabled(MTOMFeature.class)) {
             //On client, always use XOP encoding if MTOM is enabled
             // On Server, use XOP encoding if either request is XOP encoded or client accepts XOP encoding
             if(!isServerSide() || isRequestMtomMessage || acceptMtomMessages)

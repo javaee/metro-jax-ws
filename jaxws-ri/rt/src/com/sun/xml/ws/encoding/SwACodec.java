@@ -41,6 +41,7 @@
 package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.pipe.Codec;
@@ -60,7 +61,7 @@ import javax.xml.ws.WebServiceFeature;
  */
 public final class SwACodec extends MimeCodec {
 
-    public SwACodec(SOAPVersion version, WebServiceFeature[] f, Codec rootCodec) {
+    public SwACodec(SOAPVersion version, WSFeatureList f, Codec rootCodec) {
         super(version, f);
         this.rootCodec = rootCodec;
     }

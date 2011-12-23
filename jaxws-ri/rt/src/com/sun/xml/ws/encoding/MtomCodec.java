@@ -43,6 +43,7 @@ package com.sun.xml.ws.encoding;
 import com.sun.istack.NotNull;
 import com.sun.xml.bind.DatatypeConverterImpl;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.Packet;
@@ -108,12 +109,12 @@ public class MtomCodec extends MimeCodec {
     private final SerializationFeature sf;
     private final static String DECODED_MESSAGE_CHARSET = "decodedMessageCharset";
 
-    MtomCodec(SOAPVersion version, StreamSOAPCodec codec, WebServiceFeature[] feature){
-        super(version, feature);
+    MtomCodec(SOAPVersion version, StreamSOAPCodec codec, WSFeatureList features){
+        super(version, features);
         this.codec = codec;
         createConteTypeHeader();
-        sf = getFeature(feature, SerializationFeature.class);
-        MTOMFeature mtom = getFeature(feature, MTOMFeature.class);
+        sf = features.get(SerializationFeature.class);
+        MTOMFeature mtom = features.get(MTOMFeature.class);
         if(mtom == null)
             this.mtomFeature = new MTOMFeature();
         else

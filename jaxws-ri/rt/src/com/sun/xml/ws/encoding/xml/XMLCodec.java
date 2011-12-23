@@ -46,6 +46,7 @@ import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.encoding.ContentTypeImpl;
 
 import javax.xml.stream.XMLStreamException;
@@ -67,9 +68,9 @@ public final class XMLCodec implements Codec {
     private static final ContentType contentType = new ContentTypeImpl(XML_TEXT_MIME_TYPE);
 
 //  private final WSBinding binding;
-    private WebServiceFeature[] features;
+    private WSFeatureList features;
     
-    public XMLCodec(WebServiceFeature[] f) {
+    public XMLCodec(WSFeatureList f) {
 //        this.binding = binding;
         features = f;
     }

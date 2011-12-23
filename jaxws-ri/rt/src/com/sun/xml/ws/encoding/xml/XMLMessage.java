@@ -44,6 +44,7 @@ import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.message.*;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Codec;
@@ -94,7 +95,7 @@ public final class XMLMessage {
     /*
      * Construct a message given a content type and an input stream.
      */
-    public static Message create(final String ct, InputStream in, WebServiceFeature[] f) {
+    public static Message create(final String ct, InputStream in, WSFeatureList f) {
         Message data;
         try {
             in = StreamUtils.hasSomeData(in);
@@ -130,7 +131,7 @@ public final class XMLMessage {
             Messages.createUsingPayload(source, SOAPVersion.SOAP_11);
     }
 
-    public static Message create(DataSource ds, WebServiceFeature[] f) {
+    public static Message create(DataSource ds, WSFeatureList f) {
         try {
             return (ds == null) ? 
                 Messages.createEmpty(SOAPVersion.SOAP_11) : 
@@ -249,9 +250,9 @@ public final class XMLMessage {
         private Message delegate;
         private final HeaderList headerList;
 //      private final WSBinding binding;
-        private WebServiceFeature[] features;
+        private WSFeatureList features;
         
-        public XmlContent(String ct, InputStream in, WebServiceFeature[] f) {
+        public XmlContent(String ct, InputStream in, WSFeatureList f) {
             super(SOAPVersion.SOAP_11);
             dataSource = new XmlDataSource(ct, in);
             this.headerList = new HeaderList();
@@ -367,12 +368,12 @@ public final class XMLMessage {
         private Message delegate;
         private final HeaderList headerList = new HeaderList();
 //      private final WSBinding binding;
-        private final WebServiceFeature[] features;
+        private final WSFeatureList features;
 
-        public XMLMultiPart(final String contentType, final InputStream is, WebServiceFeature[] f) {
+        public XMLMultiPart(final String contentType, final InputStream is, WSFeatureList f) {
             super(SOAPVersion.SOAP_11);
             dataSource = createDataSource(contentType, is);
-            this.feature = getFeature(f, StreamingAttachmentFeature.class);
+            this.feature = f.get(StreamingAttachmentFeature.class);
             this.features = f;
         }
 
@@ -582,7 +583,7 @@ public final class XMLMessage {
 
     }
 
-    public static DataSource getDataSource(Message msg, WebServiceFeature[] f) {
+    public static DataSource getDataSource(Message msg, WSFeatureList f) {
         if (msg == null)
             return null;
         if (msg instanceof MessageDataSource) {

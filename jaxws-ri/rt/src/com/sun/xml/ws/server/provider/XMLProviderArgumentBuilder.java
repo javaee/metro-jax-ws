@@ -48,7 +48,6 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.resources.ServerMessages;
-import static com.sun.xml.ws.binding.WebServiceFeatureList.toFeatureArray; 
 
 import javax.activation.DataSource;
 import javax.xml.transform.Source;
@@ -109,11 +108,11 @@ abstract class XMLProviderArgumentBuilder<T> extends ProviderArgumentsBuilder<T>
             Message msg = packet.getMessage();
             return (msg instanceof XMLMessage.MessageDataSource)
                     ? ((XMLMessage.MessageDataSource) msg).getDataSource()
-                    : XMLMessage.getDataSource(msg, toFeatureArray(binding));
+                    : XMLMessage.getDataSource(msg, binding.getFeatures());
         }
 
         public Message getResponseMessage(DataSource ds) {
-            return XMLMessage.create(ds, toFeatureArray(binding));
+            return XMLMessage.create(ds, binding.getFeatures());
         }
 
         protected Message getResponseMessage(Exception e) {

@@ -41,6 +41,7 @@
 package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
@@ -141,7 +142,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
     
     private AcceptContentType _adaptingContentType = new AcceptContentType();
     
-    public XMLHTTPBindingCodec(WebServiceFeature[] f) {
+    public XMLHTTPBindingCodec(WSFeatureList f) {
         super(SOAPVersion.SOAP_11, f);
         
         xmlCodec = new XMLCodec(f);
@@ -324,7 +325,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
     }
         
     public static DataSource transformDataSource(DataSource in, 
-            boolean isFastInfoset, boolean useFastInfoset, WebServiceFeature[] f) {
+            boolean isFastInfoset, boolean useFastInfoset, WSFeatureList f) {
         try {
             if (isFastInfoset && !useFastInfoset) {
                 // Convert from Fast Infoset to XML

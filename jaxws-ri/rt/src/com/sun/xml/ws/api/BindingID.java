@@ -62,6 +62,9 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
+
+import org.jvnet.ws.EnvelopingFeature;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -368,7 +371,7 @@ public abstract class BindingID {
      */
     public static final BindingID XML_HTTP = new Impl(SOAPVersion.SOAP_11, HTTPBinding.HTTP_BINDING,false) {
         public Codec createEncoder(WSBinding binding) {
-            return new XMLHTTPBindingCodec(toFeatureArray(binding));
+            return new XMLHTTPBindingCodec(binding.getFeatures());
         }
     };
 
@@ -377,7 +380,7 @@ public abstract class BindingID {
      */
     private static final BindingID REST_HTTP = new Impl(SOAPVersion.SOAP_11, JAXWSProperties.REST_BINDING,true) {
         public Codec createEncoder(WSBinding binding) {
-            return new XMLHTTPBindingCodec(toFeatureArray(binding));
+            return new XMLHTTPBindingCodec(binding.getFeatures());
         }
     };
 
@@ -428,7 +431,7 @@ public abstract class BindingID {
         }
 
         public @NotNull Codec createEncoder(WSBinding binding) {
-            return new SOAPBindingCodec(toFeatureArray(binding));
+            return new SOAPBindingCodec(binding.getFeatures());
         }
 
         private Boolean isMTOMEnabled() {

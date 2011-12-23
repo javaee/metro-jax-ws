@@ -41,6 +41,7 @@
 package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentEx;
 import com.sun.xml.ws.api.message.Message;
@@ -48,10 +49,8 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
-import static com.sun.xml.ws.binding.WebServiceFeatureList.getFeature; 
 import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
-import javax.xml.ws.WebServiceFeature;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -114,9 +113,9 @@ abstract class MimeCodec implements Codec {
     protected Codec rootCodec;
     protected final SOAPVersion version;
 //  protected final WSBinding binding;
-    protected final WebServiceFeature[] features;
+    protected final WSFeatureList features;
 
-    protected MimeCodec(SOAPVersion version, WebServiceFeature[] f) {
+    protected MimeCodec(SOAPVersion version, WSFeatureList f) {
         this.version = version;
         this.features = f;
     }
@@ -207,7 +206,7 @@ abstract class MimeCodec implements Codec {
     }
 
     public void decode(InputStream in, String contentType, Packet packet) throws IOException {
-        MimeMultipartParser parser = new MimeMultipartParser(in, contentType, getFeature(features, StreamingAttachmentFeature.class));
+        MimeMultipartParser parser = new MimeMultipartParser(in, contentType, features.get(StreamingAttachmentFeature.class));
         decode(parser,packet);
     }
 

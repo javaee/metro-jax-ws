@@ -514,8 +514,8 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
         return wsfeatures.put(key, value);
     }
     
-    static public SOAPVersion getSoapVersion(WebServiceFeature[] features) {
-        EnvelopingFeature env = getFeature(features, EnvelopingFeature.class);
+    static public SOAPVersion getSoapVersion(WSFeatureList features) {
+        EnvelopingFeature env = features.get(EnvelopingFeature.class);
         return env != null ? SOAPVersion.from(env) : null;
     }
     

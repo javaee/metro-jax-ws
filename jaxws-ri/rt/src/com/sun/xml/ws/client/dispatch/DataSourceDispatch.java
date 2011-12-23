@@ -51,7 +51,6 @@ import com.sun.xml.ws.client.PortInfo;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.encoding.xml.XMLMessage.MessageDataSource;
 import com.sun.xml.ws.message.source.PayloadSourceMessage;
-import static com.sun.xml.ws.binding.WebServiceFeatureList.toFeatureArray; 
 
 import javax.activation.DataSource;
 import javax.xml.namespace.QName;
@@ -79,7 +78,7 @@ public class DataSourceDispatch extends DispatchImpl<DataSource> {
             case PAYLOAD:
                 throw new IllegalArgumentException("DataSource use is not allowed in Service.Mode.PAYLOAD\n");
             case MESSAGE:
-                return new Packet(XMLMessage.create(arg, toFeatureArray(binding)));
+                return new Packet(XMLMessage.create(arg, binding.getFeatures()));
             default:
                 throw new WebServiceException("Unrecognized message mode");
         }
@@ -89,6 +88,6 @@ public class DataSourceDispatch extends DispatchImpl<DataSource> {
         Message message = response.getMessage();
         return (message instanceof MessageDataSource)
                 ? ((MessageDataSource)message).getDataSource()
-                : XMLMessage.getDataSource(message, toFeatureArray(binding));
+                : XMLMessage.getDataSource(message, binding.getFeatures());
     }
 }
