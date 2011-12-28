@@ -51,8 +51,8 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.ws.soap.SOAPBinding;
 
-import org.jvnet.ws.Enveloping;
-import org.jvnet.ws.EnvelopingFeature;
+import org.jvnet.ws.EnvelopeStyle;
+import org.jvnet.ws.EnvelopeStyleFeature;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -271,15 +271,24 @@ public enum SOAPVersion {
             return SOAP_11;
     }
     
-    public static SOAPVersion from(EnvelopingFeature f) {
-        Enveloping.Style[] style = f.getStyles();
+    public static SOAPVersion from(EnvelopeStyleFeature f) {
+        EnvelopeStyle.Style[] style = f.getStyles();
         if (style.length != 1) throw new IllegalArgumentException ("The EnvelopingFeature must has exactly one Enveloping.Style");
-        return style[0].isSOAP11() ? SOAP_11 : SOAP_12;
+        return from(style[0]);
     }
     
-    public EnvelopingFeature toFeature() {
+    public static SOAPVersion from(EnvelopeStyle.Style style) {
+        switch (style) {
+        case SOAP11: return SOAP_11; 
+        case SOAP12: return SOAP_12;
+        case XML: //ERROR??
+        default: return SOAP_11;
+        }
+    }
+    
+    public EnvelopeStyleFeature toFeature() {
         return SOAP_11.equals(this) ?
-            new EnvelopingFeature(new Enveloping.Style[]{Enveloping.Style.SOAP11}) :
-            new EnvelopingFeature(new Enveloping.Style[]{Enveloping.Style.SOAP12});
+            new EnvelopeStyleFeature(new EnvelopeStyle.Style[]{EnvelopeStyle.Style.SOAP11}) :
+            new EnvelopeStyleFeature(new EnvelopeStyle.Style[]{EnvelopeStyle.Style.SOAP12});
     }
 }

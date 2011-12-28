@@ -54,6 +54,7 @@ import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.server.Adapter;
 import com.sun.xml.ws.api.server.TransportBackChannel;
@@ -71,6 +72,8 @@ import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.DispatchException;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
+
+import org.jvnet.ws.message.ContentType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -89,6 +92,10 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.*;
 import java.util.logging.Logger;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * Represents a container of a {@link Message}.
@@ -1016,5 +1023,27 @@ public final class Packet
 
     public SOAPMessage getSOAPMessage() throws SOAPException {
         return (message != null) ? message.readAsSOAPMessage() : null;
+    }
+    
+    Codec codec = null;
+    Codec getCodec() {
+        if (codec != null) return codec;
+        if (endpoint != null) {
+            codec = endpoint.createCodec();
+        }
+        WSBinding wsb = getBinding();
+        if (wsb != null) {
+            codec = wsb.getBindingId().createEncoder(wsb);
+        }        
+        return codec;
+    }    
+   
+
+    public ContentType writeTo( OutputStream out ) throws IOException {
+        return getCodec().encode(this, out);
+    }
+    
+    public ContentType writeTo( WritableByteChannel buffer ) {
+        return getCodec().encode(this, buffer);
     }
 }

@@ -38,55 +38,38 @@
  * holder.
  */
 
-package org.jvnet.ws.databinding;
+package org.jvnet.ws.message;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.ws.WebServiceFeature;
-
-public class DatabindingModeFeature extends WebServiceFeature {
+/**
+ * A Content-Type transport header that will be returned by {@link MessageContext#write(java.io.OutputStream)}.
+ * It will provide the Content-Type header and also take care of SOAP 1.1 SOAPAction header.
+ *
+ * @author Vivek Pandey
+ */
+public interface ContentType {
+    
     /**
-     * Constant value identifying the DatabindingFeature
+     * Gives non-null Content-Type header value.
      */
-    static public final String ID = "http://jax-ws.java.net/features/databinding";
-    
-    static public final String GLASSFISH_JAXB = "glassfish.jaxb";
+    public String getContentType();
 
-    //These constants should be defined in the corresponding plugin package
-//    static public final String ECLIPSELINK_JAXB = "eclipselink.jaxb";
-//    static public final String ECLIPSELINK_SDO = "eclipselink.sdo";
-//    static public final String TOPLINK_JAXB = "toplink.jaxb";
-//    static public final String TOPLINK_SDO = "toplink.sdo";
+    /**
+     * Gives SOAPAction transport header value. It will be non-null only for SOAP 1.1 messages. In other cases
+     * it MUST be null. The SOAPAction transport header should be written out only when its non-null.
+     *
+     * @return It can be null, in that case SOAPAction header should be written.
+     */
+    public String getSOAPActionHeader();
 
-    private String mode;
-    private Map<String, Object> properties;
-
-    public DatabindingModeFeature(String mode) {
-        super();
-        this.mode = mode;
-        properties = new HashMap<String, Object>();
-    }
-
-    public String getMode() {
-        return mode;
-    }
-
-    public String getID() {
-        return ID;
-    }
-
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
-
-    public static Builder builder() { return new Builder(new DatabindingModeFeature(null)); }
-    
-    public final static class Builder {
-        final private DatabindingModeFeature o;
-        Builder(final DatabindingModeFeature x) { o = x; }
-        public DatabindingModeFeature build() { return o; }
-//        public DatabindingModeFeature build() { return (DatabindingModeFeature) FeatureValidator.validate(o); }
-        public Builder value(final String x) { o.mode = x; return this; }
-    }
+    /**
+     * Controls the Accept transport header, if the transport supports it.
+     * Returning null means the transport need not add any new header.
+     *
+     * <p>
+     * We realize that this is not an elegant abstraction, but
+     * this would do for now. If another person comes and asks for
+     * a similar functionality, we'll define a real abstraction.
+     */
+    public String getAcceptHeader();
 }
+

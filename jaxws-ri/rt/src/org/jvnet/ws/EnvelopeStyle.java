@@ -1,4 +1,3 @@
-package org.jvnet.ws;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -39,6 +38,8 @@ package org.jvnet.ws;
  * holder.
  */
 
+package org.jvnet.ws;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -47,26 +48,26 @@ import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 
 /**
- * The Enveloping annotation is used to specify the enveloping style for a 
- * web service endpoint implementation class. To smooth the migration from
- * the BindingType annotation to this Enveloping annotation, each of the enveloping 
+ * The EnvelopeStyle annotation is used to specify the message envelope style(s)
+ * for a web service endpoint implementation class. To smooth the migration from
+ * the BindingType annotation to this EnvelopeStyle annotation, each of the  
  * styles is mapped to a binding identifier defined in JAX-WS specification.
- * Though a binding identifier includes both the enveloping and transport,
- * an enveloping style defined herein does NOT imply or mandate any transport protocol 
+ * Though a binding identifier includes both the envelope style and transport,
+ * an envelope style defined herein does NOT imply or mandate any transport protocol 
  * to be use together; HTTP is the default transport. An implementation may
- * chose to support other transport with any of the enveloping styles.
+ * chose to support other transport with any of the envelope styles.
  * 
  * This annotation may be overriden programmatically or via deployment 
  * descriptors, depending on the platform in use. 
  * 
  * @author shih-chang.chen@oracle.com
  */
-@WebServiceFeatureAnnotation(id="", bean=org.jvnet.ws.EnvelopingFeature.class)
+@WebServiceFeatureAnnotation(id="", bean=org.jvnet.ws.EnvelopeStyleFeature.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Enveloping {
+public @interface EnvelopeStyle {
     
     /**
-     * The enveloping styles. If not specified, the default is the SOAP 1.1. 
+     * The envelope styles. If not specified, the default is the SOAP 1.1. 
      * 
      * @return The enveloping styles
      */

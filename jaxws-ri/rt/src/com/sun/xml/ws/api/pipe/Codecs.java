@@ -43,7 +43,7 @@ package com.sun.xml.ws.api.pipe;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
-import static com.sun.xml.ws.binding.WebServiceFeatureList.toFeatureArray; 
+import com.sun.xml.ws.api.WSFeatureList;
 
 /**
  * Factory methods for some of the {@link Codec} implementations.
@@ -62,6 +62,27 @@ import static com.sun.xml.ws.binding.WebServiceFeatureList.toFeatureArray;
  * @author Kohsuke Kawaguchi
  */
 public abstract class Codecs {
+
+    /**
+     * This creates a full {@link Codec} for SOAP binding.
+     * 
+     * @param feature the WebServiceFeature objects
+     * @return non null codec to parse entire SOAP message(including MIME parts)
+     */
+    public static @NotNull SOAPBindingCodec createSOAPBindingCodec(WSFeatureList feature) {
+        return new com.sun.xml.ws.encoding.SOAPBindingCodec(feature);
+    }
+    
+    /**
+     * This creates a full {@link Codec} for XML binding.
+     * 
+     * @param feature the WebServiceFeature objects
+     * @return non null codec to parse entire XML message.
+     */
+    public static @NotNull Codec createXMLCodec(WSFeatureList feature) {
+        return new com.sun.xml.ws.encoding.XMLHTTPBindingCodec(feature);
+    }
+
 
     /**
      * This creates a full {@link Codec} for SOAP binding using the primary

@@ -96,9 +96,9 @@ public interface Databinding extends org.jvnet.ws.databinding.Databinding {
 	 */
 //	JavaCallInfo deserializeRequest(Packet req);
 
-//	EndpointCallBridge getEndpointBridge(Packet soap) throws DispatchException;
+	EndpointCallBridge getEndpointBridge(Packet soap) throws DispatchException;
 	
-//	ClientCallBridge getClientBridge(Method method);
+	ClientCallBridge getClientBridge(Method method);
 
 	/**
 	 * Serializes a JavaCallInfo instance representing a JAVA method call to a

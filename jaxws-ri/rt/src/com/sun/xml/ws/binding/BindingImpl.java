@@ -201,7 +201,7 @@ public abstract class BindingImpl implements WSBinding {
     @NotNull
     public WebServiceFeatureList getFeatures() {
         //TODO scchen convert BindingID  to WebServiceFeature[]
-        if(!isFeatureEnabled(org.jvnet.ws.EnvelopingFeature.class)) {
+        if(!isFeatureEnabled(org.jvnet.ws.EnvelopeStyleFeature.class)) {
             WebServiceFeature[] f = { getSOAPVersion().toFeature() };
             features.mergeFeatures(f, false);
         }

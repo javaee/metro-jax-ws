@@ -60,9 +60,10 @@ import com.sun.xml.ws.test.CollectionMapImpl;
  * @author shih-chang.chen@oracle.com
  */
 public class EclipselinkJAXBBasicTest extends BasicDatabindingTestBase  {
+    static public final String ECLIPSELINK_JAXB = "eclipselink.jaxb";
 	
 	protected DatabindingModeFeature databindingMode() {
-		return new DatabindingModeFeature(DatabindingModeFeature.ECLIPSELINK_JAXB); 
+		return new DatabindingModeFeature(ECLIPSELINK_JAXB); 
 	}
 	
 	public void testHelloEcho() throws Exception {
@@ -74,7 +75,7 @@ public class EclipselinkJAXBBasicTest extends BasicDatabindingTestBase  {
 	    String propName = BindingContextFactory.JAXB_CONTEXT_FACTORY_PROPERTY;
 	    String oldProp = System.getProperty(propName);
 	    try {
-	        System.setProperty(propName, DatabindingModeFeature.ECLIPSELINK_JAXB);
+	        System.setProperty(propName, ECLIPSELINK_JAXB);
 	        String wrapperName = _testHelloEcho();
 	        assertTrue(wrapperName != null && wrapperName.endsWith("JAXBContextWrapper"));
 	    } finally {

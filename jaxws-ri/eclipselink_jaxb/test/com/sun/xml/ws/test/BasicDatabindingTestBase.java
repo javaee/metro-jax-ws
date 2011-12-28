@@ -45,6 +45,7 @@ import org.jvnet.ws.databinding.DatabindingModeFeature;
 
 import com.sun.xml.ws.DummyAnnotations;
 import com.sun.xml.ws.WsDatabindingTestBase;
+import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingContextFactory;
@@ -94,4 +95,14 @@ public abstract class BasicDatabindingTestBase extends WsDatabindingTestBase  {
         return srvConfig.properties().get(BindingContext.class.getName())
                 .getClass().getName();
 	}
+    
+    public void testWebParamHolder() throws Exception {
+        DatabindingModeFeature dbm = databindingMode();
+        WebServiceFeature[] f = { dbm };
+        DatabindingConfig cliConfig = new DatabindingConfig();
+        cliConfig.setEndpointClass(WebParamHolderSEB.class);
+        cliConfig.setFeatures(f);  
+        Databinding db = (Databinding) factory.createRuntime(cliConfig);     
+        assertNotNull(db);
+    }
 }

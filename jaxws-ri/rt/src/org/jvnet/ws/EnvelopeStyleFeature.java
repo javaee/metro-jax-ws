@@ -38,55 +38,23 @@
  * holder.
  */
 
-package org.jvnet.ws.databinding;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.jvnet.ws;
 
 import javax.xml.ws.WebServiceFeature;
 
-public class DatabindingModeFeature extends WebServiceFeature {
-    /**
-     * Constant value identifying the DatabindingFeature
-     */
-    static public final String ID = "http://jax-ws.java.net/features/databinding";
+public class EnvelopeStyleFeature extends WebServiceFeature {
     
-    static public final String GLASSFISH_JAXB = "glassfish.jaxb";
-
-    //These constants should be defined in the corresponding plugin package
-//    static public final String ECLIPSELINK_JAXB = "eclipselink.jaxb";
-//    static public final String ECLIPSELINK_SDO = "eclipselink.sdo";
-//    static public final String TOPLINK_JAXB = "toplink.jaxb";
-//    static public final String TOPLINK_SDO = "toplink.sdo";
-
-    private String mode;
-    private Map<String, Object> properties;
-
-    public DatabindingModeFeature(String mode) {
-        super();
-        this.mode = mode;
-        properties = new HashMap<String, Object>();
+    private EnvelopeStyle.Style[] styles;
+    
+    public EnvelopeStyleFeature(EnvelopeStyle.Style... s) {
+        styles = s;
     }
-
-    public String getMode() {
-        return mode;
+    
+    public EnvelopeStyle.Style[] getStyles() {
+        return styles;
     }
-
+    
     public String getID() {
-        return ID;
-    }
-
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
-
-    public static Builder builder() { return new Builder(new DatabindingModeFeature(null)); }
-    
-    public final static class Builder {
-        final private DatabindingModeFeature o;
-        Builder(final DatabindingModeFeature x) { o = x; }
-        public DatabindingModeFeature build() { return o; }
-//        public DatabindingModeFeature build() { return (DatabindingModeFeature) FeatureValidator.validate(o); }
-        public Builder value(final String x) { o.mode = x; return this; }
+        return EnvelopeStyleFeature.class.getName();
     }
 }

@@ -40,6 +40,11 @@
 
 package org.jvnet.ws.message;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
@@ -93,4 +98,33 @@ public interface MessageContext extends DistributedPropertySet {
      * @param satellite the PropertySet type
      */
     <T extends PropertySet> T getSatellite(Class<T> satelliteClass);
+    
+    /**
+     * Writes the XML infoset portion of this MessageContext
+     * (from &lt;soap:Envelope> to &lt;/soap:Envelope>).
+     *
+     * @param out
+     *      Must not be null. The caller is responsible for closing the stream,
+     *      not the callee.
+     *
+     * @return
+     *      The MIME content type of the encoded message (such as "application/xml").
+     *      This information is often ncessary by transport.
+     *
+     * @throws IOException
+     *      if a {@link OutputStream} throws {@link IOException}.
+     */
+    //TODO chen: wait for DISI
+//    ContentType writeTo( OutputStream out ) throws IOException;
+
+    /**
+     * The version of {@link #writeTo(OutputStream)}
+     * that writes to NIO {@link ByteBuffer}.
+     *
+     * <p>
+     * TODO: for the convenience of implementation, write
+     * an adapter that wraps {@link WritableByteChannel} to {@link OutputStream}.
+     */
+    //TODO chen: wait for DISI
+//    ContentType writeTo( WritableByteChannel buffer );
 }

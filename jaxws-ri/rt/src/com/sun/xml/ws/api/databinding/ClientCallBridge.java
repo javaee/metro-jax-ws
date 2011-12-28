@@ -41,6 +41,7 @@ package com.sun.xml.ws.api.databinding;
 
 import java.lang.reflect.Method;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.JavaMethod;
 
 public interface ClientCallBridge {
 	
@@ -49,4 +50,6 @@ public interface ClientCallBridge {
 	JavaCallInfo readResponse(Packet packet, JavaCallInfo call) throws Throwable;
 	
 	Method getMethod();
+	
+	JavaMethod getOperationModel();
 }

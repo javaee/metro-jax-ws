@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -160,10 +160,10 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
                 continue;
             }
             T holderType = getHolderValueType(param);
-            if (holderType != null && webParam != null && webParam.mode().equals(WebParam.Mode.IN)) {
-                // Should we flag an error - holder cannot be IN part ??
-                continue;
-            }
+//            if (holderType != null && webParam != null && webParam.mode().equals(WebParam.Mode.IN)) {
+//                // Should we flag an error - holder cannot be IN part ??
+//                continue;
+//            }
 
             T paramType = (holderType != null) ? holderType : getSafeType(param);
             String paramName = (webParam != null && webParam.name().length() > 0)

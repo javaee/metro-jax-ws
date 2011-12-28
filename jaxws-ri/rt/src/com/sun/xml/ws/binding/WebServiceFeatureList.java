@@ -65,7 +65,7 @@ import javax.xml.ws.soap.MTOM;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 
-import org.jvnet.ws.EnvelopingFeature;
+import org.jvnet.ws.EnvelopeStyleFeature;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -515,7 +515,7 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
     }
     
     static public SOAPVersion getSoapVersion(WSFeatureList features) {
-        EnvelopingFeature env = features.get(EnvelopingFeature.class);
+        EnvelopeStyleFeature env = features.get(EnvelopeStyleFeature.class);
         return env != null ? SOAPVersion.from(env) : null;
     }
     
@@ -526,7 +526,7 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
     
     static public WebServiceFeature[] toFeatureArray(WSBinding binding) {
         //TODO scchen convert BindingID  to WebServiceFeature[]
-        if(!binding.isFeatureEnabled(EnvelopingFeature.class)) {
+        if(!binding.isFeatureEnabled(EnvelopeStyleFeature.class)) {
             WebServiceFeature[] f = { binding.getSOAPVersion().toFeature() };
             binding.getFeatures().mergeFeatures(f, false);
         }

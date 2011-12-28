@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -285,7 +285,7 @@ public class WrapperBeanGenerator {
         } catch(Exception e) {
             throw new WebServiceException(e);
         }
-
+//        write(image, className);
         return Injector.inject(cl, className, image);
     }
 
@@ -303,6 +303,7 @@ public class WrapperBeanGenerator {
         } catch(Exception e) {
             throw new WebServiceException(e);
         }
+//      write(image, className);
 
         return Injector.inject(cl, className, image);
     }
@@ -384,6 +385,19 @@ public class WrapperBeanGenerator {
             return fieldName.compareTo(o.fieldName);
         }
 
+    }
+
+    static void write(byte[] b, String className) {
+        className = className.substring(className.lastIndexOf(".")+1);
+        try {
+            java.io.FileOutputStream fo = new java.io.FileOutputStream(className + ".class");
+            fo.write(b);
+            fo.flush();
+            fo.close();
+        } catch (java.io.IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }

@@ -40,8 +40,8 @@
 
 package com.sun.xml.ws.api.databinding;
 
-import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.JavaMethod;
 
 public interface EndpointCallBridge {
 	
@@ -49,4 +49,6 @@ public interface EndpointCallBridge {
 	
 	//Change the return type to??
 	public Packet serializeResponse(JavaCallInfo call);
+	
+    JavaMethod getOperationModel();
 }

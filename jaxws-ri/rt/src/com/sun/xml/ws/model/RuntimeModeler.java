@@ -73,6 +73,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
+import javax.xml.ws.soap.MTOM;
+import javax.xml.ws.soap.MTOMFeature;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -175,6 +177,10 @@ public class RuntimeModeler {
             if (binding != null) bindingId = binding.getBinding().getBindingId();
             if (bindingId == null) bindingId = getDefaultBindingID();
             this.features = WebServiceFeatureList.toList(config.getFeatures());
+            if (!features.contains(MTOMFeature.class)) {
+                MTOM mtomAn = getAnnotation(portClass, MTOM.class);
+                if (mtomAn != null) features.add(WebServiceFeatureList.getFeature(mtomAn));
+            }
             this.wsBinding = bindingId.createBinding(features);
         }
     }

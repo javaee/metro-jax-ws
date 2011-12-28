@@ -63,8 +63,6 @@ import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
 
-import org.jvnet.ws.EnvelopingFeature;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;

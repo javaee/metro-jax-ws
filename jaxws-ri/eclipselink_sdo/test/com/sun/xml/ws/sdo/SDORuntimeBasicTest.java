@@ -27,10 +27,12 @@ import com.sun.xml.ws.spi.db.BindingContext;
 import commonj.sdo.helper.HelperContext;
 
 public class SDORuntimeBasicTest extends SDODatabindingTestBase {
+    static public final String ECLIPSELINK_SDO = "eclipselink.sdo";
+    
     static public DatabindingFactory factory  = DatabindingFactory.newInstance();
     
     protected DatabindingModeFeature databindingMode() {
-        return new DatabindingModeFeature(DatabindingModeFeature.ECLIPSELINK_SDO); 
+        return new DatabindingModeFeature(ECLIPSELINK_SDO); 
     }
 
     public void testEchoSDO() throws Exception {

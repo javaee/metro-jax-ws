@@ -46,9 +46,9 @@ import com.sun.xml.ws.api.databinding.EndpointCallBridge;
 import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
-import com.sun.xml.ws.model.CheckedExceptionImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
@@ -56,7 +56,6 @@ import com.sun.xml.ws.wsdl.DispatchException;
 
 import javax.jws.WebParam.Mode;
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Holder;
 import javax.xml.ws.ProtocolException;
@@ -340,4 +339,8 @@ final public class TieHandler implements EndpointCallBridge {
         response.setMessage(msg);
         return response;
 	}
+	
+    public JavaMethod getOperationModel() {
+        return javaMethodModel;
+    }
 }

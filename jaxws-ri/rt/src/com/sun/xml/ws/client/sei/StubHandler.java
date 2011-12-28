@@ -44,6 +44,7 @@ import com.sun.xml.ws.api.databinding.ClientCallBridge;
 import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.model.CheckedExceptionImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
@@ -274,5 +275,8 @@ public class StubHandler implements ClientCallBridge {
 	public Method getMethod() {
 		return javaMethod.getMethod();
 	}
-
+    
+    public JavaMethod getOperationModel() {
+        return javaMethod;
+    }
 }
