@@ -52,9 +52,9 @@ public class DatabindingModeFeature extends WebServiceFeature {
     
     static public final String GLASSFISH_JAXB = "glassfish.jaxb";
     static public final String ECLIPSELINK_JAXB = "eclipselink.jaxb";
-    static public final String ECLIPSELINK_SDO = "eclipselink.sdo";
+//    static public final String ECLIPSELINK_SDO = "eclipselink.sdo";
     static public final String TOPLINK_JAXB = "toplink.jaxb";
-    static public final String TOPLINK_SDO = "toplink.sdo";
+//    static public final String TOPLINK_SDO = "toplink.sdo";
 
     private String mode;
     private Map<String, Object> properties;
