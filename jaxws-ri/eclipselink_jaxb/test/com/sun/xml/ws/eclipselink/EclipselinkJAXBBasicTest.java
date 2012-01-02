@@ -53,6 +53,7 @@ import com.sun.xml.ws.spi.db.BindingContextFactory;
 import com.sun.xml.ws.test.BasicDatabindingTestBase;
 import com.sun.xml.ws.test.CollectionMap;
 import com.sun.xml.ws.test.CollectionMapImpl;
+import com.sun.xml.ws.db.toplink.JAXBContextFactory;
 
 /**
  * EclipselinkJAXBBasicTest
@@ -62,7 +63,7 @@ import com.sun.xml.ws.test.CollectionMapImpl;
 public class EclipselinkJAXBBasicTest extends BasicDatabindingTestBase  {
 	
 	protected DatabindingModeFeature databindingMode() {
-		return new DatabindingModeFeature(DatabindingModeFeature.ECLIPSELINK_JAXB); 
+		return new DatabindingModeFeature(JAXBContextFactory.ECLIPSELINK_JAXB); 
 	}
 	
 	public void testHelloEcho() throws Exception {
@@ -74,7 +75,7 @@ public class EclipselinkJAXBBasicTest extends BasicDatabindingTestBase  {
 	    String propName = BindingContextFactory.JAXB_CONTEXT_FACTORY_PROPERTY;
 	    String oldProp = System.getProperty(propName);
 	    try {
-	        System.setProperty(propName, DatabindingModeFeature.ECLIPSELINK_JAXB);
+	        System.setProperty(propName, JAXBContextFactory.ECLIPSELINK_JAXB);
 	        String wrapperName = _testHelloEcho();
 	        assertTrue(wrapperName != null && wrapperName.endsWith("JAXBContextWrapper"));
 	    } finally {

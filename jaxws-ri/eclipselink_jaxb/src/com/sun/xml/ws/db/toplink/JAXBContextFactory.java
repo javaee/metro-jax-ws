@@ -96,7 +96,10 @@ public class JAXBContextFactory extends BindingContextFactory {
 	static final public String OXM_XML_OVERRIDE = "eclipselink-oxm-xml";
 	static final public String OXM_XML_ELEMENT  = "eclipselink-oxm-xml.xml-element";
 	
-	protected boolean isFor(String str) {
+        static public final String ECLIPSELINK_JAXB = "eclipselink.jaxb";
+        static public final String TOPLINK_JAXB = "toplink.jaxb";
+
+        protected boolean isFor(String str) {
 		return (str.equals("toplink.jaxb") ||
 			    str.equals("eclipselink.jaxb")||
 			    str.equals(this.getClass().getName())||

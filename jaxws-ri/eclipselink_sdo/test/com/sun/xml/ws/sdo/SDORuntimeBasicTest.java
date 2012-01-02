@@ -15,6 +15,7 @@ import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;
 import com.sun.xml.ws.db.sdo.HelperContextResolver;
 import com.sun.xml.ws.db.sdo.SDOContextWrapper;
+import com.sun.xml.ws.db.sdo.SDOContextFactory;
 import com.sun.xml.ws.db.sdo.SDOUtils;
 import com.sun.xml.ws.db.sdo.SchemaInfo;
 import com.sun.xml.ws.sdo.test.AddNumbersPortType;
@@ -30,7 +31,7 @@ public class SDORuntimeBasicTest extends SDODatabindingTestBase {
     static public DatabindingFactory factory  = DatabindingFactory.newInstance();
     
     protected DatabindingModeFeature databindingMode() {
-        return new DatabindingModeFeature(DatabindingModeFeature.ECLIPSELINK_SDO); 
+        return new DatabindingModeFeature(SDOContextFactory.ECLIPSELINK_SDO); 
     }
 
     public void testEchoSDO() throws Exception {

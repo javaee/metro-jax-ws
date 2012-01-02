@@ -9,6 +9,9 @@ import com.sun.xml.ws.spi.db.BindingInfo;
 
 public class SDOContextFactory extends BindingContextFactory {
 
+    static public final String ECLIPSELINK_SDO = "eclipselink.sdo";
+    static public final String TOPLINK_SDO = "toplink.sdo";
+
     @Override
     protected BindingContext newContext(JAXBContext context) {
         return null;
@@ -21,8 +24,8 @@ public class SDOContextFactory extends BindingContextFactory {
 
     @Override
     protected boolean isFor(String str) {
-        return (str.equals("toplink.sdo") ||
-                str.equals("eclipselink.sdo")||
+        return (str.equals(TOPLINK_SDO) ||
+                str.equals(ECLIPSELINK_SDO)||
                 str.equals(this.getClass().getName())||
                 str.equals("org.eclipse.persistence.sdo"));
     }
