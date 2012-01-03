@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package com.sun.tools.ws.ant;
 
+import com.sun.tools.ws.ToolVersion;
 import com.sun.tools.ws.wscompile.WsgenTool;
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
@@ -547,12 +548,14 @@ public class WsGen2 extends MatchingTask {
             }
             if (fork) {
                 if (verbose) {       // Fix for CR 6444561
+                    log(ToolVersion.VERSION.BUILD_VERSION);
                     log("command line: "+"wsgen "+cmd.toString());
                 }
                 int status = run(cmd.getCommandline());
                 ok = (status == 0);
             } else {
                 if (verbose) {                // Fix for CR 6444561
+                    log(ToolVersion.VERSION.BUILD_VERSION);
                     log("command line: "+"wsgen "+cmd.getJavaCommand().toString());
                 }
                 logstr = new LogOutputStream(this, Project.MSG_WARN);
