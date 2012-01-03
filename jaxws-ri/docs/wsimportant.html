@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -97,6 +97,7 @@
     quiet="true|false"
     xadditionalHeaders="true|false"
     xauthfile="authorization file"
+    xdisableAuthenticator="true|false"
     xdebug="true|false"
     xNoAddressingDatabinding="true|false"
     xnocompile="true|false"
@@ -317,6 +318,13 @@
             <td>
                 <p>No. Defaults to false.</p></td>
             <td><code>-quiet</code></td>
+        </tr>
+        <tr valign="top">
+            <td><code>xdisableAuthenticator</code></td>
+            <td>Disables Authenticator used by JAX-WS RI, <code>-Xauthfile</code> option will be ignored if <code>-XdisableAuthenticator</code> is set.</td>
+            <td>
+                <p>No. Defaults to false.</p></td>
+            <td><code>-XdisableAuthenticator</code></td>
         </tr>
         <tr valign="top">
             <td><code>xNoAddressingDatabinding</code></td>

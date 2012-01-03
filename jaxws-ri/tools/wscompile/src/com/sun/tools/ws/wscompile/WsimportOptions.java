@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -155,6 +155,12 @@ public class WsimportOptions extends Options {
      * Authentication file
      */
     public File authFile;
+
+    /**
+     * Setting disableAuthenticator to true disables the DefaultAuthenticator.
+     * -XdisableAuthenticator
+     */
+    public boolean disableAuthenticator;
 
     /**
      * Additional arguments
@@ -357,7 +363,10 @@ public class WsimportOptions extends Options {
         } else if (args[i].equals("-XuseBaseResourceAndURLToLoadWSDL")) {
         	useBaseResourceAndURLToLoadWSDL = true;
             return 1;
-        } 
+        } else if (args[i].equals("-XdisableAuthenticator")) {
+            disableAuthenticator = true;
+            return 1;
+        }
 
         // handle additional options
         for (GeneratorExtension f:ServiceFinder.find(GeneratorExtension.class)) {

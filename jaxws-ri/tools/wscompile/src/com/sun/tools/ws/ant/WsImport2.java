@@ -586,6 +586,19 @@ public class WsImport2 extends MatchingTask {
         this.xauthfile = xauthfile;
     }
 
+    /**
+     * -XdisableAuthenticator
+     */
+    private boolean disableAuthenticator;
+
+    public boolean getXdisableAuthenticator() {
+        return disableAuthenticator;
+    }
+
+    public void setdisableAuthenticator(boolean disableAuthenticator) {
+        this.disableAuthenticator = disableAuthenticator;
+    }
+
     public void addConfiguredBinding( FileSet fs ) {
         DirectoryScanner ds = fs.getDirectoryScanner(getProject());
         String[] includedFiles = ds.getIncludedFiles();
@@ -703,6 +716,10 @@ public class WsImport2 extends MatchingTask {
         if(getXauthfile() != null){
             cmd.createArgument().setValue("-Xauthfile");
             cmd.createArgument().setFile(getXauthfile());
+        }
+
+        if(getXdisableAuthenticator()){
+            cmd.createArgument().setValue("-XdisableAuthenticator");
         }
 
         //package
