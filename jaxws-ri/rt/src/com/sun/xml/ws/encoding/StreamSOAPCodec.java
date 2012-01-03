@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.encoding;
 
+import static com.sun.xml.ws.binding.WebServiceFeatureList.getSoapVersion;
+
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.MutableXMLStreamBuffer;
@@ -48,6 +50,7 @@ import com.sun.xml.stream.buffer.XMLStreamBufferMark;
 import com.sun.xml.stream.buffer.stax.StreamReaderBufferCreator;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
@@ -106,6 +109,10 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
     /*package*/ StreamSOAPCodec(WSBinding binding) {
         this(binding.getSOAPVersion(), binding.getFeature(SerializationFeature.class));
+    }
+    
+    StreamSOAPCodec(WSFeatureList features) {
+        this(getSoapVersion(features), features.get(SerializationFeature.class));
     }
 
     private StreamSOAPCodec(SOAPVersion soapVersion, @Nullable SerializationFeature sf) {
@@ -351,6 +358,26 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
     /*
      * Creates a new {@link StreamSOAPCodec} instance using binding
+     */
+    public static StreamSOAPCodec create(WSFeatureList features) {
+        SOAPVersion version = getSoapVersion(features);
+        if(version==null)
+            // this decoder is for SOAP, not for XML/HTTP
+            throw new IllegalArgumentException();
+        switch(version) {
+            case SOAP_11:
+                return new StreamSOAP11Codec(features);
+            case SOAP_12:
+                return new StreamSOAP12Codec(features);
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    /**
+     * Creates a new {@link StreamSOAPCodec} instance using binding
+     * 
+     * @deprecated use {@link #create(WSFeatureList)}
      */
     public static StreamSOAPCodec create(WSBinding binding) {
         SOAPVersion version = binding.getSOAPVersion();

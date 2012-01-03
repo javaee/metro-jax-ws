@@ -43,6 +43,7 @@ package com.sun.xml.ws.encoding;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.message.stream.StreamHeader;
@@ -70,6 +71,10 @@ final class StreamSOAP11Codec extends StreamSOAPCodec {
 
     /*package*/  StreamSOAP11Codec(WSBinding binding) {
         super(binding);
+    }
+
+    /*package*/  StreamSOAP11Codec(WSFeatureList features) {
+        super(features);
     }
 
     public String getMimeType() {

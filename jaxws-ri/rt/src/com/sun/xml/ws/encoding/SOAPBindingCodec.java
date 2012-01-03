@@ -204,7 +204,7 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
     private AcceptContentType _adaptingContentType = new AcceptContentType();
     
     public SOAPBindingCodec(WSFeatureList features) {
-        this(features, Codecs.createSOAPEnvelopeXmlCodec(getSoapVersion(features)));
+        this(features, Codecs.createSOAPEnvelopeXmlCodec(features));
     }
     
     public SOAPBindingCodec(WSFeatureList features, StreamSOAPCodec xmlSoapCodec) {

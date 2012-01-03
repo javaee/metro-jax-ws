@@ -125,8 +125,23 @@ public abstract class Codecs {
      *
      * @param binding SOAP version and features are used from this binding
      * @return non null default xml codec
+     * 
+     * @deprecated use {@link #createSOAPEnvelopeXmlCodec(WSFeatureList)}
      */
     public static @NotNull StreamSOAPCodec createSOAPEnvelopeXmlCodec(@NotNull WSBinding binding) {
         return com.sun.xml.ws.encoding.StreamSOAPCodec.create(binding);
+    }
+
+    /**
+     * Creates a default {@link Codec} that can be used to used to
+     * decode XML infoset in SOAP envelope(primary part in MIME message).
+     * New codecs can be written using this codec as delegate. WSFeatureList
+     * parameter is used to get SOAP version and features.
+     *
+     * @param features SOAP version and features are used from this WSFeatureList
+     * @return non null default xml codec
+     */
+    public static @NotNull StreamSOAPCodec createSOAPEnvelopeXmlCodec(@NotNull WSFeatureList features) {
+        return com.sun.xml.ws.encoding.StreamSOAPCodec.create(features);
     }
 }
