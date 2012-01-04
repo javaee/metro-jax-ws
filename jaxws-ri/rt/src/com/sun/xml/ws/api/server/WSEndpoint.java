@@ -54,31 +54,26 @@ import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Engine;
-import com.sun.xml.ws.api.pipe.Fiber;
 import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
 import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
 import com.sun.xml.ws.api.pipe.Tube;
-import com.sun.xml.ws.server.EndpointFactory;
-import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.util.ServiceFinder;
-import org.xml.sax.EntityResolver;
-
+import com.sun.xml.ws.util.xml.XmlUtil;
 import org.glassfish.gmbal.ManagedObjectManager;
+import org.xml.sax.EntityResolver;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
-
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.concurrent.Executor;
 
 /**
@@ -574,7 +569,6 @@ public abstract class WSEndpoint<T> implements ComponentRegistry {
     	final WSEndpoint<T> endpoint = 
             EndpointFactory.createEndpoint(
                 implType,processHandlerAnnotation, invoker,serviceName,portName,container,binding,primaryWsdl,metadata,resolver,isTransportSynchronous,isStandard);
-        endpoint.getManagedObjectManager().resumeJMXRegistration();
 
         final Iterator<ManagedEndpointFactory> managementFactories = ServiceFinder.find(ManagedEndpointFactory.class).iterator();
         if (managementFactories.hasNext()) {

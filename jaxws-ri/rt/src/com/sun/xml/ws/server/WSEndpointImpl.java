@@ -45,57 +45,67 @@ import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.addressing.EPRSDDocumentFilter;
 import com.sun.xml.ws.addressing.WSEPRExtension;
-import com.sun.xml.ws.addressing.WsaServerTube;
-import com.sun.xml.ws.api.*;
+import com.sun.xml.ws.api.Component;
+import com.sun.xml.ws.api.ComponentFeature;
+import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.pipe.*;
-import com.sun.xml.ws.api.server.*;
+import com.sun.xml.ws.api.pipe.Codec;
+import com.sun.xml.ws.api.pipe.Engine;
+import com.sun.xml.ws.api.pipe.Fiber;
+import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
+import com.sun.xml.ws.api.pipe.ServerPipeAssemblerContext;
+import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
+import com.sun.xml.ws.api.pipe.SyncStartForAsyncFeature;
+import com.sun.xml.ws.api.pipe.Tube;
+import com.sun.xml.ws.api.pipe.TubeCloner;
+import com.sun.xml.ws.api.pipe.TubelineAssembler;
+import com.sun.xml.ws.api.pipe.TubelineAssemblerFactory;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.EndpointAwareCodec;
+import com.sun.xml.ws.api.server.EndpointComponent;
+import com.sun.xml.ws.api.server.EndpointReferenceExtensionContributor;
+import com.sun.xml.ws.api.server.LazyMOMProvider;
+import com.sun.xml.ws.api.server.TransportBackChannel;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.api.server.WebServiceContextDelegate;
 import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.client.AsyncInvoker;
-import com.sun.xml.ws.client.AsyncResponseImpl;
-import com.sun.xml.ws.client.Stub;
-import com.sun.xml.ws.client.WSServiceDelegate;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.model.wsdl.WSDLDirectProperties;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortProperties;
 import com.sun.xml.ws.model.wsdl.WSDLProperties;
-import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.resources.HandlerMessages;
 import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
-import com.sun.xml.ws.wsdl.DispatchException;
 import org.glassfish.gmbal.ManagedObjectManager;
-import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
 
 import javax.annotation.PreDestroy;
-import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.ws.*;
-import javax.xml.ws.Service.Mode;
+import javax.xml.ws.EndpointReference;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
-import javax.xml.ws.handler.HandlerResolver;
-import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,9 +115,9 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  * @author Jitendra Kotamraju
  */
-public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> {
+public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMOMProvider.WSEndpointScopeChangeListener {
 	private static final Logger LOGGER = Logger.getLogger(WSEndpointImpl.class.getName());
-
+    
     private final @NotNull QName serviceName;
     private final @NotNull QName portName;
 	protected final WSBinding binding;
@@ -123,8 +133,10 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> {
     private final @NotNull PolicyMap endpointPolicy;
 	private final Pool<Tube> tubePool;
     private final OperationDispatcher operationDispatcher;
-    private final @NotNull ManagedObjectManager managedObjectManager;
+    private       @NotNull ManagedObjectManager managedObjectManager;
     private       boolean managedObjectManagerClosed = false;
+    private       Object managedObjectManagerLock = new Object();
+    private       LazyMOMProvider.Scope lazyMOMProviderScope = LazyMOMProvider.Scope.STANDALONE;
     private final @NotNull ServerTubeAssemblerContext context;
 
     private Map<QName, WSEndpointReference.EPRExtension> endpointReferenceExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
@@ -157,8 +169,8 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> {
 		this.seiModel = seiModel;
         this.endpointPolicy = endpointPolicy;
 
-        this.managedObjectManager = 
-            new MonitorRootService(this).createManagedObjectManager(this);
+        LazyMOMProvider.INSTANCE.registerEndpoint(this);
+        initManagedObjectManager();
 
 		if (serviceDef != null) {
 			serviceDef.setOwner(this);
@@ -254,9 +266,9 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> {
 		this.masterTubeline = masterTubeline;
 		this.masterCodec = ((BindingImpl) this.binding).createCodec();
 
-        this.managedObjectManager = 
-            new MonitorRootService(this).createManagedObjectManager(this);
-		
+        LazyMOMProvider.INSTANCE.registerEndpoint(this);
+        initManagedObjectManager();
+
         this.operationDispatcher = (port == null) ? null : new OperationDispatcher(port, binding, seiModel);
 	    this.context = new ServerPipeAssemblerContext(
     	        seiModel, port, this, null /* not known */, false);
@@ -558,19 +570,92 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> {
     public @NotNull QName getServiceName() {
 		return serviceName;
 	}
+    
+    private void initManagedObjectManager() {
+        synchronized (managedObjectManagerLock) {
+            if (managedObjectManager == null) {
+                switch (this.lazyMOMProviderScope) {
+                    case GLASSFISH_NO_JMX:
+                        managedObjectManager = new WSEndpointMOMProxy(this);
+                        break;
+                    default:
+                        managedObjectManager = obtainManagedObjectManager();
+                }
+            }
+        }
+    }
 
     public @NotNull ManagedObjectManager getManagedObjectManager() {
         return managedObjectManager;
     }
 
+    /**
+     * Obtains a real instance of {@code ManagedObjectManager} class no matter what lazyMOMProviderScope is this endpoint in (or if the
+     * Gmbal API calls should be deferred).
+     *
+     * @see com.sun.xml.ws.api.server.LazyMOMProvider.Scope
+     * @return an instance of {@code ManagedObjectManager}
+     */
+    @NotNull ManagedObjectManager obtainManagedObjectManager() {
+        final MonitorRootService monitorRootService = new MonitorRootService(this);
+        final ManagedObjectManager managedObjectManager = monitorRootService.createManagedObjectManager(this);
+
+        // ManagedObjectManager was suspended due to root creation (see MonitorBase#initMOM)
+        managedObjectManager.resumeJMXRegistration();
+
+        return managedObjectManager;
+    }
+
+    public void scopeChanged(LazyMOMProvider.Scope scope) {
+        synchronized (managedObjectManagerLock) {
+            if (managedObjectManagerClosed) {
+                return;
+            }
+            
+            this.lazyMOMProviderScope = scope;
+
+            // possible lazyMOMProviderScope change can be LazyMOMProvider.Scope.GLASSFISH_NO_JMX or LazyMOMProvider.Scope.GLASSFISH_JMX
+            if (managedObjectManager == null) {
+                if (scope != LazyMOMProvider.Scope.GLASSFISH_NO_JMX) {
+                    managedObjectManager = obtainManagedObjectManager();
+                } else {
+                    managedObjectManager = new WSEndpointMOMProxy(this);
+                }
+            } else {
+                // if ManagedObjectManager for this endpoint has already been created and is uninitialized proxy then
+                // fill it with a real instance
+                if (managedObjectManager instanceof WSEndpointMOMProxy
+                        && !((WSEndpointMOMProxy)managedObjectManager).isInitialized()) {
+                    ((WSEndpointMOMProxy)managedObjectManager).setManagedObjectManager(obtainManagedObjectManager());
+                }
+            }
+        }
+    }
+
     // This can be called independently of WSEndpoint.dispose.
     // Example: the WSCM framework calls this before dispose.
     public void closeManagedObjectManager() {
-        if (managedObjectManagerClosed == true) {
-            return;
+        synchronized (managedObjectManagerLock) {
+            if (managedObjectManagerClosed == true) {
+                return;
+            }
+            if (managedObjectManager != null) {
+                boolean close = true;
+
+                // ManagedObjectManager doesn't need to be closed because it exists only as a proxy
+                if (managedObjectManager instanceof WSEndpointMOMProxy
+                        && !((WSEndpointMOMProxy)managedObjectManager).isInitialized()) {
+                    close = false;
+                }
+                
+                if (close) {
+                    // no further notification on scope change
+                    LazyMOMProvider.INSTANCE.unregisterEndpoint(this);
+                    MonitorBase.closeMOM(managedObjectManager);
+                }
+            }
+            managedObjectManagerClosed = true;
         }
-        MonitorBase.closeMOM(managedObjectManager);
-        managedObjectManagerClosed = true;
     }
 
     public @NotNull ServerTubeAssemblerContext getAssemblerContext() {
