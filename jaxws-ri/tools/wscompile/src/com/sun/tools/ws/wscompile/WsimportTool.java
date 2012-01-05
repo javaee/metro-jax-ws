@@ -183,7 +183,13 @@ public class WsimportTool {
                        Receiver receiver) {
         for (String arg : args) {
             if (arg.equals("-version")) {
-                listener.message(ToolVersion.VERSION.toString());
+                listener.message(
+                        WscompileMessages.WSIMPORT_VERSION(ToolVersion.VERSION.MAJOR_VERSION));
+                return true;
+            }
+            if (arg.equals("-fullversion")) {
+                listener.message(
+                        WscompileMessages.WSIMPORT_FULLVERSION(ToolVersion.VERSION.toString()));
                 return true;
             }
         }
