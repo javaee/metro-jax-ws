@@ -244,7 +244,16 @@
         </sequential>
     </macrodef>
 
-
+    <target name="com.sun.xml.ws.jaxws-rt.jar">
+        <jar jarfile="${build.home}/lib/com.sun.xml.ws.jaxws-rt.jar" manifest="${basedir}/rt/build/manifest">
+            <fileset dir="${basedir}/rt/build/classes" includes="**/*.class"/>
+            <fileset dir="${basedir}/rt-fi/build/classes" includes="**/*.class"/>
+            <fileset dir="${basedir}/rt-ha/build/classes" includes="**/*.class"/>
+            <fileset dir="${basedir}/servlet/build/classes" includes="**/*.class"/>
+            <fileset dir="${basedir}/rt/src" includes="**/*.xml"/>
+        </jar>
+	</target>
+	
     <target name="runtime-build" depends="runtime-compile">
         <!-- Copy resource files etc -->
         <copy todir="${basedir}/rt/build/classes">
