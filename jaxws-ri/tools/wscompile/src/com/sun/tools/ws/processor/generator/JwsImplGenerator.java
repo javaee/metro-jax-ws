@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -564,7 +564,7 @@ public final class JwsImplGenerator extends GeneratorBase {
 
 	private static File findFile(WsimportOptions options, String qualifiedFileName)
 	    throws java.io.IOException {
-		String baseDir = options.destDir.getCanonicalPath();
+		String baseDir = options.sourceDir.getCanonicalPath();
 		String fp = null;
 		for (File f : options.getGeneratedFiles()) {
 			fp = getQualifiedFileName(baseDir, f);
