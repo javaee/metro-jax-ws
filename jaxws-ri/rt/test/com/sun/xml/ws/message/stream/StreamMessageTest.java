@@ -238,6 +238,24 @@ public class StreamMessageTest extends TestCase {
         assertEquals("http://schemas.xmlsoap.org/soap/envelope/", xsr.getNamespaceURI("ns4"));
     }
 
+    public void testCData() throws Exception {
+        String soap18Msg = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+"<soapenv:Body>" +
+    "<echoRequest xmlns=\"http://test.oracle.com/xsd\">" +
+      "<arg0>outside cdata <![CDATA[<data>inside cdata</data>]]></arg0>" +
+    "</echoRequest>" +
+  "</soapenv:Body>" +
+"</soapenv:Envelope>";
+		Message message = useStreamCodec(soap18Msg);
+        Source source = message.readPayloadAsSource();
+        InputStream is = getInputStream(source);
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(is);
+		reader.next();
+		while (reader.getEventType() == XMLStreamReader.START_ELEMENT) reader.next();
+		String text = new String(reader.getTextCharacters(), reader.getTextStart(), reader.getTextLength());
+		assertEquals("outside cdata <data>inside cdata</data>", text);
+	}
+	
 /*
     private DOMSource toDOMSource(Source source) throws Exception {
         if (source instanceof DOMSource) {
