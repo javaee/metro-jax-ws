@@ -49,8 +49,11 @@ import com.sun.istack.NotNull;
 public final class ContentTypeImpl implements com.sun.xml.ws.api.pipe.ContentType {
     private final @NotNull String contentType;
     private final @NotNull String soapAction;
-    private final @Nullable String accept;
+    private String accept;
     private final @Nullable String charset;
+    private String boundary;
+    private String boundaryParameter;
+    private String rootId;
 
     public ContentTypeImpl(String contentType) {
         this(contentType, null, null);
@@ -112,6 +115,34 @@ public final class ContentTypeImpl implements com.sun.xml.ws.api.pipe.ContentTyp
 
     public String getAcceptHeader() {
         return accept;
+    }
+
+    public void setAcceptHeader(String accept) {
+        this.accept = accept;
+    }
+
+    public String getBoundary() {
+        return boundary;
+    }
+
+    public void setBoundary(String boundary) {
+        this.boundary = boundary;
+    }
+
+    public String getBoundaryParameter() {
+        return boundaryParameter;
+    }
+
+    public void setBoundaryParameter(String boundaryParameter) {
+        this.boundaryParameter = boundaryParameter;
+    }
+
+    public String getRootId() {
+        return rootId;
+    }
+
+    public void setRootId(String rootId) {
+        this.rootId = rootId;
     }
     
     public static class Builder {

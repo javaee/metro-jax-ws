@@ -793,23 +793,7 @@ public final class Packet
      */
     public Packet createServerResponse(@Nullable Message responseMessage, @Nullable WSDLPort wsdlPort, @Nullable SEIModel seiModel, @NotNull WSBinding binding) {
         Packet r = createClientResponse(responseMessage);
-
-        AddressingVersion av = binding.getAddressingVersion();
-        // populate WS-A headers only if WS-A is enabled
-        if (av == null)
-            return r;
-        //populate WS-A headers only if the request has addressing headers
-        String inputAction = this.getMessage().getHeaders().getAction(av, binding.getSOAPVersion());
-        if (inputAction == null) {
-            return r;
-        }
-        // if one-way, then dont populate any WS-A headers
-        if (responseMessage == null || (wsdlPort != null && message.isOneWay(wsdlPort)))
-            return r;
-
-        // otherwise populate WS-Addressing headers
-        populateAddressingHeaders(binding, r, wsdlPort, seiModel);
-        return r;
+        return relateServerResponse(r, wsdlPort, seiModel, binding); 
     }
 
 
@@ -829,7 +813,10 @@ public final class Packet
         r.proxy = this.proxy;
         r.webServiceContextDelegate = this.webServiceContextDelegate;
         r.expectReply = this.expectReply;
-
+        r.mtomAcceptable = this.mtomAcceptable;
+        r.mtomRequest = this.mtomRequest;         
+        r.status = Status.Response;
+        
         AddressingVersion av = binding.getAddressingVersion();
         // populate WS-A headers only if WS-A is enabled
         if (av == null)
@@ -1036,8 +1023,7 @@ public final class Packet
             codec = wsb.getBindingId().createEncoder(wsb);
         }        
         return codec;
-    }    
-   
+    } 
 
     public ContentType writeTo( OutputStream out ) throws IOException {
         return getCodec().encode(this, out);
@@ -1046,4 +1032,55 @@ public final class Packet
     public ContentType writeTo( WritableByteChannel buffer ) {
         return getCodec().encode(this, buffer);
     }
+    
+    private ContentType contentType;
+
+    /**
+     * If the request's Content-Type is multipart/related; type=application/xop+xml, then this set to to true
+     *
+     * Used on server-side, for encoding the repsonse.
+     */
+    private Boolean mtomRequest;
+
+    /**
+     * Based on request's Accept header this is set.
+     * Currently only set if MTOMFeature is enabled.
+     *
+     * Should be used on server-side, for encoding the response.
+     */
+    private Boolean mtomAcceptable;
+
+    public Boolean getMtomRequest() {
+        return mtomRequest;
+    }
+
+    public void setMtomRequest(Boolean mtomRequest) {
+        this.mtomRequest = mtomRequest;
+    }
+
+    public Boolean getMtomAcceptable() {
+        return mtomAcceptable;
+    }
+
+    public void setMtomAcceptable(Boolean mtomAcceptable) {
+        this.mtomAcceptable = mtomAcceptable;
+    }
+    
+    public ContentType getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
+    }
+    
+    public enum Status { 
+        Request, Response, Unknown;
+        public boolean isRequest()  { return Request.equals(this); }
+        public boolean isResponse() { return Response.equals(this); }
+    }
+    
+    private Status status = Status.Unknown;
+    
+    public Status getStatus() { return status; }
 }

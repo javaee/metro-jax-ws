@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,17 +69,19 @@ import java.nio.channels.WritableByteChannel;
  *
  * <p>
  * {@link Codec} does not produce transport-specific information, such as HTTP headers.
- *
+ * 
  * <p>
- * {@link Codec} is a non-reentrant object, meaning no two threads
- * can concurrently invoke the decode method. This allows the implementation
- * to easily reuse parser objects (as instance variables), which are costly otherwise.
- *
+ * {@link Codec} implementations should be thread-safe; a codec instance could be used
+ * concurrently in multiple threads. If a codec have to generate or use a per-request
+ * state, the codec implementation must store the state in the Packet instead of using an
+ * instance variable of the codec implementation.
  *
  * <p>
  * {@link BindingID} determines the {@link Codec}. See {@link BindingID#createEncoder(WSBinding)}.
  *
- * @author Kohsuke Kawaguchi
+ * @author Kohsuke Kawaguchi 
+ * @author shih-chang.chen@oracle.com
+ * 
  * @see EndpointAwareCodec
  */
 public interface Codec {

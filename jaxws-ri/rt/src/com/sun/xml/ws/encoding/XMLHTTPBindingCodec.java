@@ -110,37 +110,18 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
      * The Accept header for Fast Infoset and XML encodings
      */
     private static final String fiXmlAccept = APPLICATION_FAST_INFOSET_MIME_TYPE + ", " + BASE_ACCEPT_VALUE;
-    
-    private class AcceptContentType implements ContentType {
-        private ContentType _c;
-        private String _accept;
         
-        public AcceptContentType set(Packet p, ContentType c) {
-            // TODO: need to compose based on underlying codecs
-            if (p.contentNegotiation == ContentNegotiation.optimistic 
-                    || p.contentNegotiation == ContentNegotiation.pessimistic) {
-                _accept = fiXmlAccept;
-            } else {
-                _accept = xmlAccept;
-            }
-            _c = c;
-            return this;
+    private ContentTypeImpl setAcceptHeader(Packet p, ContentType c) {
+        ContentTypeImpl ctImpl = (ContentTypeImpl)c;
+        if (p.contentNegotiation == ContentNegotiation.optimistic 
+                || p.contentNegotiation == ContentNegotiation.pessimistic) {
+            ctImpl.setAcceptHeader(fiXmlAccept);
+        } else {
+            ctImpl.setAcceptHeader(xmlAccept);
         }
-        
-        public String getContentType() {
-            return _c.getContentType();
-        }
-        
-        public String getSOAPActionHeader() {
-            return _c.getSOAPActionHeader();
-        }
-        
-        public String getAcceptHeader() {
-            return _accept;
-        }
+        p.setContentType(ctImpl);
+        return ctImpl;
     }
-    
-    private AcceptContentType _adaptingContentType = new AcceptContentType();
     
     public XMLHTTPBindingCodec(WSFeatureList f) {
         super(SOAPVersion.SOAP_11, f);
@@ -156,7 +137,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
     
     @Override
     public ContentType getStaticContentType(Packet packet) {
-        setRootCodec(packet);
+//        setRootCodec(packet);
         
         ContentType ct = null;
         if (packet.getMessage() instanceof MessageDataSource) {
@@ -164,28 +145,28 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
             if (mds.hasUnconsumedDataSource()) {
                 ct = getStaticContentType(mds);
                 return (ct != null)
-                    ? _adaptingContentType.set(packet, ct) 
+                    ? setAcceptHeader(packet, ct) //_adaptingContentType.set(packet, ct) 
                     : null;
             }
         }
         
         ct = super.getStaticContentType(packet);            
         return (ct != null)
-            ? _adaptingContentType.set(packet, ct) 
+            ? setAcceptHeader(packet, ct) //_adaptingContentType.set(packet, ct) 
             : null;
     }
     
     @Override
     public ContentType encode(Packet packet, OutputStream out) throws IOException {
-        setRootCodec(packet);
+//        setRootCodec(packet);
         
         if (packet.getMessage() instanceof MessageDataSource) {
             final MessageDataSource mds = (MessageDataSource)packet.getMessage();
             if (mds.hasUnconsumedDataSource())
-                return _adaptingContentType.set(packet, encode(mds, out));
+                return setAcceptHeader(packet, encode(mds, out));
         }
         
-        return _adaptingContentType.set(packet, super.encode(packet, out));
+        return setAcceptHeader(packet, super.encode(packet, out));
     }
 
     public ContentType encode(Packet packet, WritableByteChannel buffer) {
@@ -299,8 +280,8 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
             throw new WebServiceException(ioe);
         }
     }    
-    
-    private void setRootCodec(Packet p) {
+
+    protected Codec getMimeRootCodec(Packet p) {
         /**
          * The following logic is only for outbound packets
          * to be encoded by client.
@@ -315,8 +296,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
             useFastInfosetForEncoding = true;
         }
 
-        rootCodec = (useFastInfosetForEncoding && fiCodec != null)
-            ? fiCodec : xmlCodec;
+        return (useFastInfosetForEncoding && fiCodec != null)? fiCodec : xmlCodec;
     }
 
     public static boolean requiresTransformationOfDataSource(
