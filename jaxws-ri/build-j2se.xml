@@ -138,7 +138,7 @@
            </classpath>
         </javac>
 
-        <jar destfile="build/j2se-servlet/jdk7-jaxws-http-transport.jar">
+        <jar destfile="build/j2se-servlet/jdk8-jaxws-http-transport.jar">
             <fileset dir="build/j2se-servlet/classes"/>
             <zipfileset src="lib/ha-api.jar"/>            
         </jar>
@@ -220,13 +220,46 @@ import com.sun.istack.internal.tools.*;]]></replacevalue>
 
        <delete dir="build/ant-j2se/tempsrc"/>
 
-
+        <copy todir="build/ant-j2se/src/com/sun/istack/tools" file="build/ant-j2se/src/com/sun/istack/internal/tools/SecureLoader.java" />
+        <replace dir="build/ant-j2se/src/com/sun/istack/tools">
+            <include name="SecureLoader.java"/>
+            <replacetoken><![CDATA[package com.sun.istack.internal.tools;]]></replacetoken>
+            <replacevalue><![CDATA[package com.sun.istack.tools;]]></replacevalue>
+        </replace>
+        <copy todir="build/ant-j2se/src/com/sun/tools/jxc" file="build/ant-j2se/src/com/sun/istack/internal/tools/SecureLoader.java" />
+        <replace dir="build/ant-j2se/src/com/sun/tools/jxc">
+            <include name="SecureLoader.java"/>
+            <replacetoken><![CDATA[package com.sun.istack.internal.tools;]]></replacetoken>
+            <replacevalue><![CDATA[package com.sun.tools.jxc;]]></replacevalue>
+        </replace>
+        <copy todir="build/ant-j2se/src/com/sun/tools/xjc" file="build/ant-j2se/src/com/sun/istack/internal/tools/SecureLoader.java" />
+        <replace dir="build/ant-j2se/src/com/sun/tools/xjc">
+            <include name="SecureLoader.java"/>
+            <replacetoken><![CDATA[package com.sun.istack.internal.tools;]]></replacetoken>
+            <replacevalue><![CDATA[package com.sun.tools.xjc;]]></replacevalue>
+        </replace>
+        <copy todir="build/ant-j2se/src/com/sun/tools/ws/ant" file="build/ant-j2se/src/com/sun/istack/internal/tools/SecureLoader.java" />
+		<replace dir="build/ant-j2se/src/com/sun/tools/ws/ant">
+            <include name="SecureLoader.java"/>
+            <replacetoken><![CDATA[package com.sun.istack.internal.tools;]]></replacetoken>
+            <replacevalue><![CDATA[package com.sun.tools.ws.ant;]]></replacevalue>
+        </replace>
+        <replace dir="build/ant-j2se/src/com/sun/tools/jxc">
+            <include name="*.java"/>
+            <replacetoken><![CDATA[import com.sun.tools.internal.jxc.SecureLoader;]]></replacetoken>
+            <replacevalue><![CDATA[]]></replacevalue>
+        </replace>
+        <replace dir="build/ant-j2se/src/com/sun/tools/xjc">
+            <include name="*.java"/>
+            <replacetoken><![CDATA[import com.sun.tools.internal.xjc.SecureLoader;]]></replacetoken>
+            <replacevalue><![CDATA[]]></replacevalue>
+        </replace>
        <javac bootclasspathref="jdk.classpath" srcdir="build/ant-j2se/src"
             debug="true"
             destdir="build/ant-j2se/classes" >
         </javac>
 
-        <jar destfile="build/ant-j2se/jdk7-jaxws-ant-tasks.jar"
+        <jar destfile="build/ant-j2se/jdk8-jaxws-ant-tasks.jar"
             basedir="build/ant-j2se/classes"/>
     
     </target>
