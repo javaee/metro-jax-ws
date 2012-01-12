@@ -370,7 +370,7 @@
             <compilation-unit>
                 <package-root>rt/build/gen-src</package-root>
                 <classpath mode="boot">${ri.nb.boot.cp}</classpath>
-                <classpath mode="compile">rt/src:${ri.nb.common.cp}</classpath>
+                <classpath mode="compile">rt/src:rt/build/classes:${ri.nb.common.cp}</classpath>
                 <built-to>rt/build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
@@ -457,7 +457,7 @@
                 <package-root>tools/wscompile/test</package-root>
                 <unit-tests/>
                 <classpath mode="boot">${ri.nb.boot.cp}</classpath>
-                <classpath mode="compile">tools/wscompile/src:rt/src:${ri.nb.test.cp}:${ri.nb.tools.jar}:${ri.nb.ant.cp}</classpath>
+                <classpath mode="compile">tools/wscompile/src:rt/src:${ri.nb.test.cp}:${ri.nb.tools.jar}:${ri.nb.ant.cp}:${ant.home}/lib/ant-launcher.jar</classpath>
                 <built-to>tools/wscompile/build/test-classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
