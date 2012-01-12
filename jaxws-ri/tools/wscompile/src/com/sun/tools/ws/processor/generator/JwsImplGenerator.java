@@ -461,21 +461,20 @@ public final class JwsImplGenerator extends GeneratorBase {
 			}
 		}
 
-		// process the bindings in backup list of model
+		// process the bindings in whole document
 		if (value == null) {
-			// TODO: The property "BAKEUP_BINDINGS" is set in WsdlModeler when init
-			// the model
-			// make this as a const if needed.
-			HashMap hm = (HashMap) model.getProperty("BAKEUP_BINDINGS");
-			Binding b = (Binding) hm.get(bName);
-			if (b != null) {
+			if (model.getEntity() instanceof Definitions) {
+			    Definitions definitions = (Definitions) model.getEntity();
+			    Binding b = (Binding) definitions.resolveBindings().get(bName);
+			    if (b != null) {
 				List<TWSDLExtension> bindextends = (List<TWSDLExtension>) b
 				    .extensions();
 				for (TWSDLExtension wsdlext : bindextends) {
-					value = resolveBindingValue(wsdlext);
-					if (value != null)
-						break;
+				    value = resolveBindingValue(wsdlext);
+				    if (value != null)
+				    break;
 				}
+	                    }
 			}
 		}
 

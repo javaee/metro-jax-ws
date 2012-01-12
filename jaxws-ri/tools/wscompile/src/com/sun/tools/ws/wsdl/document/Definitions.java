@@ -43,6 +43,7 @@ package com.sun.tools.ws.wsdl.document;
 import com.sun.tools.ws.api.wsdl.TWSDLExtensible;
 import com.sun.tools.ws.api.wsdl.TWSDLExtension;
 import com.sun.tools.ws.wsdl.framework.*;
+
 import org.xml.sax.Locator;
 
 import javax.xml.namespace.QName;
@@ -226,6 +227,10 @@ public class Definitions extends Entity implements Defining, TWSDLExtensible {
     }
 
     public void validateThis() {
+    }
+    
+    public Map resolveBindings() {
+	return _document.getMap(Kinds.BINDING);
     }
 
     private AbstractDocument _document;
