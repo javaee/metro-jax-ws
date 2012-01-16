@@ -195,24 +195,8 @@ public final class Packet
      * Used by {@link #createResponse(Message)} and {@link #copy(boolean)}.
      */
     private Packet(Packet that) {
-        that.copySatelliteInto((DistributedPropertySet) this);
-        this.handlerConfig = that.handlerConfig;
-        this.invocationProperties = that.invocationProperties;
-        this.handlerScopePropertyNames = that.handlerScopePropertyNames;
-        this.contentNegotiation = that.contentNegotiation;
-        this.wasTransportSecure = that.wasTransportSecure;
-        this.transportBackChannel = that.transportBackChannel;
-        this.endpointAddress = that.endpointAddress;
-        this.isAdapterDeliversNonAnonymousResponse = that.isAdapterDeliversNonAnonymousResponse;
-        this.wsdlOperation = that.wsdlOperation;
-        this.acceptableMimeTypes = that.acceptableMimeTypes;
-        this.endpoint = that.endpoint;
-        this.proxy = that.proxy;
-        this.webServiceContextDelegate = that.webServiceContextDelegate;
-        this.soapAction = that.soapAction;
-        this.expectReply = that.expectReply;
-        this.component = that.component;
-        // copy other properties that need to be copied. is there any?
+    	relatePackets(that, true);
+        this.invocationProperties = that.invocationProperties;      
     }
 
     /**
@@ -795,27 +779,67 @@ public final class Packet
         Packet r = createClientResponse(responseMessage);
         return relateServerResponse(r, wsdlPort, seiModel, binding); 
     }
+    
+    /**
+     * Copy all properties from ({@code this}) packet into a input {@link Packet}
+     * @param response packet
+     */
+    public void copyPropertiesTo(@Nullable Packet response){
+    	relatePackets(response, false);
+    }
+    
+    
+    /**
+     * A common method to make members related between input packet and this packet
+     * 
+     * @param packet
+     * @param isCopy 'true' means copying all properties from input packet;
+     *               'false' means copying all properties from this packet to input packet. 
+     */
+    private void relatePackets(@Nullable Packet packet, boolean isCopy)
+    {
+    	Packet request;
+  	    Packet response;
+    	
+    	if (!isCopy) { //is relate
+    	  request = this;
+    	  response = packet;
+    	  
+    	  // processing specific properties    	 
+    	  response.soapAction = null;
+    	  response.invocationProperties.putAll(request.invocationProperties);            
+    	  response.status = Status.Response;
+    	} else { //is copy constructor
+    	  request = packet;
+    	  response = this;
+    	  
+    	  // processing specific properties  
+    	  response.soapAction = request.soapAction;
+    	}
+    	
+    	request.copySatelliteInto((DistributedPropertySet) response);
+    	response.handlerConfig = request.handlerConfig;
+    	response.handlerScopePropertyNames = request.handlerScopePropertyNames;
+    	response.contentNegotiation = request.contentNegotiation;
+    	response.wasTransportSecure = request.wasTransportSecure;
+    	response.transportBackChannel = request.transportBackChannel;
+    	response.endpointAddress = request.endpointAddress;
+    	response.isAdapterDeliversNonAnonymousResponse = request.isAdapterDeliversNonAnonymousResponse;
+    	response.wsdlOperation = request.wsdlOperation;
+    	response.acceptableMimeTypes = request.acceptableMimeTypes;
+    	response.endpoint = request.endpoint;
+    	response.proxy = request.proxy;
+    	response.webServiceContextDelegate = request.webServiceContextDelegate;
+    	response.expectReply = request.expectReply;
+    	response.component = request.component;
+    	response.mtomAcceptable = request.mtomAcceptable;
+    	response.mtomRequest = request.mtomRequest;
+        // copy other properties that need to be copied. is there any?
+    }
 
 
     public Packet relateServerResponse(@Nullable Packet r, @Nullable WSDLPort wsdlPort, @Nullable SEIModel seiModel, @NotNull WSBinding binding) {
-        copySatelliteInto((DistributedPropertySet) r);
-        r.soapAction = null;
-        r.handlerConfig = this.handlerConfig;
-        r.invocationProperties.putAll(this.invocationProperties);
-        r.handlerScopePropertyNames = this.handlerScopePropertyNames;
-        r.contentNegotiation = this.contentNegotiation;
-        r.wasTransportSecure = this.wasTransportSecure;
-        r.endpointAddress = this.endpointAddress;
-        r.wsdlOperation = this.wsdlOperation;
-
-        r.acceptableMimeTypes = this.acceptableMimeTypes;
-        r.endpoint = this.endpoint;
-        r.proxy = this.proxy;
-        r.webServiceContextDelegate = this.webServiceContextDelegate;
-        r.expectReply = this.expectReply;
-        r.mtomAcceptable = this.mtomAcceptable;
-        r.mtomRequest = this.mtomRequest;         
-        r.status = Status.Response;
+    	relatePackets(r, false);
         
         AddressingVersion av = binding.getAddressingVersion();
         // populate WS-A headers only if WS-A is enabled
