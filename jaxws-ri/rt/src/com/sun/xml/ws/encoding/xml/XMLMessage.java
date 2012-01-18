@@ -594,8 +594,9 @@ public final class XMLMessage {
                 final ByteArrayBuffer bos = new ByteArrayBuffer();
                 try {
                     Codec codec = new XMLHTTPBindingCodec(f);
-                    com.sun.xml.ws.api.pipe.ContentType ct = codec.getStaticContentType(new Packet(msg));
-                    codec.encode(new Packet(msg), bos);
+                    Packet packet = new Packet(msg);
+                    com.sun.xml.ws.api.pipe.ContentType ct = codec.getStaticContentType(packet);
+                    codec.encode(packet, bos);
                     return createDataSource(ct.getContentType(), bos.newInputStream());
                 } catch(IOException ioe) {
                     throw new WebServiceException(ioe);
