@@ -815,6 +815,7 @@ public final class Packet
     	  
     	  // processing specific properties  
     	  response.soapAction = request.soapAction;
+    	  response.isAdapterDeliversNonAnonymousResponse = request.isAdapterDeliversNonAnonymousResponse;
     	}
     	
     	request.copySatelliteInto((DistributedPropertySet) response);
@@ -823,8 +824,7 @@ public final class Packet
     	response.contentNegotiation = request.contentNegotiation;
     	response.wasTransportSecure = request.wasTransportSecure;
     	response.transportBackChannel = request.transportBackChannel;
-    	response.endpointAddress = request.endpointAddress;
-    	response.isAdapterDeliversNonAnonymousResponse = request.isAdapterDeliversNonAnonymousResponse;
+    	response.endpointAddress = request.endpointAddress;    	
     	response.wsdlOperation = request.wsdlOperation;
     	response.acceptableMimeTypes = request.acceptableMimeTypes;
     	response.endpoint = request.endpoint;
