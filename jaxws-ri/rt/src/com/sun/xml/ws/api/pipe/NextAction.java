@@ -59,6 +59,7 @@ public final class NextAction {
      * Really either {@link RuntimeException} or {@link Error}.
      */
     Throwable throwable;
+    Runnable onExitRunnable;
 
     // public enum Kind { INVOKE, INVOKE_AND_FORGET, RETURN, SUSPEND }
 
@@ -162,7 +163,21 @@ public final class NextAction {
      * Once {@link Fiber#resume(Packet) resumed}, return the response processing.
      */
     public void suspend() {
-        set(SUSPEND, null, null, null);
+        suspend(null, null);
+    }
+
+    /**
+     * Indicates that the fiber should be suspended.  Once the current {@link Thread}
+     * exits the fiber's control loop, the onExitRunnable will be invoked.  This {@link Runnable}
+     * may call {@link Fiber#resume(Packet)}; however it is still guaranteed that the current
+     * Thread will return control, therefore, further processing will be handled on a {@link Thread}
+     * from the {@link Executor}.  For synchronous cases, the Thread invoking this fiber cannot return
+     * until fiber processing is complete; therefore, the guarantee is only that the onExitRunnable
+     * will be invoked prior to completing the suspension.
+     * @since 2.2.7
+     */
+    public void suspend(Runnable onExitRunnable) {
+        suspend(null, onExitRunnable);
     }
 
     /**
@@ -171,9 +186,27 @@ public final class NextAction {
      * {@link Tube#processRequest(Packet)} on the given next tube.
      */
     public void suspend(Tube next) {
-        set(SUSPEND, next, null, null);
+        suspend(next, null);
     }
     
+    /**
+     * Indicates that the fiber should be suspended.  Once the current {@link Thread}
+     * exits the fiber's control loop, the onExitRunnable will be invoked.  This {@link Runnable}
+     * may call {@link Fiber#resume(Packet)}; however it is still guaranteed that the current
+     * fiber will return control, therefore, further processing will be handled on a {@link Thread}
+     * from the {@link Executor}.  For synchronous cases, the Thread invoking this fiber cannot return
+     * until fiber processing is complete; therefore, the guarantee is only that the onExitRunnable
+     * will be invoked prior to completing the suspension.
+     * <p>
+     * Once {@link Fiber#resume(Packet) resumed}, resume with the
+     * {@link Tube#processRequest(Packet)} on the given next tube.
+     * @since 2.2.7
+     */
+    public void suspend(Tube next, Runnable onExitRunnable) {
+        set(SUSPEND, next, null, null);
+        this.onExitRunnable = onExitRunnable;
+    }
+
     /** Returns the next tube
      * @return Next tube
      */

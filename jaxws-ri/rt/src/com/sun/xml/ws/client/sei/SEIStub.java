@@ -53,8 +53,9 @@ import com.sun.xml.ws.api.model.MEP;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.Fiber;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.ContainerResolver;
 import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.client.AsyncResponseImpl;
 import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.SOAPSEIModel;
@@ -146,21 +147,26 @@ public final class SEIStub extends Stub implements InvocationHandler {
     private final Map<Method, MethodHandler> methodHandlers = new HashMap<Method, MethodHandler>();
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        MethodHandler handler = methodHandlers.get(method);
-        if (handler != null) {
-            return handler.invoke(proxy, args);
-        } else {
-            // we handle the other method invocations by ourselves
-            try {
-                return method.invoke(this, args);
-            } catch (IllegalAccessException e) {
-                // impossible
-                throw new AssertionError(e);
-            } catch (IllegalArgumentException e) {
-                throw new AssertionError(e);
-            } catch (InvocationTargetException e) {
-                throw e.getCause();
+        Container old = ContainerResolver.getDefault().enterContainer(owner.getContainer());
+        try {
+            MethodHandler handler = methodHandlers.get(method);
+            if (handler != null) {
+                return handler.invoke(proxy, args);
+            } else {
+                // we handle the other method invocations by ourselves
+                try {
+                    return method.invoke(this, args);
+                } catch (IllegalAccessException e) {
+                    // impossible
+                    throw new AssertionError(e);
+                } catch (IllegalArgumentException e) {
+                    throw new AssertionError(e);
+                } catch (InvocationTargetException e) {
+                    throw e.getCause();
+                }
             }
+        } finally {
+            ContainerResolver.getDefault().exitContainer(old);
         }
     }
 

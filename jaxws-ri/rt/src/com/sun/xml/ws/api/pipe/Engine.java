@@ -46,6 +46,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.ContainerResolver;
 
 /**
  * Collection of {@link Fiber}s.
@@ -57,27 +59,33 @@ import com.sun.xml.ws.api.message.Packet;
 public class Engine {
     private volatile Executor threadPool;
     public final String id;
+    private final Container container;
 
-    public Engine(String id, Executor threadPool) {
-        this(id);
+    public Engine(String id, Container container, Executor threadPool) {
+        this(id, container);
         this.threadPool = threadPool;
     }
 
-    public Engine(String id) {
+    public Engine(String id, Container container) {
         this.id = id;
+        this.container = container;
     }
 
     public void setExecutor(Executor threadPool) {
-        this.threadPool = threadPool;
+        this.threadPool = wrap(threadPool);
     }
 
     void addRunnable(Fiber fiber) {
         if(threadPool==null) {
             synchronized(this) {
-                threadPool = Executors.newCachedThreadPool(new DaemonThreadFactory());
+                threadPool = wrap(Executors.newCachedThreadPool(new DaemonThreadFactory()));
             }
         }
         threadPool.execute(fiber);
+    }
+    
+    private Executor wrap(Executor ex) {
+        return ContainerResolver.getDefault().wrapExecutor(container, ex);
     }
 
     /**

@@ -62,6 +62,9 @@ final class ClientContainer extends Container {
     };
 
     public <T> T getSPI(Class<T> spiType) {
+        T t = super.getSPI(spiType);
+        if (t != null)
+            return t;
         if (spiType == ResourceLoader.class) {
             return spiType.cast(loader);
         }

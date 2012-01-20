@@ -67,6 +67,7 @@ import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.TubelineAssembler;
 import com.sun.xml.ws.api.pipe.TubelineAssemblerFactory;
 import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.ContainerResolver;
 import com.sun.xml.ws.api.server.EndpointAwareCodec;
 import com.sun.xml.ws.api.server.EndpointComponent;
 import com.sun.xml.ws.api.server.EndpointReferenceExtensionContributor;
@@ -184,6 +185,7 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
 	                    break;
 		        case CONTAINER:
 		            container.getComponents().add(cf.getComponent());
+		            break;
 		        default:
 		            throw new IllegalArgumentException();
 		    }
@@ -208,7 +210,7 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
 
 		tubePool = new TubePool(masterTubeline);
 		terminalTube.setEndpoint(this);
-		engine = new Engine(toString());
+		engine = new Engine(toString(), container);
 		wsdlProperties = (port == null) ? new WSDLDirectProperties(serviceName, portName, seiModel) : new WSDLPortProperties(port, seiModel);
 
         Map<QName, WSEndpointReference.EPRExtension> eprExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
@@ -274,7 +276,7 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
     	        seiModel, port, this, null /* not known */, false);
 
 		tubePool = new TubePool(masterTubeline);
-		engine = new Engine(toString());
+		engine = new Engine(toString(), container);
 		wsdlProperties = (port == null) ? new WSDLDirectProperties(serviceName, portName, seiModel) : new WSDLPortProperties(port, seiModel);
   }
 
@@ -328,74 +330,96 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
         processAsync(request, callback, interceptor, true);
     }
 
-    private void processAsync(final Packet request, final CompletionCallback callback, FiberContextSwitchInterceptor interceptor, boolean schedule) {
-		request.endpoint = WSEndpointImpl.this;
-		request.addSatellite(wsdlProperties);
+    private void processAsync(final Packet request,
+            final CompletionCallback callback,
+            FiberContextSwitchInterceptor interceptor, boolean schedule) {
+        Container old = ContainerResolver.getDefault().enterContainer(container);
+        try {
+            request.endpoint = WSEndpointImpl.this;
+            request.addSatellite(wsdlProperties);
 
-        Fiber fiber = engine.createFiber();
-		if (interceptor != null) {
-			fiber.addInterceptor(interceptor);
-		}
-		final Tube tube = tubePool.take();
-		Fiber.CompletionCallback cbak = new Fiber.CompletionCallback() {
-            public void onCompletion(@NotNull Packet response) {
-				tubePool.recycle(tube);
-				if (callback != null) {
-					callback.onCompletion(response);
-				}
-			}
+            Fiber fiber = engine.createFiber();
+            if (interceptor != null) {
+                fiber.addInterceptor(interceptor);
+            }
+            final Tube tube = tubePool.take();
+            Fiber.CompletionCallback cbak = new Fiber.CompletionCallback() {
+                public void onCompletion(@NotNull Packet response) {
+                    tubePool.recycle(tube);
+                    if (callback != null) {
+                        callback.onCompletion(response);
+                    }
+                }
 
-            public void onCompletion(@NotNull Throwable error) {
-                // let's not reuse tubes as they might be in a wrong state, so not
-				// calling tubePool.recycle()
-                // Convert all runtime exceptions to Packet so that transport doesn't
-				// have to worry about converting to wire message
-				// TODO XML/HTTP binding
-				Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
-						soapVersion, null, error);
-                Packet response = request.createServerResponse(faultMsg, request.endpoint.getPort(), null,
-                        request.endpoint.getBinding());
-				if (callback != null) {
-					callback.onCompletion(response);
-				}
-			}
-		};
-		
-		fiber.start(tube, request, cbak, 
-				binding.isFeatureEnabled(SyncStartForAsyncFeature.class) || !schedule);
-	}
+                public void onCompletion(@NotNull Throwable error) {
+                    // let's not reuse tubes as they might be in a wrong state,
+                    // so not
+                    // calling tubePool.recycle()
+                    // Convert all runtime exceptions to Packet so that
+                    // transport doesn't
+                    // have to worry about converting to wire message
+                    // TODO XML/HTTP binding
+                    Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
+                            soapVersion, null, error);
+                    Packet response = request.createServerResponse(faultMsg,
+                            request.endpoint.getPort(), null,
+                            request.endpoint.getBinding());
+                    if (callback != null) {
+                        callback.onCompletion(response);
+                    }
+                }
+            };
+
+            fiber.start(tube, request, cbak,
+                    binding.isFeatureEnabled(SyncStartForAsyncFeature.class)
+                            || !schedule);
+        } finally {
+            ContainerResolver.getDefault().exitContainer(old);
+        }
+    }
 
     @Override
     public void process(final Packet request, final CompletionCallback callback, FiberContextSwitchInterceptor interceptor) {
         processAsync(request, callback, interceptor, false);
     }
 
-    public @NotNull PipeHead createPipeHead() {
-		return new PipeHead() {
-			private final Tube tube = TubeCloner.clone(masterTubeline);
+    public @NotNull
+    PipeHead createPipeHead() {
+        return new PipeHead() {
+            private final Tube tube = TubeCloner.clone(masterTubeline);
 
-            public @NotNull Packet process(Packet request, WebServiceContextDelegate wscd, TransportBackChannel tbc) {
-				request.webServiceContextDelegate = wscd;
-				request.transportBackChannel = tbc;
-				request.endpoint = WSEndpointImpl.this;
-				request.addSatellite(wsdlProperties);
+            public @NotNull
+            Packet process(Packet request, WebServiceContextDelegate wscd,
+                    TransportBackChannel tbc) {
+                Container old = ContainerResolver.getDefault().enterContainer(container);
+                try {
+                    request.webServiceContextDelegate = wscd;
+                    request.transportBackChannel = tbc;
+                    request.endpoint = WSEndpointImpl.this;
+                    request.addSatellite(wsdlProperties);
 
-				Fiber fiber = engine.createFiber();
-				Packet response;
-				try {
-					response = fiber.runSync(tube, request);
-				} catch (RuntimeException re) {
-					// Catch all runtime exceptions so that transport doesn't
-					// have to worry about converting to wire message
-					// TODO XML/HTTP binding
-					Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
-							soapVersion, null, re);
-                    response = request.createServerResponse(faultMsg, request.endpoint.getPort(), null, request.endpoint.getBinding());
-				}
-				return response;
-			}
-		};
-	}
+                    Fiber fiber = engine.createFiber();
+                    Packet response;
+                    try {
+                        response = fiber.runSync(tube, request);
+                    } catch (RuntimeException re) {
+                        // Catch all runtime exceptions so that transport
+                        // doesn't
+                        // have to worry about converting to wire message
+                        // TODO XML/HTTP binding
+                        Message faultMsg = SOAPFaultBuilder
+                                .createSOAPFaultMessage(soapVersion, null, re);
+                        response = request.createServerResponse(faultMsg,
+                                request.endpoint.getPort(), null,
+                                request.endpoint.getBinding());
+                    }
+                    return response;
+                } finally {
+                    ContainerResolver.getDefault().exitContainer(old);
+                }
+            }
+        };
+    }
 
 	public synchronized void dispose() {
 		if (disposed)

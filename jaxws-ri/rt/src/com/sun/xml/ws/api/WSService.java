@@ -128,7 +128,7 @@ public abstract class WSService extends ServiceDelegate implements ComponentRegi
     			return s;
     	}
     	
-    	return null;
+    	return getContainer().getSPI(spiType);
     }
     
     public @NotNull Set<Component> getComponents() {

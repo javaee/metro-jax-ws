@@ -55,6 +55,8 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Fiber;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.ContainerResolver;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.encoding.soap.DeserializationException;
@@ -195,14 +197,19 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
     abstract T toReturnValue(Packet response);
 
     public final Response<T> invokeAsync(T param) {
-        if (LOGGER.isLoggable(Level.FINE)) {
-          dumpParam(param, "invokeAsync(T)");
+        Container old = ContainerResolver.getDefault().enterContainer(owner.getContainer());
+        try {
+            if (LOGGER.isLoggable(Level.FINE)) {
+              dumpParam(param, "invokeAsync(T)");
+            }
+            AsyncInvoker invoker = new DispatchAsyncInvoker(param);
+            AsyncResponseImpl<T> ft = new AsyncResponseImpl<T>(invoker,null);
+            invoker.setReceiver(ft);
+            ft.run();
+            return ft;
+        } finally {
+            ContainerResolver.getDefault().exitContainer(old);
         }
-        AsyncInvoker invoker = new DispatchAsyncInvoker(param);
-        AsyncResponseImpl<T> ft = new AsyncResponseImpl<T>(invoker,null);
-        invoker.setReceiver(ft);
-        ft.run();
-        return ft;
     }
 
     private void dumpParam(T param, String method) {
@@ -229,16 +236,21 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
       }
     }
     public final Future<?> invokeAsync(T param, AsyncHandler<T> asyncHandler) {
-        if (LOGGER.isLoggable(Level.FINE)) {
-          dumpParam(param, "invokeAsync(T, AsyncHandler<T>)");
+        Container old = ContainerResolver.getDefault().enterContainer(owner.getContainer());
+        try {
+            if (LOGGER.isLoggable(Level.FINE)) {
+              dumpParam(param, "invokeAsync(T, AsyncHandler<T>)");
+            }
+            AsyncInvoker invoker = new DispatchAsyncInvoker(param);
+            AsyncResponseImpl<T> ft = new AsyncResponseImpl<T>(invoker,asyncHandler);
+            invoker.setReceiver(ft);
+            invoker.setNonNullAsyncHandlerGiven(asyncHandler != null);
+    
+            ft.run();
+            return ft;
+        } finally {
+            ContainerResolver.getDefault().exitContainer(old);
         }
-        AsyncInvoker invoker = new DispatchAsyncInvoker(param);
-        AsyncResponseImpl<T> ft = new AsyncResponseImpl<T>(invoker,asyncHandler);
-        invoker.setReceiver(ft);
-        invoker.setNonNullAsyncHandlerGiven(asyncHandler != null);
-
-        ft.run();
-        return ft;
     }
 
     /**
@@ -289,32 +301,42 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
     }
 
     public final T invoke(T in) {
-        if (LOGGER.isLoggable(Level.FINE)) {
-          dumpParam(in, "invoke(T)");
+        Container old = ContainerResolver.getDefault().enterContainer(owner.getContainer());
+        try {
+            if (LOGGER.isLoggable(Level.FINE)) {
+              dumpParam(in, "invoke(T)");
+            }
+    
+            return doInvoke(in,requestContext,this);
+        } finally {
+            ContainerResolver.getDefault().exitContainer(old);
         }
-
-        return doInvoke(in,requestContext,this);
     }
 
     public final void invokeOneWay(T in) {
-        if (LOGGER.isLoggable(Level.FINE)) {
-          dumpParam(in, "invokeOneWay(T)");
-        }
-
+        Container old = ContainerResolver.getDefault().enterContainer(owner.getContainer());
         try {
-            checkNullAllowed(in, requestContext, binding, mode);
-
-            Packet request = createPacket(in);
-            setProperties(request,false);
-            Packet response = process(request,requestContext,this);
-        } catch(WebServiceException e){
-            //it could be a WebServiceException or a ProtocolException
-            throw e;
-        } catch(Throwable e){
-            // it could be a RuntimeException resulting due to some internal bug or
-            // its some other exception resulting from user error, wrap it in
-            // WebServiceException
-            throw new WebServiceException(e);
+            if (LOGGER.isLoggable(Level.FINE)) {
+              dumpParam(in, "invokeOneWay(T)");
+            }
+    
+            try {
+                checkNullAllowed(in, requestContext, binding, mode);
+    
+                Packet request = createPacket(in);
+                setProperties(request,false);
+                Packet response = process(request,requestContext,this);
+            } catch(WebServiceException e){
+                //it could be a WebServiceException or a ProtocolException
+                throw e;
+            } catch(Throwable e){
+                // it could be a RuntimeException resulting due to some internal bug or
+                // its some other exception resulting from user error, wrap it in
+                // WebServiceException
+                throw new WebServiceException(e);
+            }
+        } finally {
+            ContainerResolver.getDefault().exitContainer(old);
         }
     }
 

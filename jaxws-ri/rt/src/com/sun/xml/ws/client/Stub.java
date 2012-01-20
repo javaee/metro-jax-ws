@@ -65,6 +65,8 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.*;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.ContainerResolver;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.developer.WSBindingProvider;
@@ -247,49 +249,54 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
   }
 
     private Stub(WSServiceDelegate owner, @Nullable Tube master, @Nullable WSPortInfo portInfo, QName portname, BindingImpl binding, @Nullable WSDLPort wsdlPort, EndpointAddress defaultEndPointAddress, @Nullable WSEndpointReference epr) {
-        this.owner = owner;
-        this.portInfo = portInfo;
-        this.wsdlPort = wsdlPort != null ? wsdlPort : (portInfo != null ? portInfo.getPort() : null);
-        this.portname = portname;
-        if (portname == null) {
-        	if (portInfo != null)
-        		this.portname = portInfo.getPortName();
-        	else if (wsdlPort != null)
-        		this.portname = wsdlPort.getName();
+        Container old = ContainerResolver.getDefault().enterContainer(owner.getContainer());
+        try {
+            this.owner = owner;
+            this.portInfo = portInfo;
+            this.wsdlPort = wsdlPort != null ? wsdlPort : (portInfo != null ? portInfo.getPort() : null);
+            this.portname = portname;
+            if (portname == null) {
+            	if (portInfo != null)
+            		this.portname = portInfo.getPortName();
+            	else if (wsdlPort != null)
+            		this.portname = wsdlPort.getName();
+            }
+            this.binding = binding;
+    
+            ComponentFeature cf = binding.getFeature(ComponentFeature.class);
+            if (cf != null && Target.STUB.equals(cf.getTarget())) {
+                components.add(cf.getComponent());
+            }
+    
+            // if there is an EPR, EPR's address should be used for invocation instead of default address
+            if (epr != null)
+                this.requestContext.setEndPointAddressString(epr.getAddress());
+            else
+                this.requestContext.setEndpointAddress(defaultEndPointAddress);
+            this.engine = new Engine(toString(), owner.getContainer(), owner.getExecutor());
+            this.endpointReference = epr;
+            wsdlProperties = (wsdlPort == null) ? new WSDLDirectProperties(owner.getServiceName(), portname) : new WSDLPortProperties(wsdlPort);
+            
+            this.cleanRequestContext = this.requestContext.copy();
+    
+            // ManagedObjectManager MUST be created before the pipeline
+            // is constructed.
+    
+            managedObjectManager = new MonitorRootClient(this).createManagedObjectManager(this);
+    
+            if (master != null)
+                this.tubes = new TubePool(master);
+            else
+                this.tubes = new TubePool(createPipeline(portInfo, binding));
+    
+            addrVersion = binding.getAddressingVersion();
+    
+            // This needs to happen after createPipeline.
+            // TBD: Check if it needs to happen outside the Stub constructor.
+            managedObjectManager.resumeJMXRegistration();
+        } finally {
+            ContainerResolver.getDefault().exitContainer(old);
         }
-        this.binding = binding;
-
-        ComponentFeature cf = binding.getFeature(ComponentFeature.class);
-        if (cf != null && Target.STUB.equals(cf.getTarget())) {
-            components.add(cf.getComponent());
-        }
-
-        // if there is an EPR, EPR's address should be used for invocation instead of default address
-        if (epr != null)
-            this.requestContext.setEndPointAddressString(epr.getAddress());
-        else
-            this.requestContext.setEndpointAddress(defaultEndPointAddress);
-        this.engine = new Engine(toString(), owner.getExecutor());
-        this.endpointReference = epr;
-        wsdlProperties = (wsdlPort == null) ? new WSDLDirectProperties(owner.getServiceName(), portname) : new WSDLPortProperties(wsdlPort);
-        
-        this.cleanRequestContext = this.requestContext.copy();
-
-        // ManagedObjectManager MUST be created before the pipeline
-        // is constructed.
-
-        managedObjectManager = new MonitorRootClient(this).createManagedObjectManager(this);
-
-        if (master != null)
-            this.tubes = new TubePool(master);
-        else
-            this.tubes = new TubePool(createPipeline(portInfo, binding));
-
-        addrVersion = binding.getAddressingVersion();
-
-        // This needs to happen after createPipeline.
-        // TBD: Check if it needs to happen outside the Stub constructor.
-        managedObjectManager.resumeJMXRegistration();
     }
 
     /**

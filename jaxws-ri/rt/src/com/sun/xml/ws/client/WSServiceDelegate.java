@@ -192,6 +192,10 @@ public class WSServiceDelegate extends WSService {
 
 
     public WSServiceDelegate(URL wsdlDocumentLocation, QName serviceName, Class<? extends Service> serviceClass, WebServiceFeature... features) {
+        this(wsdlDocumentLocation, serviceName, serviceClass, new WebServiceFeatureList(features));
+    }
+
+    protected WSServiceDelegate(URL wsdlDocumentLocation, QName serviceName, Class<? extends Service> serviceClass, WebServiceFeatureList features) {
         this(
             wsdlDocumentLocation==null ? null : new StreamSource(wsdlDocumentLocation.toExternalForm()),
             serviceName,serviceClass, features);
@@ -202,7 +206,15 @@ public class WSServiceDelegate extends WSService {
      *      Either {@link Service}.class or other generated service-derived classes.
      */
     public WSServiceDelegate(@Nullable Source wsdl, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass, WebServiceFeature... features) {
-    	this(wsdl, null, serviceName, serviceClass, features);
+    	this(wsdl, serviceName, serviceClass, new WebServiceFeatureList(features));
+    }
+    
+    /**
+     * @param serviceClass
+     *      Either {@link Service}.class or other generated service-derived classes.
+     */
+    protected WSServiceDelegate(@Nullable Source wsdl, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass, WebServiceFeatureList features) {
+        this(wsdl, null, serviceName, serviceClass, features);
     }
     
     /**
@@ -210,11 +222,19 @@ public class WSServiceDelegate extends WSService {
      *      Either {@link Service}.class or other generated service-derived classes.
      */
     public WSServiceDelegate(@Nullable Source wsdl, @Nullable WSDLServiceImpl service, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass, WebServiceFeature... features) {
+        this(wsdl, service, serviceName, serviceClass, new WebServiceFeatureList(features));
+    }
+    
+    /**
+     * @param serviceClass
+     *      Either {@link Service}.class or other generated service-derived classes.
+     */
+    public WSServiceDelegate(@Nullable Source wsdl, @Nullable WSDLServiceImpl service, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass, WebServiceFeatureList features) {
         //we cant create a Service without serviceName
         if (serviceName == null)
             throw new WebServiceException(ClientMessages.INVALID_SERVICE_NAME_NULL(serviceName));
 
-        this.features = new WebServiceFeatureList(features);
+        this.features = features;
         
         InitParams initParams = INIT_PARAMS.get();
         INIT_PARAMS.set(null);  // mark it as consumed
@@ -236,6 +256,7 @@ public class WSServiceDelegate extends WSService {
                     break;
                 case CONTAINER:
                     this.container.getComponents().add(cf.getComponent());
+                    break;
                 default:
                     throw new IllegalArgumentException();
             }

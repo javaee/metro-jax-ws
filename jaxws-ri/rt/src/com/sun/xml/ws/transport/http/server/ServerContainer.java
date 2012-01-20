@@ -63,6 +63,9 @@ class ServerContainer extends Container {
     };
 
     public <T> T getSPI(Class<T> spiType) {
+        T t = super.getSPI(spiType);
+        if (t != null)
+            return t;
         if (spiType == Module.class) {
             return spiType.cast(module);
         }
