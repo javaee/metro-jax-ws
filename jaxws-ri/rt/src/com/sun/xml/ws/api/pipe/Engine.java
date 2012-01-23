@@ -61,11 +61,19 @@ public class Engine {
     public final String id;
     private final Container container;
 
+    public Engine(String id, Executor threadPool) {
+        this(id, ContainerResolver.getDefault().getContainer(), threadPool);
+    }
+    
     public Engine(String id, Container container, Executor threadPool) {
         this(id, container);
         this.threadPool = threadPool;
     }
 
+    public Engine(String id) {
+        this(id, ContainerResolver.getDefault().getContainer());
+    }
+    
     public Engine(String id, Container container) {
         this.id = id;
         this.container = container;
