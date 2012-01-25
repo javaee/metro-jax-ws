@@ -84,7 +84,10 @@ public class W3CAddressingWSDLGeneratorExtension extends WSDLGeneratorExtension 
         if (a != null && !a.input().equals("")) {
             addAttribute(input, a.input());
         } else {
-            if (method.getBinding().getSOAPAction().equals("")) {
+
+            String soapAction = method.getBinding().getSOAPAction();
+            // in SOAP 1.2 soapAction is optional ...
+            if (soapAction == null || soapAction.equals("")) {
                 //hack: generate default action for interop with .Net3.0 when soapAction is non-empty
                 String defaultAction = getDefaultAction(method);
                 addAttribute(input, defaultAction);
