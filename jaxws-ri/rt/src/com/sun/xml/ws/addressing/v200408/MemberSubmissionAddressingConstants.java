@@ -52,6 +52,8 @@ public interface MemberSubmissionAddressingConstants {
     public static final String WSA_NAMESPACE_WSDL_NAME = WSA_NAMESPACE_NAME;
     public static final String WSA_NAMESPACE_POLICY_NAME = "http://schemas.xmlsoap.org/ws/2004/08/addressing/policy";
 
+    public static final QName  WSA_ACTION_QNAME = new QName(WSA_NAMESPACE_NAME,"Action");
+
     public static final String WSA_SERVICENAME_NAME = "ServiceName";
     public static final String WSA_PORTTYPE_NAME = "PortType";
     public static final String WSA_PORTNAME_NAME = "PortName";
