@@ -48,7 +48,7 @@ import javax.jws.WebService;
  *
  * @author Miroslav Kos (miroslav.kos at oracle.com)
  */
-@WebService(endpointInterface = "bugs.jaxws1040.fromwsdl.server.WSAAction", wsdlLocation = "WSAActionService.wsdl")
+@WebService(endpointInterface = "bugs.jaxws1040.fromwsdl.server.WSAAction")
 @MemberSubmissionAddressing(enabled=true, required=true) // this must be here for runtime - configuring via wsld dosn't work!
 public class WSAActionImpl {
 
