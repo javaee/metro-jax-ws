@@ -126,4 +126,17 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         if (m != null) p.setMessage(m);
         return p;
     }  
+
+    @Deprecated
+    public MessageContext doCreate() {
+        return packet(null);
+    }
+    @Deprecated
+    public MessageContext doCreate(SOAPMessage m) {
+        return createContext(m);
+    }
+    @Deprecated
+    public MessageContext doCreate(Source x, SOAPVersion soapVersion) {
+        return packet(Messages.create(x, soapVersion));
+    }
 }

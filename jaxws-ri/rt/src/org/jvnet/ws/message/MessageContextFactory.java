@@ -44,5 +44,62 @@ public abstract class MessageContextFactory
         }
         return new com.sun.xml.ws.api.message.MessageContextFactory(f);
     }  
+
+    @Deprecated
+    public abstract MessageContext doCreate();
+
+    @Deprecated
+    public abstract MessageContext doCreate(SOAPMessage m);
+
+    //public abstract MessageContext doCreate(InputStream x);
+
+    @Deprecated
+    public abstract MessageContext doCreate(Source x, SOAPVersion soapVersion);
+
+    @Deprecated
+    public static MessageContext create(final ClassLoader... classLoader) {
+        return serviceFinder(classLoader,
+                             new Creator() {
+                                 public MessageContext create(final MessageContextFactory f) {
+                                     return f.doCreate();
+                                 }
+                             });
+    }
+
+    @Deprecated
+    public static MessageContext create(final SOAPMessage m, final ClassLoader... classLoader) {
+        return serviceFinder(classLoader,
+                             new Creator() {
+                                 public MessageContext create(final MessageContextFactory f) {
+                                     return f.doCreate(m);
+                                 }
+                             });
+    }
+
+    @Deprecated
+    public static MessageContext create(final Source m, final SOAPVersion v, final ClassLoader... classLoader) {
+        return serviceFinder(classLoader,
+                             new Creator() {
+                                 public MessageContext create(final MessageContextFactory f) {
+                                     return f.doCreate(m, v);
+                                 }
+                             });
+    }
+
+    @Deprecated
+    private static MessageContext serviceFinder(final ClassLoader[] classLoader, final Creator creator) {
+        final ClassLoader cl = classLoader.length == 0 ? null : classLoader[0];
+        for (MessageContextFactory factory : ServiceFinder.find(MessageContextFactory.class, cl)) {
+            final MessageContext messageContext = creator.create(factory);
+            if (messageContext != null)
+                return messageContext;
+        }
+        return creator.create(DEFAULT);
+    }
+
+    @Deprecated
+    private static interface Creator {
+        public MessageContext create(MessageContextFactory f);
+    }
 }
 
