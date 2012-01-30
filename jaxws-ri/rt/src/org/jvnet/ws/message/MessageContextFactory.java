@@ -21,80 +21,10 @@ public abstract class MessageContextFactory
 {   
     private static final MessageContextFactory DEFAULT = new com.sun.xml.ws.api.message.MessageContextFactory(new WebServiceFeature[0]);
 
-    /**
-     * @deprecated
-     */
-    public abstract MessageContext doCreate();
-
-    /**
-     * @deprecated
-     */
-    public abstract MessageContext doCreate(SOAPMessage m);
-    //public abstract MessageContext doCreate(InputStream x);
-    
-    /**
-     * @deprecated
-     */
-    public abstract MessageContext doCreate(Source x, SOAPVersion soapVersion);
-
-    /**
-     * @deprecated
-     */
-    public static MessageContext create(final ClassLoader... classLoader) {
-        return serviceFinder(classLoader,
-                             new Creator() {
-                                 public MessageContext create(final MessageContextFactory f) {
-                                     return f.doCreate();
-                                 }
-                             });
-    }
-
-    /**
-     * @deprecated
-     */
-    public static MessageContext create(final SOAPMessage m, final ClassLoader... classLoader) {
-        return serviceFinder(classLoader,
-                             new Creator() {
-                                 public MessageContext create(final MessageContextFactory f) {
-                                     return f.doCreate(m);
-                                 }
-                             });
-    }
-
-    /**
-     * @deprecated
-     */
-    public static MessageContext create(final Source m, final SOAPVersion v, final ClassLoader... classLoader) {
-        return serviceFinder(classLoader,
-                             new Creator() {
-                                 public MessageContext create(final MessageContextFactory f) {
-                                     return f.doCreate(m, v);
-                                 }
-                             });
-    }
-
-    /**
-     * @deprecated
-     */
-    private static MessageContext serviceFinder(final ClassLoader[] classLoader, final Creator creator) {
-        final ClassLoader cl = classLoader.length == 0 ? null : classLoader[0];
-        for (MessageContextFactory factory : ServiceFinder.find(MessageContextFactory.class, cl)) {
-            final MessageContext messageContext = creator.create(factory);
-            if (messageContext != null)
-                return messageContext;
-        }
-        return creator.create(DEFAULT);
-    }
-
-    /**
-     * @deprecated
-     */
-    private static interface Creator {
-        public MessageContext create(MessageContextFactory f);
-    }
-    
     protected abstract MessageContextFactory newFactory(WebServiceFeature ... f);
     
+    public abstract MessageContext createContext();
+
     public abstract MessageContext createContext(SOAPMessage m);
     
     public abstract MessageContext createContext(Source m);

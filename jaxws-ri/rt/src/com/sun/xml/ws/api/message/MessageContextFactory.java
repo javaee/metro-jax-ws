@@ -95,6 +95,11 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         return new com.sun.xml.ws.api.message.MessageContextFactory(f);
     }
 
+
+    public MessageContext createContext() {
+        return packet(null);
+    }
+
     public MessageContext createContext(SOAPMessage soap) {
         return packet(Messages.create(soap));
     }
@@ -121,16 +126,4 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         if (m != null) p.setMessage(m);
         return p;
     }  
-    
-    
-
-    public MessageContext doCreate() {
-        return packet(null);
-    }
-    public MessageContext doCreate(SOAPMessage m) {
-        return createContext(m);
-    }
-    public MessageContext doCreate(Source x, SOAPVersion soapVersion) {
-        return packet(Messages.create(x, soapVersion));
-    }
 }
