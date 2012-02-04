@@ -62,6 +62,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map;
 
+import org.jvnet.ws.message.MessageContextFactory;
+
 /**
  * Instances are created by the service, which then
  * sets the handler chain on the binding impl.
@@ -96,6 +98,8 @@ public abstract class BindingImpl implements WSBinding {
     protected final Map<MessageKey, WebServiceFeatureList> faultMessageFeatures = new HashMap<MessageKey, WebServiceFeatureList>();
 
     protected javax.xml.ws.Service.Mode serviceMode = javax.xml.ws.Service.Mode.PAYLOAD;
+
+    protected MessageContextFactory messageContextFactory;
 
     protected BindingImpl(BindingID bindingId, WebServiceFeature ... features) {
         this.bindingId = bindingId;
@@ -299,6 +303,12 @@ public abstract class BindingImpl implements WSBinding {
         features.add(newFeature);
     }
 
+    public synchronized @NotNull MessageContextFactory getMessageContextFactory () {
+        if (messageContextFactory == null) {
+            messageContextFactory = MessageContextFactory.createFactory(getFeatures().toArray());
+        }
+        return messageContextFactory;
+    }
 
     /**
      * Experimental: Identify messages based on the name of the message and the

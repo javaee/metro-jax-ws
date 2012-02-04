@@ -54,6 +54,8 @@ import javax.xml.ws.handler.Handler;
 import java.util.List;
 import java.util.Set;
 
+import org.jvnet.ws.message.MessageContextFactory;
+
 /**
  * JAX-WS implementation of {@link Binding}.
  *
@@ -209,4 +211,9 @@ public interface WSBinding extends Binding {
      * @return Set of known QNames
      */
     @NotNull Set<QName> getKnownHeaders();
+
+    /**
+     * @return A MessageContextFactory configured according to the binding's features.
+     */
+    @NotNull MessageContextFactory getMessageContextFactory();
 }
