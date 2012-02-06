@@ -146,15 +146,36 @@
     </jar>
   </target>
 
-  <target name="docs" depends="prepare">
-     <ant dir="${basedir}/docs" target="docs"/>
-  </target>
-    
-    <target name="doc-src-zip">
-     <ant dir="${basedir}/docs" target="doc-src-zip"/>
+    <target name="docs" depends="prepare">
+        <sequential>
+            <exec executable="${mvn.exec}" failonerror="true">
+                <arg line="-f"/>
+                <arg line="${basedir}/docs/pom.xml"/>
+                <arg line="clean"/>
+                <arg line="package"/>
+            </exec>
+        </sequential>
+
+        <copy todir="${build.home}/docs/">
+            <fileset dir="${docs.home}/release-documentation/target/docbook/" excludes="*.fo" />
+        </copy>
     </target>
 
-    <target name="clean" depends="jax-ws.clean">
+    <target name="docs.clean">
+        <sequential>
+            <exec executable="${mvn.exec}" failonerror="true">
+                <arg line="-f"/>
+                <arg line="${basedir}/docs/pom.xml"/>
+                <arg line="clean"/>
+            </exec>
+        </sequential>
+    </target>
+
+    <target name="doc-src-zip" depends="docs">
+        <copy file="${docs.home}/release-documentation/target/release-documentation-${release.impl.version}-SNAPSHOT-docbook.zip" tofile="${build.home}/release-notes-src.zip" />
+    </target>
+
+    <target name="clean" depends="jax-ws.clean, docs.clean">
         <ant dir="${basedir}/transports/local" target="clean"/>
     </target>
 <!-- for now, this gets everything built -->
