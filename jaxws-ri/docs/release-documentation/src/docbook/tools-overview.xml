@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+
+The contents of this file are subject to the terms of either the GNU
+General Public License Version 2 only ("GPL") or the Common Development
+and Distribution License("CDDL") (collectively, the "License").  You
+may not use this file except in compliance with the License.  You can
+obtain a copy of the License at
+http://glassfish.java.net/public/CDDL+GPL_1_1.html
+or packager/legal/LICENSE.txt.  See the License for the specific
+language governing permissions and limitations under the License.
+
+When distributing the software, include this License Header Notice in each
+file and include the License file at packager/legal/LICENSE.txt.
+
+GPL Classpath Exception:
+Oracle designates this particular file as subject to the "Classpath"
+exception as provided by Oracle in the GPL Version 2 section of the License
+file that accompanied this code.
+
+Modifications:
+If applicable, add the following below the License Header, with the fields
+enclosed by brackets [] replaced by your own identifying information:
+"Portions Copyright [year] [name of copyright owner]"
+
+Contributor(s):
+If you wish your version of this file to be governed by only the CDDL or
+only the GPL Version 2, indicate your decision by adding "[Contributor]
+elects to include this software in this distribution under the [CDDL or GPL
+Version 2] license."  If you don't indicate a single choice of license, a
+recipient has the option to distribute your version of this file under
+either the CDDL, the GPL Version 2 or to extend the choice of license to
+its licensees as provided above.  However, if you add GPL Version 2 code
+and therefore, elected the GPL Version 2 license, then the option applies
+only if the new code is made subject to such option by the copyright
+holder.
+
+        -->
+<!DOCTYPE book [
+<!ENTITY % ents SYSTEM "docbook.ent">
+%ents;
+]>
+<section version="5.0" xml:id="tools-overview" xml:lang="en"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/1999/xhtml"
+         xmlns:ns4="http://www.w3.org/2000/svg"
+         xmlns:ns="http://docbook.org/ns/docbook"
+         xmlns:m="http://www.w3.org/1998/Math/MathML">
+    <title>Overview</title>
+
+    <orderedlist>
+        <listitem>
+            <para><xref linkend="apttool" xrefstyle="select:title" /></para>
+        </listitem>
+
+        <listitem>
+            <para><xref linkend="wscompiletool"
+            xrefstyle="select:title" /></para>
+        </listitem>
+
+        <listitem>
+            <para><xref linkend="wsdeploytool"
+            xrefstyle="select:title" /></para>
+        </listitem>
+
+        <listitem>
+            <para><xref linkend="how" xrefstyle="select:title" /></para>
+        </listitem>
+    </orderedlist>
+
+    <section xml:id="apttool">
+        <title><command>apt</command></title>
+
+        <para>The <command>apt</command> tool provides a facility for
+        programmatically processing the annotations added to Java by <link
+        xlink:href="http://www.jcp.org/en/jsr/detail?id=175">JSR 175</link>,
+        <emphasis>Metadata Facility for the Java</emphasis> TM
+        <emphasis>Programming Language</emphasis>. In brief, JSR 175 allows
+        programmers to declare new kinds of structured modifiers that can be
+        associated with program elements, fields, methods, classes,
+        etc.</para>
+
+        <para>The <command>apt</command> tool generates the portable artifacts
+        used in JAX-WS services.</para>
+
+        <para>For more information on this tool please see: <xref
+        linkend="tools-apt" xrefstyle="select:title" />.</para>
+    </section>
+
+    <section xml:id="wscompiletool">
+        <title><command>wsimport</command></title>
+
+        <para>The <command>wsimport</command> tool generates JAX-WS portable
+        artifacts used in JAX-WS clients and services. The tool reads a WSDL
+        and generates all the required artifacts for web service development,
+        deployment, and invocation.</para>
+
+        <para>For more information on this tool please see: <xref
+        linkend="tools-wsimport" xrefstyle="select:title" />.</para>
+    </section>
+
+    <section xml:id="wsdeploytool">
+        <title><command>wsgen</command></title>
+
+        <para>The <command>wsgen</command> tool reads a service endpoint
+        implementation class and generates all of the portable artifacts for a
+        JAX-WS web service..</para>
+
+        <para>For more information on this tool please see: <xref
+        linkend="tools-wsgen" xrefstyle="select:title" />.</para>
+
+        <section xml:id="running-on-jdk6">
+            <title>Running on JDK6</title>
+
+            <itemizedlist>
+                <listitem>
+                    <para>Copy
+                    <filename>&jax-ws.home;/lib/jaxws-api.jar</filename> to
+                    <filename>$JDK6_HOME/jre/lib/endorsed</filename>
+                    directory</para>
+                </listitem>
+
+                <listitem>
+                    <para>Copy
+                    <filename>&jax-ws.home;/lib/jaxb-api.jar</filename> to
+                    <filename>$JDK6_HOME/jre/lib/endorsed</filename>
+                    directory</para>
+                </listitem>
+            </itemizedlist>
+
+            <para>For details see <link
+            xlink:href="http://java.sun.com/j2se/1.5.0/docs/guide/standards/">Endorsed
+            Directory Mechanism</link>. Above,
+            <filename>&jax-ws.home;</filename> points to the root directory of
+            the extracted &jax-ws.product.name.short; bundle.
+            <filename>JDK6_HOME</filename> points to JDK 6 installation
+            directory.</para>
+        </section>
+    </section>
+
+    <section xml:id="how">
+        <title>How do I pick a tool?</title>
+
+        <para>The following lists the process to create a web service starting
+        from Java sources, classes, and a WSDL file (server side):</para>
+
+        <orderedlist>
+            <listitem>
+                <para>Starting from Java sources: <orderedlist>
+                        <listitem>
+                            <para>Use <command>apt</command> to generate the
+                            artifacts required by the JAX-WS
+                            specification.</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Package the <literal>web.xml</literal>,
+                            <literal>sun-jaxws.xml</literal>, service endpoint
+                            interface and implementation class, value types, and
+                            generated classes, if any, into a WAR file,</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Deploy the WAR to a web container.</para>
+                        </listitem>
+                    </orderedlist></para>
+            </listitem>
+
+            <listitem>
+                <para>Starting from Java classes: <orderedlist>
+                        <listitem>
+                            <para>Use <command>wsgen</command> to generate
+                            portable artifacts.</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Package the <literal>web.xml</literal>,
+                            <literal>sun-jaxws.xml</literal>, service endpoint
+                            interface and implementation class, value types, and
+                            generated classes, if any, into a WAR file,</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Deploy the WAR to a web container.</para>
+                        </listitem>
+                    </orderedlist></para>
+            </listitem>
+
+            <listitem>
+                <para>Starting from a WSDL file: <orderedlist>
+                        <listitem>
+                            <para>Use <command>wsimport</command> to generate
+                            portable artifacts.</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Implement the service endpoint.</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Package the WSDL file, schema documents,
+                            <literal>web.xml</literal>,
+                            <literal>sun-jaxws.xml</literal>, service endpoint
+                            interface and implementation class, value types, and
+                            generated classes, if any, into a WAR file.</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Deploy the WAR to a web container.</para>
+                        </listitem>
+                    </orderedlist></para>
+            </listitem>
+        </orderedlist>
+
+        <para>The following lists the process to invoke a web service (client
+        side):</para>
+
+        <orderedlist>
+            <listitem>
+                <para>Starting from deployed web service's WSDL <orderedlist>
+                        <listitem>
+                            <para>Use <command>wsimport</command> to generate
+                            the client-side artifacts.</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Implement the client to invoke the web
+                            service.</para>
+                        </listitem>
+                    </orderedlist></para>
+            </listitem>
+        </orderedlist>
+    </section>
+</section>

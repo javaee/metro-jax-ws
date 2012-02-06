@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+
+The contents of this file are subject to the terms of either the GNU
+General Public License Version 2 only ("GPL") or the Common Development
+and Distribution License("CDDL") (collectively, the "License").  You
+may not use this file except in compliance with the License.  You can
+obtain a copy of the License at
+http://glassfish.java.net/public/CDDL+GPL_1_1.html
+or packager/legal/LICENSE.txt.  See the License for the specific
+language governing permissions and limitations under the License.
+
+When distributing the software, include this License Header Notice in each
+file and include the License file at packager/legal/LICENSE.txt.
+
+GPL Classpath Exception:
+Oracle designates this particular file as subject to the "Classpath"
+exception as provided by Oracle in the GPL Version 2 section of the License
+file that accompanied this code.
+
+Modifications:
+If applicable, add the following below the License Header, with the fields
+enclosed by brackets [] replaced by your own identifying information:
+"Portions Copyright [year] [name of copyright owner]"
+
+Contributor(s):
+If you wish your version of this file to be governed by only the CDDL or
+only the GPL Version 2, indicate your decision by adding "[Contributor]
+elects to include this software in this distribution under the [CDDL or GPL
+Version 2] license."  If you don't indicate a single choice of license, a
+recipient has the option to distribute your version of this file under
+either the CDDL, the GPL Version 2 or to extend the choice of license to
+its licensees as provided above.  However, if you add GPL Version 2 code
+and therefore, elected the GPL Version 2 license, then the option applies
+only if the new code is made subject to such option by the copyright
+holder.
+
+        -->
+<!DOCTYPE book [
+<!ENTITY % ents SYSTEM "docbook.ent">
+%ents;
+]>
+<section version="5.0" xml:id="users-guide-war-file-packaging" xml:lang="en"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/2000/svg"
+         xmlns:ns3="http://www.w3.org/1999/xhtml"
+         xmlns:ns="http://docbook.org/ns/docbook"
+         xmlns:m="http://www.w3.org/1998/Math/MathML">
+    <title>WAR File Packaging</title>
+
+    <section xml:id="section-5694250262578">
+        <title>The WAR Contents</title>
+
+        <para>Typically, one creates the WAR file with a GUI development tool
+        or with the <literal>ant</literal> <literal>war</literal> task from
+        the generated artifacts from <command>wsimport</command>,
+        <command>wsgen</command>, or <command>apt</command> tools.</para>
+
+        <para>For example, a sample WAR file starting from a WSDL file:</para>
+
+        <table frame="all">
+            <title>Files contained in WAR when starting from WSDL</title>
+
+            <tgroup cols="2" colsep="1" rowsep="1">
+                <thead>
+                    <row>
+                        <entry>File</entry>
+
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+
+                <tbody>
+                    <row>
+                        <entry><code>WEB-INF/classes/hello/HelloIF.class</code></entry>
+
+                        <entry><para>SEI</para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>WEB-INF/classes/hello/HelloImpl.class</code></entry>
+
+                        <entry><para>Endpoint</para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>WEB-INF/sun-jaxws.xml</code></entry>
+
+                        <entry><para>JAX-WS RI deployment
+                        descriptor</para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>WEB-INF/web.xml</code></entry>
+
+                        <entry><para>Web deployment descriptor</para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>WEB-INF/wsdl/HelloService.wsdl</code></entry>
+
+                        <entry><para>WSDL</para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>WEB-INF/wsdl/schema.xsd</code></entry>
+
+                        <entry><para>WSDL imports this Schema</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    </section>
+
+    <section xml:id="the-sun-jaxws-xml-file">
+        <title>The <literal>sun-jaxws.xml</literal> File</title>
+
+        <para>The <literal>&lt;endpoints&gt;</literal> element contain one or
+        more <literal>&lt;endpoint&gt;</literal> elements. Each endpoint
+        represents a port in the WSDL and it contains all information about
+        <literal>implementation</literal> class, servlet
+        <literal>url-pattern</literal>, <literal>binding</literal>,
+        <literal>WSDL</literal>, <literal>service</literal>,
+        <literal>port</literal> QNames. The following shows a
+        <literal>sun-jaxws.xml</literal> file for a simple
+        <literal>HelloWorld</literal> service.
+        <filename>sun-jaxws.xml</filename> is the schema instance of <link
+        xlink:href="sun-jaxws.xsd">sun-jaxws.xsd</link>.</para>
+
+        <informalexample>
+            <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"
+        version="2.0">
+    <endpoint name="MyHello" implementation="hello.HelloImpl"
+            url-pattern="/hello"/>
+</endpoints>]]></programlisting>
+        </informalexample>
+
+        <para>Endpoint can have the following attributes:</para>
+
+        <table frame="all">
+            <title><literal>sun-jaxws.xml</literal> - Endpoint element
+            attributes.</title>
+
+            <tgroup cols="3" colsep="1" rowsep="1">
+                <thead>
+                    <row>
+                        <entry><para>Attribute</para></entry>
+
+                        <entry><para>Optional</para></entry>
+
+                        <entry><para>Use</para></entry>
+                    </row>
+                </thead>
+
+                <tbody>
+                    <row>
+                        <entry><code>name </code></entry>
+
+                        <entry><para>N</para></entry>
+
+                        <entry><para>Name of the endpoint</para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>wsdl </code></entry>
+
+                        <entry><para>Y</para></entry>
+
+                        <entry><para>Primary wsdl file location in the WAR
+                        file. For e.g.
+                        <filename>WEB-INF/wsdl/HelloService.wsdl</filename>.
+                        If this isn't specified, JAX-WS will create and
+                        publish a new WSDL. When the service is developed from
+                        Java, it is recommended to omit this
+                        attribute.</para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>service </code></entry>
+
+                        <entry><para>Y</para></entry>
+
+                        <entry><para>QName of WSDL service. For e.g.
+                        <literal>{http://example.org/}HelloService</literal>.
+                        When the service is developed from Java, it is
+                        recommended to omit this attribute.</para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>port </code></entry>
+
+                        <entry><para>Y</para></entry>
+
+                        <entry><para>QName of WSDL port. For e.g.
+                        <literal>{http://example.org/}HelloPort</literal>.
+                        When the service is developed from Java, it is
+                        recommended to omit this attribute.</para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>implementation </code></entry>
+
+                        <entry><para>N</para></entry>
+
+                        <entry><para>Endpoint implementation class name. For
+                        e.g: <literal>hello.HelloImpl</literal>. The class
+                        should have a <literal>@WebService</literal>
+                        annotation. Provider based implementation class should
+                        have a <literal>@WebServiceProvider</literal>
+                        annotation.</para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>url-pattern </code></entry>
+
+                        <entry><para>N</para></entry>
+
+                        <entry><para>Should match
+                        <literal>&lt;url-pattern&gt;</literal> in
+                        <filename>web.xml</filename></para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>binding </code></entry>
+
+                        <entry><para>Y</para></entry>
+
+                        <entry><para>Binding id defined in the JAX-WS API. The
+                        possible values are:</para><itemizedlist>
+                                <listitem>
+                                    <para><literal>"http://schemas.xmlsoap.org/wsdl/soap/http"</literal></para>
+                                </listitem>
+
+                                <listitem>
+                                    <para><literal>"http://www.w3.org/2003/05/soap/bindings/HTTP/"</literal></para>
+                                </listitem>
+                            </itemizedlist><para>If omitted, it is considered
+                        <literal>SOAP1.1</literal> binding.</para></entry>
+                    </row>
+
+                    <row>
+                        <entry><code>enable-mtom </code></entry>
+
+                        <entry><para>Y</para></entry>
+
+                        <entry><para>Enables MTOM optimization.
+                        <literal>true</literal> or <literal>false</literal>.
+                        Default is <literal>false</literal>.</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <para>Endpoint can have a optional <literal>handler-chain</literal>
+        element:</para>
+
+        <informalexample>
+            <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<endpoints ...>
+    <endpoint ...>
+        <handler-chain>
+            <handler-chain-name>somename</handler-chain-name>
+            <handler>
+                <handler-name>MyHandler</handler-name>
+                <handler-class>hello.MyHandler</handler-class>
+            </handler>
+        </handler-chain>
+    </endpoint>
+</endpoints>]]></programlisting>
+        </informalexample>
+    </section>
+
+    <section xml:id="section-42577169574826">
+        <title>The <literal>web.xml</literal> File</title>
+
+        <para>The following shows a <literal>web.xml</literal> file for a
+        simple <literal>HelloWorld</literal> service. It specifies
+        &jax-ws.product.name.short; specific listener, servlet classes. These
+        classes are
+        <literal>com.sun.ws.transport.http.servlet.WSServletContextListener</literal>,
+        and <literal>com.sun.xml.ws.transport.http.servlet.WSServlet</literal>
+        is servlet</para>
+
+        <informalexample>
+            <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+        PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/j2ee/dtds/web-app_2_3.dtd">
+<web-app>
+    <listener>
+        <listener-class>
+            com.sun.xml.ws.transport.http.servlet.WSServletContextListener
+        </listener-class>
+    </listener>
+    <servlet>
+        <servlet-name>hello</servlet-name>
+        <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>hello</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>60</session-timeout>
+    </session-config>
+</web-app>]]></programlisting>
+        </informalexample>
+
+        <para>Remember these requirements when building a WAR:</para>
+
+        <itemizedlist>
+            <listitem>
+                <para>WSDL and auxiliary WSDL, Schema files should be packaged
+                under <filename>WEB-INF/wsdl</filename> dir. It is recommended
+                that they need not be packaged when the service is started
+                from Java</para>
+            </listitem>
+
+            <listitem>
+                <para>WebService implementation class should contain a
+                <literal>@WebService</literal> annotation. Provider based
+                endpoints should have a <literal>@WebServiceProvider</literal>
+                annotation.</para>
+            </listitem>
+
+            <listitem>
+                <para><literal>wsdl</literal>, <literal>service</literal>,
+                <literal>port</literal> attributes are mandatory for
+                <literal>Provider</literal> based endpoints and can be
+                specified in the <literal>@WebServiceProvider</literal>
+                annotation or deployment descriptor
+                (<filename>sun-jaxws.xml</filename>).</para>
+            </listitem>
+        </itemizedlist>
+    </section>
+</section>

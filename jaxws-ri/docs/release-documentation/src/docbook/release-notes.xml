@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+
+The contents of this file are subject to the terms of either the GNU
+General Public License Version 2 only ("GPL") or the Common Development
+and Distribution License("CDDL") (collectively, the "License").  You
+may not use this file except in compliance with the License.  You can
+obtain a copy of the License at
+http://glassfish.java.net/public/CDDL+GPL_1_1.html
+or packager/legal/LICENSE.txt.  See the License for the specific
+language governing permissions and limitations under the License.
+
+When distributing the software, include this License Header Notice in each
+file and include the License file at packager/legal/LICENSE.txt.
+
+GPL Classpath Exception:
+Oracle designates this particular file as subject to the "Classpath"
+exception as provided by Oracle in the GPL Version 2 section of the License
+file that accompanied this code.
+
+Modifications:
+If applicable, add the following below the License Header, with the fields
+enclosed by brackets [] replaced by your own identifying information:
+"Portions Copyright [year] [name of copyright owner]"
+
+Contributor(s):
+If you wish your version of this file to be governed by only the CDDL or
+only the GPL Version 2, indicate your decision by adding "[Contributor]
+elects to include this software in this distribution under the [CDDL or GPL
+Version 2] license."  If you don't indicate a single choice of license, a
+recipient has the option to distribute your version of this file under
+either the CDDL, the GPL Version 2 or to extend the choice of license to
+its licensees as provided above.  However, if you add GPL Version 2 code
+and therefore, elected the GPL Version 2 license, then the option applies
+only if the new code is made subject to such option by the copyright
+holder.
+
+        -->
+<!DOCTYPE book [
+<!ENTITY % ents SYSTEM "docbook.ent">
+%ents;
+]>
+<chapter version="5.0" xml:id="jax-ws-ri-release-notes" xml:lang="en"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns5="http://www.w3.org/2000/svg"
+         xmlns:ns3="http://www.w3.org/1999/xhtml"
+         xmlns:ns="http://docbook.org/ns/docbook"
+         xmlns:m="http://www.w3.org/1998/Math/MathML">
+    <title>Release Notes</title>
+
+    <section xml:id="overview">
+        <title>Overview</title>
+
+        <para>&jax-ws.product.name; is a Web Services framework that provides
+        tools and infrastructure to develop Web Services solutions for the end
+        users and middleware developers.</para>
+    </section>
+
+    <section xml:id="features-in-this-release">
+        <title>Features in this release</title>
+
+        <itemizedlist>
+            <listitem>
+                <para>Reference Implementation (RI) of JAX-WS
+                &jax-ws.release.spec.version; API. Full <link
+                xlink:href="http://jcp.org/en/jsr/detail?id=224">JAX-WS
+                &jax-ws.release.spec.version;</link> compliance</para>
+            </listitem>
+
+            <listitem>
+                <para>Development Tools <itemizedlist>
+                        <listitem>
+                            <para>WSDL to Java generator <itemizedlist>
+                                    <listitem>
+                                        <para><xref linkend="tools-wsimport"
+                                        xrefstyle="select:title" />, <xref
+                                        linkend="tools-wsimport-ant-task"
+                                        xrefstyle="select:title" /> and <link
+                                        xlink:href="http://jax-ws-commons.java.net/jaxws-maven-plugin/">Maven2
+                                        plugin</link></para>
+                                    </listitem>
+                                </itemizedlist></para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Java to WSDL generator <itemizedlist>
+                                    <listitem>
+                                        <para><xref linkend="tools-wsgen"
+                                        xrefstyle="select:title" />, <xref
+                                        linkend="tools-wsgen-ant-task"
+                                        xrefstyle="select:title" />  and <link
+                                        xlink:href="http://jax-ws-commons.java.net/jaxws-maven-plugin/">Maven2
+                                        plugin</link></para>
+                                    </listitem>
+                                </itemizedlist></para>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+
+            <listitem>
+                <para>Standards <itemizedlist>
+                        <listitem>
+                            <para>Web Services Addressing 1.0 - Core</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Web Services Addressing 1.0 - SOAP
+                            Binding</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Web Services Addressing 1.0 - Metadata</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Web Services Addressing 1.0 - WSDL Binding (RI
+                            specific support)</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>WS-Addressing  - Member Submission</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>SOAP 1.1 and 1.2</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>REST and XML/HTTP</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>WS-I Basic Profile 1.2 and 2.0</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>WS-I Simple SOAP Binding Profile 1.0</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>WS-I Attachment Profile 1.0</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>MTOM</para>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+
+            <listitem>
+                <para>Extensions (May not be final unless says so)
+                <itemizedlist>
+                        <listitem>
+                            <para>Web Services Interoperable Technologies (<link
+                            xlink:href="http://wsit.java.net/jax-ws-ri-overview#downloads">WSIT</link>)
+                            - enables .NET 3.x interoperability <itemizedlist>
+                                    <listitem>
+                                        <para>WS-ReliableMessaging</para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para>WS-Policy</para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para>WS-MEX</para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para>WS-Security/WS-Security Policy</para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para>WS-Trust/WS-Secure Conversation</para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para>WS-AT/WS-Tx (Supported only on Glassfish
+                                        v2)</para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para>SOAP/TCP</para>
+                                    </listitem>
+                                </itemizedlist></para>
+                        </listitem>
+
+                        <listitem>
+                            <para><link
+                            xlink:href="http://jax-ws-commons.java.net/spring/">Spring
+                            support</link></para>
+                        </listitem>
+
+                        <listitem>
+                            <para><link
+                            xlink:href="http://jax-ws.java.net/transport.html">Pluggable
+                            Transport</link> <itemizedlist>
+                                    <listitem>
+                                        <para>In-VM transport</para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para>Servlet transport (bundled with the RI)</para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para><link
+                                        xlink:href="http://jms-ws-transport.java.net/">JMS
+                                        transport</link></para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para>SOAP over TCP transport (part of <link
+                                        xlink:href="http://wsit.java.net">WSIT</link>)</para>
+                                    </listitem>
+                                </itemizedlist></para>
+                        </listitem>
+
+                        <listitem>
+                            <para><link
+                            xlink:href="http://fi.java.net/">FastInfoset</link>
+                            (bundled with JAX-WS RI
+                            &jax-ws.release.impl.version;&jax-ws.release.impl.version.suffix;)<itemizedlist>
+                                    <listitem>
+                                        <para><link
+                                        xlink:href="http://www.itu.int/rec/T-REC-X.891-200505-I/e">ITU-T
+                                        Rec. X.891 | ISO/IEC 24824-1</link></para>
+                                    </listitem>
+                                </itemizedlist></para>
+                        </listitem>
+
+                        <listitem>
+                            <para>JBI Service Engine and Binding Component(part
+                            of Glassfish v2)</para>
+                        </listitem>
+
+                        <listitem>
+                            <para><link
+                            xlink:href="http://www.glassfishwiki.org/jbiwiki/Wiki.jsp?page=HTTPBC">HTTP
+                            Binding Component</link>, used by <link
+                            xlink:href="http://open-jbi-components.java.net/">Open
+                            JBI component</link></para>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+
+            <listitem>
+                <para>Data binding - <link
+                xlink:href="http://jaxb.java.net/2.2/">JAXB RI 2.2.3
+                u1</link></para>
+            </listitem>
+
+            <listitem>
+                <para>Server Side Asynchrony - <link
+                xlink:href="http://jax-ws.java.net/nonav/21/docs/asyncusers-guide-provider">AsyncProvider</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://jax-ws.java.net/nonav/21/docs/users-guide-stateful-webservice">Stateful
+                Web Services</link></para>
+            </listitem>
+
+            <listitem>
+                <para>Support for <link
+                xlink:href="http://weblogs.java.net/blog/ramapulavarthi/archive/2007/01/extending_jaxws.html">custom
+                WebServiceFeature</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://jax-ws-architecture-document.java.net/nonav/doc21/jax-ws-ri-overview?com/sun/xml/ws/api/server/package-summary.html">Hosting
+                API</link> <itemizedlist>
+                        <listitem>
+                            <para>These APIs can be used b y a J2EE application
+                            server to integrate &jax-ws.product.name; for
+                            hosting JAX-WS services</para>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+
+            <listitem>
+                <para>Endpoint Deployment <itemizedlist>
+                        <listitem>
+                            <para><link
+                            xlink:href="http://glassfish.java.net">Glassfish
+                            v3</link> <itemizedlist>
+                                    <listitem>
+                                        <para>Tightly integrated with Glassfish</para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para>Supports EJB and Web endpoints</para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para>109 based deployment support for better
+                                        portability</para>
+                                    </listitem>
+
+                                    <listitem>
+                                        <para>JAX-WS RI specific deployment descriptor
+                                        support</para>
+                                    </listitem>
+                                </itemizedlist></para>
+                        </listitem>
+
+                        <listitem>
+                            <para><link
+                            xlink:href="http://www.sun.com/software/products/appsrvr_pe/index.xml">Sun
+                            One Application Server 9.0 ur1</link></para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Light weight HTTP server <itemizedlist>
+                                    <listitem>
+                                        <para>Bundled with JDK 6</para>
+                                    </listitem>
+                                </itemizedlist></para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Any other container that supports Servlet 2.4,
+                            such as Tomcat, Jetty, Geronimo, JBoss, Resin, ...
+                            You name it!</para>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+        </itemizedlist>
+
+        <para>This release brings in the highly pluggable framework through
+        abstractions such as <link
+        xlink:href="http://jax-ws-architecture-document.java.net/nonav/doc21/com/sun/xml/ws/api/pipe/Tube.html">Tube</link>
+        and <link
+        xlink:href="http://jax-ws-architecture-document.java.net/nonav/doc21/com/sun/xml/ws/api/message/Message.html">Message</link>.
+        This architecture document is a glorified javadoc which includes all
+        the JAX-WS RI specific APIs. &jax-ws.product.name; has many bug fixes
+        made for interoperability with .NET 3.0. This is made mostly possible
+        due to WSIT, which uses JAX-WS plugabble architecture to plug in
+        support for WS-Metadata, WS-Policy, WS-ReliableMessaging,
+        WS-Transaction, WS-SecureConversation and WS-Security.</para>
+
+        <para>If you wish to use &jax-ws.product.name; in a Java EE container
+        in a Java EE portable manner you need to use the standard Java EE 6
+        deployment descriptor; please refer to the <link
+        xlink:href="http://java.sun.com/javaee/index.jsp">Java EE 6</link> or
+        <link xlink:href="http://glassfish.java.net/">Glassfish</link>
+        documentation/samples. The majority of the documentation included with
+        JAX-WS is valid with Java EE 6 as well.</para>
+    </section>
+
+    <section xml:id="online-documentation">
+        <title>Online Documentation</title>
+
+        <para>The documentation for &jax-ws.product.name; as well as the
+        sample applications will be periodically updated in the JAX-WS <link
+        xlink:href="http://jax-ws.java.net">project</link>.</para>
+
+        <para>The architecture document describing the latest
+        &jax-ws.product.name; can be found <link
+        xlink:href="http://jax-ws-architecture-document.java.net/nonav/doc21/?jaxws/package-summary.html">here</link>
+        .</para>
+
+        <para>Please go to <link
+        xlink:href="http://jax-ws.java.net/">http://jax-ws.java.net</link> for
+        the latest documentation and samples.</para>
+    </section>
+
+    <section xml:id="required-software">
+        <title>Required Software</title>
+
+        <itemizedlist>
+            <listitem>
+                <para>Requires <link
+                xlink:href="http://java.sun.com/products/archive/j2se/5.0_02/jax-ws-ri-overview">JDK
+                5.0 Update 2</link> or later</para>
+            </listitem>
+
+            <listitem>
+                <para>Requires <link
+                xlink:href="http://ant.apache.org/bindownload.cgi">Ant
+                1.6.2</link> or later</para>
+            </listitem>
+
+            <listitem>
+                <para>Tested to work with GlassFish v3.1 and Apache Tomcat
+                5.5.x</para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="installation-instructions">
+        <title>Installation Instructions</title>
+
+        <para>The following applies to the JAX-WS standalone bundles.</para>
+
+        <itemizedlist>
+            <listitem>
+                <para>Extract &jax-ws.product.name; bundle</para>
+            </listitem>
+
+            <listitem>
+                <para>To install on GlassFish v2 <itemizedlist>
+                        <listitem>
+                            <para>If you want to use the &jax-ws.product.name;
+                            overriding the one with Glassfish v2, Download Metro
+                            2.1 bundle from http://metro.java.net and follow the
+                            instructions in that bundle</para>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+
+            <listitem>
+                <para>To use with GlassFish v3.1 <itemizedlist>
+                        <listitem>
+                            <para>GlassFish v3.1 has &jax-ws.product.name;, so
+                            there is no installation step.</para>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+
+            <listitem>
+                <para>To install on Tomcat <itemizedlist>
+                        <listitem>
+                            <para>Set <literal>CATALINA_HOME</literal> to your
+                            Tomcat installation.</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Run <programlisting language="cli"><![CDATA[ant install]]></programlisting>This
+                            essentially copies <filename>lib/*.jar</filename>
+                            from the root of &jax-ws.product.name.short;
+                            extracted bundle to
+                            <literal>$CATALINA_HOME/shared/lib</literal></para>
+                        </listitem>
+
+                        <listitem>
+                            <para>If you are running on top of JDK6, run
+                            <programlisting language="cli"><![CDATA[ant install-api]]></programlisting>or
+                            use <programlisting language="cli"><![CDATA[ant -help]]></programlisting>
+                            for detailed information.</para>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+        </itemizedlist>
+
+        <para>If you intend to only invoke an already existing Web service,
+        then alternatively you can use the <command>wsimport</command> and
+        <command>wsgen</command> scripts in the <literal>bin</literal>
+        directory of the &jax-ws.product.name; bundle.</para>
+    </section>
+
+    <section xml:id="running-on-top-of-jdk-6">
+        <title>Running on top of JDK 6</title>
+
+        <para>JDK 6u4 includes JAX-WS 2.1 and JAXB 2.1 API and RI.
+        &jax-ws.product.name; includes RI of JAX-WS/JAXB 2.2. In order to run
+        &jax-ws.product.name; you would need to specify ONLY
+        <filename>jaxws-api.jar</filename>, and
+        <filename>jaxb-api.jar</filename> jars using the <link
+        xlink:href="http://java.sun.com/javase/6/docs/technotes/guides/standards/jax-ws-ri-overview">Java
+        Endorsed Standards Override Mechanism</link></para>
+    </section>
+
+    <section xml:id="jar-dependency">
+        <title>Jar dependency</title>
+
+        <table frame="all">
+            <title>Jar dependencies summary</title>
+
+            <tgroup cols="2" colsep="1" rowsep="1">
+                <colspec />
+
+                <colspec colwidth="4*" />
+
+                <tbody>
+                    <row>
+                        <entry><para>Runtime Jars</para></entry>
+
+                        <entry><para><filename>FastInfoset.jar</filename>,
+                        <filename>jaxb-api.jar</filename>,
+                        <filename>jaxb-impl.jar</filename>,
+                        <filename>jaxws-api.jar</filename>,
+                        <filename>jaxws-rt.jar</filename>,
+                        <filename>jsr181-api.jar</filename>,
+                        <filename>javax.annotation.jar</filename>,
+                        <filename>mimepull.jar</filename>,
+                        <filename>saaj-api.jar</filename>,
+                        <filename>saaj-impl.jar *</filename>,
+                        <filename>stax2-api.jar</filename>,
+                        <filename>woodstox-core-asl.jar</filename>,
+                        <filename>stax-ex.jar</filename>,
+                        <filename>streambuffer.jar</filename>,
+                        <filename>policy.jar</filename>,
+                        <filename>gmbal-api-only.jar</filename>,
+                        <filename>management-api.jar</filename>,
+                        <filename>ha-api.jar</filename></para></entry>
+                    </row>
+
+                    <row>
+                        <entry><para>Tooltime Jars</para></entry>
+
+                        <entry><para>All the runtime jars +
+                        <filename>jaxb-xjc.jar</filename>,
+                        <filename>jaxws-tools.jar</filename></para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    </section>
+
+    <section xml:id="current-limitations">
+        <title>Current Limitations</title>
+
+        <itemizedlist>
+            <listitem>
+                <para>The <literal>java.util.Collection</literal> classes
+                cannot be used with rpc/literal or document/literal
+                <literal>BARE</literal> style due to a limitation in JAXB.
+                However, they do work in the default document/literal
+                <literal>WRAPPED</literal> style.</para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="bugs-fixed-in-this-release">
+        <title>Bugs Fixed in this release</title>
+
+        <itemizedlist>
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10284">Bug
+                fixes</link></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="known-bugs-issues">
+        <title>Known Bugs/Issues</title>
+
+        <itemizedlist>
+            <listitem>
+                <para>Although JAX-WS customizations are portable across
+                implementations, the names of WSDL and schema files generated
+                are not specified. Therefore each vendor may and most likely
+                will generate different names. Therefore, when switching
+                between implementations of JAX-WS, it may be necessary to
+                modify your customization files to reflect different WSDL and
+                schema file names.</para>
+            </listitem>
+
+            <listitem>
+                <para>This holds true for different releases of the
+                &jax-ws.product.name.short;. The &jax-ws.product.name.short;
+                may in each release change these file names to resolve bugs.
+                If and when this does occur, a developer would need to change
+                the filenames in their customization files to match the new
+                file names.</para>
+            </listitem>
+
+            <listitem>
+                <para>A <link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=647">bug
+                in <command>apt</command> ant task</link> makes it not work by
+                default. Workaround is to use <literal>fork="true"</literal>
+                option in the <command>apt</command> task.</para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="for-more-information">
+        <title>For More Information</title>
+
+        <para>Go to <link
+        xlink:href="http://jax-ws.java.net/">http://jax-ws.java.net</link>.</para>
+
+        <para>Send your feedback to <link
+        xlink:href="mailto:users@metro.java.net">users@metro.java.net</link>
+        or use the <link
+        xlink:href="http://forums.java.net/jive/forum.jspa?forumID=46&amp;start=0">Metro
+        and JAXB Forum</link></para>
+    </section>
+
+    <xi:include href="changelog.xml" />
+
+</chapter>
