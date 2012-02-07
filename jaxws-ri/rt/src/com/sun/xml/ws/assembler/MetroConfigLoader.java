@@ -63,14 +63,14 @@ import java.net.URL;
 import java.util.logging.Level;
 
 /**
- * This class is responsible for locating and loading Metro configuration files 
+ * This class is responsible for locating and loading Metro configuration files
  * (both application jaxws-tubes.xml and default jaxws-tubes-default.xml).
- * <p />
- * Once the configuration is loaded the class is able to resolve which tubeline 
+ * <p/>
+ * Once the configuration is loaded the class is able to resolve which tubeline
  * configuration belongs to each endpoint or endpoint client. This information is
  * then used in {@link TubelineAssemblyController} to construct the list of
  * {@link TubeCreator} objects that are used in the actual tubeline construction.
- * 
+ *
  * @author Marek Potociar <marek.potociar at sun.com>
  */
 // TODO Move the logic of this class directly into MetroConfig class.
@@ -84,6 +84,7 @@ class MetroConfigLoader {
 
         TubeFactoryList getFactories(TubelineDefinition td);
     }
+
     private static final TubeFactoryListResolver ENDPOINT_SIDE_RESOLVER = new TubeFactoryListResolver() {
 
         public TubeFactoryList getFactories(TubelineDefinition td) {
@@ -104,18 +105,18 @@ class MetroConfigLoader {
 
     MetroConfigLoader(Container container, MetroConfigName defaultTubesConfigNames) {
         this.defaultTubesConfigNames = defaultTubesConfigNames;
-        ResourceLoader resourceLoader = null;
+        ResourceLoader spiResourceLoader = null;
         if (container != null) {
-            resourceLoader = container.getSPI(ResourceLoader.class);
+            spiResourceLoader = container.getSPI(ResourceLoader.class);
         }
-        if (resourceLoader == null) {
-            resourceLoader = new MetroConfigUrlLoader(container);
-        }
-        init(resourceLoader, container);
+        // if spi resource can't load resource, default (MetroConfigUrlLoader) is used;
+        // it searches the classpath, so it would be most probably used
+        // when using jaxws- or metro-defaults from jaxws libraries
+        init(container, spiResourceLoader, new MetroConfigUrlLoader(container));
     }
 
-    private void init(ResourceLoader loader, Container container) {
-       
+    private void init(Container container, ResourceLoader... loaders) {
+
         String appFileName = null;
         String defaultFileName = null;
         if (container != null) {
@@ -128,11 +129,11 @@ class MetroConfigLoader {
         if (appFileName == null) {
             appFileName = defaultTubesConfigNames.getAppFileName();
         }
-        
+
         if (defaultFileName == null) {
             defaultFileName = defaultTubesConfigNames.getDefaultFileName();
         }
-        this.defaultConfigUrl = locateResource(defaultFileName, loader);
+        this.defaultConfigUrl = locateResource(defaultFileName, loaders);
         if (defaultConfigUrl == null) {
             throw LOGGER.logSevereException(new IllegalStateException(TubelineassemblyMessages.MASM_0001_DEFAULT_CFG_FILE_NOT_FOUND(defaultFileName)));
         }
@@ -149,7 +150,7 @@ class MetroConfigLoader {
             throw LOGGER.logSevereException(new IllegalStateException(TubelineassemblyMessages.MASM_0005_NO_DEFAULT_TUBELINE_IN_DEFAULT_CFG_FILE(defaultFileName)));
         }
 
-        this.appConfigUrl = locateResource(appFileName, loader);
+        this.appConfigUrl = locateResource(appFileName, loaders);
         if (appConfigUrl != null) {
             LOGGER.config(TubelineassemblyMessages.MASM_0006_APP_CFG_FILE_LOCATED(appConfigUrl));
             this.appConfig = MetroConfigLoader.loadMetroConfig(appConfigUrl);
@@ -224,10 +225,23 @@ class MetroConfigLoader {
 
 
     private static URL locateResource(String resource, ResourceLoader loader) {
+        if (loader == null) return null;
+
         try {
             return loader.getResource(resource);
         } catch (MalformedURLException ex) {
             LOGGER.severe(TubelineassemblyMessages.MASM_0009_CANNOT_FORM_VALID_URL(resource), ex);
+        }
+        return null;
+    }
+
+    private static URL locateResource(String resource, ResourceLoader[] loaders) {
+
+        for (ResourceLoader loader : loaders) {
+            URL url = locateResource(resource, loader);
+            if (url != null) {
+                return url;
+            }
         }
         return null;
     }
