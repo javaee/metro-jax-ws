@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,26 +55,8 @@ import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.pipe.Codec;
-import com.sun.xml.ws.api.pipe.Engine;
-import com.sun.xml.ws.api.pipe.Fiber;
-import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
-import com.sun.xml.ws.api.pipe.ServerPipeAssemblerContext;
-import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
-import com.sun.xml.ws.api.pipe.SyncStartForAsyncFeature;
-import com.sun.xml.ws.api.pipe.Tube;
-import com.sun.xml.ws.api.pipe.TubeCloner;
-import com.sun.xml.ws.api.pipe.TubelineAssembler;
-import com.sun.xml.ws.api.pipe.TubelineAssemblerFactory;
-import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.server.ContainerResolver;
-import com.sun.xml.ws.api.server.EndpointAwareCodec;
-import com.sun.xml.ws.api.server.EndpointComponent;
-import com.sun.xml.ws.api.server.EndpointReferenceExtensionContributor;
-import com.sun.xml.ws.api.server.LazyMOMProvider;
-import com.sun.xml.ws.api.server.TransportBackChannel;
-import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.api.server.WebServiceContextDelegate;
+import com.sun.xml.ws.api.pipe.*;
+import com.sun.xml.ws.api.server.*;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.model.wsdl.WSDLDirectProperties;
@@ -97,14 +79,7 @@ import javax.xml.ws.EndpointReference;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
@@ -198,7 +173,7 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
         this.operationDispatcher = (port == null) ? null : new OperationDispatcher(port, binding, seiModel);
 
         context = createServerTubeAssemblerContext(terminalTube, isSynchronous);
-    this.masterTubeline = assembler.createServer(context);
+        this.masterTubeline = assembler.createServer(context);
 
 		Codec c = context.getCodec();
 		if (c instanceof EndpointAwareCodec) {

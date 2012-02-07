@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,6 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.pipe.helper.PipeAdapter;
-import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.transport.http.client.HttpTransportPipe;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.pipe.StandaloneTubeAssembler;
@@ -83,7 +82,7 @@ import java.util.logging.Logger;
  * <p>
  * {@link TransportTubeFactory} look-up follows the standard service
  * discovery mechanism, so you need
- * {@code META-INF/services/com.sun.xml.ws.api.pipe.TransportTubeFactory}.
+ * {@code META-INF/services/com.sun.xml.ws.api.pipe.BasicTransportTubeFactory}.
  *
  * @author Jitendra Kotamraju
  * @see StandaloneTubeAssembler

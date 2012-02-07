@@ -82,8 +82,10 @@
     <copy todir="${build.dir}/classes/META-INF/services">
       <fileset dir="${basedir}/etc/" includes="javax.xml.ws.*, com.sun.xml.ws.*"/>
     </copy>
-
-    <antcall target="test" inheritrefs="true"/>  
+      <copy todir="${build.dir}/classes/META-INF">
+          <fileset dir="${basedir}/etc/" includes="jaxws-tubes-default.xml"/>
+      </copy>
+    <antcall target="test" inheritrefs="true"/>
   </target>
 
   <target name="compile-mustang" depends="generate-code">
