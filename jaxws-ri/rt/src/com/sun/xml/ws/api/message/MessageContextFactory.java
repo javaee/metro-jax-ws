@@ -119,6 +119,10 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         return p;
     }
     
+    public MessageContext createContext(Message m){
+         return packet(m);
+    }
+    
     private Packet packet(Message m) {
         final Packet p = new Packet();
         //TODO when do we use xmlCodec?

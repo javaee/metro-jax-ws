@@ -40,17 +40,15 @@
 
 package org.jvnet.ws.databinding;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
 import javax.xml.transform.Source;
-import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceFeature;
 
 import org.jvnet.ws.message.MessageContext;
+import org.jvnet.ws.message.MessageContextFactory;
 import org.xml.sax.EntityResolver;
 
 /**
@@ -137,6 +135,13 @@ public interface Databinding {
 	 * @return The response XML(SOAP) message
 	 */
 	MessageContext serializeResponse(JavaCallInfo call);
+
+    /**
+     * Gets the MessageContextFactory
+     * 
+     * @return The MessageContextFactory
+     */
+	MessageContextFactory getMessageContextFactory();
 	
 	/**
 	 * {@code Databinding.Builder}, created from the DatabindingFactory, is used to 
@@ -246,94 +251,5 @@ public interface Databinding {
 	     * @return WSDLGenerator The WSDLGenerator
 	     */
 	    WSDLGenerator createWSDLGenerator();	
-	}
-	
-	/**
-	 * WSDLGenerator is used to generate the WSDL representation of the service 
-	 * endpoint interface of the parent Databinding object.
-	 */
-	public interface WSDLGenerator {
-
-		/**
-		 * Sets the inlineSchema boolean. When the inlineSchema is true, the 
-		 * generated schema documents are embedded within the type element of
-		 * the generated WSDL. When the inlineSchema is false, the generated 
-		 * schema documents are generated as standalone schema documents and
-		 * imported into the generated WSDL.
-		 * 
-		 * @param inline the inlineSchema boolean.
-		 * @return
-		 */
-		WSDLGenerator inlineSchema(boolean inline);
-
-		/**
-		 * Sets A property of the WSDLGenerator
-		 * 
-		 * @param name The name of the property
-		 * @param value The value of the property
-		 * 
-         * @return this WSDLGenerator instance
-		 */
-		WSDLGenerator property(String name, Object value);
-		
-		/**
-		 * Generates the WSDL using the wsdlResolver to output the generated
-		 * documents.
-		 * 
-		 * @param wsdlResolver The WSDLResolver
-		 */
-		void generate(WSDLResolver wsdlResolver);
-		
-		/**
-		 * Generates the WSDL into the file directory
-		 * 
-		 * @param outputDir The output file directory
-		 * @param name The file name of the main WSDL document
-		 */		
-		void generate(File outputDir, String name);
-
-		/**
-		 * WSDLResolver is used by WSDLGenerator while generating WSDL and its associated
-		 * documents. It is used to control what documents need to be generated and what
-		 * documents need to be picked from metadata. If endpont's document metadata
-		 * already contains some documents, their systemids may be used for wsdl:import,
-		 * and schema:import. The suggested filenames are relative urls(for e.g: EchoSchema1.xsd)
-		 * The Result object systemids are also relative urls(for e.g: AbsWsdl.wsdl).
-		 *
-		 * @author Jitendra Kotamraju
-		 */
-		public interface WSDLResolver {
-		    /**
-		     * Create a Result object into which concrete WSDL is to be generated.
-		     *
-		     * @return Result for the concrete WSDL
-		     */
-		    public Result getWSDL(String suggestedFilename);
-
-		    /**
-		     * Create a Result object into which abstract WSDL is to be generated. If the the
-		     * abstract WSDL is already in metadata, it is not generated.
-		     * 
-		     * Update filename if the suggested filename need to be changed in wsdl:import.
-		     * This needs to be done if the metadata contains abstract WSDL, and that systemid
-		     * needs to be reflected in concrete WSDL's wsdl:import
-		     *
-		     * @return null if abstract WSDL need not be generated
-		     */
-		    public Result getAbstractWSDL(Holder<String> filename);
-
-		    /**
-		     * Create a Result object into which schema doc is to be generated. Typically if
-		     * there is a schema doc for namespace in metadata, then it is not generated.
-		     * 
-		     * Update filename if the suggested filename need to be changed in xsd:import. This
-		     * needs to be done if the metadata contains the document, and that systemid
-		     * needs to be reflected in some other document's xsd:import
-		     *
-		     * @return null if schema need not be generated
-		     */
-		    public Result getSchemaOutput(String namespace, Holder<String> filename);
-
-		}
 	}
 }

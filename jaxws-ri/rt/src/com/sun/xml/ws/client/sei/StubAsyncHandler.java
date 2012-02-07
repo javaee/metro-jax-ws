@@ -3,6 +3,8 @@ package com.sun.xml.ws.client.sei;
 import java.util.List;
 
 import javax.jws.soap.SOAPBinding.Style;
+
+import com.sun.xml.ws.api.message.MessageContextFactory;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
@@ -11,8 +13,8 @@ public class StubAsyncHandler extends StubHandler {
 
     private final Class asyncBeanClass;
 
-	public StubAsyncHandler(JavaMethodImpl jm, JavaMethodImpl sync) {
-        super(sync);
+	public StubAsyncHandler(JavaMethodImpl jm, JavaMethodImpl sync, MessageContextFactory mcf) {
+        super(sync, mcf);
 
         List<ParameterImpl> rp = sync.getResponseParameters();
         int size = 0;

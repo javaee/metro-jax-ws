@@ -88,6 +88,7 @@ import com.sun.xml.ws.spi.db.BindingHelper;
 import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.policy.jaxws.PolicyWSDLGeneratorExtension;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import org.jvnet.ws.databinding.WSDLResolver;
 
 import javax.jws.soap.SOAPBinding.Style;
 import javax.jws.soap.SOAPBinding.Use;

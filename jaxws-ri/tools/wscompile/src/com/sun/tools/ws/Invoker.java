@@ -290,7 +290,8 @@ public final class Invoker {
         "com.ctc.wstx.", //wsimport, wsgen ant task
         "org.codehaus.stax2.", //wsimport, wsgen ant task
         "com.sun.xml.messaging.saaj.", //wsgen ant task
-        "com.sun.xml.ws."
+        "com.sun.xml.ws.",
+        "org.jvnet.ws." //wsgen
     };
 
     /**

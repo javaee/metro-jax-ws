@@ -46,6 +46,8 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 
 import javax.xml.ws.WebServiceFeature;
+
+import com.sun.xml.ws.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.wsdl.DispatchException;
@@ -156,7 +158,15 @@ public interface Databinding extends org.jvnet.ws.databinding.Databinding {
 
 	void generateWSDL(WSDLGenInfo info);
 
+	/**
+	 * @deprecated use MessageContextFactory
+	 */
 	public ContentType encode( Packet packet, OutputStream out ) throws IOException ;
 
+    /**
+     * @deprecated use MessageContextFactory
+     */
 	public void decode( InputStream in, String ct, Packet packet ) throws IOException;
+	
+	public MessageContextFactory getMessageContextFactory();
 }

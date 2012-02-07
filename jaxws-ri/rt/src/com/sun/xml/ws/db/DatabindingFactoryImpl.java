@@ -56,7 +56,7 @@ import javax.xml.ws.WebServiceFeature;
 import org.jvnet.ws.databinding.Databinding;
 import org.jvnet.ws.databinding.DatabindingModeFeature;
 import org.jvnet.ws.databinding.Databinding.Builder;
-import org.jvnet.ws.databinding.Databinding.WSDLGenerator;
+import org.jvnet.ws.databinding.WSDLGenerator;
 import org.xml.sax.EntityResolver;
 
 import com.sun.xml.ws.api.BindingID;
@@ -130,7 +130,7 @@ public class DatabindingFactoryImpl extends DatabindingFactory {
 		return provider.create(config);
 	}
     
-    public Databinding.WSDLGenerator createWsdlGen(DatabindingConfig config) {
+    public WSDLGenerator createWsdlGen(DatabindingConfig config) {
         DatabindingProvider provider = provider(config);
         return provider.wsdlGen(config);
     }

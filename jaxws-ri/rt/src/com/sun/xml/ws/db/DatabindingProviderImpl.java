@@ -43,7 +43,8 @@ package com.sun.xml.ws.db;
 import java.io.File;
 import java.util.Map;
 
-import org.jvnet.ws.databinding.Databinding.WSDLGenerator;
+import org.jvnet.ws.databinding.WSDLGenerator;
+import org.jvnet.ws.databinding.WSDLResolver;
 
 import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
@@ -87,7 +88,7 @@ public class DatabindingProviderImpl implements DatabindingProvider {
         return true;
     }
 
-    static public class JaxwsWsdlGen implements Databinding.WSDLGenerator {
+    static public class JaxwsWsdlGen implements WSDLGenerator {
         DatabindingImpl databinding;
         WSDLGenInfo wsdlGenInfo;
         
@@ -102,12 +103,12 @@ public class DatabindingProviderImpl implements DatabindingProvider {
         }
 
         public WSDLGenerator property(String name, Object value) {
-            // TODO Auto-generated method stub
-            return null;
+            // TODO wsdlGenInfo.set...
+            return this;
         }
 
         public void generate(WSDLResolver wsdlResolver) {
-//            wsdlGenInfo.setWsdlResolver(wsdlResolver);
+            wsdlGenInfo.setWsdlResolver(wsdlResolver);
             databinding.generateWSDL(wsdlGenInfo);
         }
         

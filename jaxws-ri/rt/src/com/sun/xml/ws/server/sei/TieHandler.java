@@ -45,6 +45,7 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.databinding.EndpointCallBridge;
 import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
@@ -105,8 +106,9 @@ final public class TieHandler implements EndpointCallBridge {
     // these objects together create a response message from method parameters
     private final EndpointResponseMessageBuilder bodyBuilder;
     private final MessageFiller[] outFillers;
+    protected MessageContextFactory packetFactory;
 
-    public TieHandler(JavaMethodImpl method, WSBinding binding) {
+    public TieHandler(JavaMethodImpl method, WSBinding binding, MessageContextFactory mcf) {
         this.soapVersion = binding.getSOAPVersion();
         this.method = method.getMethod();
         this.javaMethodModel = method;
@@ -116,6 +118,7 @@ final public class TieHandler implements EndpointCallBridge {
         this.outFillers = fillers.toArray(new MessageFiller[fillers.size()]);
         this.isOneWay = method.getMEP().isOneWay();
         this.noOfArgs = this.method.getParameterTypes().length;
+        packetFactory = mcf;
     }
 
     /**
@@ -335,9 +338,7 @@ final public class TieHandler implements EndpointCallBridge {
 
 	public Packet serializeResponse(JavaCallInfo call) {
 		Message msg = this.createResponse(call);
-        Packet response = new Packet();
-        response.setMessage(msg);
-        return response;
+        return (Packet)packetFactory.createContext(msg);
 	}
 	
     public JavaMethod getOperationModel() {

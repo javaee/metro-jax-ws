@@ -52,6 +52,7 @@ import javax.xml.ws.WebServiceFeature;
 
 import org.jvnet.ws.message.MessageContext;
 
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.databinding.EndpointCallBridge;
 import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;
@@ -59,6 +60,7 @@ import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.ClientCallBridge;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.MEP;
 import com.sun.xml.ws.api.model.SEIModel;
@@ -92,12 +94,14 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
     OperationDispatcher operationDispatcherNoWsdl;
     boolean clientConfig = false;
     Codec codec;
+    MessageContextFactory packetFactory = null;
     
 	public DatabindingImpl(DatabindingProviderImpl p, DatabindingConfig config) {
 		RuntimeModeler modeler = new RuntimeModeler(config);
 		modeler.setClassLoader(config.getClassLoader());
 		seiModel = modeler.buildRuntimeModel();
 		WSDLPort wsdlport = config.getWsdlPort();
+		packetFactory = new MessageContextFactory(seiModel.getWSBinding().getFeatures());
 		clientConfig = isClientConfig(config);
 		if ( clientConfig ) initStubHandlers();
 		seiModel.setDatabinding(this);
@@ -105,7 +109,7 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
 		if (operationDispatcher == null) operationDispatcherNoWsdl = new OperationDispatcher(null, seiModel.getWSBinding(), seiModel);
 //    if(!clientConfig) {
 		for(JavaMethodImpl jm: seiModel.getJavaMethods()) if (!jm.isAsync()) {
-            TieHandler th = new TieHandler(jm, seiModel.getWSBinding());
+            TieHandler th = new TieHandler(jm, seiModel.getWSBinding(), packetFactory);
             wsdlOpMap.put(jm.getOperationQName(), th);
             tieHandlers.put(th.getMethod(), th);
         }
@@ -136,7 +140,7 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
         // first fill in sychronized versions
         for (JavaMethodImpl m : seiModel.getJavaMethods()) {
             if (!m.getMEP().isAsync) {
-            	StubHandler handler = new StubHandler(m);
+            	StubHandler handler = new StubHandler(m, packetFactory);
                 syncs.put(m.getOperationSignature(), m);
                 stubHandlers.put(m.getMethod(), handler);
             }
@@ -145,7 +149,7 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
             JavaMethodImpl sync = syncs.get(jm.getOperationSignature());
             if (jm.getMEP() == MEP.ASYNC_CALLBACK || jm.getMEP() == MEP.ASYNC_POLL) {
                 Method m = jm.getMethod();
-                StubAsyncHandler handler = new StubAsyncHandler(jm, sync);
+                StubAsyncHandler handler = new StubAsyncHandler(jm, sync, packetFactory);
                 stubHandlers.put(m, handler);
             }
         }
@@ -188,7 +192,7 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
 
 	public Packet serializeRequest(JavaCallInfo call) {
         StubHandler stubHandler = stubHandlers.get(call.getMethod());
-        return stubHandler.createRequestPacket(call);	    
+        return stubHandler.createRequestPacket(call);	
 	}
 
 	public Packet serializeResponse(JavaCallInfo call) {
@@ -203,9 +207,7 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
 		if (call.getException() instanceof DispatchException) {
 		    message = ((DispatchException)call.getException()).fault;
 		}
-        Packet response = new Packet();
-        response.setMessage(message);
-        return response;
+        return (Packet)packetFactory.createContext(message);
 	}
 
 	public ClientCallBridge getClientBridge(Method method) {
@@ -262,5 +264,9 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
 
     public MessageContext serializeResponse(org.jvnet.ws.databinding.JavaCallInfo call) {
         return serializeResponse((JavaCallInfo)call);
+    }
+    
+    public MessageContextFactory getMessageContextFactory() {
+        return packetFactory;
     }
 }

@@ -166,6 +166,7 @@ public class RuntimeModeler {
         this.config = config;
         this.wsBinding = config.getWSBinding();  
         metadataReader = config.getMetadataReader();
+        targetNamespace = config.getMappingInfo().getTargetNamespace();
         if (metadataReader == null) metadataReader = new ReflectAnnotationReader();
         if (wsBinding != null) {
             this.bindingId = wsBinding.getBindingId();
@@ -1593,7 +1594,6 @@ public class RuntimeModeler {
         if(name.length() == 0){
             name = clazz.getSimpleName();
         }
-        tns = webService.targetNamespace();
         if (tns == null || "".equals(tns.trim())) tns = webService.targetNamespace();
         if (tns.length() == 0)
             tns = getNamespace(clazz.getPackage().getName());

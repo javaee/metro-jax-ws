@@ -41,7 +41,7 @@ package com.sun.xml.ws.api.databinding;
 
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
-import com.sun.xml.ws.wsdl.writer.WSDLResolver;
+import org.jvnet.ws.databinding.WSDLResolver;
 
 /**
  * WSDLGenInfo provides the WSDL generation options
@@ -73,6 +73,7 @@ public class WSDLGenInfo {
 		this.inlineSchemas = inlineSchemas;
 	}
 	public WSDLGeneratorExtension[] getExtensions() {
+	    if (extensions == null) return new WSDLGeneratorExtension[0];
 		return extensions;
 	}
 	public void setExtensions(WSDLGeneratorExtension[] extensions) {

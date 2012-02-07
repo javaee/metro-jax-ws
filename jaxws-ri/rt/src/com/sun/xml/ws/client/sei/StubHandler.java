@@ -43,6 +43,7 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.databinding.ClientCallBridge;
 import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
@@ -92,8 +93,9 @@ public class StubHandler implements ClientCallBridge {
     protected final Map<QName, CheckedExceptionImpl> checkedExceptions;
     protected SOAPVersion soapVersion = SOAPVersion.SOAP_11;
     protected ResponseBuilder responseBuilder;
-
-    public StubHandler(JavaMethodImpl method) {
+    protected MessageContextFactory packetFactory;
+    
+    public StubHandler(JavaMethodImpl method, MessageContextFactory mcf) {
         //keep all the CheckedException model for the detail qname
         this.checkedExceptions = new HashMap<QName, CheckedExceptionImpl>();
         for(CheckedExceptionImpl ce : method.getCheckedExceptions()){
@@ -107,6 +109,7 @@ public class StubHandler implements ClientCallBridge {
             this.soapAction = soapActionFromBinding;
         }
         this.javaMethod = method;
+        packetFactory = mcf;
         
         soapVersion = javaMethod.getBinding().getSOAPVersion();
 
@@ -229,7 +232,7 @@ public class StubHandler implements ClientCallBridge {
 
         for (MessageFiller filler : inFillers) filler.fillIn(call.getParameters(),msg);
 
-        Packet req = new Packet(msg);
+        Packet req = (Packet)packetFactory.createContext(msg);
         req.soapAction = soapAction;
         req.expectReply = !isOneWay;
         req.getMessage().assertOneWay(isOneWay);

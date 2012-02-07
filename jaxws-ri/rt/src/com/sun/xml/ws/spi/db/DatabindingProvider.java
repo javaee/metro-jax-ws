@@ -42,6 +42,8 @@ package com.sun.xml.ws.spi.db;
 import java.util.Map;
 
 import org.jvnet.ws.databinding.Databinding;
+import org.jvnet.ws.databinding.WSDLGenerator;
+
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 
 public interface DatabindingProvider {
@@ -49,5 +51,5 @@ public interface DatabindingProvider {
 	boolean isFor(String databindingMode);
 	void init(Map<String, Object> properties);
 	Databinding create(DatabindingConfig config);
-    Databinding.WSDLGenerator wsdlGen(DatabindingConfig config);
+    WSDLGenerator wsdlGen(DatabindingConfig config);
 }

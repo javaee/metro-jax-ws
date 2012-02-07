@@ -57,6 +57,7 @@ import junit.framework.TestCase;
 
 import org.jvnet.ws.databinding.DatabindingModeFeature;
 import org.jvnet.ws.databinding.JavaCallInfo;
+import org.jvnet.ws.message.ContentType;
 
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.databinding.Databinding;
@@ -65,7 +66,7 @@ import com.sun.xml.ws.api.databinding.DatabindingFactory;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.pipe.ContentType;
+//import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
@@ -160,7 +161,8 @@ abstract public class WsDatabindingTestBase extends TestCase {
 			Packet cliSoapReq = (Packet)cli.serializeRequest(cliCall);
 			//Transmit to Server
 			ByteArrayOutputStream cliBo = new ByteArrayOutputStream();
-			ContentType cliCt = cli.encode(cliSoapReq, cliBo);
+//			ContentType cliCt = cli.encode(cliSoapReq, cliBo);
+			ContentType cliCt = cliSoapReq.writeTo(cliBo);
 			if (wireLog) {
 				System.out.println("Request Message: " + cliCt.getContentType() + " " + cliCt.getSOAPActionHeader() );
 				System.out.println(new String(cliBo.toByteArray()));
@@ -173,9 +175,10 @@ abstract public class WsDatabindingTestBase extends TestCase {
 			}
 			
 			ByteArrayInputStream srvBi = new ByteArrayInputStream(cliBo.toByteArray());
-			Packet srvSoapReq = new Packet();
+			Packet srvSoapReq = (Packet)srv.getMessageContextFactory().createContext(srvBi, cliCt.getContentType());
+//			Packet srvSoapReq = new Packet();
 //	        packet.soapAction = fixQuotesAroundSoapAction(con.getRequestHeader("SOAPAction"));
-			srv.decode(srvBi, cliCt.getContentType(), srvSoapReq);
+//			srv.decode(srvBi, cliCt.getContentType(), srvSoapReq);
 //			Message srvSoapReq = tie.getMessageFactory().createMessage(srcReq, cliSoapReq.transportHeaders(), null);
 //			EndpointCallBridge endpointBridge = srv.getEndpointBridge(srvSoapReq);
 			JavaCallInfo srcCall = srv.deserializeRequest(srvSoapReq);			
@@ -191,7 +194,7 @@ abstract public class WsDatabindingTestBase extends TestCase {
 //			Packet srvSoapRes = srvSoapReq.createResponse(srvSoapResMsg);
 			//Transmit to Client
 			ByteArrayOutputStream srvBo = new ByteArrayOutputStream();
-			ContentType srvCt = srv.encode(srvSoapRes, srvBo);
+			ContentType srvCt = srvSoapRes.writeTo(srvBo);
 			if (wireLog) {
 				System.out.println("Response Message: " + srvCt.getContentType());
 				System.out.println(new String(srvBo.toByteArray()));
@@ -203,8 +206,9 @@ abstract public class WsDatabindingTestBase extends TestCase {
 				response = new String(srvBo.toByteArray());
 			}
 			ByteArrayInputStream cliBi = new ByteArrayInputStream(srvBo.toByteArray());
-			Packet cliSoapRes = new Packet();
-			cli.decode(cliBi, srvCt.getContentType(), cliSoapRes);
+//			Packet cliSoapRes = new Packet();
+//			cli.decode(cliBi, srvCt.getContentType(), cliSoapRes);
+			Packet cliSoapRes = (Packet)cli.getMessageContextFactory().createContext(cliBi, srvCt.getContentType());
 			cliCall = cli.deserializeResponse(cliSoapRes, cliCall);
 			if (cliCall.getException() != null) {
 				throw cliCall.getException(); 
