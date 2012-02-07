@@ -218,11 +218,15 @@
     <copy todir="${dist20.home}/lib">
       <fileset dir="${build.home}/lib" includes="*.jar" excludes="args4j*.jar,istack*.jar"/>
     </copy>
-  	
-    <copy todir="${dist20.home}/lib">
-      <fileset dir="${build.home}/plugins_lib" includes="*.jar"/>
+
+    <!-- copy plugin libs (including dependences) to separate directory  -->
+    <mkdir dir="${dist20.home}/lib/plugins" />
+    <copy todir="${dist20.home}/lib/plugins">
+      <fileset dir="${build.home}/plugins_lib" includes="*eclipselink*.jar" />
     </copy>
-    	
+    <move todir="${dist20.home}/lib/plugins" file="${dist20.home}/lib/common.sdo.jar" />
+    <move todir="${dist20.home}/lib/plugins" file="${dist20.home}/lib/eclipselink.jar" />
+
     <copy    todir="${dist20.home}/docs">
       <fileset dir="${build.home}/docs"/>
     </copy>
