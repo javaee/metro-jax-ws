@@ -151,6 +151,7 @@
             <exec executable="${mvn.exec}" failonerror="true">
                 <arg line="-f"/>
                 <arg line="${basedir}/docs/pom.xml"/>
+                <arg line="clean"/>
                 <arg line="package"/>
             </exec>
         </sequential>
@@ -215,7 +216,7 @@
     <chmod perm="+x" file="${dist20.home}/bin/wsgen.sh"/>
 
     <copy todir="${dist20.home}/lib">
-      <fileset dir="${build.home}/lib" includes="*.jar"/>
+        <fileset dir="${build.home}/lib" includes="*.jar" excludes="args4j*.jar,istack*.jar"/>
     </copy>
   	
     <copy todir="${dist20.home}/lib">
@@ -331,7 +332,7 @@
         <delete file="${dist20.home}/lib/jaxws-tools.src.zip"/>
     </target>
 
-    <target name="hudson" depends="clean, dist.zip, src.zip,javadocs, doc-src-zip" />
+    <target name="hudson" depends="clean, dist.zip, src.zip, generate-weekly-source, javadocs, doc-src-zip" />
 
    <target name="replace-binaries-with-re-build">
       <!--
@@ -903,4 +904,39 @@
             <arg  value="project.properties"/>
         </exec>
     </target>
+
+    <target name="www.release" if="jaxws.scm.username">
+        <!-- Assumes hudson target has been already invoked -->
+        <property name="www.upload.dir" value="${build.home}/www" />
+
+        <mkdir dir="${www.upload.dir}" />
+
+        <copy file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.zip" tofile="${www.upload.dir}/JAXWS${release.impl.version}${release.impl.version.suffix}-src-${DSTAMP}.zip" />
+        <copy file="${build.home}/jaxws-ri.zip" tofile="${www.upload.dir}/JAXWS${release.impl.version}${release.impl.version.suffix}-${DSTAMP}.zip" />
+
+        <copy todir="${www.upload.dir}/samples">
+            <fileset dir="${dist20.home}/samples" />
+        </copy>
+
+        <copy todir="${www.upload.dir}/docs">
+            <fileset dir="${build.home}/docs" />
+        </copy>
+
+        <copy file="${basedir}/docs/www/target/index.html" tofile="${www.upload.dir}/index.html" />
+
+        <taskdef name="soimp" classname="com.sun.istack.tools.soimp.Soimp">
+            <classpath>
+                <pathelement path="${basedir}/lib/args4j.jar" />
+                <pathelement path="${basedir}/lib/istack-commons-tools.jar" />
+            </classpath>
+        </taskdef>
+
+        <soimp  dir="${www.upload.dir}"
+                repository="${www.repository.url}/${release.impl.version}${release.impl.version.suffix}"
+                username="${jaxws.scm.username}"
+                password="${jaxws.scm.password}"
+                create="true"
+                commitMessage="JAX-WS-${release.impl.version}${release.impl.version.suffix}" />
+    </target>
+
 </project>
