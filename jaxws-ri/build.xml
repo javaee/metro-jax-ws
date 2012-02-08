@@ -222,7 +222,7 @@
     <!-- copy plugin libs (including dependences) to separate directory  -->
     <mkdir dir="${dist20.home}/lib/plugins" />
     <copy todir="${dist20.home}/lib/plugins">
-      <fileset dir="${build.home}/plugins_lib" includes="*eclipselink*.jar" />
+      <fileset dir="${build.home}/plugins_lib" includes="*eclipselink*.*" />
     </copy>
     <move todir="${dist20.home}/lib/plugins" file="${dist20.home}/lib/common.sdo.jar" />
     <move todir="${dist20.home}/lib/plugins" file="${dist20.home}/lib/eclipselink.jar" />
@@ -300,11 +300,12 @@
           <fileset dir="${basedir}/lib" includes="*-source.jar" excludes="jaxws-asm-source.jar,junit-source.jar"/>
         </zip>
     -->
-    <zip file="${dist20.home}/lib/jaxws-eclipselink-plugin.src.zip">
+    <mkdir dir="${dist20.home}/lib/plugins" />
+    <zip file="${dist20.home}/lib/plugins/jaxws-eclipselink-plugin.src.zip">
       <fileset dir="${basedir}/eclipselink_jaxb/src"/>
       <fileset dir="${basedir}/eclipselink_jaxb/build/classes" includes="META-INF/services/*"/>
     </zip>
-    <zip file="${dist20.home}/lib/sdo-eclipselink-plugin.src.zip">
+    <zip file="${dist20.home}/lib/plugins/sdo-eclipselink-plugin.src.zip">
       <fileset dir="${basedir}/eclipselink_sdo/src"/>
       <fileset dir="${basedir}/eclipselink_sdo/build/classes" includes="META-INF/services/*"/>
     </zip>
@@ -757,17 +758,18 @@
 
     <macrodef name="mvn.install.snapshot.module">
         <attribute name="module"/>
+        <attribute name="libpath" default="lib"/>
         <attribute name="extra-args" default=""/>
         <attribute name="repo" default="${maven.repo.local}"/>
         <sequential>
             <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
             <prepare-pom module="@{module}"/>
-            <mvn.install.file jar="${dist20.home}/lib/@{module}.jar" pom="build/maven2-repo/@{module}.pom"
+            <mvn.install.file jar="${dist20.home}/@{libpath}/@{module}.jar" pom="build/maven2-repo/@{module}.pom"
                               repo="@{repo}" extra-args="@{extra-args}"/>
-            <mvn.install.file jar="${dist20.home}/lib/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom"
+            <mvn.install.file jar="${dist20.home}/@{libpath}/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom"
                               repo="@{repo}" extra-args="@{extra-args}"
                               classifier="sources"/>
-            <mvn.install.file jar="${dist20.home}/lib/@{module}-javadoc.jar"
+            <mvn.install.file jar="${dist20.home}/@{libpath}/@{module}-javadoc.jar"
                               pom="build/maven2-repo/@{module}.pom" repo="@{repo}" extra-args="@{extra-args}"
                               classifier="javadoc"/>
         </sequential>
@@ -775,17 +777,18 @@
 
     <macrodef name="mvn.publish.snapshot.module">
         <attribute name="module"/>
+        <attribute name="libpath" default="lib"/>
         <attribute name="extra-args" default=""/>
         <attribute name="repo" default="${maven.repo.local}"/>
         <sequential>
             <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
             <prepare-pom module="@{module}"/>
-            <mvn.publish.snapshot.file jar="${dist20.home}/lib/@{module}.jar" pom="build/maven2-repo/@{module}.pom"
+            <mvn.publish.snapshot.file jar="${dist20.home}/@{libpath}/@{module}.jar" pom="build/maven2-repo/@{module}.pom"
                                        repo="@{repo}" extra-args="@{extra-args}"/>
-            <mvn.publish.snapshot.file jar="${dist20.home}/lib/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom"
+            <mvn.publish.snapshot.file jar="${dist20.home}/@{libpath}/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom"
                                        repo="@{repo}" extra-args="@{extra-args}"
                                        classifier="sources"/>
-            <mvn.publish.snapshot.file jar="${dist20.home}/lib/@{module}-javadoc.jar"
+            <mvn.publish.snapshot.file jar="${dist20.home}/@{libpath}/@{module}-javadoc.jar"
                                        pom="build/maven2-repo/@{module}.pom" repo="@{repo}" extra-args="@{extra-args}"
                                        classifier="javadoc"/>
         </sequential>
@@ -817,17 +820,18 @@
 
     <macrodef name="mvn.publish.release.module">
         <attribute name="module"/>
+        <attribute name="libpath" default="lib"/>
         <attribute name="repo" default="${maven.repo.local}"/>
         <attribute name="extra-args" default=""/>
         <sequential>
             <property name="jar.suffix" value="${release.impl.version}"/>
             <prepare-pom module="@{module}"/>
-            <mvn.publish.release.file jar="${dist20.home}/lib/@{module}.jar" pom="build/maven2-repo/@{module}.pom"
+            <mvn.publish.release.file jar="${dist20.home}/@{libpath}/@{module}.jar" pom="build/maven2-repo/@{module}.pom"
                                       repo="@{repo}" extra-args="@{extra-args}"/>
-            <mvn.publish.release.file jar="${dist20.home}/lib/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom"
+            <mvn.publish.release.file jar="${dist20.home}/@{libpath}/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom"
                                       repo="@{repo}" extra-args="@{extra-args}"
                                       classifier="sources"/>
-            <mvn.publish.release.file jar="${dist20.home}/lib/@{module}-javadoc.jar"
+            <mvn.publish.release.file jar="${dist20.home}/@{libpath}/@{module}-javadoc.jar"
                                       pom="build/maven2-repo/@{module}.pom" repo="@{repo}" extra-args="@{extra-args}"
                                       classifier="javadoc"/>
         </sequential>
@@ -850,17 +854,17 @@
         <mvn.install.snapshot.module module="jaxws-rt"/>
         <mvn.install.snapshot.module module="jaxws-tools"/>
         <mvn.install.snapshot.zip module="jaxws-ri"/>
-        <mvn.install.snapshot.module module="jaxws-eclipselink-plugin"/>
-        <mvn.install.snapshot.module module="sdo-eclipselink-plugin"/>
+        <mvn.install.snapshot.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" />
+        <mvn.install.snapshot.module module="sdo-eclipselink-plugin" libpath="lib/plugins" />
     </target>
     
-    <target  name="mvn.publish.snapshots.local">
+    <target name="mvn.publish.snapshots.local">
         <fail unless="maven.repo.local">maven.repo.local property needs to be set</fail>
         <mvn.publish.snapshot.module module="jaxws-rt"/>
         <mvn.publish.snapshot.module module="jaxws-tools"/>
         <mvn.publish.snapshot.zip module="jaxws-ri"/>
-        <mvn.publish.snapshot.module module="jaxws-eclipselink-plugin"/>
-        <mvn.publish.snapshot.module module="sdo-eclipselink-plugin"/>
+        <mvn.publish.snapshot.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" />
+        <mvn.publish.snapshot.module module="sdo-eclipselink-plugin" libpath="lib/plugins" />
     </target>
     
     <target name="mvn.publish.release.local">
@@ -868,8 +872,8 @@
         <mvn.publish.release.module module="jaxws-rt"/>
         <mvn.publish.release.module module="jaxws-tools"/>
         <mvn.publish.release.zip module="jaxws-ri"/>
-        <mvn.publish.release.module module="jaxws-eclipselink-plugin"/>
-        <mvn.publish.release.module module="sdo-eclipselink-plugin"/>
+        <mvn.publish.release.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" />
+        <mvn.publish.release.module module="sdo-eclipselink-plugin" libpath="lib/plugins" />
     </target>
 
     <target  name="mvn.publish.promoted.local">
@@ -882,16 +886,16 @@
         <mvn.publish.snapshot.module module="jaxws-rt" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.module module="jaxws-tools" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.zip module="jaxws-ri" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
-        <mvn.publish.snapshot.module module="jaxws-eclipselink-plugin" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
-        <mvn.publish.snapshot.module module="sdo-eclipselink-plugin" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.snapshot.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.snapshot.module module="sdo-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
     </target>
 
     <target name="mvn.publish.release.remote">
         <mvn.publish.release.module module="jaxws-rt" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="jaxws-tools" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.zip module="jaxws-ri" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
-        <mvn.publish.release.module module="jaxws-eclipselink-plugin" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
-        <mvn.publish.release.module module="sdo-eclipselink-plugin" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.release.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
+        <mvn.publish.release.module module="sdo-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
     </target>
 
 
