@@ -40,6 +40,7 @@
 
 package org.jvnet.ws.databinding;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 
@@ -141,7 +142,8 @@ public interface Databinding {
      * 
      * @return The MessageContextFactory
      */
-	MessageContextFactory getMessageContextFactory();
+//Wait for WLS/src1212 - wls.jaxrpc wrapper
+//	MessageContextFactory getMessageContextFactory();
 	
 	/**
 	 * {@code Databinding.Builder}, created from the DatabindingFactory, is used to 
@@ -250,6 +252,65 @@ public interface Databinding {
 	     * 
 	     * @return WSDLGenerator The WSDLGenerator
 	     */
-	    WSDLGenerator createWSDLGenerator();	
+		org.jvnet.ws.databinding.Databinding.WSDLGenerator createWSDLGenerator();	
 	}
+
+    
+    /**
+     * WSDLGenerator is used to generate the WSDL representation of the service 
+     * endpoint interface of the parent Databinding object.
+     */
+    public interface WSDLGenerator {
+
+        /**
+         * Sets the inlineSchema boolean. When the inlineSchema is true, the 
+         * generated schema documents are embedded within the type element of
+         * the generated WSDL. When the inlineSchema is false, the generated 
+         * schema documents are generated as standalone schema documents and
+         * imported into the generated WSDL.
+         * 
+         * @param inline the inlineSchema boolean.
+         * @return
+         */
+        org.jvnet.ws.databinding.Databinding.WSDLGenerator inlineSchema(boolean inline);
+
+        /**
+         * Sets A property of the WSDLGenerator
+         * 
+         * @param name The name of the property
+         * @param value The value of the property
+         * 
+         * @return this WSDLGenerator instance
+         */
+        org.jvnet.ws.databinding.Databinding.WSDLGenerator property(String name, Object value);
+        
+        /**
+         * Generates the WSDL using the wsdlResolver to output the generated
+         * documents.
+         * 
+         * @param wsdlResolver The WSDLResolver
+         */
+        void generate(org.jvnet.ws.databinding.Databinding.WSDLGenerator.WSDLResolver wsdlResolver);
+        
+        /**
+         * Generates the WSDL into the file directory
+         * 
+         * @param outputDir The output file directory
+         * @param name The file name of the main WSDL document
+         */     
+        void generate(File outputDir, String name);
+
+        /**
+         * WSDLResolver is used by WSDLGenerator while generating WSDL and its associated
+         * documents. It is used to control what documents need to be generated and what
+         * documents need to be picked from metadata. If endpont's document metadata
+         * already contains some documents, their systemids may be used for wsdl:import,
+         * and schema:import. The suggested filenames are relative urls(for e.g: EchoSchema1.xsd)
+         * The Result object systemids are also relative urls(for e.g: AbsWsdl.wsdl).
+         *
+         * @author Jitendra Kotamraju
+         */
+        public interface WSDLResolver extends org.jvnet.ws.databinding.WSDLResolver {
+        }
+    }
 }

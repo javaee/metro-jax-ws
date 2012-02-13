@@ -10,7 +10,6 @@ import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.Holder;
 
-import org.jvnet.ws.databinding.WSDLGenerator;
 import org.xml.sax.SAXException;
 
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
@@ -19,7 +18,7 @@ import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver.Parser;
 import com.sun.xml.ws.streaming.TidyXMLStreamReader;
 import com.sun.xml.ws.wsdl.writer.WSDLResolver;
 
-public class InVmWSDLResolver implements WSDLResolver, org.jvnet.ws.databinding.WSDLResolver {
+public class InVmWSDLResolver implements WSDLResolver, org.jvnet.ws.databinding.Databinding.WSDLGenerator.WSDLResolver {
 	String wsdlID = null;
 	ByteArrayOutputStream wsdlIO = null;
 	HashMap<String, ByteArrayOutputStream> files = new HashMap<String, ByteArrayOutputStream>();

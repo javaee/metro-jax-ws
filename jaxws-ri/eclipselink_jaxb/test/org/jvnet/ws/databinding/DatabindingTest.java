@@ -33,7 +33,7 @@ public class DatabindingTest extends TestCase {
         Databinding.Builder builder = fac.createBuilder(Hello2.class, null);
         builder.targetNamespace("mytns");
         builder.serviceName(new QName("mytns", "myservice"));
-        WSDLGenerator wsdlgen = builder.createWSDLGenerator();
+        org.jvnet.ws.databinding.Databinding.WSDLGenerator wsdlgen = builder.createWSDLGenerator();
         wsdlgen.inlineSchema(true);
         InVmWSDLResolver res = new InVmWSDLResolver();
         wsdlgen.generate(res);

@@ -42,7 +42,7 @@ package com.sun.xml.ws.spi.db;
 import java.util.Map;
 
 import org.jvnet.ws.databinding.Databinding;
-import org.jvnet.ws.databinding.WSDLGenerator;
+import org.jvnet.ws.databinding.Databinding.WSDLGenerator;
 
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 
