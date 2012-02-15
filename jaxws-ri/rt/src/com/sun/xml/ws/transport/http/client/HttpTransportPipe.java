@@ -47,11 +47,11 @@ import com.sun.xml.ws.api.ha.StickyFeature;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
+import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.developer.HttpConfigFeature;
+import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.transport.Headers;
 import com.sun.xml.ws.util.ByteArrayBuffer;
-import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.util.StreamUtils;
 
@@ -61,22 +61,15 @@ import javax.xml.bind.JAXBException;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
-import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.handler.MessageContext;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import javax.xml.ws.soap.SOAPBinding;
+import java.io.*;
 import java.net.CookieHandler;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.net.HttpURLConnection;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * {@link Tube} that sends a request to a remote HTTP server.
@@ -335,15 +328,39 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             return;         // explicitly turned off
         }
         if (sticky || (shouldMaintainSessionProperty != null && shouldMaintainSessionProperty)) {
-            Map<String, List<String>> cookies = cookieJar.get(context.endpointAddress.getURI(),reqHeaders);
-            List<String> cookieList = cookies.get("Cookie");
-            if (cookieList != null && !cookieList.isEmpty()) {
-                reqHeaders.put("Cookie", cookieList);
-            }
-            cookieList = cookies.get("Cookie2");
-            if (cookieList != null && !cookieList.isEmpty()) {
-                reqHeaders.put("Cookie2", cookieList);
-            }
+            Map<String, List<String>> rememberedCookies = cookieJar.get(context.endpointAddress.getURI(), reqHeaders);
+            processCookieHeaders(reqHeaders, rememberedCookies, "Cookie");
+            processCookieHeaders(reqHeaders, rememberedCookies, "Cookie2");
+        }
+    }
+
+    private void processCookieHeaders(Map<String, List<String>> requestHeaders, Map<String, List<String>> rememberedCookies, String cookieHeader) {
+        List<String> jarCookies = rememberedCookies.get(cookieHeader);
+        if (jarCookies != null && !jarCookies.isEmpty()) {
+            List<String> resultCookies = mergeUserCookies(jarCookies, requestHeaders.get(cookieHeader));
+            requestHeaders.put(cookieHeader, resultCookies);
+        }
+    }
+
+    private List<String> mergeUserCookies(List<String> rememberedCookies, List<String> userCookies) {
+
+        // nothing to merge
+        if (userCookies == null || userCookies.isEmpty()) {
+            return rememberedCookies;
+        }
+
+        Map<String, String> map = new HashMap<String, String>();
+        cookieListToMap(rememberedCookies, map);
+        cookieListToMap(userCookies, map);
+
+        return new ArrayList<String>(map.values());
+    }
+
+    private void cookieListToMap(List<String> cookieList, Map<String, String> targetMap) {
+        for(String cookie : cookieList) {
+            int index = cookie.indexOf("=");
+            String cookieName = cookie.substring(0, index);
+            targetMap.put(cookieName, cookie);
         }
     }
 
