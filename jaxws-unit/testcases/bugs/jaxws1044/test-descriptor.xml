@@ -1,0 +1,6 @@
+<descriptor since="2.2.7" bugs="jaxws-1044"  transport="http" uses="servlet">
+    <description>JAX_WS-1044 Setting HTTP Cookie for the second time to BindingProvider.RequestContext is not overriding
+        the old Cookie
+    </description>
+    <service basedir="./server"/>
+</descriptor>
