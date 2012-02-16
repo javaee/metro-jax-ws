@@ -40,10 +40,10 @@
 
 package com.sun.xml.ws.message.saaj;
 
-import com.sun.istack.NotNull;
-import com.sun.istack.XMLStreamException2;
-import com.sun.istack.Nullable;
 import com.sun.istack.FragmentContentHandler;
+import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
+import com.sun.istack.XMLStreamException2;
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.unmarshaller.DOMScanner;
 import com.sun.xml.ws.api.SOAPVersion;
@@ -51,11 +51,12 @@ import com.sun.xml.ws.api.message.*;
 import com.sun.xml.ws.message.AttachmentUnmarshallerImpl;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.streaming.DOMStreamReader;
+import com.sun.xml.ws.util.ASCIIUtility;
 import com.sun.xml.ws.util.DOMUtil;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -65,13 +66,7 @@ import org.xml.sax.helpers.LocatorImpl;
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.soap.AttachmentPart;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPHeaderElement;
-import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.*;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -615,7 +610,11 @@ public class SAAJMessage extends Message {
          * Writes the contents of the attachment into the given stream.
          */
         public void writeTo(OutputStream os) throws IOException {
-            os.write(asByteArray());
+            try {
+                ASCIIUtility.copyStream(ap.getRawContent(), os);
+            } catch (SOAPException e) {
+                throw new WebServiceException(e);
+            }
         }
 
         /**
