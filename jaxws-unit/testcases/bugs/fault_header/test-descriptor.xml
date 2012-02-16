@@ -1,0 +1,9 @@
+<descriptor since="2.2.7" bugs="">
+    <description>
+        bug 13576977: https://bug.oraclecorp.com/pls/bug/webbug_edit.edit_info_top?rptno=13576977
+        WsImport fails when soap:header found within binding/opration/fault
+    </description>
+    <service basedir="./server">
+        <wsdl href="FaultHeaderService.wsdl"/>
+    </service>
+</descriptor>
