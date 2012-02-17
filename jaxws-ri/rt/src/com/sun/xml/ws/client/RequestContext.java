@@ -332,7 +332,7 @@ public final class RequestContext extends DistributedPropertySet {
                         " Either set BindingProvider.SOAPACTION_USE_PROPERTY to true or enable AddressingFeature"); 
             }
 
-            copySatelliteInto((DistributedPropertySet)packet);
+            copySatelliteInto(packet);
 
             if(!others.isEmpty()) {
                 //for bug 12883765

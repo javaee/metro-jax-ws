@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,17 @@
 
 package org.jvnet.ws.message;
 
+import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.client.RequestContext;
+import com.sun.xml.ws.client.ResponseContext;
+
+import javax.xml.ws.WebServiceContext;
+import java.util.Map.Entry;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * {@link PropertySet} that combines properties exposed from multiple
@@ -78,15 +88,103 @@ import com.sun.istack.Nullable;
  *
  * @author Kohsuke Kawaguchi
  */
-public interface DistributedPropertySet extends org.jvnet.ws.message.PropertySet {
+public abstract class DistributedPropertySet extends PropertySet {
+    /**
+     * All {@link PropertySet}s that are bundled into this {@link PropertySet}.
+     */
+    private final Map<Class, PropertySet> satellites = new IdentityHashMap<Class, PropertySet>();
 
-    public @Nullable <T extends org.jvnet.ws.message.PropertySet> T getSatellite(Class<T> satelliteClass);
+    public void addSatellite(@NotNull PropertySet satellite) {
+        addSatellite(satellite.getClass(), satellite);
+    }
 
-    public void addSatellite(org.jvnet.ws.message.PropertySet satellite);
+    public void addSatellite(@NotNull Class keyClass, @NotNull PropertySet satellite) {
+        satellites.put(keyClass, satellite);
+    }
 
-    public void addSatellite(Class keyClass, org.jvnet.ws.message.PropertySet satellite);
+    public void copySatelliteInto(@NotNull DistributedPropertySet r) {
+        r.satellites.putAll(this.satellites);
+    }
+    
+    public @Nullable <T extends org.jvnet.ws.message.PropertySet> T getSatellite(Class<T> satelliteClass) {
+        T satellite = (T) satellites.get(satelliteClass);
+        if (satellite != null)
+        	return satellite;
+        
+        for (PropertySet child : satellites.values()) {
+            if (satelliteClass.isInstance(child)) {
+                return satelliteClass.cast(child);
+            }
 
-    public void removeSatellite(org.jvnet.ws.message.PropertySet satellite);
+            if (DistributedPropertySet.class.isInstance(child)) {
+                satellite = DistributedPropertySet.class.cast(child).getSatellite(satelliteClass);
+                if (satellite != null) {
+                    return satellite;
+                }
+            }
+        }
+        return null;
+    }
 
-    public void copySatelliteInto(org.jvnet.ws.message.MessageContext r);
+    @Override
+    public Object get(Object key) {
+        // check satellites
+        for (PropertySet child : satellites.values()) {
+            if(child.supports(key))
+                return child.get(key);
+        }
+
+        // otherwise it must be the master
+        return super.get(key);
+    }
+
+    @Override
+    public Object put(String key, Object value) {
+        // check satellites
+        for (PropertySet child : satellites.values()) {
+            if(child.supports(key))
+                return child.put(key,value);
+        }
+
+        // otherwise it must be the master
+        return super.put(key,value);
+    }
+
+    @Override
+    public boolean supports(Object key) {
+        // check satellites
+        for (PropertySet child : satellites.values()) {
+            if(child.supports(key))
+                return true;
+        }
+
+        return super.supports(key);
+    }
+
+    @Override
+    public Object remove(Object key) {
+        // check satellites
+        for (PropertySet child : satellites.values()) {
+            if(child.supports(key))
+                return child.remove(key);
+        }
+
+        return super.remove(key);
+    }
+
+    @Override
+    /*package*/ void createEntrySet(Set<Entry<String, Object>> core) {
+        super.createEntrySet(core);
+        for (PropertySet child : satellites.values()) {
+            child.createEntrySet(core);
+        }
+    }
+
+    public void removeSatellite(org.jvnet.ws.message.PropertySet satellite) {
+        removeSatellite((PropertySet)satellite);       
+    }
+
+    public void copySatelliteInto(org.jvnet.ws.message.MessageContext r) {
+        copySatelliteInto((DistributedPropertySet)r);
+    }
 }

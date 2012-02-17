@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,9 +42,7 @@ package org.jvnet.ws.message;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
-
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
@@ -63,48 +61,20 @@ import javax.xml.soap.SOAPMessage;
  *
  * @author shih-chang.chen@oracle.com
  */
-public interface MessageContext extends DistributedPropertySet {
+public abstract class MessageContext extends DistributedPropertySet {
     /**
      * Gets the SAAJ SOAPMessage representation of the SOAP message.
      *
      * @return The SOAPMessage
      */
-    SOAPMessage getAsSOAPMessage() throws SOAPException;
+    public abstract SOAPMessage getAsSOAPMessage() throws SOAPException;
     
-    /**
+/**
      * Gets the SAAJ SOAPMessage representation of the SOAP message.
      * @deprecated use getAsSOAPMessage
      * @return The SOAPMessage
      */
-    SOAPMessage getSOAPMessage() throws SOAPException;
-
-    /**
-     * Adds the {@link PropertySet}
-     *
-     * @param satellite the PropertySet
-     */
-    void addSatellite(PropertySet satellite);
-
-    /**
-     * Removes the {@link PropertySet}
-     *
-     * @param satellite the PropertySet
-     */
-    void removeSatellite(PropertySet satellite);
-
-    /**
-     * Copies all the {@link PropertySet} of this MessageContext into the other MessageContext
-     *
-     * @param otherMessageContext the MessageContext
-     */
-    void copySatelliteInto(MessageContext otherMessageContext);
-
-    /**
-     * Gets the {@link PropertySet}
-     *
-     * @param satellite the PropertySet type
-     */
-    <T extends PropertySet> T getSatellite(Class<T> satelliteClass);
+    public abstract SOAPMessage getSOAPMessage() throws SOAPException;
     
     /**
      * Writes the XML infoset portion of this MessageContext
@@ -116,12 +86,12 @@ public interface MessageContext extends DistributedPropertySet {
      *
      * @return
      *      The MIME content type of the encoded message (such as "application/xml").
-     *      This information is often ncessary by transport.
+     *      This information is often necessary by transport.
      *
      * @throws IOException
      *      if a {@link OutputStream} throws {@link IOException}.
      */
-    ContentType writeTo( OutputStream out ) throws IOException;
+    public abstract ContentType writeTo( OutputStream out ) throws IOException;
 
     /**
      * The version of {@link #writeTo(OutputStream)}
@@ -131,5 +101,5 @@ public interface MessageContext extends DistributedPropertySet {
      * TODO: for the convenience of implementation, write
      * an adapter that wraps {@link WritableByteChannel} to {@link OutputStream}.
      */
-    ContentType writeTo( WritableByteChannel buffer );
+    public abstract ContentType writeTo( WritableByteChannel buffer );
 }

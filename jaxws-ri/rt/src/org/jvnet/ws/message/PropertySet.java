@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,14 +40,26 @@
 
 package org.jvnet.ws.message;
 
+import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
+import com.sun.xml.ws.util.ReadOnlyPropertyException;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-
-import javax.xml.ws.handler.MessageContext;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * A set of "properties" that can be accessed via strongly-typed fields
@@ -55,7 +67,14 @@ import javax.xml.ws.handler.MessageContext;
  *
  * @author Kohsuke Kawaguchi
  */
-public interface PropertySet {
+@SuppressWarnings("SuspiciousMethodCalls")
+public abstract class PropertySet {
+
+    /**
+     * Creates a new instance of TypedMap.
+     */
+    protected PropertySet() {
+    }
 
     /**
      * Marks a field on {@link PropertySet} as a
@@ -75,15 +94,215 @@ public interface PropertySet {
      */
     @Inherited
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD,ElementType.METHOD})
+    @Target({ElementType.FIELD, ElementType.METHOD})
     public @interface Property {
+
         /**
          * Name of the property.
          */
         String[] value();
     }
 
-    public boolean containsKey(Object key);
+    /**
+     * Represents the list of strongly-typed known properties
+     * (keyed by property names.)
+     *
+     * <p>
+     * Just giving it an alias to make the use of this class more fool-proof.
+     */
+    protected static final class PropertyMap extends HashMap<String,Accessor> {}
+
+    /**
+     * Map representing the Fields and Methods annotated with {@link Property}.
+     * Model of {@link PropertySet} class.
+     *
+     * <p>
+     * At the end of the derivation chain this method just needs to be implemented
+     * as:
+     *
+     * <pre>
+     * private static final PropertyMap model;
+     * static {
+     *   model = parse(MyDerivedClass.class);
+     * }
+     * protected PropertyMap getPropertyMap() {
+     *   return model;
+     * }
+     * </pre>
+     */
+    protected abstract PropertyMap getPropertyMap();
+
+    /**
+     * This method parses a class for fields and methods with {@link Property}.
+     */
+    protected static PropertyMap parse(final Class clazz) {
+        // make all relevant fields and methods accessible.
+        // this allows runtime to skip the security check, so they runs faster.
+        return AccessController.doPrivileged(new PrivilegedAction<PropertyMap>() {
+            public PropertyMap run() {
+                PropertyMap props = new PropertyMap();
+                for( Class c=clazz; c!=null; c=c.getSuperclass()) {
+                    for (Field f : c.getDeclaredFields()) {
+                        Property cp = f.getAnnotation(Property.class);
+                        if(cp!=null) {
+                            for(String value : cp.value()) {
+                                props.put(value, new FieldAccessor(f, value));
+                            }
+                        }
+                    }
+                    for (Method m : c.getDeclaredMethods()) {
+                        Property cp = m.getAnnotation(Property.class);
+                        if(cp!=null) {
+                            String name = m.getName();
+                            assert name.startsWith("get") || name.startsWith("is");
+
+                            String setName = name.startsWith("is") ? "set"+name.substring(3) : // isFoo -> setFoo 
+                            	's'+name.substring(1);   // getFoo -> setFoo
+                            Method setter;
+                            try {
+                                setter = clazz.getMethod(setName,m.getReturnType());
+                            } catch (NoSuchMethodException e) {
+                                setter = null; // no setter
+                            }
+                            for(String value : cp.value()) {
+                                props.put(value, new MethodAccessor(m, setter, value));
+                            }
+                        }
+                    }
+                }
+
+                return props;
+            }
+        });
+    }
+
+    /**
+     * Represents a typed property defined on a {@link PropertySet}.
+     */
+    protected interface Accessor {
+        String getName();
+        boolean hasValue(PropertySet props);
+        Object get(PropertySet props);
+        void set(PropertySet props, Object value);
+    }
+
+    static final class FieldAccessor implements Accessor {
+        /**
+         * Field with the annotation.
+         */
+        private final Field f;
+
+        /**
+         * One of the values in {@link Property} annotation on {@link #f}.
+         */
+        private final String name;
+
+        protected FieldAccessor(Field f, String name) {
+            this.f = f;
+            f.setAccessible(true);
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean hasValue(PropertySet props) {
+            return get(props)!=null;
+        }
+
+        public Object get(PropertySet props) {
+            try {
+                return f.get(props);
+            } catch (IllegalAccessException e) {
+                throw new AssertionError();
+            }
+        }
+
+        public void set(PropertySet props, Object value) {
+            try {
+                f.set(props,value);
+            } catch (IllegalAccessException e) {
+                throw new AssertionError();
+            }
+        }
+    }
+
+    static final class MethodAccessor implements Accessor {
+        /**
+         * Getter method.
+         */
+        private final @NotNull Method getter;
+        /**
+         * Setter method.
+         * Some property is read-only.
+         */
+        private final @Nullable Method setter;
+
+        /**
+         * One of the values in {@link Property} annotation on {@link #getter}.
+         */
+        private final String name;
+
+        protected MethodAccessor(Method getter, Method setter, String value) {
+            this.getter = getter;
+            this.setter = setter;
+            this.name = value;
+            getter.setAccessible(true);
+            if(setter!=null)
+                setter.setAccessible(true);
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean hasValue(PropertySet props) {
+            return get(props)!=null;
+        }
+
+        public Object get(PropertySet props) {
+            try {
+                return getter.invoke(props);
+            } catch (IllegalAccessException e) {
+                throw new AssertionError();
+            } catch (InvocationTargetException e) {
+                handle(e);
+                return 0;   // never reach here
+            }
+        }
+
+        public void set(PropertySet props, Object value) {
+            if(setter==null)
+                throw new ReadOnlyPropertyException(getName());
+            try {
+                setter.invoke(props,value);
+            } catch (IllegalAccessException e) {
+                throw new AssertionError();
+            } catch (InvocationTargetException e) {
+                handle(e);
+            }
+        }
+
+        /**
+         * Since we don't expect the getter/setter to throw a checked exception,
+         * it should be possible to make the exception propagation transparent.
+         * That's what we are trying to do here.
+         */
+        private Exception handle(InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            if(t instanceof Error)
+                throw (Error)t;
+            if(t instanceof RuntimeException)
+                throw (RuntimeException)t;
+            throw new Error(e);
+        }
+    }
+
+
+    public final boolean containsKey(Object key) {
+        return get(key)!=null;
+    }
 
     /**
      * Gets the name of the property.
@@ -93,7 +312,12 @@ public interface PropertySet {
      *      convention, but if anything but {@link String} is passed, this method
      *      just returns null.
      */
-    public Object get(Object key);
+    public Object get(Object key) {
+        Accessor sp = getPropertyMap().get(key);
+        if(sp!=null)
+            return sp.get(this);
+        throw new IllegalArgumentException("Undefined property "+key);
+    }
 
     /**
      * Sets a property.
@@ -102,16 +326,48 @@ public interface PropertySet {
      * This method is slow. Code inside JAX-WS should define strongly-typed
      * fields in this class and access them directly, instead of using this.
      *
+     * @throws ReadOnlyPropertyException
+     *      if the given key is an alias of a strongly-typed field,
+     *      and if the name object given is not assignable to the field.
+     *
      * @see Property
      */
-    public Object put(String key, Object value);
+    public Object put(String key, Object value) {
+        Accessor sp = getPropertyMap().get(key);
+        if(sp!=null) {
+            Object old = sp.get(this);
+            sp.set(this,value);
+            return old;
+        } else {
+            throw new IllegalArgumentException("Undefined property "+key);
+        }
+    }
 
     /**
      * Checks if this {@link PropertySet} supports a property of the given name.
      */
-    public boolean supports(Object key);
+    @SuppressWarnings("element-type-mismatch")
+    public boolean supports(Object key) {
+        return getPropertyMap().containsKey(key);
+    }
 
-    public Object remove(Object key);
+    public Object remove(Object key) {
+        Accessor sp = getPropertyMap().get(key);
+        if(sp!=null) {
+            Object old = sp.get(this);
+            sp.set(this,null);
+            return old;
+        } else {
+            throw new IllegalArgumentException("Undefined property "+key);
+        }
+    }
+
+
+    /**
+     * Lazily created view of {@link Property}s that
+     * forms the core of {@link #createMapView()}.
+     */
+    /*package*/ Set<Entry<String,Object>> mapViewCore;
 
     /**
      * Creates a {@link Map} view of this {@link PropertySet}.
@@ -127,5 +383,35 @@ public interface PropertySet {
      * @return
      *      always non-null valid instance.
      */
-    public Map<String,Object> createMapView();
+    public final Map<String,Object> createMapView() {
+        final Set<Entry<String,Object>> core = new HashSet<Entry<String,Object>>();
+        createEntrySet(core);
+
+        return new AbstractMap<String, Object>() {
+            public Set<Entry<String,Object>> entrySet() {
+                return core;
+            }
+        };
+    }
+
+    /*package*/ void createEntrySet(Set<Entry<String,Object>> core) {
+        for (final Entry<String, Accessor> e : getPropertyMap().entrySet()) {
+            core.add(new Entry<String, Object>() {
+                public String getKey() {
+                    return e.getKey();
+                }
+
+                public Object getValue() {
+                    return e.getValue().get(PropertySet.this);
+                }
+
+                public Object setValue(Object value) {
+                    Accessor acc = e.getValue();
+                    Object old = acc.get(PropertySet.this);
+                    acc.set(PropertySet.this,value);
+                    return old;
+                }
+            });
+        }
+    }
 }

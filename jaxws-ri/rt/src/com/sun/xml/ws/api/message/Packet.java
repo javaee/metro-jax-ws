@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,11 +45,9 @@ import com.sun.istack.Nullable;
 import com.sun.xml.bind.marshaller.SAX2DOMEx;
 import com.sun.xml.ws.addressing.WsaPropertyBag;
 import com.sun.xml.ws.addressing.WsaTubeHelper;
-import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
 import com.sun.xml.ws.api.*;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
-import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
@@ -65,8 +63,6 @@ import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.message.RelatesToHeader;
 import com.sun.xml.ws.message.StringHeader;
-import com.sun.xml.ws.transport.http.WSHTTPConnection;
-import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.server.WSEndpointImpl;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -94,7 +90,6 @@ import java.util.logging.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
 /**
@@ -164,10 +159,7 @@ import java.nio.channels.WritableByteChannel;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class Packet
-    extends DistributedPropertySet
-    implements org.jvnet.ws.message.MessageContext
-{
+public final class Packet extends org.jvnet.ws.message.MessageContext {
 
     /**
      * Creates a {@link Packet} that wraps a given {@link Message}.
@@ -818,7 +810,7 @@ public final class Packet
     	  response.isAdapterDeliversNonAnonymousResponse = request.isAdapterDeliversNonAnonymousResponse;
     	}
     	
-    	request.copySatelliteInto((DistributedPropertySet) response);
+    	request.copySatelliteInto(response);
     	response.handlerConfig = request.handlerConfig;
     	response.handlerScopePropertyNames = request.handlerScopePropertyNames;
     	response.contentNegotiation = request.contentNegotiation;
@@ -984,7 +976,7 @@ public final class Packet
             LOGGER.info("WSA headers are not added as value for wsa:Action cannot be resolved for this message");
             return;
         }
-        populateAddressingHeaders(responsePacket, addressingVersion, binding.getSOAPVersion(), action, addressingVersion.isRequired(binding));
+        populateAddressingHeaders(responsePacket, addressingVersion, binding.getSOAPVersion(), action, AddressingVersion.isRequired(binding));
     }
 
     public String toShortString() {
@@ -992,6 +984,7 @@ public final class Packet
     }
 
     // For use only in a debugger
+    @Override
     public String toString() {
       StringBuilder buf = new StringBuilder();
       buf.append(super.toString());
