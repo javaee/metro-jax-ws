@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,6 @@ package com.sun.xml.ws.client;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.DistributedPropertySet;
 import com.sun.xml.ws.api.EndpointAddress;
-import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.transport.Headers;
 
@@ -279,6 +278,7 @@ public final class RequestContext extends DistributedPropertySet {
     /**
      * The efficient get method that reads from {@link RequestContext}.
      */
+    @Override
     public Object get(Object key) {
         if(super.supports(key))
             return super.get(key);
@@ -289,6 +289,7 @@ public final class RequestContext extends DistributedPropertySet {
     /**
      * The efficient put method that updates {@link RequestContext}.
      */
+    @Override
     public Object put(String key, Object value) {
         if(super.supports(key))
             return super.put(key,value);
