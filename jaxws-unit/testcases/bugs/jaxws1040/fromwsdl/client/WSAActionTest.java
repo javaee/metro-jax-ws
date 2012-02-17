@@ -56,9 +56,11 @@ public class WSAActionTest extends TestCase {
         Class c = WSAAction.class;
         Method m = c.getMethod("myWebMethod");
         Action annotation = m.getAnnotation(Action.class);
-        assertTrue("annotation must be not-null", annotation != null);
-        assertTrue("checking annotation.input", "myInputAction".equals(annotation.input()));
-        assertTrue("checking annotation.output", "myOutputAction".equals(annotation.output()));
+        assertTrue("annotation must be null", annotation == null);
+        // fix rolled back, for details see JAX_WS-1040
+        // assertTrue("annotation must be not-null", annotation != null);
+        // assertTrue("checking annotation.input", "myInputAction".equals(annotation.input()));
+        // assertTrue("checking annotation.output", "myOutputAction".equals(annotation.output()));
     }
     
     // test of runtime configuration - check dump messages
