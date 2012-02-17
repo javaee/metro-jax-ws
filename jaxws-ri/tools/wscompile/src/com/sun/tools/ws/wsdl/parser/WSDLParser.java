@@ -46,26 +46,7 @@ import com.sun.tools.ws.resources.WsdlMessages;
 import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.tools.ws.wscompile.ErrorReceiverFilter;
 import com.sun.tools.ws.wscompile.WsimportOptions;
-import com.sun.tools.ws.wsdl.document.Binding;
-import com.sun.tools.ws.wsdl.document.BindingFault;
-import com.sun.tools.ws.wsdl.document.BindingInput;
-import com.sun.tools.ws.wsdl.document.BindingOperation;
-import com.sun.tools.ws.wsdl.document.BindingOutput;
-import com.sun.tools.ws.wsdl.document.Definitions;
-import com.sun.tools.ws.wsdl.document.Documentation;
-import com.sun.tools.ws.wsdl.document.Fault;
-import com.sun.tools.ws.wsdl.document.Import;
-import com.sun.tools.ws.wsdl.document.Input;
-import com.sun.tools.ws.wsdl.document.Message;
-import com.sun.tools.ws.wsdl.document.MessagePart;
-import com.sun.tools.ws.wsdl.document.Operation;
-import com.sun.tools.ws.wsdl.document.OperationStyle;
-import com.sun.tools.ws.wsdl.document.Output;
-import com.sun.tools.ws.wsdl.document.Port;
-import com.sun.tools.ws.wsdl.document.PortType;
-import com.sun.tools.ws.wsdl.document.Service;
-import com.sun.tools.ws.wsdl.document.WSDLConstants;
-import com.sun.tools.ws.wsdl.document.WSDLDocument;
+import com.sun.tools.ws.wsdl.document.*;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
 import com.sun.tools.ws.wsdl.document.schema.SchemaConstants;
 import com.sun.tools.ws.wsdl.document.schema.SchemaKinds;
@@ -73,12 +54,7 @@ import com.sun.tools.ws.wsdl.framework.Entity;
 import com.sun.tools.ws.wsdl.framework.ParserListener;
 import com.sun.tools.ws.wsdl.framework.TWSDLParserContextImpl;
 import com.sun.xml.ws.util.ServiceFinder;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -126,7 +102,10 @@ public class WSDLParser {
         register(new MIMEExtensionHandler(extensionHandlers));
         register(new JAXWSBindingExtensionHandler(extensionHandlers));
         register(new SOAP12ExtensionHandler(extensionHandlers));
-        register(new MemberSubmissionAddressingExtensionHandler(extensionHandlers, errReceiver, options.isExtensionMode()));
+
+        // MemberSubmission Addressing not supported by WsImport anymore see JAX_WS-1040 for details
+        //register(new MemberSubmissionAddressingExtensionHandler(extensionHandlers, errReceiver, options.isExtensionMode()));
+
         register(new W3CAddressingExtensionHandler(extensionHandlers, errReceiver));
         register(new W3CAddressingMetadataExtensionHandler(extensionHandlers, errReceiver));
         register(new Policy12ExtensionHandler());
@@ -1087,6 +1066,7 @@ public class WSDLParser {
              (TWSDLExtensionHandler) extensionHandlers.get(e.getNamespaceURI());
         if (h == null) {
             context.fireIgnoringExtension(e, (Entity) entity);
+            errReceiver.warning(forest.locatorTable.getStartLocation(e), WsdlMessages.PARSING_UNKNOWN_EXTENSIBILITY_ELEMENT_OR_ATTRIBUTE(e.getLocalName(), e.getNamespaceURI()));
             return false;
         } else {
             return h.doHandleExtension(context, entity, e);
@@ -1102,6 +1082,7 @@ public class WSDLParser {
             (TWSDLExtensionHandler) extensionHandlers.get(n.getNamespaceURI());
         if (h == null) {
             context.fireIgnoringExtension(e, (Entity) entity);
+            errReceiver.warning(forest.locatorTable.getStartLocation(e), WsdlMessages.PARSING_UNKNOWN_EXTENSIBILITY_ELEMENT_OR_ATTRIBUTE(n.getLocalName(), n.getNamespaceURI()));
             return false;
         } else {
             return h.doHandleExtension(context, entity, e);
