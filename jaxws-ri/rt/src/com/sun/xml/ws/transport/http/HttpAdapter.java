@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,6 @@ import com.sun.xml.ws.api.addressing.NonAnonymousResponseProcessor;
 import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.ha.HaInfo;
-import com.sun.xml.ws.api.ha.StickyFeature;
 import com.sun.xml.ws.api.message.ExceptionHasMessage;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
@@ -71,7 +70,6 @@ import com.sun.xml.ws.util.Pool;
 
 import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.http.HTTPBinding;
 
 import java.io.ByteArrayOutputStream;
@@ -348,15 +346,17 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     }
 
     /**
-     * Some stacks may send non WS-I BP 1.2 conformant SoapAction.
-     * Make sure SOAPAction is quoted as {@link Packet#soapAction} expectsa quoted soapAction value.
+     * Some stacks may send non WS-I BP 1.2 conforming SoapAction.
+     * Make sure SOAPAction is quoted as {@link Packet#soapAction} expects quoted soapAction value.
      *  
      * @param soapAction SoapAction HTTP Header
      * @return quoted SOAPAction value
      */
     private String fixQuotesAroundSoapAction(String soapAction) {
         if(soapAction != null && (!soapAction.startsWith("\"") || !soapAction.endsWith("\"")) ) {
-            LOGGER.info("Received WS-I BP non-conformant Unquoted SoapAction HTTP header: "+ soapAction);
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "Received WS-I BP non-conformant Unquoted SoapAction HTTP header: {0}", soapAction);
+            }
             String fixedSoapAction = soapAction;
             if(!soapAction.startsWith("\""))
                 fixedSoapAction = "\"" + fixedSoapAction;
