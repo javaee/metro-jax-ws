@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,7 +69,7 @@ import java.util.Set;
  *
  * <p>
  * This class extends {@link PropertySet} so that a transport can
- * expose its properties to the appliation and pipes. (This object
+ * expose its properties to the application and pipes. (This object
  * will be added to {@link Packet#addSatellite(PropertySet)}.)
  *
  * @author Jitendra Kotamraju
