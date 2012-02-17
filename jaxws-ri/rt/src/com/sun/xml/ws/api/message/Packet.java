@@ -1033,6 +1033,11 @@ public final class Packet
     private static final Logger LOGGER = Logger.getLogger(Packet.class.getName());
 
     public SOAPMessage getSOAPMessage() throws SOAPException {
+        return getAsSOAPMessage();
+    }
+    
+    //TODO replace the message to a SAAJMEssage issue - JRFSAAJMessage or SAAJMessage?
+    public SOAPMessage getAsSOAPMessage() throws SOAPException {
         return (message != null) ? message.readAsSOAPMessage() : null;
     }
     

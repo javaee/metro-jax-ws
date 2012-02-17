@@ -69,6 +69,13 @@ public interface MessageContext extends DistributedPropertySet {
      *
      * @return The SOAPMessage
      */
+    SOAPMessage getAsSOAPMessage() throws SOAPException;
+    
+    /**
+     * Gets the SAAJ SOAPMessage representation of the SOAP message.
+     * @deprecated use getAsSOAPMessage
+     * @return The SOAPMessage
+     */
     SOAPMessage getSOAPMessage() throws SOAPException;
 
     /**
@@ -114,8 +121,7 @@ public interface MessageContext extends DistributedPropertySet {
      * @throws IOException
      *      if a {@link OutputStream} throws {@link IOException}.
      */
-    //TODO chen: wait for DISI
-//    ContentType writeTo( OutputStream out ) throws IOException;
+    ContentType writeTo( OutputStream out ) throws IOException;
 
     /**
      * The version of {@link #writeTo(OutputStream)}
@@ -125,6 +131,5 @@ public interface MessageContext extends DistributedPropertySet {
      * TODO: for the convenience of implementation, write
      * an adapter that wraps {@link WritableByteChannel} to {@link OutputStream}.
      */
-    //TODO chen: wait for DISI
-//    ContentType writeTo( WritableByteChannel buffer );
+    ContentType writeTo( WritableByteChannel buffer );
 }
