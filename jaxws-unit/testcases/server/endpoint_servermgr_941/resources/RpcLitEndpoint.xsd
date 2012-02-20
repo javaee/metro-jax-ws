@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+        xmlns:tns="http://echo.types.org/"
+        targetNamespace="http://echo.types.org/">
+
+    <xsd:simpleType name="num">
+        <xsd:restriction base="xsd:integer">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="999999"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- NOT_GENERATED -->
+</xsd:schema>

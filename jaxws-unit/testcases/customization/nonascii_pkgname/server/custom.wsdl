@@ -1,0 +1,82 @@
+<definitions
+        name="HelloTest"
+        targetNamespace="urn:test"
+        xmlns="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:types="urn:test:types"
+        xmlns:tns="urn:test">
+
+    <types>
+        <xsd:schema
+                targetNamespace="urn:test:types"
+                attributeFormDefault="qualified"
+                elementFormDefault="qualified">
+
+            <xsd:element name="Hello">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="argument" type="xsd:string"/>
+                        <xsd:element name="extra" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:complexType name="HelloType">
+                <xsd:sequence>
+                    <xsd:element name="argument" type="xsd:string"/>
+                    <xsd:element name="extra" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:element name="HelloOutput">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="argument" type="xsd:string"/>
+                        <xsd:element name="extra" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>           
+        </xsd:schema>
+    </types>
+
+    <message name="HelloRequest">
+        <part name="parameters" element="types:Hello"/>
+    </message>
+
+    <message name="HelloResponse">
+        <part name="parameters" element="types:HelloOutput"/>
+    </message>
+
+    <portType name="Hello">
+        <operation name="SayHello">
+            <input message="tns:HelloRequest"/>
+            <output message="tns:HelloResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="HelloBinding" type="tns:Hello">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <operation name="SayHello">
+           <soap:operation soapAction="urn:test:hello"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+
+        </operation>
+
+    </binding>
+
+    <service name="Hello">
+        <port name="HelloPort" binding="tns:HelloBinding">
+            <soap:address location="http://test.org/hello"/>
+        </port>
+
+    </service>
+
+</definitions>

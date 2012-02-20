@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings wsdlLocation="Catalog.wsdl" xmlns="http://java.sun.com/xml/ns/jaxws" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <package name="fromwsdl.mime.text_plain_754.server"/>
+
+    <bindings node="wsdl:definitions/wsdl:binding[@name='CatalogSoapBinding']/wsdl:operation[@name='echoString']">
+        <enableMIMEContent>false</enableMIMEContent>
+    </bindings>
+
+</bindings>
+

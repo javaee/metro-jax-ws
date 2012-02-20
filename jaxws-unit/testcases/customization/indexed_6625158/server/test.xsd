@@ -1,0 +1,33 @@
+<xs:schema version="1.0" targetNamespace="urn:test:types" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:tns="urn:test:types" jxb:version="2.0">
+
+    <xs:complexType name="name">
+        <xs:sequence>
+            <xs:element name="first" type="xs:string"/>
+            <xs:element name="last" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="echo">
+        <xs:complexType >
+            <xs:sequence>
+                <xs:element name="name" type="tns:name" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:appinfo>
+                            <jxb:property collectionType = "indexed"/>
+                        </xs:appinfo>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="echoResponse">
+        <xs:complexType >
+            <xs:sequence>
+                <xs:element name="return" type="xs:string" >
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

@@ -1,0 +1,6 @@
+<descriptor since="2.2.1">
+  <description>Service.setExecutor() tests</description>
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl" />
+  </service>
+</descriptor>

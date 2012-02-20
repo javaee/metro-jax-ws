@@ -1,0 +1,7 @@
+<descriptor since="2.0" transport="http">
+  <description>basic_auth</description>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>

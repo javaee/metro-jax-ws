@@ -1,0 +1,8 @@
+<descriptor since="2.2" uses="ri">
+    <description>Tests runtime access of EPR extensions inside EPR specified under wsdl:port on server and client</description>
+    <service basedir="./server">
+        <wsdl href="HelloService.wsdl"/>
+    </service>
+    
+</descriptor>
+

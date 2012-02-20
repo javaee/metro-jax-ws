@@ -1,0 +1,25 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.abc.com/HelloService"
+        xmlns:tns="http://www.abc.com/HelloService"
+        elementFormDefault="qualified"
+        >
+
+    <simpleType name="stringListType">
+        <list itemType="string"/>
+    </simpleType>
+
+    <element name="getAllGuestNames">
+        <complexType>
+            <sequence/>
+        </complexType>
+    </element>
+    <element name="getAllGuestNamesResponse">
+        <complexType>
+            <sequence>
+                <element name="Names" type="tns:stringListType"/>
+            </sequence>
+        </complexType>
+    </element>
+
+</schema>
+

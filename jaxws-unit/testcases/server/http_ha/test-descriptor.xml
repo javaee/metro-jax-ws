@@ -1,0 +1,6 @@
+<descriptor since="2.2.2" transport="http" uses="ri servlet">
+  <description>HA test</description>
+  <service basedir="./server">
+  </service>
+
+</descriptor>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema targetNamespace="http://helloservice.org/types"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:ns1="http://www.w3.org/2005/08/addressing"
+        attributeFormDefault="qualified"
+        elementFormDefault="qualified">
+    <import namespace="http://www.w3.org/2005/08/addressing"
+            schemaLocation="http://www.w3.org/2006/03/addressing/ws-addr.xsd"/>
+
+    <element name="HelloRequest">
+        <complexType>
+            <sequence>
+                <element name="string" type="string" nillable="true"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="HelloResponse">
+        <complexType>
+            <sequence>
+                <element name="result" type="string" nillable="true"/>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="getW3CEPR">
+        <complexType>
+            <sequence/>
+        </complexType>
+    </element>
+
+    <element name="getW3CEPRResponse">
+        <complexType>
+            <sequence>
+                <element name="return" type="ns1:EndpointReferenceType" minOccurs="0"/>
+            </sequence>
+        </complexType>
+    </element>
+
+</schema>

@@ -1,0 +1,17 @@
+<descriptor since="2.1" bugs="jax-ws-529">
+    <description>WSDL Rpclit tests</description>
+    <service basedir="./server">
+        <wsdl href="WrapperService.wsdl"/>
+    </service>
+    <pre-client>
+        import java.math.BigDecimal;
+    </pre-client>
+    <client name="fromwsdl.wsa.wsdl_rpclit.echoMsgOperation" since="2.1.4">
+        <description>
+            Test WS-Addressing with rpclit
+        </description>
+        assertEquals(wrapperPort.echoMsgOperation("Duke"),"Hello Duke");
+        
+    </client>
+
+</descriptor>

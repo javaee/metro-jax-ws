@@ -1,0 +1,4 @@
+<descriptor since="2.2" transport="http" uses="ri">
+    <description>WSA tests starting from Java testing various Responses</description>
+    <service basedir="./server"/>
+</descriptor>

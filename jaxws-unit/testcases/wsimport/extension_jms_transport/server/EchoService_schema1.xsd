@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://wssample/sei/echo/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="echoStringInput">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="echoInput" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="echoStringResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="echoResponse" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+

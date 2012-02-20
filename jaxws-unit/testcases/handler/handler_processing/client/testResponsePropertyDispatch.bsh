@@ -1,0 +1,54 @@
+    import fromwsdl.handler.common.BaseSOAPHandler;
+    import fromwsdl.handler.common.HandlerTracker;
+    import junit.framework.Test;
+    import junit.framework.TestSuite;
+
+    import javax.xml.ws.*;
+    import javax.xml.ws.handler.Handler;
+    import javax.xml.ws.soap.SOAPBinding;
+    import java.util.ArrayList;
+    import java.util.HashSet;
+    import java.util.List;
+    import java.util.Map;
+    import java.util.concurrent.Future;
+
+    /*
+     * Sets a property on the (client side) response handler context
+     * and verifies that the client sees it in the response context.
+     * This version uses a dispatch client rather than proxy.
+     */
+
+        HandlerTracker tracker = HandlerTracker.getClientInstance();
+        Dispatch dispatch = getDispatchJAXB(testPortQName);
+
+        // tell the server handlers not to do anything
+        ReportService reportStub = getReportStub(getService());
+        reportStub.clearHandlerTracker();
+
+        // add handler
+        String myHandlerName = "MyDispatchHandler";
+        BaseSOAPHandler propAddingHandler = new BaseSOAPHandler();
+        propAddingHandler.setName(CLIENT_PREFIX + myHandlerName);
+        propAddingHandler.initTheHandler();
+        List newHandlers = new ArrayList();
+        newHandlers.add(propAddingHandler);
+        dispatch.getBinding().setHandlerChain(newHandlers);
+
+        // tell the client handlers what to do
+        tracker.clearAll();
+        tracker.setHandlerAction(CLIENT_PREFIX + myHandlerName,
+            HA_ADD_USER_PROPERTY_INBOUND);
+
+        int x = 1;
+        TestInt request = new TestInt();
+        request.setIntin(x);
+        TestIntResponse response = (TestIntResponse) dispatch.invoke(request);
+        assertEquals("did not get proper response", x, response.getIntout());
+        Map context = dispatch.getResponseContext();
+        Object testValue = context.get(USER_HANDLER_PROPERTY_NAME);
+        assertNotNull("did not receive property in response context",
+            testValue);
+        String testValueString = (String) testValue;
+        assertTrue("property value incorrect. expected ",
+            testValueString.equals(USER_PROPERTY_HANDLER_SET));
+

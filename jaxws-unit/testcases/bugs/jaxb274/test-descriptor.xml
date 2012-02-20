@@ -1,0 +1,7 @@
+<descriptor since="2.1">
+  <description>
+    Regression test for JAXB #274.
+  </description>
+  <service />
+  <client href ="*.bsh" />
+</descriptor>

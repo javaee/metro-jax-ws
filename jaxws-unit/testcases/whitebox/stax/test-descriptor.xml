@@ -1,0 +1,19 @@
+<descriptor since="2.0" uses="ri">
+  <description>stax parser</description>
+
+   <!-- works only for sjsxp and woodstox -->
+  <client name="stax_writer" sideEffectFree="true">
+  <description>stax_writer</description>
+  <![CDATA[
+    import java.io.*;
+    import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
+    import com.sun.xml.ws.streaming.XMLStreamWriterUtil;
+
+    os = new ByteArrayOutputStream();
+    writer = XMLStreamWriterFactory.create(os);
+    os = XMLStreamWriterUtil.getOutputStream(writer);
+    assertNotNull(os);
+
+  ]]></client>
+
+</descriptor>

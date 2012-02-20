@@ -1,0 +1,9 @@
+<!-- Skipping this test, see issue 507 -->
+<descriptor since="2.0" uses="servlet" skip="true">
+  <description>This is a Provider XML/HTTP test</description>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>

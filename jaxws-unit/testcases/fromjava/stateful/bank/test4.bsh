@@ -1,0 +1,11 @@
+// talk to the remote stateful service
+aEpr = bankServicePort.getAccount(4);
+
+// not available today
+a = aEpr.getPort(Account.class);
+assertTrue(a!=null);
+a.deposit(100);
+v = a.getBalance();
+assertEquals(v,100);
+
+a.destroy(); // this unregisters EPR

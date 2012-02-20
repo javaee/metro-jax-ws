@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions targetNamespace="http://service_api.endpoint.server/" name="HelloService" xmlns:tns="http://service_api.endpoint.server/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xsd:schema>
+      <xsd:import namespace="http://service_api.endpoint.server/" schemaLocation="HelloService_schema1.xsd"/>
+    </xsd:schema>
+  </types>
+  <message name="echoFoo">
+    <part name="parameters" element="tns:echoFoo"/>
+  </message>
+  <message name="echoFooResponse">
+    <part name="parameters" element="tns:echoFooResponse"/>
+  </message>
+  <portType name="HelloImpl">
+    <operation name="echoFoo">
+      <input message="tns:echoFoo"/>
+      <output message="tns:echoFooResponse"/>
+    </operation>
+  </portType>
+  <binding name="HelloImplPortBinding" type="tns:HelloImpl">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="echoFoo">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="HelloService">
+    <port name="HelloImplPort" binding="tns:HelloImplPortBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
+    </port>
+  </service>
+</definitions>
+

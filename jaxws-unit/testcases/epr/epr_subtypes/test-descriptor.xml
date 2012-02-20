@@ -1,0 +1,6 @@
+<descriptor since="2.2">
+    <description>Tests the mapping subtypes of wsa:EndpointReference</description>
+    <service basedir="./server">
+        <wsdl href="hello_literal.wsdl"/>
+    </service>
+</descriptor>

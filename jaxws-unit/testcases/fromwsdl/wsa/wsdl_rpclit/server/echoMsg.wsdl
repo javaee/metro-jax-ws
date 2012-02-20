@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="echoMsg" targetNamespace="http://j2ee.netbeans.org/wsdl/echoMsg"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://j2ee.netbeans.org/wsdl/echoMsg"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    <types/>
+    <message name="echoMsgOperationRequest">
+        <part name="ipMsg" type="xsd:string"/>
+    </message>
+    <message name="echoMsgOperationResponse">
+        <part name="opMsg" type="xsd:string"/>
+    </message>
+    <portType name="echoMsgPortType">
+        <operation name="echoMsgOperation">
+            <input name="input1" message="tns:echoMsgOperationRequest"/>
+            <output name="output1" message="tns:echoMsgOperationResponse"/>
+        </operation>
+    </portType>
+    <binding name="echoMsgBinding" type="tns:echoMsgPortType">
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="echoMsgOperation">
+            <soap:operation soapAction=""/>
+            <input name="input1">
+                <soap:body use="literal" namespace="http://j2ee.netbeans.org/wsdl/echoMsg"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal" namespace="http://j2ee.netbeans.org/wsdl/echoMsg"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="echoService">
+        <port name="echoMsgPort" binding="tns:echoMsgBinding">
+            <soap:address location="http://localhost:8080/echoMsgService/echoMsgPort"/>
+        </port>
+    </service>
+</definitions>

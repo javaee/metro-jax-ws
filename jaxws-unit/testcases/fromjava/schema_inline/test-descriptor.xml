@@ -1,0 +1,8 @@
+<descriptor since="2.2.1">
+  <description>Tests in-lining of the generated schema in the WSDL</description>
+  <wsgen-options>-inlineSchemas</wsgen-options>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>

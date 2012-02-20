@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings xmlns="http://java.sun.com/xml/ns/jaxws"
+          xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+   <!--
+    <bindings node="ns1:definitions" xmlns:ns1="http://schemas.xmlsoap.org/wsdl/">
+    <package name="fromjava.handler_simple.client"/>
+  </bindings>
+   -->
+  <!-- renamed 'Hello' portType class from Hello to HelloPortType -->
+
+  <bindings node="wsdl:definitions/wsdl:portType[@name='Hello']">
+        <class name="HelloPortType"/>
+  </bindings>
+  
+  <bindings>
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <handler>
+          <handler-class>fromjava.handlerchain.common.TestHandler</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </bindings>
+
+</bindings>

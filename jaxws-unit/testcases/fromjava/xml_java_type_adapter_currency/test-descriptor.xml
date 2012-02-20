@@ -1,0 +1,8 @@
+<!-- Not yet fixed. fails with -wsgen=ignore option -->
+<descriptor since="2.2.2">
+  <description>xml_java_type_adapter_currency</description>
+
+  <service basedir="./server">
+  </service>
+
+</descriptor>

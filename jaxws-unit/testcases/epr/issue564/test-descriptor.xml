@@ -1,0 +1,6 @@
+<descriptor since="2.2.6" uses="ri">
+  <description>Testcase for issue 564 </description>
+  <client href="test.bsh" />
+  <client href="test1.bsh" />
+</descriptor>
+

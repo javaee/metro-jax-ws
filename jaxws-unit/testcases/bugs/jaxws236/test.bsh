@@ -1,0 +1,8 @@
+List req = new java.util.ArrayList();
+req.add("one");
+req.add("");
+req.add(null);
+resp = testEndpointPort.testStringArray(req);
+assertEquals(resp.get(0), "two");
+assertEquals(resp.get(1), "");
+assertEquals(resp.get(2), null);

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings xmlns="http://java.sun.com/xml/ns/jaxws" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <package name="fromwsdl.mime.text_plain_754.client"/>
+
+    <bindings node="wsdl:definitions/wsdl:binding[@name='CatalogSoapBinding']/wsdl:operation[@name='echoString']">
+        <enableMIMEContent>false</enableMIMEContent>
+    </bindings>
+
+</bindings>

@@ -1,0 +1,4 @@
+<descriptor since="2.2.6" bugs="jaxws-881" uses="ri">
+    <description>JAX_WS-881: reusing JAXBContext causes NPE</description>
+    <service basedir="./server" />
+</descriptor>

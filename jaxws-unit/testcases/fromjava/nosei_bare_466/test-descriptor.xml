@@ -1,0 +1,13 @@
+<descriptor since="2.1.4">
+  <description>nosei_bare_466</description>
+
+  <client name="nosei_bare_466_testHeaders" sideEffectFree="true">
+  <description>testHeaders</description>
+  <![CDATA[
+        assertEquals(77L, echoPort.echoIn3Header(33, 44L, "dirk"));
+  ]]></client>
+
+  <service basedir="./server">
+  </service>
+
+</descriptor>

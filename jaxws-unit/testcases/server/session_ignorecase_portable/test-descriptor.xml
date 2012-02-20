@@ -1,0 +1,7 @@
+<descriptor since="2.2.2" transport="http">
+  <description>Bug fix 834 - testcase works even with lwhs</description>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>

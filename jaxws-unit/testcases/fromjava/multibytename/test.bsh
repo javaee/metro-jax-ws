@@ -1,0 +1,3 @@
+// just the basics
+a = helloPort.echo(0);
+System.out.println(a);

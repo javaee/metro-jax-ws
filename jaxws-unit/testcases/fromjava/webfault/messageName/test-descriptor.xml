@@ -1,0 +1,6 @@
+<descriptor since="2.2" bugs="jax-ws-727">
+    <description>WebFault messageName customization</description>
+    <service basedir="./server">
+    </service>
+
+</descriptor>

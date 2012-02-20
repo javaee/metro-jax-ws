@@ -1,0 +1,98 @@
+<definitions
+        name="HelloTest"
+        targetNamespace="urn:test"
+        xmlns="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:types="urn:test:types"
+        xmlns:tns="urn:test"
+        xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+        xmlns:sp="urn:test:sp">
+
+    <types>
+        <xsd:schema
+                targetNamespace="urn:test:types"
+                attributeFormDefault="unqualified"
+                elementFormDefault="unqualified">
+
+            <xsd:element name="Hello">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="argument" type="xsd:string"/>
+                        <xsd:element name="extra" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="HelloResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="name" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </types>
+
+    <message name="HelloRequest">
+        <part name="parameters" element="types:Hello"/>
+    </message>
+
+    <message name="HelloResponse">
+        <part name="parameters" element="types:HelloResponse"/>
+    </message>
+
+    <portType name="Hello">
+        <operation name="hello">
+            <input message="tns:HelloRequest"/>
+            <output message="tns:HelloResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="HelloBinding" type="tns:Hello">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="hello">
+            <soap:operation soapAction="urn:test:hello"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+
+    <sp:Issuer>
+        <Address xmlns="http://www.w3.org/2005/08/addressing">
+            DONOT_MODIFY_THIS
+        </Address>
+    </sp:Issuer>
+
+    <service name="Hello">
+        <port name="HelloPort" binding="tns:HelloBinding">
+            <soap:address location="REPLACE_WITH_URL"/>
+            <wsaw:UsingAddressing/>
+            <wsa:EndpointReference
+                    xmlns:wsa="http://www.w3.org/2005/08/addressing"
+                    xmlns:fabrikam="http://example.com/fabrikam">
+                <wsa:Address>REPLACE_WITH_URL</wsa:Address>
+                <wsa:ReferenceParameters>
+                    <fabrikam:CustomerKey>123456789</fabrikam:CustomerKey>
+                    <fabrikam:ShoppingCart>ABCDEFG</fabrikam:ShoppingCart>
+                </wsa:ReferenceParameters>
+            </wsa:EndpointReference>
+            <sp:Issuer>
+                <Address xmlns="http://www.w3.org/2005/08/addressing">
+                    DONOT_MODIFY_THIS
+                </Address>
+            </sp:Issuer>
+        </port>
+    </service>
+    <sp:Issuer>
+        <Address xmlns="http://www.w3.org/2005/08/addressing">
+            DONOT_MODIFY_THIS
+        </Address>
+    </sp:Issuer>
+
+</definitions>

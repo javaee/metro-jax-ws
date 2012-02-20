@@ -1,0 +1,26 @@
+<!-- To run the test in http transport, need to disable keep-alive -->
+<descriptor since="2.0" skip="true" >
+    <description>server calls itself recursively - fromwsdl tests</description>
+    <service basedir="./server">
+        <wsdl href="hello_literal.wsdl"/>
+    </service>
+
+    <client name="fromwsdl.wsdl_fibonacci.request_response">
+        <description>two-way</description>
+        int num = fibPort.getFib(fibPortAddress.toString(), 5);
+        assertEquals(8, num);
+    </client>
+
+    <client name="fromwsdl.wsdl_fibonacci.oneway">
+        <description>one-way</description>
+        fibPort.getFibOneway(fibPortAddress.toString(), 6);
+    </client>
+
+    <client name="fromwsdl.wsdl_fibonacci.verify_oneway">
+        <description>verify one-way</description>
+        Thread.sleep(2000);     // so that one-way finishes
+        int num = fibPort.getFibVerifyOneway();
+        assertEquals(0, num);
+    </client>
+
+</descriptor>

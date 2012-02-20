@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions name="SOAPBuilders-mtom-cr-test" 
+    xmlns:types="http://example.org/mtom/data" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap/" 
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns:tns="http://example.org/mtom"
+    targetNamespace="http://example.org/mtom"
+    >
+
+    <wsdl:types>
+        <schema 
+            xmlns="http://www.w3.org/2001/XMLSchema" 
+            targetNamespace="http://example.org/mtom/data" 
+            xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
+            elementFormDefault="qualified">
+        <complexType name="uploadType">
+            <sequence>
+                <element name="total" type="xsd:int"/>
+                <element name="name" type="xsd:string"/>
+                <element name="data" type="base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
+            </sequence>
+        </complexType>
+        <element name="upload" type="types:uploadType"/>
+        <element name="uploadResponse" type="types:uploadType"/>
+        </schema>
+
+    </wsdl:types>
+
+    <wsdl:message name="uploadIn">
+        <wsdl:part name="data" element="types:upload"/>
+    </wsdl:message>
+
+    <wsdl:message name="uploadOut">
+        <wsdl:part name="data" element="types:uploadResponse"/>
+    </wsdl:message>
+
+    <wsdl:portType name="Hello">
+        <!-- mtom test -->
+        <wsdl:operation name="upload">
+            <wsdl:input message="tns:uploadIn"/>
+            <wsdl:output message="tns:uploadOut"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="HelloBinding" type="tns:Hello">
+        <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="upload">
+            <soap12:operation soapAction=""/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+    </wsdl:binding>
+
+    <wsdl:service name="HelloService">
+          <wsdl:port name="HelloPort" binding="tns:HelloBinding">
+                <soap12:address location="http://example/mtom-test-cr"/>
+          </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>    

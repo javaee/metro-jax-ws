@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings xmlns="http://java.sun.com/xml/ns/jaxws" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <package name="fromwsdl.mime.simple_doclit.client"/>
+    <bindings node="wsdl:definitions/wsdl:binding[@name='CatalogSoapBinding']/wsdl:operation[@name='getProductDetails']">
+        <enableMIMEContent>true</enableMIMEContent>
+    </bindings>
+    <bindings node="wsdl:definitions/wsdl:binding[@name='CatalogSoapBinding']/wsdl:operation[@name='testDataHandler']">
+        <enableMIMEContent>true</enableMIMEContent>
+    </bindings>
+
+    <bindings node="wsdl:definitions/wsdl:binding[@name='CatalogSoapBinding']/wsdl:operation[@name='echoImageWithInfo']">
+        <enableMIMEContent>true</enableMIMEContent>
+    </bindings>
+
+    <bindings node="wsdl:definitions/wsdl:portType[@name='CatalogPortType']/wsdl:operation[@name='echoImageWithInfo']">
+            <parameter part="wsdl:definitions/wsdl:message[@name='echoImageWithInfoResp']/wsdl:part[@name='image']"  name="out_image"/>
+     </bindings>
+
+</bindings>

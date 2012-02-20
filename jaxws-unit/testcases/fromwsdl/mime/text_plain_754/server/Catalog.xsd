@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ Copyright 2004 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd" xmlns:ref="http://ws-i.org/profiles/basic/1.1/xsd" xmlns:tns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema"> 	<xsd:annotation>
+		<xsd:documentation xml:lang="en">Schema for Catalog Web service in WS-I Basic Sample Application 1.1</xsd:documentation>
+	</xsd:annotation>
+
+	<xsd:element name="SpecSheet" type="xsd:string"/>
+    
+</xsd:schema>

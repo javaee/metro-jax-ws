@@ -1,0 +1,6 @@
+<descriptor since="2.2">
+    <description>Tests wsa:Address patching</description>
+    <service basedir="./server">
+        <wsdl href="hello_literal.wsdl"/>
+    </service>
+</descriptor>

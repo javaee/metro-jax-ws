@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:tns="http://datetime.bug/service"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:xs="http://www.w3.org/2001/XMLSchema"
+             xmlns:types="http://datetime.bug/types"
+             targetNamespace="http://datetime.bug/service">
+    <types>
+        <xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified"
+                   targetNamespace="http://datetime.bug/types">
+            <xs:complexType name="GYearMonthTest">
+                <xs:sequence>
+                    <xs:element name="value" type="xs:gYearMonth" nillable="true"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="GYearMonthTestResponse">
+                <xs:sequence>
+                    <xs:element name="result" type="xs:gYearMonth" nillable="true"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="GYearMonthTest" type="types:GYearMonthTest"/>
+            <xs:element name="GYearMonthTestResponse" type="types:GYearMonthTestResponse"/>
+        </xs:schema>
+    </types>
+    <message name="MarshallTest_gYearMonthTest">
+        <part name="parameters" element="types:GYearMonthTest"/>
+    </message>
+    <message name="MarshallTest_gYearMonthTestResponse">
+        <part name="result" element="types:GYearMonthTestResponse"/>
+    </message>
+    <portType name="DateTime">
+        <operation name="gYearMonthTest">
+            <input message="tns:MarshallTest_gYearMonthTest"/>
+            <output message="tns:MarshallTest_gYearMonthTestResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="DateTimeBinding" type="tns:DateTime">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <operation name="gYearMonthTest">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+
+    <service name="DateTimeService">
+        <port name="DateTimePort" binding="tns:DateTimeBinding">
+            <soap:address location="http://localhost/datetime"/>
+        </port>
+    </service>
+</definitions>

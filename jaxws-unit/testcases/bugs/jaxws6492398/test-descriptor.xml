@@ -1,0 +1,8 @@
+<descriptor since="2.0">
+  <description>This is a fromjava type substitution test</description>
+  <client href ="*.bsh" />
+  <service basedir="./server">
+    <wsdl href="datetime.wsdl"/>
+  </service>
+</descriptor>
+

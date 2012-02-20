@@ -1,0 +1,41 @@
+<descriptor since="2.1">
+    <description>Main wsdl imports wsdl in other sub directories</description>
+    <service basedir="./server">
+        <wsdl href="service.wsdl"/>
+    </service>
+    <pre-client>
+        import java.math.BigDecimal;
+    </pre-client>
+
+    <client name="wsimport.wsdl_import.echoCatalog">
+        <![CDATA[
+        in = new CatalogType();
+        CatalogItem [] cil = {new CatalogItem(), new CatalogItem()};
+        cil[0].setName("JAXRPC SI 1.1.2");
+        cil[0].setBrand("Sun Microsystems, Inc.");
+        cil[0].setCategory("Web Services");
+        cil[0].setProductNumber(1234);
+        cil[0].setDescription("Coolest Webservice Product");
+        cil[0].setPrice(new BigDecimal("100"));
+        cil[1].setName("JAXRPC SI 2.0");
+        cil[1].setBrand("Sun Microsystems, Inc.");
+        cil[1].setCategory("Web Services");
+        cil[1].setProductNumber(5678);
+        cil[1].setDescription("Coolest Webservice Product");
+        cil[1].setPrice(new BigDecimal("200"));
+        in.getItem().add(cil[0]);
+        in.getItem().add(cil[1]);
+        ret = retailerPort.echoCatalog(in);
+        for(int i = 0; i < ret.getItem().size(); i++){
+            gci = ret.getItem().get(i);
+            assertEquals(gci.getName(), cil[i].getName());
+            assertEquals(gci.getBrand(), cil[i].getBrand());
+            assertEquals(gci.getCategory(), cil[i].getCategory());
+            assertEquals(gci.getProductNumber(), cil[i].getProductNumber());
+            assertEquals(gci.getDescription(), cil[i].getDescription());
+            assertEquals(gci.getPrice(), cil[i].getPrice());
+        }
+        ]]>
+    </client>
+
+</descriptor>

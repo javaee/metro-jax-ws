@@ -1,0 +1,17 @@
+arg = "foo";
+extra = "bar";
+req = new HelloType();
+req.setArgument(arg);req.setExtra(extra);
+
+reqH = new HelloType();
+reqH.setArgument("header arg");
+reqH.setExtra("header extra");
+
+resp = new Holder();
+respH = new Holder();
+helloPort.hello1World(req, reqH, resp, respH);
+
+assertEquals(arg, resp.value.getArgument());
+assertEquals(extra, resp.value.getExtra());
+assertEquals(reqH.getArgument(), respH.value.getArgument());
+assertEquals(reqH.getExtra(), respH.value.getExtra());

@@ -1,0 +1,7 @@
+<descriptor since="2.0">
+  <description>This is a Provider test</description>
+  <client href="test.bsh" />
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+</descriptor>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions targetNamespace="http://SchemaRedefine/" name="SchemaRedefineService" xmlns:tns="http://SchemaRedefine/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xsd:schema targetNamespace="http://SchemaRedefine/">
+      <xsd:redefine schemaLocation="SchemaRedefine.xsd">
+      </xsd:redefine>
+    </xsd:schema>
+  </types>
+  <message name="echoFoo">
+    <part name="parameters" type="tns:echoFoo"/>
+  </message>
+  <message name="echoFooResponse">
+    <part name="parameters" type="tns:echoFooResponse"/>
+  </message>
+  <portType name="SchemaRedefine">
+    <operation name="echoFoo">
+      <input message="tns:echoFoo"/>
+      <output message="tns:echoFooResponse"/>
+    </operation>
+  </portType>
+  <binding name="SchemaRedefineBinding" type="tns:SchemaRedefine">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc"/>
+    <operation name="echoFoo">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal" namespace="http://SchemaRedefine/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://SchemaRedefine/" />
+      </output>
+    </operation>
+  </binding>
+  <service name="SchemaRedefineService">
+    <port name="SchemaRedefinePort" binding="tns:SchemaRedefineBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
+    </port>
+  </service>
+</definitions>

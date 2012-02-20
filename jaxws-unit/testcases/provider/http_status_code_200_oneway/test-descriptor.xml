@@ -1,0 +1,8 @@
+<descriptor since="2.2.1" transport="http">
+  <description>HTTP PUT doesn't have any response</description>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal_oneway.wsdl"/>
+  </service>
+
+</descriptor>

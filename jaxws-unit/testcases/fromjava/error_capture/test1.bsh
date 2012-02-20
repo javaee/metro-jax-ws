@@ -1,0 +1,9 @@
+// just the basics
+try {
+  myServicePort.foo();
+  fail("exception expected");
+} catch( javax.xml.ws.soap.SOAPFaultException e ) {
+  e.printStackTrace(); // so that we can see it
+
+  assertNull(e.getCause());
+}

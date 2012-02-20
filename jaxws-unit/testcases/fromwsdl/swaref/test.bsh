@@ -1,0 +1,29 @@
+import javax.activation.DataHandler;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+import testutil.AttachmentHelper;
+
+testXml = resource("test.xml");
+
+ByteArrayOutputStream baos = new ByteArrayOutputStream();
+InputStream in = new FileInputStream(testXml);
+int ch;
+while((ch=in.read()) != -1) {
+  baos.write(ch);
+}
+data = baos.toByteArray();
+
+claimForm = new DataHandler(new StreamSource(new ByteArrayInputStream(data)), "text/xml");
+assertNotNull(testXml);
+req = new ClaimFormTypeRequest();
+req.setRequest(claimForm);
+
+resp = helloPort.claimForm(req);
+
+DataHandler out = resp.getResponse();
+assertNotNull(out);
+
+resSrc = out.getContent();
+assertNotNull(resSrc);
+
+assertTrue(AttachmentHelper.compareSource(new StreamSource(new ByteArrayInputStream(data)), resSrc));

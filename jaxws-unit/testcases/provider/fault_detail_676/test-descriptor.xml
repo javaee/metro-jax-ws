@@ -1,0 +1,6 @@
+<descriptor since="2.0">
+  <description>Verifies the multiple detail entries</description>
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+</descriptor>

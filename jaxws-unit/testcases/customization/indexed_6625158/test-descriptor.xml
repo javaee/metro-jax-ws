@@ -1,0 +1,17 @@
+<descriptor since="2.1.6">
+    <description>This is a jaxws customization test for jaxb customization</description>
+    <service basedir="./server">
+        <wsdl href="test.wsdl"/>
+    </service>
+
+    <client name="customization.indexed" sideEffectFree="true">
+    <description>customization.indexed</description>
+    <![CDATA[
+      Name[] name = new Name[1];
+      name[0] = new Name();
+      name[0].setFirst("first");
+      name[0].setLast("last");
+      
+      assertEquals("works", helloPort.echo(name));
+    ]]></client>
+</descriptor>

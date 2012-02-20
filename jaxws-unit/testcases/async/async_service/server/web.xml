@@ -1,0 +1,24 @@
+<web-app version="3.0">
+    <display-name>async.async_service</display-name>
+    <description>This is a AsyncProvider test</description>
+  
+    <listener>
+        <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+    </listener>
+    <servlet>
+        <servlet-name>async.async_service</servlet-name>
+        <display-name>async.async_service</display-name>
+        <description>This is a AsyncProvider test</description>
+        <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+        <async-supported>true</async-supported>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>async.async_service</servlet-name>
+        <url-pattern>/HelloAsyncImpl</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+        <session-timeout>60</session-timeout>
+    </session-config>
+</web-app>

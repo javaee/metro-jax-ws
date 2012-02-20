@@ -1,0 +1,194 @@
+<descriptor since="2.0">
+    <description>This is a fromwsdl doc/lit fault test</description>
+    <client name="fromwsdl.fault1">
+        <description>
+            test nulls in fault bean
+        </description>
+        try{
+            in = "nullBean";
+            faultPort.echo(in);
+            assertTrue(false);
+        }catch(Fault2Exception e){
+            assertTrue(e.getFaultInfo() == null);
+            assertTrue(true);
+        }
+    </client>
+    <client name="fromwsdl.fault2">
+        <description>
+            test WSDL defined Fault1
+        </description>
+        try {
+            in = "Fault1";
+            ret = faultPort.echo(in);
+            fail("did not receive an exception");
+        } catch (Fault1Exception e) {
+            System.out.println("Expected exception received: " + e.getMessage());
+            assertTrue(true);
+        }
+    </client>
+
+    <client name="fromwsdl.fault3">
+        <description>
+            test WSDL defined Fault2
+        </description>
+        try {
+            in = "Fault2";
+            ret = faultPort.echo(in);
+            fail("did not receive an exception");
+        } catch (Fault2Exception e) {
+            System.out.println("Expected exception received: " + e.getMessage());
+            assertTrue(true);
+        }
+    </client>
+
+    <client name="fromwsdl.fault4">
+        <description>
+            test WSDL defined Fault3
+        </description>
+        try {
+            in = "Fault3";
+            ret = faultPort.echo(in);
+            fail("did not receive an exception");
+        } catch (Fault3Exception e) {
+            System.out.println("Expected exception received: " + e.getMessage());
+            assertTrue(true);
+        }
+    </client>
+
+    <client name="fromwsdl.fault5">
+        <description>
+            test WSDL defined Fault4
+        </description>
+        try {
+            in = "Fault4";
+            ret = faultPort.echo(in);
+            fail("did not receive an exception");
+        } catch (Fault4Exception e) {
+            System.out.println("Expected exception received: " + e.getMessage());
+            assertTrue(true);
+        }
+    </client>
+
+    <client name="fromwsdl.fault6">
+        <description>
+            test SOAPFaultException due to NPE on the server
+        </description>
+        try {
+            in = "NullPointerException";
+            ret = faultPort.echo(in);
+            fail("did not receive an exception");
+        } catch (ProtocolException e) {
+            System.out.println("Expected exception received: " + e.getMessage());
+            assertTrue(true);
+        }
+    </client>
+
+    <client name="fromwsdl.fault7">
+        <description>
+            SOAPFaultException
+        </description>
+        try {
+            in = "SOAPFaultException";
+            ret = faultPort.echo(in);
+            fail("did not receive an exception");
+        } catch (ProtocolException e) {
+            if (e instanceof SOAPFaultException) {
+                System.out.println("Expected exception received: " + e.getMessage());
+                Detail detail = ((SOAPFaultException)e).getFault().getDetail();
+                assertNotNull(detail);
+                Iterator i = detail.getDetailEntries();
+                assertTrue(i.hasNext());
+                assertEquals(((DetailEntry)i.next()).getElementQName(),
+                   new QName("http://faultservice.org/wsdl", "BasicFault"));
+            } else
+                assertTrue(false);
+        }
+    </client>
+
+    <client name="fromwsdl.fault8">
+        <description>
+            test SOAP fault with cause
+        </description>
+        try {
+            in = "Fault1-SOAPFaultException";
+            ret = faultPort.echo(in);
+            fail("did not receive an exception");
+        } catch (Fault1Exception e) {
+            System.out.println("Expected exception received: " + e.getMessage());
+            assertTrue(true);
+        }
+    </client>
+
+    <client name="fromwsdl.fault9">
+        <description>
+            test multiple details
+        </description>
+        try {
+            faultPort.echo("multipleDetails");
+        } catch (SOAPFaultException e) {
+            System.out.println("Expected exception received: " + e.getMessage());
+            Detail detail = e.getFault().getDetail();
+            assertNotNull(detail);
+            Iterator i = detail.getDetailEntries();
+            assertTrue(i.hasNext());
+            DetailEntry detail1 = (DetailEntry) i.next();
+            assertEquals(detail1.getElementQName(),
+                    new QName(
+                            "http://www.example.com/faults", "myFirstDetail"));
+
+            String val1 = detail1.getAttribute("msg");
+            assertNotNull(val1);
+
+            assertTrue(val1.equals("This is the first detail message."));
+
+            assertTrue(i.hasNext());
+            DetailEntry detail2 = (DetailEntry) i.next();
+            assertEquals(detail2.getElementQName(),
+                    new QName(
+                            "http://www.example.com/faults", "mySecondDetail"));
+            String val2 = detail2.getAttribute("msg");
+            assertNotNull(val2);
+            assertTrue(val2.equals("This is the second detail message."));
+        }
+    </client>
+
+    <client name="fromwsdl.fault10">
+        <description>
+            test ProtocolException
+        </description>
+        try {
+            in = "ProtocolException";
+            ret = faultPort.echo(in);
+            fail("did not receive an exception");
+        } catch (ProtocolException e) {
+            System.out.println("Expected exception received: " + e.getMessage());
+            if (e.getMessage().indexOf("javax.xml.ws.ProtocolException") != -1)
+                assertTrue(true);
+            else
+                assertTrue(false);
+        }
+    </client>
+
+    <client name="fromwsdl.fault11">
+        <description>
+            test ProtocolException with cause
+        </description>
+        try {
+            in = "ProtocolException2";
+            ret = faultPort.echo(in);
+            fail("did not receive an exception");
+        } catch (ProtocolException e) {
+            System.out.println("Expected exception received: " + e.getMessage());
+            if (e.getMessage().indexOf("FaultImpl") != -1)
+                assertTrue(true);
+            else
+                assertTrue(false);
+        }
+    </client>
+
+    <client href="dispatch.bsh"/>
+    
+    <service basedir="./server">
+        <wsdl href="fault.wsdl"/>
+    </service>
+</descriptor>

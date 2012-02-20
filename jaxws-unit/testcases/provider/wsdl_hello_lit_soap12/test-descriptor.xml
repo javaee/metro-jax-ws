@@ -1,0 +1,39 @@
+<descriptor since="2.0">
+  <description>This is a Provider SOAP12 test</description>
+
+  <client name="provider.soap12_doclit1" sideEffectFree="true"><![CDATA[
+    req = new Hello_Type();
+    req.setArgument("sendBean");
+    req.setExtra("bar");
+    response = helloPort.hello(req, req);
+    assertEquals("foo", response.getArgument());
+    assertEquals("bar", response.getExtra());
+  ]]></client>
+
+  <client name="provider.soap12_doclit2" sideEffectFree="true"><![CDATA[
+    req = new Hello_Type();
+    req.setArgument("sendSource");
+    req.setExtra("bar");
+    response = helloPort.hello(req, req);
+    assertEquals("foo", response.getArgument());
+    assertEquals("bar", response.getExtra());
+  ]]></client>
+
+  <client name="provider.soap12_doclit3" sideEffectFree="true"><![CDATA[
+    try {
+      req = new Hello_Type();
+      req.setArgument("exp");
+      req.setExtra("bar");
+      response = helloPort.hello(req, req);
+      assertEquals("foo", response.getArgument());
+      assertEquals("bar", response.getExtra());
+      assertTrue(false);
+    } catch(SOAPFaultException e) {
+    }
+  ]]></client>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>

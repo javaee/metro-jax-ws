@@ -1,0 +1,9 @@
+<descriptor since="2.6" uses="ri">
+    <!--since attr changed from 2.1 to 2.6 due to change to in WSEndpointReference class-->
+    <description>Tests EPR related API and behavior defined in spec</description>
+    <service basedir="./server">
+        <wsdl href="HelloService.wsdl"/>
+    </service>
+    
+</descriptor>
+

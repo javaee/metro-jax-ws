@@ -1,0 +1,49 @@
+<descriptor since="2.1.4">
+  <description>This is WebMethod test</description>
+
+  <client name="inheritance_webMethods" sideEffectFree="true">
+  <description>inheritance_webMethods</description>
+  <![CDATA[
+    assertEquals("str", testImplPort.method1("str"));
+    assertEquals("str", testImplPort.method3("str"));
+    assertEquals("str", testImplPort.method4("str"));
+    assertEquals("str", testImplPort.method5("str"));
+    assertEquals("str", testImplPort.method7("str"));
+  ]]></client>
+
+  <client name="inheritance_webMethods_reflection" sideEffectFree="true">
+  <description>inheritance_webMethods_reflection</description>
+  <![CDATA[
+    testImplPort.getClass().getMethod("method1", new Class[]{String.class});
+    try {
+      testImplPort.getClass().getMethod("method2", new Class[]{String.class});
+      fail("method2 shouldn't be a Web Method");
+    } catch(NoSuchMethodException e) {
+    }
+    try {
+      testImplPort.getClass().getMethod("method6", new Class[]{String.class});
+      fail("method6 shouldn't be a Web Method");
+    } catch(NoSuchMethodException e) {
+    }
+  ]]></client>
+
+  <!-- Limitation of Proxy, cannot call toString(). Use customization
+  <client name="inheritance_webMethods1" sideEffectFree="true">
+  <description>inheritance_webMethods1</description>
+  <![CDATA[
+    assertEquals("TestImplBaseBase", testImplPort.toString());
+  ]]></client>
+  -->
+    <client name="inheritance_webMethods_reflection" sideEffectFree="true">
+        <description>inheritance_webMethods_reflection</description>
+        <![CDATA[
+            clazz = fromjava.webmethod.inheritance.client.TestImpl.class;
+            methods = clazz.getMethods();
+            assertEquals(6, methods.length);
+        ]]>
+    </client>
+
+  <service basedir="./server" class="fromjava.webmethod.inheritance.server.TestImpl">
+  </service>
+
+</descriptor>

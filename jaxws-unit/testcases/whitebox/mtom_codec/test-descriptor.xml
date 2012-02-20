@@ -1,0 +1,4 @@
+<descriptor since="2.1.5" uses="ri">
+  <description>MTOM codec</description>
+
+</descriptor>
