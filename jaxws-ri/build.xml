@@ -944,6 +944,7 @@
                 username="${jaxws.scm.username}"
                 password="${jaxws.scm.password}"
                 create="true"
+                additionalOptions="--no-auth-cache"
                 commitMessage="JAX-WS-${release.impl.version}${release.impl.version.suffix}" />
     </target>
     

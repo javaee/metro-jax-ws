@@ -68,7 +68,7 @@
             <artifact name="ha-api" type="source" ext="jar"/>
             <artifact name="ha-api" type="javadoc" ext="jar"/>
         </dependency>
-        <dependency org="com.sun.istack" name="istack-commons-tools" rev="2.7" transitive="false"/>
+        <dependency org="com.sun.istack" name="istack-commons-tools" rev="2.9" transitive="false"/>
         <dependency org="args4j" name="args4j" rev="2.0.16" transitive="false"/>
         <!--dependency org="asm" name="jaxws-asm" rev="${asm.version}" transitive="false">
             <artifact name="jaxws-asm" type="jar" url="file://${basedir}/tools/lib/jaxws-asm.jar"/>
