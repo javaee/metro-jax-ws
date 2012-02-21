@@ -222,6 +222,20 @@ public class WSDLGenerator {
      * @param binding specifies which {@link javax.xml.ws.BindingType} to generate
      * @param extensions an array {@link WSDLGeneratorExtension} that will 
      * be invoked to generate WSDL extensions
+     * @deprecated
+     */
+    public WSDLGenerator(AbstractSEIModelImpl model, com.sun.xml.ws.wsdl.writer.WSDLResolver wsdlResolver, WSBinding binding, Container container,
+                         Class implType, boolean inlineSchemas, WSDLGeneratorExtension... extensions) {
+        this(model, (WSDLResolver) wsdlResolver, binding, container, implType, inlineSchemas, extensions);
+    }
+    
+    /**
+     * Creates the WSDLGenerator
+     * @param model The {@link AbstractSEIModelImpl} used to generate the WSDL
+     * @param wsdlResolver The {@link WSDLResolver} to use resovle names while generating the WSDL
+     * @param binding specifies which {@link javax.xml.ws.BindingType} to generate
+     * @param extensions an array {@link WSDLGeneratorExtension} that will 
+     * be invoked to generate WSDL extensions
      */
     public WSDLGenerator(AbstractSEIModelImpl model, WSDLResolver wsdlResolver, WSBinding binding, Container container,
                          Class implType, boolean inlineSchemas, WSDLGeneratorExtension... extensions) {
