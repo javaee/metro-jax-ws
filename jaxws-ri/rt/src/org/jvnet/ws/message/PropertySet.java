@@ -110,7 +110,7 @@ public abstract class PropertySet {
      * <p>
      * Just giving it an alias to make the use of this class more fool-proof.
      */
-    protected static final class PropertyMap extends HashMap<String,Accessor> {}
+    protected static class PropertyMap extends HashMap<String,Accessor> {}
 
     /**
      * Map representing the Fields and Methods annotated with {@link Property}.

@@ -47,4 +47,23 @@ package com.sun.xml.ws.api;
  * @author snajper
  */
 public abstract class PropertySet extends org.jvnet.ws.message.PropertySet {
+    /**
+     * Represents the list of strongly-typed known properties
+     * (keyed by property names.)
+     *
+     * <p>
+     * Just giving it an alias to make the use of this class more fool-proof.
+     * @deprecated
+     */
+    protected static class PropertyMap extends org.jvnet.ws.message.PropertySet.PropertyMap {}
+
+    /**
+     * @deprecated
+     */
+    protected static PropertyMap parse(final Class clazz) {
+        org.jvnet.ws.message.PropertySet.PropertyMap pm = org.jvnet.ws.message.PropertySet.parse(clazz);
+        PropertyMap map = new PropertyMap();
+        map.putAll(pm);
+        return map;
+    }
 }
