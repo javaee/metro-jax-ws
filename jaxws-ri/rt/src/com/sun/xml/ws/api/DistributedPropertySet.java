@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.api;
 
+import com.sun.istack.NotNull;
+
 /**
  * Placeholder for backwards compatibility.
  *
@@ -47,4 +49,11 @@ package com.sun.xml.ws.api;
  * @author Kohsuke Kawaguchi
  */
 public abstract class DistributedPropertySet extends org.jvnet.ws.message.DistributedPropertySet {
+    
+    /**
+     * @deprecated
+     */
+    public void addSatellite(@NotNull PropertySet satellite) {
+        super.addSatellite(satellite);
+    }
 }

@@ -41,7 +41,6 @@
 package com.sun.xml.ws.client;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.DistributedPropertySet;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.transport.Headers;
@@ -57,6 +56,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import org.jvnet.ws.message.DistributedPropertySet;
+import org.jvnet.ws.message.PropertySet;
 
 /**
  * Request context implementation.
@@ -121,6 +123,13 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings({"SuspiciousMethodCalls"})
 public final class RequestContext extends DistributedPropertySet {
+    /**
+     * @deprecated
+     */
+    public void addSatellite(@NotNull com.sun.xml.ws.api.PropertySet satellite) {
+        super.addSatellite(satellite);
+    }
+    
     private static final Logger LOGGER = Logger.getLogger(RequestContext.class.getName());
     
     /**

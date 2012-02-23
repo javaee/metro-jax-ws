@@ -66,4 +66,10 @@ public abstract class PropertySet extends org.jvnet.ws.message.PropertySet {
         map.putAll(pm);
         return map;
     }
+    
+    public boolean supports(Object key) {
+        return getPropertyMap().containsKey(key);
+    }
+    
+    protected abstract PropertyMap getPropertyMap();
 }
