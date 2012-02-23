@@ -233,6 +233,7 @@ public class StubHandler implements ClientCallBridge {
         for (MessageFiller filler : inFillers) filler.fillIn(call.getParameters(),msg);
 
         Packet req = (Packet)packetFactory.createContext(msg);
+        req.setState(Packet.State.ClientRequest);
         req.soapAction = soapAction;
         req.expectReply = !isOneWay;
         req.getMessage().assertOneWay(isOneWay);

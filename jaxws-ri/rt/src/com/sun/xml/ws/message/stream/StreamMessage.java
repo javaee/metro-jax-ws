@@ -588,4 +588,8 @@ public final class StreamMessage extends AbstractMessageImpl {
         return bodyEpilogue;
     }
 
+    public XMLStreamReader getReader() {
+        assert unconsumed();
+        return reader;
+    }
 }

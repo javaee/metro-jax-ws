@@ -201,27 +201,17 @@ public abstract class AbstractMessageImpl extends Message {
      *
      */
     public SOAPMessage readAsSOAPMessage(Packet packet, boolean inbound) throws SOAPException {
-        SOAPMessage msg = readAsSOAPMessage();
-        Map<String, List<String>> headers = null;
-        String key = inbound ? Packet.INBOUND_TRANSPORT_HEADERS : Packet.OUTBOUND_TRANSPORT_HEADERS;
-        if (packet.supports(key)) {
-            headers = (Map<String, List<String>>)packet.get(key);
-        }
+        SOAPMessage msg = SAAJFactory.read(soapVersion, this, packet);
+        Map<String, List<String>> headers = getTransportHeaders(packet, inbound);
+        
         if (headers != null) {
-            for(Map.Entry<String, List<String>> e : headers.entrySet()) {
-                if (!e.getKey().equalsIgnoreCase("Content-Type")) {
-                    for(String value : e.getValue()) {
-                        msg.getMimeHeaders().addHeader(e.getKey(), value);
-                    }
-                }
-            }
+            addSOAPMimeHeaders(msg.getMimeHeaders(), headers);
         }
         
         if (msg.saveRequired())
         	msg.saveChanges();
         return msg;
     }
-
 
     protected static final AttributesImpl EMPTY_ATTS = new AttributesImpl();
     protected static final LocatorImpl NULL_LOCATOR = new LocatorImpl();

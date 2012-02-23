@@ -330,7 +330,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         packet.component = this;
         packet.transportBackChannel = new Oneway(con);
         packet.webServiceContextDelegate = con.getWebServiceContextDelegate();
-
+        packet.setState(Packet.State.ServerRequest);
         if (dump || LOGGER.isLoggable(Level.FINER)) {
             ByteArrayBuffer buf = new ByteArrayBuffer();
             buf.write(in);

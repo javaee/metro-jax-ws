@@ -266,6 +266,7 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
 	            checkNullAllowed(in, rc, binding, mode);
 	
 	            Packet message = createPacket(in);
+	            message.setState(Packet.State.ClientRequest);
 	            resolveEndpointAddress(message, rc);
 	            setProperties(message,true);
 	            response = process(message,rc,receiver);
@@ -324,6 +325,7 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
                 checkNullAllowed(in, requestContext, binding, mode);
     
                 Packet request = createPacket(in);
+                request.setState(Packet.State.ClientRequest);
                 setProperties(request,false);
                 Packet response = process(request,requestContext,this);
             } catch(WebServiceException e){
@@ -558,6 +560,7 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
         public void do_run () {
             checkNullAllowed(param, rc, binding, mode);
             final Packet message = createPacket(param);
+            message.setState(Packet.State.ClientRequest);
             message.nonNullAsyncHandlerGiven = this.nonNullAsyncHandlerGiven;
             resolveEndpointAddress(message, rc);
             setProperties(message,true);

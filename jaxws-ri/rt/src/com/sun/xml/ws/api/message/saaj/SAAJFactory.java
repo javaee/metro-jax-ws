@@ -56,6 +56,7 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentEx;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -161,6 +162,24 @@ public class SAAJFactory {
     	return instance.readAsSOAPMessage(soapVersion, message);
 	}
 	
+	/**
+     * Reads Message as SOAPMessage.  After this call message is consumed.
+     * @param soapVersion SOAP version
+     * @param message Message
+     * @param packet The packet that owns the Message
+     * @return Created SOAPMessage
+     * @throws SOAPException if SAAJ processing fails
+     */
+    public static SOAPMessage read(SOAPVersion soapVersion, Message message, Packet packet) throws SOAPException {
+        for (SAAJFactory s : ServiceFinder.find(SAAJFactory.class)) {
+            SOAPMessage msg = s.readAsSOAPMessage(soapVersion, message, packet);
+            if (msg != null)
+                return msg;
+        }
+        
+        return instance.readAsSOAPMessage(soapVersion, message, packet);
+    }
+    
     /**
      * Creates a new <code>MessageFactory</code> object that is an instance
      * of the specified implementation.  May be a dynamic message factory,
@@ -236,6 +255,14 @@ public class SAAJFactory {
             throw new SOAPException(e);
         }
 
+        addAttachmentsToSOAPMessage(msg, message);
+        
+        if (msg.saveRequired())
+        	msg.saveChanges();
+        return msg;
+	}
+	
+	protected void addAttachmentsToSOAPMessage(SOAPMessage msg, Message message) {
         for(Attachment att : message.getAttachments()) {
             AttachmentPart part = msg.createAttachmentPart();
             part.setDataHandler(att.asDataHandler());
@@ -263,10 +290,20 @@ public class SAAJFactory {
                 }
             }
             msg.addAttachmentPart(part);
-        }
-        
-        if (msg.saveRequired())
-        	msg.saveChanges();
-        return msg;
+        }    
+    }
+
+    /**
+     * Reads Message as SOAPMessage.  After this call message is consumed.
+     * The implementation in this class simply calls readAsSOAPMessage(SOAPVersion, Message),
+     * and ignores the other parameters
+     * Subclasses can override and choose to base SOAPMessage creation on Packet properties if needed 
+     * @param soapVersion SOAP version
+     * @param message Message
+     * @return Created SOAPMessage
+     * @throws SOAPException if SAAJ processing fails
+     */
+	public SOAPMessage readAsSOAPMessage(SOAPVersion soapVersion, Message message, Packet packet) throws SOAPException {
+	    return readAsSOAPMessage(soapVersion, message);
 	}
 }

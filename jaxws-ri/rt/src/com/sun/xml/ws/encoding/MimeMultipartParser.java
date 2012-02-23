@@ -81,14 +81,16 @@ public final class MimeMultipartParser {
     private final String start;
     private final MIMEMessage message;
     private Attachment root;
+    private String contentType;
     
     // Attachments without root part
     private final Map<String, Attachment> attachments = new HashMap<String, Attachment>();
 
     private boolean gotAll;
 
-    public MimeMultipartParser(InputStream in, String contentType, StreamingAttachmentFeature feature) {
-        ContentType ct = new ContentType(contentType);
+    public MimeMultipartParser(InputStream in, String cType, StreamingAttachmentFeature feature) {
+        this.contentType = cType;
+        ContentType ct = new ContentType(cType);
         String boundary = ct.getParameter("boundary");
         if (boundary == null || boundary.equals("")) {
             throw new WebServiceException("MIME boundary parameter not found" + contentType);
@@ -249,6 +251,10 @@ public final class MimeMultipartParser {
                 }
             };
         }
+    }
+
+    public String getContentType() {
+        return contentType;
     }
 
 }

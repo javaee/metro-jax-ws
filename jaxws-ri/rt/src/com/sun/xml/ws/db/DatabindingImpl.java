@@ -192,7 +192,9 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
 
 	public Packet serializeRequest(JavaCallInfo call) {
         StubHandler stubHandler = stubHandlers.get(call.getMethod());
-        return stubHandler.createRequestPacket(call);	
+        Packet p = stubHandler.createRequestPacket(call);
+        p.setState(Packet.State.ClientRequest);
+        return p;
 	}
 
 	public Packet serializeResponse(JavaCallInfo call) {
@@ -207,7 +209,9 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
 		if (call.getException() instanceof DispatchException) {
 		    message = ((DispatchException)call.getException()).fault;
 		}
-        return (Packet)packetFactory.createContext(message);
+        Packet p = (Packet)packetFactory.createContext(message);
+        p.setState(Packet.State.ServerResponse);
+        return p;
 	}
 
 	public ClientCallBridge getClientBridge(Method method) {

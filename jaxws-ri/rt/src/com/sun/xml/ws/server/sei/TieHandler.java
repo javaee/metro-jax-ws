@@ -338,7 +338,9 @@ final public class TieHandler implements EndpointCallBridge {
 
 	public Packet serializeResponse(JavaCallInfo call) {
 		Message msg = this.createResponse(call);
-        return (Packet)packetFactory.createContext(msg);
+        Packet p = (Packet)packetFactory.createContext(msg);
+        p.setState(Packet.State.ServerResponse);
+        return p;
 	}
 	
     public JavaMethod getOperationModel() {

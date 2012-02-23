@@ -250,11 +250,18 @@ public class StreamMessageTest extends TestCase {
         Source source = message.readPayloadAsSource();
         InputStream is = getInputStream(source);
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(is);
-		reader.next();
-		while (reader.getEventType() == XMLStreamReader.START_ELEMENT) reader.next();
-		String text = new String(reader.getTextCharacters(), reader.getTextStart(), reader.getTextLength());
-		assertEquals("outside cdata <data>inside cdata</data>", text);
-	}
+        reader.next();
+        while (reader.getEventType() == XMLStreamReader.START_ELEMENT) reader.next();
+        String text = "";
+        //Depending on parser settings, multiple characters events may be reported
+        //in small chunks, instead of one event for an entire text node
+        while (reader.getEventType() == XMLStreamReader.CHARACTERS) {
+            String textTmp = new String(reader.getTextCharacters(), reader.getTextStart(), reader.getTextLength());
+            reader.next();
+            text += textTmp;
+        }
+        assertEquals("outside cdata <data>inside cdata</data>", text);
+    }
 	
 /*
     private DOMSource toDOMSource(Source source) throws Exception {

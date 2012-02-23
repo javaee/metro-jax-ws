@@ -71,6 +71,7 @@ import org.xml.sax.SAXParseException;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
+import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.stream.XMLStreamException;
@@ -82,6 +83,8 @@ import javax.xml.ws.WebServiceException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -523,7 +526,29 @@ public abstract class Message {
     public SOAPMessage readAsSOAPMessage(Packet packet, boolean inbound) throws SOAPException {
         return readAsSOAPMessage();
     }
+    
+    public static Map<String, List<String>> getTransportHeaders(Packet packet) {
+        return getTransportHeaders(packet, packet.getState().isInbound());
+    }
 
+    public static Map<String, List<String>> getTransportHeaders(Packet packet, boolean inbound) {
+        Map<String, List<String>> headers = null;
+        String key = inbound ? Packet.INBOUND_TRANSPORT_HEADERS : Packet.OUTBOUND_TRANSPORT_HEADERS;
+        if (packet.supports(key)) {
+            headers = (Map<String, List<String>>)packet.get(key);
+        }
+        return headers;
+    }
+    
+    public static void addSOAPMimeHeaders(MimeHeaders mh, Map<String, List<String>> headers) {
+        for(Map.Entry<String, List<String>> e : headers.entrySet()) {
+            if (!e.getKey().equalsIgnoreCase("Content-Type")) {
+                for(String value : e.getValue()) {
+                    mh.addHeader(e.getKey(), value);
+                }
+            }
+        }
+    }
     /**
      * Reads the payload as a JAXB object by using the given unmarshaller.
      *

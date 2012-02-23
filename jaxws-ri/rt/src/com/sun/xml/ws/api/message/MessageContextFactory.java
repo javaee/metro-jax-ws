@@ -46,6 +46,7 @@ import java.io.InputStream;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.soap.MTOMFeature;
 
 import org.jvnet.ws.EnvelopeStyle;
 import org.jvnet.ws.EnvelopeStyleFeature;
@@ -128,6 +129,10 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         //TODO when do we use xmlCodec?
         p.codec = soapCodec;
         if (m != null) p.setMessage(m);
+        MTOMFeature mf = features.get(MTOMFeature.class);
+        if (mf != null) {
+            p.setMtomFeature(mf);
+        }
         return p;
     }  
 

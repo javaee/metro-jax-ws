@@ -63,6 +63,7 @@ import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.message.RelatesToHeader;
 import com.sun.xml.ws.message.StringHeader;
+import com.sun.xml.ws.message.stream.StreamMessage;
 import com.sun.xml.ws.server.WSEndpointImpl;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -85,6 +86,8 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
+import javax.xml.ws.soap.MTOMFeature;
+
 import java.util.*;
 import java.util.logging.Logger;
 import java.io.ByteArrayOutputStream;
@@ -748,6 +751,7 @@ public final class Packet extends org.jvnet.ws.message.MessageContext {
         Packet response = new Packet(this);
         response.soapAction = null; // de-initializing 
         response.setMessage(msg);
+        response.setState(State.ClientResponse);
         return response;
     }
 
@@ -800,7 +804,9 @@ public final class Packet extends org.jvnet.ws.message.MessageContext {
     	  // processing specific properties    	 
     	  response.soapAction = null;
     	  response.invocationProperties.putAll(request.invocationProperties);            
-    	  response.status = Status.Response;
+    	  if (this.getState().equals(State.ServerRequest)) {
+    	      response.setState(State.ServerResponse);
+    	  }
     	} else { //is copy constructor
     	  request = packet;
     	  response = this;
@@ -808,6 +814,7 @@ public final class Packet extends org.jvnet.ws.message.MessageContext {
     	  // processing specific properties  
     	  response.soapAction = request.soapAction;
     	  response.isAdapterDeliversNonAnonymousResponse = request.isAdapterDeliversNonAnonymousResponse;
+    	  response.setState(request.getState());
     	}
     	
     	request.copySatelliteInto(response);
@@ -832,7 +839,7 @@ public final class Packet extends org.jvnet.ws.message.MessageContext {
 
     public Packet relateServerResponse(@Nullable Packet r, @Nullable WSDLPort wsdlPort, @Nullable SEIModel seiModel, @NotNull WSBinding binding) {
     	relatePackets(r, false);
-        
+        r.setState(State.ServerResponse);
         AddressingVersion av = binding.getAddressingVersion();
         // populate WS-A headers only if WS-A is enabled
         if (av == null)
@@ -869,7 +876,7 @@ public final class Packet extends org.jvnet.ws.message.MessageContext {
      */
     public Packet createServerResponse(@Nullable Message responseMessage, @NotNull AddressingVersion addressingVersion, @NotNull SOAPVersion soapVersion, @NotNull String action) {
         Packet responsePacket = createClientResponse(responseMessage);
-
+        responsePacket.setState(State.ServerResponse);
         // populate WS-A headers only if WS-A is enabled
         if (addressingVersion == null)
             return responsePacket;
@@ -1031,7 +1038,7 @@ public final class Packet extends org.jvnet.ws.message.MessageContext {
     
     //TODO replace the message to a SAAJMEssage issue - JRFSAAJMessage or SAAJMessage?
     public SOAPMessage getAsSOAPMessage() throws SOAPException {
-        return (message != null) ? message.readAsSOAPMessage() : null;
+        return (message != null) ? message.readAsSOAPMessage(this, this.getState().isInbound()) : null;
     }
     
     Codec codec = null;
@@ -1072,6 +1079,8 @@ public final class Packet extends org.jvnet.ws.message.MessageContext {
      */
     private Boolean mtomAcceptable;
 
+    private MTOMFeature mtomFeature;
+    
     public Boolean getMtomRequest() {
         return mtomRequest;
     }
@@ -1088,6 +1097,20 @@ public final class Packet extends org.jvnet.ws.message.MessageContext {
         this.mtomAcceptable = mtomAcceptable;
     }
     
+    public void setMtomFeature(MTOMFeature mtomFeature) {
+        this.mtomFeature = mtomFeature;
+    }
+
+    public MTOMFeature getMtomFeature() {
+        //If we have a binding, use that in preference to an explicitly
+        //set MTOMFeature
+        WSBinding binding = getBinding();
+        if (binding != null) {
+            return binding.getFeature(MTOMFeature.class);
+        }
+        return mtomFeature; 
+    }
+
     public ContentType getContentType() {
         return contentType;
     }
@@ -1102,7 +1125,56 @@ public final class Packet extends org.jvnet.ws.message.MessageContext {
         public boolean isResponse() { return Response.equals(this); }
     }
     
-    private Status status = Status.Unknown;
+    public enum State {
+        ServerRequest(true), ClientRequest(false), ServerResponse(false), ClientResponse(true);
+        private boolean inbound;
+        State(boolean inbound) {
+            this.inbound = inbound;
+        }
+        public boolean isInbound() {
+            return inbound;
+        }
+    }
     
-    public Status getStatus() { return status; }
+//    private Status status = Status.Unknown;
+    
+    //Default state is ServerRequest - some custom adapters may not set the value of state
+    //upon server request - all other code paths should set it
+    private State state = State.ServerRequest;
+    
+//    public Status getStatus() { return status; }
+    
+    public State getState() { return state; }
+    public void setState(State state) { this.state = state; }
+    
+    public boolean shouldUseMtom() {
+        if (getState().isInbound()) {
+            return isMtomContentType();
+        } else {
+            return shouldUseMtomOutbound();
+        }
+    }
+    
+    private boolean shouldUseMtomOutbound() {
+        //Use the getter to make sure all the logic is executed correctly
+        MTOMFeature myMtomFeature = getMtomFeature();
+        if(myMtomFeature != null && myMtomFeature.isEnabled()) {
+            //On client, always use XOP encoding if MTOM is enabled
+            //On Server, mtomAcceptable and mtomRequest will be set - use XOP encoding 
+            //if either request is XOP encoded (mtomRequest) or 
+            //client accepts XOP encoding (mtomAcceptable)
+            if (getMtomAcceptable() == null && getMtomRequest() == null) {
+                return true;                
+            } else {
+                if (getMtomAcceptable() != null &&  getMtomAcceptable() && getState().equals(State.ServerResponse)) return true;
+                if (getMtomRequest() != null && getMtomRequest() && getState().equals(State.ServerResponse)) return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isMtomContentType() {
+        return (getContentType() != null) && 
+        (getContentType().getContentType().contains("application/xop+xml"));
+    }    
 }

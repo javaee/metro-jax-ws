@@ -283,6 +283,10 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
     private void postDecode(Packet p) {
         if(features.isEnabled(MTOMFeature.class))
             p.setMtomAcceptable( isMtomAcceptable(p.acceptableMimeTypes) );
+        MTOMFeature mtomFeature = features.get(MTOMFeature.class);
+        if (mtomFeature != null) {
+            p.setMtomFeature(mtomFeature);
+        }
         if (!useFastInfosetForEncoding) {
             useFastInfosetForEncoding = isFastInfosetAcceptable(p.acceptableMimeTypes);
         }
@@ -292,7 +296,6 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
         if (contentType == null) {
             contentType = xmlMimeType;
         }
-
         preDecode(packet);
         try {
             if(isMultipartRelated(contentType))
@@ -414,7 +417,6 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
      */
     private boolean isMtomAcceptable(String accept) {
         if (accept == null || isFastInfosetDisabled) return false;
-
         StringTokenizer st = new StringTokenizer(accept, ",");
         while (st.hasMoreTokens()) {
             final String token = st.nextToken().trim();
@@ -454,18 +456,17 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
             else
                 return fiSwaCodec;
         }
-        
-        if(features.isEnabled(MTOMFeature.class)) {
-            //On client, always use XOP encoding if MTOM is enabled
-            // On Server, use XOP encoding if either request is XOP encoded or client accepts XOP encoding
-//            if(!isServerSide() || isRequestMtomMessage || acceptMtomMessages)
-//                return xmlMtomCodec;
-            if (p.getMtomAcceptable() == null && p.getMtomRequest() == null) {
-                return xmlMtomCodec;                
-            } else {
-                if (p.getMtomAcceptable() != null &&  p.getMtomAcceptable() && p.getStatus().isResponse()) return xmlMtomCodec;
-                if (p.getMtomRequest() != null && p.getMtomRequest() && p.getStatus().isResponse()) return xmlMtomCodec;
+
+        //If the packet does not have a binding, explicitly set the MTOMFeature
+        //on the packet so that it has a way to determine whether to use MTOM
+        if (p.getBinding() == null) {
+            if (features != null) {
+                p.setMtomFeature(features.get(MTOMFeature.class));
             }
+        }
+        
+        if (p.shouldUseMtom()) {
+            return xmlMtomCodec; 
         }
 
         Message m = p.getMessage();
