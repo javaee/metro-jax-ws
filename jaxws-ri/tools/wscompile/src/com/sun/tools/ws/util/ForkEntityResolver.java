@@ -64,6 +64,12 @@ public class ForkEntityResolver implements EntityResolver {
         InputSource is = lhs.resolveEntity(publicId, systemId);
         if(is!=null)
             return is;
+
+        if(publicId == null) {
+          // WorkAround: Ant's XMLCatalog supports public IDs only, this allows us to treat it as system IDs
+          publicId = systemId;
+        }
+
         return rhs.resolveEntity(publicId, systemId);
     }
 }
