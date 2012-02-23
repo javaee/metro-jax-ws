@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -568,11 +568,11 @@
         <classpath refid="findbugs.class"/>
     </taskdef>
 
-
     <target name="findbugs">
         <findbugs home="${findbugs.home}"
                   output="xml"
                   outputFile="${build.home}/jaxws-findbugs.xml"
+                  reportLevel="medium"
                   jvmargs="-Xms64m -Xmx256m">
             <auxclasspath>
                 <fileset dir="${build.home}/lib" includes="*.jar" excludes="jaxws-rt.jar, jaxws-tools.jar"/>
@@ -591,11 +591,11 @@
         </findbugs>
     </target>
 
-
     <target name="findbugs-html" depends="main">
         <findbugs home="${findbugs.home}"
                   output="html"
                   outputFile="${build.home}/jaxws-findbugs.html"
+                  reportLevel="medium"
                   jvmargs="-Xms64m -Xmx256m ">
             <auxclasspath>
                 <fileset dir="${build.home}/lib" includes="*.jar" excludes="jaxws-rt.jar, jaxws-tools.jar"/>
