@@ -45,6 +45,7 @@ import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import com.sun.xml.ws.addressing.W3CAddressingConstants;
+import com.sun.xml.ws.addressing.v200408.MemberSubmissionAddressingConstants;
 import com.sun.istack.Nullable;
 
 import javax.xml.namespace.QName;
@@ -173,11 +174,13 @@ public final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
             if (value != null) {
                 portName = new QName(targetNamespace,value);
             }
-        } else if (name.equals(W3CAddressingConstants.WSA_EPR_QNAME)) {
+        } else if (name.equals(W3CAddressingConstants.WSA_EPR_QNAME)
+        		|| name.equals(MemberSubmissionAddressingConstants.WSA_EPR_QNAME)) {
             if (serviceName != null && portName != null) {
                 inEpr = true;
             }
-        } else if (name.equals(W3CAddressingConstants.WSA_ADDRESS_QNAME)) {
+        } else if (name.equals(W3CAddressingConstants.WSA_ADDRESS_QNAME)
+        		|| name.equals(MemberSubmissionAddressingConstants.WSA_ADDRESS_QNAME)) {
             if (inEpr) {
                 inEprAddress = true;
             }
@@ -192,12 +195,14 @@ public final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
             serviceName = null;
         } else if (name.equals(WSDLConstants.QNAME_PORT)) {
             portName = null;
-        } else if (name.equals(W3CAddressingConstants.WSA_EPR_QNAME)) {
+        } else if (name.equals(W3CAddressingConstants.WSA_EPR_QNAME)
+        		|| name.equals(MemberSubmissionAddressingConstants.WSA_EPR_QNAME)) {
             if (inEpr) {
                 inEpr = false;
             }
-        } else if (name.equals(W3CAddressingConstants.WSA_ADDRESS_QNAME)) {
-            if (inEprAddress) {
+		} else if (name.equals(W3CAddressingConstants.WSA_ADDRESS_QNAME)
+				|| name.equals(MemberSubmissionAddressingConstants.WSA_ADDRESS_QNAME)) {
+			if (inEprAddress) {
                 String value = getAddressLocation();
                 if (value != null) {
                     logger.fine("Fixing EPR Address for service:"+serviceName+ " port:"+portName

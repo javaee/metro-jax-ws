@@ -60,6 +60,9 @@ public interface MemberSubmissionAddressingConstants {
 
     public static final String WSA_ADDRESS_NAME = "Address";
     public static final QName WSA_ADDRESS_QNAME = new QName(WSA_NAMESPACE_NAME, WSA_ADDRESS_NAME);
+    
+    public static final String WSA_EPR_NAME = "EndpointReference";
+    public static final QName WSA_EPR_QNAME = new QName(WSA_NAMESPACE_NAME, WSA_EPR_NAME);
 
     public static final String WSA_ANONYMOUS_ADDRESS = WSA_NAMESPACE_NAME + "/role/anonymous";
     public static final String WSA_NONE_ADDRESS = "";
