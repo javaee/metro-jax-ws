@@ -63,7 +63,6 @@ import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.message.RelatesToHeader;
 import com.sun.xml.ws.message.StringHeader;
-import com.sun.xml.ws.message.stream.StreamMessage;
 import com.sun.xml.ws.server.WSEndpointImpl;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -162,7 +161,10 @@ import java.nio.channels.WritableByteChannel;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class Packet extends org.jvnet.ws.message.MessageContext {
+public final class Packet
+    extends DistributedPropertySet
+    implements org.jvnet.ws.message.MessageContext
+{
 
     /**
      * Creates a {@link Packet} that wraps a given {@link Message}.
@@ -817,7 +819,7 @@ public final class Packet extends org.jvnet.ws.message.MessageContext {
     	  response.setState(request.getState());
     	}
     	
-    	request.copySatelliteInto(response);
+    	request.copySatelliteInto((DistributedPropertySet) response);
     	response.handlerConfig = request.handlerConfig;
     	response.handlerScopePropertyNames = request.handlerScopePropertyNames;
     	response.contentNegotiation = request.contentNegotiation;
