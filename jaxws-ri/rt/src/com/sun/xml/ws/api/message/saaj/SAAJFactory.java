@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -178,6 +178,32 @@ public class SAAJFactory {
         }
         
         return instance.readAsSOAPMessage(soapVersion, message, packet);
+    }
+
+    /**
+     * Reads the message within the Packet to a SAAJMessage.  After this call message is consumed.
+     * @param packet Packet
+     * @return Created SAAJPMessage
+     * @throws SOAPException if SAAJ processing fails
+     */
+    public static SAAJMessage read(Packet packet) throws SOAPException {
+        for (SAAJFactory s : ServiceFinder.find(SAAJFactory.class)) {
+            SAAJMessage msg = s.readAsSAAJ(packet);
+            if (msg != null) return msg;
+        }        
+        return instance.readAsSAAJ(packet);
+    }
+
+    /**
+     * Reads the message within the Packet to a SAAJMessage.  After this call message is consumed.
+     * @param packet Packet
+     * @return Created SAAJPMessage
+     * @throws SOAPException if SAAJ processing fails
+     */
+    public SAAJMessage readAsSAAJ(Packet p) throws SOAPException {
+        SOAPVersion v = p.getMessage().getSOAPVersion();
+        SOAPMessage msg = readAsSOAPMessage(v, p.getMessage());
+        return new SAAJMessage(msg);
     }
     
     /**

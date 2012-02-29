@@ -223,7 +223,13 @@ public final class Packet
      * @return may null. See the class javadoc for when it's null.
      */
     public Message getMessage() {
-        return message;
+        if (message != null && !(message instanceof MessageWrapper)) 
+            message = new MessageWrapper(this, message); 
+        return  message;
+    }
+    
+    public Message getInternalMessage() {
+        return (message instanceof MessageWrapper)? ((MessageWrapper)message).delegate : message;
     }
 
     public WSBinding getBinding() {
@@ -419,11 +425,12 @@ public final class Packet
     public
     @NotNull
     List<Element> getReferenceParameters() {
+        Message msg = getMessage();
         List<Element> refParams = new ArrayList<Element>();
-        if (message == null) {
+        if (msg == null) {
             return refParams;
         }
-        HeaderList hl = message.getHeaders();
+        HeaderList hl = msg.getHeaders();
         for (Header h : hl) {
             String attr = h.getAttribute(AddressingVersion.W3C.nsUri, "IsReferenceParameter");
             if (attr != null && (attr.equals("true") || attr.equals("1"))) {
@@ -457,8 +464,9 @@ public final class Packet
      */
     @com.sun.xml.ws.api.PropertySet.Property(JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY)
     /*package*/ HeaderList getHeaderList() {
-        if (message == null) return null;
-        return message.getHeaders();
+        Message msg = getMessage();
+        if (msg == null) return null;
+        return msg.getHeaders();
     }
 
     /**
@@ -852,7 +860,7 @@ public final class Packet
             return r;
         }
         // if one-way, then dont populate any WS-A headers
-        if (r.getMessage() == null || (wsdlPort != null && message.isOneWay(wsdlPort)))
+        if (r.getMessage() == null || (wsdlPort != null && getMessage().isOneWay(wsdlPort)))
             return r;
 
         // otherwise populate WS-Addressing headers
@@ -918,13 +926,13 @@ public final class Packet
         HeaderList hl = responsePacket.getMessage().getHeaders();
 
         WsaPropertyBag wpb = getSatellite(WsaPropertyBag.class);
-        
+        Message msg = getMessage();
         // wsa:To
         WSEndpointReference replyTo = null;
     	if (wpb != null)
     		replyTo = wpb.getReplyToFromRequest();
     	if (replyTo == null)
-    		replyTo = message.getHeaders().getReplyTo(av, sv);
+    		replyTo = msg.getHeaders().getReplyTo(av, sv);
 
         // wsa:Action, add if the message doesn't already contain it,
         // generally true for SEI case where there is SEIModel or WSDLModel
@@ -946,7 +954,7 @@ public final class Packet
         if (wpb != null)
         	mid = wpb.getMessageID();
         if (mid == null)
-        	mid = message.getHeaders().getMessageID(av, sv);
+        	mid = msg.getHeaders().getMessageID(av, sv);
         if (mid != null)
             hl.add(new RelatesToHeader(av.relatesToTag, mid));
 		
@@ -958,7 +966,7 @@ public final class Packet
         	if (wpb != null)
         		refpEPR = wpb.getFaultToFromRequest();
         	if (refpEPR == null)
-        		refpEPR = message.getHeaders().getFaultTo(av, sv);
+        		refpEPR = msg.getHeaders().getFaultTo(av, sv);
             // if FaultTo is null, then use ReplyTo
             if (refpEPR == null)
                 refpEPR = replyTo;
@@ -978,7 +986,7 @@ public final class Packet
         if (addressingVersion == null) return;
 
         WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort, seiModel, binding);
-        String action = responsePacket.message.isFault() ?
+        String action = responsePacket.getMessage().isFault() ?
                 wsaHelper.getFaultAction(this, responsePacket) :
                 wsaHelper.getOutputAction(this);
         if (action == null) {
@@ -999,10 +1007,11 @@ public final class Packet
       buf.append(super.toString());
       String content;
     	try {
-        if (message != null) {
+    	    Message msg = getMessage();
+        if (msg != null) {
 		        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		        XMLStreamWriter xmlWriter = XMLStreamWriterFactory.create(baos, "UTF-8");
-		        message.copy().writeTo(xmlWriter);
+		        msg.copy().writeTo(xmlWriter);
 		        xmlWriter.flush();
 		        xmlWriter.close();
 		        baos.flush();
@@ -1040,7 +1049,8 @@ public final class Packet
     
     //TODO replace the message to a SAAJMEssage issue - JRFSAAJMessage or SAAJMessage?
     public SOAPMessage getAsSOAPMessage() throws SOAPException {
-        return (message != null) ? message.readAsSOAPMessage(this, this.getState().isInbound()) : null;
+        Message msg = this.getMessage();
+        return (msg != null) ? msg.readAsSOAPMessage(this, this.getState().isInbound()) : null;
     }
     
     Codec codec = null;

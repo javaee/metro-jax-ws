@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -84,7 +84,7 @@ import java.util.List;
  * TODO: we need another message class that keeps {@link XMLStreamReader} that points
  * at the start of the envelope element.
  */
-public final class StreamMessage extends AbstractMessageImpl {
+public class StreamMessage extends AbstractMessageImpl {
     /**
      * The reader will be positioned at
      * the first child of the SOAP body
@@ -137,7 +137,12 @@ public final class StreamMessage extends AbstractMessageImpl {
         create(SOAPVersion.SOAP_11);
         create(SOAPVersion.SOAP_12);
     }
-
+    
+    public StreamMessage(SOAPVersion v) {
+        super(v);
+        payloadLocalName = null;
+        payloadNamespaceURI = null;
+    }
     /**
      * Creates a {@link StreamMessage} from a {@link XMLStreamReader}
      * that points at the start element of the payload, and headers.

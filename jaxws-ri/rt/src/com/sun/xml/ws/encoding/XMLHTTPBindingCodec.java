@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -140,8 +140,8 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
 //        setRootCodec(packet);
         
         ContentType ct = null;
-        if (packet.getMessage() instanceof MessageDataSource) {
-            final MessageDataSource mds = (MessageDataSource)packet.getMessage();
+        if (packet.getInternalMessage() instanceof MessageDataSource) {
+            final MessageDataSource mds = (MessageDataSource)packet.getInternalMessage();
             if (mds.hasUnconsumedDataSource()) {
                 ct = getStaticContentType(mds);
                 return (ct != null)
@@ -160,8 +160,8 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
     public ContentType encode(Packet packet, OutputStream out) throws IOException {
 //        setRootCodec(packet);
         
-        if (packet.getMessage() instanceof MessageDataSource) {
-            final MessageDataSource mds = (MessageDataSource)packet.getMessage();
+        if (packet.getInternalMessage() instanceof MessageDataSource) {
+            final MessageDataSource mds = (MessageDataSource)packet.getInternalMessage();
             if (mds.hasUnconsumedDataSource())
                 return setAcceptHeader(packet, encode(mds, out));
         }

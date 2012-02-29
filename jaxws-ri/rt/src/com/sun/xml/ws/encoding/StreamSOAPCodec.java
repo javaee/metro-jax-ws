@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -321,7 +321,9 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         if (contentType != null && !isContentTypeSupported(contentType,expectedContentTypes)) {
             throw new UnsupportedMediaException(contentType, expectedContentTypes);
         }
-        String charset = new ContentTypeImpl(contentType).getCharSet();
+        ContentTypeImpl cti = (packet.getContentType() != null && packet.getContentType() instanceof ContentTypeImpl) ?
+                (ContentTypeImpl)packet.getContentType() : new ContentTypeImpl(contentType);
+        String charset = cti.getCharSet();
         if (charset != null && !Charset.isSupported(charset)) {
             throw new UnsupportedMediaException(charset);
         }

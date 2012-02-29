@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -95,7 +95,7 @@ public class BodyPrologueAndEpilogueTest extends TestCase {
         Packet packet = new Packet();
         ByteArrayInputStream in = new ByteArrayInputStream(msg.getBytes());
         codec.decode(in, "text/xml", packet);
-        return (com.sun.xml.ws.message.stream.StreamMessage) packet.getMessage();
+        return (com.sun.xml.ws.message.stream.StreamMessage) packet.getInternalMessage();
     }
 
     private void logMessage(Message message) throws XMLStreamException {

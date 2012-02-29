@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,6 +46,7 @@ import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.saaj.SAAJFactory;
+import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
@@ -95,6 +96,9 @@ public abstract class AbstractMessageImpl extends Message {
         this.soapVersion = soapVersion;
     }
 
+    public SOAPVersion getSOAPVersion() {
+        return soapVersion;
+    }
     /**
      * Copy constructor.
      */
@@ -190,6 +194,12 @@ public abstract class AbstractMessageImpl extends Message {
      */
     protected abstract void writePayloadTo(ContentHandler contentHandler, ErrorHandler errorHandler, boolean fragment) throws SAXException;
 
+    public Message toSAAJ(Packet p, Boolean inbound) throws SOAPException {
+        SAAJMessage message = SAAJFactory.read(p);
+        if (inbound != null) transportHeaders(p, inbound, message.readAsSOAPMessage());
+        return message;
+    }
+    
     /**
      * Default implementation that uses {@link #writeTo(ContentHandler, ErrorHandler)}
      */
@@ -202,15 +212,16 @@ public abstract class AbstractMessageImpl extends Message {
      */
     public SOAPMessage readAsSOAPMessage(Packet packet, boolean inbound) throws SOAPException {
         SOAPMessage msg = SAAJFactory.read(soapVersion, this, packet);
-        Map<String, List<String>> headers = getTransportHeaders(packet, inbound);
-        
+        transportHeaders(packet, inbound, msg);
+        return msg;
+    }
+
+    private void transportHeaders(Packet packet, boolean inbound, SOAPMessage msg) throws SOAPException {
+        Map<String, List<String>> headers = getTransportHeaders(packet, inbound);        
         if (headers != null) {
             addSOAPMimeHeaders(msg.getMimeHeaders(), headers);
-        }
-        
-        if (msg.saveRequired())
-        	msg.saveChanges();
-        return msg;
+        }        
+        if (msg.saveRequired()) msg.saveChanges();
     }
 
     protected static final AttributesImpl EMPTY_ATTS = new AttributesImpl();
