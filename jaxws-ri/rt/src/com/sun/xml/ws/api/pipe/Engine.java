@@ -67,7 +67,7 @@ public class Engine {
     
     public Engine(String id, Container container, Executor threadPool) {
         this(id, container);
-        this.threadPool = threadPool;
+        this.threadPool = threadPool != null ? wrap(threadPool) : null;
     }
 
     public Engine(String id) {
@@ -80,7 +80,7 @@ public class Engine {
     }
 
     public void setExecutor(Executor threadPool) {
-        this.threadPool = wrap(threadPool);
+        this.threadPool = threadPool != null ? wrap(threadPool) : null;
     }
 
     void addRunnable(Fiber fiber) {
