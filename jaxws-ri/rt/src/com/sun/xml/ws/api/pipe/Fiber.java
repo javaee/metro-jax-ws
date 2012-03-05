@@ -321,11 +321,9 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
 
     Fiber(Engine engine) {
         this.owner = engine;
+        id = iotaGen.incrementAndGet();
         if (isTraceEnabled()) {
-            id = iotaGen.incrementAndGet();
             LOGGER.fine(getName() + " created");
-        } else {
-            id = -1;
         }
 
         // if this is run from another fiber, then we naturally inherit its context classloader,
