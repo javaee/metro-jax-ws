@@ -245,13 +245,24 @@
     </macrodef>
 
     <target name="com.sun.xml.ws.jaxws-rt.jar">
+        <delete dir="${build.home}/lib/jaxws-rtTemp"/>
+	    <unzip dest="${build.home}/lib/jaxws-rtTemp" src="${build.home}/lib/jaxws-rt.jar" />
+        <delete dir="${build.home}/lib/jaxws-rtTemp/META-INF/services"/>
+		<jar jarfile="${build.home}/lib/com.sun.xml.ws.jaxws-rt.jar">
+            <fileset dir="${build.home}/lib/jaxws-rtTemp"/>
+        </jar>
+        <delete dir="${build.home}/lib/jaxws-rtTemp"/>
+	<!--
         <jar jarfile="${build.home}/lib/com.sun.xml.ws.jaxws-rt.jar" manifest="${basedir}/rt/build/manifest">
             <fileset dir="${basedir}/rt/build/classes" includes="**/*.class"/>
-            <fileset dir="${basedir}/rt-fi/build/classes" includes="**/*.class"/>
-            <fileset dir="${basedir}/rt-ha/build/classes" includes="**/*.class"/>
+			<fileset dir="${basedir}/rt/build/classes" includes="**/*.xml"/>
+			<fileset dir="${basedir}/rt/build/classes" includes="**/*.properties"/>
+            <fileset dir="${basedir}/rt-fi/build/classes/"/>
+            <fileset dir="${basedir}/rt-ha/build/classes"/>
             <fileset dir="${basedir}/servlet/build/classes" includes="**/*.class"/>
             <fileset dir="${basedir}/rt/src" includes="**/*.xml"/>
         </jar>
+		-->
 	</target>
 	
     <target name="runtime-build" depends="runtime-compile">
