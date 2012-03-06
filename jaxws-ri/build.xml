@@ -919,7 +919,8 @@
             <entry key="promoted.version" type="int" operation="+" value="1" pattern="00"/>
         </propertyfile>
         <exec executable="svn" failonerror="true" failifexecutionfails="true">
-            <arg value="commit"/>
+            <arg  value="commit"/>
+            <arg  value="--no-auth-cache"/>
             <arg  value="-m"/>
             <arg  value="Pushed JAX-WS RI ${jar.suffix}, Incrementing the promoted version."/>
             <arg  value="project.properties"/>
