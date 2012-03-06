@@ -349,7 +349,6 @@
       <get src="${JAXWS_RE_BUILD}/jsr181-api.jar" dest="${dist20.home}/lib/jsr181-api.jar"/>
   </target>
 
-    <!--<property name="maven.repo.local" value="c:/Users/mkos/.m2/repository"/>-->
     <property name="maven.ant.task.jar" value="maven-ant-tasks-2.0.10.jar"/>
     <property name="java.net.staging.repo" value="https://maven.java.net/service/local/staging/deploy/maven2/"/>
     <property name="java.net.snapshot.repo" value="https://maven.java.net/content/repositories/snapshots/"/>
@@ -756,6 +755,20 @@
         </sequential>
     </macrodef>
 
+    <macrodef name="mvn.close.repo">
+        <attribute name="repoid" default="jvnet-nexus-staging"/>
+        <attribute name="repo" default="${maven.repo.local}"/>
+        <attribute name="extra-args" default=""/>
+        <sequential>
+            <exec executable="${mvn.exec}" failonerror="true">
+                <arg line="nexus:staging-close"/>
+                <arg line="-DrepositoryId=@{repoid}"/>
+                <arg line="-Dgpg.passphrase=@{password}"/>
+                <arg line="@{extra-args}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+    
     <macrodef name="mvn.install.snapshot.module">
         <attribute name="module"/>
         <attribute name="libpath" default="lib"/>
@@ -896,8 +909,8 @@
         <mvn.publish.release.zip module="jaxws-ri" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="sdo-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
+        <!--mvn.close.repo repo="${java.net.staging.repo}" extra-args="-P nexus -Dnexus.serverAuthId=jvnet-nexus-staging -Dnexus.url=http://maven.java.net/ -Dnexus.repositoryId=jvnet-nexus-staging ${mvn.proxy.args}"/-->
     </target>
-
 
     <target  name="mvn.publish.promoted.remote">
         <property  name="jar.suffix" value="${release.impl.version}-promoted-b${promoted.version}"/>
@@ -905,7 +918,7 @@
         <propertyfile file="project.properties">
             <entry key="promoted.version" type="int" operation="+" value="1" pattern="00"/>
         </propertyfile>
-        <exec executable="svn">
+        <exec executable="svn" failonerror="true" failifexecutionfails="true">
             <arg value="commit"/>
             <arg  value="-m"/>
             <arg  value="Pushed JAX-WS RI ${jar.suffix}, Incrementing the promoted version."/>
