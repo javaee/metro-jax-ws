@@ -909,13 +909,13 @@
         <mvn.publish.release.zip module="jaxws-ri" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="sdo-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
-        <!--mvn.close.repo repo="${java.net.staging.repo}" extra-args="-P nexus -Dnexus.serverAuthId=jvnet-nexus-staging -Dnexus.url=http://maven.java.net/ -Dnexus.repositoryId=jvnet-nexus-staging ${mvn.proxy.args}"/-->
+        <mvn.close.repo repo="${java.net.staging.repo}" extra-args="-f build/maven2-repo/jaxws-rt.pom -Dauto=true -Dnexus.username=${nexus.username} -Dnexus.password=${nexus.password} -Dnexus.url=https://maven.java.net/ ${mvn.proxy.args}"/>
     </target>
 
     <target  name="mvn.publish.promoted.remote">
         <property  name="jar.suffix" value="${release.impl.version}-promoted-b${promoted.version}"/>
         <antcall  target="mvn.publish.release.remote"/>
-        <propertyfile file="project.properties">
+        <!--propertyfile file="project.properties">
             <entry key="promoted.version" type="int" operation="+" value="1" pattern="00"/>
         </propertyfile>
         <exec executable="svn" failonerror="true" failifexecutionfails="true">
@@ -923,7 +923,7 @@
             <arg  value="-m"/>
             <arg  value="Pushed JAX-WS RI ${jar.suffix}, Incrementing the promoted version."/>
             <arg  value="project.properties"/>
-        </exec>
+        </exec-->
     </target>
 
     <target name="www.release" if="jaxws.scm.username">
