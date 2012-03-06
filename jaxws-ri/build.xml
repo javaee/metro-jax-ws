@@ -921,6 +921,10 @@
         <exec executable="svn" failonerror="true" failifexecutionfails="true">
             <arg  value="commit"/>
             <arg  value="--no-auth-cache"/>
+            <arg  value="--username"/>
+            <arg  value="${jaxws.scm.username}"/>
+            <arg  value="--password"/>
+            <arg  value="${jaxws.scm.password}"/>
             <arg  value="-m"/>
             <arg  value="Pushed JAX-WS RI ${jar.suffix}, Incrementing the promoted version."/>
             <arg  value="project.properties"/>
