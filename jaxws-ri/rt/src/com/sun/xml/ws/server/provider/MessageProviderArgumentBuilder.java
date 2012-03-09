@@ -56,7 +56,7 @@ final class MessageProviderArgumentBuilder extends ProviderArgumentsBuilder<Mess
     }
 
     @Override
-    protected Message getParameter(Packet packet) {
+    /*protected*/ public Message getParameter(Packet packet) {
         return packet.getMessage();
     }
 

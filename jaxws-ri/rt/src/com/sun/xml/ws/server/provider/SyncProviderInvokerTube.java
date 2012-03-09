@@ -56,6 +56,7 @@ import java.util.logging.Logger;
  *
  * @author Jitendra Kotamraju
  */
+public // TODO needed by factory
 class SyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
 
     private static final Logger LOGGER = Logger.getLogger(

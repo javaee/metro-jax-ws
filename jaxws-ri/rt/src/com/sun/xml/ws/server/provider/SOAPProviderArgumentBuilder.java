@@ -92,7 +92,7 @@ abstract class SOAPProviderArgumentBuilder<T> extends ProviderArgumentsBuilder<T
             super(soapVersion);
         }
 
-        protected Source getParameter(Packet packet) {
+        /*protected*/ public Source getParameter(Packet packet) {
             return packet.getMessage().readPayloadAsSource();
         }
 
@@ -111,7 +111,7 @@ abstract class SOAPProviderArgumentBuilder<T> extends ProviderArgumentsBuilder<T
             super(soapVersion);
         }
 
-        protected Source getParameter(Packet packet) {
+        /*protected*/ public Source getParameter(Packet packet) {
             return packet.getMessage().readEnvelopeAsSource();
         }
 
@@ -129,7 +129,7 @@ abstract class SOAPProviderArgumentBuilder<T> extends ProviderArgumentsBuilder<T
             super(soapVersion);
         }
 
-        protected SOAPMessage getParameter(Packet packet) {
+        /*protected*/ public SOAPMessage getParameter(Packet packet) {
             try {
                 return packet.getMessage().readAsSOAPMessage(packet, true);
             } catch (SOAPException se) {

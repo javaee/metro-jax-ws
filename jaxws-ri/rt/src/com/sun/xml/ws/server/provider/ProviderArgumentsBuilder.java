@@ -52,6 +52,7 @@ import javax.xml.ws.soap.SOAPBinding;
  * @author Jitendra Kotamraju
  */
 
+public // TODO need this in the factory
 abstract class ProviderArgumentsBuilder<T> {
 
     /**
@@ -72,7 +73,7 @@ abstract class ProviderArgumentsBuilder<T> {
      * Binds {@link com.sun.xml.ws.api.message.Message} to method invocation parameter
      * @param packet
      */
-    protected abstract T getParameter(Packet packet);
+    /*protected*/ public abstract T getParameter(Packet packet); // TODO public for DISI pluggable Provider
 
     protected abstract Message getResponseMessage(T returnValue);
 
@@ -104,7 +105,7 @@ abstract class ProviderArgumentsBuilder<T> {
 		}
 
 		@Override
-		protected Packet getParameter(Packet packet) {
+		/*protected*/ public Packet getParameter(Packet packet) {
 			return packet;
 		}
 

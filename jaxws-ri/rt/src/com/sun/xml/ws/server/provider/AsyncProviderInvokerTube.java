@@ -60,6 +60,7 @@ import java.util.logging.Logger;
  *
  * @author Jitendra Kotamraju
  */
+public // TODO needed by factory
 class AsyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
 
     private static final Logger LOGGER = Logger.getLogger(
@@ -105,7 +106,7 @@ class AsyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
     	public void onResume(Packet response);
     }
     
-    private class FiberResumer implements Resumer {
+    /*private*/ public class FiberResumer implements Resumer { // TODO public for DISI
     	private final Fiber fiber;
     	
     	public FiberResumer() {
@@ -125,7 +126,7 @@ class AsyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
 		}
     }
 
-    private class AsyncProviderCallbackImpl implements AsyncProviderCallback<T> {
+    /*private*/ public class AsyncProviderCallbackImpl implements AsyncProviderCallback<T> { // TODO public for DISI
         private final Packet request;
         private Resumer resumer;
 
@@ -163,10 +164,10 @@ class AsyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
     /**
      * The single {@link javax.xml.ws.WebServiceContext} instance injected into application.
      */
-    private static final class AsyncWebServiceContext extends AbstractWebServiceContext {
+    /*private static final*/ public class AsyncWebServiceContext extends AbstractWebServiceContext { // TODO public for DISI
         final Packet packet;
 
-        AsyncWebServiceContext(WSEndpoint endpoint, Packet packet) {
+        public AsyncWebServiceContext(WSEndpoint endpoint, Packet packet) { // TODO public for DISI
             super(endpoint);
             this.packet = packet;
         }

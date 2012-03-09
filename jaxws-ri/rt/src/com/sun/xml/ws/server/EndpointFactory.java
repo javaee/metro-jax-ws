@@ -262,7 +262,7 @@ public class EndpointFactory {
                 configFtrs = PolicyUtil.getPortScopedFeatures(policyMap,serviceName,portName);
             }
             features.mergeFeatures(configFtrs, true);
-            terminal = createProviderInvokerTube(implType,binding,invoker);
+            terminal = createProviderInvokerTube(implType, binding, invoker, container);
         } else {
             // Create runtime model for non Provider endpoints
             seiModel = createSEIModel(wsdlPort, implType, serviceName, portName, binding);
@@ -313,8 +313,9 @@ public class EndpointFactory {
     	return new SEIInvokerTube(seiModel,invoker,binding);
     }
     
-    protected <T> EndpointAwareTube createProviderInvokerTube(Class<T> implType, WSBinding binding, Invoker invoker) {
-    	return ProviderInvokerTube.create(implType, binding, invoker);
+    protected <T> EndpointAwareTube createProviderInvokerTube(final Class<T> implType, final WSBinding binding,
+                                                              final Invoker invoker, final Container container) {
+    	return ProviderInvokerTube.create(implType, binding, invoker, container);
     }
     
     /**
