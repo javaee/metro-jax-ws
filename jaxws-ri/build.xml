@@ -950,10 +950,10 @@
 
         <copy file="${basedir}/docs/www/target/index.html" tofile="${www.upload.dir}/index.html" />
 
-        <taskdef name="soimp" classname="com.sun.istack.tools.soimp.Soimp">
+        <taskdef name="soimp" classname="com.sun.istack.soimp.Soimp">
             <classpath>
                 <pathelement path="${basedir}/lib/args4j.jar" />
-                <pathelement path="${basedir}/lib/istack-commons-tools.jar" />
+                <pathelement path="${basedir}/lib/istack-commons-soimp.jar" />
             </classpath>
         </taskdef>
 
