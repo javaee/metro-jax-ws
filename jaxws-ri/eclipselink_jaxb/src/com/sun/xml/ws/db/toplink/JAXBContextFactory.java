@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -178,7 +178,6 @@ public class JAXBContextFactory extends BindingContextFactory {
 					.createContext(types, properties, bi.getClassLoader());
 			return new JAXBContextWrapper(jaxbContext, map);
 		} catch (JAXBException e) {
-			e.printStackTrace();
 			throw new DatabindingException(e.getMessage(), e);
 		}
 	}
@@ -273,10 +272,8 @@ public class JAXBContextFactory extends BindingContextFactory {
 						xmlbindings = (Element)n;
 					}
 		        } catch (TransformerConfigurationException e) {
-		            e.printStackTrace();
 		            throw new WebServiceException(e.getMessage(), e);
 		        } catch (TransformerException e) {
-		            e.printStackTrace();
 		            throw new WebServiceException(e.getMessage(), e);
 		        }
 			}
@@ -287,7 +284,6 @@ public class JAXBContextFactory extends BindingContextFactory {
 				xmlbindings = doc.createElementNS(OxmTns, "xml-bindings");
 				doc.appendChild(xmlbindings);
 			} catch (ParserConfigurationException e) {
-	            e.printStackTrace();
 	            throw new WebServiceException(e.getMessage(), e);
 			}
 		}
@@ -359,7 +355,9 @@ public class JAXBContextFactory extends BindingContextFactory {
 						tmi.setType(e.type);
 					} else if (gts.startsWith("javax.xml.ws.Response")) {
 						tmi.setType(e.type);
-					}
+					} else if (gts.startsWith( "java.util.concurrent.Future" )) {
+                        tmi.setType(e.type);
+                    }
 					if (Object.class.equals(e.type)) {
 						tmi.setType(e.type);
 						//System.out.println(e.getGenericType().getClass() + " "
@@ -410,7 +408,7 @@ public class JAXBContextFactory extends BindingContextFactory {
 	        		Class<?> cls = Class.forName(typeAttr);
 	        		e.type = cls;
 	        	} catch (ClassNotFoundException e1) {
-	        		e1.printStackTrace();
+	        		throw new DatabindingException(e1.getMessage(), e1);
 	        	}
 	        }
 	    }
