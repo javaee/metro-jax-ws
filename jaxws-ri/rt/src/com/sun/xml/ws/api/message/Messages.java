@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,7 +56,6 @@ import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.message.ProblemActionHeader;
 import com.sun.xml.ws.message.stream.PayloadStreamReaderMessage;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
-import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.message.source.PayloadSourceMessage;
 import com.sun.xml.ws.message.source.ProtocolSourceMessage;
 import com.sun.xml.ws.spi.db.BindingContextFactory;
@@ -237,7 +236,7 @@ public abstract class Messages {
             for( Node n=header.getFirstChild(); n!=null; n=n.getNextSibling() ) {
                 if(n.getNodeType()==Node.ELEMENT_NODE) {
                     if(headers==null)
-                        headers = new HeaderList();
+                        headers = new HeaderList(ver);
                     headers.add(Headers.create((Element)n));
                 }
             }
@@ -412,7 +411,7 @@ public abstract class Messages {
 
             faultMessage = SOAPFaultBuilder.createSOAPFaultMessage(sv, fault);
             if (sv == SOAPVersion.SOAP_11) {
-                faultMessage.getHeaders().add(new ProblemActionHeader(unsupportedAction, av));
+                faultMessage.getMessageHeaders().add(new ProblemActionHeader(unsupportedAction, av));
             }
         } catch (SOAPException e) {
             throw new WebServiceException(e);

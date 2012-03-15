@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,8 +52,10 @@ import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.NonAnonymousResponseProcessor;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
+import com.sun.xml.ws.api.message.AddressingUtils;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.message.Messages;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
@@ -128,12 +130,12 @@ public class WsaServerTube extends WsaTube {
         // so that they can be used after responsePacket is received.
         // These properties are used if a fault is thrown from the subsequent Pipe/Tubes.
 
-        HeaderList hl = request.getMessage().getHeaders();
+        MessageHeaders hl = request.getMessage().getMessageHeaders();
         String msgId;
         try {
-            replyTo = hl.getReplyTo(addressingVersion, soapVersion);
-            faultTo = hl.getFaultTo(addressingVersion, soapVersion);
-            msgId = hl.getMessageID(addressingVersion, soapVersion);
+            replyTo = AddressingUtils.getReplyTo(hl, addressingVersion, soapVersion);
+            faultTo = AddressingUtils.getFaultTo(hl, addressingVersion, soapVersion);
+            msgId = AddressingUtils.getMessageID(hl, addressingVersion, soapVersion);
         } catch (InvalidAddressingHeaderException e) {
 
             LOGGER.log(Level.WARNING, addressingVersion.getInvalidMapText()+", Problem header:" + e.getProblemHeader()+ ", Reason: "+ e.getSubsubcode(),e);
@@ -151,7 +153,7 @@ public class WsaServerTube extends WsaTube {
             Message m = Messages.create(soapFault);
             if (soapVersion == SOAPVersion.SOAP_11) {
                 FaultDetailHeader s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getProblemHeader());
-                m.getHeaders().add(s11FaultDetailHeader);
+                m.getMessageHeaders().add(s11FaultDetailHeader);
             }
 
             Packet response = request.createServerResponse(m, wsdlPort, null, binding);
@@ -224,7 +226,8 @@ public class WsaServerTube extends WsaTube {
         if (msg ==null)
             return doReturnWith(response);  // one way message. Nothing to see here. Move on.
 
-        String to = msg.getHeaders().getTo(addressingVersion, soapVersion);
+        String to = AddressingUtils.getTo(msg.getMessageHeaders(), 
+                addressingVersion, soapVersion);
         if (to != null) {
         	replyTo = faultTo = new WSEndpointReference(to, addressingVersion);
         }
@@ -315,7 +318,9 @@ public class WsaServerTube extends WsaTube {
         if (wsdlBoundOperation == null)
             return;
 
-        String gotA = packet.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
+        String gotA = AddressingUtils.getAction(
+                packet.getMessage().getMessageHeaders(),
+                addressingVersion, soapVersion);
 
         if (gotA == null)
             throw new WebServiceException(AddressingMessages.VALIDATION_SERVER_NULL_ACTION());

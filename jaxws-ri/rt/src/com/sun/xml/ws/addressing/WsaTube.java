@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
+import com.sun.xml.ws.api.message.AddressingUtils;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Messages;
@@ -183,7 +184,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
 
             Message m = Messages.create(soapFault);
             if (soapVersion == SOAPVersion.SOAP_11) {
-                m.getHeaders().add(s11FaultDetailHeader);
+                m.getMessageHeaders().add(s11FaultDetailHeader);
             }
 
             return packet.createServerResponse(m, wsdlPort, null,  binding);
@@ -218,10 +219,12 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         if (packet.getMessage() == null)
             return false;
 
-        if (packet.getMessage().getHeaders() != null)
+        if (packet.getMessage().getMessageHeaders() != null)
             return false;
 
-        String action = packet.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
+        String action = AddressingUtils.getAction(
+                packet.getMessage().getMessageHeaders(), 
+                addressingVersion, soapVersion);
         if (action == null)
             return true;
 
@@ -251,7 +254,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
                 return;
         }
 
-        Iterator<Header> hIter = message.getHeaders().getHeaders(addressingVersion.nsUri, true);
+        Iterator<Header> hIter = message.getMessageHeaders().getHeaders(addressingVersion.nsUri, true);
 
         if (!hIter.hasNext()) {
             // no WS-A headers are found
@@ -385,7 +388,9 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
     }
 
     protected void validateSOAPAction(Packet packet) {
-        String gotA = packet.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
+        String gotA = AddressingUtils.getAction(
+                packet.getMessage().getMessageHeaders(),
+                addressingVersion, soapVersion);
         if (gotA == null)
             throw new WebServiceException(AddressingMessages.VALIDATION_SERVER_NULL_ACTION());
         if(packet.soapAction != null && !packet.soapAction.equals("\"\"") && !packet.soapAction.equals("\""+gotA+"\"")) {

@@ -1,0 +1,385 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+package com.sun.xml.ws.api.message.saaj;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPHeaderElement;
+import javax.xml.soap.SOAPMessage;
+
+import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.message.Header;
+import com.sun.xml.ws.api.message.MessageHeaders;
+import com.sun.xml.ws.binding.SOAPBindingImpl;
+import com.sun.xml.ws.message.saaj.SAAJHeader;
+
+public class SAAJMessageHeaders implements MessageHeaders {
+    SOAPMessage sm;
+    Map<SOAPHeaderElement, Header> nonSAAJHeaders;
+    Map<QName, Integer> notUnderstoodCount;
+    SOAPVersion soapVersion;
+    
+    public SAAJMessageHeaders(SOAPMessage sm, SOAPVersion version) {
+        this.sm = sm;
+        this.soapVersion = version;
+    }
+    
+//    @Override
+    public void understood(Header header) {
+        understood(header.getNamespaceURI(), header.getLocalPart());
+    }
+    
+    public void understood(String nsUri, String localName) {
+        understood(new QName(nsUri, localName));
+    }
+    
+    public void understood(QName qName) {
+        if (notUnderstoodCount == null) {
+            notUnderstoodCount = new HashMap<QName, Integer>();
+        }
+        Integer count = notUnderstoodCount.get(qName);
+        if (count == null) {
+            //header not found
+            return;
+        } else if (count.intValue() == 0) {
+            //already zero notUnderstood headers
+            return;
+        } else {
+            notUnderstoodCount.put(qName, count - 1);
+        }
+        
+    }
+    
+//    @Override
+    public boolean isUnderstood(int index) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+    
+//    @Override
+    public Header get(String nsUri, String localName, boolean markAsUnderstood) {
+        SOAPHeaderElement h = find(nsUri, localName);
+        if (h != null) {
+            if (markAsUnderstood) {
+                understood(nsUri, localName);
+            }
+            return new SAAJHeader(h);
+        }
+        return null;
+    }
+    
+//    @Override
+    public Header get(QName name, boolean markAsUnderstood) {
+        return get(name.getNamespaceURI(), name.getLocalPart(), markAsUnderstood);
+    }
+    
+    //@Override
+    public Iterator<Header> getHeaders(QName headerName,
+            boolean markAsUnderstood) {
+        return getHeaders(headerName.getNamespaceURI(), headerName.getLocalPart(), markAsUnderstood);
+    }
+
+    public Iterator<Header> getHeaders(final String nsUri, final String localName,
+            final boolean markAsUnderstood) {
+        SOAPHeader soapHeader = ensureSOAPHeader();
+        if (soapHeader == null) return null;
+        Iterator allHeaders = soapHeader.examineAllHeaderElements();
+        if (markAsUnderstood) {
+            //mark all the matchingheaders as understood up front
+            //make an iterator while we're doing that
+            List<Header> headers = new ArrayList<Header>();
+            while (allHeaders.hasNext()) {
+                SOAPHeaderElement nextHdr = (SOAPHeaderElement) allHeaders.next();
+                if (nextHdr != null && 
+                        nextHdr.getNamespaceURI().equals(nsUri)) {
+                    if (localName == null ||
+                            nextHdr.getLocalName().equals(localName)) {
+                        understood(nextHdr.getNamespaceURI(), nextHdr.getLocalName());
+                        headers.add(new SAAJHeader(nextHdr));
+                    }
+                }
+            }
+            return headers.iterator();
+        }
+        //if we got here markAsUnderstood is false - return a lazy iterator rather
+        //than traverse the entire list of headers now
+        return new HeaderReadIterator(allHeaders, nsUri, localName);
+    }
+    
+    public Iterator<Header> getHeaders(String nsUri, boolean markAsUnderstood) {
+        return getHeaders(nsUri, null, markAsUnderstood);
+    }
+    //@Override
+    public boolean add(Header header) {
+        try {
+            header.writeTo(sm);
+        } catch (SOAPException e) {
+            //TODO log exception
+            return false;
+        }
+
+        //the newly added header is not understood by default
+        notUnderstood(new QName(header.getNamespaceURI(), header.getLocalPart()));
+        
+        //track non saaj headers so that they can be retrieved later
+        if (isNonSAAJHeader(header)) {
+            //TODO assumes only one header with that name?
+            addNonSAAJHeader(find(header.getNamespaceURI(), header.getLocalPart()),
+                    header);
+        }
+        
+        return true;
+    }
+    
+//    @Override
+    public Header remove(QName name) {
+        return remove(name.getNamespaceURI(), name.getLocalPart());
+    }
+    
+//    @Override
+    public Header remove(String nsUri, String localName) {
+        SOAPHeader soapHeader = ensureSOAPHeader();
+        if (soapHeader == null) return null;
+        SOAPHeaderElement headerElem = find(nsUri, localName);
+        if (headerElem == null) return null;
+        headerElem = (SOAPHeaderElement) soapHeader.removeChild(headerElem);
+
+        //it might have been a nonSAAJHeader - remove from that map
+        removeNonSAAJHeader(headerElem);
+        return new SAAJHeader(headerElem);
+    }
+    
+    private SOAPHeaderElement find(Header h) {
+        if (isNonSAAJHeader(h)) {
+            return findNonSAAJHeader(h);
+        } else {
+            SAAJHeader saajHdr = (SAAJHeader) h;
+            return find(saajHdr.getWrappedNode());
+        }
+    }
+    
+    private SOAPHeaderElement findNonSAAJHeader(Header h) {
+        if (nonSAAJHeaders == null) return null;
+        for (Map.Entry<SOAPHeaderElement, Header> entry : nonSAAJHeaders.entrySet()) {
+            if (h.equals(entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+    
+    private SOAPHeaderElement find(SOAPHeaderElement headerElem) {
+        SOAPHeader soapHeader = ensureSOAPHeader();
+        if (soapHeader == null) return null;
+        Iterator allHeaders = soapHeader.examineAllHeaderElements();
+        while(allHeaders.hasNext()) {
+            SOAPHeaderElement nextHdrElem = (SOAPHeaderElement) allHeaders.next();
+            if (headerElem.equals(nextHdrElem)) {
+                return nextHdrElem;
+            }
+        }
+        return null;
+    }
+    
+    private SOAPHeaderElement find(QName qName) {
+        return find(qName.getNamespaceURI(), qName.getLocalPart());
+    }
+    
+    private SOAPHeaderElement find(String nsUri, String localName) {
+        SOAPHeader soapHeader = ensureSOAPHeader();
+        if (soapHeader == null) return null;
+        Iterator allHeaders = soapHeader.examineAllHeaderElements();
+        while(allHeaders.hasNext()) {
+            SOAPHeaderElement nextHdrElem = (SOAPHeaderElement) allHeaders.next();
+            if (nextHdrElem.getNamespaceURI().equals(nsUri) && 
+                    nextHdrElem.getLocalName().equals(localName)) {
+                return nextHdrElem;
+            }
+        }
+        return null;
+    }
+
+    private void notUnderstood(QName qName) {
+        if (notUnderstoodCount == null) {
+            notUnderstoodCount = new HashMap<QName, Integer>();
+        }
+        Integer count = notUnderstoodCount.get(qName);
+        if (count == null) {
+            notUnderstoodCount.put(qName, 1);
+        } else {
+            notUnderstoodCount.put(qName, count + 1);
+        }
+    }
+
+    /**
+     * Utility method to get the SOAPHeader from a SOAPMessage, adding one if
+     * one is not present in the original message.
+     */
+    private SOAPHeader ensureSOAPHeader() {
+        SOAPHeader header;
+        try {
+            header = sm.getSOAPPart().getEnvelope().getHeader();
+            if (header != null) {
+                return header;
+            } else {
+                return sm.getSOAPPart().getEnvelope().addHeader();
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    private boolean isNonSAAJHeader(Header header) {
+        return !(header instanceof SAAJHeader);
+    }
+    
+    private void addNonSAAJHeader(SOAPHeaderElement headerElem, Header header) {
+        if (nonSAAJHeaders == null) {
+            nonSAAJHeaders = new HashMap<SOAPHeaderElement, Header>();
+        }
+        nonSAAJHeaders.put(headerElem, header);
+    }
+    
+    private void removeNonSAAJHeader(SOAPHeaderElement headerElem) {
+        if (nonSAAJHeaders != null) nonSAAJHeaders.remove(headerElem);
+    }
+
+    public boolean addOrReplace(Header header) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public Set<QName> getNotUnderstoodHeaders(Set<String> roles,
+            Set<QName> knownHeaders, WSBinding binding) {
+        Set<QName> notUnderstoodHeaderNames = new HashSet<QName>();
+        if (notUnderstoodCount == null) return notUnderstoodHeaderNames;
+        for (QName headerName : notUnderstoodCount.keySet()) {
+            int count = notUnderstoodCount.get(headerName);
+            if (count <= 0) continue;
+            SOAPHeaderElement hdrElem = find(headerName);
+            if (!hdrElem.getMustUnderstand()) continue;
+            SAAJHeader hdr = new SAAJHeader(hdrElem);
+            //mustUnderstand attribute is true - but there may be
+            //additional criteria
+            boolean understood = false;
+            if (roles != null) {
+                understood = !roles.contains(hdr.getRole(soapVersion));
+            }
+            if (understood) continue;
+            //if it must be understood see if it is understood by the binding
+            //or is in knownheaders
+            if (binding != null && binding instanceof SOAPBindingImpl) {
+                understood = ((SOAPBindingImpl) binding).understandsHeader(headerName);
+                if (!understood) {
+                    if (knownHeaders != null && knownHeaders.contains(headerName)) {
+                        understood = true;
+                    }
+                }
+            }
+            if (!understood) notUnderstoodHeaderNames.add(headerName);
+        }
+        return notUnderstoodHeaderNames;
+    }
+
+    public Iterator<Header> getHeaders() {
+        SOAPHeader soapHeader = ensureSOAPHeader();
+        if (soapHeader == null) return null;
+        Iterator allHeaders = soapHeader.examineAllHeaderElements();
+        return new HeaderReadIterator(allHeaders, null, null);
+    }
+
+    private static class HeaderReadIterator implements Iterator<Header> {
+        SOAPHeaderElement current;
+        Iterator soapHeaders;
+        String myNsUri;
+        String myLocalName;
+        
+        public HeaderReadIterator(Iterator allHeaders, String nsUri,
+                String localName) {
+            this.soapHeaders = allHeaders;
+            this.myNsUri = nsUri;
+            this.myLocalName = localName;
+        }
+
+        public boolean hasNext() {
+            if (current == null) advance();
+            return (current != null);
+        }
+
+        public Header next() {
+            if (!hasNext()) {
+                return null;
+            }
+            if (current == null) return null;
+
+            return new SAAJHeader(current);
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+        
+        private void advance() {
+            while (soapHeaders.hasNext()) {
+                SOAPHeaderElement nextHdr = (SOAPHeaderElement) soapHeaders.next();
+                if (nextHdr != null && 
+                        (myNsUri == null || nextHdr.getNamespaceURI().equals(myNsUri)) &&
+                        (myLocalName == null || nextHdr.getLocalName().equals(myLocalName))) {
+                        current = nextHdr;
+                        //found it
+                        return;
+                    }
+                }
+            //if we got here we didn't find a match
+            current = null;
+        }
+        
+    };
+}

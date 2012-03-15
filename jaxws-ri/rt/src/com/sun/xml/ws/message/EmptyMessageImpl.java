@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,6 +46,8 @@ import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.MessageHeaders;
+
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -73,14 +75,14 @@ public class EmptyMessageImpl extends AbstractMessageImpl {
 
     public EmptyMessageImpl(SOAPVersion version) {
         super(version);
-        this.headers = new HeaderList();
+        this.headers = new HeaderList(version);
         this.attachmentSet = new AttachmentSetImpl();
     }
 
     public EmptyMessageImpl(HeaderList headers, @NotNull AttachmentSet attachmentSet, SOAPVersion version){
         super(version);
         if(headers==null)
-            headers = new HeaderList();
+            headers = new HeaderList(version);
         this.attachmentSet = attachmentSet;
         this.headers = headers;
     }
@@ -133,4 +135,5 @@ public class EmptyMessageImpl extends AbstractMessageImpl {
     public Message copy() {
         return new EmptyMessageImpl(this);
     }
+
 }

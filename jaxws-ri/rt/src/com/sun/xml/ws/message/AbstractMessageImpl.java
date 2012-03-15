@@ -44,6 +44,7 @@ import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
@@ -224,6 +225,13 @@ public abstract class AbstractMessageImpl extends Message {
         if (msg.saveRequired()) msg.saveChanges();
     }
 
+    /**
+     * Default implementation of getMessageHeaders just calls getHeaders()
+     * for now. Subclasses may override if they choose
+     */
+    public MessageHeaders getMessageHeaders() {
+        return getHeaders();
+    }
     protected static final AttributesImpl EMPTY_ATTS = new AttributesImpl();
     protected static final LocatorImpl NULL_LOCATOR = new LocatorImpl();
 }

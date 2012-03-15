@@ -88,6 +88,10 @@ public class FilterMessageImpl extends Message {
         return delegate.hasHeaders();
     }
 
+    /**
+     * Deprecated - use getMessageHeaders() instead
+     */
+    @Deprecated
     public @NotNull HeaderList getHeaders() {
         return delegate.getHeaders();
     }
@@ -186,5 +190,10 @@ public class FilterMessageImpl extends Message {
 
     public SOAPVersion getSOAPVersion() {
         return delegate.getSOAPVersion();
+    }
+
+    @Override
+    public @NotNull MessageHeaders getMessageHeaders() {
+        return delegate.getMessageHeaders();
     }
 }

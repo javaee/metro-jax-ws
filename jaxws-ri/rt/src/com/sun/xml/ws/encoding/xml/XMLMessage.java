@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -255,7 +255,7 @@ public final class XMLMessage {
         public XmlContent(String ct, InputStream in, WSFeatureList f) {
             super(SOAPVersion.SOAP_11);
             dataSource = new XmlDataSource(ct, in);
-            this.headerList = new HeaderList();
+            this.headerList = new HeaderList(SOAPVersion.SOAP_11);
 //            this.binding = binding;
             features = f;
         }
@@ -366,12 +366,13 @@ public final class XMLMessage {
         private final DataSource dataSource;
         private final StreamingAttachmentFeature feature;
         private Message delegate;
-        private final HeaderList headerList = new HeaderList();
+        private HeaderList headerList;// = new HeaderList();
 //      private final WSBinding binding;
         private final WSFeatureList features;
 
         public XMLMultiPart(final String contentType, final InputStream is, WSFeatureList f) {
             super(SOAPVersion.SOAP_11);
+            headerList = new HeaderList(SOAPVersion.SOAP_11);
             dataSource = createDataSource(contentType, is);
             this.feature = f.get(StreamingAttachmentFeature.class);
             this.features = f;
@@ -515,7 +516,7 @@ public final class XMLMessage {
         public UnknownContent(DataSource ds) {
             super(SOAPVersion.SOAP_11);
             this.ds = ds;
-            this.headerList = new HeaderList();
+            this.headerList = new HeaderList(SOAPVersion.SOAP_11);
         }
 
         /*

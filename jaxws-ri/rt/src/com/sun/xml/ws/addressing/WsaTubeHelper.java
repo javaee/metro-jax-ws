@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,7 @@ import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
+import com.sun.xml.ws.api.message.AddressingUtils;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
@@ -144,7 +145,7 @@ public abstract class WsaTubeHelper {
     }
 
     String getFaultAction(@Nullable WSDLBoundOperation wbo, Packet responsePacket) {
-    	String action = responsePacket.getMessage().getHeaders().getAction(addVer, soapVer);
+    	String action = AddressingUtils.getAction(responsePacket.getMessage().getMessageHeaders(), addVer, soapVer);
     	if (action != null)
     		return action;
     	

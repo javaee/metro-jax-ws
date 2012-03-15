@@ -855,7 +855,7 @@ public final class Packet
         if (av == null)
             return r;
         //populate WS-A headers only if the request has addressing headers
-        String inputAction = this.getMessage().getHeaders().getAction(av, binding.getSOAPVersion());
+        String inputAction = AddressingUtils.getAction(this.getMessage().getMessageHeaders(), av, binding.getSOAPVersion());
         if (inputAction == null) {
             return r;
         }
@@ -891,7 +891,7 @@ public final class Packet
         if (addressingVersion == null)
             return responsePacket;
         //populate WS-A headers only if the request has addressing headers
-        String inputAction = this.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
+        String inputAction = AddressingUtils.getAction(this.getMessage().getMessageHeaders(), addressingVersion, soapVersion);
         if (inputAction == null) {
             return responsePacket;
         }
@@ -923,7 +923,7 @@ public final class Packet
         if (responsePacket.getMessage() == null)
             return;
 
-        HeaderList hl = responsePacket.getMessage().getHeaders();
+        MessageHeaders hl = responsePacket.getMessage().getMessageHeaders();
 
         WsaPropertyBag wpb = getSatellite(WsaPropertyBag.class);
         Message msg = getMessage();
@@ -932,18 +932,18 @@ public final class Packet
     	if (wpb != null)
     		replyTo = wpb.getReplyToFromRequest();
     	if (replyTo == null)
-    		replyTo = msg.getHeaders().getReplyTo(av, sv);
+    		replyTo = AddressingUtils.getReplyTo(msg.getMessageHeaders(), av, sv);
 
         // wsa:Action, add if the message doesn't already contain it,
         // generally true for SEI case where there is SEIModel or WSDLModel
         //           false for Provider with no wsdl, Expects User to set the coresponding header on the Message.
-        if (responsePacket.getMessage().getHeaders().getAction(av, sv) == null) {
+        if (AddressingUtils.getAction(responsePacket.getMessage().getMessageHeaders(), av, sv) == null) {
             //wsa:Action header is not set in the message, so use the wsa:Action  passed as the parameter.
             hl.add(new StringHeader(av.actionTag, action, sv, mustUnderstand));
         }
 
         // wsa:MessageID
-        if (responsePacket.getMessage().getHeaders().get(av.messageIDTag, false) == null) {
+        if (responsePacket.getMessage().getMessageHeaders().get(av.messageIDTag, false) == null) {
             // if header doesn't exist, method getID creates a new random id
             String newID = Message.generateMessageID();
             hl.add(new StringHeader(av.messageIDTag, newID));
@@ -954,7 +954,7 @@ public final class Packet
         if (wpb != null)
         	mid = wpb.getMessageID();
         if (mid == null)
-        	mid = msg.getHeaders().getMessageID(av, sv);
+        	mid = AddressingUtils.getMessageID(msg.getMessageHeaders(), av, sv);
         if (mid != null)
             hl.add(new RelatesToHeader(av.relatesToTag, mid));
 		
@@ -966,7 +966,7 @@ public final class Packet
         	if (wpb != null)
         		refpEPR = wpb.getFaultToFromRequest();
         	if (refpEPR == null)
-        		refpEPR = msg.getHeaders().getFaultTo(av, sv);
+        		refpEPR = AddressingUtils.getFaultTo(msg.getMessageHeaders(), av, sv);
             // if FaultTo is null, then use ReplyTo
             if (refpEPR == null)
                 refpEPR = replyTo;

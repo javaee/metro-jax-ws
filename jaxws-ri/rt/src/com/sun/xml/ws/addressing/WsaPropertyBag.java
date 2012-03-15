@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,7 @@ import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
+import com.sun.xml.ws.api.message.AddressingUtils;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
@@ -92,7 +93,7 @@ public class WsaPropertyBag extends PropertySet {
       if (packet.getMessage() == null) {
         return null;
       }
-      Header h = packet.getMessage().getHeaders().get(addressingVersion.toTag, false);
+      Header h = packet.getMessage().getMessageHeaders().get(addressingVersion.toTag, false);
       if(h==null) return null;
       return h.getStringContent();
     }
@@ -108,7 +109,7 @@ public class WsaPropertyBag extends PropertySet {
       if (packet.getMessage() == null) {
         return null;
       }
-      Header h = packet.getMessage().getHeaders().get(addressingVersion.toTag, false);
+      Header h = packet.getMessage().getMessageHeaders().get(addressingVersion.toTag, false);
       if(h==null) return null;
       return new WSEndpointReference(h.getStringContent(),addressingVersion);
     }
@@ -135,7 +136,7 @@ public class WsaPropertyBag extends PropertySet {
         if (packet.getMessage() == null) {
           return null;
         }
-        Header h = packet.getMessage().getHeaders().get(addressingVersion.actionTag, false);
+        Header h = packet.getMessage().getMessageHeaders().get(addressingVersion.actionTag, false);
         if(h==null) return null;
         return h.getStringContent();
     }
@@ -152,14 +153,14 @@ public class WsaPropertyBag extends PropertySet {
         if (packet.getMessage() == null) {
           return null;
         }
-        return packet.getMessage().getHeaders().getMessageID(addressingVersion,soapVersion);
+        return AddressingUtils.getMessageID(packet.getMessage().getMessageHeaders(), addressingVersion,soapVersion);
     }
 
     private WSEndpointReference getEPR(QName tag) throws XMLStreamException {
         if (packet.getMessage() == null) {
           return null;
         }
-        Header h = packet.getMessage().getHeaders().get(tag, false);
+        Header h = packet.getMessage().getMessageHeaders().get(tag, false);
         if(h==null) return null;
         return h.readAsEPR(addressingVersion);
     }

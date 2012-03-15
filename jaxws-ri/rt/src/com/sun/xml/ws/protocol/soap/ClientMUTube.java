@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -89,7 +89,7 @@ public class ClientMUTube extends MUTube {
             //may have been changed from the time of invocation, it ok as its only fallback case.
             handlerConfig = binding.getHandlerConfig();
         }
-        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(response.getMessage().getHeaders(), handlerConfig.getRoles(),handlerConfig.getHandlerKnownHeaders());
+        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(response.getMessage().getMessageHeaders(), handlerConfig.getRoles(),handlerConfig.getHandlerKnownHeaders());
         if((misUnderstoodHeaders == null) || misUnderstoodHeaders.isEmpty()) {
             return super.processResponse(response);
         }

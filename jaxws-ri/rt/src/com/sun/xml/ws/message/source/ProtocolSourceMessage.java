@@ -46,6 +46,7 @@ import com.sun.xml.ws.api.pipe.Codecs;
 import com.sun.xml.ws.api.pipe.StreamSOAPCodec;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
@@ -84,6 +85,9 @@ public class ProtocolSourceMessage extends Message {
         return sm.hasHeaders();
     }
 
+    /**
+     * @deprecated - use getMessageHeaders() instead
+     */
     public HeaderList getHeaders() {
         return sm.getHeaders();
     }
@@ -149,5 +153,10 @@ public class ProtocolSourceMessage extends Message {
 
     public SOAPVersion getSOAPVersion() {
         return sm.getSOAPVersion();
+    }
+
+    @Override
+    public MessageHeaders getMessageHeaders() {
+        return sm.getMessageHeaders();
     }
 }

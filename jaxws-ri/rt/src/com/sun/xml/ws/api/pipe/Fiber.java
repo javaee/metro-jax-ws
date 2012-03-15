@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.ComponentRegistry;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
+import com.sun.xml.ws.api.message.AddressingUtils;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
@@ -354,8 +355,8 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
             if (packet != null) {
                 for (SOAPVersion sv: SOAPVersion.values()) {
                     for (AddressingVersion av: AddressingVersion.values()) {
-                        action = packet.getMessage() != null ? packet.getMessage().getHeaders().getAction(av, sv) : null;
-                        msgId = packet.getMessage() != null ? packet.getMessage().getHeaders().getMessageID(av, sv) : null;
+                        action = packet.getMessage() != null ? AddressingUtils.getAction(packet.getMessage().getMessageHeaders(), av, sv) : null;
+                        msgId = packet.getMessage() != null ? AddressingUtils.getMessageID(packet.getMessage().getMessageHeaders(), av, sv) : null;
                         if (action != null || msgId != null) {
                            break;
                         }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,8 +59,10 @@ import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.client.WSPortInfo;
+import com.sun.xml.ws.api.message.AddressingUtils;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
+import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
@@ -455,16 +457,20 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 
         // to make it multi-thread safe we need to first get a stable snapshot
         Header[] hl = userOutboundHeaders;
-        if (hl != null)
-            packet.getMessage().getHeaders().addAll(hl);
+        if (hl != null) {
+            MessageHeaders mh = packet.getMessage().getMessageHeaders();
+            for (Header h : hl) {
+                mh.add(h);
+            }
+        }
 
         requestContext.fill(packet, (binding.getAddressingVersion() != null));
         packet.addSatellite(wsdlProperties);
 
         if (addrVersion != null) {
             // populate request WS-Addressing headers
-            HeaderList headerList = packet.getMessage().getHeaders();
-            headerList.fillRequestAddressingHeaders(wsdlPort, binding, packet);
+            MessageHeaders headerList = packet.getMessage().getMessageHeaders();
+            AddressingUtils.fillRequestAddressingHeaders(headerList, wsdlPort, binding, packet);
 
 
             // Spec is not clear on if ReferenceParameters are to be added when addressing is not enabled,

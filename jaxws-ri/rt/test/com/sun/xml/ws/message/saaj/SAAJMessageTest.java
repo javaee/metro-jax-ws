@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,7 @@ import javax.xml.stream.XMLStreamWriter;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.api.message.AddressingUtils;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.message.StringHeader;
@@ -89,7 +90,7 @@ public class SAAJMessageTest extends TestCase {
 
         SAAJMessage saajMsg = new SAAJMessage(message);
         assertEquals("addNumbers",saajMsg.getPayloadLocalPart());
-        assertEquals("http://example.com/addNumbers",saajMsg.getHeaders().getAction(AddressingVersion.W3C, SOAPVersion.SOAP_11));
+        assertEquals("http://example.com/addNumbers",AddressingUtils.getAction(saajMsg.getMessageHeaders(), AddressingVersion.W3C, SOAPVersion.SOAP_11));
         Header header = new StringHeader(new QName("urn:foo","header1"),"test header  ");
         saajMsg.getHeaders().add(header);
         

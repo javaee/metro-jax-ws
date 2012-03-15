@@ -219,6 +219,7 @@ public abstract class Message {
     public abstract boolean hasHeaders();
 
     /**
+     * This method is deprecated - use getMessageHeaders() instead
      * Gets all the headers of this message.
      *
      * <h3>Implementation Note</h3>
@@ -231,8 +232,17 @@ public abstract class Message {
      * @return
      *      always return the same non-null object.
      */
+    @Deprecated
     public abstract @NotNull HeaderList getHeaders();
 
+   /* Gets all the headers of this message. This
+    * method must be used rather than getHeaders()
+    *
+    * @return
+    *      always return the same non-null object.
+    */
+    public abstract @NotNull MessageHeaders getMessageHeaders();
+    
     /**
      * Gets the attachments of this message
      * (attachments live outside a message.)
@@ -760,11 +770,11 @@ public abstract class Message {
     public @NotNull String getID(AddressingVersion av, SOAPVersion sv) {
     	String uuid = null;
         if (av != null) {
-            uuid = getHeaders().getMessageID(av, sv);
+            uuid = AddressingUtils.getMessageID(getMessageHeaders(), av, sv);
         }
         if (uuid == null) {
             uuid = generateMessageID();
-            getHeaders().add(new StringHeader(av.messageIDTag, uuid));
+            getMessageHeaders().add(new StringHeader(av.messageIDTag, uuid));
         }
         return uuid;
     }

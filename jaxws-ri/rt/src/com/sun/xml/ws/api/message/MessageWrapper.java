@@ -54,6 +54,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
+import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
@@ -105,6 +106,10 @@ class MessageWrapper extends StreamMessage {
         return delegate.hasHeaders();
     }
 
+    /**
+     * Deprecated - use getMessageHeaders() instead
+     */
+    @Deprecated
     public HeaderList getHeaders() {
         return delegate.getHeaders();
     }
@@ -213,5 +218,10 @@ class MessageWrapper extends StreamMessage {
 
     public SOAPVersion getSOAPVersion() {
         return delegate.getSOAPVersion();
+    }
+    
+    @Override
+    public @NotNull MessageHeaders getMessageHeaders() {
+        return delegate.getMessageHeaders();
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,33 +40,29 @@
 
 package com.sun.xml.ws.api.message;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+import javax.xml.ws.WebServiceException;
+
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.ws.addressing.WsaTubeHelper;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
-import com.sun.xml.ws.api.addressing.OneWayFeature;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Pipe;
-import com.sun.xml.ws.message.RelatesToHeader;
-import com.sun.xml.ws.message.StringHeader;
+import com.sun.xml.ws.binding.SOAPBindingImpl;
 import com.sun.xml.ws.protocol.soap.ClientMUTube;
 import com.sun.xml.ws.protocol.soap.ServerMUTube;
 import com.sun.xml.ws.resources.AddressingMessages;
-import com.sun.xml.ws.resources.ClientMessages;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.soap.SOAPBinding;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 /**
  * A list of {@link Header}s on a {@link Message}.
@@ -128,7 +124,7 @@ import java.util.NoSuchElementException;
  *
  * @see Message#getHeaders()
  */
-public class HeaderList extends ArrayList<Header> {
+public class HeaderList extends ArrayList<Header> implements MessageHeaders {
 
     private static final long serialVersionUID = -6358045781349627237L;
     /**
@@ -147,12 +143,25 @@ public class HeaderList extends ArrayList<Header> {
      */
     private BitSet moreUnderstoodBits = null;
 
+    private SOAPVersion soapVersion;
+    
     /**
+     * This method is deprecated - instead use this one: 
+     * public HeaderList(SOAPVersion)
      * Creates an empty {@link HeaderList}.
      */
+    @Deprecated
     public HeaderList() {
     }
 
+    /**
+     * Creates an empty {@link HeaderList} with the given soap version
+     * @param soapVersion
+     */
+    public HeaderList(SOAPVersion soapVersion) {
+        this.soapVersion = soapVersion;
+    }
+    
     /**
      * Copy constructor.
      */
@@ -501,19 +510,7 @@ public class HeaderList extends ArrayList<Header> {
      * @return Value of WS-Addressing To header, anonymous URI if no header is present
      */
     public String getTo(AddressingVersion av, SOAPVersion sv) {
-        if (av == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
-        }
-
-        Header h = getFirstHeader(av.toTag, true, sv);
-        String to;
-        if (h != null) {
-            to = h.getStringContent();
-        } else {
-            to = av.anonymousUri;
-        }
-
-        return to;
+        return AddressingUtils.getTo(this, av, sv);
     }
 
     /**
@@ -528,17 +525,7 @@ public class HeaderList extends ArrayList<Header> {
      * @return Value of WS-Addressing Action header, null if no header is present
      */
     public String getAction(@NotNull AddressingVersion av, @NotNull SOAPVersion sv) {
-        if (av == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
-        }
-
-        String action = null;
-        Header h = getFirstHeader(av.actionTag, true, sv);
-        if (h != null) {
-            action = h.getStringContent();
-        }
-
-        return action;
+        return AddressingUtils.getAction(this, av, sv);
     }
 
     /**
@@ -553,23 +540,7 @@ public class HeaderList extends ArrayList<Header> {
      * @return Value of WS-Addressing ReplyTo header, null if no header is present
      */
     public WSEndpointReference getReplyTo(@NotNull AddressingVersion av, @NotNull SOAPVersion sv) {
-        if (av == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
-        }
-
-        Header h = getFirstHeader(av.replyToTag, true, sv);
-        WSEndpointReference replyTo;
-        if (h != null) {
-            try {
-                replyTo = h.readAsEPR(av);
-            } catch (XMLStreamException e) {
-                throw new WebServiceException(AddressingMessages.REPLY_TO_CANNOT_PARSE(), e);
-            }
-        } else {
-            replyTo = av.anonymousEpr;
-        }
-
-        return replyTo;
+        return AddressingUtils.getReplyTo(this, av, sv);
     }
 
     /**
@@ -584,21 +555,7 @@ public class HeaderList extends ArrayList<Header> {
      * @return Value of WS-Addressing FaultTo header, null if no header is present
      */
     public WSEndpointReference getFaultTo(@NotNull AddressingVersion av, @NotNull SOAPVersion sv) {
-        if (av == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
-        }
-
-        Header h = getFirstHeader(av.faultToTag, true, sv);
-        WSEndpointReference faultTo = null;
-        if (h != null) {
-            try {
-                faultTo = h.readAsEPR(av);
-            } catch (XMLStreamException e) {
-                throw new WebServiceException(AddressingMessages.FAULT_TO_CANNOT_PARSE(), e);
-            }
-        }
-
-        return faultTo;
+        return AddressingUtils.getFaultTo(this, av, sv);
     }
 
     /**
@@ -613,17 +570,7 @@ public class HeaderList extends ArrayList<Header> {
      * @return Value of WS-Addressing MessageID header, null if no header is present
      */
     public String getMessageID(@NotNull AddressingVersion av, @NotNull SOAPVersion sv) {
-        if (av == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
-        }
-
-        Header h = getFirstHeader(av.messageIDTag, true, sv);
-        String messageId = null;
-        if (h != null) {
-            messageId = h.getStringContent();
-        }
-
-        return messageId;
+        return AddressingUtils.getMessageID(this, av, sv);
     }
 
     /**
@@ -638,17 +585,7 @@ public class HeaderList extends ArrayList<Header> {
      * @return Value of WS-Addressing RelatesTo header, null if no header is present
      */
     public String getRelatesTo(@NotNull AddressingVersion av, @NotNull SOAPVersion sv) {
-        if (av == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
-        }
-
-        Header h = getFirstHeader(av.relatesToTag, true, sv);
-        String relatesTo = null;
-        if (h != null) {
-            relatesTo = h.getStringContent();
-        }
-
-        return relatesTo;
+        return AddressingUtils.getRelatesTo(this, av, sv);
     }
 
     /**
@@ -669,33 +606,11 @@ public class HeaderList extends ArrayList<Header> {
      * @param mustUnderstand to indicate if the addressing headers are set with mustUnderstand attribute
      */
     public void fillRequestAddressingHeaders(Packet packet, AddressingVersion av, SOAPVersion sv, boolean oneway, String action, boolean mustUnderstand) {
-        fillCommonAddressingHeaders(packet, av, sv, action, mustUnderstand);
-
-        // wsa:ReplyTo
-        // null or "true" is equivalent to request/response MEP
-        if (!oneway) {
-            WSEndpointReference epr = av.anonymousEpr;
-            if (get(av.replyToTag, false) == null) {
-              add(epr.createHeader(av.replyToTag));
-            }
-
-            // wsa:FaultTo
-            if (get(av.faultToTag, false) == null) {
-              add(epr.createHeader(av.faultToTag));
-            }
-
-            // wsa:MessageID
-            if (packet.getMessage().getHeaders().get(av.messageIDTag, false) == null) {
-                if (get(av.messageIDTag, false) == null) {
-                    Header h = new StringHeader(av.messageIDTag, Message.generateMessageID());
-                    add(h);
-                }
-            }
-        }
+        AddressingUtils.fillRequestAddressingHeaders(this, packet, av, sv, oneway, action, mustUnderstand);
     }
 
     public void fillRequestAddressingHeaders(Packet packet, AddressingVersion av, SOAPVersion sv, boolean oneway, String action) {
-        fillRequestAddressingHeaders(packet, av, sv, oneway, action, false);
+        AddressingUtils.fillRequestAddressingHeaders(this, packet, av, sv, oneway, action);
     }
 
     /**
@@ -718,143 +633,9 @@ public class HeaderList extends ArrayList<Header> {
      * @param packet request packet
      */
     public void fillRequestAddressingHeaders(WSDLPort wsdlPort, @NotNull WSBinding binding, Packet packet) {
-        if (binding == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_BINDING());
-        }
-        
-        if (binding.isFeatureEnabled(SuppressAutomaticWSARequestHeadersFeature.class))
-        	return;
-        
-        //See if WSA headers are already set by the user.
-        HeaderList hl = packet.getMessage().getHeaders();
-        String action = hl.getAction(binding.getAddressingVersion(), binding.getSOAPVersion());
-        if (action != null) {
-            //assume that all the WSA headers are set by the user
-            return;
-        }
-        AddressingVersion addressingVersion = binding.getAddressingVersion();
-        //seiModel is passed as null as it is not needed.
-        WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort, null, binding);
-
-        // wsa:Action
-        String effectiveInputAction = wsaHelper.getEffectiveInputAction(packet);
-        if (effectiveInputAction == null || effectiveInputAction.equals("") && binding.getSOAPVersion() == SOAPVersion.SOAP_11) {
-            throw new WebServiceException(ClientMessages.INVALID_SOAP_ACTION());
-        }
-        boolean oneway = !packet.expectReply;
-        if (wsdlPort != null) {
-            // if WSDL has <wsaw:Anonymous>prohibited</wsaw:Anonymous>, then throw an error
-            // as anonymous ReplyTo MUST NOT be added in that case. BindingProvider need to
-            // disable AddressingFeature and MemberSubmissionAddressingFeature and hand-craft
-            // the SOAP message with non-anonymous ReplyTo/FaultTo.
-            if (!oneway && packet.getMessage() != null && packet.getWSDLOperation() != null) {
-                WSDLBoundOperation wbo = wsdlPort.getBinding().get(packet.getWSDLOperation());
-                if (wbo != null && wbo.getAnonymous() == WSDLBoundOperation.ANONYMOUS.prohibited) {
-                    throw new WebServiceException(AddressingMessages.WSAW_ANONYMOUS_PROHIBITED());
-                }
-            }
-        }
-        if (!binding.isFeatureEnabled(OneWayFeature.class)) {
-            // standard oneway
-            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), oneway, effectiveInputAction, addressingVersion.isRequired(binding));
-        } else {
-            // custom oneway
-            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), binding.getFeature(OneWayFeature.class), oneway, effectiveInputAction);
-        }
+        AddressingUtils.fillRequestAddressingHeaders(this, wsdlPort, binding, packet);
     }
-
-    private void fillRequestAddressingHeaders(@NotNull Packet packet, @NotNull AddressingVersion av, @NotNull SOAPVersion sv, @NotNull OneWayFeature of, boolean oneway, @NotNull String action) {
-    	if (!oneway&&!of.isUseAsyncWithSyncInvoke() && Boolean.TRUE.equals(packet.isSynchronousMEP))
-    		fillRequestAddressingHeaders(packet, av, sv, oneway, action);
-    	else {
-	        fillCommonAddressingHeaders(packet, av, sv, action, false);
-	
-	        // wsa:ReplyTo
-	        // wsa:ReplyTo (add it if it doesn't already exist and OnewayFeature
-	        //              requests a specific ReplyTo)
-	        if (get(av.replyToTag, false) == null) {
-	        	WSEndpointReference replyToEpr = of.getReplyTo();
-	        	if (replyToEpr != null) {
-	        		add(replyToEpr.createHeader(av.replyToTag));
-	        		// add wsa:MessageID only for non-null ReplyTo
-	                if (packet.getMessage().getHeaders().get(av.messageIDTag, false) == null) {
-	                    // if header doesn't exist, method getID creates a new random id
-	                    String newID = Message.generateMessageID();
-	                    add(new StringHeader(av.messageIDTag, newID));
-	                }
-	        	}
-	        }
-
-          // wsa:FaultTo
-	        // wsa:FaultTo (add it if it doesn't already exist and OnewayFeature
-	        //              requests a specific FaultTo)
-	        if (get(av.faultToTag, false) == null) {
-	        	WSEndpointReference faultToEpr = of.getFaultTo();
-	        	if (faultToEpr != null) {
-	        		add(faultToEpr.createHeader(av.faultToTag));
-	        		// add wsa:MessageID only for non-null FaultTo
-	        		if (get(av.messageIDTag, false) == null) {
-	        			add(new StringHeader(av.messageIDTag, Message.generateMessageID()));
-	              }
-	        	}
-	        }
-
-          // wsa:From
-	        if (of.getFrom() != null) {
-	            addOrReplace(of.getFrom().createHeader(av.fromTag));
-	        }
-	
-	        // wsa:RelatesTo
-	        if (of.getRelatesToID() != null) {
-	            addOrReplace(new RelatesToHeader(av.relatesToTag, of.getRelatesToID()));
-	        }
-    	}
-    }
-
-    /**
-     * Creates wsa:To, wsa:Action and wsa:MessageID header on the client
-     *
-     * @param packet request packet
-     * @param av WS-Addressing version
-     * @param sv SOAP version
-     * @param action Action Message Addressing Property value
-     * @throws IllegalArgumentException if any of the parameters is null.
-     */
-    private void fillCommonAddressingHeaders(Packet packet, @NotNull AddressingVersion av, @NotNull SOAPVersion sv, @NotNull String action, boolean mustUnderstand) {
-        if (packet == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_PACKET());
-        }
-
-        if (av == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
-        }
-
-        if (sv == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_SOAP_VERSION());
-        }
-
-        if (action == null && !sv.httpBindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_ACTION());
-        }
-
-        // wsa:To
-        if (get(av.toTag, false) == null) {
-          StringHeader h = new StringHeader(av.toTag, packet.endpointAddress.toString());
-          add(h);
-        }
-
-        // wsa:Action
-        if (action != null) {
-	        packet.soapAction = action;
-	        if (get(av.actionTag, false) == null) {
-	            //As per WS-I BP 1.2/2.0, if one of the WSA headers is MU, then all WSA headers should be treated as MU.,
-	            // so just set MU on action header
-	          StringHeader h = new StringHeader(av.actionTag, action, sv, mustUnderstand);
-	          add(h);
-	        }
-        }
-    }
-
+    
     /**
      * Adds a new {@link Header}.
      *
@@ -1034,7 +815,15 @@ public class HeaderList extends ArrayList<Header> {
 
         return false;
     }
-
+    
+    public Header remove(Header h) {
+        if (remove((Object) h)) {
+            return h;
+        } else {
+            return null;
+        }
+    }
+    
     /**
      * Creates a copy.
      *
@@ -1055,5 +844,49 @@ public class HeaderList extends ArrayList<Header> {
         // read Action
         String wsaAction = getAction(binding.getAddressingVersion(), binding.getSOAPVersion());
         // TODO: validate client-inbound Action
+    }
+
+    public void understood(QName name) {
+       get(name, true);
+    }
+
+    public void understood(String nsUri, String localName) {
+        get(nsUri, localName, true);
+    }
+    
+    public Set<QName> getNotUnderstoodHeaders(Set<String> roles, Set<QName> knownHeaders, WSBinding binding) {
+        Set<QName> notUnderstoodHeaders = null;
+        for (int i = 0; i < size(); i++) {
+            if (!isUnderstood(i)) {
+                Header header = get(i);
+                if (!header.isIgnorable(getEffectiveSOAPVersion(binding), roles)) {
+                    QName qName = new QName(header.getNamespaceURI(), header.getLocalPart());
+                    // see if the binding can understand it
+                    if (binding instanceof SOAPBindingImpl && !((SOAPBindingImpl) binding).understandsHeader(qName)) {
+                        if (!knownHeaders.contains(qName)) {
+                            //logger.info("Element not understood=" + qName);
+                            if (notUnderstoodHeaders == null)
+                                notUnderstoodHeaders = new HashSet<QName>();
+                            notUnderstoodHeaders.add(qName);
+                        }
+                    }
+                }
+            }
+        }
+        return notUnderstoodHeaders;
+    }
+
+    private SOAPVersion getEffectiveSOAPVersion(WSBinding binding) {
+        SOAPVersion mySOAPVersion = (soapVersion != null) ? soapVersion : binding.getSOAPVersion();
+        if (mySOAPVersion == null) mySOAPVersion = SOAPVersion.SOAP_11;
+        return mySOAPVersion;
+    }
+
+    public void setSoapVersion(SOAPVersion soapVersion) {
+       this.soapVersion = soapVersion;
+    }
+
+    public Iterator<Header> getHeaders() {
+        return iterator();
     }
 }

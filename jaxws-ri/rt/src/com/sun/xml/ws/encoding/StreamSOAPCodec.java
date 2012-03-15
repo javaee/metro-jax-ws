@@ -235,7 +235,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
             // If SOAP header blocks are present (i.e. not <soap:Header/>)
             if (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
-                headers = new HeaderList();
+                headers = new HeaderList(soapVersion);
 
                 try {
                     // Cache SOAP header blocks

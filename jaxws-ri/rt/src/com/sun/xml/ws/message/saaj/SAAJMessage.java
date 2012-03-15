@@ -117,11 +117,11 @@ public class SAAJMessage extends Message {
      * @param headers
      * @param sm
      */
-    private SAAJMessage(HeaderList headers, AttachmentSet as, SOAPMessage sm) {
+    private SAAJMessage(HeaderList headers, AttachmentSet as, SOAPMessage sm, SOAPVersion version) {
         this.sm = sm;
         this.parse();
         if(headers == null)
-            headers = new HeaderList();
+            headers = new HeaderList(version);
         this.headers = headers;
         this.attachmentSet = as;
     }
@@ -131,7 +131,7 @@ public class SAAJMessage extends Message {
             try {
                 access();
                 if (headers == null)
-                    headers = new HeaderList();
+                    headers = new HeaderList(getSOAPVersion());
                 SOAPHeader header = sm.getSOAPHeader();
                 if (header != null) {
                     headerAttrs = header.getAttributes();
@@ -530,7 +530,7 @@ public class SAAJMessage extends Message {
                     newBody.appendChild(n);
                 }
                 addAttributes(newBody, bodyAttrs);
-                return new SAAJMessage(getHeaders(), getAttachments(), msg);
+                return new SAAJMessage(getHeaders(), getAttachments(), msg, soapVersion);
             }
         } catch (SOAPException e) {
             throw new WebServiceException(e);
@@ -724,6 +724,11 @@ public class SAAJMessage extends Message {
 
     public SOAPVersion getSOAPVersion() {
         return soapVersion;
+    }
+
+    @Override
+    public MessageHeaders getMessageHeaders() {
+        return getHeaders();
     }
 
 }

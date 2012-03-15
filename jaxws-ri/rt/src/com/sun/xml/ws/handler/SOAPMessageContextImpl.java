@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -120,7 +120,7 @@ public class SOAPMessageContextImpl extends MessageUpdatableContext implements S
 
         List<Object> beanList = new ArrayList<Object>();
         try {
-            Iterator<Header> itr = packet.getMessage().getHeaders().getHeaders(header,false);
+            Iterator<Header> itr = packet.getMessage().getMessageHeaders().getHeaders(header,false);
             if(allRoles) {
                 while(itr.hasNext()) {
                     beanList.add(itr.next().readAsJAXB(jaxbContext.createUnmarshaller()));

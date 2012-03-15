@@ -230,7 +230,7 @@ public class StreamMessage extends AbstractMessageImpl {
 
     public HeaderList getHeaders() {
         if (headers == null) {
-            headers = new HeaderList();
+            headers = new HeaderList(getSOAPVersion());
         }
         return headers;
     }

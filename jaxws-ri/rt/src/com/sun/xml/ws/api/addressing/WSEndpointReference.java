@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,6 +57,7 @@ import com.sun.xml.ws.addressing.v200408.MemberSubmissionAddressingConstants;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.api.model.wsdl.WSDLExtension;
 import com.sun.xml.ws.resources.AddressingMessages;
@@ -923,6 +924,7 @@ public final class WSEndpointReference  implements WSDLExtension {
     /**
      * Copies all the reference parameters in this EPR as headers
      * to the given {@link HeaderList}.
+     * @deprecated - use addReferenceParametersToList(MessageHeaders)
      */
     public void addReferenceParametersToList(HeaderList outbound) {
         for (Header header : referenceParameters) {
@@ -930,6 +932,15 @@ public final class WSEndpointReference  implements WSDLExtension {
         }
     }
 
+    /**
+     * Copies all the reference parameters in this EPR as headers
+     * to the given {@link MessageHeaders}.
+     */
+    public void addReferenceParametersToList(MessageHeaders outbound) {
+        for (Header header : referenceParameters) {
+            outbound.add(header);
+        }
+    }
     /**
      * Copies all the reference parameters from the given {@link HeaderList}
      * to this EPR
