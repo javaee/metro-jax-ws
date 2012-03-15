@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ee:handler-chains xmlns:ee="http://java.sun.com/xml/ns/javaee">
+    <ee:handler-chain>
+        <ee:handler>
+            <ee:handler-name>CheckSOAPActionHandler</ee:handler-name>
+            <ee:handler-class>bugs.jaxws1049.server.CheckSOAPActionHandler</ee:handler-class>
+        </ee:handler>
+    </ee:handler-chain>
+</ee:handler-chains>
