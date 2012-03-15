@@ -45,10 +45,6 @@ import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.addressing.WSEPRExtension;
 import com.sun.xml.ws.api.BindingID;
-import com.sun.xml.ws.model.wsdl.WSDLDirectProperties;
-import com.sun.xml.ws.model.wsdl.WSDLPortProperties;
-import com.sun.xml.ws.model.wsdl.WSDLProperties;
-import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
 import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.ComponentFeature;
 import com.sun.xml.ws.api.ComponentFeature.Target;
@@ -66,13 +62,23 @@ import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.pipe.*;
+import com.sun.xml.ws.api.pipe.ClientTubeAssemblerContext;
+import com.sun.xml.ws.api.pipe.Engine;
+import com.sun.xml.ws.api.pipe.Fiber;
+import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptorFactory;
+import com.sun.xml.ws.api.pipe.SyncStartForAsyncFeature;
+import com.sun.xml.ws.api.pipe.Tube;
+import com.sun.xml.ws.api.pipe.TubelineAssembler;
+import com.sun.xml.ws.api.pipe.TubelineAssemblerFactory;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ContainerResolver;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.developer.WSBindingProvider;
+import com.sun.xml.ws.model.wsdl.WSDLDirectProperties;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
+import com.sun.xml.ws.model.wsdl.WSDLPortProperties;
+import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
@@ -95,7 +101,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
-import org.xml.sax.InputSource;
 
 /**
  * Base class for stubs, which accept method invocations from
@@ -567,7 +572,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     }
 
     public final Map<String, Object> getRequestContext() {
-        return requestContext.getMapView();
+        return requestContext.asMap();
     }
     
     public void resetRequestContext() {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,7 +68,10 @@ public abstract class PropertySet implements org.jvnet.ws.message.PropertySet {
     /**
      * Creates a new instance of TypedMap.
      */
-    protected PropertySet() {}
+    protected PropertySet() {
+    }
+
+    private Map<String,Object> mapView;
 
     /**
      * Represents the list of strongly-typed known propertyies
@@ -287,6 +290,88 @@ public abstract class PropertySet implements org.jvnet.ws.message.PropertySet {
         }
     }
 
+    /**
+     * Class allowing to work with PropertySet object as with a Map; it doesn't only allow to read properties from
+     * the map but also to modify the map in a way it is in sync with original strongly typed fields. It also allows
+     * (if necessary) to store additional properties those can't be found in strongly typed fields.
+     *
+     * @see com.sun.xml.ws.api.PropertySet#asMap() method
+     */
+    class MapView extends HashMap<String, Object> {
+
+        // flag if it should allow store also different properties
+        // than the from strongly typed fields
+        boolean extensible;
+
+        MapView(boolean extensible) {
+            super(getPropertyMap().entrySet().size());
+            this.extensible = extensible;
+            initialize();
+        }
+
+        public void initialize() {
+            for (final Entry<String, Accessor> e : getPropertyMap().entrySet()) {
+                super.put(e.getKey(), e.getValue());
+            }
+        }
+
+        @Override
+        public Object get(Object key) {
+
+            Object o = super.get(key);
+            if (o instanceof Accessor) {
+                return ((Accessor) o).get(PropertySet.this);
+            } else {
+                return o;
+            }
+        }
+
+        @Override
+        public Set<Entry<String, Object>> entrySet() {
+            Set<Entry<String, Object>> entries = new HashSet<Entry<String, Object>>();
+            for (String key : keySet()) {
+                entries.add(new SimpleImmutableEntry<String, Object>(key, get(key)));
+            }
+            return entries;
+        }
+
+        @Override
+        public Object put(String key, Object value) {
+
+            Object o = super.get(key);
+            if (o != null && o instanceof Accessor) {
+
+                Object oldValue = ((Accessor) o).get(PropertySet.this);
+                ((Accessor) o).set(PropertySet.this, value);
+                return oldValue;
+
+            } else {
+
+                if (extensible) {
+                    return super.put(key, value);
+                } else {
+                    throw new IllegalStateException("Unknown property [" + key + "] for PropertySet [" +
+                            PropertySet.this.getClass().getName() + "]");
+                }
+            }
+        }
+
+        @Override
+        public void clear() {
+            for (String key : keySet()) {
+                remove(key);
+            }
+        }
+
+        @Override
+        public Object remove(Object key) {
+            Object o = super.get(key);
+            if (o instanceof Accessor) {
+                ((Accessor)o).set(PropertySet.this, null);
+            }
+            return super.remove(key);
+        }
+    }
 
     public final boolean containsKey(Object key) {
         return get(key)!=null;
@@ -349,13 +434,6 @@ public abstract class PropertySet implements org.jvnet.ws.message.PropertySet {
         }
     }
 
-
-    /**
-     * Lazily created view of {@link Property}s that
-     * forms the core of {@link #createMapView()}.
-     */
-    /*package*/ Set<Entry<String,Object>> mapViewCore;
-
     /**
      * Creates a {@link Map} view of this {@link PropertySet}.
      *
@@ -367,9 +445,13 @@ public abstract class PropertySet implements org.jvnet.ws.message.PropertySet {
      * However, this map may not pick up changes made
      * to {@link PropertySet} after the view is created.
      *
+     * @deprecated use newer implementation {@link com.sun.xml.ws.api.PropertySet#asMap()} which produces
+     * readwrite {@link Map}
+     *
      * @return
      *      always non-null valid instance.
      */
+    @Deprecated
     public final Map<String,Object> createMapView() {
         final Set<Entry<String,Object>> core = new HashSet<Entry<String,Object>>();
         createEntrySet(core);
@@ -379,6 +461,35 @@ public abstract class PropertySet implements org.jvnet.ws.message.PropertySet {
                 return core;
             }
         };
+    }
+
+    /**
+     * Creates a modifiable {@link Map} view of this {@link PropertySet}.
+     * <p/>
+     * Changes done on this {@link Map} or on {@link PropertySet} object work in both directions - values made to
+     * {@link Map} are reflected to {@link PropertySet} and changes done using getters/setters on {@link PropertySet}
+     * object are automatically reflected in this {@link Map}.
+     * <p/>
+     * If necessary, it also can hold other values (not present on {@link PropertySet}) -
+     * {@see PropertySet#mapAllowsAdditionalProperties}
+     *
+     * @return always non-null valid instance.
+     */
+    public Map<String, Object> asMap() {
+        if (mapView == null) {
+            mapView = new MapView(mapAllowsAdditionalProperties());
+        }
+        return mapView;
+    }
+
+    /**
+     * Used when constructing the {@link MapView} for this object - it controls if the {@link MapView} servers only to
+     * access strongly typed values or allows also different values
+     *
+     * @return true if {@link Map} should allow also properties not defined as strongly typed fields
+     */
+    protected boolean mapAllowsAdditionalProperties() {
+        return false;
     }
 
     /*package*/ void createEntrySet(Set<Entry<String,Object>> core) {
