@@ -92,14 +92,7 @@ public class ClientTest extends TestCase {
         requestContext.put(SOAPACTION_URI_PROPERTY, "");
         port.doSomething();
 
-        // -- TEST dispatch
-
-        System.out.println("===========================================================================================");
-        System.out.println("===========================================================================================");
-        System.out.println("===========================================================================================");
-        System.out.println("===========================================================================================");
-        System.out.println("===========================================================================================");
-        System.out.println("===========================================================================================");
+        // -- TEST dispatch: http://java.net/jira/browse/JAX_WS-1014 : Bug <12883765>
         String jaxwsMsg = "<?xml version='1.0' encoding='UTF-8'?>" +
                 "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
                 "<S:Body><doSomething xmlns=\"http://server.jaxws1049.bugs/\"/></S:Body></S:Envelope>";
@@ -113,9 +106,7 @@ public class ClientTest extends TestCase {
 
         MimeHeaders mhs = new MimeHeaders();
 
-        // TODO: check if following is correct:
-        // TODO: - in SAAJ code com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl.createMessage(), line 71
-        // TODO: there are headers thrown away if Content-Type header not present ...
+        // TODO: remove Content-Type header after SAAJ upgraded - http://java.net/jira/browse/SAAJ-67
         mhs.addHeader("Content-Type", "text/xml");
 
         mhs.addHeader("My-Content-Type", "text/xml");

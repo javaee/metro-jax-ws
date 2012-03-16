@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * TODO: Write some description here ...
+ * Handler checking expected SOAPActions are coming from client
  *
  * @author Miroslav Kos (miroslav.kos at oracle.com)
  */
@@ -69,9 +69,6 @@ public class CheckSOAPActionHandler implements SOAPHandler<SOAPMessageContext> {
             Map<String, List<String>> map = (Map<String, List<String>>) context.get(MessageContext.HTTP_REQUEST_HEADERS);
             List<String> soapAction = getHTTPHeader(map, "SOAPAction");
             String soapAction0 = soapAction != null && soapAction.size() > 0 ? soapAction.get(0) : null;
-            System.out.println("=======================================================================================");
-            System.out.println("soapAction = " + soapAction);
-            System.out.println("=======================================================================================");
 
 
             if (i < expectedSOAPActions.length) {
