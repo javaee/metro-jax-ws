@@ -37,70 +37,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.xml.ws.api.databinding;
 
-import javax.xml.namespace.QName;
+package com.sun.xml.ws.cts.jws_common;
 
-import com.sun.xml.ws.api.BindingID;
+public class Address {
 
-/**
- * A MappingInfo object is the collection of all the properties of the mapping
- * between a JAVA contract class (SEI) and it's corresponding WSDL artifacts
- * (wsdl:portType and wsdl:binding). A MappingInfo object can be used to provide
- * additional mapping metadata for WSDL generation and the runtime of WebService
- * databinding.
- * 
- * @author shih-chang.chen@oracle.com
- */
-public class MappingInfo {
-	protected String targetNamespace;
-	protected String databindingMode;
-	protected SoapBodyStyle soapBodyStyle;
-	protected BindingID bindingID;
-	protected QName serviceName;
-	protected QName portName;
-	protected String defaultSchemaNamespaceSuffix;
-	
-    public String getTargetNamespace() {
-		return targetNamespace;
-	}
-	public void setTargetNamespace(String targetNamespace) {
-		this.targetNamespace = targetNamespace;
-	}
-	public String getDatabindingMode() {
-		return databindingMode;
-	}
-	public void setDatabindingMode(String databindingMode) {
-		this.databindingMode = databindingMode;
-	}
-	public SoapBodyStyle getSoapBodyStyle() {
-		return soapBodyStyle;
-	}
-	public void setSoapBodyStyle(SoapBodyStyle soapBodyStyle) {
-		this.soapBodyStyle = soapBodyStyle;
-	}
-	public BindingID getBindingID() {
-		return bindingID;
-	}
-	public void setBindingID(BindingID bindingID) {
-		this.bindingID = bindingID;
-	}
-	public QName getServiceName() {
-		return serviceName;
-	}
-	public void setServiceName(QName serviceName) {
-		this.serviceName = serviceName;
-	}
-	public QName getPortName() {
-		return portName;
-	}
-	public void setPortName(QName portName) {
-		this.portName = portName;
-	}    
-    public String getDefaultSchemaNamespaceSuffix() {
-        return defaultSchemaNamespaceSuffix;
-    }
-    public void setDefaultSchemaNamespaceSuffix(String defaultSchemaNamespaceSuffix) {
-        this.defaultSchemaNamespaceSuffix = defaultSchemaNamespaceSuffix;
-    }
+  private String email = "";
+  private String phone = "";
+  private String street = "";
+  private String city = "San Francisco";
+  private String state = "CA";
+  private String zipcode = "94104";
+  private String country = "U.S.";
+
+  public Address(String email, String phone, String street, String city, String state, String zipcode, String country) {
+    this.email = email;
+    this.phone = phone;
+    this.street = street;
+    this.city = city;
+    this.state= state;
+    this.zipcode = zipcode;
+    this.country = country;
+  }
+
+  public Address() {}
+
+  public String getEmail() { return email; }
+  public void setEmail(String email) { this.email = email; }
+
+  public String getPhone() { return phone; }
+  public void setPhone(String phone) { this.phone = phone; }
+
+  public String getStreet() { return street; }
+  public void setStreet(String street) { this.street = street; }
+
+  public String getCity() { return city; }
+  public void setCity(String city) { this.city = city; }
+
+  public String getState() { return state; }
+  public void setState(String state) { this.state = state; }
+
+  public String getZipcode() { return zipcode; }
+  public void setZipcode(String zipcode) { this.zipcode = zipcode; }
+
+  public String getCountry() { return country; }
+  public void setCountry(String country) { this.country = country; }
+
+  public String toString() {
+    return "email:" + email + " phone:" + phone + " street:" + street + " city:" + city + " state:" + state + " zipcode:" + zipcode + 
+      " country:" + country;
+  }
 }
+
+
+

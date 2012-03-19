@@ -37,70 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.xml.ws.api.databinding;
 
-import javax.xml.namespace.QName;
+package com.sun.xml.ws.cts.jws_common;
 
-import com.sun.xml.ws.api.BindingID;
+public class Salary {
 
-/**
- * A MappingInfo object is the collection of all the properties of the mapping
- * between a JAVA contract class (SEI) and it's corresponding WSDL artifacts
- * (wsdl:portType and wsdl:binding). A MappingInfo object can be used to provide
- * additional mapping metadata for WSDL generation and the runtime of WebService
- * databinding.
- * 
- * @author shih-chang.chen@oracle.com
- */
-public class MappingInfo {
-	protected String targetNamespace;
-	protected String databindingMode;
-	protected SoapBodyStyle soapBodyStyle;
-	protected BindingID bindingID;
-	protected QName serviceName;
-	protected QName portName;
-	protected String defaultSchemaNamespaceSuffix;
-	
-    public String getTargetNamespace() {
-		return targetNamespace;
-	}
-	public void setTargetNamespace(String targetNamespace) {
-		this.targetNamespace = targetNamespace;
-	}
-	public String getDatabindingMode() {
-		return databindingMode;
-	}
-	public void setDatabindingMode(String databindingMode) {
-		this.databindingMode = databindingMode;
-	}
-	public SoapBodyStyle getSoapBodyStyle() {
-		return soapBodyStyle;
-	}
-	public void setSoapBodyStyle(SoapBodyStyle soapBodyStyle) {
-		this.soapBodyStyle = soapBodyStyle;
-	}
-	public BindingID getBindingID() {
-		return bindingID;
-	}
-	public void setBindingID(BindingID bindingID) {
-		this.bindingID = bindingID;
-	}
-	public QName getServiceName() {
-		return serviceName;
-	}
-	public void setServiceName(QName serviceName) {
-		this.serviceName = serviceName;
-	}
-	public QName getPortName() {
-		return portName;
-	}
-	public void setPortName(QName portName) {
-		this.portName = portName;
-	}    
-    public String getDefaultSchemaNamespaceSuffix() {
-        return defaultSchemaNamespaceSuffix;
-    }
-    public void setDefaultSchemaNamespaceSuffix(String defaultSchemaNamespaceSuffix) {
-        this.defaultSchemaNamespaceSuffix = defaultSchemaNamespaceSuffix;
-    }
+  private int salary = 0;
+  private int bonusPercentage = 0;
+  private String currency = "USD";
+
+  public Salary(int salary, int bonusPercentage, String currency) {
+    this.salary = salary;
+    this.bonusPercentage = bonusPercentage;
+    this.currency = currency;
+  }
+
+  public Salary(int salary, int bonusPercentage) {
+    this.salary = salary;
+    this.bonusPercentage = bonusPercentage;
+  }
+
+  public Salary() {}
+
+  public int getSalary() { return salary; }
+  public void setSalary(int salary) { this.salary = salary; }
+
+  public int getBonusPercentage() { return bonusPercentage; }
+  public void setBonusPercentage(int bonusPercentage) { this.bonusPercentage = bonusPercentage; }
+
+  public String getCurrency() { return currency; }
+  public void setCurrency(String currency) { this.currency = currency; }
+
+  public String toString() {
+    return "Salary:$" + salary + " Bonus Percentage:%" + bonusPercentage + " Currency:" + currency;
+  }
+
 }
+

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -433,6 +433,7 @@ public class RuntimeModeler {
         targetNamespace = portTypeName.getNamespaceURI();
         model.setPortTypeName(portTypeName);
         model.setTargetNamespace(targetNamespace);
+        model.defaultSchemaNamespaceSuffix = config.getMappingInfo().getDefaultSchemaNamespaceSuffix();
         model.setWSDLLocation(webService.wsdlLocation());
 
         SOAPBinding soapBinding = getAnnotation(clazz, SOAPBinding.class);
@@ -1361,7 +1362,7 @@ public class RuntimeModeler {
             }
 
             QName requestQName = new QName(requestNamespace, paramName);
-            if (!isHeader) javaMethod.setRequestPayloadName(requestQName);
+            if (!isHeader && paramMode != Mode.OUT) javaMethod.setRequestPayloadName(requestQName);
             //doclit/wrapped
             TypeInfo typeRef = //operationName with upper 1 char
                 new TypeInfo(requestQName, clazzType,

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -209,7 +209,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
                 	databindingInfo.contentClasses().addAll(cls);
                 	databindingInfo.typeInfos().addAll(types);
                 	databindingInfo.properties().put("c14nSupport", Boolean.FALSE);
-                	databindingInfo.setDefaultNamespace(AbstractSEIModelImpl.this.getTargetNamespace());
+                	databindingInfo.setDefaultNamespace(AbstractSEIModelImpl.this.getDefaultSchemaNamespace());
                 	BindingContext bc =  BindingContextFactory.create(databindingInfo);
                             if (LOGGER.isLoggable(Level.FINE))
                                 LOGGER.log(Level.FINE,
@@ -458,6 +458,15 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
         return targetNamespace;
     }
 
+    String getDefaultSchemaNamespace() {
+        String defaultNamespace = getTargetNamespace();
+        if (defaultSchemaNamespaceSuffix == null) return defaultNamespace; 
+        if (!defaultNamespace.endsWith("/")) {
+            defaultNamespace += "/";
+        }
+        return (defaultNamespace + defaultSchemaNamespaceSuffix);
+    }
+
     @NotNull
     public QName getBoundPortTypeName() {
         assert portName != null;
@@ -530,5 +539,6 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 	protected ClassLoader classLoader = null;
 	protected WSBinding wsBinding;
 	protected BindingInfo databindingInfo;
+	protected String defaultSchemaNamespaceSuffix;
 	private static final Logger LOGGER = Logger.getLogger(AbstractSEIModelImpl.class.getName());
 }
