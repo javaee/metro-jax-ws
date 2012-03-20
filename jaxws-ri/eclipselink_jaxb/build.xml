@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -58,6 +58,8 @@
         deprecation="${compile.deprecation}"
         optimize="${compile.optimize}"
         source="1.5">
+            
+      <compilerarg value="-Xbootclasspath/p:${lib.home}/jaxws-api.jar"/>
       <classpath>
       	<pathelement path="./lib/eclipselink.jar"/>
       	<pathelement path="./lib/javax.mail_1.4.jar"/>
@@ -76,6 +78,7 @@
   </target>
 
   <target name="test">
+
           <path id="test.classpath">
       	      <pathelement path="./lib/eclipselink.jar"/>
       	      <pathelement path="./lib/javax.mail_1.4.jar"/>
@@ -93,8 +96,8 @@
               <classpath refid="test.classpath"/>
           </javac>
 
-          <junit haltonfailure="yes"
-                 showoutput="true">
+          <junit haltonfailure="yes" showoutput="true" fork="true">
+              <jvmarg value="-Xbootclasspath/p:${lib.home}/jaxws-api.jar"/>
               <classpath refid="test.classpath"/>
               <formatter type="xml"/>
               <!-- This formatter allows NetBeans to display the test results -->

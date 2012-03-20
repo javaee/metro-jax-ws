@@ -97,6 +97,7 @@
     <path id="runtime.compile.classpath">
         <fileset dir="${lib.home}">
             <include name="*.jar"/>
+            <exclude name="ant.jar"/>
             <exclude name="*-source.jar"/>
             <exclude name="*-javadoc.jar"/>
         </fileset>
