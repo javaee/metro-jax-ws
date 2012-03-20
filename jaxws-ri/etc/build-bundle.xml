@@ -301,13 +301,13 @@
                 access="package"
                 windowtitle="${Name} Runtime Documentation"
                 doctitle="${Name}"
-                bottom="Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.">
+                bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
             <classpath>
                 <path refid="runtime.compile.classpath"/>
                 <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
                 <fileset dir="${basedir}/lib" includes="ha-api.jar" />
             </classpath>
-            <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
+            <link href="http://jaxb.java.net/nonav/${jaxb.impl.version}/docs/api/"
                   offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
             <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
                   offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxws-api"/>
@@ -337,11 +337,11 @@
     	        access="package"
     	        windowtitle="${Name} Runtime Documentation"
     	        doctitle="${Name}"
-    	        bottom="Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.">
+    	        bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
     	    <classpath>
     	        <path refid="runtime.compile.classpath"/>
     	    </classpath>
-    	    <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
+    	    <link href="http://jaxb.java.net/nonav/${jaxb.impl.version}/docs/api/"
     	        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
     	    <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
     	        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxws-api"/>
@@ -370,11 +370,11 @@
     	    	access="package"
     	    	windowtitle="${Name} Runtime Documentation"
     	    	doctitle="${Name}"
-    	    	bottom="Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.">
+    	    	bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
     	     <classpath>
     	         <path refid="runtime.compile.classpath"/>
     	     </classpath>
-    	     <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
+    	     <link href="http://jaxb.java.net/nonav/${jaxb.impl.version}/docs/api/"
     	         offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
     	     <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
     	         offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxws-api"/>
@@ -454,13 +454,14 @@
                 access="package"
                 windowtitle="${Name} Tools Documentation"
                 doctitle="${Name}"
-                bottom="Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.">
+                bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
             <classpath>
                 <path refid="runtime.compile.classpath"/>
+                <path refid="tools.compile.classpath"/>
                 <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
                 <fileset dir="${basedir}/lib" includes="ha-api.jar" />
             </classpath>
-            <link href="http://jaxb.java.net/nonav/2.2.4-1/docs/api/"
+            <link href="http://jaxb.java.net/nonav/${jaxb.impl.version}/docs/api/"
                   offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"/>
             <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
                   offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxws-api"/>
