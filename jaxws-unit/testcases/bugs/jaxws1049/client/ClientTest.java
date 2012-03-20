@@ -106,9 +106,6 @@ public class ClientTest extends TestCase {
 
         MimeHeaders mhs = new MimeHeaders();
 
-        // TODO: remove Content-Type header after SAAJ upgraded - http://java.net/jira/browse/SAAJ-67
-        mhs.addHeader("Content-Type", "text/xml");
-
         mhs.addHeader("My-Content-Type", "text/xml");
 
         SOAPMessage msg = MessageFactory.newInstance().createMessage(mhs, new ByteArrayInputStream(jaxwsMsg.getBytes()));
