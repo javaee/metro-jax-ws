@@ -241,7 +241,9 @@ public abstract class Message {
     * @return
     *      always return the same non-null object.
     */
-    public abstract @NotNull MessageHeaders getMessageHeaders();
+    public @NotNull MessageHeaders getMessageHeaders() {
+        return getHeaders();
+    }
     
     /**
      * Gets the attachments of this message
