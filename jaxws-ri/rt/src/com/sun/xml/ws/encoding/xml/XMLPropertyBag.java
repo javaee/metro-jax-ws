@@ -40,8 +40,8 @@
 
 package com.sun.xml.ws.encoding.xml;
 
+import org.jvnet.ws.message.BasePropertySet;
 import org.jvnet.ws.message.PropertySet;
-import org.jvnet.ws.message.impl.BasePropertySet;
 
 public class XMLPropertyBag extends BasePropertySet {
 

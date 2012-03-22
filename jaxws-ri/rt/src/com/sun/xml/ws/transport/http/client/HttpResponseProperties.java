@@ -47,8 +47,8 @@ import javax.xml.ws.handler.MessageContext;
 import java.util.List;
 import java.util.Map;
 
+import org.jvnet.ws.message.BasePropertySet;
 import org.jvnet.ws.message.PropertySet;
-import org.jvnet.ws.message.impl.BasePropertySet;
 
 /**
  * Properties exposed from {@link HttpTransportPipe} for {@link ResponseContext}.

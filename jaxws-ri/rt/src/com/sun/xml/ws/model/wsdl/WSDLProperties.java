@@ -47,8 +47,8 @@ import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import javax.xml.namespace.QName;
 import javax.xml.ws.handler.MessageContext;
 
+import org.jvnet.ws.message.BasePropertySet;
 import org.jvnet.ws.message.PropertySet;
-import org.jvnet.ws.message.impl.BasePropertySet;
 
 import org.xml.sax.InputSource;
 

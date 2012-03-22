@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.jvnet.ws.message.impl;
+package org.jvnet.ws.message;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
@@ -55,8 +55,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.jvnet.ws.message.PropertySet;
-import org.jvnet.ws.message.ReadOnlyPropertyException;
 
 /**
  * A set of "properties" that can be accessed via strongly-typed fields

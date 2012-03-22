@@ -167,7 +167,7 @@ import java.nio.channels.WritableByteChannel;
  * @author Kohsuke Kawaguchi
  */
 public final class Packet 
-    extends org.jvnet.ws.message.impl.BaseDistributedPropertySet 
+    extends org.jvnet.ws.message.BaseDistributedPropertySet 
     implements org.jvnet.ws.message.MessageContext {
 
     /**

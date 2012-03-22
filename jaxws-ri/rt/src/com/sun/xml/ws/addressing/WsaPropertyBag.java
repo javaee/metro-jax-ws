@@ -53,8 +53,7 @@ import com.sun.xml.ws.developer.JAXWSProperties;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.jvnet.ws.message.PropertySet;
-import org.jvnet.ws.message.impl.BasePropertySet;
+import org.jvnet.ws.message.BasePropertySet;
 
 /**
  * Provides access to the Addressing headers.

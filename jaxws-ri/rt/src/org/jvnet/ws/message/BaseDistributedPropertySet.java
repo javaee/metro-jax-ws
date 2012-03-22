@@ -38,11 +38,7 @@
  * holder.
  */
 
-package org.jvnet.ws.message.impl;
-
-import org.jvnet.ws.message.MessageContext;
-import org.jvnet.ws.message.PropertySet;
-import org.jvnet.ws.message.DistributedPropertySet;
+package org.jvnet.ws.message;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;

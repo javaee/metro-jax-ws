@@ -53,9 +53,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.jvnet.ws.message.BaseDistributedPropertySet;
 import org.jvnet.ws.message.PropertySet;
 import org.jvnet.ws.message.DistributedPropertySet;
-import org.jvnet.ws.message.impl.BaseDistributedPropertySet;
 
 import static javax.xml.ws.BindingProvider.*;
 import static javax.xml.ws.handler.MessageContext.HTTP_REQUEST_HEADERS;

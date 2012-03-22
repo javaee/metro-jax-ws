@@ -56,8 +56,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jvnet.ws.message.BasePropertySet;
 import org.jvnet.ws.message.PropertySet;
-import org.jvnet.ws.message.impl.BasePropertySet;
 
 /**
  * The view of an HTTP exchange from the point of view of JAX-WS.

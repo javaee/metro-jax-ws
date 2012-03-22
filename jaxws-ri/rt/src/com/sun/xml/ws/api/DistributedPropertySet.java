@@ -48,7 +48,7 @@ import com.sun.istack.NotNull;
  * @deprecated Use org.jvnet.ws.message.DistributedPropertySet instead.
  * @author Kohsuke Kawaguchi
  */
-public abstract class DistributedPropertySet extends org.jvnet.ws.message.impl.BaseDistributedPropertySet {
+public abstract class DistributedPropertySet extends org.jvnet.ws.message.BaseDistributedPropertySet {
     
     /**
      * @deprecated
