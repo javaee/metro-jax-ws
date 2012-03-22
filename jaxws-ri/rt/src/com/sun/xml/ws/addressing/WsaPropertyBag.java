@@ -41,7 +41,6 @@
 package com.sun.xml.ws.addressing;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
@@ -54,6 +53,9 @@ import com.sun.xml.ws.developer.JAXWSProperties;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.jvnet.ws.message.PropertySet;
+import org.jvnet.ws.message.impl.BasePropertySet;
+
 /**
  * Provides access to the Addressing headers.
  *
@@ -61,7 +63,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Rama Pulavarthi
  * @since 2.1.3
  */
-public class WsaPropertyBag extends PropertySet {
+public class WsaPropertyBag extends BasePropertySet {
 
     public static final String WSA_REPLYTO_FROM_REQUEST = "com.sun.xml.ws.addressing.WsaPropertyBag.ReplyToFromRequest";
     public static final String WSA_FAULTTO_FROM_REQUEST = "com.sun.xml.ws.addressing.WsaPropertyBag.FaultToFromRequest";

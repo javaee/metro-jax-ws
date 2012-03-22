@@ -45,7 +45,10 @@ import com.sun.istack.Nullable;
 import com.sun.xml.bind.marshaller.SAX2DOMEx;
 import com.sun.xml.ws.addressing.WsaPropertyBag;
 import com.sun.xml.ws.addressing.WsaTubeHelper;
-import com.sun.xml.ws.api.*;
+import com.sun.xml.ws.api.Component;
+import com.sun.xml.ws.api.EndpointAddress;
+import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.model.JavaMethod;
@@ -70,6 +73,8 @@ import com.sun.xml.ws.wsdl.DispatchException;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
 
 import org.jvnet.ws.message.ContentType;
+import org.jvnet.ws.message.PropertySet;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -161,10 +166,9 @@ import java.nio.channels.WritableByteChannel;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class Packet
-    extends DistributedPropertySet
-    implements org.jvnet.ws.message.MessageContext
-{
+public final class Packet 
+    extends org.jvnet.ws.message.impl.BaseDistributedPropertySet 
+    implements org.jvnet.ws.message.MessageContext {
 
     /**
      * Creates a {@link Packet} that wraps a given {@link Message}.
@@ -259,7 +263,7 @@ public final class Packet
      * @return null if there is no WSDL model or
      *         runtime cannot uniquely identify the wsdl operation from the information in the packet.
      */
-    @com.sun.xml.ws.api.PropertySet.Property(MessageContext.WSDL_OPERATION)
+    @Property(MessageContext.WSDL_OPERATION)
     public final
     @Nullable
     QName getWSDLOperation() {
@@ -335,7 +339,7 @@ public final class Packet
      * at the time of invocation.
      * This property is used by MUPipe and HandlerPipe implementations.
      */
-    @com.sun.xml.ws.api.PropertySet.Property(BindingProviderProperties.JAXWS_HANDLER_CONFIG)
+    @Property(BindingProviderProperties.JAXWS_HANDLER_CONFIG)
     public HandlerConfiguration handlerConfig;
 
     /**
@@ -344,7 +348,7 @@ public final class Packet
      *
      * TODO: who's using this property?
      */
-    @com.sun.xml.ws.api.PropertySet.Property(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY)
+    @Property(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY)
     public BindingProvider proxy;
 
     /**
@@ -373,7 +377,7 @@ public final class Packet
      *      {@link #endpointAddress}. This is for JAX-WS client applications
      *      that access this property via {@link BindingProvider#ENDPOINT_ADDRESS_PROPERTY}.
      */
-    @com.sun.xml.ws.api.PropertySet.Property(BindingProvider.ENDPOINT_ADDRESS_PROPERTY)
+    @Property(BindingProvider.ENDPOINT_ADDRESS_PROPERTY)
     public String getEndPointAddressString() {
         if (endpointAddress == null)
             return null;
@@ -396,7 +400,7 @@ public final class Packet
      */
     public ContentNegotiation contentNegotiation;
 
-    @com.sun.xml.ws.api.PropertySet.Property(ContentNegotiation.PROPERTY)
+    @Property(ContentNegotiation.PROPERTY)
     public String getContentNegotiationString() {
         return (contentNegotiation != null) ? contentNegotiation.toString() : null;
     }
@@ -421,7 +425,7 @@ public final class Packet
      * This is not cached as one may reset the Message.
      *<p>
      */
-    @com.sun.xml.ws.api.PropertySet.Property(MessageContext.REFERENCE_PARAMETERS)
+    @Property(MessageContext.REFERENCE_PARAMETERS)
     public
     @NotNull
     List<Element> getReferenceParameters() {
@@ -462,7 +466,7 @@ public final class Packet
      *      This method is for exposing header list through {@link PropertySet#get(Object)},
      *      for user applications, and should never be invoked directly from within the JAX-WS RI.
      */
-    @com.sun.xml.ws.api.PropertySet.Property(JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY)
+    @Property(JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY)
     /*package*/ HeaderList getHeaderList() {
         Message msg = getMessage();
         if (msg == null) return null;
@@ -538,7 +542,7 @@ public final class Packet
      * <p>
      * This property is set if and only if this is on the server side.
      */
-    @com.sun.xml.ws.api.PropertySet.Property(JAXWSProperties.WSENDPOINT)
+    @Property(JAXWSProperties.WSENDPOINT)
     public WSEndpoint endpoint;
 
     /**
@@ -565,7 +569,7 @@ public final class Packet
      * header is present (See {@BP R2744} and {@BP R2745}.) For SOAP 1.2,
      * this is moved to the parameter of the "application/soap+xml".
      */
-    @com.sun.xml.ws.api.PropertySet.Property(BindingProvider.SOAPACTION_URI_PROPERTY)
+    @Property(BindingProvider.SOAPACTION_URI_PROPERTY)
     public String soapAction;
 
     /**
@@ -626,7 +630,7 @@ public final class Packet
      * In all other situations, this property is null.
      *
      */
-    @com.sun.xml.ws.api.PropertySet.Property(BindingProviderProperties.ONE_WAY_OPERATION)
+    @Property(BindingProviderProperties.ONE_WAY_OPERATION)
     public Boolean expectReply;
 
 
@@ -823,11 +827,11 @@ public final class Packet
     	  
     	  // processing specific properties  
     	  response.soapAction = request.soapAction;
-    	  response.isAdapterDeliversNonAnonymousResponse = request.isAdapterDeliversNonAnonymousResponse;
     	  response.setState(request.getState());
     	}
     	
-    	request.copySatelliteInto((DistributedPropertySet) response);
+    	request.copySatelliteInto(response);
+        response.isAdapterDeliversNonAnonymousResponse = request.isAdapterDeliversNonAnonymousResponse;
     	response.handlerConfig = request.handlerConfig;
     	response.handlerScopePropertyNames = request.handlerScopePropertyNames;
     	response.contentNegotiation = request.contentNegotiation;
@@ -854,8 +858,12 @@ public final class Packet
         // populate WS-A headers only if WS-A is enabled
         if (av == null)
             return r;
+        
+        if (getMessage() == null)
+            return r;
+        
         //populate WS-A headers only if the request has addressing headers
-        String inputAction = AddressingUtils.getAction(this.getMessage().getMessageHeaders(), av, binding.getSOAPVersion());
+        String inputAction = AddressingUtils.getAction(getMessage().getMessageHeaders(), av, binding.getSOAPVersion());
         if (inputAction == null) {
             return r;
         }
@@ -1188,5 +1196,33 @@ public final class Packet
     private boolean isMtomContentType() {
         return (getContentType() != null) && 
         (getContentType().getContentType().contains("application/xop+xml"));
-    }    
+    }   
+    
+    /**
+     * @deprecated
+     */
+    public void addSatellite(@NotNull com.sun.xml.ws.api.PropertySet satellite) {
+        super.addSatellite(satellite);
+    }
+    
+    /**
+     * @deprecated
+     */
+    public void addSatellite(@NotNull Class keyClass, @NotNull com.sun.xml.ws.api.PropertySet satellite) {
+        super.addSatellite(keyClass, satellite);
+    }
+    
+    /**
+     * @deprecated
+     */
+    public void copySatelliteInto(@NotNull com.sun.xml.ws.api.DistributedPropertySet r) {
+        super.copySatelliteInto(r);
+    }
+    
+    /**
+     * @deprecated
+     */
+    public void removeSatellite(com.sun.xml.ws.api.PropertySet satellite) {
+        super.removeSatellite(satellite);
+    }
 }

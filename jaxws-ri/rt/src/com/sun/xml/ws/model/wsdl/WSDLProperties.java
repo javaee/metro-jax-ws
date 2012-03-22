@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,12 +41,14 @@
 package com.sun.xml.ws.model.wsdl;
 
 import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.handler.MessageContext;
+
+import org.jvnet.ws.message.PropertySet;
+import org.jvnet.ws.message.impl.BasePropertySet;
 
 import org.xml.sax.InputSource;
 
@@ -56,7 +58,7 @@ import org.xml.sax.InputSource;
  *
  * @author Jitendra Kotamraju
  */
-public abstract class WSDLProperties extends PropertySet {
+public abstract class WSDLProperties extends BasePropertySet {
 
     private static final PropertyMap model;
     static {

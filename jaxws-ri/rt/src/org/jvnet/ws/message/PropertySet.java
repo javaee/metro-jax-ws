@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -124,8 +124,26 @@ public interface PropertySet {
      * However, this map may not pick up changes made
      * to {@link PropertySet} after the view is created.
      *
+     * @deprecated use newer implementation {@link com.sun.xml.ws.api.PropertySet#asMap()} which produces
+     * readwrite {@link Map}
+     *
      * @return
      *      always non-null valid instance.
      */
+    @Deprecated
     public Map<String,Object> createMapView();
+    
+    /**
+     * Creates a modifiable {@link Map} view of this {@link PropertySet}.
+     * <p/>
+     * Changes done on this {@link Map} or on {@link PropertySet} object work in both directions - values made to
+     * {@link Map} are reflected to {@link PropertySet} and changes done using getters/setters on {@link PropertySet}
+     * object are automatically reflected in this {@link Map}.
+     * <p/>
+     * If necessary, it also can hold other values (not present on {@link PropertySet}) -
+     * {@see PropertySet#mapAllowsAdditionalProperties}
+     *
+     * @return always non-null valid instance.
+     */
+    public Map<String, Object> asMap();
 }

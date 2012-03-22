@@ -41,7 +41,6 @@
 package com.sun.xml.ws.client;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.DistributedPropertySet;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.transport.Headers;
@@ -53,6 +52,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import org.jvnet.ws.message.PropertySet;
+import org.jvnet.ws.message.DistributedPropertySet;
+import org.jvnet.ws.message.impl.BaseDistributedPropertySet;
 
 import static javax.xml.ws.BindingProvider.*;
 import static javax.xml.ws.handler.MessageContext.HTTP_REQUEST_HEADERS;
@@ -97,7 +100,7 @@ import static javax.xml.ws.handler.MessageContext.HTTP_REQUEST_HEADERS;
  * @author Kohsuke Kawaguchi
  */
 @SuppressWarnings({"SuspiciousMethodCalls"})
-public final class RequestContext extends DistributedPropertySet {
+public final class RequestContext extends BaseDistributedPropertySet {
     private static final Logger LOGGER = Logger.getLogger(RequestContext.class.getName());
 
     /**
@@ -110,6 +113,13 @@ public final class RequestContext extends DistributedPropertySet {
     private static ContentNegotiation defaultContentNegotiation =
             ContentNegotiation.obtainFromSystemProperty();
 
+    /**
+     * @deprecated
+     */
+    public void addSatellite(@NotNull com.sun.xml.ws.api.PropertySet satellite) {
+        super.addSatellite(satellite);
+    }
+    
     /**
      * The endpoint address to which this message is sent to.
      *

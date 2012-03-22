@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.xml.ws.util;
+package org.jvnet.ws.message;
 
 /**
  * Used to indicate that {@link PropertySet#put(String, Object)} failed

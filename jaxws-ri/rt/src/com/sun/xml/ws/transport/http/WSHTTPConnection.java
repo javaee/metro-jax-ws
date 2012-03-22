@@ -42,7 +42,6 @@ package com.sun.xml.ws.transport.http;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.WebServiceContextDelegate;
 
@@ -57,6 +56,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jvnet.ws.message.PropertySet;
+import org.jvnet.ws.message.impl.BasePropertySet;
 
 /**
  * The view of an HTTP exchange from the point of view of JAX-WS.
@@ -74,7 +75,7 @@ import java.util.Set;
  *
  * @author Jitendra Kotamraju
  */
-public abstract class WSHTTPConnection extends PropertySet {
+public abstract class WSHTTPConnection extends BasePropertySet {
 
     public static final int OK=200;
     public static final int ONEWAY=202;

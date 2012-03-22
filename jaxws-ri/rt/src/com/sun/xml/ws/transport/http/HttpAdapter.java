@@ -45,7 +45,6 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.addressing.NonAnonymousResponseProcessor;
 import com.sun.xml.ws.api.Component;
-import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.api.ha.HaInfo;
 import com.sun.xml.ws.api.message.ExceptionHasMessage;
 import com.sun.xml.ws.api.message.Message;
@@ -83,6 +82,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.jvnet.ws.message.PropertySet;
 
 /**
  * {@link Adapter} that receives messages in HTTP.

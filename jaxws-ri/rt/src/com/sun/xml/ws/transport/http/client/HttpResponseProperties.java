@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,19 +41,21 @@
 package com.sun.xml.ws.transport.http.client;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.PropertySet;
 import com.sun.xml.ws.client.ResponseContext;
 
 import javax.xml.ws.handler.MessageContext;
 import java.util.List;
 import java.util.Map;
 
+import org.jvnet.ws.message.PropertySet;
+import org.jvnet.ws.message.impl.BasePropertySet;
+
 /**
  * Properties exposed from {@link HttpTransportPipe} for {@link ResponseContext}.
  *
  * @author Kohsuke Kawaguchi
  */
-final class HttpResponseProperties extends PropertySet {
+final class HttpResponseProperties extends BasePropertySet {
 
     private final HttpClientTransport deferedCon;
 
