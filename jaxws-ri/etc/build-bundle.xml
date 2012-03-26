@@ -212,7 +212,7 @@
                 <path refid="runtime.compile.classpath"/>
                 <path refid="tools.compile.classpath"/>
                 <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
-                <fileset file="${java.home}/../lib/tools.jar"/>
+                <pathelement location="${java.home}/../lib/tools.jar"/>
             </classpath>
         </javadoc>
     </target>
