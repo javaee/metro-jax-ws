@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -72,6 +72,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import com.sun.tools.javac.processing.JavacProcessingEnvironment;
+import com.sun.tools.javac.util.Options;
+import com.sun.tools.javac.util.Context;
 
 /**
  * WebServiceAp is a AnnotationProcessor for processing javax.jws.* and
@@ -152,8 +155,16 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
 
             String property = System.getProperty("sun.java.command"); // todo: check if property can be null
             options.verbose = property != null && property.contains("-verbose");
-            // todo: check how to get -s and -d, -classpath options
+            // fix bug 13801994: prepare sourceDir from javac option of "-s"
             String classDir = ".";
+            if (processingEnv instanceof JavacProcessingEnvironment) {
+                Context ctxt = ((JavacProcessingEnvironment) processingEnv).getContext();
+                Options opt = Options.instance(ctxt);
+                
+                if (null != opt && null != opt.get("-s")) {
+                    classDir = opt.get("-s");
+                }
+            }
             sourceDir = new File(classDir);
             property = System.getProperty("java.class.path");
             options.classpath = classDir + File.pathSeparator + (property != null ? property : "");
