@@ -76,7 +76,7 @@ public class SAAJMessageHeadersTest extends TestCase {
     
     public void testGetHeader() throws Exception {
 //        SAAJMessage saajMsg = new SAAJMessage(makeSOAPMessage());
-        MessageHeaders hdrs = new SAAJMessageHeaders(makeSOAPMessage(), SOAPVersion.SOAP_11);
+        MessageHeaders hdrs = new SAAJMessageHeaders(makeSOAPMessage(MESSAGE), SOAPVersion.SOAP_11);
         Header actionHdr = hdrs.get(new QName(ADDRESSING_NS, "Action"), false);
         assertNotNull(actionHdr);
         assertTrue(actionHdr instanceof SAAJHeader);
@@ -96,7 +96,7 @@ public class SAAJMessageHeadersTest extends TestCase {
     }
     
     public void testMustUnderstand() throws Exception {
-        SOAPMessage sm = makeSOAPMessage();
+        SOAPMessage sm = makeSOAPMessage(MESSAGE);
         
 //        SAAJMessage saajMsg = new SAAJMessage(sm);
         MessageHeaders hdrs = new SAAJMessageHeaders(sm, SOAPVersion.SOAP_11);
@@ -126,7 +126,7 @@ public class SAAJMessageHeadersTest extends TestCase {
      * @throws Exception
      */
     public void testMustUnderstand2() throws Exception {
-        SOAPMessage sm = makeSOAPMessage();
+        SOAPMessage sm = makeSOAPMessage(MESSAGE);
         
 //      SAAJMessage saajMsg = new SAAJMessage(sm);
       MessageHeaders hdrs = new SAAJMessageHeaders(sm, SOAPVersion.SOAP_11);
@@ -201,10 +201,37 @@ public class SAAJMessageHeadersTest extends TestCase {
       assertNotNull(h);
     }
     
-    private SOAPMessage makeSOAPMessage() throws Exception {
+    public void testGetAllHeaders() throws Exception {
+        String soapMsgStr = "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<env:Header>" +
+        "<wsa:Action xmlns:wsa=\"http://www.w3.org/2005/08/addressing\"></wsa:Action>" +
+        "<wsa:MessageID xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">uuid:40a19d86-071d-4d3f-8b1b-8c8b5245b1de</wsa:MessageID>" +
+        "<wsa:RelatesTo xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">uuid:bd2cf21b-d2ad-4dc6-b0ec-2928736b5ae2</wsa:RelatesTo>" +
+        "<wsa:To xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">http://www.w3.org/2005/08/addressing/anonymous</wsa:To>" +
+        "</env:Header>" +
+        "<env:Body xmlns:wsrm11=\"http://docs.oasis-open.org/ws-rx/wsrm/200702\">" +
+        "<wsrm11:CreateSequenceResponse>" +
+        "<wsrm11:Identifier>35599b13-3672-462a-a51a-31e1820ef236</wsrm11:Identifier>" +
+        "<wsrm11:Expires>P1D</wsrm11:Expires>" +
+        "<wsrm11:IncompleteSequenceBehavior>NoDiscard</wsrm11:IncompleteSequenceBehavior>" +
+        "</wsrm11:CreateSequenceResponse>" +
+        "</env:Body></env:Envelope>";
+        
+        SOAPMessage msg = makeSOAPMessage(soapMsgStr);
+        int numHdrs = 0;
+        MessageHeaders mh = new SAAJMessageHeaders(msg, SOAPVersion.SOAP_11);
+//        assertTrue(mh instanceof SAAJMessageHeaders);
+        Iterator<Header> iter = mh.getHeaders();
+        while (iter.hasNext()) {
+            iter.next();
+            numHdrs++;
+        }
+        assertEquals(4, numHdrs);
+    }
+    private SOAPMessage makeSOAPMessage(String msg) throws Exception {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage message = factory.createMessage();
-        Source src = new StreamSource(new ByteArrayInputStream(MESSAGE.getBytes()));
+        Source src = new StreamSource(new ByteArrayInputStream(msg.getBytes()));
         message.getSOAPPart().setContent(src);
         return message;
 //        return new SAAJMessage(message);

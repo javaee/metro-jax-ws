@@ -292,8 +292,8 @@ public class SAAJMessageHeaders implements MessageHeaders {
     }
 
     public boolean addOrReplace(Header header) {
-        // TODO Auto-generated method stub
-        return false;
+        remove(header.getNamespaceURI(), header.getLocalPart());
+        return add(header);
     }
 
     public Set<QName> getNotUnderstoodHeaders(Set<String> roles,
@@ -359,7 +359,9 @@ public class SAAJMessageHeaders implements MessageHeaders {
             }
             if (current == null) return null;
 
-            return new SAAJHeader(current);
+            SAAJHeader ret = new SAAJHeader(current);
+            current = null;
+            return ret;
         }
 
         public void remove() {
