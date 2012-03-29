@@ -45,7 +45,10 @@ import static org.eclipse.persistence.jaxb.JAXBContextFactory.ECLIPSELINK_OXM_XM
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -363,6 +366,9 @@ public class JAXBContextFactory extends BindingContextFactory {
 						//System.out.println(e.getGenericType().getClass() + " "
 						//		+ e.type);
 					}
+					if (tmi.getType() instanceof GenericArrayType) {
+					    tmi.setType(typeToClass(tmi.getType(), null));
+					}
 				}
 				// Filter out non-JAXB annotations.
 				Annotation[] aa = e.annotations;
@@ -420,4 +426,89 @@ public class JAXBContextFactory extends BindingContextFactory {
 	    for (Annotation a : e.annotations) if (cls.isInstance(a)) return cls.cast(a);
 	    return null;
 	}
+	
+	//Bug 13899624 workaround
+    public static final Class<?> typeToClass(Type type, ClassLoader cl) {
+        if (type instanceof Class<?>) {
+            return (Class<?>) type;
+        } else if (type instanceof TypeVariable) {
+            return typeToClass(((TypeVariable) type).getBounds()[0], cl);
+        } else if (type instanceof ParameterizedType) {
+            return typeToClass(((ParameterizedType) type).getRawType(), cl);
+        } else if (type instanceof GenericArrayType) {
+            Type t = ((GenericArrayType) type).getGenericComponentType();
+            Class<?> clz = typeToClass(t, cl);
+            String className;
+            if (clz.isPrimitive()) {
+                char tc = 0;
+                if (clz.equals(boolean.class))
+                    tc = 'Z';
+                else if (clz.equals(byte.class))
+                    tc = 'B';
+                else if (clz.equals(char.class))
+                    tc = 'C';
+                else if (clz.equals(double.class))
+                    tc = 'D';
+                else if (clz.equals(float.class))
+                    tc = 'F';
+                else if (clz.equals(int.class))
+                    tc = 'I';
+                else if (clz.equals(long.class))
+                    tc = 'J';
+                else if (clz.equals(short.class))
+                    tc = 'S';
+                else {
+                    // String msg =
+                    // ToplinkJaxbPluginLogger.unknownPrimitiveLoggable(tc)
+                    // .getMessageText();
+                    // log.error(msg);
+                    throw new WebServiceException("unknown type " + type);
+                }
+                className = "[" + tc;
+            } else if (clz.isArray()) {
+                className = "[" + clz.getName();
+            } else
+                className = "[L" + clz.getName() + ';';
+            try {
+                return classForName(className, cl);
+            } catch (ClassNotFoundException e) {
+                // String uc =
+                // ToplinkJaxbPluginLogger.unknownClassNameLoggable(className)
+                // .getMessageText();
+                // log.error(uc);
+                // throw new WebServiceException(uc);
+                throw new WebServiceException("unknown type " + type);
+
+            }
+        } else {
+            // String ut = ToplinkJaxbPluginLogger.unexpectedTypeLoggable(type)
+            // .getMessageText();
+            // log.error(ut);
+            // throw new WebServiceException(ut);
+            throw new WebServiceException("unknown type " + type);
+        }
+    }
+
+    static public Class<?> classForName(String name, ClassLoader cl) throws ClassNotFoundException {
+        if (cl != null) {
+            try {
+                return cl.loadClass(name);
+            } catch (ClassNotFoundException e) {
+                return classForName(name);
+            }
+        }
+        return classForName(name);
+    }
+
+    static public Class<?> classForName(String name) throws ClassNotFoundException {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        if (cl != null) {
+            try {
+                return cl.loadClass(name);
+            } catch (ClassNotFoundException e) {
+                return Class.forName(name);
+            }
+        }
+        return Class.forName(name);
+    }
 }

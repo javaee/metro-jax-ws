@@ -132,6 +132,7 @@ public class RuntimeModeler {
     public static final Class<RemoteException> REMOTE_EXCEPTION_CLASS = RemoteException.class;
     public static final Class<RuntimeException> RUNTIME_EXCEPTION_CLASS = RuntimeException.class;
     public static final Class<Exception> EXCEPTION_CLASS = Exception.class;
+    public static final String DecapitalizeExceptionBeanProperties = "com.sun.xml.ws.api.model.DecapitalizeExceptionBeanProperties";
 
   /*public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull BindingID bindingId, @NotNull WebServiceFeature... features) {
         this(portClass, serviceName, null, bindingId, features);
@@ -383,12 +384,15 @@ public class RuntimeModeler {
 
 
     private Class getExceptionBeanClass(String className, Class exception, String name, String namespace) {
+        boolean decapitalizeExceptionBeanProperties = true;
+        Object o = config.properties().get(DecapitalizeExceptionBeanProperties);
+        if (o!= null && o instanceof Boolean) decapitalizeExceptionBeanProperties = (Boolean) o;
         ClassLoader loader =  (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
         try {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
             logger.fine("Dynamically creating exception bean Class " + className);
-            return WrapperBeanGenerator.createExceptionBean(className, exception, targetNamespace, name, namespace, loader);
+            return WrapperBeanGenerator.createExceptionBean(className, exception, targetNamespace, name, namespace, loader, decapitalizeExceptionBeanProperties);
         }
     }
 
