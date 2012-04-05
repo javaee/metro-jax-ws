@@ -458,9 +458,13 @@ public abstract class BasePropertySet implements PropertySet {
      */
     public Map<String, Object> asMap() {
         if (mapView == null) {
-            mapView = new MapView(mapAllowsAdditionalProperties());
+            mapView = createView();
         }
         return mapView;
+    }
+    
+    protected Map<String, Object> createView() {
+        return new MapView(mapAllowsAdditionalProperties());
     }
 
     /**

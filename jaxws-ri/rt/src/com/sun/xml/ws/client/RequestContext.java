@@ -297,18 +297,20 @@ public final class RequestContext extends BaseDistributedPropertySet {
 
         Set<String> handlerScopeNames = new HashSet<String>();
 
+        copySatelliteInto(packet);
+        
         // extending properties ...
-        for (String key : asMap().keySet()) {
+        for (String key : asMapLocal().keySet()) {
 
             //if it is not standard property it defaults to Scope.HANDLER
-            if (!supports(key)) {
+            if (!supportsLocal(key)) {
                 handlerScopeNames.add(key);
             }
 
             // to avoid slow Packet.put(), handle as small number of props as possible
             // => only properties not from RequestContext object
             if (!propMap.containsKey(key)) {
-                Object value = asMap().get(key);
+                Object value = asMapLocal().get(key);
                 if (packet.supports(key)) {
                     // very slow operation - try to avoid it!
                     packet.put(key, value);

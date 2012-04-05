@@ -47,7 +47,11 @@ import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.ResponseContext;
 
 import javax.xml.ws.WebServiceContext;
+
+
+import java.util.AbstractMap;
 import java.util.Map.Entry;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -95,6 +99,12 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
      */
     private final Map<Class, PropertySet> satellites = new IdentityHashMap<Class, PropertySet>();
 
+    private final Map<String, Object> viewthis;
+    
+    public BaseDistributedPropertySet() {
+        this.viewthis = super.createView();
+    }
+    
     public void addSatellite(@NotNull PropertySet satellite) {
         addSatellite(satellite.getClass(), satellite);
     }
@@ -189,5 +199,76 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
         for (PropertySet child : satellites.values()) {
             ((BasePropertySet) child).createEntrySet(core);
         }
+    }
+    
+    protected Map<String, Object> asMapLocal() {
+        return viewthis;
+    }
+    
+    protected boolean supportsLocal(Object key) {
+        return super.supports(key);
+    }
+    
+    class DistributedMapView extends AbstractMap<String, Object> {
+        @Override
+        public Object get(Object key) {
+            for (PropertySet child : satellites.values()) {
+                if (child.supports(key))
+                    return child.get(key);
+            }
+            
+            return viewthis.get(key);
+        }
+        
+        @Override
+        public int size() {
+            int size = viewthis.size();
+            for (PropertySet child : satellites.values()) {
+                size += child.asMap().size();
+            }
+            return size;
+        }
+
+        @Override
+        public Set<Entry<String, Object>> entrySet() {
+            Set<Entry<String, Object>> entries = new HashSet<Entry<String, Object>>();
+            for (PropertySet child : satellites.values()) {
+                entries.addAll(child.asMap().entrySet());
+            }
+            entries.addAll(viewthis.entrySet());
+            
+            return entries;
+        }
+
+        @Override
+        public Object put(String key, Object value) {
+            for (PropertySet child : satellites.values()) {
+                if (child.supports(key))
+                    return child.put(key, value);
+            }
+            
+            return viewthis.put(key, value);
+        }
+
+        @Override
+        public void clear() {
+            satellites.clear();
+            viewthis.clear();
+        }
+
+        @Override
+        public Object remove(Object key) {
+            for (PropertySet child : satellites.values()) {
+                if (child.supports(key))
+                    return child.remove(key);
+            }
+            
+            return viewthis.remove(key);
+        }
+    }
+
+    @Override
+    protected Map<String, Object> createView() {
+        return new DistributedMapView();
     }
 }
