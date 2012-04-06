@@ -1075,6 +1075,8 @@ public final class Packet
     } 
 
     public ContentType writeTo( OutputStream out ) throws IOException {
+        Message msg = getInternalMessage();
+        if (msg instanceof MessageWritable) return ((MessageWritable)msg).writeTo(out);
         return getCodec().encode(this, out);
     }
     
@@ -1132,6 +1134,8 @@ public final class Packet
     }
 
     public ContentType getContentType() {
+        Message msg = getInternalMessage();
+        if (msg instanceof MessageWritable) return ((MessageWritable)msg).getContentType();
         return contentType;
     }
 

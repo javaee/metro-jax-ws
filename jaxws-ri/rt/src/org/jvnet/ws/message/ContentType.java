@@ -40,6 +40,9 @@
 
 package org.jvnet.ws.message;
 
+//TODO Do we want to remove this implementation dependency?
+import com.sun.xml.ws.encoding.ContentTypeImpl;
+
 /**
  * A Content-Type transport header that will be returned by {@link MessageContext#write(java.io.OutputStream)}.
  * It will provide the Content-Type header and also take care of SOAP 1.1 SOAPAction header.
@@ -71,5 +74,21 @@ public interface ContentType {
      * a similar functionality, we'll define a real abstraction.
      */
     public String getAcceptHeader();
+    
+    static public class Builder {
+        private String contentType;
+        private String soapAction;
+        private String accept;
+        private String charset;
+        
+        public Builder contentType(String s) {contentType = s; return this; }
+        public Builder soapAction (String s) {soapAction = s;  return this; }
+        public Builder accept     (String s) {accept = s;      return this; }
+        public Builder charset    (String s) {charset = s;     return this; }
+        public ContentType build() {
+            //TODO Do we want to remove this implementation dependency?
+            return new ContentTypeImpl(contentType, soapAction, accept, charset);
+        }
+    }
 }
 

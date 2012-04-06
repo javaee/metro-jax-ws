@@ -131,5 +131,12 @@ public interface MessageContext extends DistributedPropertySet {
      * TODO: for the convenience of implementation, write
      * an adapter that wraps {@link WritableByteChannel} to {@link OutputStream}.
      */
-    ContentType writeTo( WritableByteChannel buffer );
+//  ContentType writeTo( WritableByteChannel buffer );
+    
+    /**
+     * Gets the Content-type of this message.
+     * 
+     * @return The MIME content type of this message
+     */
+    ContentType getContentType();
 }
