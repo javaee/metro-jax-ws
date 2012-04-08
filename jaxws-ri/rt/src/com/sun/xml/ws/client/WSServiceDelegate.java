@@ -836,27 +836,54 @@ public class WSServiceDelegate extends WSService {
     	return new DelegatingLoader(loader1, loader2);
     }
     
-    private static final class DelegatingLoader
-      extends ClassLoader
-    {
-      private final ClassLoader loader;
+    private static final class DelegatingLoader extends ClassLoader {
+        private final ClassLoader loader;
 
-      DelegatingLoader(ClassLoader loader1, ClassLoader loader2)
-      {
-        super(loader2);
-        this.loader = loader1;
-      }
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result
+                    + ((loader == null) ? 0 : loader.hashCode());
+            result = prime * result
+                    + ((getParent() == null) ? 0 : getParent().hashCode());
+            return result;
+        }
 
-      protected Class findClass(String name)
-        throws ClassNotFoundException
-      {
-        return loader.loadClass(name);
-      }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            DelegatingLoader other = (DelegatingLoader) obj;
+            if (loader == null) {
+                if (other.loader != null)
+                    return false;
+            } else if (!loader.equals(other.loader))
+                return false;
+            if (getParent() == null) {
+                if (other.getParent() != null)
+                    return false;
+            } else if (!getParent().equals(other.getParent()))
+                return false;
+            return true;
+        }
 
-      protected URL findResource(String name)
-      {
-        return loader.getResource(name);
-      }
+        DelegatingLoader(ClassLoader loader1, ClassLoader loader2) {
+            super(loader2);
+            this.loader = loader1;
+        }
+
+        protected Class findClass(String name) throws ClassNotFoundException {
+            return loader.loadClass(name);
+        }
+
+        protected URL findResource(String name) {
+            return loader.getResource(name);
+        }
     }
 }
 
