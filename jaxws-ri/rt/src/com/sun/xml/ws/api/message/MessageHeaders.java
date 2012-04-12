@@ -82,5 +82,6 @@ public interface MessageHeaders {
      *      always true. Don't use the return value.
      */
     public boolean addOrReplace(Header header);
+    public Set<QName> getUnderstoodHeaders();
     public Set<QName> getNotUnderstoodHeaders(Set<String> roles, Set<QName> knownHeaders, WSBinding binding);
 }

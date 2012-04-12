@@ -854,6 +854,10 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
         get(nsUri, localName, true);
     }
     
+    public Set<QName> getUnderstoodHeaders() {
+        throw new UnsupportedOperationException("getUnderstoodHeaders() is not implemented by HeaderList");
+    }
+    
     public Set<QName> getNotUnderstoodHeaders(Set<String> roles, Set<QName> knownHeaders, WSBinding binding) {
         Set<QName> notUnderstoodHeaders = null;
         for (int i = 0; i < size(); i++) {

@@ -113,12 +113,22 @@ public class SAAJMessageHeadersTest extends TestCase {
         Set<QName> notUnderstoods = hdrs.getNotUnderstoodHeaders(null, null, null);
         assertNotNull(notUnderstoods);
         assertEquals(1, notUnderstoods.size());
+
+        //verify the understood headers list
+        Set<QName> understoods = hdrs.getUnderstoodHeaders();
+        assertNotNull(understoods);
+        assertEquals(1, understoods.size());
         
         //now "understand" the header
         hdrs.understood(newHdr);
         notUnderstoods = hdrs.getNotUnderstoodHeaders(null, null, null);
         assertNotNull(notUnderstoods);
-        assertEquals(0, notUnderstoods.size());        
+        assertEquals(0, notUnderstoods.size());
+
+        //make sure the newly understood header now shows up in the understoodHeaders
+        understoods = hdrs.getUnderstoodHeaders();
+        assertNotNull(understoods);
+        assertEquals(2, understoods.size());
     }
     
     /**
@@ -228,6 +238,62 @@ public class SAAJMessageHeadersTest extends TestCase {
         }
         assertEquals(4, numHdrs);
     }
+    
+    public void testUnderstandingOfHeadersInSoapMessage() throws Exception {
+        //this message has one header NOT marked as mustUnderstand
+        SOAPMessage sm = makeSOAPMessage(MESSAGE);
+        
+        MessageHeaders hdrs = new SAAJMessageHeaders(sm, SOAPVersion.SOAP_11);
+        
+        Set<QName> understood = hdrs.getUnderstoodHeaders();
+        assertNotNull(understood);
+        assertEquals(1, understood.size());
+        QName actionHdrName = understood.iterator().next();
+        assertEquals(ADDRESSING_NS, actionHdrName.getNamespaceURI());
+        assertEquals("Action", actionHdrName.getLocalPart());
+        
+        //now a more complex SOAPMessage with 2 mustUnderstand=true headers, 
+        //one mustUnderstand=false and one with no mustUnderstand specified
+        String soapMsgStr = "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+        "<env:Header>" +
+        "<wsa:Action xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" env:mustUnderstand=\"true\"></wsa:Action>" +
+        "<wsa:MessageID xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">uuid:40a19d86-071d-4d3f-8b1b-8c8b5245b1de</wsa:MessageID>" +
+        "<wsa:RelatesTo xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" env:mustUnderstand=\"false\">uuid:bd2cf21b-d2ad-4dc6-b0ec-2928736b5ae2</wsa:RelatesTo>" +
+        "<wsa:To xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" env:mustUnderstand=\"true\">http://www.w3.org/2005/08/addressing/anonymous</wsa:To>" +
+        "</env:Header>" +
+        "<env:Body xmlns:wsrm11=\"http://docs.oasis-open.org/ws-rx/wsrm/200702\">" +
+        "<wsrm11:CreateSequenceResponse>" +
+        "<wsrm11:Identifier>35599b13-3672-462a-a51a-31e1820ef236</wsrm11:Identifier>" +
+        "<wsrm11:Expires>P1D</wsrm11:Expires>" +
+        "<wsrm11:IncompleteSequenceBehavior>NoDiscard</wsrm11:IncompleteSequenceBehavior>" +
+        "</wsrm11:CreateSequenceResponse>" +
+        "</env:Body></env:Envelope>";
+        
+        sm = makeSOAPMessage(soapMsgStr);
+        
+        hdrs = new SAAJMessageHeaders(sm, SOAPVersion.SOAP_11);
+        
+        //check understood headers
+        understood = hdrs.getUnderstoodHeaders();
+        assertNotNull(understood);
+        assertEquals(2, understood.size());
+        for (QName nextHdrName : understood) {
+            assertEquals(ADDRESSING_NS, nextHdrName.getNamespaceURI());
+            assertTrue("Unexpected header name " + nextHdrName.getLocalPart(), "MessageID".equals(nextHdrName.getLocalPart()) ||
+                    "RelatesTo".equals(nextHdrName.getLocalPart()));
+        }
+        
+        //check not understood headers
+        Set<QName> notUnderstood = hdrs.getNotUnderstoodHeaders(null, null, null);
+        assertNotNull(notUnderstood);
+        assertEquals(2, notUnderstood.size());
+        for (QName nextHdrName : notUnderstood) {
+            assertEquals(ADDRESSING_NS, nextHdrName.getNamespaceURI());
+            assertTrue("Action".equals(nextHdrName.getLocalPart()) ||
+                    "To".equals(nextHdrName.getLocalPart()));
+        }
+    }
+    
     private SOAPMessage makeSOAPMessage(String msg) throws Exception {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage message = factory.createMessage();

@@ -65,13 +65,35 @@ public class SAAJMessageHeaders implements MessageHeaders {
     Map<SOAPHeaderElement, Header> nonSAAJHeaders;
     Map<QName, Integer> notUnderstoodCount;
     SOAPVersion soapVersion;
+    private Set<QName> understoodHeaders;
     
     public SAAJMessageHeaders(SOAPMessage sm, SOAPVersion version) {
         this.sm = sm;
         this.soapVersion = version;
+        initHeaderUnderstanding();
     }
     
-//    @Override
+    /** Set the initial understood/not understood state of the headers in this
+     * object
+     */
+    private void initHeaderUnderstanding() {
+        SOAPHeader soapHeader = ensureSOAPHeader();
+        if (soapHeader == null) return;
+
+        Iterator allHeaders = soapHeader.examineAllHeaderElements();
+        while(allHeaders.hasNext()) {
+            SOAPHeaderElement nextHdrElem = (SOAPHeaderElement) allHeaders.next();
+            if (nextHdrElem == null) continue;
+            if (nextHdrElem.getMustUnderstand()) {
+                notUnderstood(nextHdrElem.getElementQName());
+            } else {
+                understood(nextHdrElem.getElementQName());
+            }
+        }
+        
+    }
+
+    //    @Override
     public void understood(Header header) {
         understood(header.getNamespaceURI(), header.getLocalPart());
     }
@@ -84,16 +106,17 @@ public class SAAJMessageHeaders implements MessageHeaders {
         if (notUnderstoodCount == null) {
             notUnderstoodCount = new HashMap<QName, Integer>();
         }
+        if (understoodHeaders == null) {
+            understoodHeaders = new HashSet<QName>();
+        }
         Integer count = notUnderstoodCount.get(qName);
-        if (count == null) {
-            //header not found
-            return;
-        } else if (count.intValue() == 0) {
-            //already zero notUnderstood headers
-            return;
-        } else {
+        if (count != null && count.intValue() > 0) {
+            //found the header in notUnderstood headers - decrement count
             notUnderstoodCount.put(qName, count - 1);
         }
+        
+        //also add it to the understood headers list (optimization for getUnderstoodHeaders)
+        understoodHeaders.add(qName);
         
     }
     
@@ -256,6 +279,12 @@ public class SAAJMessageHeaders implements MessageHeaders {
         } else {
             notUnderstoodCount.put(qName, count + 1);
         }
+        
+        //if for some strange reason it was previously understood and now is not,
+        //remove it from understoodHeaders if it exists there
+        if (understoodHeaders != null) {
+            understoodHeaders.remove(qName);
+        }
     }
 
     /**
@@ -296,6 +325,10 @@ public class SAAJMessageHeaders implements MessageHeaders {
         return add(header);
     }
 
+    public Set<QName> getUnderstoodHeaders() {
+        return understoodHeaders;
+    }
+    
     public Set<QName> getNotUnderstoodHeaders(Set<String> roles,
             Set<QName> knownHeaders, WSBinding binding) {
         Set<QName> notUnderstoodHeaderNames = new HashSet<QName>();
