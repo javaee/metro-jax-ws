@@ -45,17 +45,14 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
+
+import com.sun.xml.ws.util.InjectionPlan;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.annotation.Annotation;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @author Jitendra Kotamraju
@@ -102,98 +99,13 @@ class InvokerImpl extends Invoker {
     }
 
     public void inject(WebServiceContext webServiceContext) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        buildInjectionPlan(
+        InjectionPlan.buildInjectionPlan(
             implType, WebServiceContext.class,false).inject(impl,webServiceContext);
         invokeMethod(postConstructMethod, impl);
     }
 
     public Object invoke(Method m, Object... args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         return m.invoke(impl, args);
-    }
-
-    /**
-     * Encapsulates which field/method the injection is done,
-     * and performs the injection.
-     */
-    private static interface InjectionPlan<T,R> {
-        void inject(T instance,R resource);
-        /**
-         * Gets the number of injections to be performed.
-         */
-        int count();
-    }
-
-    /*
-     * Injects to a field.
-     */
-    private static class FieldInjectionPlan<T,R> implements InjectionPlan<T,R> {
-        private final Field field;
-
-        public FieldInjectionPlan(Field field) {
-            this.field = field;
-        }
-
-        public void inject(final T instance, final R resource) {
-            AccessController.doPrivileged(new PrivilegedAction<Object>() {
-                public Object run() {
-                    try {
-                        if (!field.isAccessible()) {
-                            field.setAccessible(true);
-                        }
-                        field.set(instance,resource);
-                        return null;
-                    } catch (IllegalAccessException e) {
-                        throw new WebServiceException(e);
-                    }
-                }
-            });
-        }
-
-        public int count() {
-            return 1;
-        }
-    }
-
-    /*
-     * Injects to a method.
-     */
-    private static class MethodInjectionPlan<T,R> implements InjectionPlan<T,R> {
-        private final Method method;
-
-        public MethodInjectionPlan(Method method) {
-            this.method = method;
-        }
-
-        public void inject(T instance, R resource) {
-            invokeMethod(method, instance, resource);
-        }
-
-        public int count() {
-            return 1;
-        }
-    }
-
-    /*
-     * Combines multiple {@link InjectionPlan}s into one.
-     */
-    private static class Compositor<T,R> implements InjectionPlan<T,R> {
-        private final InjectionPlan<T,R>[] children;
-
-        public Compositor(Collection<InjectionPlan<T,R>> children) {
-            this.children = children.toArray(new InjectionPlan[children.size()]);
-        }
-
-        public void inject(T instance, R res) {
-            for (InjectionPlan<T,R> plan : children)
-                plan.inject(instance,res);
-        }
-
-        public int count() {
-            int r = 0;
-            for (InjectionPlan<T, R> plan : children)
-                r += plan.count();
-            return r;
-        }
     }
 
     /*
@@ -214,79 +126,5 @@ class InvokerImpl extends Invoker {
             }
         }
         return r;
-    }
-
-    /*
-     * Creates an {@link InjectionPlan} that injects the given resource type to the given class.
-     *
-     * @param isStatic
-     *      Only look for static field/method
-     *
-     */
-    private static <T,R>
-    InjectionPlan<T,R> buildInjectionPlan(Class<? extends T> clazz, Class<R> resourceType, boolean isStatic) {
-        List<InjectionPlan<T,R>> plan = new ArrayList<InjectionPlan<T,R>>();
-
-        Class<?> cl = clazz;
-        while(cl != Object.class) {
-            for(Field field: cl.getDeclaredFields()) {
-                Resource resource = field.getAnnotation(Resource.class);
-                if (resource != null) {
-                    if(isInjectionPoint(resource, field.getType(),
-                        "Incorrect type for field"+field.getName(),
-                        resourceType)) {
-
-                        if(isStatic && !Modifier.isStatic(field.getModifiers()))
-                            throw new WebServiceException("Static resource "+resourceType+" cannot be injected to non-static "+field);
-
-                        plan.add(new FieldInjectionPlan<T,R>(field));
-                    }
-                }
-            }
-            cl = cl.getSuperclass();
-        }
-
-        cl = clazz;
-        while(cl != Object.class) {
-            for(Method method : cl.getDeclaredMethods()) {
-                Resource resource = method.getAnnotation(Resource.class);
-                if (resource != null) {
-                    Class[] paramTypes = method.getParameterTypes();
-                    if (paramTypes.length != 1)
-                        throw new WebServiceException("Incorrect no of arguments for method "+method);
-                    if(isInjectionPoint(resource,paramTypes[0],
-                        "Incorrect argument types for method"+method.getName(),
-                        resourceType)) {
-
-                        if(isStatic && !Modifier.isStatic(method.getModifiers()))
-                            throw new WebServiceException("Static resource "+resourceType+" cannot be injected to non-static "+method);
-
-                        plan.add(new MethodInjectionPlan<T,R>(method));
-                    }
-                }
-            }
-            cl = cl.getSuperclass();
-        }
-
-        return new Compositor<T,R>(plan);
-    }
-
-    /*
-     * Returns true if the combination of {@link Resource} and the field/method type
-     * are consistent for {@link WebServiceContext} injection.
-     */
-    private static boolean isInjectionPoint(Resource resource, Class fieldType, String errorMessage, Class resourceType ) {
-        Class t = resource.type();
-        if (t.equals(Object.class)) {
-            return fieldType.equals(resourceType);
-        } else if (t.equals(resourceType)) {
-            if (fieldType.isAssignableFrom(resourceType)) {
-                return true;
-            } else {
-                // type compatibility error
-                throw new WebServiceException(errorMessage);
-            }
-        }
-        return false;
     }
 }
