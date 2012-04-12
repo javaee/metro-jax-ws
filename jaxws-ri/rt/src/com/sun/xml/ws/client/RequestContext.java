@@ -243,9 +243,14 @@ public final class RequestContext extends BaseDistributedPropertySet {
      * Copy constructor.
      */
     private RequestContext(RequestContext that) {
-        asMap().putAll(that.asMap());
+        for (Map.Entry<String, Object> entry : that.asMapLocal().entrySet()) {
+            if (!propMap.containsKey(entry.getKey())) {
+                asMap().put(entry.getKey(), entry.getValue());
+            }
+        }
         endpointAddress = that.endpointAddress;
         soapAction = that.soapAction;
+        soapActionUse = that.soapActionUse;
         contentNegotiation = that.contentNegotiation;
         that.copySatelliteInto(this);
     }
