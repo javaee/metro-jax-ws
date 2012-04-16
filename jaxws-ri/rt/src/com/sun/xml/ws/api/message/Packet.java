@@ -964,7 +964,7 @@ public final class Packet
         if (mid == null)
         	mid = AddressingUtils.getMessageID(msg.getMessageHeaders(), av, sv);
         if (mid != null)
-            hl.add(new RelatesToHeader(av.relatesToTag, mid));
+            hl.addOrReplace(new RelatesToHeader(av.relatesToTag, mid));
 		
 
         // populate reference parameters
@@ -983,7 +983,7 @@ public final class Packet
             refpEPR = replyTo;
         }
         if (refpEPR != null) {
-            hl.add(new StringHeader(av.toTag, refpEPR.getAddress()));
+            hl.addOrReplace(new StringHeader(av.toTag, refpEPR.getAddress()));
             refpEPR.addReferenceParametersToList(hl);
         }
     }
