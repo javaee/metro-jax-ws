@@ -46,6 +46,7 @@ import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.xml.ws.model.RuntimeModeler;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.jws.Oneway;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -584,7 +585,9 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
     protected boolean sameMethod(ExecutableElement method1, ExecutableElement method2) {
         if (!method1.getSimpleName().equals(method2.getSimpleName()))
             return false;
-        if (!method1.getReturnType().equals(method2.getReturnType()))
+        ProcessingEnvironment processingEnv = builder.getProcessingEnvironment();
+        if( processingEnv == null ||
+            (!processingEnv.getTypeUtils().isSameType(method1.getReturnType(), method2.getReturnType())))
             return false;
         List<? extends VariableElement> parameters1 = method1.getParameters();
         List<? extends VariableElement> parameters2 = method2.getParameters();
