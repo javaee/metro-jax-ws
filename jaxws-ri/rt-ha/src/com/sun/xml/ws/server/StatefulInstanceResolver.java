@@ -55,6 +55,7 @@ import com.sun.xml.ws.developer.EPRRecipe;
 import com.sun.xml.ws.developer.StatefulWebServiceManager;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.util.DOMUtil;
+import com.sun.xml.ws.util.InjectionPlan;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.Storeable;
@@ -362,7 +363,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             if (field.getType() == StatefulWebServiceManager.class) {
                 if (!Modifier.isStatic(field.getModifiers()))
                     throw new WebServiceException(ServerMessages.STATIC_RESOURCE_INJECTION_ONLY(StatefulWebServiceManager.class, field));
-                new FieldInjectionPlan<T, StatefulWebServiceManager>(field).inject(null, this);
+                new InjectionPlan.FieldInjectionPlan<T, StatefulWebServiceManager>(field).inject(null, this);
             }
         }
 
@@ -375,7 +376,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                 if (!Modifier.isStatic(method.getModifiers()))
                     throw new WebServiceException(ServerMessages.STATIC_RESOURCE_INJECTION_ONLY(StatefulWebServiceManager.class, method));
 
-                new MethodInjectionPlan<T, StatefulWebServiceManager>(method).inject(null, this);
+                new InjectionPlan.MethodInjectionPlan<T, StatefulWebServiceManager>(method).inject(null, this);
             }
         }
     }

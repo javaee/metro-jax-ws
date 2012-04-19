@@ -87,7 +87,7 @@ public abstract class InjectionPlan<T, R> {
     /*
      * Injects to a field.
      */
-    private static class FieldInjectionPlan<T, R> extends
+    public static class FieldInjectionPlan<T, R> extends
             InjectionPlan<T, R> {
         private final Field field;
 
@@ -115,7 +115,7 @@ public abstract class InjectionPlan<T, R> {
     /*
      * Injects to a method.
      */
-    private static class MethodInjectionPlan<T, R> extends
+    public static class MethodInjectionPlan<T, R> extends
             InjectionPlan<T, R> {
         private final Method method;
 
