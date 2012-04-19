@@ -149,6 +149,7 @@
     <target name="docs" depends="prepare">
         <sequential>
             <exec executable="${mvn.exec}" failonerror="true">
+            	<arg line="${mvn.extra.args}"/>
                 <arg line="-f"/>
                 <arg line="${basedir}/docs/pom.xml"/>
                 <arg line="clean"/>
@@ -164,6 +165,7 @@
     <target name="docs.clean">
         <sequential>
             <exec executable="${mvn.exec}" failonerror="true">
+            	<arg line="${mvn.extra.args}"/>
                 <arg line="-f"/>
                 <arg line="${basedir}/docs/pom.xml"/>
                 <arg line="clean"/>
@@ -685,6 +687,7 @@
     <condition property="mvn.exec" value="mvn.bat" else="mvn">
         <os family="windows"/>
     </condition>
+	<property name="mvn.extra.args" value=""/>
 
    <macrodef name="mvn.install.file">
         <attribute name="command" default="install:install-file"/>
@@ -696,6 +699,7 @@
         <attribute name="extra-args" default=""/>
         <sequential>
             <exec executable="${mvn.exec}" failonerror="true">
+            	<arg line="${mvn.extra.args}"/>
                 <arg line="@{command}"/>
                 <arg line="-Dfile=@{jar}"/>
                 <arg line="-Dclassifier=@{classifier}"/>
@@ -718,6 +722,7 @@
         <attribute name="extra-args" default=""/>
         <sequential>
             <exec executable="${mvn.exec}" failonerror="true">
+            	<arg line="${mvn.extra.args}"/>
                 <arg line="@{command}"/>
                 <arg line="-Dfile=@{jar}"/>
                 <arg line="-Dclassifier=@{classifier}"/>
@@ -742,6 +747,7 @@
         <attribute name="extra-args" default=""/>
         <sequential>
             <exec executable="${mvn.exec}" failonerror="true">
+            	<arg line="${mvn.extra.args}"/>
                 <arg line="@{command}"/>
                 <arg line="-Dfile=@{jar}"/>
                 <arg line="-Dclassifier=@{classifier}"/>
@@ -761,6 +767,7 @@
         <attribute name="extra-args" default=""/>
         <sequential>
             <exec executable="${mvn.exec}" failonerror="true">
+            	<arg line="${mvn.extra.args}"/>
                 <arg line="nexus:staging-close"/>
                 <arg line="-DrepositoryId=@{repoid}"/>
                 <arg line="-Dgpg.passphrase=@{password}"/>
