@@ -46,8 +46,10 @@ import com.sun.xml.ws.api.pipe.ClientTubeAssemblerContext;
 import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubelineAssembler;
+import com.sun.xml.ws.assembler.dev.TubelineAssemblyDecorator;
 import com.sun.xml.ws.dump.LoggingDumpTube;
 import com.sun.xml.ws.resources.TubelineassemblyMessages;
+import com.sun.xml.ws.util.ServiceFinder;
 
 import java.util.Collection;
 import java.util.logging.Level;
@@ -118,6 +120,10 @@ public class MetroTubelineAssembler implements TubelineAssembler {
             tubeCreator.updateContext(context);
         }
 
+        TubelineAssemblyDecorator decorator = TubelineAssemblyDecorator.composite(
+                ServiceFinder.find(TubelineAssemblyDecorator.class, context.getContainer()));
+        
+        boolean first = true;
         for (TubeCreator tubeCreator : tubeCreators) {
             final MessageDumpingInfo msgDumpInfo = setupMessageDumping(tubeCreator.getMessageDumpPropertyBase(), Side.Client);
 
@@ -128,7 +134,7 @@ public class MetroTubelineAssembler implements TubelineAssembler {
                 context.setTubelineHead(afterDumpTube);
             }
 
-            if (!context.setTubelineHead(tubeCreator.createTube(context))) { // no new tube has been created
+            if (!context.setTubelineHead(decorator.decorateClient(tubeCreator.createTube(context), context))) { // no new tube has been created
                 if (afterDumpTube != null) {
                     context.setTubelineHead(oldTubelineHead); // removing possible "after" message dumping tube
                 }
@@ -144,9 +150,14 @@ public class MetroTubelineAssembler implements TubelineAssembler {
                     context.setTubelineHead(beforeDumpTube);
                 }
             }
+            
+            if (first) {
+                context.setTubelineHead(decorator.decorateClientTail(context.getTubelineHead(), context));
+                first = false;
+            }
         }
 
-        return context.getTubelineHead();
+        return decorator.decorateClientHead(context.getTubelineHead(), context);
     }
 
     @NotNull
@@ -163,6 +174,10 @@ public class MetroTubelineAssembler implements TubelineAssembler {
             tubeCreator.updateContext(context);
         }
 
+        TubelineAssemblyDecorator decorator = TubelineAssemblyDecorator.composite(
+                ServiceFinder.find(TubelineAssemblyDecorator.class, context.getEndpoint().getContainer()));
+        
+        boolean first = true;
         for (TubeCreator tubeCreator : tubeCreators) {
             final MessageDumpingInfo msgDumpInfo = setupMessageDumping(tubeCreator.getMessageDumpPropertyBase(), Side.Endpoint);
 
@@ -173,7 +188,7 @@ public class MetroTubelineAssembler implements TubelineAssembler {
                 context.setTubelineHead(afterDumpTube);
             }
 
-            if (!context.setTubelineHead(tubeCreator.createTube(context))) { // no new tube has been created
+            if (!context.setTubelineHead(decorator.decorateServer(tubeCreator.createTube(context), context))) { // no new tube has been created
                 if (afterDumpTube != null) {
                     context.setTubelineHead(oldTubelineHead); // removing possible "after" message dumping tube
                 }
@@ -189,9 +204,13 @@ public class MetroTubelineAssembler implements TubelineAssembler {
                     context.setTubelineHead(beforeDumpTube);
                 }
             }
+            
+            if (first) {
+                context.setTubelineHead(decorator.decorateServerTail(context.getTubelineHead(), context));
+            }
         }
 
-        return context.getTubelineHead();
+        return decorator.decorateServerHead(context.getTubelineHead(), context);
     }
 
     private MessageDumpingInfo setupMessageDumping(String msgDumpSystemPropertyBase, Side side) {
