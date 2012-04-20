@@ -351,11 +351,19 @@
       <get src="${JAXWS_RE_BUILD}/jsr181-api.jar" dest="${dist20.home}/lib/jsr181-api.jar"/>
   </target>
 
-    <property name="maven.ant.task.jar" value="maven-ant-tasks-2.0.10.jar"/>
-    <property name="java.net.staging.repo" value="https://maven.java.net/service/local/staging/deploy/maven2/"/>
-    <property name="java.net.snapshot.repo" value="https://maven.java.net/content/repositories/snapshots/"/>
-    <property name="mvn.proxy.args" value="-Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80 -Dhttp.proxyHost=www-proxy.us.oracle.com -Dhttp.proxyPort=80"/>
-    <property name="mavenrepo.url" value="https://maven.java.net/content/groups/public"/>
+  <property name="maven.ant.task.jar" value="maven-ant-tasks-2.0.10.jar"/>
+
+  <property name="gf.internal.release.repo" value="http://gf-maven.us.oracle.com/nexus/content/repositories/gf-internal-release"/>
+  <property name="gf.internal.snapshot.repo" value="http://gf-maven.us.oracle.com/nexus/content/repositories/gf-internal-snapshot"/>
+  <property name="gf.internal.release.repo.id" value="gf-internal-release"/>
+  <property name="gf.internal.snapshot.repo.id" value="gf-internal-snapshot"/>
+  
+  <property name="java.net.staging.repo" value="https://maven.java.net/service/local/staging/deploy/maven2/"/>
+  <property name="java.net.snapshot.repo" value="https://maven.java.net/content/repositories/snapshots/"/>
+  
+  <property name="mvn.proxy.args" value="-Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80 -Dhttp.proxyHost=www-proxy.us.oracle.com -Dhttp.proxyPort=80"/>
+  
+  <property name="mavenrepo.url" value="https://maven.java.net/content/groups/public"/>
 	
   <!-- TODO - come up with a better scheme than using hard-coded value shere. -->
   <property name="eclipselink.version" value="2.3.1-M6"/>
@@ -800,16 +808,17 @@
         <attribute name="libpath" default="lib"/>
         <attribute name="extra-args" default=""/>
         <attribute name="repo" default="${maven.repo.local}"/>
+        <attribute name="repoid" default="jvnet-nexus-snapshots"/>
         <sequential>
             <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
             <prepare-pom module="@{module}"/>
             <mvn.publish.snapshot.file jar="${dist20.home}/@{libpath}/@{module}.jar" pom="build/maven2-repo/@{module}.pom"
-                                       repo="@{repo}" extra-args="@{extra-args}"/>
+                                       repo="@{repo}" repoid="@{repoid}" extra-args="@{extra-args}"/>
             <mvn.publish.snapshot.file jar="${dist20.home}/@{libpath}/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom"
-                                       repo="@{repo}" extra-args="@{extra-args}"
+                                       repo="@{repo}" repoid="@{repoid}" extra-args="@{extra-args}"
                                        classifier="sources"/>
             <mvn.publish.snapshot.file jar="${dist20.home}/@{libpath}/@{module}-javadoc.jar"
-                                       pom="build/maven2-repo/@{module}.pom" repo="@{repo}" extra-args="@{extra-args}"
+                                       pom="build/maven2-repo/@{module}.pom" repoid="@{repoid}" repo="@{repo}" extra-args="@{extra-args}"
                                        classifier="javadoc"/>
         </sequential>
     </macrodef>
@@ -830,11 +839,12 @@
         <attribute name="module"/>
         <attribute name="extra-args" default=""/>
         <attribute name="repo" default="${maven.repo.local}"/>
+        <attribute name="repoid" default="jvnet-nexus-snapshots"/>
         <sequential>
             <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT"/>
             <prepare-pom module="@{module}"/>
             <mvn.publish.snapshot.file jar="${build.home}/@{module}.zip" pom="build/maven2-repo/@{module}.pom"
-                                       repo="@{repo}" extra-args="@{extra-args}"/>
+                                       repo="@{repo}" repoid="@{repoid}" extra-args="@{extra-args}"/>
         </sequential>
     </macrodef>
 
@@ -843,16 +853,17 @@
         <attribute name="libpath" default="lib"/>
         <attribute name="repo" default="${maven.repo.local}"/>
         <attribute name="extra-args" default=""/>
+        <attribute name="repoid" default="jvnet-nexus-staging"/>
         <sequential>
             <property name="jar.suffix" value="${release.impl.version}"/>
             <prepare-pom module="@{module}"/>
             <mvn.publish.release.file jar="${dist20.home}/@{libpath}/@{module}.jar" pom="build/maven2-repo/@{module}.pom"
-                                      repo="@{repo}" extra-args="@{extra-args}"/>
+                                      repo="@{repo}" repoid="@{repoid}" extra-args="@{extra-args}"/>
             <mvn.publish.release.file jar="${dist20.home}/@{libpath}/@{module}.src.zip" pom="build/maven2-repo/@{module}.pom"
-                                      repo="@{repo}" extra-args="@{extra-args}"
+                                      repo="@{repo}" repoid="@{repoid}" extra-args="@{extra-args}"
                                       classifier="sources"/>
             <mvn.publish.release.file jar="${dist20.home}/@{libpath}/@{module}-javadoc.jar"
-                                      pom="build/maven2-repo/@{module}.pom" repo="@{repo}" extra-args="@{extra-args}"
+                                      pom="build/maven2-repo/@{module}.pom" repo="@{repo}" repoid="@{repoid}" extra-args="@{extra-args}"
                                       classifier="javadoc"/>
         </sequential>
     </macrodef>
@@ -861,11 +872,12 @@
         <attribute name="module"/>
         <attribute name="repo" default="${maven.repo.local}"/>
         <attribute name="extra-args" default=""/>
+        <attribute name="repoid" default="jvnet-nexus-staging"/>
         <sequential>
             <property name="jar.suffix" value="${release.impl.version}"/>
             <prepare-pom module="@{module}"/>
             <mvn.publish.release.file jar="${build.home}/@{module}.zip" pom="build/maven2-repo/@{module}.pom"
-                                      repo="@{repo}" extra-args="@{extra-args}"/>
+                                      repo="@{repo}" repoid="@{repoid}" extra-args="@{extra-args}"/>
         </sequential>
     </macrodef>
 
@@ -901,13 +913,20 @@
             <antcall  target="mvn.publish.release.local"/>
     </target>
 
-
     <target  name="mvn.publish.snapshots.remote">
         <mvn.publish.snapshot.module module="jaxws-rt" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.module module="jaxws-tools" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.zip module="jaxws-ri" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.snapshot.module module="sdo-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.snapshot.repo}" extra-args="${mvn.proxy.args}"/>
+    </target>
+
+    <target  name="mvn.publish.snapshots.internal">
+        <mvn.publish.snapshot.module module="jaxws-rt" repo="${gf.internal.snapshot.repo}" repoid="${gf.internal.snapshot.repo.id}" extra-args="${mvn.proxy.args} -Pgfinternal"/>
+        <mvn.publish.snapshot.module module="jaxws-tools" repo="${gf.internal.snapshot.repo}" repoid="${gf.internal.snapshot.repo.id}" extra-args="${mvn.proxy.args} -Pgfinternal"/>
+        <mvn.publish.snapshot.zip module="jaxws-ri" repo="${gf.internal.snapshot.repo}" repoid="${gf.internal.snapshot.repo.id}" extra-args="${mvn.proxy.args} -Pgfinternal"/>
+        <mvn.publish.snapshot.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" repo="${gf.internal.snapshot.repo}" repoid="${gf.internal.snapshot.repo.id}" extra-args="${mvn.proxy.args} -Pgfinternal"/>
+        <mvn.publish.snapshot.module module="sdo-eclipselink-plugin" libpath="lib/plugins" repo="${gf.internal.snapshot.repo}" repoid="${gf.internal.snapshot.repo.id}" extra-args="${mvn.proxy.args} -Pgfinternal"/>
     </target>
 
     <target name="mvn.publish.release.remote">
@@ -917,6 +936,14 @@
         <mvn.publish.release.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="sdo-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.close.repo repo="${java.net.staging.repo}" extra-args="-f build/maven2-repo/jaxws-rt.pom -Dauto=true -Dnexus.username=${nexus.username} -Dnexus.password=${nexus.password} -Dnexus.url=https://maven.java.net/ ${mvn.proxy.args}"/>
+    </target>
+
+    <target name="mvn.publish.release.internal">
+        <mvn.publish.release.module module="jaxws-rt" repo="${gf.internal.release.repo}" repoid="${gf.internal.release.repo.id}" extra-args="${mvn.proxy.args} -P gfinternal"/>
+        <mvn.publish.release.module module="jaxws-tools" repo="${gf.internal.release.repo}" repoid="${gf.internal.release.repo.id}" extra-args="${mvn.proxy.args} -P gfinternal"/>
+        <mvn.publish.release.zip module="jaxws-ri" repo="${gf.internal.release.repo}" repoid="${gf.internal.release.repo.id}" extra-args="${mvn.proxy.args} -P gfinternal"/>
+        <mvn.publish.release.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" repo="${gf.internal.release.repo}" repoid="${gf.internal.release.repo.id}" extra-args="${mvn.proxy.args} -P gfinternal"/>
+        <mvn.publish.release.module module="sdo-eclipselink-plugin" libpath="lib/plugins" repo="${gf.internal.release.repo}" repoid="${gf.internal.release.repo.id}" extra-args="${mvn.proxy.args} -P gfinternal"/>
     </target>
 
     <target  name="mvn.publish.promoted.remote">
@@ -936,6 +963,11 @@
             <arg  value="Pushed JAX-WS RI ${jar.suffix}, Incrementing the promoted version."/>
             <arg  value="project.properties"/>
         </exec>
+    </target>
+
+    <target  name="mvn.publish.promoted.internal">
+        <property  name="jar.suffix" value="${release.impl.version}-promoted-b43"/>
+        <antcall  target="mvn.publish.release.internal"/>
     </target>
 
     <target name="www.release" if="jaxws.scm.username">
