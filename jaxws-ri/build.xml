@@ -966,7 +966,7 @@
     </target>
 
     <target  name="mvn.publish.promoted.internal">
-        <property  name="jar.suffix" value="${release.impl.version}-promoted-b43"/>
+        <property  name="jar.suffix" value="${release.impl.version}-promoted-b${promoted.version}"/>
         <antcall  target="mvn.publish.release.internal"/>
     </target>
 
