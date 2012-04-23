@@ -134,15 +134,14 @@
             destdir="build/j2se-servlet/classes" >
            <classpath>
                <pathelement location="servlet/lib/javax.servlet.jar"/>
-               <pathelement location="lib/ha-api.jar"/>
+               <pathelement location="rt-ha/lib/ha-api.jar"/>
            </classpath>
         </javac>
 
         <jar destfile="build/j2se-servlet/jdk8-jaxws-http-transport.jar">
             <fileset dir="build/j2se-servlet/classes"/>
-            <zipfileset src="lib/ha-api.jar"/>            
+            <zipfileset src="rt-ha/lib/ha-api.jar"/>
         </jar>
-
 
     </target>
 
