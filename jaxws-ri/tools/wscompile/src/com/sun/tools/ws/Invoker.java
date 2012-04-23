@@ -209,29 +209,6 @@ public final class Invoker {
     }
 
     /**
-     * Creates a classloader for loading JAXB/WS 2.1 jar and tools.jar
-     */
-    private static URL[] findIstack21APIs(ClassLoader cl) throws ClassNotFoundException, MalformedURLException, ToolsJarNotFoundException {
-        List<URL> urls = new ArrayList<URL>();
-
-        if(Service.class.getClassLoader()==null) {
-            // JAX-WS API is loaded from bootstrap classloader
-            URL res = cl.getResource("javax/xml/ws/EndpointReference.class");
-            if(res==null)
-                throw new ClassNotFoundException("There's no JAX-WS 2.1 API in the classpath");
-            urls.add(ParallelWorldClassLoader.toJarUrl(res));
-
-            res = cl.getResource("javax/xml/bind/annotation/XmlSeeAlso.class");
-            if(res==null)
-                throw new ClassNotFoundException("There's no JAXB 2.1 API in the classpath");
-            urls.add(ParallelWorldClassLoader.toJarUrl(res));
-        }
-
-        findToolsJar(cl, urls);
-
-        return urls.toArray(new URL[urls.size()]);
-    }
-    /**
      * Creates a classloader for loading JAXB/WS 2.2 jar and tools.jar
      */
     private static URL[] findIstack22APIs(ClassLoader cl) throws ClassNotFoundException, IOException, ToolsJarNotFoundException {
