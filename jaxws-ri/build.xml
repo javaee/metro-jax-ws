@@ -932,8 +932,7 @@
         <mvn.publish.release.zip module="jaxws-ri" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="jaxws-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
         <mvn.publish.release.module module="sdo-eclipselink-plugin" libpath="lib/plugins" repo="${java.net.staging.repo}" extra-args="${mvn.proxy.args}"/>
-        <!--TODO: don't close until properly tested ...-->
-        <!--<mvn.close.repo repo="${java.net.staging.repo}" extra-args="-f build/maven2-repo/jaxws-rt.pom -Dauto=true -Dnexus.username=${nexus.username} -Dnexus.password=${nexus.password} -Dnexus.url=https://maven.java.net/ ${mvn.proxy.args}"/>-->
+        <mvn.close.repo repo="${java.net.staging.repo}" extra-args="-f build/maven2-repo/jaxws-rt.pom -Dauto=true -Dnexus.username=${nexus.username} -Dnexus.password=${nexus.password} -Dnexus.url=https://maven.java.net/ ${mvn.proxy.args}"/>
     </target>
 
     <target name="mvn.publish.release.internal">
