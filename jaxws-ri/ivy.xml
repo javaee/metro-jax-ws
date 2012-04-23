@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -49,6 +49,7 @@
         <dependency org="com.sun.xml.stream.buffer" name="streambuffer" rev="${xmlstreambuffer.version}" transitive="false"/>
         <dependency org="com.sun.xml.ws" name="policy" rev="${policy.version}" transitive="false"/>
         <dependency org="javax.jws" name="jsr181-api" rev="${jsr181.version}" transitive="false"/>
+        <dependency org="javax.mail" name="mail" rev="${mail.version}" transitive="false"/>
         <dependency org="javax.xml.bind" name="jaxb-api" rev="${jaxb.api.version}" transitive="false"/>
         <dependency org="javax.xml.soap" name="saaj-api" rev="${saaj-api.version}" transitive="false"/>
         <dependency org="javax.xml.ws" name="jaxws-api" rev="${release.api.version}" transitive="false"/>
@@ -63,6 +64,8 @@
         <dependency org="org.glassfish.gmbal" name="gmbal-api-only-source" rev="${gmbal.version}" transitive="false"/>
         <dependency org="org.jvnet.mimepull" name="mimepull" rev="${mimepull.version}" transitive="false"/>
         <dependency org="org.jvnet.staxex" name="stax-ex" rev="${stax-ex.version}" transitive="false"/>
+        <dependency org="org.eclipse.persistence" name="eclipselink" rev="${eclipselink.version}" transitive="false"/>
+        <dependency org="commonj.sdo" name="commonj.sdo" rev="${common.sdo.version}" transitive="false"/>
         <dependency org="org.glassfish.ha" name="ha-api" rev="${ha-api.version}" transitive="false">
             <artifact name="ha-api" type="jar"/>
             <artifact name="ha-api" type="source" ext="jar"/>

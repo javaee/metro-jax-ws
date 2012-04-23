@@ -226,8 +226,9 @@
     <copy todir="${dist20.home}/lib/plugins">
       <fileset dir="${build.home}/plugins_lib" includes="*eclipselink*.*" />
     </copy>
-    <move todir="${dist20.home}/lib/plugins" file="${dist20.home}/lib/common.sdo.jar" />
-    <move todir="${dist20.home}/lib/plugins" file="${dist20.home}/lib/eclipselink.jar" />
+    <move todir="${dist20.home}/lib/plugins" file="${lib.home}/commonj.sdo.jar" />
+    <move todir="${dist20.home}/lib/plugins" file="${lib.home}/eclipselink.jar" />
+    <move todir="${dist20.home}/lib/plugins" file="${lib.home}/mail.jar" />
 
     <copy    todir="${dist20.home}/docs">
       <fileset dir="${build.home}/docs"/>
@@ -365,10 +366,6 @@
   
   <property name="mavenrepo.url" value="https://maven.java.net/content/groups/public"/>
 	
-  <!-- TODO - come up with a better scheme than using hard-coded value shere. -->
-  <property name="eclipselink.version" value="2.3.1-M6"/>
-  <property name="common.sdo.version" value="2.1.1"/>
-
     <target name="check-maven-ant-task">
         <available property="maven.ant.task.available" value="true" file="${lib.home}/${maven.ant.task.jar}"
                    type="file"/>
@@ -639,11 +636,11 @@
             classpathref="maven-ant-tasks.classpath"/>
         <artifact:dependencies pathId="dependency.classpath" filesetId="dependency.fileset"> 
             <dependency groupId="org.eclipse.persistence" artifactId="eclipselink"
-                version="2.3.1-SNAPSHOT"/>
+                version="2.4.0-SNAPSHOT"/>
             <remoteRepository url="http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo"/>
         </artifact:dependencies>
 
-        <copy todir="${basedir}/eclipselink_jaxb/lib">
+        <copy todir="${basedir}/lib">
             <fileset refid="dependency.fileset"/>
                 <mapper>
                     <mergemapper to="eclipselink.jar"/>
