@@ -116,11 +116,17 @@ public class SAAJMessageHeadersTest extends TestCase {
 
         //verify the understood headers list
         Set<QName> understoods = hdrs.getUnderstoodHeaders();
-        assertNotNull(understoods);
-        assertEquals(1, understoods.size());
+        //none of the headers is marked understood
+        assertNull(understoods);
+        //assertEquals(1, understoods.size());
+        
+        //the new header should not be understood yet
+        assertFalse(hdrs.isUnderstood(newHdr));
         
         //now "understand" the header
         hdrs.understood(newHdr);
+        //the new header should be understood now
+        assertTrue(hdrs.isUnderstood(newHdr));
         notUnderstoods = hdrs.getNotUnderstoodHeaders(null, null, null);
         assertNotNull(notUnderstoods);
         assertEquals(0, notUnderstoods.size());
@@ -128,7 +134,7 @@ public class SAAJMessageHeadersTest extends TestCase {
         //make sure the newly understood header now shows up in the understoodHeaders
         understoods = hdrs.getUnderstoodHeaders();
         assertNotNull(understoods);
-        assertEquals(2, understoods.size());
+        assertEquals(1, understoods.size());
     }
     
     /**
@@ -242,15 +248,25 @@ public class SAAJMessageHeadersTest extends TestCase {
     public void testUnderstandingOfHeadersInSoapMessage() throws Exception {
         //this message has one header NOT marked as mustUnderstand
         SOAPMessage sm = makeSOAPMessage(MESSAGE);
-        
+        String hdrLocalName = "Action";
         MessageHeaders hdrs = new SAAJMessageHeaders(sm, SOAPVersion.SOAP_11);
         
         Set<QName> understood = hdrs.getUnderstoodHeaders();
+        //header has not been explicity understood so it shoud
+        //not be treated as understood
+        assertNull(understood);
+        assertFalse(hdrs.isUnderstood(ADDRESSING_NS, hdrLocalName));
+        
+        hdrs.understood(ADDRESSING_NS, hdrLocalName);
+        
+        //now it should be understood
+        assertTrue(hdrs.isUnderstood(ADDRESSING_NS, hdrLocalName));
+        understood = hdrs.getUnderstoodHeaders();
         assertNotNull(understood);
         assertEquals(1, understood.size());
         QName actionHdrName = understood.iterator().next();
         assertEquals(ADDRESSING_NS, actionHdrName.getNamespaceURI());
-        assertEquals("Action", actionHdrName.getLocalPart());
+        assertEquals(hdrLocalName, actionHdrName.getLocalPart());
         
         //now a more complex SOAPMessage with 2 mustUnderstand=true headers, 
         //one mustUnderstand=false and one with no mustUnderstand specified
@@ -273,9 +289,30 @@ public class SAAJMessageHeadersTest extends TestCase {
         
         hdrs = new SAAJMessageHeaders(sm, SOAPVersion.SOAP_11);
         
-        //check understood headers
+        //check understood headers - none are marked understood yet
+        //mustUnderstand = false headers, NOT yet marked as understood
+        understood = hdrs.getUnderstoodHeaders();
+        assertNull(understood);
+        assertFalse(hdrs.isUnderstood(ADDRESSING_NS, "MessageID"));
+        assertFalse(hdrs.isUnderstood(ADDRESSING_NS, "RelatesTo"));
+        
+        //mark NON-mustUnderstand header MessageID as understood
+        //it should now be "understood"
+        hdrs.understood(ADDRESSING_NS, "MessageID");
+        assertTrue(hdrs.isUnderstood(ADDRESSING_NS, "MessageID"));
+        assertFalse(hdrs.isUnderstood(ADDRESSING_NS, "RelatesTo"));
         understood = hdrs.getUnderstoodHeaders();
         assertNotNull(understood);
+        assertEquals(1, understood.size());
+        QName understoodQName = understood.iterator().next();
+        assertEquals(ADDRESSING_NS, understoodQName.getNamespaceURI());
+        assertEquals("MessageID", understoodQName.getLocalPart());
+        
+        //mark NON-mustUnderstand header RelatesTo as understood
+        //it should also now be "understood"
+        hdrs.understood(ADDRESSING_NS, "RelatesTo");
+        assertTrue(hdrs.isUnderstood(ADDRESSING_NS, "MessageID"));
+        assertTrue(hdrs.isUnderstood(ADDRESSING_NS, "RelatesTo"));
         assertEquals(2, understood.size());
         for (QName nextHdrName : understood) {
             assertEquals(ADDRESSING_NS, nextHdrName.getNamespaceURI());
@@ -283,7 +320,12 @@ public class SAAJMessageHeadersTest extends TestCase {
                     "RelatesTo".equals(nextHdrName.getLocalPart()));
         }
         
+        //NOW TEST the mustUnderstand=true headers
+        //initially they should be in the notUnderstood list (and nothing
+        //else should be in that list)
         //check not understood headers
+        assertFalse(hdrs.isUnderstood(ADDRESSING_NS, "Action"));
+        assertFalse(hdrs.isUnderstood(ADDRESSING_NS, "To"));
         Set<QName> notUnderstood = hdrs.getNotUnderstoodHeaders(null, null, null);
         assertNotNull(notUnderstood);
         assertEquals(2, notUnderstood.size());
@@ -292,6 +334,38 @@ public class SAAJMessageHeadersTest extends TestCase {
             assertTrue("Action".equals(nextHdrName.getLocalPart()) ||
                     "To".equals(nextHdrName.getLocalPart()));
         }
+        
+        int prevSizeOfUnderstood = understood.size();
+        
+        //add understood calls for mustUnderstand=true headers
+        //i.e. Action and To headers and make sure they are understood
+        hdrs.understood(ADDRESSING_NS, "Action");
+        assertTrue(hdrs.isUnderstood(ADDRESSING_NS, "Action"));
+        understood = hdrs.getUnderstoodHeaders();
+        assertNotNull(understood);
+        assertEquals(prevSizeOfUnderstood + 1, understood.size());
+        assertTrue(understood.contains(new QName(ADDRESSING_NS, "Action")));
+        
+        prevSizeOfUnderstood = understood.size();
+        
+        hdrs.understood(ADDRESSING_NS, "To");
+        understood = hdrs.getUnderstoodHeaders();
+        assertNotNull(understood);
+        assertEquals(prevSizeOfUnderstood + 1, understood.size());
+        assertTrue(understood.contains(new QName(ADDRESSING_NS, "To")));
+
+        //make sure marking a header understood a second time doesn't 
+        //add to size of understood
+        prevSizeOfUnderstood = understood.size();
+        hdrs.understood(ADDRESSING_NS, "To");
+        understood = hdrs.getUnderstoodHeaders();
+        assertNotNull(understood);
+        assertEquals(prevSizeOfUnderstood, understood.size());
+        
+        //make sure no more notUnderstood headers exist
+        notUnderstood = hdrs.getNotUnderstoodHeaders(null, null, null);
+        assertTrue(notUnderstood == null || 
+                notUnderstood.size() == 0);
     }
     
     private SOAPMessage makeSOAPMessage(String msg) throws Exception {

@@ -82,6 +82,47 @@ public interface MessageHeaders {
      *      always true. Don't use the return value.
      */
     public boolean addOrReplace(Header header);
+    
+    /**
+     * Return a Set of QNames of headers that have been explicitly marked as understood.
+     * If none have been marked, this method could return null
+     */
     public Set<QName> getUnderstoodHeaders();
+    
+    /**
+     * Returns a Set of QNames of headers that satisfy ALL the following conditions:
+     * (a) Have mustUnderstand = true 
+     * (b) have NOT been explicitly marked as understood
+     * (c) If roles argument is non-null, the header has isIgnorable = false 
+     * for the roles argument and SOAP version  
+     * (d) If non-null binding is passed in, are NOT understood by the binding
+     * (e) If (d) is met, the header is NOT in the knownHeaders list passed in
+     * 
+     * @param roles
+     * @param knownHeaders
+     * @param binding
+     * @return
+     */
     public Set<QName> getNotUnderstoodHeaders(Set<String> roles, Set<QName> knownHeaders, WSBinding binding);
+    
+    /**
+     * True if the header has been explicitly marked understood, false otherwise
+     * @param header
+     * @return
+     */
+    public boolean isUnderstood(Header header);
+    
+    /**
+     * True if the header has been explicitly marked understood, false otherwise
+     * @param header
+     * @return
+     */
+    public boolean isUnderstood(QName name);
+    
+    /**
+     * True if the header has been explicitly marked understood, false otherwise
+     * @param header
+     * @return
+     */
+    public boolean isUnderstood(String nsUri, String localName);
 }

@@ -86,9 +86,10 @@ public class SAAJMessageHeaders implements MessageHeaders {
             if (nextHdrElem == null) continue;
             if (nextHdrElem.getMustUnderstand()) {
                 notUnderstood(nextHdrElem.getElementQName());
-            } else {
-                understood(nextHdrElem.getElementQName());
             }
+            //only headers explicitly marked as understood should be 
+            //in the understoodHeaders set, so don't add anything to
+            //that set at the beginning 
         }
         
     }
@@ -106,20 +107,41 @@ public class SAAJMessageHeaders implements MessageHeaders {
         if (notUnderstoodCount == null) {
             notUnderstoodCount = new HashMap<QName, Integer>();
         }
-        if (understoodHeaders == null) {
-            understoodHeaders = new HashSet<QName>();
-        }
+
         Integer count = notUnderstoodCount.get(qName);
         if (count != null && count.intValue() > 0) {
             //found the header in notUnderstood headers - decrement count
-            notUnderstoodCount.put(qName, count - 1);
+            count = count.intValue() - 1;
+            if (count <= 0) {
+                //if the value is zero or negative, remove that header name
+                //since all headers by that name are understood now
+                notUnderstoodCount.remove(qName);
+            } else {
+                notUnderstoodCount.put(qName, count);
+            }
         }
         
+        if (understoodHeaders == null) {
+            understoodHeaders = new HashSet<QName>();
+        }
         //also add it to the understood headers list (optimization for getUnderstoodHeaders)
         understoodHeaders.add(qName);
         
     }
     
+    public boolean isUnderstood(Header header) {
+        return isUnderstood(header.getNamespaceURI(), header.getLocalPart());
+    }
+    public boolean isUnderstood(String nsUri, String localName) {
+        return isUnderstood(new QName(nsUri, localName));
+    }
+    
+    public boolean isUnderstood(QName name) {
+        if (understoodHeaders == null) return false;
+        return understoodHeaders.contains(name);
+    }
+
+
 //    @Override
     public boolean isUnderstood(int index) {
         // TODO Auto-generated method stub
@@ -216,9 +238,28 @@ public class SAAJMessageHeaders implements MessageHeaders {
 
         //it might have been a nonSAAJHeader - remove from that map
         removeNonSAAJHeader(headerElem);
+        
+        //remove it from understoodHeaders and notUnderstoodHeaders if present
+        QName hdrName = (nsUri == null) ? new QName(localName) : new QName(nsUri, localName);
+        if (understoodHeaders != null) {
+            understoodHeaders.remove(hdrName);
+        }
+        removeNotUnderstood(hdrName);
+
         return new SAAJHeader(headerElem);
     }
     
+    private void removeNotUnderstood(QName hdrName) {
+        if (notUnderstoodCount == null) return;
+        Integer notUnderstood = notUnderstoodCount.get(hdrName);
+        if (notUnderstood != null) {
+            int intNotUnderstood = notUnderstood;
+            intNotUnderstood--;
+            if (intNotUnderstood <= 0) notUnderstoodCount.remove(hdrName);
+        }
+        
+    }
+
     private SOAPHeaderElement find(Header h) {
         if (isNonSAAJHeader(h)) {
             return findNonSAAJHeader(h);

@@ -855,23 +855,61 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
     }
     
     public Set<QName> getUnderstoodHeaders() {
-        throw new UnsupportedOperationException("getUnderstoodHeaders() is not implemented by HeaderList");
+        Set<QName> understoodHdrs = new HashSet<QName>();
+        for (int i = 0; i < size(); i++) {
+            if (isUnderstood(i)) {
+                Header header = get(i);
+                understoodHdrs.add(new QName(header.getNamespaceURI(), header.getLocalPart()));
+            }
+        }
+        return understoodHdrs;
+//        throw new UnsupportedOperationException("getUnderstoodHeaders() is not implemented by HeaderList");
+    }
+    
+    public boolean isUnderstood(Header header) {
+        return isUnderstood(header.getNamespaceURI(), header.getLocalPart());
+    }
+    
+    public boolean isUnderstood(String nsUri, String localName) {
+        for (int i = 0; i < size(); i++) {
+            Header h = get(i);
+            if (h.getLocalPart().equals(localName) && h.getNamespaceURI().equals(nsUri)) {
+                return isUnderstood(i);
+            }
+        }
+        return false;
+    }
+    
+    public boolean isUnderstood(QName name) {
+        return isUnderstood(name.getNamespaceURI(), name.getLocalPart());
     }
     
     public Set<QName> getNotUnderstoodHeaders(Set<String> roles, Set<QName> knownHeaders, WSBinding binding) {
         Set<QName> notUnderstoodHeaders = null;
+        if (roles == null) roles = new HashSet<String>();
+        SOAPVersion effectiveSoapVersion = getEffectiveSOAPVersion(binding);
+        roles.add(effectiveSoapVersion.implicitRole);
         for (int i = 0; i < size(); i++) {
             if (!isUnderstood(i)) {
                 Header header = get(i);
-                if (!header.isIgnorable(getEffectiveSOAPVersion(binding), roles)) {
+                if (!header.isIgnorable(effectiveSoapVersion, roles)) {
                     QName qName = new QName(header.getNamespaceURI(), header.getLocalPart());
-                    // see if the binding can understand it
-                    if (binding instanceof SOAPBindingImpl && !((SOAPBindingImpl) binding).understandsHeader(qName)) {
-                        if (!knownHeaders.contains(qName)) {
-                            //logger.info("Element not understood=" + qName);
-                            if (notUnderstoodHeaders == null)
-                                notUnderstoodHeaders = new HashSet<QName>();
-                            notUnderstoodHeaders.add(qName);
+                    if (binding == null) {
+                        //if binding is null, no further checks needed...we already
+                        //know this header is not understood from the isUnderstood
+                        //check above
+                        if (notUnderstoodHeaders == null)
+                            notUnderstoodHeaders = new HashSet<QName>();
+                        notUnderstoodHeaders.add(qName);
+                    } else {
+                        // if the binding is not null, see if the binding can understand it
+                        if (binding instanceof SOAPBindingImpl && !((SOAPBindingImpl) binding).understandsHeader(qName)) {
+                            if (!knownHeaders.contains(qName)) {
+                                //logger.info("Element not understood=" + qName);
+                                if (notUnderstoodHeaders == null)
+                                    notUnderstoodHeaders = new HashSet<QName>();
+                                notUnderstoodHeaders.add(qName);
+                            }
                         }
                     }
                 }
