@@ -45,6 +45,7 @@
         <chain name="jaxws-chain" returnFirst="true">
             <ibiblio name="javanet" m2compatible="true" root="https://maven.java.net/content/repositories/releases/"/>
             <ibiblio name="central" m2compatible="true"/>
+            <ibiblio name="javanet_staging" m2compatible="true" root="https://maven.java.net/content/repositories/staging/"/>
             <ibiblio name="eclipse" m2compatible="true" root="http://download.eclipse.org/rt/eclipselink/maven.repo/"/>
         </chain>
     </resolvers>
