@@ -410,7 +410,7 @@
 
         <copy todir="${build.home}/lib">
             <fileset dir="${lib.home}/"
-                     includes="eclipselink.jar, mail.jar, commonj.sdo.jar, FastInfoset.jar, gmbal-api-only.jar, management-api.jar, jaxb-api.jar, jaxb-impl.jar, jaxb-xjc.jar, jaxws-api.jar, jaxws-rt.jar, jaxws-tools.jar, jsr181-api.jar, javax.annotation.jar, saaj-api.jar, saaj-impl.jar, stax-ex.jar, streambuffer.jar, mimepull.jar, policy.jar, ha-api.jar"/>
+                     includes="mail.jar, FastInfoset.jar, gmbal-api-only.jar, management-api.jar, jaxb-api.jar, jaxb-impl.jar, jaxb-xjc.jar, jaxws-api.jar, jaxws-rt.jar, jaxws-tools.jar, jsr181-api.jar, javax.annotation.jar, saaj-api.jar, saaj-impl.jar, stax-ex.jar, streambuffer.jar, mimepull.jar, policy.jar, ha-api.jar"/>
         </copy>
 
         <antcall target="copy-woodstox-libs"/>
