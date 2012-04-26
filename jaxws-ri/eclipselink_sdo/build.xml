@@ -59,9 +59,9 @@
         optimize="${compile.optimize}"
         source="1.5">
       <classpath>
-      	<pathelement path="./lib/common.sdo.jar"/>
-      	<pathelement path="../eclipselink_jaxb/lib/eclipselink.jar"/>
-      	<pathelement path="../eclipselink_jaxb/lib/javax.mail_1.4.jar"/>
+      	<pathelement path="../lib/commonj.sdo.jar"/>
+      	<pathelement path="../lib/eclipselink.jar"/>
+      	<pathelement path="../lib/mail.jar"/>
         <path refid="runtime.compile.classpath"/>
         <pathelement path="../rt/build/classes" />
       </classpath>
@@ -78,9 +78,9 @@
 
   <target name="test">
           <path id="test.classpath">
-              <pathelement path="./lib/common.sdo.jar"/>
-              <pathelement path="../eclipselink_jaxb/lib/eclipselink.jar"/>
-              <pathelement path="../eclipselink_jaxb/lib/javax.mail_1.4.jar"/>
+              <pathelement path="../lib/commonj.sdo.jar"/>
+              <pathelement path="../lib/eclipselink.jar"/>
+              <pathelement path="../lib/mail.jar"/>
               <path refid="runtime.compile.classpath"/>
               <pathelement path="../rt/build/classes" />
               <pathelement path="${build.dir}/classes" />

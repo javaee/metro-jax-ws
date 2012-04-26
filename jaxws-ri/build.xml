@@ -517,7 +517,7 @@
             <zipfileset dir="${basedir}/etc" includes="src-build-readme.txt"
                         fullpath="${source.dist.dir.name}/README"/>
             <!-- additional jar files -->
-            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.jar, junit*.jar, *-javadoc.jar, commons-jelly-tags-jsl-1.0.jar, sjsxp.jar, maven-ant-tasks-2.0.10.jar, javax.mail_1.4.jar, html*.jar"
+            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.jar, junit*.jar, *-javadoc.jar, commons-jelly-tags-jsl-1.0.jar, sjsxp.jar, maven-ant-tasks-2.0.10.jar, mail.jar, html*.jar"
                         prefix="${source.dist.dir.name}/lib"/>
 
             <!-- license files -->

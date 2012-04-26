@@ -412,7 +412,7 @@
             <compilation-unit>
                 <package-root>eclipselink_jaxb/src</package-root>
 <!--                <classpath mode="boot">${ri.nb.boot.cp}</classpath>-->
-                <classpath mode="compile">rt/src:eclipselink_jaxb/lib/eclipselink.jar:eclipselink_jaxb/lib/javax.mail_1.4.jar:${ri.nb.common.cp}</classpath>
+                <classpath mode="compile">rt/src:lib/eclipselink.jar:lib/mail.jar:${ri.nb.common.cp}</classpath>
                 <built-to>eclipselink_jaxb/build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
@@ -427,7 +427,7 @@
             <compilation-unit>
                 <package-root>eclipselink_sdo/src</package-root>
                 <classpath mode="boot">${ri.nb.boot.cp}</classpath>
-                <classpath mode="compile">eclipselink_sdo/lib/common.sdo.jar:eclipselink_jaxb/lib/eclipselink.jar:eclipselink_jaxb/lib/javax.mail_1.4.jar:rt/build/classes:${ri.nb.common.cp}</classpath>
+                <classpath mode="compile">lib/commonj.sdo.jar:lib/eclipselink.jar:lib/mail.jar:rt/build/classes:${ri.nb.common.cp}</classpath>
                 <built-to>eclipselink_sdo/build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
@@ -435,7 +435,7 @@
                 <package-root>eclipselink_sdo/test</package-root>
                 <unit-tests/>
                 <classpath mode="boot">${ri.nb.boot.cp}</classpath>
-                <classpath mode="compile">eclipselink_sdo/src:rt/src:eclipselink_jaxb/lib/eclipselink.jar:eclipselink_sdo/lib/common.sdo.jar:${ri.nb.test.cp}</classpath>
+                <classpath mode="compile">eclipselink_sdo/src:rt/src:lib/eclipselink.jar:lib/commonj.sdo.jar:${ri.nb.test.cp}</classpath>
                 <built-to>eclipselink_sdo/build/test-classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
