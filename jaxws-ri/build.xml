@@ -228,7 +228,6 @@
     </copy>
     <move todir="${dist20.home}/lib/plugins" file="${lib.home}/commonj.sdo.jar" />
     <move todir="${dist20.home}/lib/plugins" file="${lib.home}/eclipselink.jar" />
-    <move todir="${dist20.home}/lib/plugins" file="${lib.home}/mail.jar" />
 
     <copy    todir="${dist20.home}/docs">
       <fileset dir="${build.home}/docs"/>
