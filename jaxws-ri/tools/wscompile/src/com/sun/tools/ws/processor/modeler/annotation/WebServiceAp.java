@@ -51,7 +51,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.jws.WebService;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -105,7 +104,6 @@ import com.sun.tools.javac.util.Context;
         "javax.xml.ws.WebServiceRef"
 })
 @SupportedOptions({WebServiceAp.DO_NOT_OVERWRITE, WebServiceAp.IGNORE_NO_WEB_SERVICE_FOUND_WARNING})
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
 
     public static final String DO_NOT_OVERWRITE = "doNotOverWrite";
@@ -321,6 +319,14 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
     @Override
     public String getOperationName(Name messageName) {
         return messageName != null ? messageName.toString() : null;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        if (SourceVersion.latest().compareTo(SourceVersion.RELEASE_6) > 0)
+            return SourceVersion.valueOf("RELEASE_7");
+        else
+            return SourceVersion.RELEASE_6;
     }
 }
 
