@@ -98,12 +98,12 @@ class SyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
         return doReturnWith(response);
     }
 
-    public NextAction processResponse(Packet response) {
-        throw new IllegalStateException("InovkerPipe's processResponse shouldn't be called.");
+    public @NotNull NextAction processResponse(@NotNull Packet response) {
+        return doReturnWith(response);
     }
 
-    public NextAction processException(@NotNull Throwable t) {
-        throw new IllegalStateException("InovkerPipe's processException shouldn't be called.");
+    public @NotNull NextAction processException(@NotNull Throwable t) {
+        return doThrow(t);
     }
 
 }

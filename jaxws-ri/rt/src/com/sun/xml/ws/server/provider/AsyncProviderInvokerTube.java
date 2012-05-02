@@ -182,7 +182,7 @@ class AsyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
     }
 
     public @NotNull NextAction processException(@NotNull Throwable t) {
-        throw new IllegalStateException("AsyncProviderInvokerTube's processException shouldn't be called.");
+        return doThrow(t);
     }
 
 }

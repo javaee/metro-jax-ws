@@ -103,11 +103,11 @@ public class SEIInvokerTube extends InvokerTube {
     }
 
     public @NotNull NextAction processResponse(@NotNull Packet response) {
-        throw new IllegalStateException("InovkerPipe's processResponse shouldn't be called.");
+        return doReturnWith(response);
     }
 
     public @NotNull NextAction processException(@NotNull Throwable t) {
-        throw new IllegalStateException("InovkerPipe's processException shouldn't be called.");
+        return doThrow(t);
     }
 
 }
