@@ -1,5 +1,6 @@
 package fromjava.webmethod.legacy.staticFinal.server;
 
+import javax.jws.WebMethod;
 import javax.jws.WebService;
 import java.rmi.Remote;
 
@@ -11,6 +12,7 @@ import java.rmi.Remote;
 public class TestImpl {
 
     // This is WebMethod
+    @WebMethod
     public String method1(String str) {
         return str;
     }
@@ -45,4 +47,8 @@ public class TestImpl {
         return null;
     }
 
+    // this is not webMethod - since it's not annotated with @WebMethod
+    public String method8(String str) {
+        return str;
+    }
 }
