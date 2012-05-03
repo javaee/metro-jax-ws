@@ -392,9 +392,9 @@
         <param name="compile.debug" value="true"/>
       </antcall>
       <antcall target="generate-bundle-for-licensee" />
-      <copy tofile="${build.home}/jaxws-${release.jar.version}.zip"
+      <copy tofile="${build.home}/jaxws-${release.impl.version}.zip"
          file="${build.home}/jaxws-ri.zip"/>
-      <move tofile="${build.home}/jaxws-${release.jar.version}-src.zip"
+      <move tofile="${build.home}/jaxws-${release.impl.version}-src.zip"
          file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.zip"/>
     </target>
 
