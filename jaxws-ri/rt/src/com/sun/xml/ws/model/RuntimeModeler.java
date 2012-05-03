@@ -44,6 +44,7 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.MetadataReader;
 import com.sun.xml.ws.api.model.ExceptionType;
@@ -64,6 +65,9 @@ import com.sun.xml.ws.spi.db.TypeInfo;
 import com.sun.xml.ws.spi.db.WrapperComposite;
 import com.sun.xml.ws.util.localization.Localizable;
 import org.jvnet.ws.databinding.DatabindingMode;
+import org.jvnet.ws.EnvelopeStyleFeature;
+import org.jvnet.ws.EnvelopeStyle;
+import static com.sun.xml.ws.binding.WebServiceFeatureList.getSoapVersion;   
 
 import javax.jws.*;
 import javax.jws.WebParam.Mode;
@@ -176,12 +180,16 @@ public class RuntimeModeler {
         	this.features = WebServiceFeatureList.toList(wsBinding.getFeatures());
         } else {
             this.bindingId = config.getMappingInfo().getBindingID();
+            this.features = WebServiceFeatureList.toList(config.getFeatures());
             if (binding != null) bindingId = binding.getBinding().getBindingId();
             if (bindingId == null) bindingId = getDefaultBindingID();
-            this.features = WebServiceFeatureList.toList(config.getFeatures());
             if (!features.contains(MTOMFeature.class)) {
                 MTOM mtomAn = getAnnotation(portClass, MTOM.class);
                 if (mtomAn != null) features.add(WebServiceFeatureList.getFeature(mtomAn));
+            }
+            if (!features.contains(EnvelopeStyleFeature.class)) {
+                EnvelopeStyle es = getAnnotation(portClass, EnvelopeStyle.class);
+                if (es != null) features.add(WebServiceFeatureList.getFeature(es));
             }
             this.wsBinding = bindingId.createBinding(features);
         }
@@ -189,8 +197,14 @@ public class RuntimeModeler {
 
     private BindingID getDefaultBindingID() {
     	BindingType bt = getAnnotation(portClass, BindingType.class);
-    	String id = (bt != null) ? bt.value() :  javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
-		return BindingID.parse(id);
+    	if (bt != null) return BindingID.parse(bt.value());
+    	SOAPVersion ver = getSoapVersion(features); 
+    	boolean mtomEnabled = features.isEnabled(MTOMFeature.class);
+    	if (SOAPVersion.SOAP_12.equals(ver)) {
+    	    return (mtomEnabled) ? BindingID.SOAP12_HTTP_MTOM : BindingID.SOAP12_HTTP; 
+    	} else {
+            return (mtomEnabled) ? BindingID.SOAP11_HTTP_MTOM : BindingID.SOAP11_HTTP; 
+    	}
 	}
 
 	/**
@@ -603,6 +617,7 @@ public class RuntimeModeler {
     private void processMethod(Method method) {
         int mods = method.getModifiers();
         WebMethod webMethod = getAnnotation(method, WebMethod.class);
+        if (webMethod != null && webMethod.exclude()) return;
 /*
         validations are already done
 

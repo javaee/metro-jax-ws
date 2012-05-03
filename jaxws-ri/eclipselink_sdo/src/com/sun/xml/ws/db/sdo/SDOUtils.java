@@ -502,4 +502,43 @@ public class SDOUtils {
             }
         }
     }
+
+    
+    public static Set<SchemaInfo> getSchemas(String filePath) throws Exception {
+        Set<SchemaInfo> schemas = new HashSet<SchemaInfo>();
+        
+        QName QNAME_SCHEMA = new QName("http://www.w3.org/2001/XMLSchema", "schema");
+        Document document = newDocumentBuilder().parse(new File(filePath));
+        Element rootEl = document.getDocumentElement();
+        if (QNAME_SCHEMA.equals(new QName(rootEl.getNamespaceURI(), rootEl.getLocalName()))) {
+            SchemaInfo info = new SchemaInfo(filePath, null, new DOMSource(rootEl));
+            schemas.add(info);
+        } else if ("http://schemas.xmlsoap.org/wsdl/".equals(rootEl.getNamespaceURI())) {
+            Element types = null;
+            Node n = rootEl.getFirstChild();
+            while (types == null) {
+                if (n instanceof Element && ((Element)n).getLocalName().equals("types")) types = (Element)n;
+                else n = n.getNextSibling();
+            }
+            NodeList nl = types.getChildNodes();
+            for (int i = 0; i < nl.getLength(); i++ ) {
+                Node x = nl.item(i);
+                if (x instanceof Element && ((Element)x).getLocalName().equals("schema")) {
+                    SchemaInfo info = new SchemaInfo(filePath, null, new DOMSource((Element)x));
+                    schemas.add(info);
+                }
+            }
+//            Definition def = WSDLHelper.readWsdl(url, document);
+//            SchemaCollection schemaCollection = SchemaAnalyzer.collectSchemas(def);
+//            schemas = SchemaHelper.getSchemaInfos(url.toString(), schemaCollection,true);
+//            for (SchemaInfo schema : schemas) {
+//                Element schemaElement = schema.getSchemaElement();
+//                SchemaHelper.fixMissingNamespaces(schemaElement);
+//            }
+        } else {
+//            throw new IOException("Document found at '" + sdoSchema + "' is not a valid schema/wsdl document.");
+        }
+
+        return schemas;
+    }
 }
