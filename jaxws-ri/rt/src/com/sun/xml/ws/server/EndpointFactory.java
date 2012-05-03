@@ -53,6 +53,7 @@ import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.server.*;
+import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver.Parser;
@@ -78,6 +79,7 @@ import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.jaxws.PolicyUtil;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.jws.WebService;
@@ -236,7 +238,7 @@ public class EndpointFactory {
         AbstractSEIModelImpl seiModel = null;
         // create WSDL model
         if (primaryDoc != null) {
-            wsdlPort = getWSDLPort(primaryDoc, docList, serviceName, portName, container);
+            wsdlPort = getWSDLPort(primaryDoc, docList, serviceName, portName, container, resolver);
         }
 
         WebServiceFeatureList features=((BindingImpl)binding).getFeatures();
@@ -275,7 +277,7 @@ public class EndpointFactory {
             if (primaryDoc == null) {
                 primaryDoc = generateWSDL(binding, seiModel, docList, container, implType);
                 // create WSDL model
-                wsdlPort = getWSDLPort(primaryDoc, docList, serviceName, portName, container);
+                wsdlPort = getWSDLPort(primaryDoc, docList, serviceName, portName, container, resolver);
                 seiModel.freeze(wsdlPort);
             }
             policyMap = wsdlPort.getOwner().getParent().getPolicyMap();
@@ -635,12 +637,13 @@ public class EndpointFactory {
      * @return non-null wsdl port object
      */
     private static @NotNull WSDLPortImpl getWSDLPort(SDDocumentSource primaryWsdl, List<? extends SDDocumentSource> metadata,
-                                                     @NotNull QName serviceName, @NotNull QName portName, Container container) {
+                                                     @NotNull QName serviceName, @NotNull QName portName, Container container,
+                                                     EntityResolver resolver) {
         URL wsdlUrl = primaryWsdl.getSystemId();
         try {
-            // TODO: delegate to another entity resolver
+            
             WSDLModelImpl wsdlDoc = RuntimeWSDLParser.parse(
-                new Parser(primaryWsdl), new EntityResolverImpl(metadata),
+                new Parser(primaryWsdl), new EntityResolverImpl(metadata, resolver),
                     false, container, ServiceFinder.find(WSDLParserExtension.class).toArray());
             if(wsdlDoc.getServices().size() == 0) {
                 throw new ServerRtException(ServerMessages.localizableRUNTIME_PARSER_WSDL_NOSERVICE_IN_WSDLMODEL(wsdlUrl));
@@ -670,11 +673,13 @@ public class EndpointFactory {
      */
     private static final class EntityResolverImpl implements XMLEntityResolver {
         private Map<String,SDDocumentSource> metadata = new HashMap<String,SDDocumentSource>();
+        private EntityResolver resolver;
 
-        public EntityResolverImpl(List<? extends SDDocumentSource> metadata) {
+        public EntityResolverImpl(List<? extends SDDocumentSource> metadata, EntityResolver resolver) {
             for (SDDocumentSource doc : metadata) {
                 this.metadata.put(doc.getSystemId().toExternalForm(),doc);
             }
+            this.resolver = resolver;
         }
 
         public Parser resolveEntity (String publicId, String systemId) throws IOException, XMLStreamException {
@@ -682,6 +687,17 @@ public class EndpointFactory {
                 SDDocumentSource doc = metadata.get(systemId);
                 if (doc != null)
                     return new Parser(doc);
+            }
+            if (resolver != null) {
+                try {
+                    InputSource source = resolver.resolveEntity(publicId, systemId);
+                    if (source != null) {
+                        Parser p = new Parser(null, XMLStreamReaderFactory.create(source, true));
+                        return p;
+                    }
+                } catch (SAXException e) {
+                    throw new XMLStreamException(e);
+                }
             }
             return null;
         }
