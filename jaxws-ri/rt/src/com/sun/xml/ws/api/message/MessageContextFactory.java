@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -102,26 +102,31 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
     }
 
     public MessageContext createContext(SOAPMessage soap) {
+        throwIfIllegalMessageArgument(soap);
         return packet(Messages.create(soap));
     }
 
     public MessageContext createContext(Source m, EnvelopeStyle.Style envelopeStyle) {
+        throwIfIllegalMessageArgument(m);
         return packet(Messages.create(m, SOAPVersion.from(envelopeStyle)));
     }
 
     public MessageContext createContext(Source m) {
+        throwIfIllegalMessageArgument(m);
         return packet(Messages.create(m, SOAPVersion.from(singleSoapStyle)));
     }
     
     public MessageContext createContext(InputStream in, String contentType) throws IOException {
+        throwIfIllegalMessageArgument(in);
         //TODO when do we use xmlCodec?
         Packet p = packet(null);
         soapCodec.decode(in, contentType, p);
         return p;
     }
     
-    public MessageContext createContext(Message m){
-         return packet(m);
+    public MessageContext createContext(Message m) {
+        throwIfIllegalMessageArgument(m);
+        return packet(m);
     }
     
     private Packet packet(Message m) {
@@ -135,6 +140,14 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         }
         return p;
     }  
+
+    private void throwIfIllegalMessageArgument(Object message)
+        throws IllegalArgumentException
+    {
+        if (message == null) {
+            throw new IllegalArgumentException("null messages are not allowed.  Consider using MessageContextFactory.createContext()");
+        }
+    }
 
     @Deprecated
     public MessageContext doCreate() {
