@@ -503,7 +503,7 @@
         <mkdir dir="${source.drop.dir}"/>
         <mkdir dir="${source.drop.dir}/jaxws-ri/lib"/>
 
-        <zip destfile="${build.home}/jaxws-${release.jar.version}-src-licensee.zip"  duplicate="fail" whenempty="fail">
+        <zip destfile="${build.home}/jaxws-${release.impl.version}-src-licensee.zip"  duplicate="fail" whenempty="fail">
             <zipfileset dir="rt" prefix="${source.dist.dir.name}/rt" defaultexcludes="true" includes="build.xml, src/**, build/gen-src/**, etc/**" excludes="test/**"/>
             <zipfileset dir="rt-fi" prefix="${source.dist.dir.name}/rt-fi" defaultexcludes="true" includes="build.xml, src/**"/>
             <zipfileset dir="rt-ha" prefix="${source.dist.dir.name}/rt-ha" defaultexcludes="true" includes="build.xml, src/**,lib/**"/>
