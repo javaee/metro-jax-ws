@@ -1134,6 +1134,15 @@ public final class Packet
     }
 
     public ContentType getContentType() {
+        if (contentType == null) contentType = getInternalContentType();
+        if (contentType == null) contentType = getCodec().getStaticContentType(this);
+        if (contentType == null) {
+            //TODO write to buffer
+        }
+        return contentType;
+    }
+    
+    public ContentType getInternalContentType() {
         Message msg = getInternalMessage();
         if (msg instanceof MessageWritable) return ((MessageWritable)msg).getContentType();
         return contentType;
@@ -1198,8 +1207,8 @@ public final class Packet
     }
     
     private boolean isMtomContentType() {
-        return (getContentType() != null) && 
-        (getContentType().getContentType().contains("application/xop+xml"));
+        return (getInternalContentType() != null) && 
+        (getInternalContentType().getContentType().contains("application/xop+xml"));
     }   
     
     /**

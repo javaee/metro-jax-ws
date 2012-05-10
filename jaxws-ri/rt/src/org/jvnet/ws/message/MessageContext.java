@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -134,7 +134,9 @@ public interface MessageContext extends DistributedPropertySet {
 //  ContentType writeTo( WritableByteChannel buffer );
     
     /**
-     * Gets the Content-type of this message.
+     * Gets the Content-type of this message. For an out-bound message that this getContentType() 
+     * method returns a null, the Content-Type can be determined only by calling the writeTo
+     * method to write the MessageContext to an OutputStream.
      * 
      * @return The MIME content type of this message
      */

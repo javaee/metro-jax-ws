@@ -46,6 +46,7 @@ import java.io.InputStream;
 import com.sun.xml.ws.api.SOAPVersion; // TODO leaking RI APIs
 import com.sun.xml.ws.util.ServiceFinder;
 
+import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.ws.WebServiceFeature;
@@ -67,6 +68,8 @@ public abstract class MessageContextFactory
     public abstract MessageContext createContext(Source m, EnvelopeStyle.Style envelopeStyle);
     
     public abstract MessageContext createContext(InputStream in, String contentType) throws IOException;
+    
+    public abstract MessageContext createContext(InputStream in, MimeHeaders headers) throws IOException;
     
     static public MessageContextFactory createFactory(WebServiceFeature ... f) {
         return createFactory(null, f);

@@ -42,7 +42,14 @@ package com.sun.xml.ws.api.message;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
+import javax.xml.soap.MimeHeader;
+import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.ws.WebServiceFeature;
@@ -56,6 +63,7 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Codecs;
+import static com.sun.xml.ws.transport.http.HttpAdapter.fixQuotesAroundSoapAction;
 
 /**
  * The MessageContextFactory implements org.jvnet.ws.message.MessageContextFactory as
@@ -122,6 +130,34 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         Packet p = packet(null);
         soapCodec.decode(in, contentType, p);
         return p;
+    }
+    
+    public MessageContext createContext(InputStream in, MimeHeaders headers) throws IOException {
+        String contentType = getHeader(headers, "Content-Type");
+        Packet packet = (Packet) createContext(in, contentType);
+        packet.acceptableMimeTypes = getHeader(headers, "Accept");
+        packet.soapAction = fixQuotesAroundSoapAction(getHeader(headers, "SOAPAction"));
+        packet.put(Packet.INBOUND_TRANSPORT_HEADERS, toMap(headers));
+        return packet;
+    }
+    
+    static String getHeader(MimeHeaders headers, String name) {
+        String[] values = headers.getHeader(name);
+        return (values != null && values.length > 0) ? values[0] : null;
+    }
+   
+    static Map<String, List<String>> toMap(MimeHeaders headers) {
+        HashMap<String, List<String>> map = new HashMap<String, List<String>>();
+        for (Iterator<MimeHeader> i = headers.getAllHeaders(); i.hasNext();) {
+            MimeHeader mh = i.next();
+            List<String> values = map.get(mh.getName());
+            if (values == null) {
+                values = new ArrayList<String>();
+                map.put(mh.getName(), values);
+            }
+            values.add(mh.getValue());
+        }       
+        return map;
     }
     
     public MessageContext createContext(Message m) {

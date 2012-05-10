@@ -321,8 +321,9 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         if (contentType != null && !isContentTypeSupported(contentType,expectedContentTypes)) {
             throw new UnsupportedMediaException(contentType, expectedContentTypes);
         }
-        ContentTypeImpl cti = (packet.getContentType() != null && packet.getContentType() instanceof ContentTypeImpl) ?
-                (ContentTypeImpl)packet.getContentType() : new ContentTypeImpl(contentType);
+        org.jvnet.ws.message.ContentType pct = packet.getInternalContentType();
+        ContentTypeImpl cti = (pct != null && pct instanceof ContentTypeImpl) ?
+                (ContentTypeImpl)pct : new ContentTypeImpl(contentType);
         String charset = cti.getCharSet();
         if (charset != null && !Charset.isSupported(charset)) {
             throw new UnsupportedMediaException(charset);

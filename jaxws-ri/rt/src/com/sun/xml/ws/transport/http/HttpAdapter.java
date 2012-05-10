@@ -353,7 +353,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * @param soapAction SoapAction HTTP Header
      * @return quoted SOAPAction value
      */
-    private String fixQuotesAroundSoapAction(String soapAction) {
+    static public String fixQuotesAroundSoapAction(String soapAction) {
         if(soapAction != null && (!soapAction.startsWith("\"") || !soapAction.endsWith("\"")) ) {
             if (LOGGER.isLoggable(Level.INFO)) {
                 LOGGER.log(Level.INFO, "Received WS-I BP non-conformant Unquoted SoapAction HTTP header: {0}", soapAction);
