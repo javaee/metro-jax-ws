@@ -244,4 +244,9 @@ abstract public class WsDatabindingTestBase extends TestCase {
       for(Object k : req.keySet()) if(!req.get(k).equals(res.get(k))) return false;
       return true;
     }
+
+    static public Method findMethod(Class<?> c, String n) {
+        for (Method m :c.getMethods()) if (m.getName().equals(n)) return m;
+        return null;
+    }
 }

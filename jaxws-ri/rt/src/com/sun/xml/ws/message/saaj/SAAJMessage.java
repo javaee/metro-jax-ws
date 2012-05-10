@@ -542,6 +542,8 @@ public class SAAJMessage extends Message {
     private class SAAJAttachment implements AttachmentEx {
 
         final AttachmentPart ap;
+        
+        String contentIdNoAngleBracket;
 
         public SAAJAttachment(AttachmentPart part) {
             this.ap = part;
@@ -551,7 +553,12 @@ public class SAAJMessage extends Message {
          * Content ID of the attachment. Uniquely identifies an attachment.
          */
         public String getContentId() {
-            return ap.getContentId();
+            if (contentIdNoAngleBracket == null) {
+                contentIdNoAngleBracket = ap.getContentId();
+                if (contentIdNoAngleBracket != null && contentIdNoAngleBracket.charAt(0) == '<') 
+                    contentIdNoAngleBracket = contentIdNoAngleBracket.substring(1, contentIdNoAngleBracket.length()-1);
+            }
+            return contentIdNoAngleBracket;
         }
 
         /**
