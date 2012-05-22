@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,14 +88,14 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     private final CookieHandler cookieJar;      // shared object among the tubes
     private final boolean sticky;
 
-    // Need to use JAXB first to register DatatypeConverter
-    static {
-        try {
-            JAXBContext.newInstance().createUnmarshaller();
-        } catch(JAXBException je) {
-            // Nothing much can be done. Intentionally left empty
-        }
-    }
+//    // Need to use JAXB first to register DatatypeConverter
+//    static {
+//        try {
+//            JAXBContext.newInstance().createUnmarshaller();
+//        } catch(JAXBException je) {
+//            // Nothing much can be done. Intentionally left empty
+//        }
+//    }
 
     public HttpTransportPipe(Codec codec, WSBinding binding) {
         this.codec = codec;
