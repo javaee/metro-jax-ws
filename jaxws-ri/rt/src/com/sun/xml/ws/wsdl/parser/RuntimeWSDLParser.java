@@ -47,6 +47,7 @@ import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.stream.buffer.XMLStreamBufferMark;
 import com.sun.xml.stream.buffer.stax.StreamReaderBufferCreator;
 import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.BindingIDFactory;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.WSDLLocator;
@@ -583,7 +584,9 @@ public class RuntimeWSDLParser {
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
             if (WSDLConstants.NS_SOAP_BINDING.equals(name)) {
-                binding.setBindingId(BindingID.SOAP11_HTTP);
+                String transport = reader.getAttributeValue(null, WSDLConstants.ATTR_TRANSPORT);
+                binding.setBindingId(createBindingId(transport, SOAPVersion.SOAP_11));
+
                 String style = reader.getAttributeValue(null, "style");
 
                 if ((style != null) && (style.equals("rpc"))) {
@@ -593,7 +596,9 @@ public class RuntimeWSDLParser {
                 }
                 goToEnd(reader);
             } else if (WSDLConstants.NS_SOAP12_BINDING.equals(name)) {
-                binding.setBindingId(BindingID.SOAP12_HTTP);
+                String transport = reader.getAttributeValue(null, WSDLConstants.ATTR_TRANSPORT);
+                binding.setBindingId(createBindingId(transport, SOAPVersion.SOAP_12));
+
                 String style = reader.getAttributeValue(null, "style");
                 if ((style != null) && (style.equals("rpc"))) {
                     binding.setStyle(Style.RPC);
@@ -607,6 +612,18 @@ public class RuntimeWSDLParser {
                 extensionFacade.bindingElements(binding, reader);
             }
         }
+    }
+    
+    private static BindingID createBindingId(String transport, SOAPVersion soapVersion) {
+        if (!transport.equals(SOAPConstants.URI_SOAP_TRANSPORT_HTTP)) {
+            for( BindingIDFactory f : ServiceFinder.find(BindingIDFactory.class) ) {
+                BindingID bindingId = f.create(transport, soapVersion);
+                if(bindingId!=null) {
+                    return bindingId;
+                }
+            }
+        }
+        return soapVersion.equals(SOAPVersion.SOAP_11)?BindingID.SOAP11_HTTP:BindingID.SOAP12_HTTP;
     }
 
 
