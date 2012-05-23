@@ -43,6 +43,7 @@ package com.sun.xml.ws.transport.http;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.addressing.NonAnonymousResponseProcessor;
 import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.ha.HaInfo;
@@ -62,6 +63,7 @@ import com.sun.xml.ws.api.server.ServiceDefinition;
 import com.sun.xml.ws.api.server.TransportBackChannel;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WebServiceContextDelegate;
+import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.server.UnsupportedMediaException;
 import com.sun.xml.ws.util.ByteArrayBuffer;
@@ -374,11 +376,19 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     private void encodePacket(@NotNull Packet packet, @NotNull WSHTTPConnection con, @NotNull Codec codec) throws IOException {
     	if (packet.endpointAddress != null) {
-    		// Message is targeted to non-anonymous response endpoint.
-    		// After call to non-anonymous processor, typically, packet.getMessage() will be null
-    		// however, processors could use this pattern to modify the response sent on the back-channel,
-    		// e.g. send custom HTTP headers with the HTTP 202
-    		packet = getNonAnonymousResponseProcessor().process(packet);
+            try {
+                // Message is targeted to non-anonymous response endpoint.
+                // After call to non-anonymous processor, typically, packet.getMessage() will be null
+                // however, processors could use this pattern to modify the response sent on the back-channel,
+                // e.g. send custom HTTP headers with the HTTP 202
+    		    packet = getNonAnonymousResponseProcessor().process(packet);
+            } catch (RuntimeException re) {
+                // if processing by NonAnonymousResponseProcessor fails, new SOAPFaultMessage is created to be sent
+                // to back-channel client
+                SOAPVersion soapVersion = packet.getBinding().getSOAPVersion();
+                Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(soapVersion, null, re);
+                packet = packet.createServerResponse(faultMsg, packet.endpoint.getPort(), null, packet.endpoint.getBinding());
+            }
     	}
     	
         if (con.isClosed()) {
