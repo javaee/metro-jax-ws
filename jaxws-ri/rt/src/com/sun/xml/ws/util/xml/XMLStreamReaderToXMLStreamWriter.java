@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,11 +40,16 @@
 
 package com.sun.xml.ws.util.xml;
 
+import java.io.IOException;
+
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.XMLConstants;
+
+import org.jvnet.staxex.Base64Data;
+import org.jvnet.staxex.XMLStreamReaderEx;
 
 /**
  * Reads a sub-tree from {@link XMLStreamReader} and writes to {@link XMLStreamWriter}
@@ -65,6 +70,8 @@ public class XMLStreamReaderToXMLStreamWriter {
 
     private char[] buf;
 
+    boolean optimizeBase64Data = false;
+            
     /**
      * Reads one subtree and writes it out.
      *
@@ -77,6 +84,8 @@ public class XMLStreamReaderToXMLStreamWriter {
         this.in = in;
         this.out = out;
 
+        optimizeBase64Data = (in instanceof XMLStreamReaderEx);
+                
         // remembers the nest level of elements to know when we are done.
         int depth=0;
 
@@ -151,9 +160,24 @@ public class XMLStreamReaderToXMLStreamWriter {
 
 
     protected void handleCharacters() throws XMLStreamException {
-        for (int start=0,read=buf.length; read == buf.length; start+=buf.length) {
-            read = in.getTextCharacters(start, buf, 0, buf.length);
-            out.writeCharacters(buf, 0, read);
+        
+        CharSequence c = null;
+        
+        if (optimizeBase64Data) {
+            c = ((XMLStreamReaderEx)in).getPCDATA();
+        }
+        
+        if ((c != null) && (c instanceof Base64Data)) {
+            try {
+                ((Base64Data)c).writeTo(out);
+            } catch (IOException e) {
+                throw new XMLStreamException(e);
+            }
+        } else {
+            for (int start=0,read=buf.length; read == buf.length; start+=buf.length) {
+                read = in.getTextCharacters(start, buf, 0, buf.length);
+                out.writeCharacters(buf, 0, read);
+            }
         }
     }
 
