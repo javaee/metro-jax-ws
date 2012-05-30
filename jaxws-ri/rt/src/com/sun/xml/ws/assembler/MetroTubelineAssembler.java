@@ -207,6 +207,7 @@ public class MetroTubelineAssembler implements TubelineAssembler {
             
             if (first) {
                 context.setTubelineHead(decorator.decorateServerTail(context.getTubelineHead(), context));
+                first = false;
             }
         }
 
