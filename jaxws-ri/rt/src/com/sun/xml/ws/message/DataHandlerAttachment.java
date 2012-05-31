@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,6 +63,7 @@ public final class DataHandlerAttachment implements Attachment {
 
     private final DataHandler dh;
     private final String contentId;
+    String contentIdNoAngleBracket;
 
     /**
      * This will be constructed by {@link AttachmentMarshallerImpl}
@@ -73,7 +74,13 @@ public final class DataHandlerAttachment implements Attachment {
     }
 
     public String getContentId() {
-        return contentId;
+//        return contentId;
+        if (contentIdNoAngleBracket == null) {
+            contentIdNoAngleBracket = contentId;
+            if (contentIdNoAngleBracket != null && contentIdNoAngleBracket.charAt(0) == '<') 
+                contentIdNoAngleBracket = contentIdNoAngleBracket.substring(1, contentIdNoAngleBracket.length()-1);
+        }
+        return contentIdNoAngleBracket;
     }
 
     public String getContentType() {

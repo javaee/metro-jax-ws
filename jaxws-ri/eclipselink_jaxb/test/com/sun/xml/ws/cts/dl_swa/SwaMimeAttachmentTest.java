@@ -158,16 +158,92 @@ public class SwaMimeAttachmentTest extends WsDatabindingTestBase  {
         Map<String, DataHandler> smcAtts2 = (Map<String, DataHandler>) smc.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
         assertEquals( 5, smcAtts1.size() );
         for (String cid : smcAtts2.keySet()) assertTrue(cid.charAt(0)!='<');
-
-//        ByteArrayOutputStream cliBo = new ByteArrayOutputStream();
-        
-//        ContentType cliCt = cliSoapReq.writeTo(cliBo);
-//        if (debug) {
-//            System.out.println("Request Message: " + cliCt.getContentType() + " " + cliCt.getSOAPActionHeader() );
-//            System.out.println(new String(cliBo.toByteArray()));
-//        }
     }
 
+
+    public void testCustomAttachmentContentId() throws Exception {
+        WSDLPort wsdlPort = getWSDLPort(getResource("WSW2JDLSwaTestService.wsdl"));
+        Class proxySEIClass = SwaTest1.class;
+        WebServiceFeature[] f = { databindingMode() };
+        
+        DatabindingConfig cliConfig = new DatabindingConfig();
+        cliConfig.setContractClass(proxySEIClass);
+        cliConfig.setFeatures(f);
+        cliConfig.setWsdlPort(wsdlPort);
+
+        cliConfig.setWsdlPort(wsdlPort);
+        cliConfig.getMappingInfo().setServiceName(new QName("http://SwaTestService.org/wsdl", "WSIDLSwaTestService"));
+        Databinding cli = (Databinding) factory.createRuntime(cliConfig); 
+
+        URL url1 = getResource("attach.text");
+        URL url2 = getResource("attach.html");
+        URL url3 = getResource("attach.xml");
+        URL url4 = getResource("attach.jpeg1");
+        URL url5 = getResource("attach.jpeg2");
+        DataHandler dh1 = new DataHandler(url1);
+        DataHandler dh2 = new DataHandler(url2);
+        DataHandler dh3 = new DataHandler(url3);
+        DataHandler dh4 = new DataHandler(url4);
+//        DataHandler dh5 = new DataHandler(url5);
+        javax.xml.ws.Holder<javax.activation.DataHandler> attach1 = new javax.xml.ws.Holder<javax.activation.DataHandler>();
+        attach1.value = dh1;
+        javax.xml.ws.Holder<javax.activation.DataHandler> attach2 = new javax.xml.ws.Holder<javax.activation.DataHandler>();
+        attach2.value = dh2;
+        javax.xml.ws.Holder<javax.xml.transform.Source> attach3 = new javax.xml.ws.Holder<javax.xml.transform.Source>();
+        attach3.value = new StreamSource(dh3.getInputStream());
+        javax.xml.ws.Holder<java.awt.Image> attach4 = new javax.xml.ws.Holder<java.awt.Image>();
+        javax.xml.ws.Holder<java.awt.Image> attach5 = new javax.xml.ws.Holder<java.awt.Image>();
+        attach4.value = javax.imageio.ImageIO.read(url4);
+        attach5.value = javax.imageio.ImageIO.read(url5);
+        VoidRequest request = new VoidRequest();
+        Object[] args = { request, attach1, attach2, attach3, attach4, attach5 };
+        Method method = findMethod(proxySEIClass, "echoAllAttachmentTypes");
+        JavaCallInfo cliCall = cli.createJavaCallInfo(method, args);
+        Packet cliSoapReq = (Packet)cli.serializeRequest(cliCall);
+
+        String customContentId = "<abcd@example.org>";
+        Map<String, DataHandler> attMap = new HashMap<String, DataHandler>();
+        attMap.put(customContentId, dh4);
+        cliSoapReq.invocationProperties.put(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS, attMap);
+
+        SOAPMessageContextImpl smc = new SOAPMessageContextImpl(null, cliSoapReq, null);
+        Map<String, DataHandler> smcAtts1 = (Map<String, DataHandler>) smc.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
+
+        assertEquals( 6, smcAtts1.size() );
+        assertNotNull(smcAtts1.get(customContentId));
+        
+        {//ClientSOAPHandlerTube.callHandlersOnRequest
+            Map<String, DataHandler> atts = (Map<String, DataHandler>) smc.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
+            AttachmentSet attSet = cliSoapReq.getMessage().getAttachments();
+            for(String cid : atts.keySet()){
+                if (attSet.get(cid) == null) {  // Otherwise we would be adding attachments twice
+                    Attachment att = new DataHandlerAttachment(cid, atts.get(cid));
+                    attSet.add(att);
+                }
+            }
+        }
+
+        int attCount = 0;
+        for (com.sun.xml.ws.api.message.Attachment a : cliSoapReq.getMessage().getAttachments()) {
+//            assertTrue(a.getContentId().charAt(0)!='<'); 
+            attCount++;
+        }
+        assertEquals( 6, attCount);
+        Object s1 = cliSoapReq.getAsSOAPMessage();
+        Object s2 = smc.getMessage();
+        assertTrue(s1 == s2);
+
+        int attCountSaaj = 0;
+        for (com.sun.xml.ws.api.message.Attachment a : cliSoapReq.getMessage().getAttachments()) {
+            assertTrue(a.getContentId().charAt(0)!='<');
+            attCountSaaj++;
+        }
+        assertEquals( 6, attCountSaaj);
+        Map<String, DataHandler> smcAtts2 = (Map<String, DataHandler>) smc.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
+        assertEquals( 6, smcAtts2.size() );
+//        System.out.println(smcAtts2.size() + " " + smcAtts2);
+        assertNotNull(smcAtts2.get(customContentId));
+    }
     
     public void testCTS_WsiDocLitSwaTest() throws Exception {
         WSDLPort wsdlPort = getWSDLPort(getResource("WSW2JDLSwaTestService.wsdl"));

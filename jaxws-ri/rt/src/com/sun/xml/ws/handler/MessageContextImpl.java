@@ -169,7 +169,16 @@ class MessageContextImpl implements MessageContext {
                 atts = new HashMap<String, DataHandler>();
             AttachmentSet attSet = packet.getMessage().getAttachments();
             for(Attachment att : attSet){
-                atts.put(att.getContentId(), att.asDataHandler());
+                String cid = att.getContentId();
+                if (cid.indexOf("@jaxws.sun.com") == -1) {
+                    Object a = atts.get(cid);
+                    if (a == null) {
+                        a = atts.get("<" + cid + ">");
+                        if (a == null) atts.put(att.getContentId(), att.asDataHandler());
+                    }
+                } else {
+                    atts.put(att.getContentId(), att.asDataHandler());
+                }
             }
             return atts;
         }
