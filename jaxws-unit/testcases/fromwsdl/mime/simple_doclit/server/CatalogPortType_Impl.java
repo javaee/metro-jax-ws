@@ -15,6 +15,8 @@ import javax.xml.ws.WebServiceException;
 import java.math.BigDecimal;
 import java.awt.Image;
 import java.util.List;
+import java.util.Map;
+import javax.xml.ws.handler.MessageContext;
 
 
 @WebService(endpointInterface = "fromwsdl.mime.simple_doclit.server.CatalogPortType")
@@ -28,7 +30,7 @@ public class CatalogPortType_Impl {
 
         outImageType.value = inImageType;
         out_image.value = image;
-/*
+
        MessageContext mc = wsContext.getMessageContext();
        Map<String, DataHandler> attachments = (Map<String, DataHandler>)mc.get(MessageContext.INBOUND_MESSAGE_ATTACHMENTS);
 
@@ -37,7 +39,7 @@ public class CatalogPortType_Impl {
 
        //now copy the received attachemnts to outbound attachemnt property
        mc.put(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS, attachments);
-*/
+
     }
 
     public FooType getFooWithMimeDisabled(boolean param, FooType foo) {
