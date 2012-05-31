@@ -322,7 +322,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         BindingID bindingId = portInfo.getBindingId();
 
         TubelineAssembler assembler = TubelineAssemblerFactory.create(
-                Thread.currentThread().getContextClassLoader(), bindingId);
+                Thread.currentThread().getContextClassLoader(), bindingId, owner.getContainer());
         if (assembler == null)
             throw new WebServiceException("Unable to process bindingID=" + bindingId);    // TODO: i18n
         return assembler.createClient(
