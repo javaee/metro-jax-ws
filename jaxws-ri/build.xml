@@ -67,58 +67,6 @@
     </javadoc>
   </target>
 
-    <target name="architecture-document" depends="prepare"
-            description="generate architecture documents (which is just a glorified javadoc)">
-      <mkdir dir="${build.home}/javadoc" />
-      <taskdef name="sequence-diagram" classname="com.sun.xml.bind.taglets.SequenceDiagramTask">
-        <classpath>
-          <pathelement path="${basedir}/tools/lib/taglets.jar" />
-        </classpath>
-      </taskdef>
-      <sequence-diagram
-        src="${basedir}/javadoc"
-        dest="${build.home}/javadoc"
-        includes="**/*.seq" />
-
-      <javadoc
-            destdir="${build.home}/javadoc"
-            use="true"
-            author="false"
-            version="false"
-            windowtitle="JAX-WS RI"
-            doctitle="JAX-WS RI"
-            access="package">
-
-      <doclet name="com.sun.xml.bind.taglets.CustomHtmlDoclet"
-        path="${basedir}/tools/lib/taglets.jar">
-      </doclet>
-
-      <packageset dir="${basedir}/javadoc"/>
-      <group title="Root Architecture Document" packages="jaxws" />
-
-      <packageset dir="${basedir}/rt/src"/>
-      <group title="Runtime" packages="com.sun.xml.ws.*,com.sun.pept.*" />
-
-      <packageset dir="${basedir}/servlet/src"/>
-      <group title="Runtime" packages="com.sun.xml.ws.*" />
-
-      <packageset dir="${basedir}/transports/local/src"/>
-      <group title="Runtime" packages="com.sun.xml.ws.transport.local.*" />
-
-      <packageset dir="${basedir}/tools/wscompile/src"/>
-      <group title="Tools" packages="com.sun.tools.ws.*,com.sun.istack.*" />
-
-      <link href="https://jaxb.dev.java.net/nonav/jaxb20-pr/api/"
-        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"   />
-      <link href="http://java.sun.com/j2se/1.5.0/docs/api/"
-        offline="true" packagelistloc="${basedir}/tools/javadoc-link/j2se5.0"  />
-      <link href="https://jaxb-architecture-document.dev.java.net/nonav/doc/"
-        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-ri"  />
-
-      <classpath refid="tools.compile.classpath"/>
-    </javadoc>
-    </target>
-
   <target name="generate-code" description="Just run the code generators. Designed to be invoked from IDE while developing the RI">
     <ant dir="${basedir}/rt"              target="generate-code" inheritrefs="true"/>
     <ant dir="${basedir}/tools/wscompile" target="generate-code" inheritrefs="true"/>
@@ -515,13 +463,10 @@
             <zipfileset dir="${basedir}/etc" prefix="${source.dist.dir.name}/etc" includes="CDDL+GPLv2.xml" />
             <zipfileset dir="${basedir}/etc" includes="src-build-readme.txt"
                         fullpath="${source.dist.dir.name}/README"/>
-            <!-- additional jar files -->
-            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.jar, junit*.jar, *-javadoc.jar, commons-jelly-tags-jsl-1.0.jar, sjsxp.jar, maven-ant-tasks-2.0.10.jar, mail.jar, html*.jar"
-                        prefix="${source.dist.dir.name}/lib"/>
 
             <!-- license files -->
             <zipfileset dir="."
-                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties, build-j2se.xml"
+                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties, build-taskdefs.xml, ivy.xml, ivysettings.xml, project.properties"
                         prefix="${source.dist.dir.name}"/>
             <zipfileset dir="${build.home}"
                         includes="TLDA_SCSL_Licensees_License_Notice.txt"
@@ -972,20 +917,25 @@
     </target>
 
     <target name="www.release" if="jaxws.scm.username">
-        <!-- Assumes hudson target has been already invoked -->
+        <!-- Assumes hudson target and licesee bundle target has been already invoked -->
         <property name="www.upload.dir" value="${build.home}/www" />
 
         <mkdir dir="${www.upload.dir}" />
 
+        <copy file="${build.home}/jaxws-${release.impl.version}-src-licensee.zip" tofile="${www.upload.dir}/jaxws-${release.impl.version}-src-licensee.zip" />
         <copy file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.zip" tofile="${www.upload.dir}/JAXWS${release.impl.version}${release.impl.version.suffix}-src-${DSTAMP}.zip" />
         <copy file="${build.home}/jaxws-ri.zip" tofile="${www.upload.dir}/JAXWS${release.impl.version}${release.impl.version.suffix}-${DSTAMP}.zip" />
 
         <copy todir="${www.upload.dir}/samples">
-            <fileset dir="${dist20.home}/samples" />
+            <fileset dir="${dist20.home}/samples"/>
+        </copy>
+
+        <copy todir="${www.upload.dir}/javadocs">
+            <fileset dir="${dist20.home}/javadocs"/>
         </copy>
 
         <copy todir="${www.upload.dir}/docs">
-            <fileset dir="${build.home}/docs" />
+            <fileset dir="${build.home}/docs"/>
         </copy>
 
         <copy file="${basedir}/docs/www/target/index.html" tofile="${www.upload.dir}/index.html" />
