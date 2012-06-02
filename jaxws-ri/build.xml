@@ -62,7 +62,7 @@
          version="false"
          windowtitle="${Name} Generated Documentation"
          doctitle="${Name}"
-         bottom="Copyright &#169; 2005 Sun Microsystems, Inc. All Rights Reserved.">
+         bottom="Copyright (c) 2005-2012 Oracle and/or its affiliates. All rights reserved.">
         <classpath refid="tools.compile.classpath"/>
     </javadoc>
   </target>
@@ -287,7 +287,7 @@
         <delete file="${dist20.home}/lib/jaxws-tools.src.zip"/>
     </target>
 
-   <target name="hudson" depends="dist.zip, src.zip, generate-weekly-source, javadocs, doc-src-zip" />
+   <target name="hudson" depends="dist.zip, src.zip, generate-weekly-source, javadocs, javadocs-spi, doc-src-zip" />
 
    <target name="replace-binaries-with-re-build">
       <!--
@@ -929,7 +929,7 @@
         </copy>
 
         <copy todir="${www.upload.dir}/javadocs">
-            <fileset dir="${dist20.home}/javadocs"/>
+            <fileset dir="${build.home}/javadocs"/>
         </copy>
 
         <copy todir="${www.upload.dir}/docs">

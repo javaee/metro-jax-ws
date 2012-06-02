@@ -208,7 +208,7 @@
                 version="false"
                 windowtitle="${Name} Generated Documentation"
                 doctitle="${Name}"
-                bottom="Copyright &#169; 2005 Sun Microsystems, Inc. All Rights Reserved.">
+                bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
             <classpath>
                 <path refid="runtime.compile.classpath"/>
                 <path refid="tools.compile.classpath"/>
@@ -318,7 +318,6 @@
         <zip zipfile="${build.home}/lib/jaxws-rt-javadoc.jar">
             <fileset dir="${build.home}/javadocs/rt"/>
         </zip>
-        <delete dir="${build.home}/javadocs/rt/"/>
 
         <ant dir="${basedir}/httpspi-servlet" target="jar"/>
     	<copy file="${basedir}/eclipselink_jaxb/etc/manifest" todir="${basedir}/eclipselink_jaxb/build"/>
@@ -352,7 +351,6 @@
     	<zip zipfile="${build.home}/plugins_lib/jaxws-eclipselink-plugin-javadoc.jar">
     	    <fileset dir="${build.home}/javadocs/eclipselink_jaxb"/>
     	</zip>
-    	<delete dir="${build.home}/javadocs/eclipselink_jaxb"/>
     	
     	<copy file="${basedir}/eclipselink_sdo/etc/manifest" todir="${basedir}/eclipselink_sdo/build"/>
     	<updateManifestWithVersion file="${basedir}/eclipselink_sdo/build/manifest"/>
@@ -385,7 +383,6 @@
     	<zip zipfile="${build.home}/plugins_lib/sdo-eclipselink-plugin-javadoc.jar">
     	    <fileset dir="${build.home}/javadocs/eclipselink_sdo"/>
     	</zip>
-    	<delete dir="${build.home}/javadocs/eclipselink_sdo"/>
     </target>
     <!-- runtime must be built before tools -->
     <target name="tools-compile" depends="runtime-build">
@@ -462,7 +459,6 @@
         <zip zipfile="${build.home}/lib/jaxws-tools-javadoc.jar">
             <fileset dir="${build.home}/javadocs/tools"/>
         </zip>
-        <delete dir="${build.home}/javadocs/tools/"/>
     </target>
 
     <target name="copy-woodstox-libs" description="Copies woodstox.jar into distribution jars" if="woodstox">
