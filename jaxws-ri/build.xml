@@ -917,6 +917,7 @@
     <target name="www.release" if="jaxws.scm.username">
         <!-- Assumes hudson target and licesee bundle target has been already invoked -->
         <property name="www.upload.dir" value="${build.home}/www" />
+        <property name="repo.dir" value="${www.repository.url}/${release.impl.version}${release.impl.version.suffix}${www.suffix}" />
 
         <mkdir dir="${www.upload.dir}" />
 
@@ -946,7 +947,7 @@
         </taskdef>
 
         <soimp  dir="${www.upload.dir}"
-                repository="${www.repository.url}/${release.impl.version}${release.impl.version.suffix}"
+                repository="${repo.dir}"
                 username="${jaxws.scm.username}"
                 password="${jaxws.scm.password}"
                 create="true"
