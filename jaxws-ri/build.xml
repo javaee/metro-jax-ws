@@ -287,7 +287,7 @@
         <delete file="${dist20.home}/lib/jaxws-tools.src.zip"/>
     </target>
 
-    <target name="hudson" depends="clean, dist.zip, src.zip, generate-weekly-source, javadocs, doc-src-zip" />
+   <target name="hudson" depends="dist.zip, src.zip, generate-weekly-source, javadocs, doc-src-zip" />
 
    <target name="replace-binaries-with-re-build">
       <!--
@@ -436,9 +436,7 @@
       <delete dir="${source.drop.dir}"/>
     </target>
 
-    <target name="generate-bundle-for-licensee"
-            depends="prepare"
-            description="generate sources bundle for licensees">
+    <target name="generate-bundle-for-licensee" depends="init" description="generate sources bundle for licensees">
         <tstamp/>
 
         <get src="http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/TLDA_SCSL_Licensees_License_Notice.txt" dest="${build.home}/TLDA_SCSL_Licensees_License_Notice.txt"/>
