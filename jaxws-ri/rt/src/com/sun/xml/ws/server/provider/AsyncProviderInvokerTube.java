@@ -149,8 +149,8 @@ class AsyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
 
         public void sendError(@NotNull Throwable t) {
             Exception e;
-            if (t instanceof RuntimeException) {
-                e = (RuntimeException)t;
+            if (t instanceof Exception) {
+                e = (Exception) t;
             } else {
                 e = new RuntimeException(t);
             }

@@ -41,10 +41,12 @@
 package com.sun.xml.ws.server.provider;
 
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.fault.SOAPFaultBuilder;
 
 import javax.xml.ws.soap.SOAPBinding;
 
@@ -91,17 +93,22 @@ abstract class ProviderArgumentsBuilder<T> {
 
     public static ProviderArgumentsBuilder<?> create(ProviderEndpointModel model, WSBinding binding) {
     	if (model.datatype == Packet.class)
-    		return new PacketProviderArgumentsBuilder();
+    		return new PacketProviderArgumentsBuilder(binding.getSOAPVersion());
         return (binding instanceof SOAPBinding) ? SOAPProviderArgumentBuilder.create(model, binding.getSOAPVersion())
                 : XMLProviderArgumentBuilder.createBuilder(model, binding);
     }
     
     private static class PacketProviderArgumentsBuilder extends ProviderArgumentsBuilder<Packet> {
+                private final SOAPVersion soapVersion;
+
+                public PacketProviderArgumentsBuilder(SOAPVersion soapVersion) {
+                    this.soapVersion = soapVersion;
+                }
 
 		@Override
 		protected Message getResponseMessage(Exception e) {
-			// Should never be called
-			throw new IllegalStateException();
+		    // Will be called by AsyncProviderCallbackImpl.sendError
+		    return SOAPFaultBuilder.createSOAPFaultMessage(soapVersion, null, e);
 		}
 
 		@Override
