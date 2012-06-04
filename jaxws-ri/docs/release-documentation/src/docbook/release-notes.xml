@@ -513,6 +513,15 @@ holder.
                 </tbody>
             </tgroup>
         </table>
+
+        <para>If you run &jax-ws.product.name; with IBM JDK, there are two options:
+            <itemizedlist>
+                <listitem><para>to add Oracles's JAXP implementation jars along</para></listitem>
+                <listitem><para>to remove the saaj-impl.jar from the libraries in order IBM SAAJ implementation to be used</para></listitem>
+            </itemizedlist>
+            First approach is recommended.
+        </para>
+
     </section>
 
     <section xml:id="current-limitations">
