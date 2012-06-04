@@ -1,3 +1,43 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
 package com.sun.xml.ws.db.sdo;
 
 import commonj.sdo.DataObject;
@@ -24,6 +64,7 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -35,6 +76,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 //import javax.xml.transform.stax.StAXSource;
+import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -63,6 +105,8 @@ public class SDOBond<T>  implements XMLBridge<T> {
     private Class<T> javaType = null;
     private Type theType = null;
     private SDOContextWrapper parent;
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    TransformerFactory tf = TransformerFactory.newInstance();
     
     public SDOBond(SDOContextWrapper parent, TypeInfo ti) {
         this.parent = parent;
@@ -91,6 +135,9 @@ public class SDOBond<T>  implements XMLBridge<T> {
 
     private T deserialize(Source src, javax.xml.bind.attachment.AttachmentUnmarshaller au) {
         try {
+            if (!commonj.sdo.DataObject.class.isAssignableFrom(javaType) && !javaType.isInterface()) {
+                return (T) deserializePrimitives(src);
+            }            
             HelperContext context = parent.getHelperContext();
             SDOAttachmentUnmarshaller unmarshaller = null;
             if (au != null)
@@ -112,6 +159,33 @@ public class SDOBond<T>  implements XMLBridge<T> {
         }
     }
 
+    private Object deserializePrimitives(Source src) throws Exception {
+        if (javaType == null) return null;
+        DOMResult result = new DOMResult();
+        Transformer t = tf.newTransformer();
+        t.transform(src, result);        
+        String value = ((Document)result.getNode()).getDocumentElement().getTextContent().trim(); //xmlElement.getTextContent().trim();
+        if (value == null) {
+            return null;
+        }
+        Object o = null;
+        try {
+            o = ((SDODataHelper) parent.getHelperContext().getDataHelper()).convertFromStringValue(value, theType);
+        } catch (Exception e) {
+            // content class does not accept null or empty value, such as BigDecimal, Integer etc
+            // these type of empty value will cause toplink data helper to fail, workaround to prevent such failures
+            if (value.length() == 0) {
+                if (logger.isLoggable(Level.FINEST))
+                    logger.finest("Deserialized primitive part has 0 length text, result is null");
+                return null;
+            }            
+        }
+        
+        if (logger.isLoggable(Level.FINEST))
+            logger.finest("Deserialized primitive part " + o);
+        return o;
+    }
+
     private String serializePrimitive(Object obj, Class<?> contentClass) {
         if (logger.isLoggable(Level.FINEST))
             logger.finest("Primitive class to be serialized ==> " + contentClass);    
@@ -129,7 +203,6 @@ public class SDOBond<T>  implements XMLBridge<T> {
     
     private void serializeToResult(String value, Result result) {
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.newDocument();
             Element elt = doc.createElementNS(xmlTag.getNamespaceURI(), "ns1:"
@@ -137,7 +210,6 @@ public class SDOBond<T>  implements XMLBridge<T> {
             doc.appendChild(elt);
             elt.appendChild(doc.createTextNode(value));
             DOMSource ds = new DOMSource(elt);
-            TransformerFactory tf = TransformerFactory.newInstance();
             Transformer t = tf.newTransformer();
             t.transform(ds, result);
         } catch (Exception e) {
@@ -213,10 +285,11 @@ public class SDOBond<T>  implements XMLBridge<T> {
             //TODO, this is a hack, seems to be wrong. why should namespace returned  is ""?
             if (xmlTag.getNamespaceURI().equals("")) {
                 output.writeStartElement("", xmlTag.getLocalPart(), xmlTag.getNamespaceURI());
-            } else if (prefix == null) {
-                output.writeStartElement(xmlTag.getNamespaceURI(), xmlTag.getLocalPart());
+//            } else if (prefix == null) {
+//                output.writeStartElement(xmlTag.getNamespaceURI(), xmlTag.getLocalPart());
             } else {
                 output.writeStartElement(prefix, xmlTag.getLocalPart(), xmlTag.getNamespaceURI());
+                output.writeNamespace(prefix, xmlTag.getNamespaceURI());
             }
             output.writeCharacters(value);
             output.writeEndElement();
@@ -302,8 +375,8 @@ public class SDOBond<T>  implements XMLBridge<T> {
     //@Override
     public T unmarshal(XMLStreamReader in, AttachmentUnmarshaller au)
             throws JAXBException {
-        //return deserialize(new StAXSource(in), au);
-        return deserialize(new com.sun.xml.ws.util.xml.StAXSource(in, false), au);
+        return deserialize(new StAXSource(in), au);
+//        return deserialize(new com.sun.xml.ws.util.xml.StAXSource(in, true), au);
     }
 
     //@Override

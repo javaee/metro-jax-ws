@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,8 @@ import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.Parameter;
 import com.sun.xml.ws.api.model.ParameterBinding;
+import com.sun.xml.ws.spi.db.RepeatedElementBridge;
+import com.sun.xml.ws.spi.db.WrapperComposite;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.spi.db.TypeInfo;
 
@@ -79,6 +81,9 @@ public class ParameterImpl implements Parameter {
     private TypeInfo typeInfo;
     private QName name;
     private final JavaMethodImpl parent;
+    
+    WrapperParameter wrapper;
+    TypeInfo itemTypeInfo;
 
     public ParameterImpl(JavaMethodImpl parent, TypeInfo type, Mode mode, int index) {
         assert type != null;
@@ -107,6 +112,26 @@ public class ParameterImpl implements Parameter {
     
     public XMLBridge getXMLBridge() {
         return getOwner().getXMLBridge(typeInfo);
+    }
+    
+    public XMLBridge getInlinedRepeatedElementBridge() {
+        TypeInfo itemType = getItemType();
+        if (itemType != null) {
+            XMLBridge xb = getOwner().getXMLBridge(itemType);
+            if (xb != null) return new RepeatedElementBridge(typeInfo, xb);
+        }
+        return null;
+    }
+    
+    public TypeInfo getItemType() {
+        if (itemTypeInfo != null) return itemTypeInfo;
+        //RpcLit cannot inline repeated element in wrapper
+        if (parent.getBinding().isRpcLit() || wrapper == null) return null;
+        //InlinedRepeatedElementBridge is only used for dynamic wrapper (no wrapper class) 
+        if (!WrapperComposite.class.equals(wrapper.getTypeInfo().type)) return null;
+        if (!getBinding().isBody()) return null;
+        itemTypeInfo = typeInfo.getItemType();
+        return  itemTypeInfo;
     }
 
     /**  @deprecated  */
@@ -244,6 +269,7 @@ public class ParameterImpl implements Parameter {
     }
 
     void fillTypes(List<TypeInfo> types) {
-        types.add(getTypeInfo());
+        TypeInfo itemType = getItemType();
+        types.add((itemType != null) ? itemType : getTypeInfo());
     }
 }

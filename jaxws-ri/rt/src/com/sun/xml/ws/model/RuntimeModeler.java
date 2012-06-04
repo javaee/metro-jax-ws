@@ -137,6 +137,7 @@ public class RuntimeModeler {
     public static final Class<RuntimeException> RUNTIME_EXCEPTION_CLASS = RuntimeException.class;
     public static final Class<Exception> EXCEPTION_CLASS = Exception.class;
     public static final String DecapitalizeExceptionBeanProperties = "com.sun.xml.ws.api.model.DecapitalizeExceptionBeanProperties";
+    public static final String SuppressDocLitWrapperGeneration = "com.sun.xml.ws.api.model.SuppressDocLitWrapperGeneration";
 
   /*public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull BindingID bindingId, @NotNull WebServiceFeature... features) {
         this(portClass, serviceName, null, bindingId, features);
@@ -376,11 +377,17 @@ public class RuntimeModeler {
         }
     }
 
+    private boolean noWrapperGen() {
+        Object o = config.properties().get(SuppressDocLitWrapperGeneration);
+        return (o!= null && o instanceof Boolean) ? ((Boolean) o) : false;
+    }
+
     private Class getRequestWrapperClass(String className, Method method, QName reqElemName) {
         ClassLoader loader =  (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
         try {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
+            if (noWrapperGen()) return WrapperComposite.class;
             logger.fine("Dynamically creating request wrapper Class " + className);
             return WrapperBeanGenerator.createRequestWrapperBean(className, method, reqElemName, loader);
         }
@@ -391,6 +398,7 @@ public class RuntimeModeler {
         try {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
+            if (noWrapperGen()) return WrapperComposite.class;
             logger.fine("Dynamically creating response wrapper bean Class " + className);
             return WrapperBeanGenerator.createResponseWrapperBean(className, method, resElemName, loader);
         }
@@ -876,6 +884,7 @@ public class RuntimeModeler {
             if (resultQName.getLocalPart() != null) {
                 TypeInfo rTypeReference = new TypeInfo(resultQName, returnType, rann);
                 metadataReader.getProperties(rTypeReference.properties(), method);
+                rTypeReference.setGenericType(method.getGenericReturnType());
                 ParameterImpl returnParameter = new ParameterImpl(javaMethod, rTypeReference, Mode.OUT, -1);
                 if (isResultHeader) {
                     returnParameter.setBinding(ParameterBinding.HEADER);
@@ -940,6 +949,7 @@ public class RuntimeModeler {
             typeRef =
                 new TypeInfo(paramQName, clazzType, pannotations[pos]);
             metadataReader.getProperties(typeRef.properties(), method, pos);
+            typeRef.setGenericType(genericParameterTypes[pos]);
             ParameterImpl param = new ParameterImpl(javaMethod, typeRef, paramMode, pos++);
 
             if (isHeader) {

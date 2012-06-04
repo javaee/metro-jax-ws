@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<definitions name="HRAppService"
+             targetNamespace="http://sdo.sample.service/"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:tns="http://sdo.sample.service/"
+             xmlns:types="http://sdo.sample.service/types/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+   <types>
+      <xsd:schema elementFormDefault="qualified"
+                  targetNamespace="http://sdo.sample.service/types/"
+                  xmlns="http://sdo.sample.service/types/"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:sdoJava="commonj.sdo/java"
+                  sdoJava:package="com.sun.xml.ws.sdo.sample.service.types">
+         <xsd:element name="getTotalComp" type="GetTotalComp"/>
+         <xsd:complexType name="GetTotalComp" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.GetTotalComp">
+            <xsd:sequence>
+               <xsd:element name="empno" type="xsd:integer"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="getTotalCompResponse" type="GetTotalCompResponse"/>
+         <xsd:complexType name="GetTotalCompResponse" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.GetTotalCompResponse">
+            <xsd:sequence>
+               <xsd:element name="result" type="xsd:decimal" nillable="true"/>
+            </xsd:sequence>
+         </xsd:complexType>
+      </xsd:schema>
+   </types>
+   <message name="HRAppService_getTotalComp">
+      <part name="parameters" element="types:getTotalComp"/>
+   </message>
+   <message name="HRAppService_getTotalCompResponse">
+      <part name="parameters" element="types:getTotalCompResponse"/>
+   </message>
+   
+   <portType name="HRAppService">   
+      <operation name="getTotalComp">
+         <input message="tns:HRAppService_getTotalComp"/>
+         <output message="tns:HRAppService_getTotalCompResponse"/>
+      </operation>
+   </portType>
+   
+   <binding name="HRAppServiceSoapHttp" type="tns:HRAppService">
+      <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+      <operation name="getTotalComp">
+         <soap:operation soapAction="http://sdo.sample.service//getTotalComp"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+   </binding>
+   <service name="HRAppService">
+      <port name="HRAppServiceSoapHttpPort" binding="tns:HRAppServiceSoapHttp">
+         <soap:address location="http://localhost:8888/sdoTest/sdoTest"/>
+      </port>
+   </service>
+</definitions>

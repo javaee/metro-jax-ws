@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.sdo;
 
 import java.io.ByteArrayInputStream;
@@ -45,6 +46,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -240,6 +242,11 @@ abstract public class SDODatabindingTestBase extends TestCase {
       if (req.size() != res.size()) return false;
       for(Object k : req.keySet()) if(!req.get(k).equals(res.get(k))) return false;
       return true;
+    }
+
+    static public URL getResource(String str) throws Exception {
+//        return new File("D:/oc4j/webservices/devtest/data/cts15/DLSwaTest/" + str).toURL();
+        return Thread.currentThread().getContextClassLoader().getResource("etc/"+str);
     }
 }
 

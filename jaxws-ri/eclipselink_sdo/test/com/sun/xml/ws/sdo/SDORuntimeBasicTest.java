@@ -2,6 +2,8 @@ package com.sun.xml.ws.sdo;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +21,8 @@ import com.sun.xml.ws.db.sdo.SDOUtils;
 import com.sun.xml.ws.db.sdo.SchemaInfo;
 import com.sun.xml.ws.sdo.test.AddNumbersPortType;
 import com.sun.xml.ws.sdo.test.AddNumbersServiceImpl;
+import com.sun.xml.ws.sdo.test.HelloSDO_DocLitWrap;
+import com.sun.xml.ws.sdo.test.HelloSDO_DocLitWrapImpl;
 import com.sun.xml.ws.sdo.test.HelloSDO_ProxyInterface;
 import com.sun.xml.ws.sdo.test.HelloSDO_ProxyInterfaceImpl;
 import com.sun.xml.ws.sdo.test.helloSDO.MySDO;
@@ -78,9 +82,7 @@ public class SDORuntimeBasicTest extends SDODatabindingTestBase {
         
         HelloSDO_ProxyInterface proxy =  createProxy(sei, srvConfig, cliConfig, false);
         SDOUtils.defineSchema(chc, f);
-        MySDO mySDO = (MySDO) chc.getDataFactory().create(MySDO.class);
-        mySDO.setIntPart(20);
-        mySDO.setStringPart("Gigi");
+        MySDO mySDO = createMySDO(chc, "Gigi", 20);
         Object obj = proxy.echoSDO(mySDO);
         assertTrue(obj instanceof MySDO);
         mySDO = (MySDO) obj;
@@ -139,6 +141,88 @@ public class SDORuntimeBasicTest extends SDODatabindingTestBase {
         assertTrue(obj instanceof Integer);
         Integer resp = (Integer) obj;
         assertEquals(new Integer(-79), resp);
+    }
+
+
+    public void testEchoSDO_DocLitWrapNoWrapper() throws Exception {
+        Class<HelloSDO_DocLitWrap>     sei = HelloSDO_DocLitWrap.class;
+        Class<HelloSDO_DocLitWrapImpl> seb = HelloSDO_DocLitWrapImpl.class;
+        DatabindingConfig srvConfig = new DatabindingConfig();
+        final HelperContext shc = SDOHelperContext.getHelperContext("server");
+        HelperContextResolver shcr = new HelperContextResolver() {
+            public HelperContext getHelperContext(boolean isClient,
+                    QName serviceName, Map<String, Object> properties) {
+                return shc;
+            }
+            
+        };
+        File f = getSchema("MySDO.xsd");
+        
+        Set<SchemaInfo> schemas = SDOUtils.getSchemas(f);
+        
+        srvConfig.setEndpointClass(seb);
+        DatabindingModeFeature dbm = databindingMode();
+        WebServiceFeature[] features = { dbm };
+        srvConfig.setFeatures(features); 
+        srvConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_INFO, schemas);
+        srvConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, shcr);
+        srvConfig.properties().put("com.sun.xml.ws.api.model.SuppressDocLitWrapperGeneration", true);
+
+        DatabindingConfig cliConfig = new DatabindingConfig();
+        final HelperContext chc = SDOHelperContext.getHelperContext("client");//SDODatabindingContext.getLocalHelperContext();
+        HelperContextResolver chcr = new HelperContextResolver() {
+            public HelperContext getHelperContext(boolean isClient,
+                    QName serviceName, Map<String, Object> properties) {
+                return chc;
+            }
+            
+        };
+        cliConfig.setContractClass(sei);
+        cliConfig.setFeatures(features);
+        cliConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_INFO, schemas);
+        cliConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, chcr);
+        cliConfig.properties().put("com.sun.xml.ws.api.model.SuppressDocLitWrapperGeneration", true);
+        
+        HelloSDO_DocLitWrap proxy =  createProxy(sei, srvConfig, cliConfig, false);
+        SDOUtils.defineSchema(chc, f);
+        String s = "Gigi";
+        int i = 20;
+        MySDO mySDO = createMySDO(chc, s, i);
+        assertEquals(s, proxy.returnS(mySDO));
+        assertEquals(i, proxy.returnI(mySDO));
+        Object obj = proxy.echoSDO(mySDO);
+        assertTrue(obj instanceof MySDO);
+        mySDO = (MySDO) obj;
+        assertEquals(21, mySDO.getIntPart());
+        assertEquals("Gary", mySDO.getStringPart());
+        String wrapperName = srvConfig.properties().get(
+                BindingContext.class.getName()).getClass().getName();
+        assertTrue(wrapperName != null && wrapperName.endsWith("SDOContextWrapper"));
+        {
+            MySDO[] a = { createMySDO(chc, "a", 1), createMySDO(chc, "b", 2), createMySDO(chc, "c", 3) };        
+            List<MySDO> lreq = Arrays.asList(a);
+            List<String> lres = proxy.testList1(lreq);
+            assertEquals(lres.size(), lreq.size());
+        }
+        {
+            MySDO[] a = { createMySDO(chc, "a", 1), createMySDO(chc, "b", 2), createMySDO(chc, "c", 3) };        
+            List<String> l1 = Arrays.asList( new String[]{"w", "x", "y", "z"});    
+            List<MySDO> l2 = Arrays.asList(a);
+            List<String> lres = proxy.testList2(l1, l2);
+            assertEquals(lres.size(), l1.size() + l2.size());
+        }
+        {
+            MySDO[] a = { createMySDO(chc, "g", 5), createMySDO(chc, "j", 6), createMySDO(chc, "k", 7), createMySDO(chc, "l", 8), createMySDO(chc, "h", 9) };
+            String[] res = proxy.arrayList01(a);
+            assertEquals(res.length, a.length);
+        }
+    }
+
+    private MySDO createMySDO(HelperContext chc, String s, int i) {
+        MySDO mySDO = (MySDO) chc.getDataFactory().create(MySDO.class);
+        mySDO.setIntPart(i);
+        mySDO.setStringPart(s);
+        return mySDO;
     }
     
     static public Method findMethod(Class<?> c, String name) {

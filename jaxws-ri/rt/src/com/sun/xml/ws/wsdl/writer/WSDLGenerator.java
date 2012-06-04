@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -83,12 +83,19 @@ import com.sun.xml.ws.wsdl.writer.document.soap.BodyType;
 import com.sun.xml.ws.wsdl.writer.document.soap.Header;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPAddress;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPFault;
+import com.sun.xml.ws.wsdl.writer.document.xsd.Schema;
 import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingHelper;
+import com.sun.xml.ws.spi.db.TypeInfo;
+import com.sun.xml.ws.spi.db.WrapperComposite;
 import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.policy.jaxws.PolicyWSDLGeneratorExtension;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import org.jvnet.ws.databinding.WSDLResolver;
+import com.sun.xml.bind.v2.schemagen.xmlschema.Element;
+import com.sun.xml.bind.v2.schemagen.xmlschema.ComplexType;
+import com.sun.xml.bind.v2.schemagen.xmlschema.ExplicitGroup;
+import com.sun.xml.bind.v2.schemagen.xmlschema.LocalElement;
 
 import javax.jws.soap.SOAPBinding.Style;
 import javax.jws.soap.SOAPBinding.Use;
@@ -111,6 +118,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -468,6 +476,64 @@ public class WSDLGenerator {
             } catch (TransformerException e) {
                 e.printStackTrace();
                 throw new WebServiceException(e.getMessage(), e);
+            }
+        }
+        generateWrappers();
+    }
+    
+    void generateWrappers() {
+        List<WrapperParameter> wrappers = new ArrayList<WrapperParameter>();
+        for (JavaMethodImpl method : model.getJavaMethods()) {
+            if(method.getBinding().isRpcLit()) continue; 
+            for (ParameterImpl p : method.getRequestParameters()) {
+                if (p instanceof WrapperParameter) {
+                    if (WrapperComposite.class.equals((((WrapperParameter)p).getTypeInfo().type))) {
+                        wrappers.add((WrapperParameter)p);
+                    }
+                }
+            }
+            for (ParameterImpl p : method.getResponseParameters()) {
+                if (p instanceof WrapperParameter) {
+                    if (WrapperComposite.class.equals((((WrapperParameter)p).getTypeInfo().type))) {
+                        wrappers.add((WrapperParameter)p);
+                    }
+                }
+            }
+        }        
+        if (wrappers.size() == 0) return;
+        HashMap<String, Schema> xsds = new HashMap<String, Schema>(); 
+        for(WrapperParameter wp : wrappers) {
+            String tns = wp.getName().getNamespaceURI();
+            Schema xsd = xsds.get(tns);
+            if (xsd == null) {
+                xsd = types.schema();
+                xsd.targetNamespace(tns);
+                xsds.put(tns, xsd);
+            }
+            Element e =  xsd._element(Element.class);
+            e._attribute("name", wp.getName().getLocalPart());
+            e.type(wp.getName());
+            ComplexType ct =  xsd._element(ComplexType.class);
+            ct._attribute("name", wp.getName().getLocalPart());
+            ExplicitGroup sq = ct.sequence();            
+            for (ParameterImpl p : wp.getWrapperChildren() ) {
+                if (p.getBinding().isBody()) {
+                    LocalElement le = sq.element();
+                    le._attribute("name", p.getName().getLocalPart());
+                    TypeInfo typeInfo = p.getItemType();
+                    boolean repeatedElement = false;
+                    if (typeInfo == null) {
+                        typeInfo = p.getTypeInfo();
+                    } else {
+                        repeatedElement = true;
+                    }
+                    QName type = model.getBindingContext().getTypeName(typeInfo); 
+                    le.type(type);
+                    if (repeatedElement) {
+                        le.minOccurs(0);
+                        le.maxOccurs("unbounded");
+                    }                    
+                }
             }
         }
     }

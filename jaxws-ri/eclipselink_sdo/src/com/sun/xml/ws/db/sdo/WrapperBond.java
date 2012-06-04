@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,10 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.xml.ws.db.sdo;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.attachment.AttachmentMarshaller;
@@ -59,15 +61,17 @@ import org.xml.sax.SAXException;
 
 
 import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.RepeatedElementBridge;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.spi.db.DatabindingException;
 import com.sun.xml.ws.spi.db.TypeInfo;
 import com.sun.xml.ws.spi.db.WrapperComposite;
 
 public class WrapperBond<T> implements XMLBridge<T> {
-    SDOContextWrapper parent;
+    BindingContext parent;
     TypeInfo typeInfo;
-    static final String WrapperPrefix = "W:";
+    static final String WrapperPrefix  = "w";
+    static final String WrapperPrefix_ = WrapperPrefix + ":";
     
     public WrapperBond(SDOContextWrapper p, TypeInfo ti) {
         this.parent = p;
@@ -99,12 +103,19 @@ public class WrapperBond<T> implements XMLBridge<T> {
             public String getValue(String qName)  { return null; }
         };
         try {
-            contentHandler.startElement(typeInfo.tagName.getNamespaceURI(), typeInfo.tagName.getLocalPart(), WrapperPrefix + typeInfo.tagName.getLocalPart(), att);
+            contentHandler.startElement(typeInfo.tagName.getNamespaceURI(), typeInfo.tagName.getLocalPart(), WrapperPrefix_ + typeInfo.tagName.getLocalPart(), att);
         } catch (SAXException e) {
             throw new JAXBException(e);
         }
         if (w.bridges != null) for (int i = 0; i < w.bridges.length; i++) {
-            w.bridges[i].marshal(w.values[i], contentHandler, am);
+            if (w.bridges[i] instanceof RepeatedElementBridge) {
+                RepeatedElementBridge rbridge = (RepeatedElementBridge) w.bridges[i];
+                for (Iterator itr = rbridge.collectionHandler().iterator(w.values[i]); itr.hasNext();) {
+                    rbridge.marshal(itr.next(), contentHandler, am);
+                }                
+            } else {
+                w.bridges[i].marshal(w.values[i], contentHandler, am);
+            }
         }
         try {
             contentHandler.endElement(typeInfo.tagName.getNamespaceURI(), typeInfo.tagName.getLocalPart(), null);
@@ -136,8 +147,8 @@ public class WrapperBond<T> implements XMLBridge<T> {
 //          System.out.println(typeInfo.tagName.getNamespaceURI());
             
             //The prefix is to workaround an eclipselink bug
-            output.writeStartElement("rpc", typeInfo.tagName.getLocalPart(), typeInfo.tagName.getNamespaceURI());
-            output.writeNamespace("rpc", typeInfo.tagName.getNamespaceURI());
+            output.writeStartElement(WrapperPrefix, typeInfo.tagName.getLocalPart(), typeInfo.tagName.getNamespaceURI());
+            output.writeNamespace(WrapperPrefix, typeInfo.tagName.getNamespaceURI());
 
 //          output.writeStartElement("", typeInfo.tagName.getLocalPart(), typeInfo.tagName.getNamespaceURI());
 //          output.writeDefaultNamespace(typeInfo.tagName.getNamespaceURI());
@@ -149,8 +160,14 @@ public class WrapperBond<T> implements XMLBridge<T> {
             new DatabindingException(e);
         }
         if (w.bridges != null) for (int i = 0; i < w.bridges.length; i++) {
-//          System.out.println("======== bond " + w.bridges[i].getTypeInfo().tagName);
-            w.bridges[i].marshal(w.values[i], output, am);
+            if (w.bridges[i] instanceof RepeatedElementBridge) {
+                RepeatedElementBridge rbridge = (RepeatedElementBridge) w.bridges[i];
+                for (Iterator itr = rbridge.collectionHandler().iterator(w.values[i]); itr.hasNext();) {
+                    rbridge.marshal(itr.next(), output, am);
+                }                
+            } else {
+                w.bridges[i].marshal(w.values[i], output, am);
+            }
         }
         try {
             output.writeEndElement();
