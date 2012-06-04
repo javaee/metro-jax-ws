@@ -247,27 +247,6 @@
             </manifest>
         </sequential>
     </macrodef>
-
-    <target name="com.sun.xml.ws.jaxws-rt.jar">
-        <delete dir="${build.home}/lib/jaxws-rtTemp"/>
-	    <unzip dest="${build.home}/lib/jaxws-rtTemp" src="${build.home}/lib/jaxws-rt.jar" />
-        <delete dir="${build.home}/lib/jaxws-rtTemp/META-INF/services"/>
-		<jar jarfile="${build.home}/lib/com.sun.xml.ws.jaxws-rt.jar">
-            <fileset dir="${build.home}/lib/jaxws-rtTemp"/>
-        </jar>
-        <delete dir="${build.home}/lib/jaxws-rtTemp"/>
-	<!--
-        <jar jarfile="${build.home}/lib/com.sun.xml.ws.jaxws-rt.jar" manifest="${basedir}/rt/build/manifest">
-            <fileset dir="${basedir}/rt/build/classes" includes="**/*.class"/>
-			<fileset dir="${basedir}/rt/build/classes" includes="**/*.xml"/>
-			<fileset dir="${basedir}/rt/build/classes" includes="**/*.properties"/>
-            <fileset dir="${basedir}/rt-fi/build/classes/"/>
-            <fileset dir="${basedir}/rt-ha/build/classes"/>
-            <fileset dir="${basedir}/servlet/build/classes" includes="**/*.class"/>
-            <fileset dir="${basedir}/rt/src" includes="**/*.xml"/>
-        </jar>
-		-->
-	</target>
 	
     <target name="runtime-build" depends="runtime-compile">
         <!-- Copy resource files etc -->
@@ -502,4 +481,39 @@
     <target name="j2se-integration" description="Prepare Sources for J2SE integration" depends="tools-build">
         <ant antfile="build-j2se.xml" target="repackage-j2se-integration" inheritrefs="true"/>
     </target>
+	
+
+	<!-- Generates the corresponding com.sun.xml.ws.*.jar that does not contain the 
+	      META-INF/services -->
+    <target name="no-services-jar">
+        <delete  dir="${no-services-jar.dir}/${no-services-jar.jar}Temp"/>
+	    <unzip  dest="${no-services-jar.dir}/${no-services-jar.jar}Temp" 
+		         src="${no-services-jar.dir}/${no-services-jar.jar}.jar" />
+        <delete  dir="${no-services-jar.dir}/${no-services-jar.jar}Temp/META-INF/services"/>
+		<jar jarfile="${no-services-jar.dir}/com.sun.xml.ws.${no-services-jar.jar}.jar">
+            <fileset dir="${no-services-jar.dir}/${no-services-jar.jar}Temp" />
+        </jar>
+        <delete dir="${no-services-jar.dir}/${no-services-jar.jar}Temp" />
+	</target>
+	
+    <target name="com.sun.xml.ws.jaxws-rt.jar">
+	  <antcall target="no-services-jar">
+		<param name="no-services-jar.dir" value="${build.home}/lib"/>
+		<param name="no-services-jar.jar" value="jaxws-rt"/>
+	  </antcall>
+	</target>
+	
+    <target name="com.sun.xml.ws.jaxws-eclipselink-plugin.jar">	
+	  <antcall target="no-services-jar">
+		<param name="no-services-jar.dir" value="${build.home}/plugins_lib"/>
+		<param name="no-services-jar.jar" value="jaxws-eclipselink-plugin"/>
+	  </antcall>
+	</target>
+	
+    <target name="com.sun.xml.ws.sdo-eclipselink-plugin.jar">
+	  <antcall target="no-services-jar">
+		<param name="no-services-jar.dir" value="${build.home}/plugins_lib"/>
+		<param name="no-services-jar.jar" value="sdo-eclipselink-plugin"/>
+	  </antcall>
+	</target>
 </project>
