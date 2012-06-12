@@ -280,7 +280,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
                 this.requestContext.setEndPointAddressString(epr.getAddress());
             else
                 this.requestContext.setEndpointAddress(defaultEndPointAddress);
-            this.engine = new Engine(toString(), owner.getContainer(), owner.getExecutor());
+            this.engine = new Engine(toString(), owner.getContainer(), this, owner.getExecutor());
             this.endpointReference = epr;
             wsdlProperties = (wsdlPort == null) ? new WSDLDirectProperties(owner.getServiceName(), portname) : new WSDLPortProperties(wsdlPort);
             
@@ -521,10 +521,6 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         // check race condition on cancel
         if (receiver.isCancelled())
         	return;
-        
-        FiberContextSwitchInterceptorFactory fcsif = owner.getSPI(FiberContextSwitchInterceptorFactory.class);
-        if(fcsif != null)
-            fiber.addInterceptor(fcsif.create());
         
         // then send it away!
         final Tube tube = pool.take();

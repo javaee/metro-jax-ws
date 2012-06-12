@@ -185,7 +185,7 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
 
 		tubePool = new TubePool(masterTubeline);
 		terminalTube.setEndpoint(this);
-		engine = new Engine(toString(), container);
+		engine = new Engine(toString(), container, this);
 		wsdlProperties = (port == null) ? new WSDLDirectProperties(serviceName, portName, seiModel) : new WSDLPortProperties(port, seiModel);
 
         Map<QName, WSEndpointReference.EPRExtension> eprExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
@@ -251,7 +251,7 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
     	        seiModel, port, this, null /* not known */, false);
 
 		tubePool = new TubePool(masterTubeline);
-		engine = new Engine(toString(), container);
+		engine = new Engine(toString(), container, this);
 		wsdlProperties = (port == null) ? new WSDLDirectProperties(serviceName, portName, seiModel) : new WSDLPortProperties(port, seiModel);
   }
 

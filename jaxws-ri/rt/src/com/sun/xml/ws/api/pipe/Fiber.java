@@ -987,6 +987,10 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
                             return true;
                         }
                     }
+                    
+                    // Move synchronous suspend-related blocking outside of the FiberContextSwitchInterceptor
+                    // handling
+                    blockIfNeeded();
                 } while (needsToReenter);
             } catch(OnExitRunnableException o) {
                 // catching this exception indicates onExitRunnable in suspend() threw.
@@ -1181,10 +1185,7 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
     	this.contsSize = contsSize;
     }
 
-    /**
-     * Returns true if the fiber is ready to execute.
-     */
-    private boolean isReady() {
+    private void blockIfNeeded() {
         if (synchronous) {
             while (suspendedCount == 1)
                 try {
@@ -1198,6 +1199,18 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
                     // when you are actually running the whole thing synchronously.
                     interrupted = true;
                 }
+        }
+    }
+    
+    /**
+     * Returns true if the fiber is ready to execute.
+     */
+    private boolean isReady() {
+        if (synchronous) {
+            if (suspendedCount == 1) {
+                needsToReenter = true;
+                return false;
+            }
             return true;
         }
         else
