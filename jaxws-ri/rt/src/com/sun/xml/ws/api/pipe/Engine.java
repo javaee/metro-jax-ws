@@ -45,7 +45,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ContainerResolver;
@@ -60,7 +59,6 @@ import com.sun.xml.ws.api.server.ContainerResolver;
 public class Engine {
     private volatile Executor threadPool;
     public final String id;
-    private final FiberContextSwitchInterceptorFactory fcsif;
     private final Container container;
 
     public Engine(String id, Executor threadPool) {
@@ -68,11 +66,7 @@ public class Engine {
     }
     
     public Engine(String id, Container container, Executor threadPool) {
-        this(id, container, container, threadPool);
-    }
-    
-    public Engine(String id, Container container, Component component, Executor threadPool) {
-        this(id, container, component);
+        this(id, container);
         this.threadPool = threadPool != null ? wrap(threadPool) : null;
     }
 
@@ -81,13 +75,8 @@ public class Engine {
     }
     
     public Engine(String id, Container container) {
-        this(id, container, container);
-    }
-        
-    public Engine(String id, Container container, Component component) {
         this.id = id;
         this.container = container;
-        this.fcsif = component.getSPI(FiberContextSwitchInterceptorFactory.class);
     }
 
     public void setExecutor(Executor threadPool) {
@@ -117,12 +106,7 @@ public class Engine {
      * @return new Fiber
      */
     public Fiber createFiber() {
-        Fiber fiber = new Fiber(this);
-        
-        if(fcsif != null)
-            fiber.addInterceptor(fcsif.create());
-        
-        return fiber;
+        return new Fiber(this);
     }
 
     private static class DaemonThreadFactory implements ThreadFactory {

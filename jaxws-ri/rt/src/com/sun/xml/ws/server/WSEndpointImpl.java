@@ -92,22 +92,22 @@ import java.util.logging.Logger;
  * @author Jitendra Kotamraju
  */
 public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMOMProvider.WSEndpointScopeChangeListener {
-	private static final Logger LOGGER = Logger.getLogger(WSEndpointImpl.class.getName());
+        private static final Logger LOGGER = Logger.getLogger(WSEndpointImpl.class.getName());
     
     private final @NotNull QName serviceName;
     private final @NotNull QName portName;
-	protected final WSBinding binding;
-	private final SEIModel seiModel;
+        protected final WSBinding binding;
+        private final SEIModel seiModel;
     private final @NotNull Container container;
-	private final WSDLPort port;
+        private final WSDLPort port;
 
-	protected final Tube masterTubeline;
-	private final ServiceDefinitionImpl serviceDef;
-	private final SOAPVersion soapVersion;
-	private final Engine engine;
+        protected final Tube masterTubeline;
+        private final ServiceDefinitionImpl serviceDef;
+        private final SOAPVersion soapVersion;
+        private final Engine engine;
     private final @NotNull Codec masterCodec;
     private final @NotNull PolicyMap endpointPolicy;
-	private final Pool<Tube> tubePool;
+        private final Pool<Tube> tubePool;
     private final OperationDispatcher operationDispatcher;
     private       @NotNull ManagedObjectManager managedObjectManager;
     private       boolean managedObjectManagerClosed = false;
@@ -116,17 +116,17 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
     private final @NotNull ServerTubeAssemblerContext context;
 
     private Map<QName, WSEndpointReference.EPRExtension> endpointReferenceExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
-	/**
+        /**
      * Set to true once we start shutting down this endpoint.
      * Used to avoid running the clean up processing twice.
-	 * 
-	 * @see #dispose()
-	 */
-	private boolean disposed;
+         * 
+         * @see #dispose()
+         */
+        private boolean disposed;
 
-	private final Class<T> implementationClass;
+        private final Class<T> implementationClass;
     private final @NotNull WSDLProperties wsdlProperties;
-	private final Set<Component> componentRegistry = new CopyOnWriteArraySet<Component>();
+        private final Set<Component> componentRegistry = new CopyOnWriteArraySet<Component>();
 
     protected WSEndpointImpl(@NotNull QName serviceName, @NotNull QName portName, WSBinding binding,
                    Container container, SEIModel seiModel, WSDLPort port,
@@ -134,59 +134,59 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
                    @Nullable ServiceDefinitionImpl serviceDef,
                    EndpointAwareTube terminalTube, boolean isSynchronous,
                    PolicyMap endpointPolicy) {
-		this.serviceName = serviceName;
-		this.portName = portName;
-		this.binding = binding;
-		this.soapVersion = binding.getSOAPVersion();
-		this.container = container;
-		this.port = port;
-		this.implementationClass = implementationClass;
-		this.serviceDef = serviceDef;
-		this.seiModel = seiModel;
+                this.serviceName = serviceName;
+                this.portName = portName;
+                this.binding = binding;
+                this.soapVersion = binding.getSOAPVersion();
+                this.container = container;
+                this.port = port;
+                this.implementationClass = implementationClass;
+                this.serviceDef = serviceDef;
+                this.seiModel = seiModel;
         this.endpointPolicy = endpointPolicy;
 
         LazyMOMProvider.INSTANCE.registerEndpoint(this);
         initManagedObjectManager();
 
-		if (serviceDef != null) {
-			serviceDef.setOwner(this);
-		}
-		
-		ComponentFeature cf = binding.getFeature(ComponentFeature.class);
-		if (cf != null) {
-		    switch(cf.getTarget()) {
-		        case ENDPOINT:
-	                    componentRegistry.add(cf.getComponent());
-	                    break;
-		        case CONTAINER:
-		            container.getComponents().add(cf.getComponent());
-		            break;
-		        default:
-		            throw new IllegalArgumentException();
-		    }
-		}
+                if (serviceDef != null) {
+                        serviceDef.setOwner(this);
+                }
+                
+                ComponentFeature cf = binding.getFeature(ComponentFeature.class);
+                if (cf != null) {
+                    switch(cf.getTarget()) {
+                        case ENDPOINT:
+                            componentRegistry.add(cf.getComponent());
+                            break;
+                        case CONTAINER:
+                            container.getComponents().add(cf.getComponent());
+                            break;
+                        default:
+                            throw new IllegalArgumentException();
+                    }
+                }
 
         TubelineAssembler assembler = TubelineAssemblerFactory.create(
                 Thread.currentThread().getContextClassLoader(), binding.getBindingId(), container);
-		assert assembler != null;
+                assert assembler != null;
 
         this.operationDispatcher = (port == null) ? null : new OperationDispatcher(port, binding, seiModel);
 
         context = createServerTubeAssemblerContext(terminalTube, isSynchronous);
         this.masterTubeline = assembler.createServer(context);
 
-		Codec c = context.getCodec();
-		if (c instanceof EndpointAwareCodec) {
+                Codec c = context.getCodec();
+                if (c instanceof EndpointAwareCodec) {
             // create a copy to avoid sharing the codec between multiple endpoints 
-			c = c.copy();
-			((EndpointAwareCodec) c).setEndpoint(this);
-		}
-		this.masterCodec = c;
+                        c = c.copy();
+                        ((EndpointAwareCodec) c).setEndpoint(this);
+                }
+                this.masterCodec = c;
 
-		tubePool = new TubePool(masterTubeline);
-		terminalTube.setEndpoint(this);
-		engine = new Engine(toString(), container, this);
-		wsdlProperties = (port == null) ? new WSDLDirectProperties(serviceName, portName, seiModel) : new WSDLPortProperties(port, seiModel);
+                tubePool = new TubePool(masterTubeline);
+                terminalTube.setEndpoint(this);
+                engine = new Engine(toString(), container);
+                wsdlProperties = (port == null) ? new WSDLDirectProperties(serviceName, portName, seiModel) : new WSDLPortProperties(port, seiModel);
 
         Map<QName, WSEndpointReference.EPRExtension> eprExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
         try {
@@ -221,38 +221,38 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
   }
 
   protected ServerTubeAssemblerContext createServerTubeAssemblerContext(
-    	    EndpointAwareTube terminalTube, boolean isSynchronous) {
+            EndpointAwareTube terminalTube, boolean isSynchronous) {
     ServerTubeAssemblerContext context = new ServerPipeAssemblerContext(
         seiModel, port, this, terminalTube, isSynchronous);
     return context;
   }
 
-	protected WSEndpointImpl(@NotNull QName serviceName, @NotNull QName portName, WSBinding binding, Container container,
-			SEIModel seiModel, WSDLPort port,
-			Tube masterTubeline) {
-		this.serviceName = serviceName;
-		this.portName = portName;
-		this.binding = binding;
-		this.soapVersion = binding.getSOAPVersion();
-		this.container = container;
-		this.endpointPolicy = null;
-		this.port = port;
-		this.seiModel = seiModel;
-		this.serviceDef = null;
-		this.implementationClass = null;
-		this.masterTubeline = masterTubeline;
-		this.masterCodec = ((BindingImpl) this.binding).createCodec();
+        protected WSEndpointImpl(@NotNull QName serviceName, @NotNull QName portName, WSBinding binding, Container container,
+                        SEIModel seiModel, WSDLPort port,
+                        Tube masterTubeline) {
+                this.serviceName = serviceName;
+                this.portName = portName;
+                this.binding = binding;
+                this.soapVersion = binding.getSOAPVersion();
+                this.container = container;
+                this.endpointPolicy = null;
+                this.port = port;
+                this.seiModel = seiModel;
+                this.serviceDef = null;
+                this.implementationClass = null;
+                this.masterTubeline = masterTubeline;
+                this.masterCodec = ((BindingImpl) this.binding).createCodec();
 
         LazyMOMProvider.INSTANCE.registerEndpoint(this);
         initManagedObjectManager();
 
         this.operationDispatcher = (port == null) ? null : new OperationDispatcher(port, binding, seiModel);
-	    this.context = new ServerPipeAssemblerContext(
-    	        seiModel, port, this, null /* not known */, false);
+            this.context = new ServerPipeAssemblerContext(
+                seiModel, port, this, null /* not known */, false);
 
-		tubePool = new TubePool(masterTubeline);
-		engine = new Engine(toString(), container, this);
-		wsdlProperties = (port == null) ? new WSDLDirectProperties(serviceName, portName, seiModel) : new WSDLPortProperties(port, seiModel);
+                tubePool = new TubePool(masterTubeline);
+                engine = new Engine(toString(), container);
+                wsdlProperties = (port == null) ? new WSDLDirectProperties(serviceName, portName, seiModel) : new WSDLPortProperties(port, seiModel);
   }
 
     public Collection<WSEndpointReference.EPRExtension> getEndpointReferenceExtensions() {
@@ -272,34 +272,34 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
     }
 
     public @NotNull Class<T> getImplementationClass() {
-		return implementationClass;
-	}
+                return implementationClass;
+        }
 
     public @NotNull WSBinding getBinding() {
-		return binding;
-	}
+                return binding;
+        }
 
     public @NotNull Container getContainer() {
-		return container;
-	}
+                return container;
+        }
 
-	public WSDLPort getPort() {
-		return port;
-	}
+        public WSDLPort getPort() {
+                return port;
+        }
 
-	@Override
+        @Override
     public @Nullable SEIModel getSEIModel() {
-		return seiModel;
-	}
+                return seiModel;
+        }
 
-	public void setExecutor(Executor exec) {
-		engine.setExecutor(exec);
-	}
-	
-	@Override
-	public Engine getEngine() {
-		return engine;
-	}
+        public void setExecutor(Executor exec) {
+                engine.setExecutor(exec);
+        }
+        
+        @Override
+        public Engine getEngine() {
+                return engine;
+        }
 
     public void schedule(final Packet request, final CompletionCallback callback, FiberContextSwitchInterceptor interceptor) {
         processAsync(request, callback, interceptor, true);
@@ -396,142 +396,142 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
         };
     }
 
-	public synchronized void dispose() {
-		if (disposed)
-			return;
-		disposed = true;
+        public synchronized void dispose() {
+                if (disposed)
+                        return;
+                disposed = true;
 
     masterTubeline.preDestroy();
 
-		for (Handler handler : binding.getHandlerChain()) {
-			for (Method method : handler.getClass().getMethods()) {
-				if (method.getAnnotation(PreDestroy.class) == null) {
-					continue;
-				}
-				try {
-					method.invoke(handler);
-				} catch (Exception e) {
+                for (Handler handler : binding.getHandlerChain()) {
+                        for (Method method : handler.getClass().getMethods()) {
+                                if (method.getAnnotation(PreDestroy.class) == null) {
+                                        continue;
+                                }
+                                try {
+                                        method.invoke(handler);
+                                } catch (Exception e) {
                     logger.log(Level.WARNING, HandlerMessages.HANDLER_PREDESTROY_IGNORE(e.getMessage()), e);
-				}
-				break;
-			}
-		}
+                                }
+                                break;
+                        }
+                }
         closeManagedObjectManager();
-	}
+        }
 
-	public ServiceDefinitionImpl getServiceDefinition() {
-		return serviceDef;
-	}
+        public ServiceDefinitionImpl getServiceDefinition() {
+                return serviceDef;
+        }
 
-	public Set<EndpointComponent> getComponentRegistry() {
-		Set<EndpointComponent> sec = new EndpointComponentSet();
-		for (Component c : componentRegistry) {
-			sec.add(c instanceof EndpointComponentWrapper ?
-				((EndpointComponentWrapper) c).component :
-				new ComponentWrapper(c));
-		}
-		return sec;
-	}
-	
-	private class EndpointComponentSet extends HashSet<EndpointComponent> {
+        public Set<EndpointComponent> getComponentRegistry() {
+                Set<EndpointComponent> sec = new EndpointComponentSet();
+                for (Component c : componentRegistry) {
+                        sec.add(c instanceof EndpointComponentWrapper ?
+                                ((EndpointComponentWrapper) c).component :
+                                new ComponentWrapper(c));
+                }
+                return sec;
+        }
+        
+        private class EndpointComponentSet extends HashSet<EndpointComponent> {
 
-		@Override
-		public Iterator<EndpointComponent> iterator() {
-			final Iterator<EndpointComponent> it = super.iterator();
-			return new Iterator<EndpointComponent>() {
-				private EndpointComponent last = null;
-				
-				public boolean hasNext() {
-					return it.hasNext();
-				}
+                @Override
+                public Iterator<EndpointComponent> iterator() {
+                        final Iterator<EndpointComponent> it = super.iterator();
+                        return new Iterator<EndpointComponent>() {
+                                private EndpointComponent last = null;
+                                
+                                public boolean hasNext() {
+                                        return it.hasNext();
+                                }
 
-				public EndpointComponent next() {
-					last = it.next();
-					return last;
-				}
+                                public EndpointComponent next() {
+                                        last = it.next();
+                                        return last;
+                                }
 
-				public void remove() {
-					it.remove();
-					if (last != null) {
-						componentRegistry.remove(last instanceof ComponentWrapper ?
-								((ComponentWrapper) last).component : 
-								new EndpointComponentWrapper(last));
-					}
-					last = null;
-				}
-			};
-		}
+                                public void remove() {
+                                        it.remove();
+                                        if (last != null) {
+                                                componentRegistry.remove(last instanceof ComponentWrapper ?
+                                                                ((ComponentWrapper) last).component : 
+                                                                new EndpointComponentWrapper(last));
+                                        }
+                                        last = null;
+                                }
+                        };
+                }
 
-		@Override
-		public boolean add(EndpointComponent e) {
-			boolean result = super.add(e);
-			if (result) {
-				componentRegistry.add(new EndpointComponentWrapper(e));
-			}
-			return result;
-		}
+                @Override
+                public boolean add(EndpointComponent e) {
+                        boolean result = super.add(e);
+                        if (result) {
+                                componentRegistry.add(new EndpointComponentWrapper(e));
+                        }
+                        return result;
+                }
 
-		@Override
-		public boolean remove(Object o) {
-			boolean result = super.remove(o);
-			if (result) {
-				componentRegistry.remove(o instanceof ComponentWrapper ?
-						((ComponentWrapper) o).component : 
-						new EndpointComponentWrapper((EndpointComponent)o));
-			}
-			return result;
-		}
-		
-	}
-	
-	private static class ComponentWrapper implements EndpointComponent {
-		private final Component component;
-		
-		public ComponentWrapper(Component component) {
-			this.component = component;
-		}
+                @Override
+                public boolean remove(Object o) {
+                        boolean result = super.remove(o);
+                        if (result) {
+                                componentRegistry.remove(o instanceof ComponentWrapper ?
+                                                ((ComponentWrapper) o).component : 
+                                                new EndpointComponentWrapper((EndpointComponent)o));
+                        }
+                        return result;
+                }
+                
+        }
+        
+        private static class ComponentWrapper implements EndpointComponent {
+                private final Component component;
+                
+                public ComponentWrapper(Component component) {
+                        this.component = component;
+                }
 
-		public <S> S getSPI(Class<S> spiType) {
-			return component.getSPI(spiType);
-		}
+                public <S> S getSPI(Class<S> spiType) {
+                        return component.getSPI(spiType);
+                }
 
-		@Override
-		public int hashCode() {
-			return component.hashCode();
-		}
+                @Override
+                public int hashCode() {
+                        return component.hashCode();
+                }
 
-		@Override
-		public boolean equals(Object obj) {
-			return component.equals(obj);
-		}
-	}
-	
-	private static class EndpointComponentWrapper implements Component {
-		private final EndpointComponent component;
+                @Override
+                public boolean equals(Object obj) {
+                        return component.equals(obj);
+                }
+        }
+        
+        private static class EndpointComponentWrapper implements Component {
+                private final EndpointComponent component;
 
-		public EndpointComponentWrapper(EndpointComponent component) {
-			this.component = component;
-		}
-		
-		public <S> S getSPI(Class<S> spiType) {
-			return component.getSPI(spiType);
-		}
+                public EndpointComponentWrapper(EndpointComponent component) {
+                        this.component = component;
+                }
+                
+                public <S> S getSPI(Class<S> spiType) {
+                        return component.getSPI(spiType);
+                }
 
-		@Override
-		public int hashCode() {
-			return component.hashCode();
-		}
+                @Override
+                public int hashCode() {
+                        return component.hashCode();
+                }
 
-		@Override
-		public boolean equals(Object obj) {
-			return component.equals(obj);
-		}
-	}
-	
-	public @NotNull Set<Component> getComponents() {
-		return componentRegistry;
-	}
-	
+                @Override
+                public boolean equals(Object obj) {
+                        return component.equals(obj);
+                }
+        }
+        
+        public @NotNull Set<Component> getComponents() {
+                return componentRegistry;
+        }
+        
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".server.endpoint");
 
@@ -544,31 +544,31 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
         return getEndpointReference(clazz, address, wsdlAddress, null, refParams);
     }
     public <T extends EndpointReference> T getEndpointReference(Class<T> clazz,
-			String address, String wsdlAddress, List<Element> metadata,
-			List<Element> referenceParameters) {
-		QName portType = null;
-		if (port != null) {
-			portType = port.getBinding().getPortTypeName();
-		}
+                        String address, String wsdlAddress, List<Element> metadata,
+                        List<Element> referenceParameters) {
+                QName portType = null;
+                if (port != null) {
+                        portType = port.getBinding().getPortTypeName();
+                }
 
         AddressingVersion av = AddressingVersion.fromSpecClass(clazz);
         return new WSEndpointReference(
                     av, address, serviceName, portName, portType, metadata, wsdlAddress, referenceParameters,endpointReferenceExtensions.values(), null).toSpec(clazz);
 
-	}
+        }
 
     public @NotNull QName getPortName() {
-		return portName;
-	}
+                return portName;
+        }
 
 
     public @NotNull Codec createCodec() {
-		return masterCodec.copy();
-	}
+                return masterCodec.copy();
+        }
 
     public @NotNull QName getServiceName() {
-		return serviceName;
-	}
+                return serviceName;
+        }
     
     private void initManagedObjectManager() {
         synchronized (managedObjectManagerLock) {

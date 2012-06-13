@@ -263,10 +263,10 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             this.wsdlPort = wsdlPort != null ? wsdlPort : (portInfo != null ? portInfo.getPort() : null);
             this.portname = portname;
             if (portname == null) {
-            	if (portInfo != null)
-            		this.portname = portInfo.getPortName();
-            	else if (wsdlPort != null)
-            		this.portname = wsdlPort.getName();
+                if (portInfo != null)
+                        this.portname = portInfo.getPortName();
+                else if (wsdlPort != null)
+                        this.portname = wsdlPort.getName();
             }
             this.binding = binding;
     
@@ -280,7 +280,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
                 this.requestContext.setEndPointAddressString(epr.getAddress());
             else
                 this.requestContext.setEndpointAddress(defaultEndPointAddress);
-            this.engine = new Engine(toString(), owner.getContainer(), this, owner.getExecutor());
+            this.engine = new Engine(toString(), owner.getContainer(), owner.getExecutor());
             this.endpointReference = epr;
             wsdlProperties = (wsdlPort == null) ? new WSDLDirectProperties(owner.getServiceName(), portname) : new WSDLPortProperties(wsdlPort);
             
@@ -315,7 +315,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         SEIModel seiModel = null;
         Class sei = null;
         if (portInfo instanceof SEIPortInfo) {
-        	SEIPortInfo sp = (SEIPortInfo) portInfo;
+                SEIPortInfo sp = (SEIPortInfo) portInfo;
             seiModel = sp.model;
             sei = sp.sei;
         }
@@ -333,15 +333,15 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     }
     
     public WSDLPort getWSDLPort() {
-    	return wsdlPort;
+        return wsdlPort;
     }
     
     public WSService getService() {
-    	return owner;
+        return owner;
     }
     
     public Pool<Tube> getTubes() {
-    	return tubes;
+        return tubes;
     }
     
     /**
@@ -507,7 +507,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
      */
     protected final void processAsync(AsyncResponseImpl<?> receiver, Packet request, RequestContext requestContext, final Fiber.CompletionCallback completionCallback) {
         // fill in Packet
-    	request.component = this;
+        request.component = this;
         configureRequestPacket(request, requestContext);
 
         final Pool<Tube> pool = tubes;
@@ -520,7 +520,11 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         
         // check race condition on cancel
         if (receiver.isCancelled())
-        	return;
+                return;
+        
+        FiberContextSwitchInterceptorFactory fcsif = owner.getSPI(FiberContextSwitchInterceptorFactory.class);
+        if(fcsif != null)
+            fiber.addInterceptor(fcsif.create());
         
         // then send it away!
         final Tube tube = pool.take();
@@ -541,8 +545,8 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         // Check for SyncStartForAsyncInvokeFeature
 
         fiber.start(tube, request, fiberCallback, 
-        		getBinding().isFeatureEnabled(SyncStartForAsyncFeature.class) &&
-        		!requestContext.containsKey(PREVENT_SYNC_START_FOR_ASYNC_INVOKE));
+                        getBinding().isFeatureEnabled(SyncStartForAsyncFeature.class) &&
+                        !requestContext.containsKey(PREVENT_SYNC_START_FOR_ASYNC_INVOKE));
     }
 
     public void close() {
@@ -572,7 +576,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     }
     
     public void resetRequestContext() {
-    	requestContext = cleanRequestContext.copy();
+        requestContext = cleanRequestContext.copy();
     }
 
     public final ResponseContext getResponseContext() {
@@ -682,15 +686,15 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     }
     
     public <S> S getSPI(Class<S> spiType) {
-	for (Component c : components) {
-	    S s = c.getSPI(spiType);
-	    if (s != null)
-		return s;
-	}
-    	return owner.getSPI(spiType);
+        for (Component c : components) {
+            S s = c.getSPI(spiType);
+            if (s != null)
+                return s;
+        }
+        return owner.getSPI(spiType);
     }
     
     public Set<Component> getComponents() {
-	return components;
+        return components;
     }
 }
