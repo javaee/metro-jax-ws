@@ -184,6 +184,20 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12</version>
+                <configuration>
+                    <!-- make sure that plugin's classes are at the end of the cp
+                         otherwise testHelloEchoNoMode(com.sun.xml.ws.jaxbri.JAXBRIBasicTest) will fail
+                         as it requires specific order of jars on the cp -->
+                    <classesDirectory>/non/existing/directory</classesDirectory>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>${project.build.outputDirectory}</additionalClasspathElement>
+                    </additionalClasspathElements>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.3.7</version>
