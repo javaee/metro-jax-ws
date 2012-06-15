@@ -29,6 +29,10 @@ import com.sun.xml.ws.sdo.test.helloSDO.MySDO;
 import com.sun.xml.ws.spi.db.BindingContext;
 
 import commonj.sdo.helper.HelperContext;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SDORuntimeBasicTest extends SDODatabindingTestBase {
     static public final String ECLIPSELINK_SDO = "eclipselink.sdo";
@@ -235,8 +239,13 @@ public class SDORuntimeBasicTest extends SDODatabindingTestBase {
     }
     
     private static final File getSchema(String schemaName) {
-        return ResourceHelper.file("eclipselink_sdo", "test", "etc", "wsdl",
-                schemaName);
+        URL u = SDORuntimeBasicTest.class.getResource("/etc/wsdl/" + schemaName);
+        try {
+            return new File(u.toURI());
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(SDORuntimeBasicTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;        
     }
 
 }

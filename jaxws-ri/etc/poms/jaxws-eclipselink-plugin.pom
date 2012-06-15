@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@
     <parent>
         <groupId>net.java</groupId>
         <artifactId>jvnet-parent</artifactId>
-        <version>1</version>
+        <version>3</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -112,24 +112,233 @@
 
     <dependencies>
         <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${mail.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
-            <version>@ECLIPSELINK_VERSION@</version>
+            <version>${eclipselink.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.staxex</groupId>
             <artifactId>stax-ex</artifactId>
-            <version>@STAX_EX_VERSION@</version>
+            <version>${stax-ex.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-tools</artifactId>
-            <version>@VERSION@</version>
+            <version>${jaxws-tools.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-rt</artifactId>
-            <version>@VERSION@</version>
+            <version>${jaxws-rt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <sourceDirectory>${project.basedir}/src</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/etc</directory>
+                <excludes>
+                    <exclude>manifest</exclude>
+                </excludes>
+                <targetPath>META-INF/services</targetPath>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/test</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <id>compile</id>
+                    </execution>
+                </executions>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.7</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>osgi-bundle</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                        <configuration>
+                            <instructions>
+                                <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
+                                <Export-Package>
+                                    com.sun.xml.ws.db.toplink;version=@RELEASE_VERSION@
+                                </Export-Package>
+                                <Import-Package>
+                                    com.sun.xml.ws.model;version=@RELEASE_VERSION@,
+                                    com.sun.xml.ws.spi.db;version=@RELEASE_VERSION@,
+                                    javax.activation,
+                                    javax.mail.internet;version=@OSGI_MAIL_VERSION@,
+                                    javax.xml.bind;version=@JAXB_API_VERSION@,
+                                    javax.xml.bind.annotation;version=@JAXB_API_VERSION@,
+                                    javax.xml.bind.attachment;version=@JAXB_API_VERSION@,
+                                    javax.xml.namespace,
+                                    javax.xml.parsers,
+                                    javax.xml.stream,
+                                    javax.xml.transform,
+                                    javax.xml.transform.dom,
+                                    javax.xml.transform.sax,
+                                    javax.xml.transform.stream,
+                                    javax.xml.ws;version=@OSGI_API_VERSION@,
+                                    org.eclipse.persistence;version=@OSGI_ECLIPSELINK_VERSION@,
+                                    org.eclipse.persistence.internal.oxm.record;version=@OSGI_ECLIPSELINK_VERSION@,
+                                    org.eclipse.persistence.jaxb;version=@OSGI_ECLIPSELINK_VERSION@,
+                                    org.eclipse.persistence.oxm.record;version=@OSGI_ECLIPSELINK_VERSION@,
+                                    org.jvnet.staxex;version=@STAX_EX_VERSION@,
+                                    org.w3c.dom,
+                                    org.xml.sax
+                                </Import-Package>
+                            </instructions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.8.1</version>
+                        <configuration>
+                            <minmemory>128m</minmemory>
+                            <maxmemory>768m</maxmemory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.1.2</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jdk6</id>
+            <activation>
+                <jdk>1.6</jdk>
+            </activation>
+            <properties>
+                <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.3</version>
+                        <executions>
+                            <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${endorsed.dir}</outputDirectory>
+                                    <silent>true</silent>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>javax.xml.bind</groupId>
+                                            <artifactId>jaxb-api</artifactId>
+                                            <version>2.2.6</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>javax.xml.ws</groupId>
+                                            <artifactId>jaxws-api</artifactId>
+                                            <version>2.2.8</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>1.5</source>
+                            <target>1.5</target>
+                            <compilerArguments>
+                                <endorseddirs>${endorsed.dir}</endorseddirs>
+                            </compilerArguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <properties>
+        <jaxws-eclipselink-plugin.version>@VERSION@</jaxws-eclipselink-plugin.version>
+        <eclipselink.version>@ECLIPSELINK_VERSION@</eclipselink.version>
+        <mail.version>@MAIL_VERSION@</mail.version>
+        <jaxws.spec.version>@API_VERSION@</jaxws.spec.version>
+        <stax-ex.version>@STAX_EX_VERSION@</stax-ex.version>
+        <jaxws-tools.version>@VERSION@</jaxws-tools.version>
+        <jaxws-rt.version>@VERSION@</jaxws-rt.version>
+        <jaxws.ri.release.version>@VERSION@</jaxws.ri.release.version>
+        <jaxb.spec.version>@JAXB_API_VERSION@</jaxb.spec.version>
+        <junit.version>@JUNIT_VERSION@</junit.version>
+    </properties>
 </project>

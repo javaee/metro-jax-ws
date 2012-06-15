@@ -608,6 +608,8 @@
                 <copy file="etc/poms/@{module}.pom" tofile="build/maven2-repo/@{module}.pom" overwrite="true">
                     <filterset>
                         <filter token="API_VERSION" value="${release.api.version}"/>
+                        <filter token="OSGI_API_VERSION" value="${osgi.release.api.version}"/>
+                        <filter token="RELEASE_VERSION" value="${release.impl.version}"/>
                         <filter token="JAXB_API_VERSION" value="${jaxb.api.version}"/>
                         <filter token="SAAJ_API_VERSION" value="${saaj-api.version}"/>
                         <filter token="JSR_181_API_VERSION" value="${jsr181.version}"/>
@@ -624,7 +626,12 @@
                         <filter token="GMBAL_API_VERSION" value="${gmbal.version}"/>
                         <filter token="HA_API_VERSION" value="${ha-api.version}"/>
                         <filter token="ECLIPSELINK_VERSION" value="${eclipselink.version}"/>
+                        <filter token="OSGI_ECLIPSELINK_VERSION" value="${osgi.eclipselink.version}"/>
                         <filter token="COMMON_SDO_VERSION" value="${common.sdo.version}"/>
+                        <filter token="OSGI_COMMON_SDO_VERSION" value="${osgi.common.sdo.version}"/>
+                        <filter token="MAIL_VERSION" value="${mail.version}"/>
+                        <filter token="OSGI_MAIL_VERSION" value="${osgi.mail.version}"/>
+                        <filter token="JUNIT_VERSION" value="${junit.version}"/>
                         <filter token="VERSION" value="${jar.suffix}"/>
                     </filterset>
                 </copy>
