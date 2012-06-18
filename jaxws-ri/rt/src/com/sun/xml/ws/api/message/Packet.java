@@ -357,7 +357,18 @@ public final class Packet
      * flag the {@link WsaServerTube} would deliver non-anonymous responses.
      */
     public boolean isAdapterDeliversNonAnonymousResponse;
-    
+
+    /**
+     * During invocation of a client Stub or Dispatch a Packet is
+     * created then the Stub's RequestContext is copied into the
+     * Packet.  On certain internal cases the Packet is created
+     * *before* the invocation.  In those cases we want the contents
+     * of the Packet to take precedence when ever any key/value pairs
+     * collide : if the Packet contains a value for a key use it,
+     * otherwise copy as usual from Stub.
+     */
+    public boolean packetTakesPriorityOverRequestContext = false;
+
     /**
      * The endpoint address to which this message is sent to.
      *

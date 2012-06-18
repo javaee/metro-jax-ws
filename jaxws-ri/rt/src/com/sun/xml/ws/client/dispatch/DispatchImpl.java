@@ -398,36 +398,54 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
         return portname;
     }
 
-    void resolveEndpointAddress(@NotNull Packet message, @NotNull RequestContext requestContext) {
+    void resolveEndpointAddress(@NotNull final Packet message, @NotNull final RequestContext requestContext) {
+        final boolean p = message.packetTakesPriorityOverRequestContext;
+
         //resolve endpoint look for query parameters, pathInfo
-        String endpoint = (String) requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+        String endpoint;
+        if (p && message.endpointAddress != null) {
+            endpoint = message.endpointAddress.toString();
+        } else {
+            endpoint = (String) requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+        }
+        // This is existing before packetTakesPriorityOverRequestContext so leaving in place.
         if (endpoint == null)
             endpoint = message.endpointAddress.toString();
 
         String pathInfo = null;
         String queryString = null;
-        if (requestContext.get(MessageContext.PATH_INFO) != null)
+        if (p && message.invocationProperties.get(MessageContext.PATH_INFO) != null) {
+            pathInfo = (String) message.invocationProperties.get(MessageContext.PATH_INFO);
+        } else if (requestContext.get(MessageContext.PATH_INFO) != null) {
             pathInfo = (String) requestContext.get(MessageContext.PATH_INFO);
+        }
 
-        if (requestContext.get(MessageContext.QUERY_STRING) != null)
+        if (p && message.invocationProperties.get(MessageContext.QUERY_STRING) != null) {
+            queryString = (String) message.invocationProperties.get(MessageContext.QUERY_STRING);
+        } else if (requestContext.get(MessageContext.QUERY_STRING) != null) {
             queryString = (String) requestContext.get(MessageContext.QUERY_STRING);
+        }
 
-
-        String resolvedEndpoint = null;
         if (pathInfo != null || queryString != null) {
             pathInfo = checkPath(pathInfo);
             queryString = checkQuery(queryString);
             if (endpoint != null) {
                 try {
                     final URI endpointURI = new URI(endpoint);
-                    resolvedEndpoint = resolveURI(endpointURI, pathInfo, queryString);
+                    endpoint = resolveURI(endpointURI, pathInfo, queryString);
                 } catch (URISyntaxException e) {
                     throw new WebServiceException(DispatchMessages.INVALID_URI(endpoint));
                 }
             }
-            requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, resolvedEndpoint);
-            //message.endpointAddress = EndpointAddress.create(resolvedEndpoint);
         }
+        // These two lines used to be inside the above if.  It is outside so:
+        // - in cases where there is no setting of address on a Packet before invocation or no pathInfo/queryString
+        //   this will just put back what it found in the requestContext - basically a noop.
+        // - but when info is in the Packet this will update so it will get used later.
+        // Remember - we are operating on a copied RequestContext at this point - not the sticky one in the Stub.
+        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
+        // This is not necessary because a later step will copy the resolvedEndpoint put above into message.
+        //message.endpointAddress = EndpointAddress.create(endpoint);
     }
 
     protected @NotNull String resolveURI(@NotNull URI endpointURI, @Nullable String pathInfo, @Nullable String queryString) {

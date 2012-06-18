@@ -357,17 +357,22 @@ public final class RequestContext extends BaseDistributedPropertySet {
     }
 
     private void fillSOAPAction(Packet packet, boolean isAddressingEnabled) {
+        final boolean p = packet.packetTakesPriorityOverRequestContext;
+        final String  localSoapAction    = p ? packet.soapAction : soapAction;
+        final Boolean localSoapActionUse = p ? (Boolean) packet.invocationProperties.get(BindingProvider.SOAPACTION_USE_PROPERTY)
+                                             : soapActionUse;
+
         //JAX-WS-596: Check the semantics of SOAPACTION_USE_PROPERTY before using the SOAPACTION_URI_PROPERTY for
         // SoapAction as specified in the javadoc of BindingProvider. The spec seems to be little contradicting with
         //  javadoc and says that the use property effects the sending of SOAPAction property.
         // Since the user has the capability to set the value as "" if needed, implement the javadoc behavior.
-        if ((soapActionUse != null && soapActionUse) || (soapActionUse == null && isAddressingEnabled)) {
-            if (soapAction != null) {
-                packet.soapAction = soapAction;
+        if ((localSoapActionUse != null && localSoapActionUse) || (localSoapActionUse == null && isAddressingEnabled)) {
+            if (localSoapAction != null) {
+                packet.soapAction = localSoapAction;
             }
         }
 
-        if ((!isAddressingEnabled && (soapActionUse == null || !soapActionUse)) && soapAction != null) {
+        if ((!isAddressingEnabled && (localSoapActionUse == null || !localSoapActionUse)) && localSoapAction != null) {
             LOGGER.warning("BindingProvider.SOAPACTION_URI_PROPERTY is set in the RequestContext but is ineffective," +
                     " Either set BindingProvider.SOAPACTION_USE_PROPERTY to true or enable AddressingFeature");
         }
