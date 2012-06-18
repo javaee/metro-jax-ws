@@ -887,6 +887,14 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
                             
                             for (WSDLBoundFault boundFault : boundOperation.getFaults()) {
                                 final WSDLFault fault = boundFault.getFault();
+
+                                // this shouldn't happen ususally,
+                                // but since this scenario tested in lagacy tests, dont' fail here
+                                if (fault == null) {
+                                    LOGGER.warning(PolicyMessages.WSP_1021_FAULT_NOT_BOUND(boundFault.getName()));
+                                    continue;
+                                }
+
                                 final WSDLMessage faultMessage = fault.getMessage();
                                 final QName faultName = new QName(boundOperation.getBoundPortType().getName().getNamespaceURI(), boundFault.getName());
                                 // We store the message and portType/fault under the same namespace as the binding/fault so that we can match them up later
