@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:tns="http://service.test.policy.ws.xml.sun.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://service.test.policy.ws.xml.sun.com/">
+    <xs:element name="echo" type="tns:echo">
+    </xs:element>
+    <xs:element name="echoResponse" type="tns:echoResponse">
+    </xs:element>
+    <xs:complexType name="echo">
+        <xs:sequence>
+            <xs:element name="arg0" type="xs:string" minOccurs="0">
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="echoResponse">
+        <xs:sequence>
+            <xs:element name="return" type="xs:string" minOccurs="0">
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

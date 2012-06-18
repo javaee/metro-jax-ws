@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://spews.pmg.net/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://spews.pmg.net/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://spews.pmg.net/">
+      <s:element name="AlertActionRaw">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="sSessionId" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="nExecutionDetailsId" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="sOutput" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="bIsComplete" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AlertActionRawResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AlertActionRawResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AlertAction">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="sSessionId" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="nExecutionDetailsId" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="sOutput" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AlertActionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AlertActionResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AlertActionByKey">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="sSessionId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sMessage" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sOutput" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AlertActionByKeyResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AlertActionByKeyResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetTime">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetTimeResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetTimeResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Login">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="sUserId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sPassword" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="LoginResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="LoginResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Logout">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="sSessionId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="LogoutResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="OrderProduct">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="sSessionId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sUserId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sProductId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sQuestionValueXml" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="OrderProductResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="OrderProductResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetServiceQuestionFormat">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="sSessionId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="sProductId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetServiceQuestionFormatResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetServiceQuestionFormatResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="string" nillable="true" type="s:string" />
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="AlertActionRawSoapIn">
+    <wsdl:part name="parameters" element="tns:AlertActionRaw" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionRawSoapOut">
+    <wsdl:part name="parameters" element="tns:AlertActionRawResponse" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionSoapIn">
+    <wsdl:part name="parameters" element="tns:AlertAction" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionSoapOut">
+    <wsdl:part name="parameters" element="tns:AlertActionResponse" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionByKeySoapIn">
+    <wsdl:part name="parameters" element="tns:AlertActionByKey" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionByKeySoapOut">
+    <wsdl:part name="parameters" element="tns:AlertActionByKeyResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetTimeSoapIn">
+    <wsdl:part name="parameters" element="tns:GetTime" />
+  </wsdl:message>
+  <wsdl:message name="GetTimeSoapOut">
+    <wsdl:part name="parameters" element="tns:GetTimeResponse" />
+  </wsdl:message>
+  <wsdl:message name="LoginSoapIn">
+    <wsdl:part name="parameters" element="tns:Login" />
+  </wsdl:message>
+  <wsdl:message name="LoginSoapOut">
+    <wsdl:part name="parameters" element="tns:LoginResponse" />
+  </wsdl:message>
+  <wsdl:message name="LogoutSoapIn">
+    <wsdl:part name="parameters" element="tns:Logout" />
+  </wsdl:message>
+  <wsdl:message name="LogoutSoapOut">
+    <wsdl:part name="parameters" element="tns:LogoutResponse" />
+  </wsdl:message>
+  <wsdl:message name="OrderProductSoapIn">
+    <wsdl:part name="parameters" element="tns:OrderProduct" />
+  </wsdl:message>
+  <wsdl:message name="OrderProductSoapOut">
+    <wsdl:part name="parameters" element="tns:OrderProductResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetServiceQuestionFormatSoapIn">
+    <wsdl:part name="parameters" element="tns:GetServiceQuestionFormat" />
+  </wsdl:message>
+  <wsdl:message name="GetServiceQuestionFormatSoapOut">
+    <wsdl:part name="parameters" element="tns:GetServiceQuestionFormatResponse" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionRawHttpGetIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+    <wsdl:part name="nExecutionDetailsId" type="s:string" />
+    <wsdl:part name="sOutput" type="s:string" />
+    <wsdl:part name="bIsComplete" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionRawHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionHttpGetIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+    <wsdl:part name="nExecutionDetailsId" type="s:string" />
+    <wsdl:part name="sOutput" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionByKeyHttpGetIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+    <wsdl:part name="sMessage" type="s:string" />
+    <wsdl:part name="sOutput" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionByKeyHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTimeHttpGetIn" />
+  <wsdl:message name="GetTimeHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="LoginHttpGetIn">
+    <wsdl:part name="sUserId" type="s:string" />
+    <wsdl:part name="sPassword" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="LoginHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="LogoutHttpGetIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="LogoutHttpGetOut" />
+  <wsdl:message name="OrderProductHttpGetIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+    <wsdl:part name="sUserId" type="s:string" />
+    <wsdl:part name="sProductId" type="s:string" />
+    <wsdl:part name="sQuestionValueXml" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="OrderProductHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetServiceQuestionFormatHttpGetIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+    <wsdl:part name="sProductId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetServiceQuestionFormatHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionRawHttpPostIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+    <wsdl:part name="nExecutionDetailsId" type="s:string" />
+    <wsdl:part name="sOutput" type="s:string" />
+    <wsdl:part name="bIsComplete" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionRawHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionHttpPostIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+    <wsdl:part name="nExecutionDetailsId" type="s:string" />
+    <wsdl:part name="sOutput" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionByKeyHttpPostIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+    <wsdl:part name="sMessage" type="s:string" />
+    <wsdl:part name="sOutput" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="AlertActionByKeyHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTimeHttpPostIn" />
+  <wsdl:message name="GetTimeHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="LoginHttpPostIn">
+    <wsdl:part name="sUserId" type="s:string" />
+    <wsdl:part name="sPassword" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="LoginHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="LogoutHttpPostIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="LogoutHttpPostOut" />
+  <wsdl:message name="OrderProductHttpPostIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+    <wsdl:part name="sUserId" type="s:string" />
+    <wsdl:part name="sProductId" type="s:string" />
+    <wsdl:part name="sQuestionValueXml" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="OrderProductHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetServiceQuestionFormatHttpPostIn">
+    <wsdl:part name="sSessionId" type="s:string" />
+    <wsdl:part name="sProductId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetServiceQuestionFormatHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+
+
+  <wsdl:portType name="SPEWSSoap">
+    <wsdl:operation name="AlertActionRaw">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a message to any action.</wsdl:documentation>
+      <wsdl:input message="tns:AlertActionRawSoapIn" />
+      <wsdl:output message="tns:AlertActionRawSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AlertAction">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a message to one [Wait For Message] action.</wsdl:documentation>
+      <wsdl:input message="tns:AlertActionSoapIn" />
+      <wsdl:output message="tns:AlertActionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AlertActionByKey">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a message to all [Wait For Message] action.</wsdl:documentation>
+      <wsdl:input message="tns:AlertActionByKeySoapIn" />
+      <wsdl:output message="tns:AlertActionByKeySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTime">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Get the current server time.</wsdl:documentation>
+      <wsdl:input message="tns:GetTimeSoapIn" />
+      <wsdl:output message="tns:GetTimeSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Login">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Establish a new session.</wsdl:documentation>
+      <wsdl:input message="tns:LoginSoapIn" />
+      <wsdl:output message="tns:LoginSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Logout">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Invalidates a session.</wsdl:documentation>
+      <wsdl:input message="tns:LogoutSoapIn" />
+      <wsdl:output message="tns:LogoutSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OrderProduct">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Order a service.</wsdl:documentation>
+      <wsdl:input message="tns:OrderProductSoapIn" />
+      <wsdl:output message="tns:OrderProductSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetServiceQuestionFormat">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns service question format for a service.</wsdl:documentation>
+      <wsdl:input message="tns:GetServiceQuestionFormatSoapIn" />
+      <wsdl:output message="tns:GetServiceQuestionFormatSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="SPEWSHttpGet">
+    <wsdl:operation name="AlertActionRaw">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a message to any action.</wsdl:documentation>
+      <wsdl:input message="tns:AlertActionRawHttpGetIn" />
+      <wsdl:output message="tns:AlertActionRawHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AlertAction">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a message to one [Wait For Message] action.</wsdl:documentation>
+      <wsdl:input message="tns:AlertActionHttpGetIn" />
+      <wsdl:output message="tns:AlertActionHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AlertActionByKey">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a message to all [Wait For Message] action.</wsdl:documentation>
+      <wsdl:input message="tns:AlertActionByKeyHttpGetIn" />
+      <wsdl:output message="tns:AlertActionByKeyHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTime">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Get the current server time.</wsdl:documentation>
+      <wsdl:input message="tns:GetTimeHttpGetIn" />
+      <wsdl:output message="tns:GetTimeHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Login">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Establish a new session.</wsdl:documentation>
+      <wsdl:input message="tns:LoginHttpGetIn" />
+      <wsdl:output message="tns:LoginHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Logout">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Invalidates a session.</wsdl:documentation>
+      <wsdl:input message="tns:LogoutHttpGetIn" />
+      <wsdl:output message="tns:LogoutHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OrderProduct">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Order a service.</wsdl:documentation>
+      <wsdl:input message="tns:OrderProductHttpGetIn" />
+      <wsdl:output message="tns:OrderProductHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetServiceQuestionFormat">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns service question format for a service.</wsdl:documentation>
+      <wsdl:input message="tns:GetServiceQuestionFormatHttpGetIn" />
+      <wsdl:output message="tns:GetServiceQuestionFormatHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+
+
+  <wsdl:portType name="SPEWSHttpPost">
+    <wsdl:operation name="AlertActionRaw">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a message to any action.</wsdl:documentation>
+      <wsdl:input message="tns:AlertActionRawHttpPostIn" />
+      <wsdl:output message="tns:AlertActionRawHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AlertAction">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a message to one [Wait For Message] action.</wsdl:documentation>
+      <wsdl:input message="tns:AlertActionHttpPostIn" />
+      <wsdl:output message="tns:AlertActionHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AlertActionByKey">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a message to all [Wait For Message] action.</wsdl:documentation>
+      <wsdl:input message="tns:AlertActionByKeyHttpPostIn" />
+      <wsdl:output message="tns:AlertActionByKeyHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTime">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Get the current server time.</wsdl:documentation>
+      <wsdl:input message="tns:GetTimeHttpPostIn" />
+      <wsdl:output message="tns:GetTimeHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Login">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Establish a new session.</wsdl:documentation>
+      <wsdl:input message="tns:LoginHttpPostIn" />
+      <wsdl:output message="tns:LoginHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Logout">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Invalidates a session.</wsdl:documentation>
+      <wsdl:input message="tns:LogoutHttpPostIn" />
+      <wsdl:output message="tns:LogoutHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OrderProduct">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Order a service.</wsdl:documentation>
+      <wsdl:input message="tns:OrderProductHttpPostIn" />
+      <wsdl:output message="tns:OrderProductHttpPostOut" />
+    </wsdl:operation>
+
+    <wsdl:operation name="GetServiceQuestionFormat">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns service question format for a service.</wsdl:documentation>
+      <wsdl:input message="tns:GetServiceQuestionFormatHttpPostIn" />
+      <wsdl:output message="tns:GetServiceQuestionFormatHttpPostOut" />
+    </wsdl:operation>
+
+  </wsdl:portType>
+
+  <wsdl:binding name="SPEWSSoap" type="tns:SPEWSSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="AlertActionRaw">
+      <soap:operation soapAction="http://spews.pmg.net/AlertActionRaw" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AlertAction">
+      <soap:operation soapAction="http://spews.pmg.net/AlertAction" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AlertActionByKey">
+      <soap:operation soapAction="http://spews.pmg.net/AlertActionByKey" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTime">
+      <soap:operation soapAction="http://spews.pmg.net/GetTime" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Login">
+      <soap:operation soapAction="http://spews.pmg.net/Login" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Logout">
+      <soap:operation soapAction="http://spews.pmg.net/Logout" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OrderProduct">
+      <soap:operation soapAction="http://spews.pmg.net/OrderProduct" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServiceQuestionFormat">
+      <soap:operation soapAction="http://spews.pmg.net/GetServiceQuestionFormat" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="SPEWSSoap12" type="tns:SPEWSSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="AlertActionRaw">
+      <soap12:operation soapAction="http://spews.pmg.net/AlertActionRaw" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AlertAction">
+      <soap12:operation soapAction="http://spews.pmg.net/AlertAction" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AlertActionByKey">
+      <soap12:operation soapAction="http://spews.pmg.net/AlertActionByKey" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTime">
+      <soap12:operation soapAction="http://spews.pmg.net/GetTime" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Login">
+      <soap12:operation soapAction="http://spews.pmg.net/Login" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Logout">
+      <soap12:operation soapAction="http://spews.pmg.net/Logout" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OrderProduct">
+      <soap12:operation soapAction="http://spews.pmg.net/OrderProduct" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServiceQuestionFormat">
+      <soap12:operation soapAction="http://spews.pmg.net/GetServiceQuestionFormat" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+  <wsdl:binding name="SPEWSHttpGet" type="tns:SPEWSHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="AlertActionRaw">
+      <http:operation location="/AlertActionRaw" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AlertAction">
+      <http:operation location="/AlertAction" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AlertActionByKey">
+      <http:operation location="/AlertActionByKey" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTime">
+      <http:operation location="/GetTime" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Login">
+      <http:operation location="/Login" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Logout">
+      <http:operation location="/Logout" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output />
+    </wsdl:operation>
+    <wsdl:operation name="OrderProduct">
+      <http:operation location="/OrderProduct" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServiceQuestionFormat">
+      <http:operation location="/GetServiceQuestionFormat" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+
+
+  <wsdl:binding name="SPEWSHttpPost" type="tns:SPEWSHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="AlertActionRaw">
+      <http:operation location="/AlertActionRaw" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AlertAction">
+      <http:operation location="/AlertAction" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AlertActionByKey">
+      <http:operation location="/AlertActionByKey" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTime">
+      <http:operation location="/GetTime" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Login">
+      <http:operation location="/Login" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Logout">
+      <http:operation location="/Logout" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output />
+    </wsdl:operation>
+    <wsdl:operation name="OrderProduct">
+      <http:operation location="/OrderProduct" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetServiceQuestionFormat">
+      <http:operation location="/GetServiceQuestionFormat" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:binding>
+
+  <wsdl:service name="SPEWS">
+
+    <wsdl:port name="SPEWSSoap" binding="tns:SPEWSSoap">
+      <soap:address location="http://service-dev.host.name.com/spe/spews.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SPEWSSoap12" binding="tns:SPEWSSoap12">
+      <soap12:address location="http://service-dev.host.name.com/spe/spews.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SPEWSHttpGet" binding="tns:SPEWSHttpGet">
+      <http:address location="http://service-dev.host.name.com/spe/spews.asmx" />
+    </wsdl:port>
+
+    <wsdl:port name="SPEWSHttpPost" binding="tns:SPEWSHttpPost">
+      <http:address location="http://service-dev.host.name.com/spe/spews.asmx" />
+    </wsdl:port>
+
+  </wsdl:service>
+</wsdl:definitions>

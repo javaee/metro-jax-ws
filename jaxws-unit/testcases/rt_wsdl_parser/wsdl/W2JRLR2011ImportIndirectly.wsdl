@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright 2003 Sun Microsystems, Inc. All rights reserved.
+   SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+<definitions name="W2JRLR2011Test"
+     targetNamespace="http://w2jrlr2011testservice.org/W2JRLR2011ImportIndirectly.wsdl"
+     xmlns:tns="http://w2jrlr2011testservice.org/W2JRLR2011ImportIndirectly.wsdl"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:ns3="http://w2jrlr2011testservice.org/types3">
+
+     <types>
+          <xsd:schema elementFormDefault="qualified" attributeFormDefault="unqualified">
+               <xsd:import namespace="http://w2jrlr2011testservice.org/types3" schemaLocation="W2JRLR2011ImportIndirectly.xsd"/>
+          </xsd:schema>
+     </types>
+
+    
+</definitions>

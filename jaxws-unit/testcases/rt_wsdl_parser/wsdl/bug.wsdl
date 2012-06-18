@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions name="HelloImplService" targetNamespace="http://server.hello/jaxws" xmlns:tns="http://server.hello/jaxws" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+<types>
+<xsd:schema>
+<xsd:import namespace="http://server.hello/jaxws" schemaLocation="schema1.xsd"/>
+</xsd:schema>
+</types>
+<message name="sayHello">
+<part name="parameters" element="tns:sayHello"/>
+</message>
+<message name="sayHelloResponse">
+<part name="parameters" element="tns:sayHelloResponse"/>
+</message>
+<portType name="HelloImpl">
+<operation name="sayHello">
+<input message="tns:sayHello"/>
+<output message="tns:sayHelloResponse"/>
+</operation>
+</portType>
+<binding name="HelloImplBinding" type="tns:HelloImpl">
+<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+<operation name="sayHello">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+</binding>
+<service name="HelloImplService">
+<port name="HelloImpl" binding="tns:HelloImplBinding">
+<soap:address location="http://localhost:8080/jaxws-hello/hello"/>
+</port>
+</service>
+</definitions>
