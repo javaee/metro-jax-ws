@@ -60,7 +60,7 @@
                 <arg line="-DdestDir=../build/gen-src"/>
                 <arg line="-Dresources=com/sun/xml/ws/resources/*.properties"/>
                 <arg line="-Dlicense=../../etc/CDDL+GPLv2.xml"/>
-                <arg line="com.sun.istack:maven-istack-commons-plugin:2.12:rs-gen"/>
+                <arg line="com.sun.istack:istack-commons-maven-plugin:2.12:rs-gen"/>
             </exec>
         </sequential>
   </target>
