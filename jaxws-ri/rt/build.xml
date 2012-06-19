@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -54,16 +54,15 @@
 
   <target name="generate-code" depends="prepare"
           description="build and run all the code generators">
-    <ant dir="../tools/resourcegen" target="jar" />
-    <taskdef name="resgen" classname="com.sun.tools.resourcegen.ResourceGenTask">
-      <classpath>
-        <path refid="runtime.compile.classpath" />
-        <pathelement path="../tools/resourcegen/build/resourcegen.jar" />
-      </classpath>
-    </taskdef>
-    <resgen destdir="build/gen-src" license="../etc/CDDL+GPLv2.xml">
-      <resource dir="src" includes="com/sun/xml/ws/resources/*.properties" />
-    </resgen>
+      <sequential>
+            <exec executable="${mvn.exec}" failonerror="true" dir="${basedir}/src">
+            	<arg line="${mvn.extra.args}"/>
+                <arg line="-DdestDir=../build/gen-src"/>
+                <arg line="-Dresources=com/sun/xml/ws/resources/*.properties"/>
+                <arg line="-Dlicense=../../etc/CDDL+GPLv2.xml"/>
+                <arg line="com.sun.istack:maven-istack-commons-plugin:2.12:rs-gen"/>
+            </exec>
+        </sequential>
   </target>
 
   <target name="compile" depends="generate-code">

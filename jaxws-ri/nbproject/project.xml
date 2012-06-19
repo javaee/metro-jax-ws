@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2011 Oracle. All rights reserved.
+ Copyright 1997-2012 Oracle. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -96,30 +96,6 @@
                     <label>httpspi-servlet/src</label>
                     <type>java</type>
                     <location>httpspi-servlet/src</location>
-                    <encoding>UTF-8</encoding>
-                </source-folder>
-                <source-folder>
-                    <label>eclipselink_jaxb/src</label>
-                    <type>java</type>
-                    <location>eclipselink_jaxb/src</location>
-                    <encoding>UTF-8</encoding>
-                </source-folder>
-                <source-folder>
-                    <label>eclipselink_jaxb/test</label>
-                    <type>java</type>
-                    <location>eclipselink_jaxb/test</location>
-                    <encoding>UTF-8</encoding>
-                </source-folder>
-                <source-folder>
-                    <label>eclipselink_sdo/src</label>
-                    <type>java</type>
-                    <location>eclipselink_sdo/src</location>
-                    <encoding>UTF-8</encoding>
-                </source-folder>
-                <source-folder>
-                    <label>eclipselink_sdo/test</label>
-                    <type>java</type>
-                    <location>eclipselink_sdo/test</location>
                     <encoding>UTF-8</encoding>
                 </source-folder>
                 <source-folder>
@@ -249,26 +225,6 @@
                 <location>httpspi-servlet/build/classes</location>
                 <build-target>dist</build-target>
             </export>
-            <export>
-                <type>folder</type>
-                <location>eclipselink_jaxb/build/classes</location>
-                <build-target>dist</build-target>
-            </export>
-            <export>
-                <type>folder</type>
-                <location>eclipselink_jaxb/build/test-classes</location>
-                <build-target>dist</build-target>
-            </export>
-            <export>
-                <type>folder</type>
-                <location>eclipselink_sdo/build/classes</location>
-                <build-target>dist</build-target>
-            </export>
-            <export>
-                <type>folder</type>
-                <location>eclipselink_sdo/build/test-classes</location>
-                <build-target>dist</build-target>
-            </export>
             <view>
                 <items>
                     <source-folder style="packages">
@@ -298,22 +254,6 @@
                     <source-folder style="packages">
                         <label>httpspi-servlet/src</label>
                         <location>httpspi-servlet/src</location>
-                    </source-folder>
-                    <source-folder style="packages">
-                        <label>eclipselink_jaxb/src</label>
-                        <location>eclipselink_jaxb/src</location>
-                    </source-folder>
-                    <source-folder style="packages">
-                        <label>eclipselink_jaxb/test</label>
-                        <location>eclipselink_jaxb/test</location>
-                    </source-folder>
-                    <source-folder style="packages">
-                        <label>eclipselink_sdo/src</label>
-                        <location>eclipselink_sdo/src</location>
-                    </source-folder>
-                    <source-folder style="packages">
-                        <label>eclipselink_sdo/test</label>
-                        <location>eclipselink_sdo/test</location>
                     </source-folder>
                     <source-folder style="packages">
                         <label>tools/wscompile/src</label>
@@ -407,36 +347,6 @@
                 <classpath mode="boot">${ri.nb.boot.cp}</classpath>
                 <classpath mode="compile">httpspi-servlet/lib/servlet.jar:${ri.nb.common.cp}</classpath>
                 <built-to>httpspi-servlet/build/classes</built-to>
-                <source-level>1.5</source-level>
-            </compilation-unit>
-            <compilation-unit>
-                <package-root>eclipselink_jaxb/src</package-root>
-<!--                <classpath mode="boot">${ri.nb.boot.cp}</classpath>-->
-                <classpath mode="compile">rt/src:lib/eclipselink.jar:lib/mail.jar:${ri.nb.common.cp}</classpath>
-                <built-to>eclipselink_jaxb/build/classes</built-to>
-                <source-level>1.5</source-level>
-            </compilation-unit>
-            <compilation-unit>
-                <package-root>eclipselink_jaxb/test</package-root>
-                <unit-tests/>
-                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
-                <classpath mode="compile">rt/build/classes:eclipselink_jaxb/build/classes:${ri.nb.test.cp}</classpath>
-                <built-to>eclipselink_jaxb/build/test-classes</built-to>
-                <source-level>1.5</source-level>
-            </compilation-unit>
-            <compilation-unit>
-                <package-root>eclipselink_sdo/src</package-root>
-                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
-                <classpath mode="compile">lib/commonj.sdo.jar:lib/eclipselink.jar:lib/mail.jar:rt/build/classes:${ri.nb.common.cp}</classpath>
-                <built-to>eclipselink_sdo/build/classes</built-to>
-                <source-level>1.5</source-level>
-            </compilation-unit>
-            <compilation-unit>
-                <package-root>eclipselink_sdo/test</package-root>
-                <unit-tests/>
-                <classpath mode="boot">${ri.nb.boot.cp}</classpath>
-                <classpath mode="compile">eclipselink_sdo/src:rt/src:lib/eclipselink.jar:lib/commonj.sdo.jar:${ri.nb.test.cp}</classpath>
-                <built-to>eclipselink_sdo/build/test-classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>

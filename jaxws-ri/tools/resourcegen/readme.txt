@@ -1,1 +1,0 @@
-This tool reads resource files and generate type-safe methods to format strings with them.

@@ -41,6 +41,7 @@
 package com.sun.xml.ws.model;
 
 import com.sun.istack.NotNull;
+import com.sun.istack.localization.Localizable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
@@ -63,7 +64,6 @@ import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingHelper;
 import com.sun.xml.ws.spi.db.TypeInfo;
 import com.sun.xml.ws.spi.db.WrapperComposite;
-import com.sun.xml.ws.util.localization.Localizable;
 import org.jvnet.ws.databinding.DatabindingMode;
 import org.jvnet.ws.EnvelopeStyleFeature;
 import org.jvnet.ws.EnvelopeStyle;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,11 +40,11 @@
 
 package com.sun.xml.ws.transport.http.servlet;
 
+import com.sun.istack.localization.Localizable;
+import com.sun.istack.localization.Localizer;
 import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
-import com.sun.xml.ws.util.localization.Localizable;
-import com.sun.xml.ws.util.localization.Localizer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;

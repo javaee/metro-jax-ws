@@ -401,8 +401,6 @@
         <jar jarfile="${build.home}/lib/jaxws-tools.jar"
              manifest="${basedir}/tools/wscompile/build/manifest">
             <fileset dir="${basedir}/tools/wscompile/build/classes"/>
-            <!-- sneaky but it's easy because this is just one class -->
-            <fileset dir="${basedir}/tools/resourcegen/build/classes"/>
             <!-- if annotation processor would be set as service - it will be run automatically every time withing javac task in case jax-ws annotations have been found
                      <service type="javax.annotation.processing.Processor" provider="com.sun.tools.ws.processor.modeler.annotation.WebServiceAp"/>-->
         </jar>
@@ -454,7 +452,6 @@
         <ant dir="${basedir}/rt" target="clean"/>
         <ant dir="${basedir}/rt-fi" target="clean"/>
         <ant dir="${basedir}/rt-ha" target="clean"/>
-        <ant dir="${basedir}/tools/resourcegen" target="clean"/>
         <ant dir="${basedir}/tools/wscompile" target="clean"/>
         <ant dir="${basedir}/servlet" target="clean"/>
         <ant dir="${basedir}/httpspi-servlet" target="clean"/>

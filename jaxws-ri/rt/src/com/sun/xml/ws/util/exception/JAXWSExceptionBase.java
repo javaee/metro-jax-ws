@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,13 +40,16 @@
 
 package com.sun.xml.ws.util.exception;
 
-import com.sun.xml.ws.util.localization.*;
-
-import javax.xml.ws.WebServiceException;
+import com.sun.istack.localization.Localizable;
+import com.sun.istack.localization.LocalizableMessage;
+import com.sun.istack.localization.LocalizableMessageFactory;
+import com.sun.istack.localization.Localizer;
+import com.sun.istack.localization.NullLocalizable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import javax.xml.ws.WebServiceException;
 
 /**
  * Represents a {@link WebServiceException} with
@@ -68,17 +71,12 @@ public abstract class JAXWSExceptionBase
      */
     protected JAXWSExceptionBase(String key, Object... args) {
         super(findNestedException(args));
-        this.msg = new LocalizableImpl(key,fixNull(args),getDefaultResourceBundleName());
+        this.msg = new LocalizableMessage(getDefaultResourceBundleName(), key, args);
     }
 
 
     protected JAXWSExceptionBase(String message) {
         this(new NullLocalizable(message));
-    }
-
-    private static Object[] fixNull(Object[] x) {
-        if(x==null)     return new Object[0];
-        else            return x;
     }
 
     /**
