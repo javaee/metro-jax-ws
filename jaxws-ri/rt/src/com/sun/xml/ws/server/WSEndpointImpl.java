@@ -417,6 +417,7 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
                         }
                 }
         closeManagedObjectManager();
+            LazyMOMProvider.INSTANCE.unregisterEndpoint(this);
         }
 
         public ServiceDefinitionImpl getServiceDefinition() {
@@ -649,7 +650,6 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
                 
                 if (close) {
                     // no further notification on scope change
-                    LazyMOMProvider.INSTANCE.unregisterEndpoint(this);
                     MonitorBase.closeMOM(managedObjectManager);
                 }
             }
