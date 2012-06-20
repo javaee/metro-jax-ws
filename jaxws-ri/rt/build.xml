@@ -109,7 +109,7 @@
     </target>
 
 
-    <target name="test" depends="check-tests" description="rt-whitebox-tests"
+    <target name="test" depends="check-tests, prepare" description="rt-whitebox-tests"
             unless="from.source" if="tests.exist">
         <path id="test.classpath">
             <path refid="runtime.compile.classpath"/>
