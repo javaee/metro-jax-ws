@@ -56,7 +56,7 @@ import java.util.Iterator;
 /**
  * @author Vivek Pandey
  */
-public class jaxws413 extends TestCase {
+public class jaxws413Test extends TestCase {
 
     public void test1() throws SOAPException, IOException {
         SOAPFault fault = SOAPVersion.SOAP_11.getSOAPFactory().createFault();
