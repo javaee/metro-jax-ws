@@ -970,7 +970,8 @@
 
     <target name="useReleasedAPIs">
         <exec failonerror="false" failifexecutionfails="false" executable="svn" output="build/svn.properties">
-            <arg value="revert project.properties" />
+            <arg value="revert" />
+            <arg value="project.properties" />
         </exec>
     </target>
     
