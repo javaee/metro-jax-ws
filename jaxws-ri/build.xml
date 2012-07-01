@@ -964,15 +964,8 @@
     
     <target name="useAPISnapshots">
         <replace file="${basedir}/project.properties" token="jaxb.api.version=2.2.7" value="jaxb.api.version=2.3-SNAPSHOT"/>
-        <replace file="${basedir}/project.properties" token="saaj-impl.version=1.3.19" value="saaj-impl.version=1.4-SNAPSHOT"/>
+        <replace file="${basedir}/project.properties" token="saaj-api.version=1.3.4" value="saaj-api.version=1.4-SNAPSHOT"/>
         <replace file="${basedir}/project.properties" token="release.api.version=2.2.8" value="release.api.version=2.3-SNAPSHOT"/>
     </target>
 
-    <target name="useReleasedAPIs">
-        <exec failonerror="false" failifexecutionfails="false" executable="svn" output="build/svn.properties">
-            <arg value="revert" />
-            <arg value="project.properties" />
-        </exec>
-    </target>
-    
 </project>
