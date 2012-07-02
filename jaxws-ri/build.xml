@@ -271,16 +271,24 @@
             <fileset dir="${dist20.home}/lib" includes="jaxws-tools.src.zip"/>
             <!-- include everything except jaxws-asm-source.jar, junit-source.jar, ant-source.jar -->
             <fileset dir="${basedir}/lib">
-                <include name="*source*.jar" />
-                <exclude name="junit-source.jar" />
-                <!--TODO: seems to be we have to integrate ....-->
-                <!--<exclude name="jaxws-asm-source.jar" />-->
-                <exclude name="ant-source.jar" />
-                <exclude name="woodstox-core-asl-source.jar" />
-
-                <!--also weren't integrated before ...-->
-                <exclude name="ha-api-source.jar" />
-                <exclude name="stax2-api-source.jar" />
+                <include name="FastInfoset-source.jar" />
+                <include name="gmbal-api-only-source.jar" />
+                <include name="javax.annotation-source.jar" />
+                <include name="jaxb-api-source.jar" />
+                <include name="jaxb-impl-source.jar" />
+                <include name="jaxb-xjc-source.jar" />
+                <include name="jaxws-api-source.jar" />
+                <include name="jaxws-asm-source.jar" />
+                <include name="jaxws-rt.src.zip" />
+                <include name="jaxws-tools.src.zip" />
+                <include name="jsr181-api-source.jar" />
+                <include name="management-api-sources.jar" />
+                <include name="mimepull-source.jar" />
+                <include name="policy-source.jar" />
+                <include name="saaj-api-source.jar" />
+                <include name="saaj-impl-source.jar" />
+                <include name="stax-ex-source.jar" />
+                <include name="streambuffer-source.jar" />
             </fileset>
         </zip>
         <delete file="${dist20.home}/lib/jaxws-rt.src.zip"/>
