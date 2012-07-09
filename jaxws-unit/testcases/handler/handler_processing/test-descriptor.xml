@@ -4,7 +4,7 @@
   </description>
 
     <!-- Test for http://java.net/jira/browse/JAX_WS-457, Not fixed in 2.2.8 -->
-    <client name="testAddMimeHeadersInSOAPMessage" since="2.2.8"><![CDATA[
+    <client name="testAddMimeHeadersInSOAPMessage" since="2.2.9"><![CDATA[
     import handler.handler_processing.common.*;
     HandlerTracker tracker = HandlerTracker.getClientInstance();
     try {
