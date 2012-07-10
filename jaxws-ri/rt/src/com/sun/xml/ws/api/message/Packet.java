@@ -774,10 +774,23 @@ public final class Packet
      */
     public Packet createClientResponse(Message msg) {
         Packet response = new Packet(this);
-        response.soapAction = null; // de-initializing 
         response.setMessage(msg);
-        response.setState(State.ClientResponse);
+        finishCreateRelateClientResponse(response);
         return response;
+    }
+
+    /**
+     * For use cases that start with an existing Packet.
+     */
+    public Packet relateClientResponse(final Packet response) {
+        response.relatePackets(this, true);
+        finishCreateRelateClientResponse(response);
+        return response;
+    }
+
+    private void finishCreateRelateClientResponse(final Packet response) {
+        response.soapAction = null; // de-initializing
+        response.setState(State.ClientResponse);
     }
 
     /**
