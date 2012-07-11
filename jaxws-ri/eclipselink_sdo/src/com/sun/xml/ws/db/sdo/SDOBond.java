@@ -161,10 +161,23 @@ public class SDOBond<T>  implements XMLBridge<T> {
 
     private Object deserializePrimitives(Source src) throws Exception {
         if (javaType == null) return null;
-        DOMResult result = new DOMResult();
-        Transformer t = tf.newTransformer();
-        t.transform(src, result);        
-        String value = ((Document)result.getNode()).getDocumentElement().getTextContent().trim(); //xmlElement.getTextContent().trim();
+        String value = null;
+        if (src instanceof StAXSource) {
+            StAXSource staxSrc = (StAXSource)src;
+            XMLStreamReader xr = staxSrc.getXMLStreamReader();
+            if(xr.isStartElement()) xr.next();
+            StringBuffer sb = new StringBuffer(); 
+            while(xr.isCharacters()) {
+                sb.append(xr.getText());
+                xr.next();
+            }
+            value = sb.toString().trim();
+        } else {
+            DOMResult result = new DOMResult();
+            Transformer t = tf.newTransformer();
+            t.transform(src, result); 
+            value = ((Document)result.getNode()).getDocumentElement().getTextContent().trim(); //xmlElement.getTextContent().trim();             
+        }
         if (value == null) {
             return null;
         }

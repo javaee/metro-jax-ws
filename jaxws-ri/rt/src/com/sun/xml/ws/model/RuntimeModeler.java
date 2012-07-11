@@ -138,6 +138,7 @@ public class RuntimeModeler {
     public static final Class<Exception> EXCEPTION_CLASS = Exception.class;
     public static final String DecapitalizeExceptionBeanProperties = "com.sun.xml.ws.api.model.DecapitalizeExceptionBeanProperties";
     public static final String SuppressDocLitWrapperGeneration = "com.sun.xml.ws.api.model.SuppressDocLitWrapperGeneration";
+    public static final String DocWrappeeNamespapceQualified = "com.sun.xml.ws.api.model.DocWrappeeNamespapceQualified";
 
   /*public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull BindingID bindingId, @NotNull WebServiceFeature... features) {
         this(portClass, serviceName, null, bindingId, features);
@@ -878,7 +879,7 @@ public class RuntimeModeler {
             returnType = getAsyncReturnType(method, returnType);
             resultQName = new QName(RETURN);
         }
-
+        resultQName = qualifyWrappeeIfNeeded(resultQName, resNamespace);
         if (!isOneway && (returnType != null) && (!returnType.getName().equals("void"))) {
             Annotation[] rann = getAnnotations(method);
             if (resultQName.getLocalPart() != null) {
@@ -946,6 +947,7 @@ public class RuntimeModeler {
                 if (isHolder && paramMode == Mode.IN)
                     paramMode = Mode.INOUT;
             }
+            paramQName = qualifyWrappeeIfNeeded(paramQName, reqNamespace);
             typeRef =
                 new TypeInfo(paramQName, clazzType, pannotations[pos]);
             metadataReader.getProperties(typeRef.properties(), method, pos);
@@ -982,6 +984,16 @@ public class RuntimeModeler {
         processExceptions(javaMethod, method);
     }
 
+    private QName qualifyWrappeeIfNeeded(QName resultQName, String ns) {
+        Object o = config.properties().get(DocWrappeeNamespapceQualified);
+        boolean qualified = (o!= null && o instanceof Boolean) ? ((Boolean) o) : false;
+        if (qualified) {
+            if (resultQName.getNamespaceURI() == null || "".equals(resultQName.getNamespaceURI())) {
+                return new QName(ns, resultQName.getLocalPart());
+            }
+        }
+        return resultQName;
+    }
 
     /**
      * models a rpc/literal method
