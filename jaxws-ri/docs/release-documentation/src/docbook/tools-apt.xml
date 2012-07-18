@@ -56,6 +56,12 @@ holder.
     <section xml:id="section-8324588054404016">
         <title><command>apt</command></title>
 
+        <para>Be aware that <command>apt</command> was deprecated. And has been replaced by
+            <link xlink:href="http://www.jcp.org/en/jsr/detail?id=269">Pluggable Annotation Processing API</link>
+            Please use <command>javac</command> for <xref
+            linkend="tools-annotation-processing" xrefstyle="select:title" /> purposes.
+        </para>
+
         <para>The <command>apt</command> tool provides a facility for
         programmatically processing the annotations added to Java by <link
         xlink:href="http://www.jcp.org/en/jsr/detail?id=175">JSR 175</link>,

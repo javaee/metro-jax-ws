@@ -60,7 +60,8 @@ holder.
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tools-wsimport-ant-task.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tools-wsgen.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tools-wsgen-ant-task.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tools-annotation-processing.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tools-apt.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tools-apt-ant-task.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tools-annotation-processing-ant-task.xml" />
 
 </chapter>

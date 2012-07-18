@@ -55,7 +55,7 @@ holder.
 
     <orderedlist>
         <listitem>
-            <para><xref linkend="apttool" xrefstyle="select:title" /></para>
+            <para><xref linkend="annotationProcessing" xrefstyle="select:title" /></para>
         </listitem>
 
         <listitem>
@@ -73,22 +73,36 @@ holder.
         </listitem>
     </orderedlist>
 
-    <section xml:id="apttool">
-        <title><command>apt</command></title>
+    <section xml:id="annotationProcessing">
+        <title><command>Annotation Processing</command></title>
 
         <para>The <command>apt</command> tool provides a facility for
         programmatically processing the annotations added to Java by <link
-        xlink:href="http://www.jcp.org/en/jsr/detail?id=175">JSR 175</link>,
+            xlink:href="http://www.jcp.org/en/jsr/detail?id=175">JSR 175</link>,
         <emphasis>Metadata Facility for the Java</emphasis> TM
         <emphasis>Programming Language</emphasis>. In brief, JSR 175 allows
         programmers to declare new kinds of structured modifiers that can be
         associated with program elements, fields, methods, classes,
         etc.</para>
 
-        <para>The <command>apt</command> tool generates the portable artifacts
-        used in JAX-WS services.</para>
+        <para>The <command>javac</command> completely replaced functionality
+        provided by <command>apt</command>. It was done within implementation of <link
+        xlink:href="http://www.jcp.org/en/jsr/detail?id=269">JSR 269</link>,
+        <emphasis>Pluggable Annotation Processing API</emphasis>.
+        So it's expected programmers to use <command>javac</command> instead of
+        <command>apt</command>.</para>
 
-        <para>For more information on this tool please see: <xref
+        <para>Using <command>javac</command> with JAX-WS annotation processor
+        will generates the portable artifacts used in JAX-WS services.</para>
+
+        <para>
+            Be aware that the <command>apt</command> tool and its associated API,
+            <command>com.sun.mirror.\*</command>, are being deprecated in JDK 7.
+        </para>
+
+        <para>For more information on this compiler please see <xref
+        linkend="tools-annotation-processing" xrefstyle="select:title" />.</para>
+        <para>For more information on <command>apt</command> tool please see: <xref
         linkend="tools-apt" xrefstyle="select:title" />.</para>
     </section>
 
@@ -153,8 +167,8 @@ holder.
             <listitem>
                 <para>Starting from Java sources: <orderedlist>
                         <listitem>
-                            <para>Use <command>apt</command> to generate the
-                            artifacts required by the JAX-WS
+                            <para>Use <command>annotationProcessing</command> Ant task
+                            to generate the artifacts required by the JAX-WS
                             specification.</para>
                         </listitem>
 

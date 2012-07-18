@@ -59,7 +59,7 @@ holder.
         <para>Typically, one creates the WAR file with a GUI development tool
         or with the <literal>ant</literal> <literal>war</literal> task from
         the generated artifacts from <command>wsimport</command>,
-        <command>wsgen</command>, or <command>apt</command> tools.</para>
+        <command>wsgen</command>, or <command>annotationProcessing</command> tools.</para>
 
         <para>For example, a sample WAR file starting from a WSDL file:</para>
 

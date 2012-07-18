@@ -572,14 +572,6 @@ holder.
                 the filenames in their customization files to match the new
                 file names.</para>
             </listitem>
-
-            <listitem>
-                <para>A <link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=647">bug
-                in <command>apt</command> ant task</link> makes it not work by
-                default. Workaround is to use <literal>fork="true"</literal>
-                option in the <command>apt</command> task.</para>
-            </listitem>
         </itemizedlist>
     </section>
 

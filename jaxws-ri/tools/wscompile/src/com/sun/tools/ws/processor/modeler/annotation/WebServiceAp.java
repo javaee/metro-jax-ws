@@ -70,10 +70,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
-import com.sun.tools.javac.processing.JavacProcessingEnvironment;
-import com.sun.tools.javac.util.Options;
-import com.sun.tools.javac.util.Context;
 
 /**
  * WebServiceAp is a AnnotationProcessor for processing javax.jws.* and
@@ -136,7 +134,7 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
     }
 
     @Override
-    public void init(ProcessingEnvironment processingEnv) {
+    public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         remoteElement = processingEnv.getElementUtils().getTypeElement(Remote.class.getName());
         remoteExceptionElement = processingEnv.getElementUtils().getTypeElement(RemoteException.class.getName()).asType();
@@ -151,16 +149,21 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
             doNotOverWrite = getOption(DO_NOT_OVERWRITE);
             ignoreNoWebServiceFoundWarning = getOption(IGNORE_NO_WEB_SERVICE_FOUND_WARNING);
 
-            String property = System.getProperty("sun.java.command"); // todo: check if property can be null
-            options.verbose = property != null && property.contains("-verbose");
-            // fix bug 13801994: prepare sourceDir from javac option of "-s"
             String classDir = ".";
-            if (processingEnv instanceof JavacProcessingEnvironment) {
-                Context ctxt = ((JavacProcessingEnvironment) processingEnv).getContext();
-                Options opt = Options.instance(ctxt);
-                
-                if (null != opt && null != opt.get("-s")) {
-                    classDir = opt.get("-s");
+            String property = System.getProperty("sun.java.command");
+            if (property != null) {
+                Scanner scanner = new Scanner(property);
+                boolean sourceDirNext = false;
+                while (scanner.hasNext()) {
+                    String token = scanner.next();
+                    if (sourceDirNext) {
+                        classDir = token;
+                        sourceDirNext = false;
+                    } else if ("-verbose".equals(token)) {
+                        options.verbose = true;
+                    } else if ("-s".equals(token)) {
+                        sourceDirNext = true;
+                    }
                 }
             }
             sourceDir = new File(classDir);
