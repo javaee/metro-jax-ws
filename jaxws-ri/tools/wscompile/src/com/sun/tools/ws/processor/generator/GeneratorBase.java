@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -75,11 +75,13 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.processing.Filer;
+import javax.tools.FileObject;
 
-/**
- *
- * @author WS Development Team
- */
+import javax.tools.JavaFileManager;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
+
 public abstract class GeneratorBase implements ModelVisitor {
     private File destDir;
     private String targetVersion;
@@ -214,17 +216,25 @@ public abstract class GeneratorBase implements ModelVisitor {
     }
 
     private void generateHandlerChainFile(Element hChains, String name) {
-        String hcName = getHandlerConfigFileName(name);
-
-        File packageDir = DirectoryUtil.getOutputDirectoryFor(name, destDir);
-        File hcFile = new File(packageDir, hcName);
-
-        options.addGeneratedFile(hcFile);
+        
+        Filer filer = options.filer;
 
         try {
-            IndentingWriter p =
-                new IndentingWriter(
-                    new OutputStreamWriter(new FileOutputStream(hcFile)));
+            IndentingWriter p;
+            FileObject jfo;
+            if (filer != null) { 
+                jfo = filer.createResource(StandardLocation.SOURCE_OUTPUT, 
+                        Names.getPackageName(name), getHandlerConfigFileName(name));
+                options.addGeneratedFile(new File(jfo.toUri()));
+                p = new IndentingWriter(new OutputStreamWriter(jfo.openOutputStream()));
+            } else { // leave for backw. compatibility now
+                String hcName = getHandlerConfigFileName(name);
+                File packageDir = DirectoryUtil.getOutputDirectoryFor(name, destDir);
+                File hcFile = new File(packageDir, hcName);
+                options.addGeneratedFile(hcFile);
+                p = new IndentingWriter(new OutputStreamWriter(new FileOutputStream(hcFile)));
+            }
+        
             Transformer it = XmlUtil.newTransformer();
 
             it.setOutputProperty(OutputKeys.METHOD, "xml");
