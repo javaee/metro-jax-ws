@@ -148,45 +148,45 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
         LazyMOMProvider.INSTANCE.registerEndpoint(this);
         initManagedObjectManager();
 
-                if (serviceDef != null) {
-                        serviceDef.setOwner(this);
-                }
-                
-                ComponentFeature cf = binding.getFeature(ComponentFeature.class);
-                if (cf != null) {
-                    switch(cf.getTarget()) {
-                        case ENDPOINT:
-                            componentRegistry.add(cf.getComponent());
-                            break;
-                        case CONTAINER:
-                            container.getComponents().add(cf.getComponent());
-                            break;
-                        default:
-                            throw new IllegalArgumentException();
-                    }
-                }
+        if (serviceDef != null) {
+            serviceDef.setOwner(this);
+        }
+
+        ComponentFeature cf = binding.getFeature(ComponentFeature.class);
+        if (cf != null) {
+            switch (cf.getTarget()) {
+                case ENDPOINT:
+                    componentRegistry.add(cf.getComponent());
+                    break;
+                case CONTAINER:
+                    container.getComponents().add(cf.getComponent());
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
 
         TubelineAssembler assembler = TubelineAssemblerFactory.create(
                 Thread.currentThread().getContextClassLoader(), binding.getBindingId(), container);
-                assert assembler != null;
+        assert assembler != null;
 
         this.operationDispatcher = (port == null) ? null : new OperationDispatcher(port, binding, seiModel);
 
         context = createServerTubeAssemblerContext(terminalTube, isSynchronous);
         this.masterTubeline = assembler.createServer(context);
 
-                Codec c = context.getCodec();
-                if (c instanceof EndpointAwareCodec) {
+        Codec c = context.getCodec();
+        if (c instanceof EndpointAwareCodec) {
             // create a copy to avoid sharing the codec between multiple endpoints 
-                        c = c.copy();
-                        ((EndpointAwareCodec) c).setEndpoint(this);
-                }
-                this.masterCodec = c;
+            c = c.copy();
+            ((EndpointAwareCodec) c).setEndpoint(this);
+        }
+        this.masterCodec = c;
 
-                tubePool = new TubePool(masterTubeline);
-                terminalTube.setEndpoint(this);
-                engine = new Engine(toString(), container);
-                wsdlProperties = (port == null) ? new WSDLDirectProperties(serviceName, portName, seiModel) : new WSDLPortProperties(port, seiModel);
+        tubePool = new TubePool(masterTubeline);
+        terminalTube.setEndpoint(this);
+        engine = new Engine(toString(), container);
+        wsdlProperties = (port == null) ? new WSDLDirectProperties(serviceName, portName, seiModel) : new WSDLPortProperties(port, seiModel);
 
         Map<QName, WSEndpointReference.EPRExtension> eprExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
         try {

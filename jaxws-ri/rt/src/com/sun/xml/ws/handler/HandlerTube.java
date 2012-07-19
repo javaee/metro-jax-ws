@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -308,7 +308,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
         } else {
             /*
               otherwise use this value as an approximation, since this carries
-              the appliation's intention --- whether it was invokeOneway vs invoke,etc.
+              the application's intention --- whether it was invokeOneway vs invoke,etc.
              */
             return !(packet.expectReply != null && packet.expectReply);
         }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,6 +58,7 @@ import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
 import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.server.EndpointAwareTube;
 import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -575,9 +576,17 @@ public abstract class WSEndpoint<T> implements ComponentRegistry {
             final ManagedEndpointFactory managementFactory = managementFactories.next();
             final EndpointCreationAttributes attributes = new EndpointCreationAttributes(
                     processHandlerAnnotation, invoker, resolver, isTransportSynchronous);
-            return managementFactory.createEndpoint(endpoint, attributes);
-        }
+            
+            WSEndpoint<T> managedEndpoint = managementFactory.createEndpoint(endpoint, attributes);
 
+            if (endpoint.getAssemblerContext().getTerminalTube() instanceof EndpointAwareTube) {
+                ((EndpointAwareTube)endpoint.getAssemblerContext().getTerminalTube()).setEndpoint(managedEndpoint);
+            }
+            
+            return managedEndpoint;
+        }
+        
+        
         return endpoint;
     }
 
@@ -645,6 +654,11 @@ public abstract class WSEndpoint<T> implements ComponentRegistry {
     
     public static @NotNull QName getDefaultPortName(@NotNull QName serviceName, Class endpointClass, boolean isStandard){
         return EndpointFactory.getDefaultPortName(serviceName, endpointClass, isStandard);
+    }
+
+    public boolean equalsProxiedInstance(WSEndpoint endpoint) {
+        if (endpoint == null) return false;
+        return this.equals(endpoint);
     }
     
 }

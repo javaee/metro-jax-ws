@@ -1,6 +1,57 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
 package com.sun.xml.ws.server;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.pipe.Codec;
+import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
+import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.ServiceDefinition;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.policy.PolicyMap;
 import org.glassfish.gmbal.AMXClient;
 import org.glassfish.gmbal.GmbalMBean;
 import org.glassfish.gmbal.ManagedObjectManager;
@@ -11,6 +62,9 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.concurrent.Executor;
+import javax.xml.namespace.QName;
 
 /**
  * {@link ManagedObjectManager} proxy class for {@link WSEndpointImpl} instances that could be used when Gmbal API calls
@@ -18,7 +72,7 @@ import java.util.ResourceBundle;
  * method from {@link ManagedObjectManager} is invoked on it. In this case a real instance of ManagedObjectManager is
  * obtained from WSEndpointImpl and the method is rather invoked on this object.
  */
-public class WSEndpointMOMProxy implements ManagedObjectManager {
+public class WSEndpointMOMProxy extends WSEndpoint implements ManagedObjectManager {
 
     private final @NotNull
     WSEndpointImpl wsEndpoint;
@@ -33,7 +87,7 @@ public class WSEndpointMOMProxy implements ManagedObjectManager {
      *
      * @return an ManagedObjectManager instance
      */
-    private ManagedObjectManager getManagedObjectManager() {
+    public ManagedObjectManager getManagedObjectManager() {
         if (managedObjectManager == null) {
             managedObjectManager = wsEndpoint.obtainManagedObjectManager();
         }
@@ -178,4 +232,99 @@ public class WSEndpointMOMProxy implements ManagedObjectManager {
         getManagedObjectManager().close();
     }
 
+    @Override
+    public boolean equalsProxiedInstance(WSEndpoint endpoint) {
+        if (wsEndpoint == null) {
+            return (endpoint == null);
+        }
+        return wsEndpoint.equals(endpoint);
+    }
+
+    @Override
+    public Codec createCodec() {
+        return this.wsEndpoint.createCodec();
+    }
+
+    @Override
+    public QName getServiceName() {
+        return this.wsEndpoint.getServiceName();
+    }
+
+    @Override
+    public QName getPortName() {
+        return this.wsEndpoint.getPortName();
+    }
+
+    @Override
+    public Class getImplementationClass() {
+        return this.wsEndpoint.getImplementationClass();
+    }
+
+    @Override
+    public WSBinding getBinding() {
+        return this.wsEndpoint.getBinding();
+    }
+
+    @Override
+    public Container getContainer() {
+        return this.wsEndpoint.getContainer();
+    }
+
+    @Override
+    public WSDLPort getPort() {
+        return this.getPort();
+    }
+
+    @Override
+    public void setExecutor(Executor exec) {
+        this.wsEndpoint.setExecutor(exec);
+    }
+
+    @Override
+    public void schedule(Packet request, CompletionCallback callback, FiberContextSwitchInterceptor interceptor) {
+        this.wsEndpoint.schedule(request, callback, interceptor);
+    }
+
+    @Override
+    public PipeHead createPipeHead() {
+        return this.wsEndpoint.createPipeHead();
+    }
+
+    @Override
+    public void dispose() {
+        if (this.wsEndpoint != null) {
+            this.wsEndpoint.dispose();
+        }
+    }
+
+    @Override
+    public ServiceDefinition getServiceDefinition() {
+        return this.wsEndpoint.getServiceDefinition();
+    }
+
+    @Override
+    public Set getComponentRegistry() {
+        return this.wsEndpoint.getComponentRegistry();
+    }
+
+    @Override
+    public SEIModel getSEIModel() {
+        return this.wsEndpoint.getSEIModel();
+    }
+
+    @Override
+    public PolicyMap getPolicyMap() {
+        return this.wsEndpoint.getPolicyMap();
+    }
+
+    @Override
+    public void closeManagedObjectManager() {
+        this.wsEndpoint.closeManagedObjectManager();
+    }
+
+    @Override
+    public ServerTubeAssemblerContext getAssemblerContext() {
+        return this.wsEndpoint.getAssemblerContext();
+    }
+    
 }
