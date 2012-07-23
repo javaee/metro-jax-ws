@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -101,5 +101,10 @@ public class WsGenTaskTest extends WsAntTaskTestBase {
     public void testMemoryArgs() throws IOException, URISyntaxException {
         copy(pkg, "TestWs.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs.java_"));
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-server-memory"));
+    }
+
+    public void testFork() throws IOException, URISyntaxException {
+        copy(pkg, "TestWs.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs.java_"));
+        assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-fork"));
     }
 }

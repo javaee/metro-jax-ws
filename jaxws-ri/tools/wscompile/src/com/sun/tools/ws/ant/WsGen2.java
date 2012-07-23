@@ -59,6 +59,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
+import java.util.Enumeration;
 
 /**
  * wsgen task for use with the JAXWS project.
@@ -431,8 +433,25 @@ public class WsGen2 extends MatchingTask {
             loader = loader.getParent();
         }
 
-        if(loader!=null)
-            cmd.createClasspath(getProject()).append(new Path(getProject(), ((AntClassLoader)loader).getClasspath()));
+        if(loader!=null) {
+            String antcl = ((AntClassLoader)loader).getClasspath();
+            // try to find tools.jar and add it to the cp
+            // so the behaviour on all JDKs is the same
+            // (avoid creating MaskingClassLoader on non-Mac JDKs)
+            File jreHome = new File(System.getProperty("java.home"));
+            File toolsJar = new File(jreHome.getParent(), "lib/tools.jar" );
+            if (toolsJar.exists()) {
+                antcl += File.pathSeparatorChar + toolsJar.getAbsolutePath();
+            }
+            cmd.createClasspath(getProject()).append(new Path(getProject(), antcl));
+            String apiCp = getApiClassPath(this.getClass().getClassLoader());
+            if (apiCp != null) {
+                //TODO: jigsaw - Xbootclaspath may get deprecated/removed
+                //and replaced with '-L' or '-m' options
+                //see also: http://mail.openjdk.java.net/pipermail/jigsaw-dev/2010-April/000778.html
+                cmd.createVmArgument().setLine("-Xbootclasspath/p:" + apiCp);
+            }
+        }
 
         cmd.createClasspath(getProject()).append(getClasspath());
         cmd.setClassname("com.sun.tools.ws.WsGen");
@@ -620,5 +639,44 @@ public class WsGen2 extends MatchingTask {
         } catch (IOException e) {
             throw new BuildException(e, location);
         }
+    }
+
+    private String getApiClassPath(ClassLoader cl) {
+        StringBuilder sb = new StringBuilder();
+        URL wsAPI = getResourceFromCP(cl, "javax/xml/ws/EndpointContext.class");
+        if (wsAPI != null) {
+            sb.append(jarToPath(wsAPI));
+            URL jaxbAPI = getResourceFromCP(cl, "javax/xml/bind/JAXBPermission.class");
+            if (jaxbAPI != null) {
+                String s = jarToPath(jaxbAPI);
+                if (sb.indexOf(s) < 0) {
+                    sb.append(File.pathSeparator);
+                    sb.append(s);
+                }
+            }
+        }
+        return sb.length() != 0 ? sb.toString() : null;
+    }
+
+    private URL getResourceFromCP(ClassLoader cl, String resource) {
+        try {
+            Enumeration<URL> res = cl.getResources(resource);
+            while (res.hasMoreElements()) {
+                URL u = res.nextElement();
+                String s = u.toExternalForm();
+                if (!s.contains("rt.jar") && !s.contains("classes.jar")) {
+                    return u;
+                }
+            }
+        } catch (IOException ex) {
+            log(ex.getMessage(), Project.MSG_WARN);
+        }
+        return null;
+    }
+
+    private String jarToPath(URL u) {
+        String s = u.toExternalForm();
+        s = s.substring(s.lastIndexOf(":") + 1);
+        return s.indexOf('!') < 0 ? s : s.substring(0, s.indexOf('!'));
     }
 }

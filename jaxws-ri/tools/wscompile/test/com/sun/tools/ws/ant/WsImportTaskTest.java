@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,8 @@ import java.util.logging.Logger;
 public class WsImportTaskTest extends WsAntTaskTestBase {
 
     private File wsdl;
+    private static final File pkg = new File(srcDir, "test");
+    private static final File metainf = new File(buildDir, "META-INF");
 
     @Override
     public String getBuildScript() {
@@ -61,6 +63,8 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
     protected void setUp() throws Exception {
         super.setUp();
         wsdl = copy(projectDir, "hello.wsdl", WsImportTaskTest.class.getResourceAsStream("resources/hello.wsdl"));
+        assertTrue(pkg.mkdirs());
+        assertTrue(metainf.mkdirs());
     }
 
     @Override
@@ -132,5 +136,11 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
         }
         br.close();
         assertTrue("Plugin not invoked", found);
+    }
+
+    public void testFork() throws FileNotFoundException, IOException {
+        copy(pkg,  "MyExtension.java", WsImportTaskTest.class.getResourceAsStream("resources/MyExtension.java_"));
+        copy(buildDir,  "com.sun.tools.ws.api.wsdl.TWSDLExtensionHandler", WsImportTaskTest.class.getResourceAsStream("resources/TWSDLExtensionHandler"));
+        assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-fork"));
     }
 }
