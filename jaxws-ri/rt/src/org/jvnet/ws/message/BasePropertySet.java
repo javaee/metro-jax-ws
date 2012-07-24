@@ -126,8 +126,8 @@ public abstract class BasePropertySet implements PropertySet {
                             String name = m.getName();
                             assert name.startsWith("get") || name.startsWith("is");
 
-                            String setName = name.startsWith("is") ? "set"+name.substring(3) : // isFoo -> setFoo 
-                                's'+name.substring(1);   // getFoo -> setFoo
+                            String setName = name.startsWith("is") ? "set"+name.substring(2) : // isFoo -> setFoo
+                                                                     's'  +name.substring(1);  // getFoo -> setFoo
                             Method setter;
                             try {
                                 setter = clazz.getMethod(setName,m.getReturnType());
