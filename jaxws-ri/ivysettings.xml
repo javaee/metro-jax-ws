@@ -47,7 +47,8 @@
             <ibiblio name="central" m2compatible="true"/>
             <ibiblio name="javanet_staging" m2compatible="true" root="https://maven.java.net/content/repositories/staging/"/>
             <ibiblio name="eclipse" m2compatible="true" root="http://download.eclipse.org/rt/eclipselink/maven.repo/"/>
-            <ibiblio name="glassfish-internal" m2compatible="true" root="http://gf-maven.us.oracle.com/nexus/content/repositories/gf-internal-snapshot/"/>
+            <ibiblio name="javanet-m1" m2compatible="false" root="http://download.java.net/maven/1/"/>
+            <ibiblio name="glassfish-internal" m2compatible="true" root="http://gf-maven.us.oracle.com/nexus/content/repositories/gf-internal-snapshot/"/> <!-- TODO - remove!! -->
         </chain>
     </resolvers>
 </ivysettings>
