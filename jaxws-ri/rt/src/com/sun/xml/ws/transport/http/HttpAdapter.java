@@ -373,6 +373,20 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     protected NonAnonymousResponseProcessor getNonAnonymousResponseProcessor() {
     	return NonAnonymousResponseProcessor.getDefault();
     }
+    
+    /**
+     * This method is added for the case of the sub-class wants to override the method to 
+     * print details. E.g. convert soapfault as HTML msg for 403 error connstatus.
+     * @param os
+     */
+    protected void writeClientError(int connStatus, @NotNull OutputStream os, @NotNull Packet packet) throws IOException {
+    	//do nothing
+    }
+    
+    private boolean isClientErrorStatus(int connStatus)
+    {
+    	return (connStatus == HttpURLConnection.HTTP_FORBIDDEN); // add more for future.
+    }
 
     private void encodePacket(@NotNull Packet packet, @NotNull WSHTTPConnection con, @NotNull Codec codec) throws IOException {
     	if (packet.endpointAddress != null) {
@@ -417,6 +431,13 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 con.setStatus(responseMessage.isFault()
                         ? HttpURLConnection.HTTP_INTERNAL_ERROR
                         : HttpURLConnection.HTTP_OK);
+            } 
+
+            if (isClientErrorStatus(con.getStatus())) { 
+            	 OutputStream os = con.getOutput();
+            	 writeClientError(con.getStatus(), os, packet);
+            	 os.close();
+            	 return;
             }
 
             ContentType contentType = codec.getStaticContentType(packet);
