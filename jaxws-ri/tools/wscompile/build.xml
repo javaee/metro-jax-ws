@@ -138,10 +138,34 @@
             <!-- so that resources can be found -->
             <pathelement path="${basedir}/test"/>
         </path>
-        
+
+        <!-- prepare testing environment -->
+        <property name="test.libs.dir" location="${java.io.tmpdir}/ws-ri-testlibs"/>
+        <property name="test.lib.dir" value="${test.libs.dir}/lib"/>
+        <property name="test.api.dir" value="${test.lib.dir}/api"/>
+        <property name="test.ant.dir" value="${test.lib.dir}/ant"/>
+        <mkdir dir="${test.libs.dir}"/>
+        <mkdir dir="${test.lib.dir}"/>
+        <mkdir dir="${test.api.dir}"/>
+        <mkdir dir="${test.ant.dir}"/>
+
+        <copy todir="${test.api.dir}">
+            <fileset dir="${build.home}/lib">
+                <include name="jaxws-api.jar"/>
+                <include name="jaxb-api.jar"/>
+                <include name="jsr181-api.jar"/>
+            </fileset>
+        </copy>
+        <copy todir="${test.ant.dir}">
+            <fileset dir="${ant.home}/lib" includes="ant.jar,ant-launcher.jar"/>
+        </copy>
+        <copy todir="${test.lib.dir}">
+            <fileset dir="${build.home}/lib" includes="*.jar" excludes="jaxws-api*,jaxb-api*,*181*,*javadoc*"/>
+        </copy>
+
         <junit haltonfailure="yes">
             <classpath refid="test.classpath"/>
-            <jvmarg line="-Djaxws-ri.home=../../"/>
+            <sysproperty key="bin.folder" value="${test.libs.dir}"/>
             <formatter type="xml"/>
             <!-- This formatter allows NetBeans to display the test results -->
             <formatter type="brief" usefile="false"/>

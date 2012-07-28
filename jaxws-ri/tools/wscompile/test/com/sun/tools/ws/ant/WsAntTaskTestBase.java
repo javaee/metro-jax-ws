@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,7 +74,7 @@ public abstract class WsAntTaskTestBase extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         assertFalse("project dir exists", projectDir.exists() && projectDir.isDirectory());
-        assertTrue("project dir created", projectDir.mkdir());
+        assertTrue("project dir created", projectDir.mkdirs());
         script = copy(projectDir, getBuildScript(), WsAntTaskTestBase.class.getResourceAsStream("resources/" + getBuildScript()));
 
     }
@@ -134,7 +134,7 @@ public abstract class WsAntTaskTestBase extends TestCase {
             }
         }
     }
-    
+
     protected boolean isOldJDK() {
         try {
             float version = Float.parseFloat(System.getProperty("java.specification.version"));

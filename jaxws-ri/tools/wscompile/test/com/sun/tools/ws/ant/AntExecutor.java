@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,11 +43,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.tools.ant.launch.Launcher;
 
 /**
  *
@@ -55,36 +53,11 @@ import org.apache.tools.ant.launch.Launcher;
  */
 public class AntExecutor {
 
-    private static final File JAX_WS_RI_HOME = init();
     private static boolean DEBUG = Boolean.getBoolean("anttasks.debug");
     private static String DEBUG_PORT = "5432";
     private static boolean PROFILE = Boolean.getBoolean("anttasks.profile");
 
-    private static File init() {
-        if (System.getProperty("jaxws-ri.home") != null) {
-            return new File(System.getProperty("jaxws-ri.home"));
-        }
-        try {
-            //see: https://issues.apache.org/bugzilla/show_bug.cgi?id=20174
-            //File f = new File(AntExecutor.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            File f = new File(AntExecutor.class.getResource("AntExecutor.class").toURI());
-            while (!"wscompile".equals(f.getName())) {
-                f = f.getParentFile();
-            }
-            return f.getParentFile().getParentFile();
-        } catch (URISyntaxException ex) {
-            return null;
-        }
-    }
-
     public static int exec(File script, File endorsedDir, String... targets) throws IOException {
-        File launcher = null;
-        try {
-            launcher = new File(Launcher.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        } catch (URISyntaxException ex) {
-            //should not happen
-            return -1;
-        }
         File heapDump = null;
         List<String> cmd = new ArrayList<String>();
         cmd.add("java");
@@ -96,16 +69,15 @@ public class AntExecutor {
             heapDump = File.createTempFile(script.getName(), ".hprof", new File(System.getProperty("user.home")));
             cmd.add("-agentlib:hprof=heap=dump,file=" + heapDump.getAbsolutePath() + ",format=b");
         }
-        cmd.add("-Dant.home=" + launcher.getParentFile().getParentFile().getAbsolutePath());
         cmd.add("-Djava.endorsed.dirs=" + endorsedDir.getAbsolutePath());
-        cmd.add("-Djaxp.debug=true");
+        cmd.add("-Dbin.folder=" + System.getProperty("bin.folder"));
+//        cmd.add("-Djaxp.debug=true");
         cmd.add("-cp");
-        cmd.add(launcher.getAbsolutePath());
-        cmd.add("org.apache.tools.ant.launch.Launcher");
-        cmd.add("-v");
+        cmd.add(getAntCP(new File(System.getProperty("bin.folder"), "lib/ant")));
+        cmd.add("org.apache.tools.ant.Main");
+//        cmd.add("-v");
         cmd.add("-f");
         cmd.add(script.getName());
-        cmd.add("-Djaxws-ri.home=" + JAX_WS_RI_HOME.getAbsolutePath());
         cmd.addAll(Arrays.asList(targets));
         ProcessBuilder pb = new ProcessBuilder(cmd).directory(script.getParentFile());
         Process p = pb.start();
@@ -120,6 +92,15 @@ public class AntExecutor {
             System.out.println("Heap dump (in binary format): " + heapDump.getAbsolutePath());
         }
         return p.exitValue();
+    }
+
+    private static String getAntCP(File dir) {
+        StringBuilder path = new StringBuilder();
+        for (File jar : dir.listFiles()) {
+            path.append(jar.getAbsolutePath());
+            path.append(File.pathSeparator);
+        }
+        return path.substring(0, path.length() - 1);
     }
 
     private static class InOut extends Thread {

@@ -47,15 +47,11 @@
     </target>
 
     <target name="init">
-        <property name="libs.folder" value="${jaxws-ri.home}/build/lib"/>
+        <property name="libs.folder" value="${bin.folder}/lib"/>
         <property name="api.dir" value="api"/>
         <property name="lib.dir" value="lib"/>
         <property name="build.dir" value="build"/>
         <property name="src.dir" value="src"/>
-        <!--
-        <property name="http.proxyHost" value="www-proxy.us.oracle.com"/>
-        <property name="http.proxyPort" value="80"/>
-        -->
     </target>
 
     <target name="setup" depends="init">
@@ -63,22 +59,17 @@
         <mkdir dir="${lib.dir}"/>
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${src.dir}"/>
-        <copy file="${libs.folder}/jaxb-api.jar" todir="${api.dir}"/>
-        <copy file="${libs.folder}/jaxws-api.jar" todir="${api.dir}"/>
-        <copy file="${libs.folder}/jsr181-api.jar" todir="${api.dir}"/>
         <copy todir="${lib.dir}">
-            <fileset dir="${libs.folder}">
-                <exclude name="jaxb-api.jar"/>
-                <exclude name="jaxws-api.jar"/>
-            </fileset>
+            <fileset dir="${libs.folder}" />
+        </copy>
+        <copy todir="${api.dir}">
+            <fileset dir="${libs.folder}/api" />
         </copy>
         <path id="task.cp">
-            <fileset dir="${lib.dir}">
-                <include name="jaxws-tools.jar"/>
-            </fileset>
-            <fileset dir="${api.dir}">
-                <include name="*.jar"/>
-            </fileset>
+            <pathelement location="${bin.folder}/generated-sources/rsrc-gen"/>
+            <pathelement location="${bin.folder}/classes"/>
+            <fileset dir="${lib.dir}" />
+            <fileset dir="${api.dir}" />
         </path>
     </target>
 

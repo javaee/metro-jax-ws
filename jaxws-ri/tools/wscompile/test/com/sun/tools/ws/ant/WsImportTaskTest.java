@@ -140,7 +140,7 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
 
     public void testFork() throws FileNotFoundException, IOException {
         copy(pkg,  "MyExtension.java", WsImportTaskTest.class.getResourceAsStream("resources/MyExtension.java_"));
-        copy(buildDir,  "com.sun.tools.ws.api.wsdl.TWSDLExtensionHandler", WsImportTaskTest.class.getResourceAsStream("resources/TWSDLExtensionHandler"));
+        copy(buildDir,  "META-INF/com.sun.tools.ws.api.wsdl.TWSDLExtensionHandler", WsImportTaskTest.class.getResourceAsStream("resources/TWSDLExtensionHandler"));
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-fork"));
     }
 }
