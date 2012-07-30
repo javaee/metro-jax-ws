@@ -103,8 +103,8 @@ public class BasicAuthTest extends TestCase {
         StringTokenizer tokenizer = new StringTokenizer(dumpStr, "\n");
         while (tokenizer.hasMoreTokens()) {
                 String token = tokenizer.nextToken();
-                if (token.indexOf("HTTP response") != -1) {
-		  System.out.println("Response code:" + token);
+                if (token.indexOf("HTTP status code") != -1) {
+		  System.out.println("HTTP status code:" + token);
                   if(token.indexOf("403") > 0)
                      has403 = true;
                 }
