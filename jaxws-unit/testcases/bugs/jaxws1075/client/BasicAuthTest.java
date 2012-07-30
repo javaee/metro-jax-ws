@@ -80,10 +80,10 @@ public class BasicAuthTest extends TestCase {
         bp.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, "auth-pass");
 
 
-        PrintStream ps = System.out;
+        PrintStream ps = System.err;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        System.setOut(new PrintStream(baos));
+        System.setErr(new PrintStream(baos));
 
         try {
            proxy.testHttpProperties();
@@ -92,7 +92,7 @@ public class BasicAuthTest extends TestCase {
           //exception must not be soapfault
           assertTrue("The exception can not be soapfault exception", !(ex instanceof javax.xml.ws.ProtocolException));
         } finally{
-           System.setOut(ps);
+           System.setErr(ps);
            System.setProperty(prop, oldV);
         }
 
