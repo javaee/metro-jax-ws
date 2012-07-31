@@ -433,24 +433,26 @@ public class WsGen2 extends MatchingTask {
             loader = loader.getParent();
         }
 
-        if(loader!=null) {
-            String antcl = ((AntClassLoader)loader).getClasspath();
-            // try to find tools.jar and add it to the cp
-            // so the behaviour on all JDKs is the same
-            // (avoid creating MaskingClassLoader on non-Mac JDKs)
-            File jreHome = new File(System.getProperty("java.home"));
-            File toolsJar = new File(jreHome.getParent(), "lib/tools.jar" );
-            if (toolsJar.exists()) {
-                antcl += File.pathSeparatorChar + toolsJar.getAbsolutePath();
-            }
-            cmd.createClasspath(getProject()).append(new Path(getProject(), antcl));
-            String apiCp = getApiClassPath(this.getClass().getClassLoader());
-            if (apiCp != null) {
-                //TODO: jigsaw - Xbootclaspath may get deprecated/removed
-                //and replaced with '-L' or '-m' options
-                //see also: http://mail.openjdk.java.net/pipermail/jigsaw-dev/2010-April/000778.html
-                cmd.createVmArgument().setLine("-Xbootclasspath/p:" + apiCp);
-            }
+        String antcp = loader != null
+                //taskedef cp
+                ? ((AntClassLoader) loader).getClasspath()
+                //system classloader, ie. env CLASSPATH=...
+                : System.getProperty("java.class.path");
+        // try to find tools.jar and add it to the cp
+        // so the behaviour on all JDKs is the same
+        // (avoid creating MaskingClassLoader on non-Mac JDKs)
+        File jreHome = new File(System.getProperty("java.home"));
+        File toolsJar = new File(jreHome.getParent(), "lib/tools.jar");
+        if (toolsJar.exists()) {
+            antcp += File.pathSeparatorChar + toolsJar.getAbsolutePath();
+        }
+        cmd.createClasspath(getProject()).append(new Path(getProject(), antcp));
+        String apiCp = getApiClassPath(this.getClass().getClassLoader());
+        if (apiCp != null) {
+            //TODO: jigsaw - Xbootclaspath may get deprecated/removed
+            //and replaced with '-L' or '-m' options
+            //see also: http://mail.openjdk.java.net/pipermail/jigsaw-dev/2010-April/000778.html
+            cmd.createVmArgument().setLine("-Xbootclasspath/p:" + apiCp);
         }
 
         cmd.createClasspath(getProject()).append(getClasspath());
