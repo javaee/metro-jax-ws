@@ -62,13 +62,17 @@ import com.sun.xml.ws.server.EndpointAwareTube;
 import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.wsdl.OperationDispatcher;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.xml.sax.EntityResolver;
+import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Binding;
+import javax.xml.ws.EndpointReference;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
+
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -656,9 +660,45 @@ public abstract class WSEndpoint<T> implements ComponentRegistry {
         return EndpointFactory.getDefaultPortName(serviceName, endpointClass, isStandard);
     }
 
+    /**
+     * Return EndpointReference instance, based on passed parameters and spec version represented by clazz
+     * @param <T>
+     * @param clazz represents spec version
+     * @param address   endpoint address
+     * @param wsdlAddress   wsdl address
+     * @param referenceParameters   any reference parameters to be added to the instance
+     * @return EndpointReference instance based on passed parameters and values obtained from current instance
+     */
+    public abstract <T extends EndpointReference> T getEndpointReference(Class<T> clazz, String address, String wsdlAddress, Element... referenceParameters);
+
+    /**
+     * 
+     * @param <T>
+     * @param clazz
+     * @param address
+     * @param wsdlAddress
+     * @param metadata
+     * @param referenceParameters
+     * @return 
+     */
+    public abstract <T extends EndpointReference> T getEndpointReference(Class<T> clazz,
+            String address, String wsdlAddress, List<Element> metadata,
+            List<Element> referenceParameters);
+    
+    /**
+     * Used for managed endpoints infrastructure to compare equality of proxies vs proxied endpoints.
+     * @param endpoint
+     * @return true if the proxied endpoint instance held by this instance equals to 'endpoint', otherwise return false.
+     */
     public boolean equalsProxiedInstance(WSEndpoint endpoint) {
         if (endpoint == null) return false;
         return this.equals(endpoint);
     }
+
+    /**
+     * Nullable when there is no associated WSDL Model
+     * @return
+     */
+    public abstract @Nullable OperationDispatcher getOperationDispatcher();
     
 }

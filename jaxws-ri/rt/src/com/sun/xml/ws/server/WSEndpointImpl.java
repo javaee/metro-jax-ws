@@ -92,27 +92,28 @@ import java.util.logging.Logger;
  * @author Jitendra Kotamraju
  */
 public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMOMProvider.WSEndpointScopeChangeListener {
-        private static final Logger LOGGER = Logger.getLogger(WSEndpointImpl.class.getName());
+        
+    private static final Logger logger = Logger.getLogger(com.sun.xml.ws.util.Constants.LoggingDomain + ".server.endpoint");
     
     private final @NotNull QName serviceName;
     private final @NotNull QName portName;
-        protected final WSBinding binding;
-        private final SEIModel seiModel;
+    protected final WSBinding binding;
+    private final SEIModel seiModel;
     private final @NotNull Container container;
-        private final WSDLPort port;
+    private final WSDLPort port;
 
-        protected final Tube masterTubeline;
-        private final ServiceDefinitionImpl serviceDef;
-        private final SOAPVersion soapVersion;
-        private final Engine engine;
+    protected final Tube masterTubeline;
+    private final ServiceDefinitionImpl serviceDef;
+    private final SOAPVersion soapVersion;
+    private final Engine engine;
     private final @NotNull Codec masterCodec;
     private final @NotNull PolicyMap endpointPolicy;
-        private final Pool<Tube> tubePool;
+    private final Pool<Tube> tubePool;
     private final OperationDispatcher operationDispatcher;
-    private       @NotNull ManagedObjectManager managedObjectManager;
-    private       boolean managedObjectManagerClosed = false;
-    private       Object managedObjectManagerLock = new Object();
-    private       LazyMOMProvider.Scope lazyMOMProviderScope = LazyMOMProvider.Scope.STANDALONE;
+    private @NotNull ManagedObjectManager managedObjectManager;
+    private boolean managedObjectManagerClosed = false;
+    private final Object managedObjectManagerLock = new Object();
+    private LazyMOMProvider.Scope lazyMOMProviderScope = LazyMOMProvider.Scope.STANDALONE;
     private final @NotNull ServerTubeAssemblerContext context;
 
     private Map<QName, WSEndpointReference.EPRExtension> endpointReferenceExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
@@ -222,9 +223,9 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
 
   protected ServerTubeAssemblerContext createServerTubeAssemblerContext(
             EndpointAwareTube terminalTube, boolean isSynchronous) {
-    ServerTubeAssemblerContext context = new ServerPipeAssemblerContext(
+    ServerTubeAssemblerContext ctx = new ServerPipeAssemblerContext(
         seiModel, port, this, terminalTube, isSynchronous);
-    return context;
+    return ctx;
   }
 
         protected WSEndpointImpl(@NotNull QName serviceName, @NotNull QName portName, WSBinding binding, Container container,
@@ -503,10 +504,10 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
 
                 @Override
                 public boolean equals(Object obj) {
-                        return component.equals(obj);
+                    return component.equals(obj);
                 }
         }
-        
+
         private static class EndpointComponentWrapper implements Component {
                 private final EndpointComponent component;
 
@@ -528,35 +529,33 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
                         return component.equals(obj);
                 }
         }
-        
+
+        @Override
         public @NotNull Set<Component> getComponents() {
                 return componentRegistry;
         }
-        
-    private static final Logger logger = Logger.getLogger(
-        com.sun.xml.ws.util.Constants.LoggingDomain + ".server.endpoint");
 
-    public <T extends EndpointReference> T getEndpointReference(Class<T>
-            clazz, String address, String wsdlAddress, Element... referenceParameters) {
+    public <T extends EndpointReference> T getEndpointReference(Class<T> clazz, String address, String wsdlAddress, Element... referenceParameters) {
         List<Element> refParams = null;
         if (referenceParameters != null) {
             refParams = Arrays.asList(referenceParameters);
         }
         return getEndpointReference(clazz, address, wsdlAddress, null, refParams);
     }
+
     public <T extends EndpointReference> T getEndpointReference(Class<T> clazz,
-                        String address, String wsdlAddress, List<Element> metadata,
-                        List<Element> referenceParameters) {
-                QName portType = null;
-                if (port != null) {
-                        portType = port.getBinding().getPortTypeName();
-                }
+            String address, String wsdlAddress, List<Element> metadata,
+            List<Element> referenceParameters) {
+        QName portType = null;
+        if (port != null) {
+            portType = port.getBinding().getPortTypeName();
+        }
 
         AddressingVersion av = AddressingVersion.fromSpecClass(clazz);
         return new WSEndpointReference(
-                    av, address, serviceName, portName, portType, metadata, wsdlAddress, referenceParameters,endpointReferenceExtensions.values(), null).toSpec(clazz);
+                av, address, serviceName, portName, portType, metadata, wsdlAddress, referenceParameters, endpointReferenceExtensions.values(), null).toSpec(clazz);
 
-        }
+    }
 
     public @NotNull QName getPortName() {
                 return portName;
@@ -598,12 +597,12 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
      */
     @NotNull ManagedObjectManager obtainManagedObjectManager() {
         final MonitorRootService monitorRootService = new MonitorRootService(this);
-        final ManagedObjectManager managedObjectManager = monitorRootService.createManagedObjectManager(this);
+        final ManagedObjectManager mOM = monitorRootService.createManagedObjectManager(this);
 
         // ManagedObjectManager was suspended due to root creation (see MonitorBase#initMOM)
-        managedObjectManager.resumeJMXRegistration();
+        mOM.resumeJMXRegistration();
 
-        return managedObjectManager;
+        return mOM;
     }
 
     public void scopeChanged(LazyMOMProvider.Scope scope) {

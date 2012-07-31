@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -251,7 +251,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                         Callback<T> cb = timeoutCallback;
                         if (cb != null) {
                             if (logger.isLoggable(Level.FINEST)) {
-                                logger.finest("Invoking timeout callback for instance/timeouttask = [ " + instance + " / " + this + " ]");
+                                logger.log(Level.FINEST, "Invoking timeout callback for instance/timeouttask = [ {0} / {1} ]", new Object[]{instance, this});
                             }
                             cb.onTimeout(instance, StatefulInstanceResolver.this);
                             return;
@@ -274,11 +274,11 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             if (task != null) {
                 boolean result = task.cancel();
                 if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest("Timeout callback CANCELED for instance/timeouttask/cancel result = [ " + instance + " / " + this + " / " + result + " ]");
+                    logger.log(Level.FINEST, "Timeout callback CANCELED for instance/timeouttask/cancel result = [ {0} / {1} / {2} ]", new Object[]{instance, this, result});
                 }
             } else {
                 if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest("Timeout callback NOT CANCELED for instance = [ " + instance + " ]; task is null ...");
+                    logger.log(Level.FINEST, "Timeout callback NOT CANCELED for instance = [ {0} ]; task is null ...", instance);
                 }
             }
             task = null;
@@ -295,8 +295,8 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         boolean ha = false;
         if (HighAvailabilityProvider.INSTANCE.isHaEnvironmentConfigured()) {
             if (Serializable.class.isAssignableFrom(clazz)) {
-                logger.warning(clazz + " doesn't implement Serializable. High availibility is disabled i.e." +
-                        "if a failover happens, stateful instance state is not failed over.");
+                logger.log(Level.WARNING,"{0}" + " doesn''t implement Serializable. High availibility is disabled i.e." +
+                        "if a failover happens, stateful instance state is not failed over.", clazz);
                 ha = true;
             }
         }
@@ -316,22 +316,23 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             Instance o = haMap.get(id);
             if (o != null) {
                 if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest("Restarting timer for objectId/Instance = [ " + id + " / " + o + " ]");
+                    logger.log(Level.FINEST, "Restarting timer for objectId/Instance = [ {0} / {1} ]", new Object[]{id, o});
                 }
                 o.restartTimer();
                 return o.instance;
             }
 
             // huh? what is this ID?
-            logger.log(Level.INFO, "Request had an unrecognized object ID " + id);
+            logger.log(Level.INFO, "Request had an unrecognized object ID {0}", id);
         } else {
             logger.fine("No objectId header received");
         }
 
         // need to fallback
-        T fallback = this.fallback;
-        if (fallback != null)
-            return fallback;
+        T flbk = this.fallback;
+        if (flbk != null) {
+            return flbk;
+        }
 
         if (id == null)
             throw new WebServiceException(ServerMessages.STATEFUL_COOKIE_HEADER_REQUIRED(COOKIE_TAG));
@@ -390,9 +391,10 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             }
             haMap.destroy();
         }
-        if (fallback != null)
+        if (fallback != null) {
             dispose(fallback);
-        fallback = null;
+            fallback = null;
+        }
         stopTimer();
     }
 
@@ -456,7 +458,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             key = UUID.randomUUID().toString();
             Instance instance = new Instance(o);
             if (logger.isLoggable(Level.FINEST)) {
-                logger.finest("Storing instance ID/Instance/Object/TimerTask = [ " + key + " / " + instance + " / " + instance.instance + " / " + instance.task + " ]");
+                logger.log(Level.FINEST, "Storing instance ID/Instance/Object/TimerTask = [ {0} / {1} / {2} / {3} ]", new Object[]{key, instance, instance.instance, instance.task});
             }
             haMap.put(key, instance);
             if (timeoutMilliseconds != 0)
@@ -510,65 +512,9 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
         }
 
-        return
-                eprClass.cast(((WSEndpointImpl) owner).getEndpointReference(eprClass, address, wsdlAddress,
-                        metadata, referenceParameters));
+        return eprClass.cast(owner.getEndpointReference(eprClass, address, wsdlAddress, metadata, referenceParameters));
     }
 
-
-    /*
-    private <EPR extends EndpointReference> EPR createEPR(String key, Class<EPR> eprClass, String address, EPRRecipe recipe) {
-        AddressingVersion adrsVer = AddressingVersion.fromSpecClass(eprClass);
-
-        try {
-            StreamWriterBufferCreator w = new StreamWriterBufferCreator();
-
-            w.writeStartDocument();
-            w.writeStartElement("wsa","EndpointReference", adrsVer.nsUri);
-            w.writeNamespace("wsa",adrsVer.nsUri);
-
-            w.writeStartElement("wsa","Address",adrsVer.nsUri);
-            w.writeCharacters(address);
-            w.writeEndElement();
-
-            w.writeStartElement("wsa","ReferenceParameters",adrsVer.nsUri);
-            w.writeStartElement(COOKIE_TAG.getPrefix(), COOKIE_TAG.getLocalPart(), COOKIE_TAG.getNamespaceURI());
-            w.writeCharacters(key);
-            w.writeEndElement();
-            if(recipe!=null) {
-                for (Header h : recipe.getReferenceParameters())
-                    h.writeTo(w);
-            }
-            w.writeEndElement();
-
-            if(recipe!=null) {
-                List<Source> metadata = recipe.getMetadata();
-                if(!metadata.isEmpty()) {
-                    w.writeStartElement("wsa","Metadata",adrsVer.nsUri);
-                    Transformer t = XmlUtil.newTransformer();
-                    for (Source s : metadata)
-                        try {
-                            t.transform(s,
-                                new SAXResult(new FragmentContentHandler(new ContentHandlerToXMLStreamWriter(w))));
-                        } catch (TransformerException e) {
-                            throw new IllegalArgumentException("Unable to write EPR metadata "+s,e);
-                        }
-                    w.writeEndElement();
-                }
-            }
-
-            w.writeEndElement();
-            w.writeEndDocument();
-
-            // TODO: this can be done better by writing SAX code that produces infoset
-            // and setting that as Source.
-            return eprClass.cast(ProviderImpl.INSTANCE.readEndpointReference(
-                new XMLStreamBufferSource(w.getXMLStreamBuffer())));
-        } catch (XMLStreamException e) {
-            throw new Error(e); // this must be a bug in our code
-        }
-    }
-    */
     public void unexport(@Nullable T o) {
         if (o == null) return;
         Instance i = haMap.remove(o);
@@ -585,16 +531,19 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             StringBuilder buf = new StringBuilder();
             boolean inCookie = false;
 
+            @Override
             public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
                 if (localName.equals(COOKIE_TAG.getLocalPart()) && uri.equals(COOKIE_TAG.getNamespaceURI()))
                     inCookie = true;
             }
 
+            @Override
             public void characters(char ch[], int start, int length) throws SAXException {
                 if (inCookie)
                     buf.append(ch, start, length);
             }
 
+            @Override
             public void endElement(String uri, String localName, String qName) throws SAXException {
                 inCookie = false;
             }
@@ -672,7 +621,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             return expiredTask;
         }
 
-        TimerTask newExpiredTask() {
+        private TimerTask newExpiredTask() {
             expiredTask = new TimerTask() {
                 public void run() {
                     HighAvailabilityProvider.removeExpired(bs);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,6 @@ package com.sun.xml.ws.transport.http;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.server.WSEndpoint;
@@ -137,7 +136,7 @@ public class DeploymentDescriptorParser<A> {
         this.adapterFactory = adapterFactory;
 
         collectDocs("/WEB-INF/wsdl/");
-        logger.fine("war metadata="+docs);
+        logger.log(Level.FINE, "war metadata={0}", docs);
     }
 
     /**
@@ -380,9 +379,7 @@ public class DeploymentDescriptorParser<A> {
 
         if (wsdlFile!=null) {
             if (!wsdlFile.startsWith(JAXWS_WSDL_DD_DIR)) {
-                logger.warning("Ignoring wrong wsdl="+wsdlFile+". It should start with "
-                        +JAXWS_WSDL_DD_DIR
-                        +". Going to generate and publish a new WSDL.");
+                logger.log(Level.WARNING, "Ignoring wrong wsdl={0}. It should start with {1}. Going to generate and publish a new WSDL.", new Object[]{wsdlFile, JAXWS_WSDL_DD_DIR});
                 return null;
             }
 
@@ -502,7 +499,7 @@ public class DeploymentDescriptorParser<A> {
     }
 
     protected static void fail(String key, XMLStreamReader reader) {
-        logger.log(Level.SEVERE, key + reader.getLocation().getLineNumber());
+        logger.log(Level.SEVERE, "{0}{1}", new Object[]{key, reader.getLocation().getLineNumber()});
         throw new ServerRtException(
             key,
             Integer.toString(reader.getLocation().getLineNumber()));

@@ -66,7 +66,6 @@ import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.message.RelatesToHeader;
 import com.sun.xml.ws.message.StringHeader;
-import com.sun.xml.ws.server.WSEndpointImpl;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.DispatchException;
@@ -272,7 +271,7 @@ public final class Packet
 
         OperationDispatcher opDispatcher = null;
         if (endpoint != null) {
-            opDispatcher = ((WSEndpointImpl) endpoint).getOperationDispatcher();
+            opDispatcher = endpoint.getOperationDispatcher();
         } else if (proxy != null) {
             opDispatcher = ((Stub) proxy).getOperationDispatcher();
         }

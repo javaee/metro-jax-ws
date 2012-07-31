@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,6 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.HttpAdapterList;
 import com.sun.xml.ws.server.ServerRtException;
-import com.sun.xml.ws.server.WSEndpointImpl;
 import com.sun.xml.ws.resources.ServerMessages;
 
 import javax.xml.ws.EndpointReference;
@@ -142,9 +141,8 @@ public final class HttpEndpoint extends com.sun.xml.ws.api.server.HttpEndpoint {
     }
 
     public <T extends EndpointReference> T getEndpointReference(Class<T> clazz, Element...referenceParameters) {
-        WSEndpointImpl endpointImpl = (WSEndpointImpl) adapter.getEndpoint();
         String eprAddress = getEPRAddress();
-        return clazz.cast(endpointImpl.getEndpointReference(clazz, eprAddress,eprAddress+"?wsdl", referenceParameters));
+        return clazz.cast(adapter.getEndpoint().getEndpointReference(clazz, eprAddress,eprAddress+"?wsdl", referenceParameters));
     }
 
 }

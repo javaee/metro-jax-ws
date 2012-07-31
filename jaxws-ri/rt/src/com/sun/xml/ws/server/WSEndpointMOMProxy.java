@@ -52,6 +52,7 @@ import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ServiceDefinition;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.wsdl.OperationDispatcher;
 import org.glassfish.gmbal.AMXClient;
 import org.glassfish.gmbal.GmbalMBean;
 import org.glassfish.gmbal.ManagedObjectManager;
@@ -61,10 +62,13 @@ import javax.management.ObjectName;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import javax.xml.namespace.QName;
+import javax.xml.ws.EndpointReference;
+import org.w3c.dom.Element;
 
 /**
  * {@link ManagedObjectManager} proxy class for {@link WSEndpointImpl} instances that could be used when Gmbal API calls
@@ -325,6 +329,21 @@ public class WSEndpointMOMProxy extends WSEndpoint implements ManagedObjectManag
     @Override
     public ServerTubeAssemblerContext getAssemblerContext() {
         return this.wsEndpoint.getAssemblerContext();
+    }
+
+    @Override
+    public EndpointReference getEndpointReference(Class clazz, String address, String wsdlAddress, Element... referenceParameters) {
+        return wsEndpoint.getEndpointReference(clazz, address, wsdlAddress, referenceParameters);
+    }
+
+    @Override
+    public EndpointReference getEndpointReference(Class clazz, String address, String wsdlAddress, List metadata, List referenceParameters) {
+        return wsEndpoint.getEndpointReference(clazz, address, wsdlAddress, metadata, referenceParameters);
+    }
+
+    @Override
+    public OperationDispatcher getOperationDispatcher() {
+        return wsEndpoint.getOperationDispatcher();
     }
     
 }
