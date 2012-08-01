@@ -133,11 +133,15 @@ if [ -e src/com ]; then
 fi
 
 if [ -e etc ]; then
-    echo "-> moving META=INF resources"
+    echo "-> moving META-INF resources"
     pushd etc
     dir=../src/main/resources/META-INF
     for f in `find -type f`; do
-        if [[ "$f" == *svn* || "$f" == *manifest ]]; then
+        if [[ "$f" == *svn* ]]; then
+            continue
+        fi
+        if [[ "$f" == *manifest ]]; then
+            svn rm $f
             continue
         fi
         if [[ "$f" == *.xml ]]; then
@@ -158,6 +162,8 @@ fi
 
 popd
 done
+
+svn rm nbproject
 
 #update pom.xmls
 

@@ -82,28 +82,10 @@
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
         </dependency>
-
-        <!--
         <dependency>
-            <groupId>org.glassfish.gmbal</groupId>
-            <artifactId>gmbal-api-only</artifactId>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.sun.xml.stream.buffer</groupId>
-            <artifactId>streambuffer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.org.apache.xml.internal</groupId>
-            <artifactId>resolver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet.mimepull</groupId>
-            <artifactId>mimepull</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>asm-all-repackaged</artifactId>
-        </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

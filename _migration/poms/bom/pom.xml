@@ -281,6 +281,14 @@
                 <version>${jsr-250-api.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.sun</groupId>
+                <artifactId>tools</artifactId>
+                <version>1.6</version>
+                <scope>system</scope>
+                <systemPath>${tools.jar}</systemPath>
+            </dependency>
+
             <!-- Test Dependencies -->
             <dependency>
                 <groupId>junit</groupId>
@@ -323,7 +331,7 @@
             <artifactId>jaxws-api</artifactId>
         </dependency>
     </dependencies>
-    
+
     <properties>
         <ant.version>1.7.0</ant.version>
         <asm.version>3.1</asm.version>
@@ -356,21 +364,29 @@
         <streambuffer.version>1.5</streambuffer.version>
         <woodstox-core-asl.version>4.1.2</woodstox-core-asl.version>
     </properties>
+    
     <profiles>
         <profile>
             <id>default-tools.jar</id>
             <activation>
-                <jdk>[1.6,1.8)</jdk>
+                <file>
+                    <exists>${java.home}/../lib/tools.jar</exists>
+                </file>
             </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.sun</groupId>
-                    <artifactId>tools</artifactId>
-                    <version>1.6</version>
-                    <scope>system</scope>
-                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
-                </dependency>
-            </dependencies>
+            <properties>
+                <tools.jar>${java.home}/../lib/tools.jar</tools.jar>
+            </properties>
+        </profile>
+        <profile>
+            <id>default-tools.jar-mac</id>
+            <activation>
+                <file>
+                    <exists>${java.home}/../Classes/classes.jar</exists>
+                </file>
+            </activation>
+            <properties>
+                <tools.jar>${java.home}/../Classes/classes.jar</tools.jar>
+            </properties>
         </profile>
     </profiles>
 </project>
