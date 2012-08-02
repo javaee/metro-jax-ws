@@ -40,13 +40,13 @@
     holder.
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <parent>
         <groupId>com.sun.xml.ws</groupId>
-        <artifactId>jaxws-ri</artifactId>
+        <artifactId>project</artifactId>
         <version>2.2.8-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>

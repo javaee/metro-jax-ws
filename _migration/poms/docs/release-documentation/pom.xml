@@ -40,7 +40,6 @@
     holder.
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -59,10 +58,52 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/docbook</outputDirectory>
+                    <includeEmptyDirs>true</includeEmptyDirs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <id>copy-common-resources</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-docbook-resources</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/docbook</directory>
+                                    <includes>
+                                        <include>download/**</include>
+                                        <include>figures/**</include>
+                                        <include>icons/**</include>
+                                        <include>style/**</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
@@ -74,11 +115,9 @@
                                     <fileset dir="src/docbook"/>
                                 </copy>
                                 <replace file="${src.dir}/docbook.ent" token="$version" value="${project.version}"/>
-                                <replace file="${src.dir}/docbook.ent" token="$repository" value="${javanet.repository.id}"/>
 
-                                <replace file="${src.dir}/docbook.ent" token="$release.spec.version" value="${release.spec.version}"/>
-                                <replace file="${src.dir}/docbook.ent" token="$release.impl.version.suffix" value="${release.impl.version.suffix}"/>
-                                <replace file="${src.dir}/docbook.ent" token="$release.impl.version" value="${release.impl.version}"/>
+                                <replace file="${src.dir}/docbook.ent" token="$release.spec.version" value="${jaxws-api.version}"/>
+                                <replace file="${src.dir}/docbook.ent" token="$release.impl.version" value="${project.version}"/>
                             </tasks>
                         </configuration>
                         <id>process-entities</id>
@@ -137,24 +176,6 @@
                     <keepRelativeImageUris>true</keepRelativeImageUris>
                     <generateIdAttributes>true</generateIdAttributes>
                     <chapterAutolabel>0</chapterAutolabel>
-
-                    <preProcess>
-                        <copy todir="${project.build.directory}/docbook/figures">
-                            <fileset dir="${src.dir}/figures" />
-                        </copy>
-                        <copy todir="${project.build.directory}/docbook/download">
-                            <fileset dir="${src.dir}/download" />
-                        </copy>
-                        <copy todir="${project.build.directory}/docbook/style">
-                            <fileset dir="${src.dir}/style" />
-                        </copy>
-                        <copy todir="${project.build.directory}/docbook/icons">
-                            <fileset dir="${src.dir}/icons" />
-                        </copy>
-                        <copy todir="${project.build.directory}/docbook">
-                            <fileset dir="${resources.dir}" />
-                        </copy>
-                    </preProcess>
                 </configuration>
                 <executions>
                     <execution>
@@ -184,6 +205,7 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
@@ -200,17 +222,11 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin> <!-- remove the generated src dir-->
-                <artifactId>maven-clean-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
 
     <properties>
-        <assembly.directory>${project.build.directory}/assembly</assembly.directory>
         <src.dir>${basedir}/target/gen-src</src.dir>
-        <resources.dir>${basedir}/src/main/resources</resources.dir>
-        <javanet.repository.id>snapshots</javanet.repository.id>
     </properties>
 
 </project>

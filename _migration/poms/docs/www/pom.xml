@@ -1,12 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
         <artifactId>docs</artifactId>
         <groupId>com.sun.xml.ws</groupId>
         <version>2.2.8-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>www</artifactId>
@@ -14,51 +58,36 @@
     <name>JAX-WS WWW Help files</name>
 
     <properties>
-        <jaxws.version>${release.impl.version}${release.impl.version.suffix}</jaxws.version>
-        <jaxws.bin>JAXWS${jaxws.version}-${dstamp}.zip</jaxws.bin>
-        <jaxws.src>JAXWS${jaxws.version}-src-${dstamp}.zip</jaxws.src>
+        <jaxws.bin>JAXWS${project.version}-${dstamp}.zip</jaxws.bin>
+        <jaxws.src>JAXWS${project.version}-src-${dstamp}.zip</jaxws.src>
     </properties>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.0</version>
-                <configuration>
-                    <locale>en-US</locale>
-                </configuration>
                 <executions>
                     <execution>
                         <id>dstamp</id>
                         <phase>validate</phase>
                         <goals>
-                            <goal>create</goal>
+                            <goal>create-timestamp</goal>
                         </goals>
                         <configuration>
-                            <buildNumberPropertyName>dstamp</buildNumberPropertyName>
-                            <format>{0,date,yyyyMMdd}</format>
-                            <items>
-                                <item>timestamp</item>
-                            </items>
+                            <timestampPropertyName>dstamp</timestampPropertyName>
+                            <timestampFormat>yyyyMMdd</timestampFormat>
                         </configuration>
                     </execution>
                     <execution>
                         <id>release-date</id>
                         <phase>validate</phase>
                         <goals>
-                            <goal>create</goal>
+                            <goal>create-timestamp</goal>
                         </goals>
                         <configuration>
-                            <buildNumberPropertyName>release-date</buildNumberPropertyName>
-                            <format>{0,date,MMMM d, yyyy}</format>
-                            <items>
-                                <item>timestamp</item>
-                            </items>
+                            <timestampPropertyName>release-date</timestampPropertyName>
+                            <timestampFormat>MMMM d, yyyy</timestampFormat>
                         </configuration>
                     </execution>
                 </executions>
@@ -66,14 +95,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.5</version>
                 <executions>
                     <execution>
-                        <id>process-www</id>
+                        <phase>validate</phase>
+                        <id>copy-resources</id>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
-                        <phase>process-resources</phase>
                         <configuration>
                             <outputDirectory>${project.build.directory}</outputDirectory>
                             <resources>
@@ -82,7 +110,6 @@
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>
-                            <encoding>UTF-8</encoding>
                         </configuration>
                     </execution>
                 </executions>
