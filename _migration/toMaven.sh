@@ -189,4 +189,12 @@ for f in `find _migration/poms -name pom.xml`; do
 done
 
 #move additional files/sources
-svn mv --parents _migration/bundles/jaxws-ri/src jaxws-ri/bundles/jaxws-ri/
+pushd jaxws-ri
+
+svn cp --parents "../_migration/poms/bundles/jaxws-ri/src/main/assembly/assembly.xml" bundles/jaxws-ri/src/main/assembly/assembly.xml
+
+svn mv --parents "CDDL+GPLv2.txt" LICENSE.txt README ThirdPartyLicense.txt distributionREADME_WMforJava2.0.txt bundles/jaxws-ri/src/main/resources
+svn mv --parents tools/bin/* bundles/jaxws-ri/src/main/resources/bin
+svn mv --parents etc/istackontomcat.xml bundles/jaxws-ri/src/main/resources/build.xml
+popd
+

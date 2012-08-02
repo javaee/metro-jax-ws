@@ -49,6 +49,26 @@
     <formats>
         <format>zip</format>
     </formats>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>jaxws-ri</outputDirectory>
+            <directoryMode>0755</directoryMode>
+            <fileMode>0644</fileMode>
+            <excludes>
+                <exclude>bin/*.sh</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>jaxws-ri</outputDirectory>
+            <directoryMode>0755</directoryMode>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>bin/*.sh</include>
+            </includes>
+        </fileSet>
+    </fileSets>
     <dependencySets>
         <dependencySet>
             <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
@@ -57,6 +77,7 @@
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <outputDirectory>jaxws-ri/lib</outputDirectory>
             <directoryMode>0755</directoryMode>
+            <fileMode>0644</fileMode>
             <includes>
                 <include>javax.xml.bind:jaxb-api</include>
                 <include>javax.xml.ws:jaxws-api</include>
@@ -71,6 +92,7 @@
             <outputDirectory>jaxws-ri/docs</outputDirectory>
             <unpack>true</unpack>
             <directoryMode>0755</directoryMode>
+            <fileMode>0644</fileMode>
             <includes>
                 <include>${project.groupId}:release-documentation</include>
             </includes>
@@ -82,7 +104,7 @@
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <outputDirectory>jaxws-ri/lib/plugins</outputDirectory>
             <directoryMode>0755</directoryMode>
-
+            <fileMode>0644</fileMode>
             <includes>
                 <include>${project.groupId}:jaxws-eclipselink-plugin</include>
                 <include>${project.groupId}:sdo-eclipselink-plugin</include>
