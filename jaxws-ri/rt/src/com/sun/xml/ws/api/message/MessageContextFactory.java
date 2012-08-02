@@ -131,13 +131,17 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         soapCodec.decode(in, contentType, p);
         return p;
     }
-    
+
+    /**
+     * @deprecated http://java.net/jira/browse/JAX_WS-1077
+     */
+    @Deprecated 
     public MessageContext createContext(InputStream in, MimeHeaders headers) throws IOException {
         String contentType = getHeader(headers, "Content-Type");
         Packet packet = (Packet) createContext(in, contentType);
         packet.acceptableMimeTypes = getHeader(headers, "Accept");
         packet.soapAction = fixQuotesAroundSoapAction(getHeader(headers, "SOAPAction"));
-        packet.put(Packet.INBOUND_TRANSPORT_HEADERS, toMap(headers));
+//      packet.put(Packet.INBOUND_TRANSPORT_HEADERS, toMap(headers));
         return packet;
     }
     

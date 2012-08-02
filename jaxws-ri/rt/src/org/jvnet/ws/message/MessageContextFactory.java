@@ -68,7 +68,11 @@ public abstract class MessageContextFactory
     public abstract MessageContext createContext(Source m, EnvelopeStyle.Style envelopeStyle);
     
     public abstract MessageContext createContext(InputStream in, String contentType) throws IOException;
-    
+
+    /**
+     * @deprecated http://java.net/jira/browse/JAX_WS-1077
+     */
+    @Deprecated 
     public abstract MessageContext createContext(InputStream in, MimeHeaders headers) throws IOException;
     
     static public MessageContextFactory createFactory(WebServiceFeature ... f) {
