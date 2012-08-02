@@ -135,7 +135,7 @@ bp.setOutboundHeaders(
     <section xml:id="propagation-of-server-side-stacktrace">
         <title>Propagation of Server-side Stacktrace</title>
 
-                <para>This is a very useful feature while developing Web Services.
+        <para>This is a very useful feature while developing Web Services.
         Often the soap fault messages for not user defined faults does not
         convey enough information about the problem. &jax-ws.product.name.short;
         relieves you from digging out the server logs to find out the stacktrace.
@@ -143,7 +143,7 @@ bp.setOutboundHeaders(
         SOAP Fault and the complete exception stacktrace can be made visible to
         the client as cause of <literal>SOAPFaultException</literal>.</para>
 
-        <section xml:id="disabling-propagation-of-server-side-stacktrace">
+        <section xml:id="enabling-propagation-of-server-side-stacktrace">
             <title>Enabling propagation of Server-side stacktrace</title>
 
             <para>Propagation of Stack trace is off by default. To turn it on
