@@ -55,12 +55,13 @@
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>wscompile</artifactId>
 
-    <name>JAXWS-RI Tools</name>
-    <description>JAXWS-RI Tools</description>
+    <name>JAX-WS RI Tools</name>
+    <description>JAX-WS RI Tools</description>
 
     <properties>
         <ant.version>1.8.4</ant.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
@@ -70,13 +71,15 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>policy</artifactId>
-        </dependency>
+        
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>jaxws-rt</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>policy</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
@@ -180,7 +183,20 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <java.io.tmpdir>${project.build.directory}/test-antprojects</java.io.tmpdir>
+                        <bin.folder>${project.build.directory}</bin.folder>
+                        <jaxb-api.version>${jaxb-api.version}</jaxb-api.version>
+                        <jaxws-api.version>${jaxws-api.version}</jaxws-api.version>
+                    </systemPropertyVariables>
+                    <forkMode>always</forkMode>
+                </configuration>
+            </plugin>
+            <!--
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -302,19 +318,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemPropertyVariables>
-                        <java.io.tmpdir>${project.build.directory}/test-antprojects</java.io.tmpdir>
-                        <bin.folder>${project.build.directory}</bin.folder>
-                        <jaxb-api.version>${jaxb-api.version}</jaxb-api.version>
-                        <jaxws-api.version>${jaxws-api.version}</jaxws-api.version>
-                    </systemPropertyVariables>
-                    <forkMode>always</forkMode>
-                </configuration>
-            </plugin>
+            -->
         </plugins>
     </build>
 </project>

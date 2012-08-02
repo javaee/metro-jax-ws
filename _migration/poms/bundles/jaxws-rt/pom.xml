@@ -56,26 +56,38 @@
     <name>JAX-WS RI Runtime non-OSGi Bundle</name>
 
     <dependencies>
-        <!-- Provided dependencies -->
         <dependency>
-            <groupId>com.sun.xml.ws</groupId>
-            <artifactId>policy</artifactId>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.soap</groupId>
+            <artifactId>saaj-api</artifactId>
+        </dependency>
+        <!-- Provided dependencies -->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>policy</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.gmbal</groupId>
             <artifactId>gmbal-api-only</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.stream.buffer</groupId>
-            <artifactId>streambuffer</artifactId>
+            <groupId>org.jvnet.staxex</groupId>
+            <artifactId>stax-ex</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.org.apache.xml.internal</groupId>
-            <artifactId>resolver</artifactId>
+            <groupId>com.sun.xml.stream.buffer</groupId>
+            <artifactId>streambuffer</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jvnet.mimepull</groupId>
@@ -90,8 +102,23 @@
             <artifactId>ha-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+        </dependency>
+
+        <dependency>
+            <artifactId>woodstox-core-asl</artifactId>
+            <groupId>org.codehaus.woodstox</groupId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>stax2-api</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Test dependencies -->
@@ -133,6 +160,25 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathLayoutType>custom</classpathLayoutType>
+                            <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>
+                            <mainClass>com.sun.tools.ws.WsImport</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
@@ -153,20 +199,13 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Build-Version>JAX-WS RI 2.2.7-b103</Build-Version>
+                                        <Class-Path>jaxb-api.jar jaxws-api.jar saaj-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
+                                        <!--                                        <Build-Version>JAX-WS RI 2.2.7-b103</Build-Version>
                                         <Build-Id>b103</Build-Id>
                                         <Major-Version>2.2.7</Major-Version>
-                                        <Specification-Title>The Java API for XML Web Services</Specification-Title>
-                                        <Specification-Version>2.2</Specification-Version>
-                                        <Implementation-Title>JAX-WS Reference Implementation</Implementation-Title>
-                                        <Implementation-Version>2.2.7</Implementation-Version>
-                                        <Implementation-Vendor>Sun Microsystems Inc</Implementation-Vendor>
-                                        <Implementation-Vendor-Id>com.sun</Implementation-Vendor-Id>
                                         <Extension-Name>com.sun.xml.ws</Extension-Name>
                                         <SVN-Revision>13193</SVN-Revision>
-                                        <SVN-URL>https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri</SVN-URL>
-                                        <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
-                                        <Class-Path>jaxws-api.jar jsr181-api.jar javax.annotation.jar saaj-api.jar saaj-impl.jar stax2-api.jar woodstox-core-asl.jar jaxb-api.jar jaxb-impl.jar stax-ex.jar streambuffer.jar stax-utils.jar policy.jar gmbal-api-only.jar management-api.jar</Class-Path>
+                                        <SVN-URL>https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri</SVN-URL>-->
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
@@ -174,7 +213,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 

@@ -72,16 +72,28 @@
             <artifactId>gmbal-api-only</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.jvnet.staxex</groupId>
+            <artifactId>stax-ex</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.sun.xml.stream.buffer</groupId>
             <artifactId>streambuffer</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.org.apache.xml.internal</groupId>
-            <artifactId>resolver</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.jvnet.mimepull</groupId>
             <artifactId>mimepull</artifactId>
+        </dependency>
+        <dependency>
+            <artifactId>woodstox-core-asl</artifactId>
+            <groupId>org.codehaus.woodstox</groupId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>stax2-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.org.apache.xml.internal</groupId>
+            <artifactId>resolver</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

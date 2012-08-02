@@ -169,9 +169,9 @@ svn rm nbproject
 
 #move current ones to expected location to keep history...
 #main
-mkdir -p bundles/jaxws-rt bundles/jaxws-tools bom
-svn add --parents bundles bom
-svn mv --parents etc/poms/jaxws-ri.pom pom.xml
+mkdir -p bundles/jaxws-ri bundles/jaxws-rt bundles/jaxws-tools bom extras
+svn add --parents bundles bom extras
+svn mv --parents etc/poms/jaxws-ri.pom bundles/jaxws-ri/pom.xml
 svn mv --parents etc/poms/jaxws-rt.pom bundles/jaxws-rt/pom.xml
 svn mv --parents etc/poms/jaxws-tools.pom bundles/jaxws-tools/pom.xml
 #plugins
@@ -188,3 +188,5 @@ for f in `find _migration/poms -name pom.xml`; do
     cp -v $f jaxws-ri/${f##_migration/poms/}
 done
 
+#move additional files/sources
+svn mv --parents _migration/bundles/jaxws-ri/src jaxws-ri/bundles/jaxws-ri/
