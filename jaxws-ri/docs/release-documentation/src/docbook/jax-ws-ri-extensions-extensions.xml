@@ -135,24 +135,23 @@ bp.setOutboundHeaders(
     <section xml:id="propagation-of-server-side-stacktrace">
         <title>Propagation of Server-side Stacktrace</title>
 
-        <para>This is a very useful feature while developing Web Services.
-        Often the soap fault messages does n't convey enough information about
-        the problem. &jax-ws.product.name.short; relieves you from digging out
-        the server logs to find out the stacktrace. Now the whole stacktrace
-        (including nested exceptions) is propagated in the SOAP Fault and the
-        complete exception stacktrace is visible to the client as cause of
-        <literal>SOAPFaultException</literal>.</para>
+                <para>This is a very useful feature while developing Web Services.
+        Often the soap fault messages for not user defined faults does not
+        convey enough information about the problem. &jax-ws.product.name.short;
+        relieves you from digging out the server logs to find out the stacktrace.
+        Whole stacktrace (including nested exceptions) can be propagated in the
+        SOAP Fault and the complete exception stacktrace can be made visible to
+        the client as cause of <literal>SOAPFaultException</literal>.</para>
 
         <section xml:id="disabling-propagation-of-server-side-stacktrace">
-            <title>Disabling propagation of Server-side stacktrace</title>
+            <title>Enabling propagation of Server-side stacktrace</title>
 
-            <para>Propagation of Stack trace is on by default. If you think
-            its not safe for your Web Service Application to send the complete
-            stack trace, you can turn off this functionality by setting the
-            system property</para>
+            <para>Propagation of Stack trace is off by default. To turn it on
+            for your Web Service Application to send the complete stack trace,
+            set the system property</para>
 
             <informalexample>
-                <programlisting><![CDATA[com.sun.xml.ws.fault.SOAPFaultBuilder.disableCaptureStackTrace=false]]></programlisting>
+                <programlisting><![CDATA[com.sun.xml.ws.fault.SOAPFaultBuilder.captureStackTrace=true]]></programlisting>
             </informalexample>
         </section>
     </section>
