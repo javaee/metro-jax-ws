@@ -59,6 +59,36 @@
     <name>JAX-WS RI Standalone Zipped Bundle</name>
     <description>Open source Reference Implementation of JSR-224: Java API for XML Web Services Distribution Bundle</description>
 
+    <dependencyManagement>
+        <!-- Metro relies on this section
+             TODO: consider removing at least some of dependencies
+                   which are available in JDK 6+ -->
+        <dependencies>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-osgi</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${jaxb-impl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-osgi</artifactId>
+                <version>${jaxb-impl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>javax.annotation</artifactId>
+                <version>3.2-b05</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.jws</groupId>
+                <artifactId>jsr181-api</artifactId>
+                <version>1.0-MR1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
