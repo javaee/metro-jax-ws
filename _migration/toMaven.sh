@@ -163,8 +163,6 @@ fi
 popd
 done
 
-svn rm nbproject
-
 #update pom.xmls
 
 #move current ones to expected location to keep history...
@@ -196,5 +194,10 @@ svn cp --parents "../_migration/poms/bundles/jaxws-ri/src/main/assembly/assembly
 svn mv --parents "CDDL+GPLv2.txt" LICENSE.txt README ThirdPartyLicense.txt distributionREADME_WMforJava2.0.txt bundles/jaxws-ri/src/main/resources
 svn mv --parents tools/bin/* bundles/jaxws-ri/src/main/resources/bin
 svn mv --parents etc/istackontomcat.xml bundles/jaxws-ri/src/main/resources/build.xml
+
+svn rm nbproject
+svn rm tools/bin
+svn rm tools/lib
+
 popd
 
