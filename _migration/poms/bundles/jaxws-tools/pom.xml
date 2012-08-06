@@ -54,8 +54,8 @@
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-tools</artifactId>
     <version>2.2.8-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <name>JAX-WS RI Tools non-OSGi Bundle</name>
+    <packaging>pom</packaging>
+    <name>JAX-WS RI Tools Bundle</name>
     <description>Open source Reference Implementation of JSR-224: Java API for XML Web Services</description>
 
     <dependencies>
@@ -67,64 +67,182 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wscompile</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
+    <modules>
+        <module>../../tools/wscompile</module>
+    </modules>
+
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.1.2</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>aggregate</goal>
+                            </goals>
+                            <configuration>
+                                <archive>
+                                    <manifest>
+                                        <!-- <addClasspath>true</addClasspath>
+                                        <classpathLayoutType>custom</classpathLayoutType>
+                                        <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>-->
+                                        <mainClass>com.sun.tools.ws.WsImport</mainClass>
+                                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                    </manifest>
+                                    <manifestEntries>
+                                        <Class-Path>jaxws-rt.jar jaxb-xjc.jar</Class-Path>
+                                    </manifestEntries>
+                                </archive>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.3</version>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathLayoutType>custom</classpathLayoutType>
-                            <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout> 
-                            <mainClass>com.sun.tools.ws.WsImport</mainClass>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                    </archive>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>make-bin-assembly</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>single</goal>
                         </goals>
                         <configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>${project.groupId}:wscompile</include>
-                                </includes>
-                            </artifactSet>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Class-Path>jaxws-rt.jar jaxb-xjc.jar</Class-Path>
-<!--                                        <Build-Version>JAX-WS RI 2.2.7-b103</Build-Version>
-                                        <Build-Id>b103</Build-Id>
-                                        <Major-Version>2.2.8</Major-Version>
-                                        <Extension-Name>com.sun.tools.ws</Extension-Name>
-                                        <SVN-Revision>13193</SVN-Revision>
-                                        <SVN-URL>https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri</SVN-URL>-->
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                            <archive>
+                                <manifest>
+                                    <!--                                    <addClasspath>true</addClasspath>
+                                    <classpathLayoutType>custom</classpathLayoutType>
+                                    <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>-->
+                                    <mainClass>com.sun.tools.ws.WsImport</mainClass>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                </manifest>
+                                <manifestEntries>
+                                    <Class-Path>jaxws-rt.jar jaxb-xjc.jar</Class-Path>
+                                </manifestEntries>
+                            </archive>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <!-- TODO: maven-javadoc-plugin:aggregate-jar cannot be used
+            because of: http://jira.codehaus.org/browse/MJAVADOC-311
+            therefore getting around it using
+                 dependency -> antrun -> buildhelper
+            plugins to generate javadoc for jaxws-rt.jar -->
+            <id>jvnet-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>${project.artifactId}</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                            <classifier>sources</classifier>
+                                            <outputDirectory>${project.build.directory}/bundlesources</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>generate-javadocs</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <verbose>true</verbose>
+                                    <target>
+                                        <property name="api.dest.dir" value="${project.build.directory}/apidocs"/>
+                                        <mkdir dir="${api.dest.dir}"/>
+                                        <javadoc
+                                            packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
+                                            sourcepath="${project.build.directory}/bundlesources"
+                                            destdir="${api.dest.dir}/"
+                                            author="false"
+                                            version="false"
+                                            use="true"
+                                            access="package"
+                                            windowtitle="JAX-WS RI Tools Documentation"
+                                            doctitle="JAX-WS RI"
+                                            bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
+                                            <classpath refid="maven.compile.classpath"/>
+                                        </javadoc>
+                                        <jar jarfile="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar">
+                                            <fileset dir="${api.dest.dir}"/>
+                                        </jar>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>attach-gen-javadocs</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>attach-artifact</goal>
+                                </goals>
+                                <configuration>
+                                    <artifacts>
+                                        <artifact>
+                                            <file>${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar</file>
+                                            <type>jar</type>
+                                            <classifier>javadoc</classifier>
+                                        </artifact>
+                                    </artifacts>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     
 </project>

@@ -190,6 +190,8 @@ done
 pushd jaxws-ri
 
 svn cp --parents "../_migration/poms/bundles/jaxws-ri/src/main/assembly/assembly.xml" bundles/jaxws-ri/src/main/assembly/assembly.xml
+svn cp --parents "../_migration/poms/bundles/jaxws-rt/src/main/assembly/assembly.xml" bundles/jaxws-rt/src/main/assembly/assembly.xml
+svn cp --parents "../_migration/poms/bundles/jaxws-tools/src/main/assembly/assembly.xml" bundles/jaxws-tools/src/main/assembly/assembly.xml
 
 svn mv --parents "CDDL+GPLv2.txt" LICENSE.txt README ThirdPartyLicense.txt distributionREADME_WMforJava2.0.txt bundles/jaxws-ri/src/main/resources
 svn mv --parents tools/bin/* bundles/jaxws-ri/src/main/resources/bin

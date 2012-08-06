@@ -55,7 +55,7 @@
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>wscompile</artifactId>
 
-    <name>JAX-WS RI Tools</name>
+    <name>JAX-WS RI Tools (wscompile)</name>
     <description>JAX-WS RI Tools</description>
 
     <properties>

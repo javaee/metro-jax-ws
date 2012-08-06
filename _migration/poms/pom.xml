@@ -122,6 +122,11 @@
                                         <type>jar</type>
                                     </artifactItem>
                                     <artifactItem>
+                                        <groupId>javax.xml.soap</groupId>
+                                        <artifactId>saaj-api</artifactId>
+                                        <type>jar</type>
+                                    </artifactItem>
+                                    <artifactItem>
                                         <groupId>javax.xml.ws</groupId>
                                         <artifactId>jaxws-api</artifactId>
                                         <type>jar</type>
@@ -169,23 +174,14 @@
                     <version>2.3.7</version>
                     <extensions>true</extensions>
                 </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>1.6</version>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
 
     <modules>
         <module>bom</module>
-        <module>rt</module>
-        <module>rt-fi</module>
-        <module>rt-ha</module>
-        <module>servlet</module>
-        <module>httpspi-servlet</module>
-        <module>tools/wscompile</module>
+        <module>bundles/jaxws-rt</module>
+        <module>bundles/jaxws-tools</module>
         <module>extras</module>
         <module>docs</module>
         <module>bundles</module>

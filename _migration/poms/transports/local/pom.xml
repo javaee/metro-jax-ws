@@ -55,8 +55,8 @@
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-local-transport</artifactId>
 
-    <name>jaxws-local-transport</name>
-    <description>jaxws-local-transport</description>
+    <name>JAX-WS RI Local-Transport Implemetation</name>
+    <description>Implementation of Local-Transport for JAX-WS RI, used mainly in tests</description>
 
     <dependencies>
         <dependency>
