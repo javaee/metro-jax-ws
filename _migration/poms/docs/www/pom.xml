@@ -55,7 +55,7 @@
 
     <artifactId>www</artifactId>
     <packaging>pom</packaging>
-    <name>JAX-WS WWW Help files</name>
+    <name>JAX-WS RI WWW Help files</name>
 
     <properties>
         <jaxws.bin>JAXWS${project.version}-${dstamp}.zip</jaxws.bin>

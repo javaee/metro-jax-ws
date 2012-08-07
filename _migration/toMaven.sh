@@ -163,6 +163,19 @@ fi
 popd
 done
 
+#samples
+mkdir -p samples/src/main/samples
+svn add --parents samples/src/main/samples
+pushd samples
+for dir in `ls`; do
+    if [[ "$dir" == *svn* || "$dir" == src ]]; then
+        continue
+    fi
+    svn mv --parents $dir src/main/samples/$dir
+    svn rm $dir
+done
+popd
+
 #update pom.xmls
 
 #move current ones to expected location to keep history...
@@ -192,14 +205,23 @@ pushd jaxws-ri
 svn cp --parents "../_migration/poms/bundles/jaxws-ri/src/main/assembly/assembly.xml" bundles/jaxws-ri/src/main/assembly/assembly.xml
 svn cp --parents "../_migration/poms/bundles/jaxws-rt/src/main/assembly/assembly.xml" bundles/jaxws-rt/src/main/assembly/assembly.xml
 svn cp --parents "../_migration/poms/bundles/jaxws-tools/src/main/assembly/assembly.xml" bundles/jaxws-tools/src/main/assembly/assembly.xml
+svn cp --parents "../_migration/poms/samples/src/main/assembly/assembly.xml" samples/src/main/assembly/assembly.xml
 
 svn mv --parents "CDDL+GPLv2.txt" LICENSE.txt README ThirdPartyLicense.txt distributionREADME_WMforJava2.0.txt bundles/jaxws-ri/src/main/resources
 svn mv --parents tools/bin/* bundles/jaxws-ri/src/main/resources/bin
 svn mv --parents etc/istackontomcat.xml bundles/jaxws-ri/src/main/resources/build.xml
 
+#javadoc
+mkdir -p src/main/javadoc-link
+svn add --parents src/main/javadoc-link
+svn mv --parents tools/javadoc-link/j2se5.0 src/main/javadoc-link/javase6
+svn rm tools/javadoc-link/j2se5.0
+svn mv --parents tools/javadoc-link/* src/main/javadoc-link
+
 svn rm nbproject
 svn rm tools/bin
 svn rm tools/lib
+svn rm tools/javadoc-link
 
 popd
 

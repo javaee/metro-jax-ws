@@ -54,7 +54,7 @@
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>release-documentation</artifactId>
     <packaging>pom</packaging>
-    <name>JAX-WS Release Documentation</name>
+    <name>JAX-WS RI Release Documentation</name>
 
     <build>
         <plugins>

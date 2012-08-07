@@ -100,6 +100,17 @@
         <dependencySet>
             <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
             <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>jaxws-ri</outputDirectory>
+            <unpack>true</unpack>
+            <directoryMode>0755</directoryMode>
+            <fileMode>0644</fileMode>
+            <includes>
+                <include>${project.groupId}:samples</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <useProjectArtifact>false</useProjectArtifact>
             <useTransitiveDependencies>true</useTransitiveDependencies>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <outputDirectory>jaxws-ri/lib/plugins</outputDirectory>

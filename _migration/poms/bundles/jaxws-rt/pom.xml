@@ -152,19 +152,19 @@
                                 <goal>aggregate</goal>
                             </goals>
                             <configuration>
-                            <archive>
-                                <manifest>
-                                    <!--                                    <addClasspath>true</addClasspath>
-                                    <classpathLayoutType>custom</classpathLayoutType>
-                                    <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>-->
-                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                                </manifest>
-                                <manifestEntries>
-                                    <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
-                                    <Class-Path>jaxb-api.jar jaxws-api.jar saaj-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
-                                </manifestEntries>
-                            </archive>
+                                <archive>
+                                    <manifest>
+                                        <!--                                    <addClasspath>true</addClasspath>
+                                        <classpathLayoutType>custom</classpathLayoutType>
+                                        <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>-->
+                                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                    </manifest>
+                                    <manifestEntries>
+                                        <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
+                                        <Class-Path>jaxb-api.jar jaxws-api.jar saaj-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
+                                    </manifestEntries>
+                                </archive>
                             </configuration>
                         </execution>
                     </executions>
@@ -213,7 +213,7 @@
             <!-- TODO: maven-javadoc-plugin:aggregate-jar cannot be used
             because of: http://jira.codehaus.org/browse/MJAVADOC-311
             therefore getting around it using
-                 dependency -> antrun -> buildhelper
+                 dependency -> antrun
             plugins to generate javadoc for jaxws-rt.jar -->
             <id>jvnet-release</id>
             <build>
@@ -245,7 +245,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
                         <executions>
                             <execution>
                                 <id>gen-javadocs</id>
@@ -257,6 +256,9 @@
                                     <verbose>true</verbose>
                                     <target>
                                         <property name="api.dest.dir" value="${project.build.directory}/apidocs"/>
+                                        <property name="javadoc.jar" value="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar"/>
+                                        <property name="links.dir" value="${javadoc.links.dir}"/>
+                                        <property name="links.offline" value="${javadoc.links.offline}"/>
                                         <mkdir dir="${api.dest.dir}"/>
                                         <javadoc
                                             packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
@@ -269,34 +271,18 @@
                                             doctitle="JAX-WS RI"
                                             bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
                                             <classpath refid="maven.compile.classpath"/>
+                                            <link href="http://docs.oracle.com/javase/6/docs/api/"
+                                                  offline="${links.offline}" packagelistloc="${links.dir}/javase6/"/>
+                                            <link href="http://jaxb.java.net/nonav/${jaxb-impl.version}/docs/api/"
+                                                  offline="${links.offline}" packagelistloc="${links.dir}/jaxb-api/"/>
+                                            <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
+                                                  offline="${links.offline}" packagelistloc="${links.dir}/jaxws-api/"/>
                                         </javadoc>
-                                        <jar jarfile="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar">
+                                        <jar jarfile="${javadoc.jar}">
                                             <fileset dir="${api.dest.dir}"/>
                                         </jar>
+                                        <attachartifact file="${javadoc.jar}" classifier="javadoc" type="jar"/>
                                     </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>1.7</version>
-                        <executions>
-                            <execution>
-                                <id>attach-gen-javadocs</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>attach-artifact</goal>
-                                </goals>
-                                <configuration>
-                                    <artifacts>
-                                        <artifact>
-                                            <file>${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar</file>
-                                            <type>jar</type>
-                                            <classifier>javadoc</classifier>
-                                        </artifact>
-                                    </artifacts>
                                 </configuration>
                             </execution>
                         </executions>

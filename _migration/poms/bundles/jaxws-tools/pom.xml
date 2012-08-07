@@ -151,8 +151,8 @@
             <!-- TODO: maven-javadoc-plugin:aggregate-jar cannot be used
             because of: http://jira.codehaus.org/browse/MJAVADOC-311
             therefore getting around it using
-                 dependency -> antrun -> buildhelper
-            plugins to generate javadoc for jaxws-rt.jar -->
+                 dependency -> antrun
+            plugins to generate javadoc for jaxws-tools.jar -->
             <id>jvnet-release</id>
             <build>
                 <plugins>
@@ -183,7 +183,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
                         <executions>
                             <execution>
                                 <id>generate-javadocs</id>
@@ -195,11 +194,14 @@
                                     <verbose>true</verbose>
                                     <target>
                                         <property name="api.dest.dir" value="${project.build.directory}/apidocs"/>
+                                        <property name="javadoc.jar" value="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar"/>
+                                        <property name="links.dir" value="${javadoc.links.dir}"/>
+                                        <property name="links.offline" value="${javadoc.links.offline}"/>
                                         <mkdir dir="${api.dest.dir}"/>
                                         <javadoc
                                             packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
                                             sourcepath="${project.build.directory}/bundlesources"
-                                            destdir="${api.dest.dir}/"
+                                            destdir="${api.dest.dir}"
                                             author="false"
                                             version="false"
                                             use="true"
@@ -207,35 +209,22 @@
                                             windowtitle="JAX-WS RI Tools Documentation"
                                             doctitle="JAX-WS RI"
                                             bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
-                                            <classpath refid="maven.compile.classpath"/>
+                                            <classpath>
+                                                <path  refid="maven.compile.classpath"/>
+                                                <pathelement location="${ant.core.lib}"/>
+                                            </classpath>
+                                            <link href="http://docs.oracle.com/javase/6/docs/api/"
+                                                  offline="${links.offline}" packagelistloc="${links.dir}/javase6/"/>
+                                            <link href="http://jaxb.java.net/nonav/${jaxb-impl.version}/docs/api/"
+                                                  offline="${links.offline}" packagelistloc="${links.dir}/jaxb-api/"/>
+                                            <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
+                                                  offline="${links.offline}" packagelistloc="${links.dir}/jaxws-api/"/>
                                         </javadoc>
-                                        <jar jarfile="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar">
+                                        <jar jarfile="${javadoc.jar}">
                                             <fileset dir="${api.dest.dir}"/>
                                         </jar>
+                                        <attachartifact file="${javadoc.jar}" classifier="javadoc" type="jar"/>
                                     </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>1.7</version>
-                        <executions>
-                            <execution>
-                                <id>attach-gen-javadocs</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>attach-artifact</goal>
-                                </goals>
-                                <configuration>
-                                    <artifacts>
-                                        <artifact>
-                                            <file>${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar</file>
-                                            <type>jar</type>
-                                            <classifier>javadoc</classifier>
-                                        </artifact>
-                                    </artifacts>
                                 </configuration>
                             </execution>
                         </executions>
