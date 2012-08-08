@@ -68,6 +68,12 @@
                     <fileSet>
                         <directory>target/generated-sources/renamed-sources</directory>
                     </fileSet>
+                    <fileSet>
+                        <directory>target/classes</directory>
+                        <includes>
+                            <include>com/sun/tools/ws/version.properties</include>
+                        </includes>
+                    </fileSet>
                 </fileSets>
             </sources>
         </moduleSet>
