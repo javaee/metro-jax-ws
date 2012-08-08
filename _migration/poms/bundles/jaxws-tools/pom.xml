@@ -79,7 +79,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.1.2</version>
                     <executions>
                         <execution>
                             <id>attach-sources</id>
@@ -90,15 +89,11 @@
                             <configuration>
                                 <archive>
                                     <manifest>
-                                        <!-- <addClasspath>true</addClasspath>
-                                        <classpathLayoutType>custom</classpathLayoutType>
-                                        <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>-->
                                         <mainClass>com.sun.tools.ws.WsImport</mainClass>
-                                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                                     </manifest>
                                     <manifestEntries>
                                         <Class-Path>jaxws-rt.jar jaxb-xjc.jar</Class-Path>
+                                        <Extension-Name>com.sun.tools.ws</Extension-Name>
                                     </manifestEntries>
                                 </archive>
                             </configuration>
@@ -111,9 +106,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                </configuration>
                 <executions>
                     <execution>
                         <id>make-bin-assembly</id>
@@ -128,15 +120,11 @@
                             </descriptors>
                             <archive>
                                 <manifest>
-                                    <!--                                    <addClasspath>true</addClasspath>
-                                    <classpathLayoutType>custom</classpathLayoutType>
-                                    <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>-->
                                     <mainClass>com.sun.tools.ws.WsImport</mainClass>
-                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                                 </manifest>
                                 <manifestEntries>
                                     <Class-Path>jaxws-rt.jar jaxb-xjc.jar</Class-Path>
+                                    <Extension-Name>com.sun.xml.ws</Extension-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>
@@ -191,7 +179,6 @@
                                 </goals>
                                 <phase>package</phase>
                                 <configuration>
-                                    <verbose>true</verbose>
                                     <target>
                                         <property name="api.dest.dir" value="${project.build.directory}/apidocs"/>
                                         <property name="javadoc.jar" value="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar"/>
@@ -233,5 +220,5 @@
             </build>
         </profile>
     </profiles>
-    
+
 </project>

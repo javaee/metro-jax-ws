@@ -113,7 +113,7 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <echo message="Preparing char entities"/>
                                 <mkdir dir="${src.dir}"/>
                                 <copy todir="${src.dir}">
@@ -123,7 +123,7 @@
 
                                 <replace file="${src.dir}/docbook.ent" token="$release.spec.version" value="${jaxws-api.version}"/>
                                 <replace file="${src.dir}/docbook.ent" token="$release.impl.version" value="${project.version}"/>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>

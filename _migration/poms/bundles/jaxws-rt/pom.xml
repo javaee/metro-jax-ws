@@ -143,7 +143,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.1.2</version>
                     <executions>
                         <execution>
                             <id>attach-sources</id>
@@ -153,16 +152,10 @@
                             </goals>
                             <configuration>
                                 <archive>
-                                    <manifest>
-                                        <!--                                    <addClasspath>true</addClasspath>
-                                        <classpathLayoutType>custom</classpathLayoutType>
-                                        <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>-->
-                                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                                    </manifest>
                                     <manifestEntries>
                                         <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
                                         <Class-Path>jaxb-api.jar jaxws-api.jar saaj-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
+                                        <Extension-Name>com.sun.xml.ws</Extension-Name>
                                     </manifestEntries>
                                 </archive>
                             </configuration>
@@ -175,7 +168,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.3</version>
                 <executions>
                     <execution>
                         <id>make-bin-assembly</id>
@@ -189,16 +181,10 @@
                                 <descriptor>src/main/assembly/assembly.xml</descriptor>
                             </descriptors>
                             <archive>
-                                <manifest>
-                                    <!--                                    <addClasspath>true</addClasspath>
-                                    <classpathLayoutType>custom</classpathLayoutType>
-                                    <customClasspathLayout>${artifact.artifactId}.${artifact.extension}</customClasspathLayout>-->
-                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                                </manifest>
                                 <manifestEntries>
                                     <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
                                     <Class-Path>jaxb-api.jar jaxws-api.jar saaj-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
+                                    <Extension-Name>com.sun.xml.ws</Extension-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>
@@ -253,7 +239,6 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <verbose>true</verbose>
                                     <target>
                                         <property name="api.dest.dir" value="${project.build.directory}/apidocs"/>
                                         <property name="javadoc.jar" value="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar"/>

@@ -202,6 +202,8 @@ done
 #move additional files/sources
 pushd jaxws-ri
 
+svn cp --parents "../_migration/poms/rt/src/main" rt/src/
+svn cp --parents "../_migration/poms/tools/wscompile/src/main" tools/wscompile/src
 svn cp --parents "../_migration/poms/bundles/jaxws-ri/src/main/assembly/assembly.xml" bundles/jaxws-ri/src/main/assembly/assembly.xml
 svn cp --parents "../_migration/poms/bundles/jaxws-rt/src/main/assembly/assembly.xml" bundles/jaxws-rt/src/main/assembly/assembly.xml
 svn cp --parents "../_migration/poms/bundles/jaxws-tools/src/main/assembly/assembly.xml" bundles/jaxws-tools/src/main/assembly/assembly.xml

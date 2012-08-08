@@ -43,21 +43,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>jaxws-ri-bom</artifactId>
         <version>2.2.8-SNAPSHOT</version>
         <relativePath>bom/pom.xml</relativePath>
     </parent>
-    
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>project</artifactId>
     <packaging>pom</packaging>
     <name>JAX-WS (JSR-224) Reference Implementation</name>
     <description>Open source Reference Implementation of JSR-224: Java API for XML Web Services</description>
-    
+
     <repositories>
         <repository>
             <id>releases.java.net</id>
@@ -103,6 +103,11 @@
                     <configuration>
                         <locale>en-US</locale>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.glassfish.hk2</groupId>
+                    <artifactId>osgiversion-maven-plugin</artifactId>
+                    <version>2.1.14</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -158,11 +163,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.4</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.12</version>
                     <configuration>
@@ -172,9 +172,79 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <archive>
+                            <manifestEntries>
+                                <Specification-Title>The Java API for XML Web Services</Specification-Title>
+                                <Specification-Version>2.2</Specification-Version>
+                                <Implementation-Title>JAX-WS Implementation</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Implementation-Vendor>Sun Microsystems Inc</Implementation-Vendor>
+                                <Implementation-Vendor-Id>com.sun</Implementation-Vendor-Id>
+                                <Build-Id>${project.version}</Build-Id>
+                                <SVN-Revision>${buildNumber}</SVN-Revision>
+                                <SVN-URL>${project.scm.connection}</SVN-URL>
+                                <Build-Version>JAX-WS RI ${project.version}</Build-Version>
+                                <Major-Version>${project.osgi.version}</Major-Version>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.1.2</version>
+                    <configuration>
+                        <archive>
+                            <manifestEntries>
+                                <Specification-Title>The Java API for XML Web Services</Specification-Title>
+                                <Specification-Version>2.2</Specification-Version>
+                                <Implementation-Title>JAX-WS Implementation</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Implementation-Vendor>Sun Microsystems Inc</Implementation-Vendor>
+                                <Implementation-Vendor-Id>com.sun</Implementation-Vendor-Id>
+                                <Build-Id>${project.version}</Build-Id>
+                                <SVN-Revision>${buildNumber}</SVN-Revision>
+                                <SVN-URL>${project.scm.connection}</SVN-URL>
+                                <Build-Version>JAX-WS RI ${project.version}</Build-Version>
+                                <Major-Version>${project.osgi.version}</Major-Version>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.3</version>
+                    <configuration>
+                        <archive>
+                            <manifestEntries>
+                                <Specification-Title>The Java API for XML Web Services</Specification-Title>
+                                <Specification-Version>2.2</Specification-Version>
+                                <Implementation-Title>JAX-WS Implementation</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Implementation-Vendor>Sun Microsystems Inc</Implementation-Vendor>
+                                <Implementation-Vendor-Id>com.sun</Implementation-Vendor-Id>
+                                <Build-Id>${project.version}</Build-Id>
+                                <SVN-Revision>${buildNumber}</SVN-Revision>
+                                <SVN-URL>${project.scm.connection}</SVN-URL>
+                                <Build-Version>JAX-WS RI ${project.version}</Build-Version>
+                                <Major-Version>${project.osgi.version}</Major-Version>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>2.8.1</version>
                     <configuration>
+                        <aggregate>false</aggregate>
+                        <dependencySourceExcludes>
+                            <dependencySourceExclude>com.sun.xml.ws:*</dependencySourceExclude>
+                        </dependencySourceExcludes>
                         <offlineLinks>
                             <offlineLink>
                                 <url>http://docs.oracle.com/javase/6/docs/api/</url>
@@ -204,6 +274,46 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-buildnumber</id>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                        <configuration>
+                            <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+                            <revisionOnScmFailure>unknown</revisionOnScmFailure>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>osgiversion-maven-plugin</artifactId>
+                <executions>
+                    <!-- Since we don't want qualifier like b05 or SNAPSHOT to appear
+                    in package version attribute, we use the following goal to
+                    populate a project property with an OSGi version which is
+                    equivalent to maven version without qualifier and then use that
+                    property in osgi.bundle while exporting. -->
+                    <execution>
+                        <id>compute-osgi-version</id>
+                        <goals>
+                            <goal>compute-osgi-version</goal>
+                        </goals>
+                        <configuration>
+                            <dropVersionComponent>qualifier</dropVersionComponent>
+                            <versionPropertyName>project.osgi.version</versionPropertyName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <modules>
