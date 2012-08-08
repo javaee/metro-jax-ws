@@ -144,6 +144,11 @@
                     </executions>
                 </plugin>
                 <plugin>
+                    <groupId>com.sun.wts.tools.ant</groupId>
+                    <artifactId>package-rename-task</artifactId>
+                    <version>1.2-SNAPSHOT</version>
+                </plugin>
+                <plugin>
                     <groupId>com.sun.istack</groupId>
                     <artifactId>istack-commons-maven-plugin</artifactId>
                     <version>${istack-commons.version}</version>

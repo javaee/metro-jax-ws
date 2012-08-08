@@ -479,7 +479,7 @@
         <fi-api.version>1.0</fi-api.version>
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
         <ha-api.version>3.1.8</ha-api.version>
-        <istack-commons.version>2.14-SNAPSHOT</istack-commons.version>
+        <istack-commons.version>2.13</istack-commons.version>
         <jaxb-api.version>2.2.7</jaxb-api.version>
         <jaxb-impl.version>2.2.7-b41</jaxb-impl.version>
         <jaxb-xjc.version>2.2.7-b41</jaxb-xjc.version>
