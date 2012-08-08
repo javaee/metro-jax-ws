@@ -207,6 +207,7 @@ svn cp --parents "../_migration/poms/tools/wscompile/src/main/version/com/sun/to
 svn cp --parents "../_migration/poms/bundles/jaxws-ri/src/main/assembly/assembly.xml" bundles/jaxws-ri/src/main/assembly/assembly.xml
 svn cp --parents "../_migration/poms/bundles/jaxws-rt/src/main/assembly/assembly.xml" bundles/jaxws-rt/src/main/assembly/assembly.xml
 svn cp --parents "../_migration/poms/bundles/jaxws-rt/src/main/assembly/assembly-src.xml" bundles/jaxws-rt/src/main/assembly/assembly-src.xml
+svn cp --parents "../_migration/poms/bundles/jaxws-tools/src/main/assembly/assembly.xml" bundles/jaxws-tools/src/main/assembly/assembly.xml
 svn cp --parents "../_migration/poms/bundles/jaxws-tools/src/main/assembly/assembly-src.xml" bundles/jaxws-tools/src/main/assembly/assembly-src.xml
 svn cp --parents "../_migration/poms/samples/src/main/assembly/assembly.xml" samples/src/main/assembly/assembly.xml
 
