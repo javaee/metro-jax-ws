@@ -74,6 +74,19 @@
             <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
             <layout>default</layout>
         </repository>
+        <!-- TODO: temporary - will be removed after jvnet/central/internal sync -->
+        <repository>
+            <id>temp-repo</id>
+            <url>https://maven.java.net/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
     </repositories>
 
     <properties>
