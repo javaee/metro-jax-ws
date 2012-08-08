@@ -74,34 +74,6 @@
     </modules>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>aggregate</goal>
-                            </goals>
-                            <configuration>
-                                <archive>
-                                    <manifest>
-                                        <mainClass>com.sun.tools.ws.WsImport</mainClass>
-                                    </manifest>
-                                    <manifestEntries>
-                                        <Class-Path>jaxws-rt.jar jaxb-xjc.jar</Class-Path>
-                                        <Extension-Name>com.sun.tools.ws</Extension-Name>
-                                    </manifestEntries>
-                                </archive>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -124,7 +96,7 @@
                                 </manifest>
                                 <manifestEntries>
                                     <Class-Path>jaxws-rt.jar jaxb-xjc.jar</Class-Path>
-                                    <Extension-Name>com.sun.xml.ws</Extension-Name>
+                                    <Extension-Name>com.sun.tools.ws</Extension-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>
@@ -143,7 +115,52 @@
             plugins to generate javadoc for jaxws-tools.jar -->
             <id>jvnet-release</id>
             <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-source-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>attach-sources</id>
+                                    <inherited>false</inherited>
+                                    <configuration>
+                                        <skip>true</skip>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>make-src-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <appendAssemblyId>true</appendAssemblyId>
+                                    <descriptors>
+                                        <descriptor>src/main/assembly/assembly-src.xml</descriptor>
+                                    </descriptors>
+                                    <archive>
+                                        <manifest>
+                                            <mainClass>com.sun.tools.ws.WsImport</mainClass>
+                                        </manifest>
+                                        <manifestEntries>
+                                            <Class-Path>jaxws-rt.jar jaxb-xjc.jar</Class-Path>
+                                            <Extension-Name>com.sun.tools.ws</Extension-Name>
+                                        </manifestEntries>
+                                    </archive>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>

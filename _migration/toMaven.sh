@@ -202,11 +202,12 @@ done
 #move additional files/sources
 pushd jaxws-ri
 
-svn cp --parents "../_migration/poms/rt/src/main" rt/src/
-svn cp --parents "../_migration/poms/tools/wscompile/src/main" tools/wscompile/src
+svn cp --parents "../_migration/poms/rt/src/main/version/com/sun/xml/ws/util" rt/src/main/version/com/sun/xml/ws/util
+svn cp --parents "../_migration/poms/tools/wscompile/src/main/version/com/sun/tools/ws" tools/wscompile/src/main/version/com/sun/tools/ws
 svn cp --parents "../_migration/poms/bundles/jaxws-ri/src/main/assembly/assembly.xml" bundles/jaxws-ri/src/main/assembly/assembly.xml
 svn cp --parents "../_migration/poms/bundles/jaxws-rt/src/main/assembly/assembly.xml" bundles/jaxws-rt/src/main/assembly/assembly.xml
-svn cp --parents "../_migration/poms/bundles/jaxws-tools/src/main/assembly/assembly.xml" bundles/jaxws-tools/src/main/assembly/assembly.xml
+svn cp --parents "../_migration/poms/bundles/jaxws-rt/src/main/assembly/assembly-src.xml" bundles/jaxws-rt/src/main/assembly/assembly-src.xml
+svn cp --parents "../_migration/poms/bundles/jaxws-tools/src/main/assembly/assembly-src.xml" bundles/jaxws-tools/src/main/assembly/assembly-src.xml
 svn cp --parents "../_migration/poms/samples/src/main/assembly/assembly.xml" samples/src/main/assembly/assembly.xml
 
 svn mv --parents "CDDL+GPLv2.txt" LICENSE.txt README ThirdPartyLicense.txt distributionREADME_WMforJava2.0.txt bundles/jaxws-ri/src/main/resources
