@@ -1,0 +1,7 @@
+<descriptor since="2.1.5" uses="ri">
+  <description>custom_server_jaxbcontext</description>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>

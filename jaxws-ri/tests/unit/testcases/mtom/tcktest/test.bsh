@@ -1,0 +1,214 @@
+import junit.framework.TestCase;
+import testutil.AttachmentHelper;
+import testutil.ClientServerTestUtil;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.soap.MTOMFeature;
+import javax.xml.ws.*;
+import javax.xml.soap.*;
+import javax.xml.ws.http.*;
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service.Mode;
+import java.awt.*;
+import java.io.*;
+import javax.imageio.ImageIO;
+
+/**
+ * This tests if MTOM attachments are inlined.
+ * Creating Dispatch<DataSource> as Dispatch<SOAPMessage> seems to inline
+ * response attachments
+ *
+ * @author Jitendra Kotamraju
+ */
+getSOAPMessage() throws Exception {
+    headers = new MimeHeaders();
+    headers.addHeader("Content-Type", "text/xml");
+
+    in  = new FileInputStream(resource("raw.envelope"));
+    msg =  MessageFactory.newInstance().createMessage(headers, in);
+
+    doc1 = msg.createAttachmentPart(getDataHandler("attach.txt"));
+    doc1.setContentId("6f43c576-1c18-441a-8aaa-a455dc87a656@example.jaxws.sun.com");
+    msg.addAttachmentPart(doc1);
+
+    doc2 = msg.createAttachmentPart(getDataHandler("attach.html"));
+    doc2.setContentId("d04800fe-ec4b-4312-97f3-eb84172ac6d9@example.jaxws.sun.com");
+    msg.addAttachmentPart(doc2);
+
+    doc3 = msg.createAttachmentPart(getDataHandler("attach.xml"));
+    doc3.setContentId("0e558b51-7c30-4fe5-b65a-d01ac86129e5@example.jaxws.sun.com");
+    msg.addAttachmentPart(doc3);
+
+    doc4 = msg.createAttachmentPart(getDataHandler("attach.jpeg"));
+    doc4.setContentId("72d1efa4-e45d-4cf0-90b5-56d111a4cb03@example.jaxws.sun.com");
+    doc4.setContentType("image/jpeg");
+    msg.addAttachmentPart(doc4);
+
+    doc5 = msg.createAttachmentPart(getDataHandler("attach2.jpeg"));
+    doc5.setContentType("image/jpeg");
+    doc5.setContentId("e622a8c0-b994-424e-8343-f15b18bb2fa2@example.jaxws.sun.com");
+    msg.addAttachmentPart(doc5);
+
+    hdrs = msg.getMimeHeaders();
+    boundary = "BOUNDARY_123456789_BOUNDARY";
+    ct = 
+"multipart/related;type=\"application/xop+xml\";boundary="+boundary+";start-info=\"text/xml\"";
+    hdrs.setHeader("Content-Type", ct);
+
+    msg.saveChanges();
+    return msg;
+}
+
+validate(InputStream exp, InputStream got) throws Exception {
+    int ch;
+    while((ch=exp.read()) != -1) {
+	assertEquals(ch, got.read());	
+    }
+    assertEquals(-1, got.read());
+    exp.close();
+    got.close();
+}
+
+getImage(String image) throws Exception {
+    is = new FileInputStream(resource(image));
+    return ImageIO.read(is);
+}
+
+DataHandler getDataHandler(String file) throws Exception {
+    return new DataHandler(new DataSource() {
+	getContentType() {
+	    return "text/html";
+	}
+
+	getInputStream() {
+	    return new FileInputStream(resource(file));
+	}
+
+	getName() {
+	    return null;
+	}
+
+	getOutputStream() {
+	    throw new UnsupportedOperationException();
+	}
+    });
+}
+
+getDataSource(SOAPMessage msg) throws Exception {
+    return new DataSource() {
+	getContentType() {
+	    return msg.getMimeHeaders().getHeader("Content-Type")[0];
+	}
+
+	getInputStream() {
+            baos = new ByteArrayOutputStream();
+            msg.writeTo(baos);
+            return new ByteArrayInputStream(baos.toByteArray());
+	}
+
+	getName() {
+	    return null;
+	}
+
+	getOutputStream() {
+	    throw new UnsupportedOperationException();
+	}
+    };
+}
+
+serviceName = new QName("http://example.org/mtom", "Hello");
+portName = new QName("http://example.org/mtom", "HelloPort");
+service = Service.create(serviceName);
+service.addPort(portName, HTTPBinding.HTTP_BINDING, helloPortAddress.toString());
+disp = service.createDispatch(portName, DataSource.class, Mode.MESSAGE);
+
+// Create a request SOAPMessage
+soap = getSOAPMessage();
+ds = getDataSource(soap);
+ds = disp.invoke(ds);
+
+// Create a SOAPMessage from response
+headers = new MimeHeaders();
+headers.addHeader("Content-Type", ds.getContentType());
+soap =  MessageFactory.newInstance().createMessage(headers, ds.getInputStream());
+
+// verify S:Body 
+body = soap.getSOAPBody();
+it = body.getChildElements();
+elem = it.next();
+assertEquals(new QName("http://example.org/mtom", "MTOMInOutResponse"), elem.getElementQName());
+docit = elem.getChildElements();
+
+// verify <doc1> contains xop:Include
+elem = docit.next();
+assertEquals(new QName("http://example.org/mtom", "doc1"), elem.getElementQName());
+xopit = elem.getChildElements();
+elem = xopit.next();
+assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+String href = elem.getAttributeValue(new QName("", "href"));
+assertEquals("cid:", href.substring(0,4));
+
+// verify <doc2> contains xop:Include
+elem = docit.next();
+assertEquals(new QName("http://example.org/mtom", "doc2"), elem.getElementQName());
+xopit = elem.getChildElements();
+elem = xopit.next();
+assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+String href = elem.getAttributeValue(new QName("", "href"));
+assertEquals("cid:", href.substring(0,4));
+
+// verify <doc3> contains xop:Include
+elem = docit.next();
+assertEquals(new QName("http://example.org/mtom", "doc3"), elem.getElementQName());
+xopit = elem.getChildElements();
+elem = xopit.next();
+assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+String href = elem.getAttributeValue(new QName("", "href"));
+assertEquals("cid:", href.substring(0,4));
+
+// verify <doc4> contains xop:Include
+elem = docit.next();
+assertEquals(new QName("http://example.org/mtom", "doc4"), elem.getElementQName());
+xopit = elem.getChildElements();
+elem = xopit.next();
+assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+String href = elem.getAttributeValue(new QName("", "href"));
+assertEquals("cid:", href.substring(0,4));
+
+// verify <doc5> contains xop:Include
+elem = docit.next();
+assertEquals(new QName("http://example.org/mtom", "doc5"), elem.getElementQName());
+xopit = elem.getChildElements();
+elem = xopit.next();
+assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+String href = elem.getAttributeValue(new QName("", "href"));
+assertEquals("cid:", href.substring(0,4));
+
+// Validate the number of attachments
+assertEquals(5, soap.countAttachments());
+
+it = soap.getAttachments();
+
+// Validate attach.txt attachement
+at = it.next();
+validate(new FileInputStream(resource("attach.txt")), at.getRawContent());
+
+// Validate attach.html attachment
+at = it.next();
+validate(new FileInputStream(resource("attach.html")), at.getRawContent());
+
+// Validate attach.xml attachment
+at = it.next();
+validate(new FileInputStream(resource("attach.xml")), at.getRawContent());
+
+// Validate attach.jpeg attachment
+at = it.next();
+img = ImageIO.read(at.getRawContent());
+assertNotNull(img);
+
+// Validate attach2.jpeg attachment
+at = it.next();
+img = ImageIO.read(at.getRawContent());
+assertNotNull(img);

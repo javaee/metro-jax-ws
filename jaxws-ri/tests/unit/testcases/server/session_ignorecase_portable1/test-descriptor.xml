@@ -1,0 +1,7 @@
+<descriptor since="2.2.5" transport="http">
+  <description>Sets address dynamically and checks if session is continued</description>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>

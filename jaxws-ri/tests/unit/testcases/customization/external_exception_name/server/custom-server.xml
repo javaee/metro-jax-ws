@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxws:bindings wsdlLocation="custom.wsdl"
+                xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+                xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                xmlns:types="urn:test:types">
+
+    <jaxws:bindings
+            node="wsdl:definitions/wsdl:portType[@name='Hello']/wsdl:operation[@name='Foo']/wsdl:fault[@name='FooFault']">
+        <jaxws:class name="custom.pkg.CustomException"/>
+    </jaxws:bindings>
+
+</jaxws:bindings>
+

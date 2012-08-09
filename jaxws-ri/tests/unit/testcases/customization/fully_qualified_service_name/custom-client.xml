@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+                xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                xmlns:types="urn:test:types">
+
+    <jaxws:bindings node="wsdl:definitions/wsdl:service[@name='Hello']">
+        <jaxws:class name="custom.pkg.CustomService"/>
+    </jaxws:bindings>
+
+</jaxws:bindings>
+

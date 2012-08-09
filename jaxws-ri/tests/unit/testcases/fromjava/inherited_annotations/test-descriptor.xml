@@ -1,0 +1,16 @@
+<descriptor since="2.1">
+    <description>
+        Tests inherited annotations rules. 
+    </description>
+    <client name="fromjava.inherited-annotations">
+        assertTrue(echoPort.echoA("A").equals("EchoBase2:A"));
+        assertTrue(echoPort.echoB("B").equals("EchoBase:B"));
+        assertTrue(echoPort.echoC("C").equals("EchoBase3:C"));
+        assertTrue(echoPort.echoD("D").equals("EchoBase3:D"));
+        assertTrue(echoPort.echoE("E").equals("EchoBase2:E"));
+        assertTrue(echoPort.echoF("F").equals("EchoImpl:F"));
+        assertTrue(echoPort.echoG("G").equals("EchoBase3:G"));
+        assertTrue(echoPort.echoH("H").equals("EchoImpl:H"));
+    </client>
+    <service basedir="./server" class="fromjava.inherited_annotations.server.EchoImpl"/>
+</descriptor>

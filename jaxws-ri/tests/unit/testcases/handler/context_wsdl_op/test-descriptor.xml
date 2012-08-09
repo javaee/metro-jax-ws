@@ -1,0 +1,6 @@
+<descriptor since="2.2" bugs="jax-ws-605">
+    <description>
+        Tests for accessing WSDL_OPRERATION in MessageContext in handler and endpoint implementation
+    </description>
+    <service basedir="./server"/>
+</descriptor>

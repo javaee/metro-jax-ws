@@ -1,0 +1,6 @@
+<descriptor since="2.2" transport="http">
+    <description>W3cEndpointReferenceBuilder tests</description>
+    <service basedir="./server">
+        <wsdl href="hello_literal.wsdl"/>
+    </service>
+</descriptor>

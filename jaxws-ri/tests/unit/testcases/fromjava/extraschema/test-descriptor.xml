@@ -1,0 +1,34 @@
+<descriptor since="2.1">
+    <description>
+        Test to check that unncessary schema imports are generated in the generated wsdl.
+        In this rpc-lit case where all the types are primtive, no extra schema is needed in the wsdl.
+    </description>
+    <client name="fromjava.extraschema"><![CDATA[
+
+        import org.w3c.dom.*;
+        import javax.xml.parsers.*;
+        
+        File f = new File(home,"work/services/war/WEB-INF/wsdl/TestEndpointService.wsdl");
+        InputStream is = new FileInputStream(f);
+        assertTrue(is != null);
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setValidating(false);
+        DocumentBuilder builder = dbf.newDocumentBuilder();
+        node = builder.parse(is);
+
+        Element e = null;
+        for(Node n = node.getFirstChild(); n != null; n = n.getNextSibling()) {
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                e = n;
+                break;
+            }
+        }
+        NodeList nl = e.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "import");
+        if(nl.getLength() > 0)
+            System.out.println("Expected none but "+ nl.getLength()+" xs:import found!");
+        assertTrue(nl.getLength() == 0);
+    ]]></client>
+    <service/>
+</descriptor>

@@ -1,0 +1,8 @@
+<!-- it fails on some os(solaris) that don't have support for utf-8 -->
+<descriptor since="2.2" skip="true">
+  <description>
+    Test multibyte service names
+  </description>
+  <client href ="*.bsh" />
+  <service />
+</descriptor>

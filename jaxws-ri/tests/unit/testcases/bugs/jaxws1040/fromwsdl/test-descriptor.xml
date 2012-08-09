@@ -1,0 +1,6 @@
+<descriptor since="2.2.7" bugs="jaxws-1040">
+    <description>JAX_WS-1040 EndpointInterface annotation generated based on wsdl for old addressing space are wrong</description>
+    <service basedir="./server">
+        <wsdl href="WSAActionService.wsdl"/>
+    </service>
+</descriptor>

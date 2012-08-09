@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema targetNamespace="http://helloservice.org/types"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        attributeFormDefault="qualified"
+        elementFormDefault="qualified">
+    <element name="HelloRequest">
+        <complexType>
+            <sequence>
+                <element name="string" type="string" nillable="true"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="HelloResponse">
+        <complexType>
+            <sequence>
+                <element name="result" type="string" nillable="true"/>
+            </sequence>
+        </complexType>
+    </element>
+</schema>

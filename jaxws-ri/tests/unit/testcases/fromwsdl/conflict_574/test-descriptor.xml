@@ -1,0 +1,14 @@
+<descriptor since="2.1.4">
+    <description>wsimport reports a wrong conflict</description>
+    <service basedir="./server">
+        <wsdl href="hello_literal.wsdl"/>
+    </service>
+    <client name="fromwsdl.conflict_574">
+        <description>
+            Test hello().
+        </description>
+        Hello req = new Hello();
+        response = helloPort.hello(req);
+    </client>
+
+</descriptor>

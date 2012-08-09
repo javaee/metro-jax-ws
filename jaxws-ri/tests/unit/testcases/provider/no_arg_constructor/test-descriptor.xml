@@ -1,0 +1,8 @@
+<descriptor since="2.2" transport="http">
+  <description>Test for Provider Payload Source - no arg Source constructors</description>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>

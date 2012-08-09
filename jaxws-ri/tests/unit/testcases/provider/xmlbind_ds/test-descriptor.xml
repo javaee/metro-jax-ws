@@ -1,0 +1,52 @@
+<!-- Uses SAAJ internal class so marking with ri-api -->
+<descriptor since="2.0" uses="ri">
+  <description>This is a Provider XML/HTTP test</description>
+
+   <pre-client><![CDATA[
+
+     import junit.framework.*;
+     import javax.xml.ws.Service;
+     import javax.xml.namespace.QName;
+     import javax.xml.ws.*;
+     import javax.xml.ws.soap.*;
+     import javax.xml.ws.http.*;
+     import javax.xml.soap.*;
+     import java.io.*;
+     import java.awt.Image;
+     import java.net.URI;
+     import java.net.URL;
+     import javax.imageio.*;
+
+     helloSM = "<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'><soapenv:Body><tns:Hello xmlns:tns='urn:test:types'><argument>Dispatch </argument><extra>Test </extra></tns:Hello></soapenv:Body></soapenv:Envelope>";
+
+     serviceQName = new QName("urn:test", "Hello");
+     portQName = new QName("urn:test", "HelloPort");
+
+     getSOAPMessage() throws Exception {
+         bytes = helloSM.getBytes();
+         bis = new ByteArrayInputStream(bytes);
+         factory = MessageFactory.newInstance();
+         message = factory.createMessage();
+         message.getSOAPPart().setContent(new StreamSource(bis));
+
+
+         // Attach Image        
+         img = ImageIO.read(resource("java.jpg"));
+         ap = message.createAttachmentPart(img, "image/jpeg");
+         message.addAttachmentPart(ap);
+         message.saveChanges();
+         return message;
+     }
+
+   ]]>
+   </pre-client>
+
+   <client href="test1.bsh" />
+
+   <client href="test2.bsh" />
+
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>

@@ -1,0 +1,8 @@
+<descriptor since="2.2" transport="http">
+  <description>Bug: JAX_WS-1075: RI Http Adapter should send common response instead of soapfault if the http status code is 403, according to WS-I BP 1.1</description>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>
+

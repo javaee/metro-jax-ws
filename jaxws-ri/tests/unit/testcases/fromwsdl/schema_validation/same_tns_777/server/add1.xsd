@@ -1,0 +1,13 @@
+<xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified" xmlns:tns="urn:ns:2"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="urn:ns:2">
+
+    <complexType name="addNumbersResponse">
+        <sequence>
+            <element name="return" type="xsd:int"/>
+        </sequence>
+    </complexType>
+    <element name="addNumbersResponse" type="tns:addNumbersResponse"/>
+
+</xsd:schema>

@@ -1,0 +1,300 @@
+<definitions
+  name="HelloTest"
+  targetNamespace="urn:test"
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:types="urn:test:types"
+  xmlns:tns="urn:test"
+  xmlns:wsa10="http://www.w3.org/2005/08/addressing"
+        xmlns:x="http://example.com/test"
+        xmlns:wsid="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+
+  <types>
+    <xsd:schema
+        targetNamespace="urn:test:types"
+        attributeFormDefault="qualified"
+        elementFormDefault="qualified">
+
+      <xsd:element name="Hello">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="argument" type="xsd:string"/>
+                <xsd:element name="extra" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+    <xsd:complexType name="HelloType">
+            <xsd:sequence>
+                <xsd:element name="argument" type="xsd:string"/>
+                <xsd:element name="extra" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+
+      <xsd:element name="HelloResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:sequence>
+                    <xsd:element name="name" type="xsd:string"/>
+                </xsd:sequence>
+                <xsd:element name="argument" type="xsd:string"/>
+                <xsd:element name="extra" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+
+      <xsd:element name="VoidTest" type="types:VoidType" nillable="true"/>
+
+        <xsd:complexType name="VoidType">
+          <xsd:sequence>
+          </xsd:sequence>
+        </xsd:complexType>
+
+      <xsd:element name="VoidTestResponse" type="types:VoidType" nillable="true"/>
+
+      <xsd:element name="echoArray" type="types:nameType"/>
+      <xsd:element name="echoArray1" type="types:nameType"/>
+      <xsd:element name="echoArray2" type="types:nameType"/>
+      <xsd:element name="echoArray3" type="types:nameType"/>
+      <xsd:element name="detail" type="xsd:string"/>
+      <xsd:element name="echoArray4Body" type="types:nameType1"/>
+
+
+      <xsd:element name="echoArrayResponse" type="types:nameType"/>
+      <xsd:complexType name="nameType">
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:complexType name="nameType1">
+        <xsd:sequence>
+          <xsd:element name="name" type="types:HelloType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+      </xsd:complexType>
+        <xsd:element name="oneway" type="xsd:string"/>
+
+    </xsd:schema>
+  </types>
+
+  <message name="HelloRequest">
+    <part name="parameters" element="types:Hello"/>
+    <part name="parameters1" element="types:Hello"/>
+  </message>
+
+  <message name="HelloResponse">
+    <part name="parameters" element="types:HelloResponse"/>
+    <part name="parameters2" element="types:Hello"/>
+  </message>
+
+  <message name="MarshallTest_voidTest">
+    <part name="parameters" element="types:VoidTest"/>
+  </message>
+
+  <message name="MarshallTest_voidTestResponse">
+    <part name="result" element="types:VoidTestResponse"/>
+  </message>
+
+  <message name="echoArrayRequest">
+    <part name="body" element="types:echoArray"/>
+  </message>
+
+  <message name="echoArrayResponse">
+    <part name="body" element="types:echoArray"/>
+  </message>
+
+  <message name="echoArrayRequest1">
+    <part name="body" element="types:echoArray1"/>
+  </message>
+
+  <message name="echoArrayResponse1">
+    <part name="body" element="types:echoArray1"/>
+  </message>
+
+  <message name="echoArrayRequest2">
+    <part name="body" element="types:echoArray2"/>
+  </message>
+
+  <message name="echoArrayResponse2">
+    <part name="body" element="types:echoArray2"/>
+  </message>
+
+  <message name="echoArrayRequest3">
+    <part name="body" element="types:echoArray3"/>
+  </message>
+
+  <message name="echoArrayResponse3">
+    <part name="body" element="types:echoArray3"/>
+  </message>
+
+  <message name="echoArrayRequest4">
+    <part name="request" element="types:echoArray4Body"/>
+  </message>
+
+  <message name="echoArrayResponse4">
+    <part name="response" element="types:echoArray4Body"/>
+  </message>
+
+  <message name="HelloException">
+    <part name="detail" element="types:detail"/>
+  </message>
+
+    <message name="onewayrequest">
+      <part name="rqequest" element="types:oneway"/>
+    </message>
+
+  <portType name="Hello">
+      <operation name="oneway">
+        <input  message="tns:onewayrequest"/>
+      </operation>
+
+    <operation name="hello">
+      <input  message="tns:HelloRequest"/>
+      <output message="tns:HelloResponse"/>
+      <fault  name="helloFault" message="tns:HelloException"/>
+    </operation>
+
+    <!-- this is a regression test for bug 4823861 -->
+    <operation name="voidTest">
+      <input name="voidInput" message="tns:MarshallTest_voidTest"/>
+      <output name="voidOutput" message="tns:MarshallTest_voidTestResponse"/>
+    </operation>
+
+
+    <operation name="echoArray">
+      <input message="tns:echoArrayRequest"/>
+      <output message="tns:echoArrayResponse"/>
+    </operation>
+<!--
+    <operation name="echoArray1">
+      <input message="tns:echoArrayRequest1"/>
+      <output message="tns:echoArrayResponse1"/>
+    </operation>
+-->
+    <operation name="echoArray2">
+      <input message="tns:echoArrayRequest2"/>
+      <output message="tns:echoArrayResponse2"/>
+    </operation>
+
+    <operation name="echoArray3">
+      <input message="tns:echoArrayRequest3"/>
+      <output message="tns:echoArrayResponse3"/>
+    </operation>
+
+    <operation name="echoArray4">
+      <input message="tns:echoArrayRequest4"/>
+      <output message="tns:echoArrayResponse4"/>
+    </operation>
+  </portType>
+
+  <binding name="HelloBinding" type="tns:Hello">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+      <operation name="oneway">
+      <soap:operation soapAction="urn:test:hello"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+    </operation>
+
+    <operation name="hello">
+      <soap:operation soapAction="urn:test:hello"/>
+      <input>
+        <soap:body parts="parameters1" use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="helloFault">
+        <soap:fault name="helloFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="voidTest">
+      <input>
+        <soap:body use="literal"/></input>
+      <output>
+        <soap:body use="literal"/></output>
+      <soap:operation soapAction=""/>
+    </operation>
+
+    <operation name="echoArray">
+      <soap:operation soapAction="urn:test:hello"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body parts="" use="literal"/>
+      </output>
+    </operation>
+<!--
+    <operation name="echoArray1">
+      <soap:operation soapAction="urn:test:hello"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body parts="" use="literal"/>
+        <soap:header message="tns:echoArrayResponse1" part="body" use="literal"/>
+      </output>
+    </operation>
+-->
+    <operation name="echoArray2">
+      <soap:operation soapAction="urn:test:hello"/>
+      <input>
+        <soap:body parts="" use="literal"/>
+        <soap:header message="tns:echoArrayRequest2" part="body" use="literal"/>
+      </input>
+      <output>
+        <soap:body parts="" use="literal"/>
+        <soap:header message="tns:echoArrayResponse2" part="body" use="literal"/>
+      </output>
+    </operation>
+
+    <operation name="echoArray3">
+      <soap:operation soapAction="urn:test:hello"/>
+      <input>
+        <soap:body/>
+      </input>
+      <output>
+        <soap:body/>
+      </output>
+    </operation>
+
+    <operation name="echoArray4">
+      <soap:operation soapAction="urn:test:hello"/>
+      <input>
+        <soap:body/>
+      </input>
+      <output>
+        <soap:body/>
+      </output>
+    </operation>
+
+  </binding>
+
+    <service name="Hello1" xmlns:wsid="http://fake.org">
+        <port name="HelloPort1" binding="tns:HelloBinding">
+            <soap:address location="http://localhost:8080/secure_federation/SecureConversation_MutualCertificate11"/>
+        </port>
+    </service>
+    <service name="Hello2">
+        <port name="HelloPort2" binding="tns:HelloBinding">
+            <wsa10:EndpointReference>
+                <wsa10:Address>
+                    http://localhost:8080/secure_federation/SecureConversation_MutualCertificate11
+                </wsa10:Address>
+                <wsid:Identity>
+                    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                        <x:X509Data>
+                            <X509Certificate>
+                                MIIDCjCCAfKgAwIBAgIQYDju2/6sm77InYfTq65x+DANBgkqhkiG9w0BAQUFADAwMQ4wDAYDVQQKDAVPQVNJUzEeMBwGA1UEAwwVT0FTSVMgSW50ZXJvcCBUZXN0IENBMB4XDTA1MDMxOTAwMDAwMFoXDTE4MDMxOTIzNTk1OVowQDEOMAwGA1UECgwFT0FTSVMxIDAeBgNVBAsMF09BU0lTIEludGVyb3AgVGVzdCBDZXJ0MQwwCgYDVQQDDANCb2IwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMCquMva4lFDrv3fXQnKK8CkSU7HvVZ0USyJtlL/yhmHH/FQXHyYY+fTcSyWYItWJYiTZ99PAbD+6EKBGbdfuJNUJCGaTWc5ZDUISqM/SGtacYe/PD/4+g3swNPzTUQAIBLRY1pkr2cm3s5Ch/f+mYVNBR41HnBeIxybw25kkoM7AgMBAAGjgZMwgZAwCQYDVR0TBAIwADAzBgNVHR8ELDAqMCiiJoYkaHR0cDovL2ludGVyb3AuYmJ0ZXN0Lm5ldC9jcmwvY2EuY3JsMA4GA1UdDwEB/wQEAwIEsDAdBgNVHQ4EFgQUXeg55vRyK3ZhAEhEf+YT0z986L0wHwYDVR0jBBgwFoAUwJ0o/MHrNaEd1qqqoBwaTcJJDw8wDQYJKoZIhvcNAQEFBQADggEBAIiVGv2lGLhRvmMAHSlY7rKLVkv+zEUtSyg08FBT8z/RepUbtUQShcIqwWsemDU8JVtsucQLc+g6GCQXgkCkMiC8qhcLAt3BXzFmLxuCEAQeeFe8IATr4wACmEQE37TEqAuWEIanPYIplbxYgwP0OBWBSjcRpKRAxjEzuwObYjbll6vKdFHYIweWhhWPrefquFp7TefTkF4D3rcctTfWJ76I5NrEVld+7PBnnJNpdDEuGsoaiJrwTW3Ixm40RXvG3fYS4hIAPeTCUk3RkYfUkqlaaLQnUrF2hZSgiBNLPe8gGkYORccRIlZCGQDEpcWl1Uf9OHw6fC+3hkqolFd5CVI=
+                            </X509Certificate>
+                        </x:X509Data>
+                    </KeyInfo>
+                </wsid:Identity>
+            </wsa10:EndpointReference>
+            <soap:address location="http://localhost:8080/secure_federation/SecureConversation_MutualCertificate11"/>
+        </port>
+    </service>
+</definitions>

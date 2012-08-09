@@ -1,0 +1,4 @@
+<descriptor since="2.2.7" bugs="jaxws-1049" uses="ri">
+    <description>JAXWS-1049: SOAPAction empty after reading from RequestContext</description>
+    <service basedir="./server" />
+</descriptor>

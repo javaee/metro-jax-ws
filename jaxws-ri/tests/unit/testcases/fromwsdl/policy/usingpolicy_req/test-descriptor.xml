@@ -1,0 +1,6 @@
+<descriptor since="2.2.1" bugs="JAX-WS-849">
+    <description>This is a fromwsdl test that has extension wsp:usingpolicy as required in the wsdl definitions( jax-ws issue-847)</description>
+    <service basedir="./server">
+        <wsdl href="usingpolicy-required.wsdl"/>
+    </service>
+</descriptor>

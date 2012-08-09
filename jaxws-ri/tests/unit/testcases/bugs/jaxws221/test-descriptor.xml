@@ -1,0 +1,9 @@
+<descriptor since="2.1">
+  <description>
+    Test for oneway and parameterOrder in the WSDL
+  </description>
+  <client href ="*.bsh" />
+  <service basedir="./server">
+      <wsdl href="TestEndpointService.wsdl"/>
+  </service>
+</descriptor>

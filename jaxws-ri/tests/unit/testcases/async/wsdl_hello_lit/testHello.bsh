@@ -1,0 +1,10 @@
+arg = "foo";
+extra = "bar";
+
+req = new Hello_Type();
+req.setArgument(arg);
+req.setExtra(extra);
+response = helloPort.hello(req);
+
+assertEquals(arg, response.getArgument());
+assertEquals(extra, response.getExtra());

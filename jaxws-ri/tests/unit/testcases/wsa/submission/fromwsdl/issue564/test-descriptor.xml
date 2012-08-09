@@ -1,0 +1,7 @@
+<descriptor since="2.1.8" uses="ri">
+    <description>End to End WSA testcase for issue 564</description>
+    <service basedir="./server">
+        <wsdl href="AddNumbers.wsdl"/>
+    </service>
+    <client href ="test.bsh" />
+</descriptor>

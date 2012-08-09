@@ -1,0 +1,7 @@
+<descriptor since="2.1">
+  <description>
+    Test for nullable data types
+  </description>
+  <client href ="*.bsh" />
+  <service basedir="./server"/>
+</descriptor>

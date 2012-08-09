@@ -1,0 +1,62 @@
+    import fromwsdl.handler.common.BaseSOAPHandler;
+    import fromwsdl.handler.common.HandlerTracker;
+    import junit.framework.Test;
+    import junit.framework.TestSuite;
+
+    import javax.xml.ws.*;
+    import javax.xml.ws.handler.Handler;
+    import javax.xml.ws.soap.SOAPBinding;
+    import java.util.ArrayList;
+    import java.util.HashSet;
+    import java.util.List;
+    import java.util.Map;
+    import java.util.concurrent.Future;
+    
+    /*
+     * Sets a property on the request context with dispatch
+     * and verifies that the property exists in the handler.
+     * Also adds a handler to add 1 to the messages just to
+     * make sure handlers are being invoked.
+     */
+
+        HandlerTracker tracker = HandlerTracker.getClientInstance();
+        Dispatch dispatch = getDispatchJAXB(testPortQName);
+
+        // tell the server handlers not to do anything
+        ReportService reportStub = getReportStub(getService());
+        reportStub.clearHandlerTracker();
+
+        // add handlers
+        String myHandlerName = "MyDispatchHandler";
+        BaseSOAPHandler propCheckingHandler = new BaseSOAPHandler();
+        propCheckingHandler.setName(CLIENT_PREFIX + myHandlerName);
+        propCheckingHandler.initTheHandler();
+        String otherHandlerName = "MyOtherHandler";
+        BaseSOAPHandler numberAddingHandler = new BaseSOAPHandler();
+        numberAddingHandler.setName(CLIENT_PREFIX + otherHandlerName);
+        numberAddingHandler.initTheHandler();
+        List newHandlers = new ArrayList();
+        newHandlers.add(propCheckingHandler);
+        newHandlers.add(numberAddingHandler);
+        dispatch.getBinding().setHandlerChain(newHandlers);
+
+        // add the property
+        dispatch.getRequestContext().put(USER_CLIENT_PROPERTY_NAME,
+            USER_PROPERTY_CLIENT_SET);
+
+        // tell the client handlers what to do
+        tracker.clearAll();
+        tracker.setHandlerAction(CLIENT_PREFIX + myHandlerName,
+            HA_CHECK_FOR_USER_PROPERTY_OUTBOUND);
+        tracker.setHandlerAction(CLIENT_PREFIX + otherHandlerName,
+            HA_ADD_ONE);
+
+        // make the call (will get exception if handler doesn't see property)
+        int x = 1;
+        int diff = 2; // for the number adding handler
+        TestInt request = new TestInt();
+        request.setIntin(x);
+        TestIntResponse response = (TestIntResponse) dispatch.invoke(request);
+        assertEquals("did not get proper response",
+            x+diff, response.getIntout());
+

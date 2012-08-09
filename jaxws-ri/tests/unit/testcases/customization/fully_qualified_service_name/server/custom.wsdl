@@ -1,0 +1,84 @@
+<definitions
+        name="HelloTest"
+        targetNamespace="urn:test"
+        xmlns="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:types="urn:test:types"
+        xmlns:tns="urn:test">
+
+    <types>
+        <xsd:schema
+                targetNamespace="urn:test:types"
+                attributeFormDefault="qualified"
+                elementFormDefault="qualified">
+
+            <xsd:element name="Foo">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="fooChild1" type="xsd:string"/>
+                        <xsd:element name="fooChild2" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="FooResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="fooResponse1" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="info" type="xsd:string"/>
+            <xsd:element name="infoFaultDetail" type="xsd:string"/>
+        </xsd:schema>
+    </types>
+
+    <message name="FooRequest">
+        <part name="in" element="types:Foo"/>
+    </message>
+
+    <message name="FooResponse">
+        <part name="out" element="types:FooResponse"/>
+    </message>
+
+    <message name="FooFaultMessage">
+        <part name="fooFault" element="types:Foo"/>
+    </message>
+
+    <portType name="Hello">
+        <operation name="Foo">
+            <input message="tns:FooRequest"/>
+            <output message="tns:FooResponse"/>
+            <fault name="FooFault" message="tns:FooFaultMessage"/>
+        </operation>
+    </portType>
+
+    <binding name="HelloBinding" type="tns:Hello">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <operation name="Foo">
+            <soap:operation soapAction="urn:test:hello"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+
+            <fault name="FooFault">
+                <soap:fault name="FooFault" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+
+    <service name="Hello">
+
+        <port name="HelloPort" binding="tns:HelloBinding">
+            <soap:address location="http://test.org/hello"/>
+        </port>
+
+    </service>
+
+</definitions>

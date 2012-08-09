@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ Copyright 2004 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd" xmlns:ref="http://ws-i.org/profiles/basic/1.1/xsd" xmlns:tns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema"> 	<xsd:annotation>
+		<xsd:documentation xml:lang="en">Schema for Catalog Web service in WS-I Basic Sample Application 1.1</xsd:documentation>
+	</xsd:annotation>
+	<xsd:import namespace="http://ws-i.org/profiles/basic/1.1/xsd" schemaLocation="WS-ISwA.xsd"/>
+	<xsd:element name="ProductCatalog" type="tns:productCatalogType"/>
+    <xsd:element name="testDataHandlerBody" type="xsd:string"/>
+	<xsd:complexType name="productCatalogType">
+		<xsd:sequence>
+			<xsd:element maxOccurs="unbounded" name="Product" type="tns:productType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="productType">
+		<xsd:sequence>
+			<xsd:element name="Name" type="xsd:string"/>
+			<xsd:element name="Description" type="xsd:string"/>
+			<xsd:element ref="tns:ProductNumber"/>
+			<xsd:element name="Category" type="xsd:string"/>
+			<xsd:element name="Brand" type="xsd:string"/>
+			<xsd:element name="Price" type="xsd:decimal"/>
+			<xsd:element name="Thumbnail" type="ref:swaRef" nillable="true"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="ProductNumber" type="tns:productNumberType"/>
+	<xsd:simpleType name="productNumberType">
+		<xsd:restriction base="xsd:int">
+			<xsd:minInclusive value="1"/>
+			<xsd:maxInclusive value="999999"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="ProductDetails" type="tns:productDetailsType"/>
+	<xsd:complexType name="productDetailsType">
+		<xsd:sequence>
+			<xsd:element name="Weight" type="xsd:int"/>
+			<xsd:element name="WeightUnit" type="xsd:string"/>
+			<xsd:element name="Dimensions" type="tns:dimensionsType"/>
+			<xsd:element name="DimensionsUnit" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="dimensionsType">
+		<xsd:sequence>
+			<xsd:element name="Height" type="xsd:int"/>
+			<xsd:element name="Width" type="xsd:int"/>
+			<xsd:element name="Depth" type="xsd:int"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="Picture" type="xsd:base64Binary"/>
+	<xsd:element name="SpecSheet" type="xsd:string"/>
+	<xsd:element name="GetProductDetails" type="tns:getProductDetailsType"/>
+	<xsd:complexType name="getProductDetailsType">
+		<xsd:sequence>
+			<xsd:element ref="tns:ProductNumber"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="GetCatalogWithImages" type="tns:getCatalogWithImagesType"/>
+	<xsd:complexType name="getCatalogWithImagesType">
+		<xsd:sequence>
+        <xsd:element name="Thumbnail" type="ref:swaRef" nillable="true"/>
+		</xsd:sequence>
+	</xsd:complexType>
+    <xsd:element name="order" type="xsd:string"/>
+    <xsd:element name="status" type="xsd:string"/>
+    <xsd:element name="int" type="xsd:int"/>
+    <xsd:element name="picName" type="xsd:string"/>
+    <xsd:complexType name="fooType">
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="value" type="xsd:int"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="foo" type="tns:fooType"/>
+    <xsd:element name="disabledInfo" type="xsd:boolean"/>
+    <xsd:element name="fooAsAttach" type="tns:fooType"/>
+    <xsd:element name="picType" type="xsd:string"/>
+
+</xsd:schema>

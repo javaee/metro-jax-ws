@@ -1,0 +1,72 @@
+<definitions
+        name="HelloTest"
+        targetNamespace="urn:test"
+        xmlns="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:types="urn:test:types"
+        xmlns:tns="urn:test">
+
+    <types>
+        <xsd:schema
+                targetNamespace="urn:test"
+                attributeFormDefault="unqualified"
+                elementFormDefault="qualified">
+
+            <xsd:element name="testApl" nillable="true" type="tns:testApl"/>
+            <xsd:element name="testAplResponse" nillable="true"
+                         type="tns:testAplResponse"/>
+            <xsd:complexType name="testApl">
+                <xsd:sequence>
+                    <xsd:element name="param1" type="xsd:integer"
+                                 nillable="true" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="testAplResponse">
+                <xsd:sequence>
+                    <xsd:element name="return" type="xsd:int"/>
+                    <xsd:element name="param1" type="xsd:negativeInteger"
+                                 nillable="true"
+                                 minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+        </xsd:schema>
+    </types>
+
+    <message name="testApl">
+        <part name="parameters" element="tns:testApl"/>
+    </message>
+    <message name="testAplResponse">
+        <part name="parameters" element="tns:testAplResponse"/>
+    </message>
+    <portType name="Hello">
+        <operation name="testApl">
+            <input message="tns:testApl"/>
+            <output message="tns:testAplResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="HelloBinding" type="tns:Hello">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="testApl">
+            <soap:operation soapAction="urn:test:hello"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+    </binding>
+
+    <service name="Hello">
+        <port name="HelloPort" binding="tns:HelloBinding">
+            <soap:address location="http://test.org/hello"/>
+        </port>
+    </service>
+
+</definitions>

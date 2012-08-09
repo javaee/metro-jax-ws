@@ -1,0 +1,29 @@
+<xsd:schema targetNamespace="/oracle/fodemo/storefront/store/queries/common/" xmlns="/oracle/fodemo/storefront/store/queries/common/"
+     elementFormDefault="qualified" sdoJava:package="oracle.fodemo.storefront.store.queries.common"
+     xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
+    <xsd:complexType name="OrderItemsInfoVOSDO">
+        <xsd:annotation>
+            <xsd:appinfo source="http://xmlns.oracle.com/adf/svc/metadata/">
+                <key xmlns="http://xmlns.oracle.com/adf/svc/metadata/">
+                    <attribute>OrderId</attribute>
+                    <attribute>LineItemId</attribute>
+                    <attribute>ProductId</attribute>
+                </key>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="OrderId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>
+            <xsd:element name="LineItemId" type="xsd:integer" minOccurs="0" nillable="true"/>
+            <xsd:element name="ProductId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>
+            <xsd:element name="Quantity" type="xsd:int" minOccurs="0" sdoXML:dataType="sdoJava:IntObject"/>
+            <xsd:element name="UnitPrice" type="xsd:decimal" minOccurs="0"/>
+            <xsd:element name="ProductName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="SupplierName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ObjectVersionId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>
+            <xsd:element name="ProductId1" type="xsd:integer" minOccurs="0" nillable="true"/>
+            <xsd:element name="SupplierId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>
+            <xsd:element name="ObjectVersionId1" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="orderItemsInfoVOSDO" type="OrderItemsInfoVOSDO"/>
+</xsd:schema>

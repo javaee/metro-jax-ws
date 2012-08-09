@@ -1,0 +1,7 @@
+<descriptor since="2.0" uses="multi-endpoint ri">
+    <description>XOP test for issue 671</description>
+
+   <service basedir="./server">
+        <wsdl href="hello.wsdl"/>
+    </service>
+</descriptor>

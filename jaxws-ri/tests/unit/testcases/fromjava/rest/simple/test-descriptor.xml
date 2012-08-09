@@ -1,0 +1,15 @@
+<descriptor since="2.1.4" uses="ri">
+  <description>rest</description>
+
+  <client name="rest_testAdd" sideEffectFree="true">
+  <description>testAdd</description>
+  <![CDATA[
+    proxy = echoImplService.getEchoImplPort(new com.sun.xml.ws.developer.BindingTypeFeature(com.sun.xml.ws.developer.JAXWSProperties.REST_BINDING));
+    assertEquals(5, proxy.add(2,3));
+System.out.println(""+proxy.add(2,3));
+  ]]></client>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>

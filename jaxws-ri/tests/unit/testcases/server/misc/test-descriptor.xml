@@ -1,0 +1,25 @@
+<descriptor since="2.0" transport="http">
+  <description>misc</description>
+
+  <client name="server_misc_bad_charset" sideEffectFree="true" since="2.1.4">
+  <description>Sends a message with wrong charset in Content-Type</description>
+  <![CDATA[
+    import java.lang.reflect.Proxy;
+    import java.io.*;
+    import testutil.ClientServerTestUtil;
+    import testutil.HTTPResponseInfo;
+    import javax.xml.soap.*;
+    import javax.xml.namespace.QName;
+
+    String message =
+"<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:ns1='http://example.com/types'><soapenv:Body><ns1:echo><ns1:reqInfo>foo</ns1:reqInfo></ns1:echo></soapenv:Body></soapenv:Envelope>";
+
+    rInfo = ClientServerTestUtil.sendPOSTRequest(helloPort, message, "text/xml;charset=usascii");
+    assertEquals(415, rInfo.getResponseCode());
+  ]]></client>
+    
+  <service basedir="./server">
+    <wsdl href="header.wsdl"/>
+  </service>
+
+</descriptor>

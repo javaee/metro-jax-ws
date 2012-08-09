@@ -1,0 +1,14 @@
+<descriptor since="2.1.2">
+    <description>This is a fromwsdl rpc/lit fault test</description>
+
+    <client name="fromwsdl.rpclit_134.test1">
+        <description>
+            test echo3()
+        </description>
+        assertEquals(1, helloPort.echo3("1"));
+    </client>
+
+    <service basedir="./server">
+        <wsdl href="header.wsdl"/>
+    </service>
+</descriptor>
