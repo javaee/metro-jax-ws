@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,15 +44,22 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.policy.PolicyResolverFactory;
-import com.sun.xml.ws.api.policy.PolicyResolver;
-import com.sun.xml.ws.api.databinding.WSDLGenInfo;
-import com.sun.xml.ws.api.databinding.DatabindingFactory;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
+import com.sun.xml.ws.api.databinding.DatabindingFactory;
+import com.sun.xml.ws.api.databinding.MetadataReader;
+import com.sun.xml.ws.api.databinding.WSDLGenInfo;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.pipe.Tube;
-import com.sun.xml.ws.api.server.*;
+import com.sun.xml.ws.api.policy.PolicyResolver;
+import com.sun.xml.ws.api.policy.PolicyResolverFactory;
+import com.sun.xml.ws.api.server.AsyncProvider;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.ContainerResolver;
+import com.sun.xml.ws.api.server.InstanceResolver;
+import com.sun.xml.ws.api.server.Invoker;
+import com.sun.xml.ws.api.server.SDDocument;
+import com.sun.xml.ws.api.server.SDDocumentSource;
+import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver;
@@ -62,11 +69,14 @@ import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.SOAPBindingImpl;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
+import com.sun.xml.ws.model.ReflectAnnotationReader;
 import com.sun.xml.ws.model.RuntimeModeler;
 import com.sun.xml.ws.model.SOAPSEIModel;
 import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
+import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.policy.jaxws.PolicyUtil;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.server.provider.ProviderInvokerTube;
 import com.sun.xml.ws.server.sei.SEIInvokerTube;
@@ -75,9 +85,7 @@ import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.util.ServiceConfigurationError;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
-import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
-import com.sun.xml.ws.policy.PolicyMap;
-import com.sun.xml.ws.policy.jaxws.PolicyUtil;
+import org.jvnet.ws.databinding.ExternalMetadataFeature;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -87,8 +95,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Provider;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.soap.SOAPBinding;
 import java.io.IOException;
 import java.net.URL;
@@ -182,8 +190,10 @@ public class EndpointFactory {
         if(implType ==null)
             throw new IllegalArgumentException();
 
+        MetadataReader metadataReader = getExternalMetadatReader(implType, binding);
+
         if (isStandard) {
-        	verifyImplementorClass(implType);
+            verifyImplementorClass(implType, metadataReader);
         }
 
         if (invoker == null) {
@@ -201,10 +211,10 @@ public class EndpointFactory {
             container = ContainerResolver.getInstance().getContainer();
 
         if(serviceName==null)
-            serviceName = getDefaultServiceName(implType);
+            serviceName = getDefaultServiceName(implType, metadataReader);
 
         if(portName==null)
-            portName = getDefaultPortName(serviceName,implType);
+            portName = getDefaultPortName(serviceName,implType, metadataReader);
 
         {// error check
             String serviceNS = serviceName.getNamespaceURI();
@@ -224,7 +234,7 @@ public class EndpointFactory {
 
         QName portTypeName = null;
         if (isStandard && implType.getAnnotation(WebServiceProvider.class)==null) {
-            portTypeName = RuntimeModeler.getPortTypeName(implType);
+            portTypeName = RuntimeModeler.getPortTypeName(implType, metadataReader);
         }
 
         // Categorises the documents as WSDL, Schema etc
@@ -383,9 +393,14 @@ public class EndpointFactory {
      *      If it doesn't have any one of @WebService or @WebServiceProvider
      *      If it has both @WebService and @WebServiceProvider annotations
      */
-    public static boolean verifyImplementorClass(Class<?> clz) {
-        WebServiceProvider wsProvider = clz.getAnnotation(WebServiceProvider.class);
-        WebService ws = clz.getAnnotation(WebService.class);
+    public static boolean verifyImplementorClass(Class<?> clz, MetadataReader metadataReader) {
+
+        if (metadataReader == null) {
+            metadataReader = new ReflectAnnotationReader();
+        }
+
+        WebServiceProvider wsProvider = metadataReader.getAnnotation(WebServiceProvider.class, clz);
+        WebService ws = metadataReader.getAnnotation(WebService.class, clz);
         if (wsProvider == null && ws == null) {
             throw new IllegalArgumentException(clz +" has neither @WebService nor @WebServiceProvider annotation");
         }
@@ -433,8 +448,17 @@ public class EndpointFactory {
 //		config.getMappingInfo().setBindingID(binding.getBindingId());
 		config.setClassLoader(implType.getClassLoader());
 		config.getMappingInfo().setPortName(portName);
+
+        config.setMetadataReader(getExternalMetadatReader(implType, binding));
+
 		com.sun.xml.ws.db.DatabindingImpl rt = (com.sun.xml.ws.db.DatabindingImpl)fac.createRuntime(config);
 		return (AbstractSEIModelImpl) rt.getModel();    	
+    }
+
+    public static MetadataReader getExternalMetadatReader(Class<?> implType, WSBinding binding) {
+        ExternalMetadataFeature f = binding.getFeature(ExternalMetadataFeature.class);
+        if (f == null) return null;
+        return f.getMetadataReader(implType.getClassLoader());
     }
 
     /**
@@ -461,18 +485,29 @@ public class EndpointFactory {
      * @return non-null service name
      */
     public static @NotNull QName getDefaultServiceName(Class<?> implType) {
-    	return getDefaultServiceName(implType, true);
+        return getDefaultServiceName(implType, null);
+    }
+
+    public static @NotNull QName getDefaultServiceName(Class<?> implType, MetadataReader metadataReader) {
+    	return getDefaultServiceName(implType, true, metadataReader);
     }
     
     public static @NotNull QName getDefaultServiceName(Class<?> implType, boolean isStandard) {
+        return getDefaultServiceName(implType, isStandard, null);
+    }
+
+    public static @NotNull QName getDefaultServiceName(Class<?> implType, boolean isStandard, MetadataReader metadataReader) {
+        if (metadataReader == null) {
+            metadataReader = new ReflectAnnotationReader();
+        }
         QName serviceName;
-        WebServiceProvider wsProvider = implType.getAnnotation(WebServiceProvider.class);
+        WebServiceProvider wsProvider = metadataReader.getAnnotation(WebServiceProvider.class, implType);
         if (wsProvider!=null) {
             String tns = wsProvider.targetNamespace();
             String local = wsProvider.serviceName();
             serviceName = new QName(tns, local);
         } else {
-            serviceName = RuntimeModeler.getServiceName(implType, isStandard);
+            serviceName = RuntimeModeler.getServiceName(implType, metadataReader, isStandard);
         }
         assert serviceName != null;
         return serviceName;
@@ -485,18 +520,29 @@ public class EndpointFactory {
      * @return non-null port name
      */
     public static @NotNull QName getDefaultPortName(QName serviceName, Class<?> implType) {
-    	return getDefaultPortName(serviceName, implType, true);
+        return getDefaultPortName(serviceName, implType, null);
+    }
+
+    public static @NotNull QName getDefaultPortName(QName serviceName, Class<?> implType, MetadataReader metadataReader) {
+    	return getDefaultPortName(serviceName, implType, true, metadataReader);
     }
     
     public static @NotNull QName getDefaultPortName(QName serviceName, Class<?> implType, boolean isStandard) {
+        return getDefaultPortName(serviceName, implType, isStandard, null);
+    }
+
+    public static @NotNull QName getDefaultPortName(QName serviceName, Class<?> implType, boolean isStandard, MetadataReader metadataReader) {
+        if (metadataReader == null) {
+            metadataReader = new ReflectAnnotationReader();
+        }
         QName portName;
-        WebServiceProvider wsProvider = implType.getAnnotation(WebServiceProvider.class);
+        WebServiceProvider wsProvider = metadataReader.getAnnotation(WebServiceProvider.class, implType);
         if (wsProvider!=null) {
             String tns = wsProvider.targetNamespace();
             String local = wsProvider.portName();
             portName = new QName(tns, local);
         } else {
-            portName = RuntimeModeler.getPortName(implType, serviceName.getNamespaceURI(), isStandard);
+            portName = RuntimeModeler.getPortName(implType, metadataReader, serviceName.getNamespaceURI(), isStandard);
         }
         assert portName != null;
         return portName;
@@ -512,19 +558,39 @@ public class EndpointFactory {
      * @return wsdl if there is wsdlLocation, else null
      */
     public static @Nullable String getWsdlLocation(Class<?> implType) {
-        String wsdl;
-        WebService ws = implType.getAnnotation(WebService.class);
+        return getWsdlLocation(implType, new ReflectAnnotationReader());
+    }
+
+    /**
+     * Returns the wsdl from @WebService, or @WebServiceProvider annotation using
+     * wsdlLocation element.
+     *
+     * @param implType
+     *      endpoint implementation class
+     *      make sure that you called {@link #verifyImplementorClass} on it.
+     * @return wsdl if there is wsdlLocation, else null
+     */
+    public static @Nullable String getWsdlLocation(Class<?> implType, MetadataReader metadataReader) {
+
+        if (metadataReader == null) {
+            metadataReader = new ReflectAnnotationReader();
+        }
+
+        WebService ws = metadataReader.getAnnotation(WebService.class, implType);
         if (ws != null) {
-            wsdl = ws.wsdlLocation();
+            return nullIfEmpty(ws.wsdlLocation());
         } else {
             WebServiceProvider wsProvider = implType.getAnnotation(WebServiceProvider.class);
             assert wsProvider != null;
-            wsdl = wsProvider.wsdlLocation();
+            return nullIfEmpty(wsProvider.wsdlLocation());
         }
-        if (wsdl.length() < 1) {
-            wsdl = null;
+    }
+
+    private static String nullIfEmpty(String string) {
+        if (string.length() < 1) {
+            string = null;
         }
-        return wsdl;
+        return string;
     }
 
     /**
@@ -641,7 +707,7 @@ public class EndpointFactory {
                                                      EntityResolver resolver) {
         URL wsdlUrl = primaryWsdl.getSystemId();
         try {
-            
+            // TODO: delegate to another entity resolver
             WSDLModelImpl wsdlDoc = RuntimeWSDLParser.parse(
                 new Parser(primaryWsdl), new EntityResolverImpl(metadata, resolver),
                     false, container, ServiceFinder.find(WSDLParserExtension.class).toArray());

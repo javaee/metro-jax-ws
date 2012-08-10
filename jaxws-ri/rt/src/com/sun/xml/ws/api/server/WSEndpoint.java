@@ -48,6 +48,7 @@ import com.sun.xml.ws.api.ComponentRegistry;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.config.management.EndpointCreationAttributes;
 import com.sun.xml.ws.api.config.management.ManagedEndpointFactory;
+import com.sun.xml.ws.api.databinding.MetadataReader;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
@@ -642,22 +643,34 @@ public abstract class WSEndpoint<T> implements ComponentRegistry {
      * Gives the wsdl:service default name computed from the endpoint implementaiton class
      */
     public static @NotNull QName getDefaultServiceName(Class endpointClass){
-        return getDefaultServiceName(endpointClass, true);
+        return getDefaultServiceName(endpointClass, true, null);
+    }
+    public static @NotNull QName getDefaultServiceName(Class endpointClass, MetadataReader metadataReader){
+        return getDefaultServiceName(endpointClass, true, metadataReader);
     }
 
     public static @NotNull QName getDefaultServiceName(Class endpointClass, boolean isStandard){
-        return EndpointFactory.getDefaultServiceName(endpointClass, isStandard);
+        return getDefaultServiceName(endpointClass, isStandard, null);
+    }
+    public static @NotNull QName getDefaultServiceName(Class endpointClass, boolean isStandard, MetadataReader metadataReader){
+        return EndpointFactory.getDefaultServiceName(endpointClass, isStandard, metadataReader);
     }
 
     /**
      * Gives the wsdl:service/wsdl:port default name computed from the endpoint implementaiton class
      */
-    public static @NotNull QName getDefaultPortName(@NotNull QName serviceName, Class endpointClass){
-    	return getDefaultPortName(serviceName, endpointClass, true);
+    public static @NotNull QName getDefaultPortName(@NotNull QName serviceName, Class endpointClass) {
+        return getDefaultPortName(serviceName, endpointClass, null);
+    }
+    public static @NotNull QName getDefaultPortName(@NotNull QName serviceName, Class endpointClass, MetadataReader metadataReader) {
+    	return getDefaultPortName(serviceName, endpointClass, true, metadataReader);
     }
     
-    public static @NotNull QName getDefaultPortName(@NotNull QName serviceName, Class endpointClass, boolean isStandard){
-        return EndpointFactory.getDefaultPortName(serviceName, endpointClass, isStandard);
+    public static @NotNull QName getDefaultPortName(@NotNull QName serviceName, Class endpointClass, boolean isStandard) {
+        return getDefaultPortName(serviceName, endpointClass, isStandard, null);
+    }
+    public static @NotNull QName getDefaultPortName(@NotNull QName serviceName, Class endpointClass, boolean isStandard, MetadataReader metadataReader){
+        return EndpointFactory.getDefaultPortName(serviceName, endpointClass, isStandard, metadataReader);
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,17 +40,22 @@
 
 package com.sun.tools.ws.wscompile;
 
-import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.api.WsgenExtension;
 import com.sun.tools.ws.api.WsgenProtocol;
+import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.xml.ws.api.BindingID;
-import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.binding.SOAPBindingImpl;
+import com.sun.xml.ws.util.ServiceFinder;
 
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Vivek Pandey
@@ -104,6 +109,12 @@ public class WsgenOptions extends Options {
      * Tells if user specified a specific protocol
      */
     public boolean protocolSet = false;
+
+    /**
+     * <code>-x file1 -x file2 ...<code/><br />
+     * Files to be parsed to get classes' metadata in addition/instead of using annotations and reflection API
+     */
+    public List<String> externalMetadataFiles = new ArrayList<String>();
 
     private static final String SERVICENAME_OPTION = "-servicename";
     private static final String PORTNAME_OPTION = "-portname";
@@ -177,6 +188,9 @@ public class WsgenOptions extends Options {
             return 1;
         } else if (args[i].equals("-inlineSchemas")) {
             inlineSchemas = true;
+            return 1;
+        } else if ("-x".equals(args[i])) {
+            externalMetadataFiles.add(requireArgument("-x", args, ++i));
             return 1;
         }
 

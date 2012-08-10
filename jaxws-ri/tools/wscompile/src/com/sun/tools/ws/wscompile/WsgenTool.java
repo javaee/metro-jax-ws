@@ -58,6 +58,7 @@ import com.sun.xml.ws.api.databinding.WSDLGenInfo;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
+import com.sun.xml.ws.model.ExternalMetadataReader;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.wsdl.writer.WSDLResolver;
@@ -86,6 +87,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -101,7 +103,7 @@ public class WsgenTool {
 
 
     public WsgenTool(OutputStream out, Container container) {
-        this.out = (out instanceof PrintStream)?(PrintStream)out:new PrintStream(out);
+        this.out = (out instanceof PrintStream) ? (PrintStream) out : new PrintStream(out);
         this.container = container;
     }
 
@@ -110,7 +112,7 @@ public class WsgenTool {
         this(out, null);
     }
 
-    public boolean run(String[] args){
+    public boolean run(String[] args) {
         final Listener listener = new Listener();
         for (String arg : args) {
             if (arg.equals("-version")) {
@@ -127,22 +129,22 @@ public class WsgenTool {
         try {
             options.parseArguments(args);
             options.validate();
-            if(!buildModel(options.endpoint.getName(), listener)){
+            if (!buildModel(options.endpoint.getName(), listener)) {
                 return false;
             }
-        }catch (Options.WeAreDone done){
-            usage((WsgenOptions)done.getOptions());
-        }catch (BadCommandLineException e) {
-            if(e.getMessage()!=null) {
+        } catch (Options.WeAreDone done) {
+            usage((WsgenOptions) done.getOptions());
+        } catch (BadCommandLineException e) {
+            if (e.getMessage() != null) {
                 System.out.println(e.getMessage());
                 System.out.println();
             }
-            usage((WsgenOptions)e.getOptions());
+            usage((WsgenOptions) e.getOptions());
             return false;
-        }catch(AbortException e){
+        } catch (AbortException e) {
             //error might have been reported
-        }finally{
-            if(!options.keep){
+        } finally {
+            if (!options.keep) {
                 options.removeGeneratedFiles();
             }
         }
@@ -158,9 +160,9 @@ public class WsgenTool {
      */
     private static boolean useBootClasspath(Class clazz) {
         try {
-            ParallelWorldClassLoader.toJarUrl(clazz.getResource('/'+clazz.getName().replace('.','/')+".class"));
+            ParallelWorldClassLoader.toJarUrl(clazz.getResource('/' + clazz.getName().replace('.', '/') + ".class"));
             return true;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -193,7 +195,7 @@ public class WsgenTool {
                     .append(JavaCompilerHelper.getJarFile(XmlSeeAlso.class)).toString());
         }
 
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();//        compiler = JavacTool.create();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
         JavaCompiler.CompilationTask task = compiler.getTask(
@@ -211,8 +213,14 @@ public class WsgenTool {
             return false;
         }
         if (options.genWsdl) {
-    		DatabindingConfig config = new DatabindingConfig();
-            String tmpPath = options.destDir.getAbsolutePath()+ File.pathSeparator+options.classpath;
+            DatabindingConfig config = new DatabindingConfig();
+
+            List<String> externalMetadataFileNames = options.externalMetadataFiles;
+            if (externalMetadataFileNames != null && externalMetadataFileNames.size() > 0) {
+                config.setMetadataReader(new ExternalMetadataReader(getExternalFiles(externalMetadataFileNames), null, null, true));
+            }
+
+            String tmpPath = options.destDir.getAbsolutePath() + File.pathSeparator + options.classpath;
             ClassLoader classLoader = new URLClassLoader(Options.pathToURLs(tmpPath),
                     this.getClass().getClassLoader());
             Class<?> endpointClass;
@@ -230,19 +238,19 @@ public class WsgenTool {
 //            RuntimeModeler rtModeler = new RuntimeModeler(endpointClass, options.serviceName, bindingID, wsfeatures.toArray());
 //            rtModeler.setClassLoader(classLoader);
             if (options.portName != null)
-            	config.getMappingInfo().setPortName(options.portName);//rtModeler.setPortName(options.portName);
+                config.getMappingInfo().setPortName(options.portName);//rtModeler.setPortName(options.portName);
 //            AbstractSEIModelImpl rtModel = rtModeler.buildRuntimeModel();
 
-    		DatabindingFactory fac = DatabindingFactory.newInstance();
-    		config.setEndpointClass(endpointClass);
-    		config.getMappingInfo().setServiceName(options.serviceName);
-    		config.setFeatures(wsfeatures.toArray());
-    		config.setClassLoader(classLoader);
-    		config.getMappingInfo().setBindingID(bindingID);
-    		com.sun.xml.ws.db.DatabindingImpl rt = (com.sun.xml.ws.db.DatabindingImpl)fac.createRuntime(config);
+            DatabindingFactory fac = DatabindingFactory.newInstance();
+            config.setEndpointClass(endpointClass);
+            config.getMappingInfo().setServiceName(options.serviceName);
+            config.setFeatures(wsfeatures.toArray());
+            config.setClassLoader(classLoader);
+            config.getMappingInfo().setBindingID(bindingID);
+            com.sun.xml.ws.db.DatabindingImpl rt = (com.sun.xml.ws.db.DatabindingImpl) fac.createRuntime(config);
 
             final File[] wsdlFileName = new File[1]; // used to capture the generated WSDL file.
-            final Map<String,File> schemaFiles = new HashMap<String,File>();
+            final Map<String, File> schemaFiles = new HashMap<String, File>();
 
             WSDLGenInfo wsdlGenInfo = new WSDLGenInfo();
             wsdlGenInfo.setWsdlResolver(
@@ -250,6 +258,7 @@ public class WsgenTool {
                         private File toFile(String suggestedFilename) {
                             return new File(options.nonclassDestDir, suggestedFilename);
                         }
+
                         private Result toResult(File file) {
                             Result result;
                             try {
@@ -267,16 +276,19 @@ public class WsgenTool {
                             wsdlFileName[0] = f;
                             return toResult(f);
                         }
+
                         public Result getSchemaOutput(String namespace, String suggestedFilename) {
                             if (namespace == null)
                                 return null;
                             File f = toFile(suggestedFilename);
-                            schemaFiles.put(namespace,f);
+                            schemaFiles.put(namespace, f);
                             return toResult(f);
                         }
+
                         public Result getAbstractWSDL(Holder<String> filename) {
                             return toResult(toFile(filename.value));
                         }
+
                         public Result getSchemaOutput(String namespace, Holder<String> filename) {
                             return getSchemaOutput(namespace, filename.value);
                         }
@@ -289,20 +301,29 @@ public class WsgenTool {
             rt.generateWSDL(wsdlGenInfo);
 
 
-            if(options.wsgenReport!=null)
-                generateWsgenReport(endpointClass,(AbstractSEIModelImpl)rt.getModel(),wsdlFileName[0],schemaFiles);
+            if (options.wsgenReport != null)
+                generateWsgenReport(endpointClass, (AbstractSEIModelImpl) rt.getModel(), wsdlFileName[0], schemaFiles);
         }
         return true;
+    }
+
+    private List<File> getExternalFiles(List<String> exts) {
+        List<File> files = new ArrayList<File>();
+        for (String ext : exts) {
+            File file = new File(options.sourceDir.getAbsolutePath() + File.separator + ext);
+            files.add(file);
+        }
+        return files;
     }
 
     /**
      * Generates a small XML file that captures the key activity of wsgen,
      * so that test harness can pick up artifacts.
      */
-    private void generateWsgenReport(Class<?> endpointClass, AbstractSEIModelImpl rtModel, File wsdlFile, Map<String,File> schemaFiles) {
+    private void generateWsgenReport(Class<?> endpointClass, AbstractSEIModelImpl rtModel, File wsdlFile, Map<String, File> schemaFiles) {
         try {
             ReportOutput.Report report = TXW.create(ReportOutput.Report.class,
-                new StreamSerializer(new BufferedOutputStream(new FileOutputStream(options.wsgenReport))));
+                    new StreamSerializer(new BufferedOutputStream(new FileOutputStream(options.wsgenReport))));
 
             report.wsdl(wsdlFile.getAbsolutePath());
             ReportOutput.writeQName(rtModel.getServiceQName(), report.service());
@@ -311,7 +332,7 @@ public class WsgenTool {
 
             report.implClass(endpointClass.getName());
 
-            for (Map.Entry<String,File> e : schemaFiles.entrySet()) {
+            for (Map.Entry<String, File> e : schemaFiles.entrySet()) {
                 ReportOutput.Schema s = report.schema();
                 s.ns(e.getKey());
                 s.location(e.getValue().getAbsolutePath());
@@ -332,10 +353,13 @@ public class WsgenTool {
         interface Report extends TypedXmlWriter {
             @XmlElement
             void wsdl(String file); // location of WSDL
+
             @XmlElement
             QualifiedName portType();
+
             @XmlElement
             QualifiedName service();
+
             @XmlElement
             QualifiedName port();
 
@@ -352,6 +376,7 @@ public class WsgenTool {
         interface QualifiedName extends TypedXmlWriter {
             @XmlAttribute
             void uri(String ns);
+
             @XmlAttribute
             void localName(String localName);
         }
@@ -359,11 +384,12 @@ public class WsgenTool {
         interface Schema extends TypedXmlWriter {
             @XmlAttribute
             void ns(String ns);
+
             @XmlAttribute
             void location(String filePath);
         }
 
-        private static void writeQName( QName n, QualifiedName w ) {
+        private static void writeQName(QName n, QualifiedName w) {
             w.uri(n.getNamespaceURI());
             w.localName(n.getLocalPart());
         }

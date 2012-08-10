@@ -328,7 +328,7 @@ public class RuntimeModeler {
 //                serviceName, portName);
 //        }
 
-        if (portName == null) portName = getPortName(portClass, serviceName.getNamespaceURI(), metadataReader);
+        if (portName == null) portName = getPortName(portClass, metadataReader, serviceName.getNamespaceURI());
         model.setPortName(portName);
 
         // Check if databinding is overridden in annotation.
@@ -1505,11 +1505,11 @@ public class RuntimeModeler {
     public static QName getServiceName(Class<?> implClass) {
     	return getServiceName(implClass, null);
     }
-    
+
     public static QName getServiceName(Class<?> implClass, boolean isStandard) {
-    	return getServiceName(implClass, null, isStandard);
+        return getServiceName(implClass, null, isStandard);
     }
-    
+
     public static QName getServiceName(Class<?> implClass, MetadataReader reader) {
     	return getServiceName(implClass, reader, true);
     }
@@ -1550,18 +1550,18 @@ public class RuntimeModeler {
      * @return the <code>wsdl:portName</code> for the <code>implClass</code>
      */
     public static QName getPortName(Class<?> implClass, String targetNamespace) {
-        return getPortName(implClass, targetNamespace, null);
+        return getPortName(implClass, null, targetNamespace);
     }
     
     public static QName getPortName(Class<?> implClass, String targetNamespace, boolean isStandard) {
-    	return getPortName(implClass, targetNamespace, null, isStandard);
+        return getPortName(implClass, null, targetNamespace, isStandard);
+    }
+
+    public static QName getPortName(Class<?> implClass, MetadataReader reader, String targetNamespace) {
+    	return getPortName(implClass, reader, targetNamespace, true);
     }
     
-    public static QName getPortName(Class<?> implClass, String targetNamespace, MetadataReader reader) {
-    	return getPortName(implClass, targetNamespace, reader, true);
-    }
-    
-    public static QName getPortName(Class<?> implClass, String targetNamespace, MetadataReader reader, boolean isStandard) {
+    public static QName getPortName(Class<?> implClass, MetadataReader reader, String targetNamespace, boolean isStandard) {
         WebService webService = getAnnotation(WebService.class, implClass, reader);  
         if (isStandard && webService == null) {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
@@ -1608,6 +1608,11 @@ public class RuntimeModeler {
     public static QName getPortTypeName(Class<?> implOrSeiClass){
         return getPortTypeName(implOrSeiClass, null, null);
     }
+
+    public static QName getPortTypeName(Class<?> implOrSeiClass, MetadataReader metadataReader){
+        return getPortTypeName(implOrSeiClass, null, metadataReader);
+    }
+
     public static QName getPortTypeName(Class<?> implOrSeiClass, String tns, MetadataReader reader){
         assert(implOrSeiClass != null);
         WebService webService = getAnnotation(WebService.class, implOrSeiClass, reader);        
@@ -1624,7 +1629,8 @@ public class RuntimeModeler {
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeModelerException("runtime.modeler.class.not.found", epi);
                 }
-                if (!clazz.isAnnotationPresent(javax.jws.WebService.class)) {
+                WebService ws = getAnnotation(WebService.class, clazz, reader);
+                if (ws == null) {
                     throw new RuntimeModelerException("runtime.modeler.endpoint.interface.no.webservice",
                                         webService.endpointInterface());
                 }

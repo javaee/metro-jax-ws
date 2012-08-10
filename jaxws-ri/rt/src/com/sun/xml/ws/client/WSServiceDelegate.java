@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,12 +51,12 @@ import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.client.ServiceInterceptor;
 import com.sun.xml.ws.api.client.ServiceInterceptorFactory;
-import com.sun.xml.ws.api.databinding.DatabindingFactory;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
+import com.sun.xml.ws.api.databinding.DatabindingFactory;
+import com.sun.xml.ws.api.databinding.MetadataReader;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.wsdl.WSDLService;
-import com.sun.xml.ws.api.pipe.*;
+import com.sun.xml.ws.api.pipe.Stubs;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ContainerResolver;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
@@ -65,9 +65,10 @@ import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.client.HandlerConfigurator.AnnotationConfigurator;
 import com.sun.xml.ws.client.HandlerConfigurator.HandlerResolverImpl;
 import com.sun.xml.ws.client.sei.SEIStub;
+import org.jvnet.ws.databinding.ExternalMetadataFeature;
 import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
-import com.sun.xml.ws.developer.WSBindingProvider;
 import com.sun.xml.ws.developer.UsesJAXBContextFeature;
+import com.sun.xml.ws.developer.WSBindingProvider;
 import com.sun.xml.ws.model.RuntimeModeler;
 import com.sun.xml.ws.model.SOAPSEIModel;
 import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
@@ -79,9 +80,7 @@ import com.sun.xml.ws.resources.ProviderApiMessages;
 import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.ServiceConfigurationError;
 import com.sun.xml.ws.util.ServiceFinder;
-import static com.sun.xml.ws.util.xml.XmlUtil.createDefaultCatalogResolver;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
-
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
@@ -92,7 +91,13 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.*;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Dispatch;
+import javax.xml.ws.EndpointReference;
+import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceClient;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.handler.HandlerResolver;
 import javax.xml.ws.soap.AddressingFeature;
 import java.io.IOException;
@@ -102,9 +107,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
+
+import static com.sun.xml.ws.util.xml.XmlUtil.createDefaultCatalogResolver;
 
 /**
  * <code>Service</code> objects provide the client view of a Web service.
@@ -390,10 +402,11 @@ public class WSServiceDelegate extends WSService {
 
     public <T> T getPort(WSEndpointReference wsepr, Class<T> portInterface, WebServiceFeature... features) {
         //get the portType from SEI, so that it can be used if EPR does n't have endpointName
-        QName portTypeName = RuntimeModeler.getPortTypeName(portInterface);
+        WebServiceFeatureList featureList = new WebServiceFeatureList(features);
+        QName portTypeName = RuntimeModeler.getPortTypeName(portInterface, getMetadadaReader(featureList, portInterface.getClassLoader()));
         //if port name is not specified in EPR, it will use portTypeName to get it from the WSDL model.
         QName portName = getPortNameFromEPR(wsepr, portTypeName);
-        return getPort(wsepr,portName,portInterface,new WebServiceFeatureList(features));
+        return getPort(wsepr,portName,portInterface, featureList);
     }
 
     protected <T> T getPort(WSEndpointReference wsepr, QName portName, Class<T> portInterface,
@@ -410,7 +423,7 @@ public class WSServiceDelegate extends WSService {
     
     public <T> T getPort(Class<T> portInterface, WebServiceFeature... features) {
         //get the portType from SEI
-        QName portTypeName = RuntimeModeler.getPortTypeName(portInterface);
+        QName portTypeName = RuntimeModeler.getPortTypeName(portInterface, getMetadadaReader(new WebServiceFeatureList(features), portInterface.getClassLoader()));
         WSDLServiceImpl wsdlService = this.wsdlService;
         if(wsdlService == null) {
             // assigning it to local variable and not setting it back to this.wsdlService intentionally
@@ -799,10 +812,19 @@ public class WSServiceDelegate extends WSService {
 		config.setFeatures(features);
 		config.setClassLoader(portInterface.getClassLoader());
 		config.getMappingInfo().setPortName(portName);
+
+        // if ExternalMetadataFeature present, ExternalMetadataReader will be created ...
+        config.setMetadataReader(getMetadadaReader(features, portInterface.getClassLoader()));
 		
 		com.sun.xml.ws.db.DatabindingImpl rt = (com.sun.xml.ws.db.DatabindingImpl)fac.createRuntime(config);
 		
 		return rt.getModel();
+    }
+
+    private MetadataReader getMetadadaReader(WebServiceFeatureList features, ClassLoader classLoader) {
+        if (features == null) return null;
+        ExternalMetadataFeature f = features.get(ExternalMetadataFeature.class);
+        return f != null ? f.getMetadataReader(classLoader) : null;
     }
 
     private SEIPortInfo createSEIPortInfo(QName portName, Class portInterface, WebServiceFeatureList features) {
