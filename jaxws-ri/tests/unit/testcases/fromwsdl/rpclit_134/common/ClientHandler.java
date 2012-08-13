@@ -1,8 +1,8 @@
 /*
  * $Id: ClientHandler.java,v 1.1 2008-03-28 20:46:50 jitu Exp $
  *
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright 2005 Oracle and/or its affiliates. All rights reserved.
+ * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package fromwsdl.rpclit_134.common;
 

@@ -1,8 +1,8 @@
 /*
  * $Id: HelloServiceImpl.java,v 1.2 2008-07-01 22:45:36 jitu Exp $
  *
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright 2005 Oracle and/or its affiliates. All rights reserved.
+ * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package server.http_session_scope.server;
 

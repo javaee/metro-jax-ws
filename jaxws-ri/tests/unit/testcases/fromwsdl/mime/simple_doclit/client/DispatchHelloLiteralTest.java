@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Sun Microsystems, Inc.
+ * Copyright (c) 2006 Oracle and/or its affiliates.
  * All Rights Reserved.
  */
 package fromwsdl.mime.simple_doclit.client;

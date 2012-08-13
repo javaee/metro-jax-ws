@@ -1,8 +1,8 @@
 /*
  * $Id: BasicAuthTest.java,v 1.1 2009-10-01 20:21:45 jitu Exp $
  *
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright 2005 Oracle and/or its affiliates. All rights reserved.
+ * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package server.basic_auth.client;
 

@@ -1,8 +1,8 @@
 /*
  * $Id: TestConstants.java,v 1.2 2008-03-06 02:38:15 ramapulavarthi Exp $
  *
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright 2005 Oracle and/or its affiliates. All rights reserved.
+ * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package handler.handler_processing.common;
 

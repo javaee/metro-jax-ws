@@ -1,6 +1,6 @@
 /*
- * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright 2004 Oracle and/or its affiliates. All rights reserved.
+ * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
 package fromwsdl.mime.simple_doclit.server;
@@ -89,7 +89,7 @@ public class CatalogPortType_Impl {
         List<ProductType> pts = pct.getProduct();
         ProductType pt = new ProductType();
         pt.setName("JAXWS2.0");
-        pt.setBrand("SUN");
+        pt.setBrand("ORACLE");
         pt.setCategory("Web Services");
         pt.setDescription("WEB SERVICE Development");
         pt.setPrice(new BigDecimal("2000"));

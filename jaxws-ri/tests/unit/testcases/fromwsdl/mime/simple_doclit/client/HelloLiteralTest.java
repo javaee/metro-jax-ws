@@ -1,6 +1,6 @@
 /*
- * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright 2004 Oracle and/or its affiliates. All rights reserved.
+ * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
 package fromwsdl.mime.simple_doclit.client;
@@ -49,10 +49,10 @@ public class HelloLiteralTest extends TestCase {
 
     public void testGetFooWithMimeDisabled() {
         FooType ft = new FooType();
-        ft.setName("SUNW");
+        ft.setName("ORACLEW");
         ft.setValue(100);
         FooType resp = port.getFooWithMimeDisabled(true, ft);
-        assertEquals(resp.getName(), "SUNW");
+        assertEquals(resp.getName(), "ORACLEW");
         assertEquals(resp.getValue(), 100);
     }
 

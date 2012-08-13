@@ -1,8 +1,8 @@
 /**
  * $Id: TestCaseBase.java,v 1.4 2008-07-07 18:34:37 jitu Exp $
  *
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright 2005 Oracle and/or its affiliates. All rights reserved.
+ * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package handler.handler_processing.client;
 

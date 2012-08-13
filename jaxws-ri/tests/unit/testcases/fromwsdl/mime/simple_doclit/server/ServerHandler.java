@@ -1,8 +1,8 @@
 /*
  * $Id: ServerHandler.java,v 1.3.2.1 2006/06/19 23:50:50 jk144508 Exp $
  *
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright 2005 Oracle and/or its affiliates. All rights reserved.
+ * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package fromwsdl.mime.simple_doclit.server;
 

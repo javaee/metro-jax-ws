@@ -1,8 +1,8 @@
 /**
  * $Id: HelloService_Impl.java,v 1.1 2007-09-21 22:43:57 ramapulavarthi Exp $
  *
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright 2005 Oracle and/or its affiliates. All rights reserved.
+ * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
 package handler.single_handlertube.server;
