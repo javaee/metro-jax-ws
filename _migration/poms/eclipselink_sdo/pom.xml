@@ -102,11 +102,11 @@
                             <instructions>
                                 <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
                                 <Export-Package>
-                                    com.sun.xml.ws.db.sdo;version=${project.version}
+                                    com.sun.xml.ws.db.sdo;version=${project.osgi.version}
                                 </Export-Package>
                                 <Import-Package>
-                                    com.sun.xml.ws.spi.db;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.util.xml;version=${jaxws-rt.version},
+                                    com.sun.xml.ws.spi.db;version=${project.osgi.version},
+                                    com.sun.xml.ws.util.xml;version=${project.osgi.version},
                                     commonj.sdo;version=2.1.1,
                                     commonj.sdo.helper;version=2.1.1,
                                     commonj.sdo.impl;version=2.1.1,
