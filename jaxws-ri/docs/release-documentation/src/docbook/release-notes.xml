@@ -226,7 +226,7 @@ holder.
                             <para><link
                             xlink:href="http://fi.java.net/">FastInfoset</link>
                             (bundled with JAX-WS RI
-                            &jax-ws.release.impl.version;&jax-ws.release.impl.version.suffix;)<itemizedlist>
+                            &jax-ws.release.impl.version;)<itemizedlist>
                                     <listitem>
                                         <para><link
                                         xlink:href="http://www.itu.int/rec/T-REC-X.891-200505-I/e">ITU-T

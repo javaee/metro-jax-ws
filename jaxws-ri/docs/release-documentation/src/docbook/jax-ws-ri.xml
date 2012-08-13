@@ -53,7 +53,7 @@ holder.
          xmlns:m="http://www.w3.org/1998/Math/MathML"
          xmlns:html="http://www.w3.org/1999/xhtml"
          xmlns:db="http://docbook.org/ns/docbook">
-<title>JAX-WS RI &jax-ws.release.impl.version; &jax-ws.release.impl.version.suffix;</title>
+<title>JAX-WS RI &jax-ws.release.impl.version;</title>
 
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="jax-ws-ri-overview.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="jax-ws-ri-release-notes.xml" />

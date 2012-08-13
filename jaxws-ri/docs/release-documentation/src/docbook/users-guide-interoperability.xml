@@ -119,8 +119,7 @@ holder.
             </listitem>
 
             <listitem>
-                <para>JAX-WS &jax-ws.release.impl.version;
-                &jax-ws.release.impl.version.suffix; and WSIT plugins are
+                <para>JAX-WS &jax-ws.release.impl.version; and WSIT plugins are
                 tightly integrated in to <link
                 xlink:href="http://glassfish.java.net/public/downloadsjax-ws-ri-overview">GF
                 v3.1</link></para>
@@ -170,8 +169,7 @@ holder.
 
             <listitem>
                 <para>Get standalone consolidated bundle of JAX-WS
-                &jax-ws.release.impl.version;
-                &jax-ws.release.impl.version.suffix; and WSIT from <link
+                &jax-ws.release.impl.version; and WSIT from <link
                 xlink:href="http://metro.java.net/">Metro
                 website</link>.</para>
             </listitem>

@@ -41,14 +41,12 @@
 
 -->
 <!ENTITY version "$version">
-<!ENTITY repository "$repository">
 
 <!ENTITY nbsp "&#xA0;">
 
 <!ENTITY jax-ws.release.spec.version "$release.spec.version">
 <!ENTITY jax-ws.release.impl.version "$release.impl.version">
-<!ENTITY jax-ws.release.impl.version.suffix "$release.impl.version.suffix">
 
 <!ENTITY jax-ws.product.name.short "JAX-WS RI">
-<!ENTITY jax-ws.product.name "&jax-ws.product.name.short; &jax-ws.release.impl.version;&jax-ws.release.impl.version.suffix;">
+<!ENTITY jax-ws.product.name "&jax-ws.product.name.short; &jax-ws.release.impl.version;">
 <!ENTITY jax-ws.home "JAXWS_HOME">
