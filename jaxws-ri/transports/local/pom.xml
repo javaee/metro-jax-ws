@@ -82,20 +82,20 @@
                             <instructions>
                                 <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
                                 <Export-Package>
-                                    com.sun.xml.ws.transport.local;version=${project.version}
+                                    com.sun.xml.ws.transport.local;version=${project.osgi.version}
                                 </Export-Package>
                                 <Import-Package>
-                                    com.sun.xml.ws.api;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.api.message;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.api.pipe;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.api.pipe.helper;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.api.server;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.client;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.transport.http;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.util;version=${jaxws-rt.version},
+                                    com.sun.xml.ws.api;version=${project.osgi.version},
+                                    com.sun.xml.ws.api.message;version=${project.osgi.version},
+                                    com.sun.xml.ws.api.pipe;version=${project.osgi.version},
+                                    com.sun.xml.ws.api.pipe.helper;version=${project.osgi.version},
+                                    com.sun.xml.ws.api.server;version=${project.osgi.version},
+                                    com.sun.xml.ws.client;version=${project.osgi.version},
+                                    com.sun.xml.ws.transport.http;version=${project.osgi.version},
+                                    com.sun.xml.ws.util;version=${project.osgi.version},
                                     javax.xml.namespace,
                                     javax.xml.ws;version=${jaxws-api.version},
-                                    org.jvnet.ws.message;version=${jaxws-rt.version}
+                                    org.jvnet.ws.message;version=${project.osgi.version}
                                 </Import-Package>
                             </instructions>
                         </configuration>
