@@ -40,52 +40,91 @@
     holder.
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>docs</artifactId>
         <groupId>com.sun.xml.ws</groupId>
+        <artifactId>docs</artifactId>
         <version>2.2.8-SNAPSHOT</version>
     </parent>
 
+    <groupId>com.sun.xml.ws</groupId>
     <artifactId>release-documentation</artifactId>
     <packaging>pom</packaging>
-    <name>JAX-WS Release Documentation</name>
+    <name>JAX-WS RI Release Documentation</name>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/docbook</outputDirectory>
+                    <includeEmptyDirs>true</includeEmptyDirs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <id>copy-common-resources</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-docbook-resources</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/docbook</directory>
+                                    <includes>
+                                        <include>download/**</include>
+                                        <include>figures/**</include>
+                                        <include>icons/**</include>
+                                        <include>style/**</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>process-entities</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <echo message="Preparing char entities"/>
                                 <mkdir dir="${src.dir}"/>
                                 <copy todir="${src.dir}">
                                     <fileset dir="src/docbook"/>
                                 </copy>
                                 <replace file="${src.dir}/docbook.ent" token="$version" value="${project.version}"/>
-                                <replace file="${src.dir}/docbook.ent" token="$repository" value="${javanet.repository.id}"/>
 
-                                <replace file="${src.dir}/docbook.ent" token="$release.spec.version" value="${release.spec.version}"/>
-                                <replace file="${src.dir}/docbook.ent" token="$release.impl.version.suffix" value="${release.impl.version.suffix}"/>
-                                <replace file="${src.dir}/docbook.ent" token="$release.impl.version" value="${release.impl.version}"/>
-                            </tasks>
+                                <replace file="${src.dir}/docbook.ent" token="$release.spec.version" value="${jaxws-api.version}"/>
+                                <replace file="${src.dir}/docbook.ent" token="$release.impl.version" value="${project.version}"/>
+                            </target>
                         </configuration>
-                        <id>process-entities</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -137,24 +176,6 @@
                     <keepRelativeImageUris>true</keepRelativeImageUris>
                     <generateIdAttributes>true</generateIdAttributes>
                     <chapterAutolabel>0</chapterAutolabel>
-
-                    <preProcess>
-                        <copy todir="${project.build.directory}/docbook/figures">
-                            <fileset dir="${src.dir}/figures" />
-                        </copy>
-                        <copy todir="${project.build.directory}/docbook/download">
-                            <fileset dir="${src.dir}/download" />
-                        </copy>
-                        <copy todir="${project.build.directory}/docbook/style">
-                            <fileset dir="${src.dir}/style" />
-                        </copy>
-                        <copy todir="${project.build.directory}/docbook/icons">
-                            <fileset dir="${src.dir}/icons" />
-                        </copy>
-                        <copy todir="${project.build.directory}/docbook">
-                            <fileset dir="${resources.dir}" />
-                        </copy>
-                    </preProcess>
                 </configuration>
                 <executions>
                     <execution>
@@ -170,6 +191,7 @@
                     </execution>
                     <execution>
                         <id>Multiple HTML pages</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>generate-html</goal>
                         </goals>
@@ -179,11 +201,11 @@
                             <chunkSectionDepth>0</chunkSectionDepth>
                             <useIdAsFilename>false</useIdAsFilename>
                         </configuration>
-                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
@@ -200,17 +222,11 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin> <!-- remove the generated src dir-->
-                <artifactId>maven-clean-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
 
     <properties>
-        <assembly.directory>${project.build.directory}/assembly</assembly.directory>
         <src.dir>${basedir}/target/gen-src</src.dir>
-        <resources.dir>${basedir}/src/main/resources</resources.dir>
-        <javanet.repository.id>snapshots</javanet.repository.id>
     </properties>
 
 </project>
