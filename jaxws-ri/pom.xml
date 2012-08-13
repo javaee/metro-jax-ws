@@ -126,16 +126,19 @@
                                     <artifactItem>
                                         <groupId>javax.xml.bind</groupId>
                                         <artifactId>jaxb-api</artifactId>
+                                        <version>${jaxb-api.version}</version>
                                         <type>jar</type>
                                     </artifactItem>
                                     <artifactItem>
                                         <groupId>javax.xml.soap</groupId>
                                         <artifactId>saaj-api</artifactId>
+                                        <version>${saaj-api.version}</version>
                                         <type>jar</type>
                                     </artifactItem>
                                     <artifactItem>
                                         <groupId>javax.xml.ws</groupId>
                                         <artifactId>jaxws-api</artifactId>
+                                        <version>${jaxws-api.version}</version>
                                         <type>jar</type>
                                     </artifactItem>
                                 </artifactItems>
