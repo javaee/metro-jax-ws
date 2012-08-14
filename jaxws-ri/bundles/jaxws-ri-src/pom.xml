@@ -108,7 +108,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>jaxws-ri-${project.version}-src</finalName>
+                            <finalName>jaxws-ri-${project.version}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/assembly-src.xml</descriptor>
                             </descriptors>
