@@ -163,135 +163,102 @@
                             </archive>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>make-src-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>true</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly-src.xml</descriptor>
+                            </descriptors>
+                            <archive>
+                                <manifestEntries>
+                                    <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
+                                    <Class-Path>jaxb-api.jar jaxws-api.jar saaj-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
+                                    <Extension-Name>com.sun.xml.ws</Extension-Name>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
-        </plugins>
-    </build>
-
-    <profiles>
-        <profile>
             <!-- TODO: maven-javadoc-plugin:aggregate-jar cannot be used
             because of: http://jira.codehaus.org/browse/MJAVADOC-311
             therefore getting around it using
                  dependency -> antrun
             plugins to generate javadoc for jaxws-rt.jar -->
-            <id>jvnet-release</id>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-source-plugin</artifactId>
-                            <executions>
-                                <execution>
-                                    <id>attach-sources</id>
-                                    <inherited>false</inherited>
-                                    <configuration>
-                                        <skip>true</skip>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>make-src-assembly</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <appendAssemblyId>true</appendAssemblyId>
-                                    <descriptors>
-                                        <descriptor>src/main/assembly/assembly-src.xml</descriptor>
-                                    </descriptors>
-                                    <archive>
-                                        <manifestEntries>
-                                            <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
-                                            <Class-Path>jaxb-api.jar jaxws-api.jar saaj-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
-                                            <Extension-Name>com.sun.xml.ws</Extension-Name>
-                                        </manifestEntries>
-                                    </archive>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <phase>package</phase>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>${project.groupId}</groupId>
-                                            <artifactId>${project.artifactId}</artifactId>
-                                            <version>${project.version}</version>
-                                            <type>jar</type>
-                                            <classifier>sources</classifier>
-                                            <outputDirectory>${project.build.directory}/bundlesources</outputDirectory>
-                                        </artifactItem>
-                                    </artifactItems>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>gen-javadocs</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <property name="api.dest.dir" value="${project.build.directory}/apidocs"/>
-                                        <property name="javadoc.jar" value="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar"/>
-                                        <property name="links.dir" value="${javadoc.links.dir}"/>
-                                        <property name="links.offline" value="${javadoc.links.offline}"/>
-                                        <mkdir dir="${api.dest.dir}"/>
-                                        <javadoc
-                                            packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
-                                            sourcepath="${project.build.directory}/bundlesources"
-                                            destdir="${api.dest.dir}"
-                                            author="false"
-                                            version="false"
-                                            use="true"
-                                            windowtitle="JAX-WS RI Runtime Documentation"
-                                            doctitle="JAX-WS RI"
-                                            bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
-                                            <classpath refid="maven.compile.classpath"/>
-                                            <link href="http://docs.oracle.com/javase/6/docs/api/"
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <classifier>sources</classifier>
+                                    <outputDirectory>${project.build.directory}/bundlesources</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>gen-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <property name="api.dest.dir" value="${project.build.directory}/apidocs"/>
+                                <property name="javadoc.jar" value="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar"/>
+                                <property name="links.dir" value="${javadoc.links.dir}"/>
+                                <property name="links.offline" value="${javadoc.links.offline}"/>
+                                <mkdir dir="${api.dest.dir}"/>
+                                <javadoc
+                                    packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
+                                    sourcepath="${project.build.directory}/bundlesources"
+                                    destdir="${api.dest.dir}"
+                                    author="false"
+                                    version="false"
+                                    use="true"
+                                    windowtitle="JAX-WS RI Runtime Documentation"
+                                    doctitle="JAX-WS RI"
+                                    bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
+                                    <classpath refid="maven.compile.classpath"/>
+                                    <link href="http://docs.oracle.com/javase/6/docs/api/"
                                                   offline="${links.offline}" packagelistloc="${links.dir}/javase6/"/>
-                                            <link href="http://jaxb.java.net/nonav/${jaxb-impl.version}/docs/api/"
+                                    <link href="http://jaxb.java.net/nonav/${jaxb-impl.version}/docs/api/"
                                                   offline="${links.offline}" packagelistloc="${links.dir}/jaxb-api/"/>
-                                            <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
+                                    <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/"
                                                   offline="${links.offline}" packagelistloc="${links.dir}/jaxws-api/"/>
-                                        </javadoc>
-                                        <jar jarfile="${javadoc.jar}">
-                                            <fileset dir="${api.dest.dir}"/>
-                                        </jar>
-                                        <attachartifact file="${javadoc.jar}" classifier="javadoc" type="jar"/>
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+                                </javadoc>
+                                <jar jarfile="${javadoc.jar}">
+                                    <fileset dir="${api.dest.dir}"/>
+                                </jar>
+                                <attachartifact file="${javadoc.jar}" classifier="javadoc" type="jar"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
