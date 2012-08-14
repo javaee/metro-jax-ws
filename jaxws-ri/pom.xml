@@ -336,6 +336,7 @@
 
     <profiles>
         <profile>
+            <id>re-build</id>
             <activation>
                 <property>
                     <name>license.url</name>
