@@ -71,7 +71,6 @@
         <pathelement location="build/classes"/>
         <pathelement location="${java.home}/../lib/tools.jar"/>
     </path>
-
     <property name="proxy.host" value="www-proxy.us.oracle.com"/>
     <target name="probe-proxy">
         <condition property="proxy.not.needed">

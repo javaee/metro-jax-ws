@@ -70,11 +70,15 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.ant</groupId>
-                        <artifactId>ant-nodeps</artifactId>
+                        <artifactId>ant-junit</artifactId>
                         <version>1.8.1</version>
                     </dependency>
                 </dependencies>
@@ -90,6 +94,7 @@
                                 <ant dir="${basedir}" target="run" inheritRefs="true">
                                     <property name="jaxwsdir" location="${basedir}/../.."/>
                                     <property name="args" value="-transport ${maven.dependency.com.sun.xml.ws.jaxws-local-transport.jar.path} -version ${project.osgi.version}"/>
+                                    <property name="endorsed.dir" value="${endorsed.dir}"/>
                                 </ant>
                             </target>
                         </configuration>
