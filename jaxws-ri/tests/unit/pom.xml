@@ -58,16 +58,34 @@
     <name>JAX-WS RI Unit Tests</name>
     <description>JAX-WS RI Unit Tests</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>jaxws-local-transport</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-clean</id>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.build.directory}</directory>
+                                </fileset>
+                                <fileset>
+                                    <directory>testcases</directory>
+                                    <includes>
+                                        <include>**/work/**</include>
+                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -91,9 +109,16 @@
                         <phase>test</phase>
                         <configuration>
                             <target>
-                                <ant dir="${basedir}" target="run" inheritRefs="true">
+                                <condition property="test.args" value="${ws.args}" else="-version ${project.osgi.version}">
+                                    <isset property="ws.args"/>
+                                </condition>
+                                <condition property="test.test" value="${ws.test}" else="testcases">
+                                    <isset property="ws.test"/>
+                                </condition>
+                                <ant dir="${basedir}" target="run">
+                                    <property name="args" value="${test.args}"/>
+                                    <property name="test" value="${test.test}"/>
                                     <property name="jaxwsdir" location="${basedir}/../.."/>
-                                    <property name="args" value="-transport ${maven.dependency.com.sun.xml.ws.jaxws-local-transport.jar.path} -version ${project.osgi.version}"/>
                                     <property name="endorsed.dir" value="${endorsed.dir}"/>
                                 </ant>
                             </target>
