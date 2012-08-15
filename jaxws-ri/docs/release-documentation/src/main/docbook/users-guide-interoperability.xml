@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+
+The contents of this file are subject to the terms of either the GNU
+General Public License Version 2 only ("GPL") or the Common Development
+and Distribution License("CDDL") (collectively, the "License").  You
+may not use this file except in compliance with the License.  You can
+obtain a copy of the License at
+http://glassfish.java.net/public/CDDL+GPL_1_1.html
+or packager/legal/LICENSE.txt.  See the License for the specific
+language governing permissions and limitations under the License.
+
+When distributing the software, include this License Header Notice in each
+file and include the License file at packager/legal/LICENSE.txt.
+
+GPL Classpath Exception:
+Oracle designates this particular file as subject to the "Classpath"
+exception as provided by Oracle in the GPL Version 2 section of the License
+file that accompanied this code.
+
+Modifications:
+If applicable, add the following below the License Header, with the fields
+enclosed by brackets [] replaced by your own identifying information:
+"Portions Copyright [year] [name of copyright owner]"
+
+Contributor(s):
+If you wish your version of this file to be governed by only the CDDL or
+only the GPL Version 2, indicate your decision by adding "[Contributor]
+elects to include this software in this distribution under the [CDDL or GPL
+Version 2] license."  If you don't indicate a single choice of license, a
+recipient has the option to distribute your version of this file under
+either the CDDL, the GPL Version 2 or to extend the choice of license to
+its licensees as provided above.  However, if you add GPL Version 2 code
+and therefore, elected the GPL Version 2 license, then the option applies
+only if the new code is made subject to such option by the copyright
+holder.
+
+        -->
+<!DOCTYPE book [
+<!ENTITY % ents SYSTEM "docbook.ent">
+%ents;
+]>
+<section version="5.0" xml:id="users-guide-interoperability" xml:lang="en"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/1999/xhtml"
+         xmlns:ns4="http://www.w3.org/2000/svg"
+         xmlns:ns="http://docbook.org/ns/docbook"
+         xmlns:m="http://www.w3.org/1998/Math/MathML">
+    <title>Interoperability</title>
+
+    <para>&jax-ws.product.name; provides a comprehensive interoperability
+    platform to develop web services solutions. Here are the key
+    interoperability features:</para>
+
+    <section xml:id="section-4101350549640481">
+        <title>WSDL and Message Level Interoperability</title>
+
+        <itemizedlist>
+            <listitem>
+                <para>JAX-WS 2.1</para>
+            </listitem>
+
+            <listitem>
+                <para>JAXB 2.1</para>
+            </listitem>
+
+            <listitem>
+                <para>SAAJ</para>
+            </listitem>
+
+            <listitem>
+                <para>Stax</para>
+            </listitem>
+
+            <listitem>
+                <para>WS-I Basic Profile 1.2 and 2.0</para>
+            </listitem>
+
+            <listitem>
+                <para>WS-I Simple SOAP Binding Profile 1.0</para>
+            </listitem>
+
+            <listitem>
+                <para>WS-I Attachment Profile 1.0</para>
+            </listitem>
+
+            <listitem>
+                <para>SOAP 1.1 and SOAP 1.2</para>
+            </listitem>
+
+            <listitem>
+                <para>WSDL 1.1</para>
+            </listitem>
+
+            <listitem>
+                <para>Web Services Addressing 1.0 - Core, Web Services
+                Addressing 1.0 - SOAP Binding and Web Services Addressing 1.0
+                - Metadata</para>
+            </listitem>
+
+            <listitem>
+                <para>MTOM and SOAP With Attachments</para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="section-325661411410258">
+        <title>.NET 3.5 Interoperability</title>
+
+        <itemizedlist>
+            <listitem>
+                <para>Provided thru <link
+                xlink:href="http://wsit.java.net">WSIT</link> plugins.</para>
+            </listitem>
+
+            <listitem>
+                <para>JAX-WS &jax-ws.release.impl.version; and WSIT plugins are
+                tightly integrated in to <link
+                xlink:href="http://glassfish.java.net/public/downloadsjax-ws-ri-overview">GF
+                v3.1</link></para>
+            </listitem>
+
+            <listitem>
+                <para>Tested for interoperability with .NET 3.0</para>
+            </listitem>
+
+            <listitem>
+                <para>.NET 3.0 interoperable WS-* features supported through
+                WSIT <itemizedlist>
+                        <listitem>
+                            <para>WS-ReliableMessaging</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>WS-Policy</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>WS-MEX</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>WS-Security/WS-Security Policy</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>WS-Trust/WS-Secure Conversation</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>WS-AT/WS-Tx (Supported only on Glassfish
+                            v2)</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>WS-Addresssing</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>MTOM</para>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+
+            <listitem>
+                <para>Get standalone consolidated bundle of JAX-WS
+                &jax-ws.release.impl.version; and WSIT from <link
+                xlink:href="http://metro.java.net/">Metro
+                website</link>.</para>
+            </listitem>
+        </itemizedlist>
+
+        <para>Send your feedback to <link
+        xlink:href="mailto:users@jax-ws.java.net">users@jaxws.dev.java.net</link>.</para>
+    </section>
+</section>

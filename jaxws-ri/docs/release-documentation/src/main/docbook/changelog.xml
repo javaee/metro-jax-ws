@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+
+The contents of this file are subject to the terms of either the GNU
+General Public License Version 2 only ("GPL") or the Common Development
+and Distribution License("CDDL") (collectively, the "License").  You
+may not use this file except in compliance with the License.  You can
+obtain a copy of the License at
+http://glassfish.java.net/public/CDDL+GPL_1_1.html
+or packager/legal/LICENSE.txt.  See the License for the specific
+language governing permissions and limitations under the License.
+
+When distributing the software, include this License Header Notice in each
+file and include the License file at packager/legal/LICENSE.txt.
+
+GPL Classpath Exception:
+Oracle designates this particular file as subject to the "Classpath"
+exception as provided by Oracle in the GPL Version 2 section of the License
+file that accompanied this code.
+
+Modifications:
+If applicable, add the following below the License Header, with the fields
+enclosed by brackets [] replaced by your own identifying information:
+"Portions Copyright [year] [name of copyright owner]"
+
+Contributor(s):
+If you wish your version of this file to be governed by only the CDDL or
+only the GPL Version 2, indicate your decision by adding "[Contributor]
+elects to include this software in this distribution under the [CDDL or GPL
+Version 2] license."  If you don't indicate a single choice of license, a
+recipient has the option to distribute your version of this file under
+either the CDDL, the GPL Version 2 or to extend the choice of license to
+its licensees as provided above.  However, if you add GPL Version 2 code
+and therefore, elected the GPL Version 2 license, then the option applies
+only if the new code is made subject to such option by the copyright
+holder.
+
+        -->
+<!DOCTYPE book [
+<!ENTITY % ents SYSTEM "docbook.ent">
+%ents;
+]>
+<section version="5.0" xml:id="jax-ws-ri-changelog" xml:lang="en"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/1999/xhtml"
+         xmlns:ns4="http://www.w3.org/2000/svg"
+         xmlns:ns="http://docbook.org/ns/docbook"
+         xmlns:m="http://www.w3.org/1998/Math/MathML">
+    <title>Changelog</title>
+
+    <section xml:id="changes-221-223">
+        <title>Changes from JAX-WS RI 2.2.1 to JAX-WS RI 2.2.3 </title>
+
+        <itemizedlist>
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-871">Add
+                -clientjar option for <command>wsimport</command></link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-872">Add
+                support for Async Servlet Transport using Servlet 3.0
+                api</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10284">Bug
+                fixes</link></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="changes-22-221">
+        <title>Changes from JAX-WS RI 2.2 to JAX-WS RI 2.2.1 </title>
+
+        <itemizedlist>
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=85">wsgen
+                can inline schemas in a generated wsdl using a
+                switch</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=777">Schema
+                Validation support is enhanced</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;issue_type=FEATURE&amp;issue_type=TASK&amp;issue_type=PATCH&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;resolution=FIXED&amp;target_milestone=2.2.1&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;Submit+query=Submit+query">Bug
+                fixes</link></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="changes-217-22">
+        <title>Changes from JAX-WS RI 2.1.7 to JAX-WS RI 2.2 </title>
+
+        <itemizedlist>
+            <listitem>
+                <para>Add WS-Addressing 1.0 Metadata support as per 2.2
+                spec</para>
+            </listitem>
+
+            <listitem>
+                <para>Support for <literal>@XmlElement</literal> on SEI's
+                wrapper parameter</para>
+            </listitem>
+
+            <listitem>
+                <para>Support for <literal>@XmlType</literal> on exception
+                classes</para>
+            </listitem>
+
+            <listitem>
+                <para>Implement HTTP SPI</para>
+            </listitem>
+
+            <listitem>
+                <para>Implement Endpoint API with features</para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-818">Generate
+                new constructors in the generated Service class(service level
+                features, wsdllocation)</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-726">Add
+                support for customizing wrapper <literal>wsdl:part</literal>
+                names as defined in 2.2</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-727">Add
+                support for customizing <literal>wsdl:message</literal> name
+                using <literal>@WebFault</literal> as defined in
+                2.2</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-728">Fault
+                customization should accept fully qualified name of the
+                exception class to be generated</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-729">Customization
+                of Service should accept fully qualified class
+                name</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-360">Add
+                Xnocompile option for <command>wsgen</command> similar to <command>wsimport</command></link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-576">XPath
+                expressions in jax-ws customization can now select multiple
+                nodes</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-761">Disable
+                server-side exception stacktrace for service specific
+                exceptions</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-648">Optimzation
+                of LogicalMessage implementation</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://java.net/jira/browse/JAX_WS-305">wsimport
+                now handles URL redirection of imported wsdls
+                correctly</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;issue_type=FEATURE&amp;issue_type=TASK&amp;issue_type=PATCH&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;resolution=FIXED&amp;target_milestone=2.2&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;Submit+query=Submit+query">Bug
+                fixes</link></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="changes-216-217">
+        <title>Changes from JAX-WS RI 2.1.6 to JAX-WS RI 2.1.7 </title>
+
+        <itemizedlist>
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;resolution=FIXED&amp;target_milestone=2.1.7&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=as91only&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Bug
+                fixes</link></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="changes-215-216">
+        <title>Changes from JAX-WS RI 2.1.5 to JAX-WS RI 2.1.6 </title>
+
+        <itemizedlist>
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=741">Supportfor
+                transport attribute for bindings like SOAP/JMS
+                binding</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;resolution=FIXED&amp;target_milestone=2.1.6&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=as91only&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Bug
+                fixes</link></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="changes-214-215">
+        <title>Changes from JAX-WS RI 2.1.4 to JAX-WS RI 2.1.5 </title>
+
+        <itemizedlist>
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=607">Allowing
+                HTTP response code to be set via MessageContext
+                property</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=282">New
+                feature: UsesJAXBContextFeature, to control JAXBContext
+                creation</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=289">New
+                <command>wsimport</command> option: -XdisableSSLHostnameVerfication, to disable
+                SSL Hostname verification</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=490">Wsimport
+                ant task accepts nested args for specifying additional
+                options</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;resolution=FIXED&amp;target_milestone=2.1.5&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=as91only&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Bug
+                fixes</link></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="changes-213-214">
+        <title>Changes from JAX-WS RI 2.1.3 to JAX-WS RI 2.1.4</title>
+
+        <itemizedlist>
+            <listitem>
+                <para><link
+                xlink:href="http://weblogs.java.net/blog/jitu/archive/2008/03/alternative_to_1.html">Simplified
+                "Starting from Java Programming model" through dynamic
+                generation of request and response wrappers</link></para>
+            </listitem>
+
+            <listitem>
+                <para><xref linkend="samples-samples"
+                xrefstyle="select:title" /></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;resolution=FIXED&amp;target_milestone=2.1.4&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=as91only&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Bug
+                fixes</link></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="changes-211-213">
+        <title>Changes from JAX-WS RI 2.1.2 to JAX-WS RI 2.1.3</title>
+
+        <itemizedlist>
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=231">Authentication
+                support in <command>wsimport</command></link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=263">Additional
+                header support</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=29">Large
+                and Streaming attachment support</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=239">XML
+                Schema validation support for SOAP message</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=473">Expose
+                the -Xnocompile as an Ant task option</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=437">Additional
+                WSDL object methods for policy</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=456">Wsimport
+                should be able to handle redirects and see
+                Others</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=54">Remove
+                SJSXP and SAAJ RI dependency</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=387">Wsimport
+                should write to passed OutputStream</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=482">Efficient
+                Handler using Handler&lt;Message&gt; support</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;issue_type=DEFECT&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;resolution=FIXED&amp;target_milestone=2.1.3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=as91only&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Bug
+                fixes</link></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="changes-211-212">
+        <title>Changes from JAX-WS RI 2.1.1 to JAX-WS RI 2.1.2</title>
+
+        <itemizedlist>
+            <listitem>
+                <para>JMX Agent for the server side</para>
+            </listitem>
+
+            <listitem>
+                <para>Mtom Interop with .NET 2.0/WSE 3.0</para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?resort=1&amp;issue_type=DEFECT;issue_type=ENHANCEMENT;issue_type=FEATURE;issue_type=TASK;component=jax-ws;issue_status=RESOLVED;resolution=FIXED;priority=P1;priority=P2;priority=P3;priority=P4;email1=;emailtype1=">Bug
+                fixes</link></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="changes-20-21">
+        <title>Changes from JAX-WS 2.0 RI to JAX-WS RI 2.1.1</title>
+
+        <itemizedlist>
+            <listitem>
+                <para>JAXB 2.1 RI Integration</para>
+            </listitem>
+
+            <listitem>
+                <para>JAX-WS 2.1 MR (JSR 224) implementation</para>
+            </listitem>
+
+            <listitem>
+                <para>Type substitution support</para>
+            </listitem>
+
+            <listitem>
+                <para>WS-Addressing - W3C and Memeber Submission</para>
+            </listitem>
+
+            <listitem>
+                <para>APIs to create EPR and use it to invoke endpoint</para>
+            </listitem>
+
+            <listitem>
+                <para>Support for enabling/disabling features, such as
+                WS-Addressing/MTOM</para>
+            </listitem>
+
+            <listitem>
+                <para>Asynchronous server</para>
+            </listitem>
+
+            <listitem>
+                <para>Tubes and Fiber for asynchronous message
+                processing</para>
+            </listitem>
+
+            <listitem>
+                <para>Dispatch&lt;Message&gt; and
+                Provider&lt;Message&gt;</para>
+            </listitem>
+
+            <listitem>
+                <para>Stateful Webservice support</para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?resort=1&amp;issue_type=DEFECT;issue_type=ENHANCEMENT;issue_type=FEATURE;issue_type=TASK;component=jax-ws;issue_status=RESOLVED;resolution=FIXED;priority=P1;priority=P2;priority=P3;priority=P4;email1=;emailtype1=">Bug
+                fixes</link></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+</section>

@@ -1,0 +1,3795 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+
+The contents of this file are subject to the terms of either the GNU
+General Public License Version 2 only ("GPL") or the Common Development
+and Distribution License("CDDL") (collectively, the "License").  You
+may not use this file except in compliance with the License.  You can
+obtain a copy of the License at
+http://glassfish.java.net/public/CDDL+GPL_1_1.html
+or packager/legal/LICENSE.txt.  See the License for the specific
+language governing permissions and limitations under the License.
+
+When distributing the software, include this License Header Notice in each
+file and include the License file at packager/legal/LICENSE.txt.
+
+GPL Classpath Exception:
+Oracle designates this particular file as subject to the "Classpath"
+exception as provided by Oracle in the GPL Version 2 section of the License
+file that accompanied this code.
+
+Modifications:
+If applicable, add the following below the License Header, with the fields
+enclosed by brackets [] replaced by your own identifying information:
+"Portions Copyright [year] [name of copyright owner]"
+
+Contributor(s):
+If you wish your version of this file to be governed by only the CDDL or
+only the GPL Version 2, indicate your decision by adding "[Contributor]
+elects to include this software in this distribution under the [CDDL or GPL
+Version 2] license."  If you don't indicate a single choice of license, a
+recipient has the option to distribute your version of this file under
+either the CDDL, the GPL Version 2 or to extend the choice of license to
+its licensees as provided above.  However, if you add GPL Version 2 code
+and therefore, elected the GPL Version 2 license, then the option applies
+only if the new code is made subject to such option by the copyright
+holder.
+
+        -->
+<!DOCTYPE book [
+<!ENTITY % ents SYSTEM "docbook.ent">
+%ents;
+]>
+<section version="5.0" xml:id="users-guide-annotations" xml:lang="en"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/2000/svg"
+         xmlns:ns3="http://www.w3.org/1999/xhtml"
+         xmlns:ns="http://docbook.org/ns/docbook"
+         xmlns:m="http://www.w3.org/1998/Math/MathML">
+    <title>Annotations</title>
+
+    <section xml:id="section-031540603185018">
+        <title>Overview</title>
+
+        <para>Annotations play a critical role in JAX-WS
+        &jax-ws.release.spec.version;. First, annotations are used in mapping
+        Java to WSDL and schema. Second, annotations are used a runtime to
+        control how the JAX-WS runtime processes and responds to web service
+        invocations. Currently the annotations utilized by JAXR-WS 2.0 are
+        defined in separate JSRs:</para>
+
+        <itemizedlist>
+            <listitem>
+                <para><link
+                xlink:href="http://www.jcp.org/en/jsr/detail?id=181">JSR 181:
+                Web Services Metadata for the Java TM Platform</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://www.jcp.org/en/jsr/detail?id=222">JSR 222:
+                Java TM Architecture for XML Binding (JAXB) 2.1</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://www.jcp.org/en/jsr/detail?id=224">JSR 224:
+                Java TM API for XML Web Services (JAX-WS) 2.0 and
+                2.1</link></para>
+            </listitem>
+
+            <listitem>
+                <para><link
+                xlink:href="http://www.jcp.org/en/jsr/detail?id=250">JSR 250:
+                Common Annotations for the Java TM Platform</link>.</para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="jsr-181">
+        <title>JSR 181 (Web Services Metadata) Annotations</title>
+
+        <para>Because JSR 181 has been written to work with JAX-RPC 1.1, we
+        have made slight changes in the use and interpretation of these
+        annotations to work better with JAX-WS 2.0. We are working with the
+        JSR 181 expert group to align the next release with JAX-WS 2.0 and we
+        hope that all of the changes we have made will be folded in.</para>
+
+        <section xml:id="javax-jws-webservice-outline">
+            <title><literal>@javax.jws.WebService</literal></title>
+
+            <para>The purpose of this annotation is to mark an endpoint
+            implementation as implementing a web service or to mark that a
+            service endpoint interface as defining a web service interface.
+            All endpoint implementation classes MUST have a
+            <literal>WebService</literal> annotation and must meet the
+            requirements of section 3.3 of the <link
+            xlink:href="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS
+            2.0</link> specification.</para>
+
+            <table frame="all">
+                <title><literal>@javax.jws.WebService</literal> - Description
+                of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>name</literal></para></entry>
+
+                            <entry><para>The name of the
+                            <literal>wsdl:portType</literal></para></entry>
+
+                            <entry><para>The unqualified name of the Java class
+                            or interface</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>targetNamespace</literal></para></entry>
+
+                            <entry><para>The XML namespace of the the WSDL and
+                            some of the XML elements generated from this web
+                            service. Most of the XML elements will be in the
+                            namespace according to the JAXB mapping
+                            rules.</para></entry>
+
+                            <entry><para>The namespace mapped from the package
+                            name containing the web service according to section
+                            3.2 of the <link
+                            xlink:href="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS
+                            2.0</link> specification.</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>serviceName</literal></para></entry>
+
+                            <entry><para>The Service name of the web service:
+                            <literal>wsdl:service</literal></para></entry>
+
+                            <entry><para>The unqualified name of the Java class
+                            or interface + "Service"</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>endpointInterface</literal></para></entry>
+
+                            <entry><para>The qualified name of the service
+                            endpoint interface. If the implementation bean
+                            references a service endpoint interface, that
+                            service endpoint interface is used to determine the
+                            abstract WSDL contract (portType and bindings). In
+                            this case, the service implementation bean MUST NOT
+                            include any JSR 181 annotations other than
+                            <literal>@WebService</literal> and
+                            <literal>@HandlerChain</literal> In addition, the
+                            <literal>@WebService</literal> annotation MUST NOT
+                            include the name annotation element. The endpoint
+                            implementation class is not required to implement
+                            the endpointInterface.</para></entry>
+
+                            <entry><para>None – If not specified, the endpoint
+                            implementation class is used to generate the web
+                            service contract. In this case, a service endpoint
+                            interface is not required.</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>portName</literal></para></entry>
+
+                            <entry><para>The
+                            <literal>wsdl:portName</literal></para></entry>
+
+                            <entry><para>The <literal>WebService.name</literal>
+                            + "Port"</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>wsdlLocation</literal></para></entry>
+
+                            <entry><para>Not currently used by
+                            &jax-ws.product.name;</para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-5790511949612727">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Retention(value = RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface WebService {
+    String name() default "";
+
+    String targetNamespace() default "";
+
+    String serviceName() default "";
+
+    String wsdlLocation() default "";
+
+    String endpointInterface() default "";
+
+    String portName() default "";
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-724263520121821">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.jws.WebService</literal> - Example
+                    1</title>
+
+                    <programlisting language="java"><![CDATA[@WebService(name = "AddNumbers",
+        targetNamespace = "http://duke.example.org")
+public class AddNumbersImpl {
+    /**
+     * @param number1
+     * @param number2
+     * @return The sum
+     * @throws AddNumbersException if any of the numbers to be added is
+     *                             negative.
+     */
+    public int addNumbers(int number1, int number2) throws 
+            AddNumbersException {
+        if (number1 < 0 || number2 < 0) {
+            throw new AddNumbersException("Negative number cant be added " +
+                    "!", "Numbers: " + number1 + ", " + number2);
+        }
+        return number1 + number2;
+    }
+}]]></programlisting>
+                </example>
+
+                <para>If you are familiar with JAX-RPC 1.1, you will notice
+                that the <literal>AddNumbersImpl</literal> implementation
+                class does not implement a service endpoint interface. In
+                JAX-WS &jax-ws.release.spec.version; a service endpoint
+                interface is no longer required. If a service endpoint
+                interfaces is desired, then the <literal>@WebService</literal>
+                annotation on the endpoint implementation is modified to
+                specify the endpoint interface and the actual service endpoint
+                interface must also have a <literal>@WebService</literal>
+                annotation. The following is the above
+                <literal>AddNumbersImpl</literal> modified to use a service
+                endpoint interface.</para>
+
+                <example>
+                    <title><literal>@javax.jws.WebService</literal> - Example
+                    2 - Implementation class using Service Endpoint
+                    Interface</title>
+
+                    <programlisting language="java"><![CDATA[@WebService(endpointInterface = "annotations.server.AddNumbersIF")
+public class AddNumbersImpl {
+    /**
+     * @param number1
+     * @param number2
+     * @return The sum
+     * @throws AddNumbersException if any of the numbers to be added is 
+     * negative.
+     */
+    public int addNumbers(int number1, int number2) throws 
+            AddNumbersException {
+        if (number1 < 0 || number2 < 0) {
+            throw new AddNumbersException("Negative number cant be " +
+                    "added!", "Numbers: " + number1 + ", " + number2);
+        } return number1 + number2;
+    }
+}]]></programlisting>
+
+                    <programlisting language="java"><![CDATA[@WebService(targetNamespace = "http://duke.example.org",
+        name = "AddNumbers")
+public interface AddNumbersIF extends Remote {
+
+    public int addNumbers(int number1, int number2) throws 
+            RemoteException, AddNumbersException;
+
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-jws-webmethod-outline">
+            <title><literal>@javax.jws.WebMethod</literal></title>
+
+            <para>The purpose of this annotation is to expose a method as a
+            web service operation. The method must meet all the requirements
+            of section 3.4 of the <link
+            xlink:href="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS
+            2.0</link> specification.</para>
+
+            <table frame="all">
+                <title><literal>@javax.jws.WebMethod</literal> - Description
+                of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="138*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>operationName</literal></para></entry>
+
+                            <entry><para>The name of the
+                            <literal>wsdl:operation</literal> matching this
+                            method. For operations using the mode defined by
+                            <literal>SOAPBinding.Style.DOCUMENT</literal>,
+                            <literal>SOAPBinding.Use.LITERAL</literal>, and
+                            <literal>SOAPBinding.ParameterStyle.BARE</literal>,
+                            this name is also used for the global XML element
+                            representing the operations body element. The
+                            namespace of this name is taken from the value
+                            <literal>@WebService.targetNamespace</literal> or
+                            its default value.</para></entry>
+
+                            <entry><para>The name of the Java
+                            method</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>action</literal></para></entry>
+
+                            <entry><para>The XML namespace of the the WSDL and
+                            some of the XML elements generated from this web
+                            service. Most of the XML elements will be in the
+                            namespace according to the JAXB mapping
+                            rules.</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>exclude</literal></para></entry>
+
+                            <entry><para>Used to exclude a method from the
+                            WebService.</para></entry>
+
+                            <entry><para>false</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-54961496738835">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Retention(value = RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface WebMethod {
+    String operationName() default "";
+
+    String action() default "";
+
+    boolean exclude() default false;
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-998755081708335">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.jws.WebMethod</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[@WebService(targetNamespace = "http://duke.example.org",
+        name = "AddNumbers")
+public interface AddNumbersIF extends Remote {
+
+    @WebMethod(operationName = "add", action = "urn:addNumbers")
+    public int addNumbers(int number1, int number2) throws 
+            RemoteException, AddNumbersException;
+
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-jws-oneway-outline">
+            <title><literal>@javax.jws.OneWay</literal></title>
+
+            <para>The purpose of this annotation is to mark a method as a web
+            service one-way operation. The method must meet all the
+            requirements of section 3.4.1 of the <link
+            xlink:href="http://www.jcp.org/en/jsr/detail?id=224">JSR
+            224</link> spec.</para>
+
+            <para>There are no properties on the <literal>OneWay</literal>
+            annotation.</para>
+
+            <section xml:id="section-57285842212862">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Retention(value = RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface Oneway {
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-877748055333987">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.jws.OneWay</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[@WebService(name = "CheckIn")
+public class CheckInIF {
+    
+    @WebMethod
+    @OneWay
+    public void checkIn(String name);
+
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-jws-webparam-outline">
+            <title><literal>@javax.jws.WebParam</literal></title>
+
+            <para>This annotation is used to customize the mapping of a single
+            parameter to a message part or element.</para>
+
+            <table frame="all">
+                <title><literal>@javax.jws.WebParam</literal> - Description of
+                Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="75*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>name</literal></para></entry>
+
+                            <entry><para>Name of the parameter.</para><para>If
+                            the operation is RPC style and
+                            <literal>@WebParam.partName</literal> has not been
+                            specified, this is name of the
+                            <literal>wsdl:part</literal> representing the
+                            parameter.</para><para><literal>@WebMethod.operation</literal>
+                            Name, if the operation is document style and the
+                            parameter style is
+                            <literal>BARE</literal>.</para><para>Otherwise, the
+                            default is <literal>argN</literal> if the operation
+                            is document style or the parameter maps to a header,
+                            this is the local name of the XML element
+                            representing the parameter.</para><para>A name MUST
+                            be specified if the operation is document style, the
+                            parameter style is <literal>BARE</literal>, and the
+                            mode is <literal>OUT</literal> or
+                            <literal>INOUT</literal>.</para></entry>
+
+                            <entry><para><literal>@WebMethod.operation</literal>
+                            Name, if the operation is document style and the
+                            parameter style is <literal>BARE</literal>.
+                            Otherwise, the default is <literal>argN</literal>,
+                            where <literal>N</literal> represents the index of
+                            the parameter in the method signature (starting at
+                            <literal>arg0</literal>).</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>targetNamespace</literal></para></entry>
+
+                            <entry><para>The XML namespace for the parameter.
+                            Only used if the operation is document style or the
+                            paramater maps to a header. If the target namespace
+                            is set to "", this represents the empty
+                            namespace.</para></entry>
+
+                            <entry><para>The empty namespace, if the operation
+                            is document style, the parameter style is
+                            <literal>WRAPPED</literal>, and the parameter does
+                            not map to a header. Otherwise, the default is the
+                            <literal>targetNamespace</literal> for the Web
+                            Service.</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>mode</literal></para></entry>
+
+                            <entry><para>Represents the direction the parameter
+                            flows for this method. Possible values are
+                            <literal>IN</literal>, <literal>INOUT</literal> and
+                            <literal>OUT</literal>. <literal>INOUT</literal> and
+                            <literal>OUT</literal> modes can only be used with
+                            parameters that meet the requirements for a holder
+                            as classified by section 3.5 of the <link
+                            xlink:href="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS
+                            2.0</link> specification. <literal>OUT</literal> and
+                            <literal>INOUT</literal> parameters can be used by
+                            all <literal>RPC</literal> and
+                            <literal>DOCUMENT</literal> bindings.</para></entry>
+
+                            <entry><para><literal>IN</literal> for non-holder
+                            parameters <literal>INOUT</literal> for holder
+                            parameters.</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>header</literal></para></entry>
+
+                            <entry><para>Specifies whether the parameter should
+                            be carried in a header.</para></entry>
+
+                            <entry><para><literal>FALSE</literal></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>partName</literal></para></entry>
+
+                            <entry><para>Used to specify the
+                            <literal>partName</literal> for the parameter with
+                            <literal>RPC</literal> or
+                            <literal>DOCUMENT</literal>/<literal>BARE</literal>
+                            operations.</para></entry>
+
+                            <entry><para><literal>@WebParam.name
+                            </literal></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-704139125883689">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Retention(value = RetentionPolicy.RUNTIME)
+@Target({ElementType.PARAMETER})
+public @interface WebParam {
+
+    public enum Mode {
+        IN,
+        OUT,
+        INOUT
+    }
+
+    String name() default "";
+
+    String targetNamespace() default "";
+
+    Mode mode() default Mode.IN;
+
+    boolean header() default false;
+
+    String partName() default "";
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-759744573502372">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.jws.WebParam</literal> - Example
+                    1</title>
+
+                    <programlisting language="java"><![CDATA[@WebService(targetNamespace = "http://duke.example.org",
+        name = "AddNumbers")
+public interface AddNumbersIF extends Remote {
+ 
+    @WebMethod(operationName = "add", action = "urn:addNumbers")
+    @WebResult(name = "return")
+    public int addNumbers(@WebParam(name = "num1") int number1, 
+                          @WebParam(name = "num2") int number2) throws 
+            RemoteException, AddNumbersException;
+
+}]]></programlisting>
+                </example>
+
+                <example>
+                    <title><literal>@javax.jws.WebParam</literal> - Example
+                    2</title>
+
+                    <programlisting language="java"><![CDATA[@WebService(targetNamespace = "http://duke.example.org",
+        name = "AddNumbers")
+public interface AddNumbersIF extends Remote {
+
+    @WebMethod(operationName = "add", action = "urn:addNumbers")
+    @WebResult(name = "return")
+    public void addNumbers(@WebParam(name = "num1") int number1, 
+                           @WebParam(name = "num2") int number2, 
+                           @WebParam(name = "result",
+            mode = WebParam.Mode.OUT) Holder<Integer> result) throws RemoteException, AddNumbersException;
+
+
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-jws-webresult-outline">
+            <title><literal>@javax.jws.WebResult</literal></title>
+
+            <para>This annotation is used to customize the mapping of the
+            method return value to a WSDL part or XML element.</para>
+
+            <table frame="all">
+                <title><literal>@javax.jws.WebResult</literal> - Description
+                of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>name</literal></para></entry>
+
+                            <entry><para>The name of the return value in the
+                            WSDL and on the wire. For <literal>RPC</literal>
+                            bindings this is the part name of the return value
+                            in the response message. For
+                            <literal>DOCUMENT</literal> bindings this is the
+                            local name of the XML element representing the
+                            return value.</para></entry>
+
+                            <entry><para>"return" for <literal>RPC</literal> and
+                            <literal>DOCUMENT</literal>/<literal>WRAPPED</literal>
+                            bindings. Method name + "Response" for
+                            <literal>DOCUMENT</literal>/<literal>BARE</literal>
+                            bindings.</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>targetNamespace</literal></para></entry>
+
+                            <entry><para>The XML namespace for the return value.
+                            Only used if the operation is document style or the
+                            return value maps to a header. If the target
+                            namespace is set to "", this represents the empty
+                            namespace.</para></entry>
+
+                            <entry><para>The empty namespace, if the operation
+                            is document style, the parameter style is
+                            <literal>WRAPPED</literal>, and the return value
+                            does not map to a header, Otherwise, the default is
+                            the <literal>targetNamespace</literal> for the Web
+                            Service.</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>header</literal></para></entry>
+
+                            <entry><para>Specifies whether the result should be
+                            carried in a header.</para></entry>
+
+                            <entry><para><literal>FALSE</literal></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>partName</literal></para></entry>
+
+                            <entry><para>Used to specify the
+                            <literal>partName</literal> for the result with
+                            <literal>RPC</literal> or
+                            <literal>DOCUMENT</literal>/<literal>BARE</literal>
+                            operations.</para></entry>
+
+                            <entry><para><literal>@WebResult.name
+                            </literal></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-825230071110141">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Retention(value = RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface WebResult {
+
+    String name() default "return";
+
+    String targetNamespace() default "";
+
+    boolean header() default false;
+
+    String partName() default "";
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-324659921484612">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.jws.WebResult</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[@WebService(targetNamespace = "http://duke.example.org",
+        name = "AddNumbers")
+public interface AddNumbersIF extends Remote {
+ 
+    @WebMethod(operationName = "add", action = "urn:addNumbers")
+    @WebResult(name = "return")
+    public int addNumbers(@WebParam(name = "num1") int number1, 
+                          @WebParam(name = "num2") int number2) throws 
+            RemoteException, AddNumbersException;
+
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-jws-handlerchain-outline">
+            <title><literal>@javax.jws.HandlerChain</literal></title>
+
+            <para>This annotation is used to specified an externally defined
+            handler chain.</para>
+
+            <table frame="all">
+                <title><literal>@javax.jws.HandlerChain</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="75*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>file</literal></para></entry>
+
+                            <entry><para>Location of the file containing the
+                            handler chain definition. The location can be
+                            relative or absolute with in a classpath system. If
+                            the location is relative, it is relative to the
+                            package of the web service. If it is absolute, it is
+                            absolute from some path on the
+                            classpath.</para></entry>
+
+                            <entry><para>None</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>name</literal></para></entry>
+
+                            <entry><para><emphasis
+                            role="bold">DEPRECATED</emphasis> The handler chain
+                            name from within the handler chain
+                            file.</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-888738992154297">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Retention(value = RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface HandlerChain {
+    
+    String file();
+
+    @Deprecated String name() default "";
+
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-0070675424428255">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.jws.HandlerChain</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[@WebService
+@HandlerChain(file = "handlers.xml")
+public class AddNumbersImpl {
+    /**
+     * @param number1
+     * @param number2
+     * @return The sum
+     * @throws AddNumbersException if any of the numbers to be added is
+     *                             negative.
+     */
+    public int addNumbers(int number1, int number2) throws 
+            AddNumbersException {
+        if (number1 < 0 || number2 < 0) {
+            throw new AddNumbersException("Negative number cant be added " +
+                    "!", "Numbers: " + number1 + ", " + number2);
+        }
+        return number1 + number2;
+    }
+
+}]]></programlisting>
+                </example>
+
+                <example>
+                    <title><literal>@javax.jws.HandlerChain</literal> -
+                    Example - handlers.xml</title>
+
+                    <programlisting language="xml"><![CDATA[<jws:handler-config xmlns:jws="http://java.sun.com/xml/ns/javaee">
+    <jws:handler-chains>
+        <jws:handler-chain>
+            <jws:handler>
+                <jws:handler-class>fromjavahandler.common.LoggingHandler
+                </jws:handler-class>
+            </jws:handler>
+        </jws:handler-chain>
+    </jws:handler-chains>
+</jws:handler-config>]]></programlisting>
+                </example>
+
+                <important>
+                    <para>When using a handler chain file, it is important
+                    that the file is store in the appropriate place in the
+                    classpath so that the file can be found. This means that
+                    when a raw WAR file is created that the file must be place
+                    in the proper directory. Please refer to the
+                    <application>fromjavahandlers</application> <link
+                    xlink:href="../samples/docs/jax-ws-ri-overview">sample
+                    application</link> and the <xref
+                    linkend="users-guide-handler" xrefstyle="select:title" />
+                    for more information.</para>
+                </important>
+            </section>
+        </section>
+
+        <section xml:id="javax-jws-soap-soapbinding-outline">
+            <title><literal>@javax.jws.soap.SOAPBinding</literal></title>
+
+            <para>JSR 181 also allows you to specify a
+            <literal>SOAPBinding</literal> annotation on an endpoint
+            implementation or service endpoint interface. This annotation lets
+            the developer choose between <literal>DOCUMENT\LITERAL
+            WRAPPED</literal>, <literal>DOCUMENT\LITERAL BARE</literal>,
+            <literal>RPC\LITERAL</literal> and <literal>RPC\ENCODED</literal>
+            endpoints with the default being <literal>DOCUMENT\LITERAL
+            WRAPPED</literal>. JAX-WS &jax-ws.release.spec.version; does not
+            support <literal>RPC\ENCODED</literal>. The main difference
+            between <literal>DOCUMENT\LITERAL BARE</literal> and
+            <literal>DOCUMENT\LITERAL WRAPPED</literal> is that methods on a
+            <literal>DOCUMENT\LITERAL WRAPPED</literal> endpoint can have
+            multiple parameters bound to the body of a SOAP message, while a
+            <literal>DOCUMENT\LITERAL BARE</literal> can only have one such
+            parameter. The main difference between <literal>DOCUMENT\LITERAL
+            WRAPPED</literal> and <literal>RPC\LITERAL</literal> is that a
+            <literal>DOCUMENT\LITERAL</literal> invocation can be fully
+            validated by a standard validating XML parser, while an
+            <literal>RPC\LITERAL</literal> invocation cannot because of the
+            implied wrapper element around the invocation body.</para>
+
+            <table frame="all">
+                <title><literal>@javax.jws.soap.SOAPBinding</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>style</literal></para></entry>
+
+                            <entry><para>Defines the style for messages used in
+                            a web service. The value can be either
+                            <literal>DOCUMENT</literal> or
+                            <literal>RPC</literal>.</para></entry>
+
+                            <entry><para><literal>DOCUMENT</literal></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>use</literal></para></entry>
+
+                            <entry><para>Defines the encoding used for messages
+                            used in web service. Can only be
+                            <literal>LITERAL</literal> for JAX-WS
+                            &jax-ws.release.spec.version;.</para></entry>
+
+                            <entry><para><literal>LITERAL</literal></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>parameterStyle</literal></para></entry>
+
+                            <entry><para>Determines if the method's parameters
+                            represent the entire message body or whether the
+                            parameters are wrapped in a body element named after
+                            the operation. Choice of <literal>WRAPPED</literal>
+                            or <literal>BARE</literal>. <literal>BARE</literal>
+                            can only be used with <literal>DOCUMENT</literal>
+                            style bindings.</para></entry>
+
+                            <entry><para><literal>WRAPPED</literal></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-980481850012988">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Retention(value = RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface SOAPBinding {
+    
+    public enum Style {
+        DOCUMENT,
+        RPC,
+    }
+
+    public enum Use {
+        LITERAL,
+        ENCODED,
+    }
+
+    public enum ParameterStyle {
+        BARE,
+        WRAPPED,
+    }
+
+    Style style() default Style.DOCUMENT;
+
+    Use use() default Use.LITERAL;
+
+    ParameterStyle parameterStyle() default ParameterStyle.WRAPPED;
+
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-106596084465574">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.jws.soap.SOAPBinding</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[@WebService(targetNamespace = "http://duke.example.org",
+        name = "AddNumbers")
+@SOAPBinding(style = SOAPBinding.Style.RPC,
+        use = SOAPBinding.Use.LITERAL)
+public interface AddNumbersIF extends Remote {
+ 
+    @WebMethod(operationName = "add", action = "urn:addNumbers")
+    @WebResult(name = "return")
+    public int addNumbers(@WebParam(name = "num1") int number1, 
+                          @WebParam(name = "num2") int number2) throws 
+            RemoteException, AddNumbersException;
+
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+    </section>
+
+    <section xml:id="jsr-224-jax-ws-annotations-outline">
+        <title>JSR 224 (JAX-WS) Annotations</title>
+
+        <para>The following are standard annotations needed by JAX-WS that are
+        not defined in JSR 181. The developer may not ever use these
+        annotations directly as some of them are generated by JAX-WS tools but
+        they will be presented here to avoid confusion.</para>
+
+        <section xml:id="javax-xml-ws-bindingtype-outline">
+            <title><literal>@javax.xml.ws.BindingType</literal></title>
+
+            <para>The <literal>BindingType</literal> annotation is used to
+            specify the binding to use for a web service endpoint
+            implementation class. As well as specify additional features that
+            may be enabled.</para>
+
+            <para>This annotation may be overriden programmatically or via
+            deployment descriptors, depending on the platform in use.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.ws.BindingType</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>value</literal></para></entry>
+
+                            <entry><para>A binding identifier (a
+                            URI).</para><para>See the
+                            <literal>SOAPBinding</literal> and
+                            <literal>HTTPBinding</literal> for the definition of
+                            the standard binding
+                            identifiers.</para><para><code>@see
+                            javax.xml.ws.Binding</code></para><para><code>@see
+                            javax.xml.ws.soap.SOAPBinding#SOAP11HTTP_BINDING</code></para><para><code>@see
+                            javax.xml.ws.soap.SOAPBinding#SOAP12HTTP_BINDING</code></para><para><code>@see
+                            javax.xml.ws.http.HTTPBinding#HTTP_BINDING</code></para></entry>
+
+                            <entry><para>"<literal>SOAP 1.1
+                            Protocol</literal>"/<literal>HTTP</literal></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-2239237830275984">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface BindingType {
+    /**
+     * A binding identifier (a URI).
+     * If not specified, the default is the SOAP 1.1 / HTTP
+     * binding.
+     * <p/>
+     * See the
+     * SOAPBinding and
+     * HTTPBinding
+     * for the definition of the standard binding identifiers.
+     *
+     * @see javax.xml.ws.Binding
+     * @see javax.xml.ws.soap.SOAPBinding#SOAP11HTTP_BINDING
+     * @see javax.xml.ws.soap.SOAPBinding#SOAP12HTTP_BINDING
+     * @see javax.xml.ws.http.HTTPBinding#HTTP_BINDING
+     */
+    String value() default "";
+
+    /**
+     * An array of Features to enable/disable on the specified
+     * binding.
+     * If not specified, features will be enabled/disabled based
+     * on their own rules. Refer to the documentation of the
+     * feature
+     * to determine when it will be automatically enabled.
+     * <p/>
+     * See the
+     * SOAPBinding
+     * for the definition of the standard feature identifiers.
+     *
+     * @see javax.xml.ws.RespectBindingFeature
+     * @see javax.xml.ws.soap.AddressingFeature
+     * @see javax.xml.ws.soap.MTOMFeature
+     * @since JAX-WS 2.1
+     */
+    Feature[] features() default {};
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-673452285502762">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.ws.BindingType</literal> -
+                    Example</title>
+
+                    <para>Given the web service defined by</para>
+
+                    <programlisting language="java"><![CDATA[@WebService
+@BindingType(value = "http://www.w3.org/2003/05/soap/bindings/HTTP/")
+public class AddNumbersImpl {
+    /**
+     * @param number1
+     * @param number2
+     * @return The sum
+     * @throws AddNumbersException if any of the numbers to be added is
+     *                             negative.
+     */
+    public int addNumbers(int number1, int number2) throws 
+            AddNumbersException {
+        if (number1 < 0 || number2 < 0) {
+            throw new AddNumbersException("Negative number cant be " + 
+                    "added!", "Numbers: " + number1 +
+                    ", " + number2);
+        }
+        return number1 + number2;
+    }
+}]]></programlisting>
+
+                    <para>The deployed endpoint would use the SOAP 1.2 over
+                    HTTP binding.</para>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-ws-requestwrapper-outline">
+            <title><literal>@javax.xml.ws.RequestWrapper</literal></title>
+
+            <para>This annotation annotates methods in the Service Endpoint
+            Interface with the request wrapper bean to be used at
+            runtime.</para>
+
+            <para>When starting from Java this annotation is used to resolve
+            overloading conflicts in <literal>DOCUMENT\LITERAL</literal> mode.
+            Only the <literal>className</literal> is required in this
+            case.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.ws.RequestWrapper</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>localName</literal></para></entry>
+
+                            <entry><para>Specifies the
+                            <literal>localName</literal> of the XML Schema
+                            element representing this request
+                            wrapper.</para></entry>
+
+                            <entry><para><literal>operationName</literal> as
+                            defined by
+                            <literal>@javax.jws.WebMethod</literal></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>targetNamespace</literal></para></entry>
+
+                            <entry><para>namespace of the request wrapper
+                            element.</para></entry>
+
+                            <entry><para>the <literal>targetNamespace</literal>
+                            of the SEI</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>className</literal></para></entry>
+
+                            <entry><para>The name of the Class representing the
+                            request wrapper.</para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-253709758478671">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RequestWrapper {
+    /**
+     * Elements local name.
+     */
+    public String localName() default "";
+
+    /**
+     * Elements namespace name.
+     */
+    public String targetNamespace() default "";
+
+    /**
+     * Request wrapper bean name.
+     */
+    public String className() default "";
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-677521323678242">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.ws.RequestWrapper</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[public interface AddNumbersImpl {
+    /**
+     * @param arg1
+     * @param arg0
+     * @return returns int
+     * @throws AddNumbersException_Exception
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "addNumbers", 
+            targetNamespace = "http://server.fromjava/", 
+            className = "fromjava.client.AddNumbers")
+    @ResponseWrapper(localName = "addNumbersResponse",
+            targetNamespace = "http://server.fromjava/", 
+            className = "fromjava.client.AddNumbersResponse")
+    public int addNumbers(@WebParam(name = "arg0", targetNamespace = "") 
+                              int arg0, @WebParam(name = "arg1", targetNamespace = "") int arg1) throws AddNumbersException_Exception;
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-ws-responsewrapper-outline">
+            <title><literal>@javax.xml.ws.ResponseWrapper</literal></title>
+
+            <para>This annotation annotates methods in the Service Endpoint
+            Interface with the response wrapper bean to be used at
+            runtime.</para>
+
+            <para>When starting from Java this annotation is used to resolve
+            overloading conflicts in <literal>DOCUMENT\LITERAL</literal> mode.
+            Only the <literal>className</literal> is required in this
+            case.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.ws.ResponseWrapper</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>localName</literal></para></entry>
+
+                            <entry><para>Specifies the
+                            <literal>localName</literal> of the XML Schema
+                            element representing this request
+                            wrapper.</para></entry>
+
+                            <entry><para><literal>operationName</literal> as
+                            defined by
+                            <literal>@javax.jws.WebMethod</literal></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>targetNamespace</literal></para></entry>
+
+                            <entry><para>namespace of the request wrapper
+                            element.</para></entry>
+
+                            <entry><para>the <literal>targetNamespace</literal>
+                            of the SEI</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>className</literal></para></entry>
+
+                            <entry><para>The name of the Class representing the
+                            request wrapper.</para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-431093721276197">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ResponseWrapper {
+    /**
+     * Elements local name.
+     */
+    public String localName() default "";
+
+    /**
+     * Elements namespace name.
+     */
+    public String targetNamespace() default "";
+
+    /**
+     * Request wrapper bean name.
+     */
+    public String className() default "";
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-486634908061201">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.ws.ResponseWrapper</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[public interface AddNumbersImpl {
+    /**
+     * @param arg1
+     * @param arg0
+     * @return returns int
+     * @throws AddNumbersException_Exception
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "addNumbers", 
+            targetNamespace = "http://server.fromjava/", 
+            className = "fromjava.client.AddNumbers")
+    @ResponseWrapper(localName = "addNumbersResponse",
+            targetNamespace = "http://server.fromjava/", 
+            className = "fromjava.client.AddNumbersResponse")
+    public int addNumbers(@WebParam(name = "arg0", targetNamespace = "") 
+                              int arg0, @WebParam(name = "arg1", targetNamespace = "") int arg1) throws AddNumbersException_Exception;
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-ws-servicemode-outline">
+            <title><literal>@javax.xml.ws.ServiceMode</literal></title>
+
+            <para>This annotation allows the <xref
+            linkend="users-guide-provider" xrefstyle="select:title" />
+            developer to indicate whether a <literal>Provider</literal>
+            implementation wishes to work with entire protocol messages or
+            just with protocol message payloads.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.ws.ServiceMode</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>value</literal></para></entry>
+
+                            <entry><para>Convey whether the
+                            <literal>Provider</literal> endpoint wants to access
+                            then entire message (<literal>MESSAGE</literal>) or
+                            just the payload
+                            (<literal>PAYLOAD</literal>).</para></entry>
+
+                            <entry><para><literal>PAYLOAD</literal></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-7509472401703894">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface ServiceMode {
+    /**
+     * Service mode. <code>PAYLOAD</code> indicates that the 
+     * <code>Provider</code> implementation
+     * wishes to work with protocol message payloads only. 
+     * <code>MESSAGE</code> indicates
+     * that the <code>Provider</code> implementation wishes to work with 
+     * entire protocol
+     * messages.
+     */
+    public Service.Mode value() default Service.Mode.PAYLOAD;
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-0843754606554705">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.ws.ServiceMode</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[@ServiceMode(value = Service.Mode.PAYLOAD)
+public class AddNumbersImpl implements Provider<Source> {
+    public Source invoke(Source source) throws RemoteException {
+        try {
+            DOMResult dom = new DOMResult();
+            Transformer trans = TransformerFactory.newInstance()
+                    .newTransformer();
+            trans.transform(source, dom);
+            Node node = dom.getNode();
+            Node root = node.getFirstChild();
+            Node first = root.getFirstChild();
+            int number1 = Integer.decode(first.getFirstChild()
+                    .getNodeValue());
+            Node second = first.getNextSibling();
+            int number2 = Integer.decode(second.getFirstChild()
+                    .getNodeValue());
+            return sendSource(number1, number2);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RemoteException("Error in provider endpoint");
+        }
+    }
+
+    private Source sendSource(int number1, int number2) {
+        int sum = number1 + number2;
+        String body = "<ns:addNumbersResponse xmlns:ns =\"http://duke" +
+                ".example.org\"><return>" + sum +
+                "</return></ns:addNumbersResponse>";
+        Source source = new StreamSource(new ByteArrayInputStream(body.getBytes()));
+        return source;
+    }
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-ws-webendpoint-outline">
+            <title><literal>@javax.xml.ws.WebEndpoint</literal></title>
+
+            <para>Used to annotate the <literal>getPortName()</literal>
+            methods of a generated service interface.</para>
+
+            <para>The information specified in this annotation is sufficient
+            to uniquely identify a <literal>wsdl:port</literal> element inside
+            a <literal>wsdl:service</literal>. The latter is determined based
+            on the value of the <literal>WebServiceClient</literal> annotation
+            on the generated service interface itself.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.ws.WebEndpoint</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>name</literal></para></entry>
+
+                            <entry><para>Defines the local name of the XML
+                            element representing the corresponding port in the
+                            WSDL.</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-800546080791241">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[/**
+ * Used to annotate the <code>get<em>PortName</em>()</code>
+ * methods of a generated service interface.
+ * <p/>
+ * <p>The information specified in this annotation is sufficient
+ * to uniquely identify a <code>wsdl:port</code> element
+ * inside a <code>wsdl:service</code>. The latter is
+ * determined based on the value of the <code>WebServiceClient</code>
+ * annotation on the generated service interface itself.
+ *
+ * @see javax.xml.ws.WebServiceClient
+ * @since JAX-WS 2.0
+ */
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface WebEndpoint {
+    /**
+     * The local name of the endpoint.
+     */
+    String name() default "";
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-969119628218757">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.ws.WebEndpoint</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[@WebServiceClient(name = "AddNumbersImplService", 
+        targetNamespace = "http://server.fromjava/", 
+        wsdlLocation = "http://localhost:8080/jaxws-fromjava/addnumbers" +
+                "?wsdl")
+public class AddNumbersImplService extends Service {
+    private final static URL WSDL_LOCATION;
+    private final static QName ADDNUMBERSIMPLSERVICE = new QName
+            ("http://server.fromjava/", "AddNumbersImplService");
+    private final static QName ADDNUMBERSIMPLPORT = new QName
+            ("http://server.fromjava/", "AddNumbersImplPort");
+
+    static {
+        URL url = null;
+        try {
+            url = new URL("http://localhost:8080/jaxws-fromjava" +
+                    "/addnumbers?wsdl");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        WSDL_LOCATION = url;
+    }
+
+    public AddNumbersImplService(URL wsdlLocation, QName serviceName) {
+        super(wsdlLocation, serviceName);
+    }
+
+    public AddNumbersImplService() {
+        super(WSDL_LOCATION, ADDNUMBERSIMPLSERVICE);
+    }
+
+    /**
+     * @return returns AddNumbersImpl
+     */
+    @WebEndpoint(name = "AddNumbersImplPort")
+    public AddNumbersImpl getAddNumbersImplPort() {
+        return (AddNumbersImpl) super.getPort(ADDNUMBERSIMPLPORT, AddNumbersImpl.class);
+    }
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-ws-webfault-outline">
+            <title><literal>@javax.xml.ws.WebFault</literal></title>
+
+            <para>This annotation is generated by the JAX-WS tools into
+            service specific exception classes generated from a WSDL to
+            customize the local and namespace name of the fault element and
+            the name of the fault bean and to mark the service specific
+            exception as one generated from WSDL. The reason that the JAX-WS
+            needs to know if a service specific exception is generated from a
+            WSDL or not is because these exceptions will already have a fault
+            bean generated for them. The name of this fault bean is not the
+            same name as the one generated from a Java service specific
+            exception class. For more information on this topic, please refer
+            to section 3.6 of the <link
+            xlink:href="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS
+            2.0</link> specification.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.ws.WebFault</literal> - Description
+                of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>name</literal></para></entry>
+
+                            <entry><para>Defines the local name of the XML
+                            element representing the corresponding fault in the
+                            WSDL.</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>targetNamespace</literal></para></entry>
+
+                            <entry><para>Defines the namespace of the XML
+                            element representing the corresponding fault in the
+                            WSDL.</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>faultBean</literal></para></entry>
+
+                            <entry><para>The qualified name of the Java class
+                            that represents the detail of the fault
+                            message.</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-4120261211514535">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[/**
+ * Used to annotate service specific exception classes to customize
+ * to the local and namespace name of the fault element and the name
+ * of the fault bean.
+ *
+ * @since JAX-WS 2.0
+ */
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface WebFault {
+    /**
+     * Element's local name.
+     */
+    public String name() default "";
+
+    /**
+     * Element's namespace name.
+     */
+    public String targetNamespace() default "";
+
+    /**
+     * Fault bean name.
+     */
+    public String faultBean() default "";
+
+
+    /**
+     * wsdl:Message's name. Default name is the exception's class name.
+     *
+     * @since JAX-WS 2.2
+     */
+    public String messageName() default "";
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-36622117177507">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.ws.WebFault</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[@javax.xml.ws.WebFault(name = "AddNumbersException",
+        targetNamespace = "http://server.fromjava/jaxws")
+public class AddNumbersException_Exception extends Exception {
+    private fromjava.client.AddNumbersException faultInfo;
+
+    public AddNumbersException_Exception(String message, 
+                                         fromjava.client.AddNumbersException faultInfo) {
+        super(message);
+        this.faultInfo = faultInfo;
+    }
+
+    public AddNumbersException_Exception(String message, 
+                                         fromjava.client
+                                                 .AddNumbersException faultInfo, Throwable cause) {
+        super(message, cause);
+        this.faultInfo = faultInfo;
+    }
+
+    public fromjava.client.AddNumbersException getFaultInfo() {
+        return faultInfo;
+    }
+
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-ws-webserviceclient-outline">
+            <title><literal>@javax.xml.ws.WebServiceClient</literal></title>
+
+            <para>The information specified in this annotation is sufficient
+            to uniquely identify a <literal>wsdl:service</literal> element
+            inside a WSDL document. This <literal>wsdl:service</literal>
+            element represents the Web service for which the generated service
+            interface provides a client view.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.ws.WebServiceClient</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>name</literal></para></entry>
+
+                            <entry><para>Defines the local name of the
+                            <literal>wsdl:serviceName</literal> in the
+                            WSDL.</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>targetNamespace</literal></para></entry>
+
+                            <entry><para>Defines the namespace for the
+                            <literal>wsdl:serviceName</literal> in the
+                            WSDL.</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>wsdlLocation</literal></para></entry>
+
+                            <entry><para>Specifies the location of the WSDL that
+                            defines this service.</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-01521047797341">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[/**
+ * Used to annotate a generated service interface.
+ * <p/>
+ * <p>The information specified in this annotation is sufficient
+ * to uniquely identify a <code>wsdl:service</code>
+ * element inside a WSDL document. This <code>wsdl:service</code>
+ * element represents the Web service for which the generated
+ * service interface provides a client view.
+ *
+ * @since JAX-WS 2.0
+ */
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface WebServiceClient {
+    /**
+     * The local name of the Web service.
+     */
+    String name() default "";
+
+    /**
+     * The namespace for the Web service.
+     */
+    String targetNamespace() default "";
+
+    /**
+     * The location of the WSDL document for the service (a URL).
+     */
+    String wsdlLocation() default "";
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-616559816681746">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.ws.WebServiceClient</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[@WebServiceClient(name = "AddNumbersImplService", 
+        targetNamespace = "http://server.fromjava/", 
+        wsdlLocation = "http://localhost:8080/jaxws-fromjava/addnumbers" +
+                "?wsdl")
+public class AddNumbersImplService extends Service {
+    private final static URL WSDL_LOCATION;
+    private final static QName ADDNUMBERSIMPLSERVICE = new QName
+            ("http://server.fromjava/", "AddNumbersImplService");
+    private final static QName ADDNUMBERSIMPLPORT = new QName
+            ("http://server.fromjava/", "AddNumbersImplPort");
+
+    static {
+        URL url = null;
+        try {
+            url = new URL("http://localhost:8080/jaxws-fromjava" +
+                    "/addnumbers?wsdl");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        WSDL_LOCATION = url;
+    }
+
+    public AddNumbersImplService(URL wsdlLocation, QName serviceName) {
+        super(wsdlLocation, serviceName);
+    }
+
+    public AddNumbersImplService() {
+        super(WSDL_LOCATION, ADDNUMBERSIMPLSERVICE);
+    }
+
+    /**
+     * @return returns AddNumbersImpl
+     */
+    @WebEndpoint(name = "AddNumbersImplPort")
+    public AddNumbersImpl getAddNumbersImplPort() {
+        return (AddNumbersImpl) super.getPort(ADDNUMBERSIMPLPORT, AddNumbersImpl.class);
+    }
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-ws-webserviceprovider-outline">
+            <title><literal>@javax.xml.ws.WebServiceProvider</literal></title>
+
+            <para>Annotation used to annotate a <literal>Provider</literal>
+            implementation class.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.ws.WebServiceProvider</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>targetNamespace</literal></para></entry>
+
+                            <entry><para>The XML namespace of the the WSDL and
+                            some of the XML elements generated from this web
+                            service. Most of the XML elements will be in the
+                            namespace according to the JAXB mapping
+                            rules.</para></entry>
+
+                            <entry><para>The namespace mapped from the package
+                            name containing the web service according to section
+                            3.2 of the <link
+                            xlink:href="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS
+                            2.0</link> specification.</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>serviceName</literal></para></entry>
+
+                            <entry><para>The Service name of the web service:
+                            <literal>wsdl:service</literal></para></entry>
+
+                            <entry><para>The unqualified name of the Java class
+                            or interface + "Service"</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>portName</literal></para></entry>
+
+                            <entry><para>The
+                            <literal>wsdl:portName</literal></para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>wsdlLocation</literal></para></entry>
+
+                            <entry><para>Location of the WSDL description for
+                            the service</para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-194282375923834">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[/**
+ * Used to annotate a Provider implementation class.
+ *
+ * @since JAX-WS 2.0
+ * @see javax.xml.ws.Provider
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface WebServiceProvider {
+    /**
+     * Location of the WSDL description for the service.
+     */
+    String wsdlLocation() default "";    
+    
+    /**
+     * Service name.
+     */
+    String serviceName() default "";
+    
+    /**
+     * Target namespace for the service
+     */
+    String targetNamespace() default "";
+
+    /**
+     * Port name.
+     */
+    String portName() default "";
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-5041062451497706">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.ws.WebServiceProvider</literal>
+                    - Example</title>
+
+                    <programlisting language="java"><![CDATA[@ServiceMode(value = Service.Mode.PAYLOAD)
+@WebServiceProvider(wsdlLocation = "WEB-INF/wsdl/AddNumbers.wsdl")
+public class AddNumbersImpl implements Provider {
+    public Source invoke(Source source) {
+        try {
+            DOMResult dom = new DOMResult();
+            Transformer trans = TransformerFactory.newInstance()
+                    .newTransformer();
+            trans.transform(source, dom);
+            Node node = dom.getNode();
+            Node root = node.getFirstChild();
+            Node first = root.getFirstChild();
+            int number1 = Integer.decode(first.getFirstChild()
+                    .getNodeValue());
+            Node second = first.getNextSibling();
+            int number2 = Integer.decode(second.getFirstChild()
+                    .getNodeValue());
+            return sendSource(number1, number2);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error in provider endpoint", e);
+        }
+    }
+
+    private Source sendSource(int number1, int number2) {
+        int sum = number1 + number2;
+        String body = "" + sum + "";
+        Source source = new StreamSource(new ByteArrayInputStream(body.getBytes()));
+        return source;
+    }
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-ws-webserviceref-outline">
+            <title><literal>@javax.xml.ws.WebServiceRef</literal></title>
+
+            <para>The <literal>WebServiceRef</literal> annotation is used to
+            define a reference to a web service and (optionally) an injection
+            target for it. Web service references are resources in the Java EE
+            5 sense.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.ws.WebServiceRef</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>name</literal></para></entry>
+
+                            <entry><para>The JNDI name of the resource. For
+                            field annotations, the default is the field name.
+                            For method annotations, the default is the JavaBeans
+                            property name corresponding to the method. For class
+                            annotations, there is no default and this must be
+                            specified.</para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>type</literal></para></entry>
+
+                            <entry><para>The Java type of the resource. For
+                            field annotations, the default is the type of the
+                            field. For method annotations, the default is the
+                            type of the JavaBeans property. For class
+                            annotations, there is no default and this must be
+                            specified.</para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>mappedName</literal></para></entry>
+
+                            <entry><para>A product specific name that this
+                            resource should be mapped to.</para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>value</literal></para></entry>
+
+                            <entry><para>The service class, always a type
+                            extending <literal>javax.xml.ws.Service</literal>.
+                            This element must be specified whenever the type of
+                            the reference is a service endpoint
+                            interface.</para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>wsdlLocation</literal></para></entry>
+
+                            <entry><para>Location of the WSDL description for
+                            the service</para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-910589920332548">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[/**
+ * The <code>WebServiceRef</code> annotation is used to
+ * define a reference to a web service and
+ * (optionally) an injection target for it.
+ * It can be used to inject both service and proxy
+ * instances. These injected references are not thread safe.
+ * If the references are accessed by multiple threads,
+ * usual synchronization techinques can be used to
+ * support multiple threads.
+ * <p/>
+ * Web service references are resources in the Java EE 5 sense.
+ * The annotations (for example, {@link Addressing}) annotated with
+ * meta-annotation {@link WebServiceFeatureAnnotation}
+ * can be used in conjunction with <code>WebServiceRef</code>.
+ * The created reference MUST be configured with annotation's web service
+ * feature.
+ * <p/>
+ * If a JAX-WS implementation encounters an unsupported or unrecognized
+ * annotation annotated with the <code>WebServiceFeatureAnnotation</code>
+ * that is specified with <code>WebServiceRef</code>, 
+ * an ERROR MUST be given.
+ *
+ * @see javax.annotation.Resource
+ * @see WebServiceFeatureAnnotation
+ * @since JAX-WS 2.0
+ */
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface WebServiceRef {
+    /**
+     * The JNDI name of the resource.  For field annotations,
+     * the default is the field name.  For method annotations,
+     * the default is the JavaBeans property name corresponding
+     * to the method.  For class annotations, there is no default
+     * and this MUST be specified.
+     * <p/>
+     * The JNDI name can be absolute(with any logical namespace) or 
+     * relative
+     * to JNDI <code>java:comp/env</code> namespace.
+     */
+    String name() default "";
+
+    /**
+     * The Java type of the resource.  For field annotations,
+     * the default is the type of the field.  For method annotations,
+     * the default is the type of the JavaBeans property.
+     * For class annotations, there is no default and this MUST be
+     * specified.
+     */
+    Class<?> type() default Object.class;
+
+    /**
+     * A product specific name that this resource should be mapped to.
+     * The name of this resource, as defined by the <code>name</code>
+     * element or defaulted, is a name that is local to the application
+     * component using the resource.  (When a relative JNDI name
+     * is specified, then it's a name in the JNDI
+     * <code>java:comp/env</code> namespace.)  Many application servers
+     * provide a way to map these local names to names of resources
+     * known to the application server.  This mapped name is often a
+     * <i>global</i> JNDI name, but may be a name of any form.
+     * <p/>
+     * Application servers are not required to support any particular
+     * form or type of mapped name, nor the ability to use mapped names.
+     * The mapped name is product-dependent and often 
+     * installation-dependent.
+     * No use of a mapped name is portable.
+     */
+    String mappedName() default "";
+
+    /**
+     * The service class, alwiays a type extending
+     * <code>javax.xml.ws.Service</code>. This element MUST be specified
+     * whenever the type of the reference is a service endpoint interface.
+     */
+    // 2.1 has Class value() default Object.class;
+    // Fixing this raw Class type correctly in 2.2 API. This shouldn't 
+    // cause
+    // any compatibility issues for applications.
+    Class<? extends Service> value() default Service.class;
+
+    /**
+     * A URL pointing to the WSDL document for the web service.
+     * If not specified, the WSDL location specified by annotations
+     * on the resource type is used instead.
+     */
+    String wsdlLocation() default "";
+
+    /**
+     * A portable JNDI lookup name that resolves to the target
+     * web service reference.
+     *
+     * @since JAX-WS 2.2
+     */
+    String lookup() default "";
+
+}]]></programlisting>
+                </informalexample>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-ws-action-outline">
+            <title><literal>@javax.xml.ws.Action</literal></title>
+
+            <para>The <literal>Action</literal> annotation allows explicit
+            association of <literal>Action</literal> message addressing
+            property with <literal>input</literal>, <literal>output</literal>,
+            and <literal>fault</literal> messages of the mapped WSDL
+            operation.</para>
+
+            <para>This annotation can be specified on each method of a service
+            endpoint interface or implementation. For such a method, the
+            mapped operation in the generated WSDL contains explicit
+            <literal>wsaw:Action</literal> attribute on the WSDL
+            <literal>input</literal>, <literal>output</literal> and
+            <literal>fault</literal> messages of the WSDL
+            <literal>operation</literal> based upon which attributes of the
+            <literal>Action</literal> annotation have been specified.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.ws.Action</literal> - Description
+                of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>input</literal></para></entry>
+
+                            <entry><para>Explicit value of
+                            <literal>Action</literal> message addressing
+                            property for the <literal>input</literal> message of
+                            the operation. If the value is "", then no
+                            <literal>wsaw:Action</literal> is
+                            generated.</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>ouput</literal></para></entry>
+
+                            <entry><para>Explicit value of
+                            <literal>Action</literal> message addressing
+                            property for the <literal>output</literal> message
+                            of the operation. If the value is "", then no
+                            <literal>wsaw:Action</literal> is
+                            generated.</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>fault</literal></para></entry>
+
+                            <entry><para>Explicit value of
+                            <literal>Action</literal> message addressing
+                            property for the <literal>fault</literal> message(s)
+                            of the operation. Each exception that is mapped to a
+                            fault and requires explicit
+                            <literal>Action</literal> message addressing
+                            property, need to be specified as a value in this
+                            property using FaultAction
+                            annotation.</para></entry>
+
+                            <entry><para>{}</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-51086889743311215">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[/**
+ * The <code>Action</code> annotation allows explicit association of a
+ * WS-Addressing <code>Action</code> message addressing property with
+ * <code>input</code>, <code>output</code>, and
+ * <code>fault</code> messages of the mapped WSDL operation.
+ * <p/>
+ * This annotation can be specified on each method of a service endpoint 
+ * interface.
+ * For such a method, the mapped operation in the generated WSDL's
+ * <code>wsam:Action</code> attribute on the WSDL <code>input</code>,
+ * <code>output</code> and <code>fault</code> messages of the WSDL 
+ * <code>operation</code>
+ * is based upon which attributes of the <code>Action</code> annotation 
+ * have been specified.
+ * For the exact computation of <code>wsam:Action</code> values for the 
+ * messages, refer
+ * to the algorithm in the JAX-WS specification.
+ *
+ * @see FaultAction
+ * @since JAX-WS 2.1
+ */
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Action {
+    /**
+     * Explicit value of the WS-Addressing <code>Action</code> message 
+     * addressing property for the <code>input</code>
+     * message of the operation.
+     */
+    String input() default "";
+
+    /**
+     * Explicit value of the WS-Addressing <code>Action</code> message 
+     * addressing property for the <code>output</code>
+     * message of the operation.
+     */
+    String output() default "";
+
+    /**
+     * Explicit value of the WS-Addressing <code>Action</code> message 
+     * addressing property for the <code>fault</code>
+     * message(s) of the operation. Each exception that is mapped to a 
+     * fault and requires an explicit WS-Addressing
+     * <code>Action</code> message addressing property, 
+     * needs to be specified as a value in this property
+     * using {@link FaultAction} annotation.
+     */
+    FaultAction[] fault() default {};
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-386040099353688">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.ws.Action</literal> - Example 1
+                    - Specify explicit values for <literal>Action</literal>
+                    message addressing property for <literal>input</literal>
+                    and <literal>output</literal> messages.</title>
+
+                    <programlisting language="java"><![CDATA[@javax.jws.WebService
+public class AddNumbersImpl {
+    @javax.xml.ws.Action(
+            input = "http://example.com/inputAction",
+            output = "http://example.com/outputAction")
+    public int addNumbers(int number1, int number2) {
+        return number1 + number2;
+    }
+}]]></programlisting>
+
+                    <para>The generated WSDL looks like:</para>
+
+                    <programlisting language="xml"><![CDATA[<definitions targetNamespace="http://example.com/numbers" ...>
+
+    ...
+    
+    <portType name="AddNumbersPortType">
+        <operation name="AddNumbers">
+            <input message="tns:AddNumbersInput" name="Parameters"
+                    wsaw:Action="http://example.com/inputAction"/>
+            <output message="tns:AddNumbersOutput" name="Result"
+                    wsaw:Action="http://example.com/outputAction"/>
+        </operation>
+    </portType>
+
+    ...
+
+</definitions>]]></programlisting>
+                </example>
+
+                <example>
+                    <title><literal>@javax.xml.ws.Action</literal> - Example 2
+                    - Specify explicit value for <literal>Action</literal>
+                    message addressing property for only the
+                    <literal>input</literal> message.</title>
+
+                    <para>The default values are used for the
+                    <literal>output</literal> message.</para>
+
+                    <programlisting language="java"><![CDATA[@javax.jws.WebService
+public class AddNumbersImpl {
+    @javax.xml.ws.Action(input = "http://example.com/inputAction")
+    public int addNumbers(int number1, int number2) {
+        return number1 + number2;
+    }
+}]]></programlisting>
+
+                    <para>The generated WSDL looks like:</para>
+
+                    <programlisting language="xml"><![CDATA[<definitions targetNamespace="http://example.com/numbers" ...>
+
+    ...
+    
+    <portType name="AddNumbersPortType">
+        <operation name="AddNumbers">
+            <input message="tns:AddNumbersInput" name="Parameters"
+                    wsaw:Action="http://example.com/inputAction"/>
+            <output message="tns:AddNumbersOutput" name="Result"/>
+        </operation>
+    </portType>
+    
+    ...
+    
+</definitions>]]></programlisting>
+
+                    <para>It is legitimate to specify an explicit value for
+                    <literal>Action</literal> message addressing property for
+                    <literal>output</literal> message only. In this case, a
+                    default value of <literal>wsaw:Action</literal> is used
+                    for the <literal>input</literal> message.</para>
+                </example>
+
+                <example>
+                    <title><literal>@javax.xml.ws.Action</literal> - Example 3
+                    - <literal>@FaultAction</literal></title>
+
+                    <para>See <literal><xref
+                    linkend="javax-xml-ws-faultaction-outline"
+                    xrefstyle="select:title" /></literal> for an example of
+                    how to specify an explicit value for
+                    <literal>Action</literal> message addressing property for
+                    the <literal>fault</literal> message.</para>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-ws-faultaction-outline">
+            <title><literal>@javax.xml.ws.FaultAction</literal></title>
+
+            <para>The <literal>FaultAction</literal> annotation is used inside
+            an <literal>Action</literal> annotation to allow an explicit
+            association of <literal>Action</literal> message addressing
+            property with the <literal>fault</literal> messages of the WSDL
+            operation mapped from the exception class.</para>
+
+            <para>The <literal>fault</literal> message in the generated WSDL
+            operation mapped for <literal>className</literal> class contains
+            explicit <literal>wsaw:Action</literal> attribute.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.ws.FaultAction</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>className</literal></para></entry>
+
+                            <entry><para>Name of the exception
+                            class</para></entry>
+
+                            <entry><para>there is no default and is
+                            required.</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>value</literal></para></entry>
+
+                            <entry><para>Value of <literal>Action</literal>
+                            message addressing property for the
+                            exception</para></entry>
+
+                            <entry><para>""</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-2290523806237594">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface FaultAction {
+    /**
+     * Name of the exception class
+     */
+    Class<? extends Exception> className();
+
+    /**
+     * Value of WS-Addressing <code>Action</code> message addressing 
+     * property for the exception
+     */
+    String value() default "";
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-139653992039007">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.ws.FaultAction</literal> -
+                    Example 1 - Specify explicit values for
+                    <literal>Action</literal> message addressing property for
+                    the <literal>input</literal>, <literal>output</literal>
+                    and <literal>fault</literal> message if the Java method
+                    throws only one service specific exception.</title>
+
+                    <programlisting language="java"><![CDATA[@javax.jws.WebService
+public class AddNumbersImpl {
+    @javax.xml.ws.Action(
+            input = "http://example.com/inputAction",
+            output = "http://example.com/outputAction",
+            fault = {
+                    @javax.xml.ws.FaultAction(className = 
+                            AddNumbersException.class,
+                            value = "http://example.com/faultAction")})
+    public int addNumbers(int number1, int number2) throws 
+            AddNumbersException {
+        return number1 + number2;
+    }
+}]]></programlisting>
+
+                    <para>The generated WSDL looks like:</para>
+
+                    <programlisting language="xml"><![CDATA[<definitions targetNamespace="http://example.com/numbers" ...>
+
+    ...
+    
+    <portType name="AddNumbersPortType">
+        <operation name="AddNumbers">
+            <input message="tns:AddNumbersInput" name="Parameters"
+                    wsaw:Action="http://example.com/inputAction"/>
+            <output message="tns:AddNumbersOutput" name="Result"
+                    wsaw:Action="http://example.com/outputAction"/>
+            <fault message="tns:AddNumbersException"
+                    name="AddNumbersException"
+                    wsaw:Action="http://example.com/faultAction"/>
+        </operation>
+    </portType>
+    
+    ...
+    
+</definitions>]]></programlisting>
+                </example>
+
+                <example>
+                    <title><literal>@javax.xml.ws.FaultAction</literal> -
+                    Example 1 - Specify explicit values for
+                    <literal>Action</literal> message addressing property if
+                    the Java method throws only one service specific
+                    exception, without specifying the values for
+                    <literal>input</literal> and <literal>output</literal>
+                    messages.</title>
+
+                    <programlisting language="java"><![CDATA[@javax.jws.WebService
+public class AddNumbersImpl {
+    @javax.xml.ws.Action(
+            fault = {@javax.xml.ws.FaultAction(className = 
+                    AddNumbersException.class,
+                    value = "http://example.com/faultAction")})
+    public int addNumbers(int number1, int number2) throws 
+            AddNumbersException {
+        return number1 + number2;
+    }
+}]]></programlisting>
+
+                    <para>The generated WSDL looks like:</para>
+
+                    <programlisting language="xml"><![CDATA[<definitions targetNamespace="http://example.com/numbers" ...>
+    
+    ...
+    
+    <portType name="AddNumbersPortType">
+        <operation name="AddNumbers">
+            <input message="tns:AddNumbersInput" name="Parameters"/>
+            <output message="tns:AddNumbersOutput" name="Result"/>
+            <fault message="tns:addNumbersFault" name="InvalidNumbers"
+                    wsa:Action="http://example.com/addnumbers/fault"/>
+        </operation>
+    </portType>
+    
+    ...
+    
+</definitions>]]></programlisting>
+                </example>
+
+                <example>
+                    <title><literal>@javax.xml.ws.FaultAction</literal> -
+                    Example 1 - Specify explicit values for
+                    <literal>Action</literal> message addressing property if
+                    the Java method throws more than one service specific
+                    exception.</title>
+
+                    <programlisting language="java"><![CDATA[@javax.jws.WebService
+public class AddNumbersImpl {
+    @javax.xml.ws.Action(
+            fault = {@javax.xml.ws.FaultAction(className = 
+                    AddNumbersException.class,
+                    value = "http://example.com/addFaultAction"),
+
+                    @javax.xml.ws.FaultAction(className = 
+                            TooBigNumbersException.class,
+                            value = "http://example" +
+                                    ".com/toobigFaultAction")})
+    public int addNumbers(int number1, int number2) throws AddNumbersException, TooBigNumbersException {
+        return number1 + number2;
+    }
+}]]></programlisting>
+
+                    <para>The generated WSDL looks like:</para>
+
+                    <programlisting language="xml"><![CDATA[<definitions targetNamespace="http://example.com/numbers" ...>
+    
+    ...
+    
+    <portType name="AddNumbersPortType">
+        <operation name="AddNumbers">
+            <input message="tns:AddNumbersInput" name="Parameters"/>
+            <output message="tns:AddNumbersOutput" name="Result"/>
+            <fault message="tns:addNumbersFault" name="AddNumbersException"
+                    wsa:Action="http://example.com/addnumbers/fault"/>
+            <fault message="tns:tooBigNumbersFault"
+                    name="TooBigNumbersException"
+                    wsa:Action="http://example.com/toobigFaultAction"/>
+        </operation>
+    </portType>
+    
+    ...
+    
+</definitions>]]></programlisting>
+                </example>
+            </section>
+        </section>
+    </section>
+
+    <section xml:id="jsr-222-jaxb-annotations-outline">
+        <title>JSR 222 (JAXB) Annotations</title>
+
+        <para>The following JAXB annotations are being documented because
+        JAX-WS generates them when generating wrapper beans and exception
+        beans according to the JAX-WS 2.0 spec. Please refer to sections
+        3.5.2.1 and 3.6 of the <link
+        xlink:href="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS 2.0</link>
+        specification for more information on these beans. For more
+        information on these and other JAXB annotations please refer to the
+        <link xlink:href="http://www.jcp.org/en/jsr/detail?id=222">JAXB 2.0
+        specification</link>.</para>
+
+        <section xml:id="javax-xml-bind-annotation-xmlrootelement-outline">
+            <title><literal>@javax.xml.bind.annotation.XmlRootElement</literal></title>
+
+            <para>This annotation is used to map a top level class to a global
+            element in the XML schema used by the WSDL of the web
+            service.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.bind.annotation.XmlRootElement</literal>
+                - Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>name</literal></para></entry>
+
+                            <entry><para>Defines the local name of the XML
+                            element representing the annotated
+                            class</para></entry>
+
+                            <entry><literal>##default</literal> – the name is
+                            derived from the class</entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>namespace</literal></para></entry>
+
+                            <entry><para>Defines the namespace of the XML
+                            element representing the annotated
+                            class</para></entry>
+
+                            <entry><literal>##default</literal> – the namespace
+                            is derived from the package of the class</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-638165859587004">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface XmlRootElement {
+    /**
+     * namespace name of the XML element.
+     * <p/>
+     * If the value is "##default", then the XML namespace name is
+     * derived
+     * from the package of the class ( {@link XmlSchema} ). If the
+     * package is unnamed, then the XML namespace is the default
+     * empty
+     * namespace.
+     */
+    String namespace() default "##default";
+
+    /**
+     * local name of the XML element.
+     * <p/>
+     * If the value is "##default", then the name is derived from
+     * the
+     * class name.
+     */
+    String name() default "##default";
+
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-3077451588388276">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.bind.annotation.XmlRootElement</literal>
+                    - Example</title>
+
+                    <programlisting language="java"><![CDATA[@XmlRootElement(name = "addNumbers", namespace = "http://server.fromjava/")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "addNumbers", namespace = "http://server.fromjava/", 
+        propOrder = {"arg0", "arg1"})
+public class AddNumbers {
+
+    @XmlElement(name = "arg0", namespace = "")
+    private int arg0;
+    @XmlElement(name = "arg1", namespace = "")
+    private int arg1;
+
+    public int getArg0() {
+        return this.arg0;
+    }
+
+    public void setArg0(int arg0) {
+        this.arg0 = arg0;
+    }
+
+    public int getArg1() {
+        return this.arg1;
+    }
+
+    public void setArg1(int arg1) {
+        this.arg1 = arg1;
+    }
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-bind-annotation-xmlaccessortype-outline">
+            <title><literal>@javax.xml.bind.annotation.XmlAccessorType</literal></title>
+
+            <para>This annotation is used to specify whether fields or
+            properties are serialized by default.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.bind.annotation.XmlAccessorType</literal>
+                - Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>value</literal></para></entry>
+
+                            <entry><para>Specifies whether fields or properties
+                            are serialized by default. The value can be
+                            <literal>XmlAccessType.FIELD</literal> or
+                            <literal>XmlAccessType.PROPERTY</literal> or
+                            <literal>XmlAccessType.PUBLIC_MEMBER</literal> or
+                            <literal>XmlAccessType.NONE</literal></para></entry>
+
+                            <entry><para><literal>XmlAccessType.PROPERTY</literal></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-9211410647210394">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Inherited
+@Retention(RUNTIME)
+@Target({PACKAGE, TYPE})
+public @interface XmlAccessorType {
+
+    /**
+     * Specifies whether fields or properties are serialized.
+     *
+     * @see XmlAccessType
+     */
+    XmlAccessType value() default XmlAccessType.PUBLIC_MEMBER;
+}]]></programlisting>
+
+                    <programlisting language="java"><![CDATA[/**
+ * Used by XmlAccessorType to control serialization of fields or
+ * properties.
+ */
+public enum XmlAccessType {
+    /**
+     * Every getter/setter pair in a JAXB-bound class will be
+     * automatically
+     * bound to XML, unless annotated by {@link XmlTransient}.
+     * <p/>
+     * Fields are bound to XML only when they are explicitly
+     * annotated
+     * by some of the JAXB annotations.
+     */
+    PROPERTY,
+    /**
+     * Every non static, non transient field in a JAXB-bound class
+     * will be automatically
+     * bound to XML, unless annotated by {@link XmlTransient}.
+     * <p/>
+     * Getter/setter pairs are bound to XML only when they are
+     * explicitly annotated
+     * by some of the JAXB annotations.
+     */
+    FIELD,
+    /**
+     * Every public getter/setter pair and every public field will
+     * be
+     * automatically bound to XML, unless annotated by {@link
+     * XmlTransient}.
+     * <p/>
+     * Fields or getter/setter pairs that are private, protected,
+     * or
+     * defaulted to package-only access are bound to XML only when
+     * they are
+     * explicitly annotated by the appropriate JAXB annotations.
+     */
+    PUBLIC_MEMBER,
+    /**
+     * None of the fields or properties is bound to XML unless they
+     * are specifically  annotated with some of the JAXB
+     * annotations.
+     */
+    NONE
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-6109125632205346">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.bind.annotation.XmlAccessorType</literal>
+                    - Example</title>
+
+                    <programlisting language="java"><![CDATA[@XmlRootElement(name = "addNumbers", namespace = "http://server.fromjava/")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "addNumbers", namespace = "http://server.fromjava/", 
+        propOrder = {"arg0", "arg1"})
+public class AddNumbers {
+
+    @XmlElement(name = "arg0", namespace = "")
+    private int arg0;
+    @XmlElement(name = "arg1", namespace = "")
+    private int arg1;
+
+    public int getArg0() {
+        return this.arg0;
+    }
+
+    public void setArg0(int arg0) {
+        this.arg0 = arg0;
+    }
+
+    public int getArg1() {
+        return this.arg1;
+    }
+
+    public void setArg1(int arg1) {
+        this.arg1 = arg1;
+    }
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-bind-annotation-xmltype-outline">
+            <title><literal>@javax.xml.bind.annotation.XmlType</literal></title>
+
+            <para>This annotation is used to map a value class to an XML
+            Schema type. A value class is a data container for values
+            represented by properties and fields. A schema type is a data
+            container for values represented by schema components within a
+            schema type's content model (e.g. Model groups, attributes
+            etc).</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.bind.annotation.XmlType</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>name</literal></para></entry>
+
+                            <entry><para>Defines the local name of the XML type
+                            representing this class in the XML schema used by
+                            the WSDL of the web service</para></entry>
+
+                            <entry>"<literal>##default</literal>"</entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>namespace</literal></para></entry>
+
+                            <entry><para>Defines the namespace of the XML type
+                            representing this class in the XML schema used by
+                            the WSDL of the web service</para></entry>
+
+                            <entry>"<literal>##default</literal>"</entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>propOrder</literal></para></entry>
+
+                            <entry><para>Defines a list of names of JavaBean
+                            properties in the class. Each name in the list is
+                            the name of a Java identifier of the JavaBean
+                            property. The order in which JavaBean properties are
+                            listed is the order of XML Schema elements to which
+                            the JavaBean properties are mapped.</para><para>All
+                            of the JavaBean properties being mapped must be
+                            listed (i.e. if a JavaBean property mapping is
+                            prevented by <literal>@XmlTransient</literal> then
+                            it does not have to be listed). Otherwise, it is an
+                            error. By default, the JavaBean properties are
+                            ordered using a default order specified in the <link
+                            xlink:href="http://www.jcp.org/en/jsr/detail?id=222">JAXB
+                            2.0 specification</link>.</para></entry>
+
+                            <entry><para>{""}</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-7314416209576604">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface XmlType {
+    /**
+     * Name of the XML Schema type which the class is mapped.
+     */
+    String name() default "##default";
+
+    /**
+     * Specifies the order for XML Schema elements when class is
+     * mapped to a XML Schema complex type.
+     * <p/>
+     * <p> Refer to the table for how the propOrder affects the
+     * mapping of class </p>
+     * <p/>
+     * <p> The propOrder is a list of names of JavaBean properties in
+     * the class. Each name in the list is the name of a Java
+     * identifier of the JavaBean property. The order in which
+     * JavaBean properties are listed is the order of XML Schema
+     * elements to which the JavaBean properties are mapped. </p>
+     * <p> All of the JavaBean properties being mapped to XML Schema
+     * elements
+     * must be listed.
+     * <p> A JavaBean property or field listed in propOrder must not
+     * be transient or annotated with <tt>@XmlTransient</tt>.
+     * <p> The default ordering of JavaBean properties is determined
+     * by @{@link XmlAccessorOrder}.
+     */
+    String[] propOrder() default {""};
+
+    /**
+     * Name of the target namespace of the XML Schema type. By
+     * default, this is the target namespace to which the package
+     * containing the class is mapped.
+     */
+    String namespace() default "##default";
+
+    /**
+     * Class containing a no-arg factory method for creating an
+     * instance of this class. The default is this class.
+     * <p/>
+     * <p>If <tt>factoryClass</tt> is DEFAULT.class and
+     * <tt>factoryMethod</tt> is "", then there is no static factory
+     * method.
+     * <p/>
+     * <p>If <tt>factoryClass</tt> is DEFAULT.class and
+     * <tt>factoryMethod</tt> is not "", then
+     * <tt>factoryMethod</tt> is the name of a static factory method
+     * in this class.
+     * <p/>
+     * <p>If <tt>factoryClass</tt> is not DEFAULT.class, then
+     * <tt>factoryMethod</tt> must not be "" and must be the name of
+     * a static factory method specified in <tt>factoryClass</tt>.
+     */
+    Class factoryClass() default DEFAULT.class;
+
+    /**
+     * Used in {@link XmlType#factoryClass()} to
+     * signal that either factory mehod is not used or
+     * that it's in the class with this {@link XmlType} itself.
+     */
+    static final class DEFAULT {
+    }
+
+    /**
+     * Name of a no-arg factory method in the class specified in
+     * <tt>factoryClass</tt> factoryClass().
+     */
+    String factoryMethod() default "";
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-3949542543211304">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.bind.annotation.XmlType</literal>
+                    - Example</title>
+
+                    <programlisting language="java"><![CDATA[@XmlRootElement(name = "addNumbers", namespace = "http://server.fromjava/")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "addNumbers", namespace = "http://server.fromjava/", 
+        propOrder = {"arg0", "arg1"})
+public class AddNumbers {
+
+    @XmlElement(name = "arg0", namespace = "")
+    private int arg0;
+    @XmlElement(name = "arg1", namespace = "")
+    private int arg1;
+
+    public int getArg0() {
+        return this.arg0;
+    }
+
+    public void setArg0(int arg0) {
+        this.arg0 = arg0;
+    }
+
+    public int getArg1() {
+        return this.arg1;
+    }
+
+    public void setArg1(int arg1) {
+        this.arg1 = arg1;
+    }
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="section-147120285802621">
+            <title><literal>@javax.xml.bind.annotation.XmlElement</literal></title>
+
+            <para>This annotation is used to map a property contained in a
+            class to a local element in the XML Schema complex type to which
+            the containing class is mapped.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.bind.annotation.XmlElement</literal>
+                - Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>name</literal></para></entry>
+
+                            <entry><para>Defines the local name of the XML
+                            element representing the property of a
+                            JavaBean</para></entry>
+
+                            <entry><para>"<literal>##default</literal>" - the
+                            element name is derived from the JavaBean property
+                            name.</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>namespace</literal></para></entry>
+
+                            <entry><para>Defines the namespace of the XML
+                            element representing the property of a
+                            JavaBean</para></entry>
+
+                            <entry><para>"<literal>##default</literal>" - the
+                            namespace of the containing class</para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>nillable</literal></para></entry>
+
+                            <entry><para>Not generated by JAX-WS</para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+
+                        <row>
+                            <entry><para><literal>type</literal></para></entry>
+
+                            <entry><para>Not generated by JAX-WS</para></entry>
+
+                            <entry><para></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-585474581494925">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+public @interface XmlElement {
+    /**
+     * Name of the XML Schema element.
+     * <p> If the value is "##default", then element name is derived from
+     * the
+     * JavaBean property name.
+     */
+    String name() default "##default";
+
+    /**
+     * Customize the element declaration to be nillable.
+     * <p>If nillable() is true, then the JavaBean property is
+     * mapped to a XML Schema nillable element declaration.
+     */
+    boolean nillable() default false;
+
+    /**
+     * Customize the element declaration to be required.
+     * <p>If required() is true, then Javabean property is mapped to
+     * an XML schema element declaration with minOccurs="1".
+     * maxOccurs is "1" for a single valued property and "unbounded"
+     * for a multivalued property.
+     * <p>If required() is false, then the Javabean property is mapped
+     * to XML Schema element declaration with minOccurs="0".
+     * maxOccurs is "1" for a single valued property and "unbounded"
+     * for a multivalued property.
+     */
+
+    boolean required() default false;
+
+    /**
+     * XML target namespace of the XML Schema element.
+     * <p/>
+     * If the value is "##default", then the namespace is determined
+     * as follows:
+     * <ol>
+     * <li>
+     * If the enclosing package has {@link XmlSchema} annotation,
+     * and its {@link XmlSchema#elementFormDefault() elementFormDefault}
+     * is {@link XmlNsForm#QUALIFIED QUALIFIED}, then the namespace of
+     * the enclosing class.
+     * <p/>
+     * <li>
+     * Otherwise &#39;&#39; (which produces unqualified element in the 
+     * default
+     * namespace.
+     * </ol>
+     */
+    String namespace() default "##default";
+
+    /**
+     * Default value of this element.
+     * <p/>
+     * <p/>
+     * The <pre>'\u0000'</pre> value specified as a default of this 
+     * annotation element
+     * is used as a poor-man's substitute for null to allow implementations
+     * to recognize the 'no default value' state.
+     */
+    String defaultValue() default "\u0000";
+
+    /**
+     * The Java class being referenced.
+     */
+    Class type() default DEFAULT.class;
+
+    /**
+     * Used in {@link XmlElement#type()} to
+     * signal that the type be inferred from the signature
+     * of the property.
+     */
+    static final class DEFAULT {
+    }
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-3035378616552507">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.xml.bind.annotation.XmlElement</literal>
+                    - Example</title>
+
+                    <programlisting language="java"><![CDATA[@XmlRootElement(name = "addNumbers", namespace = "http://server.fromjava/")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "addNumbers", namespace = "http://server.fromjava/", 
+        propOrder = {"arg0", "arg1"})
+public class AddNumbers {
+
+    @XmlElement(name = "arg0", namespace = "")
+    private int arg0;
+    @XmlElement(name = "arg1", namespace = "")
+    private int arg1;
+
+    public int getArg0() {
+        return this.arg0;
+    }
+
+    public void setArg0(int arg0) {
+        this.arg0 = arg0;
+    }
+
+    public int getArg1() {
+        return this.arg1;
+    }
+
+    public void setArg1(int arg1) {
+        this.arg1 = arg1;
+    }
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-xml-bind-annotation-xmlseealso">
+            <title><literal>@javax.xml.bind.annotation.XmlSeeAlso</literal></title>
+
+            <para>Instructs JAXB to also bind other classes when binding this
+            class.</para>
+
+            <table frame="all">
+                <title><literal>@javax.xml.bind.annotation.XmlSeeAlso</literal>
+                - Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>value</literal></para></entry>
+
+                            <entry><para>Other classes that JAXB can use when
+                            binding this class</para></entry>
+
+                            <entry><para>{}</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-4562047312606827">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[/**
+ * Instructs JAXB to also bind other classes when binding this class.
+ * <p/>
+ * Java makes it impractical/impossible to list all sub-classes of
+ * a given class. This often gets in a way of JAXB users, as it JAXB
+ * cannot automatically list up the classes that need to be known
+ * to {@link JAXBContext}.
+ * <p/>
+ * For example, with the following class definitions:
+ * <p/>
+ * <pre>
+ * class Animal {}
+ * class Dog extends Animal {}
+ * class Cat extends Animal {}
+ * </pre>
+ * <p/>
+ * The user would be required to create {@link JAXBContext} as
+ * <tt>JAXBContext.newInstance(Dog.class,Cat.class)</tt>
+ * (<tt>Animal</tt> will be automatically picked up since <tt>Dog</tt>
+ * and <tt>Cat</tt> refers to it.)
+ * <p/>
+ * {@link XmlSeeAlso} annotation would allow you to write:
+ * <pre>
+ * &#64;XmlSeeAlso({Dog.class,Cat.class})
+ * class Animal {}
+ * class Dog extends Animal {}
+ * class Cat extends Animal {}
+ * </pre>
+ * <p/>
+ * This would allow you to do <tt>JAXBContext.newInstance(Animal.class)
+ * </tt>.
+ * By the help of this annotation, JAXB implementations will be able to
+ * correctly bind <tt>Dog</tt> and <tt>Cat</tt>.
+ *
+ * @author Kohsuke Kawaguchi
+ * @since JAXB2.1
+ */
+@Target({ElementType.TYPE})
+@Retention(RUNTIME)
+public @interface XmlSeeAlso {
+    Class[] value();
+}]]></programlisting>
+                </informalexample>
+            </section>
+        </section>
+    </section>
+
+    <section xml:id="jsr-250-common-annotations">
+        <title>JSR 250 (Common Annotations) Annotations</title>
+
+        <para>The following annotations are being documented because JAX-WS
+        endpoints use them for resource injection, and as lifecycle methods.
+        Please refer to sections 5.2.1 and 5.3 of the <link
+        xlink:href="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS 2.0</link>
+        specification for resource injection, and lifecycle management. For
+        more information on these and other common annotations please refer to
+        the <link xlink:href="http://www.jcp.org/en/jsr/detail?id=250">JSR
+        250: <emphasis>Common Annotations for the Java TM Platform</emphasis>
+        </link>.</para>
+
+        <section xml:id="javax-xml-bind-annotation-xmlrootelement-outline1">
+            <title><literal>@javax.annotation.Resource</literal></title>
+
+            <para>This annotation is used to mark a WebServiceContext resource
+            that is needed by a web service. It is applied to a field or a
+            method for JAX-WS endpoints. The container will inject an instance
+            of the WebServiceContext resource into the endpoint implementation
+            when it is initialized.</para>
+
+            <table frame="all">
+                <title><literal>@javax.annotation.Resource</literal> -
+                Description of Properties</title>
+
+                <tgroup cols="3" colsep="1" rowsep="1">
+                    <colspec colwidth="42*" />
+
+                    <colspec colwidth="139*" />
+
+                    <colspec colwidth="76*" />
+
+                    <thead>
+                        <row>
+                            <entry>Property</entry>
+
+                            <entry>Description</entry>
+
+                            <entry>Default</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>type</literal></para></entry>
+
+                            <entry><para>Java type of the
+                            resource</para></entry>
+
+                            <entry><para>For field annotations, the default is
+                            the type of the field. For method annotations, the
+                            default is the type of the JavaBeans
+                            property.</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <section xml:id="section-26090909275792">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Resource {
+
+    // ...
+
+    /**
+     * The Java type of the resource.  For field annotations,
+     * the default is the type of the field.  For method annotations,
+     * the default is the type of the JavaBeans property.
+     * For class annotations, there is no default and this must be
+     * specified.
+     */
+    Class type() default java.lang.Object.class;
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-3989686945211064">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.annotation.Resource</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[@WebService
+public class HelloImpl {
+    @Resource
+    private WebServiceContext context;
+
+    public String echoHello(String name) {
+        // ...
+    }
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="javax-annotation-postconstruct">
+            <title><literal>@javax.annotation.PostConstruct</literal></title>
+
+            <para>This annotation is used on a method that needs to be
+            executed after dependency injection is done to perform any
+            initialization. This method MUST be invoked before the class is
+            put into service.</para>
+
+            <section xml:id="section-944222438955486">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[/**
+ * The PostConstruct annotation is used on a method that needs to be 
+ * executed
+ * after dependency injection is done to perform any initialization. This
+ * method MUST be invoked before the class is put into service. This
+ * annotation MUST be supported on all classes that support dependency
+ * injection. The method annotated with PostConstruct MUST be invoked even
+ * if the class does not request any resources to be injected. Only one
+ * method can be annotated with this annotation. The method on which the
+ * PostConstruct annotation is applied MUST fulfill all of the following
+ * criteria -
+ * - The method MUST NOT have any parameters except in the case of EJB
+ * interceptors   in which case it takes an InvocationC	ontext object as
+ * defined by the EJB   specification.
+ * - The return type of the method MUST be void.
+ * - The method MUST NOT throw a checked exception.
+ * - The method on which PostConstruct is applied MAY be public, protected,
+ * package private or private.
+ * - The method MUST NOT be static except for the application client.
+ * - The method MAY be final.
+ * - If the method throws an unchecked exception the class MUST NOT be 
+ * put into
+ * service except in the case of EJBs where the EJB can handle exceptions
+ * and
+ * even   recover from them.
+ *
+ * @see javax.annotation.PreDestroy
+ * @see javax.annotation.Resource
+ * @since Common Annotations 1.0
+ */
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface PostConstruct {
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-76012616986007">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.annotation.PostConstruct</literal>
+                    - Example</title>
+
+                    <para><programlisting language="java"><![CDATA[@WebService
+public class HelloImpl {
+    @PostConstruct
+    private void init() {
+        // ...
+    }
+
+    public String echoHello(String name) {
+        // ...
+    }
+}]]></programlisting></para>
+                </example>
+            </section>
+        </section>
+
+        <section xml:id="section-930833968571058">
+            <title><literal>@javax.annotation.PreDestroy</literal></title>
+
+            <para>The PreDestroy annotation is used on methods as a callback
+            notification to signal that the instance is in the process of
+            being removed by the container. The method annotated with
+            PreDestroy is typically used to release resources that it has been
+            holding.</para>
+
+            <section xml:id="section-916789883737631">
+                <title>Annotation Type Definition</title>
+
+                <informalexample>
+                    <programlisting language="java"><![CDATA[/**
+ * The PreDestroy annotation is used on methods as a callback 
+ * notification to
+ * signal that the instance is in the process of being removed by the
+ * container. The method annotated with PreDestroy is typically used to
+ * release resources that it has been holding. This annotation MUST be
+ * supported by all container managed objects that support PostConstruct
+ * except the application client container in Java EE 5. The method on 
+ * which
+ * the PreDestroy annotation is applied MUST fulfill all of the following
+ * criteria -
+ * - The method MUST NOT have any parameters except in the case of EJB
+ * interceptors in which case it takes an InvocationContext object as 
+ * defined
+ * by the EJB specification.
+ * - The return type of the method MUST be void.
+ * - The method MUST NOT throw a checked exception.
+ * - The method on which PreDestroy is applied MAY be public, protected,
+ * package private or private.
+ * - The method MUST NOT be static.
+ * - The method MAY be final.
+ * - If the method throws an unchecked exception it is ignored except in 
+ * the
+ * case of EJBs where the EJB can handle exceptions.
+ *
+ * @see javax.annotation.PostConstruct
+ * @see javax.annotation.Resource
+ * @since Common Annotations 1.0
+ */
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface PreDestroy {
+}]]></programlisting>
+                </informalexample>
+            </section>
+
+            <section xml:id="section-9258638457952977">
+                <title>Examples</title>
+
+                <example>
+                    <title><literal>@javax.annotation.PreDestroy</literal> -
+                    Example</title>
+
+                    <programlisting language="java"><![CDATA[@WebService
+public class HelloImpl {
+    public String echoHello(String name) {
+        // ...
+    }
+
+    @PreDestroy
+    private void release() {
+        // ...
+    }
+}]]></programlisting>
+                </example>
+            </section>
+        </section>
+    </section>
+</section>
