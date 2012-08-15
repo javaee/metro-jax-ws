@@ -182,6 +182,12 @@
                                     windowtitle="JAX-WS RI Tools Documentation"
                                     doctitle="JAX-WS RI"
                                     bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
+                                    <bootclasspath>
+                                        <pathelement path="${maven.dependency.javax.xml.bind.jaxb-api.jar.path}"/>
+                                        <pathelement path="${maven.dependency.javax.xml.soap.saaj-api.jar.path}"/>
+                                        <pathelement path="${maven.dependency.javax.xml.ws.jaxws-api.jar.path}"/>
+                                        <pathelement path="${sun.boot.class.path}"/>
+                                    </bootclasspath>
                                     <classpath>
                                         <path  refid="maven.compile.classpath"/>
                                         <pathelement location="${ant.core.lib}"/>

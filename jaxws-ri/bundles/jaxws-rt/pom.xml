@@ -120,7 +120,11 @@
             <artifactId>javax.servlet</artifactId>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.sun.org.apache.xml.internal</groupId>
+            <artifactId>resolver</artifactId>
+        </dependency>
+        
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -241,6 +245,12 @@
                                     windowtitle="JAX-WS RI Runtime Documentation"
                                     doctitle="JAX-WS RI"
                                     bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
+                                    <bootclasspath>
+                                        <pathelement path="${maven.dependency.javax.xml.bind.jaxb-api.jar.path}"/>
+                                        <pathelement path="${maven.dependency.javax.xml.soap.saaj-api.jar.path}"/>
+                                        <pathelement path="${maven.dependency.javax.xml.ws.jaxws-api.jar.path}"/>
+                                        <pathelement path="${sun.boot.class.path}"/>
+                                    </bootclasspath>
                                     <classpath refid="maven.compile.classpath"/>
                                     <link href="http://docs.oracle.com/javase/6/docs/api/"
                                                   offline="${links.offline}" packagelistloc="${links.dir}/javase6/"/>
