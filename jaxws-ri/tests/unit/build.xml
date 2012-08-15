@@ -55,6 +55,16 @@
     <property name="hudson-relative-artifact-location" value="jaxws-ri"/> 
     <!-- Additional arguments to test harness -->
     <property name="args" value=""/>
+    <property name="jvmOpts" value=""/>
+    <condition property="log.prop" value="true" else="false">
+        <istrue value="${log}"/>
+    </condition>
+    <condition property="libraries.dir.prop" value="-Dlibraries.dir=${libraries.dir}" else="">
+        <available file="${libraries.dir}"/>
+    </condition>
+    <condition property="jvm.opts.prop" value="${jvmOpts}" else="">
+        <length string="${jvmOpts}" trim="true" when="greater" length="3" />
+    </condition>
 
     <!-- default build id -->
     <tstamp>
@@ -220,8 +230,8 @@
             refer to docs/index.html
             -->
             <java jar="${lib.home}/harness.jar" fork="true">
-                <sysproperty key="com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump" value="${log}"/>
-                <sysproperty key="com.sun.xml.ws.transport.local.LocalTransportTube.dump" value="${log}"/>
+                <sysproperty key="com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump" value="${log.prop}"/>
+                <sysproperty key="com.sun.xml.ws.transport.local.LocalTransportTube.dump" value="${log.prop}"/>
                 <syspropertyset refid="proxy.properties"/>
 
 
@@ -235,16 +245,16 @@
                 <arg path="${test}"/>
 
                 <arg line="${args}"/>
-                <jvmarg  value="-Djava.endorsed.dirs=${endorsed.dir}"/>
+                <jvmarg  line="-Djava.endorsed.dirs=${endorsed.dir} ${libraries.dir.prop} ${jvm.opts.prop}"/>
 
                 <!--jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,address=8000" />
                <jvmarg value="-Xdebug"/-->
             </java>
 
-            <mkdir dir="${logs.dir}/junit-reports"/>
-            <junitreport todir="${logs.dir}/junit-reports">
+            <mkdir dir="${logs.dir}/html"/>
+            <junitreport todir="${logs.dir}/html">
                 <fileset dir="${logs.dir}" includes="*.xml"/>
-                <report format="frames" todir="${logs.dir}/junit-reports"/>
+                <report format="frames" todir="${logs.dir}/html"/>
             </junitreport>
         </sequential>
     </macrodef>
