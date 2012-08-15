@@ -43,15 +43,14 @@ import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.developer.StreamingDataHandler;
 import com.sun.xml.ws.encoding.DataSourceStreamingDataHandler;
 import junit.framework.TestCase;
-import org.apache.tools.ant.util.ReaderInputStream;
 
 import javax.activation.DataSource;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.soap.MTOMFeature;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.util.Map;
 
 /**
@@ -116,7 +115,7 @@ public class UploadTest extends TestCase {
 
                        @Override
                        public InputStream getInputStream() throws IOException {
-                            return new ReaderInputStream(new StringReader(msg));
+                            return new ByteArrayInputStream(msg.getBytes());
                        }
 
                        @Override
