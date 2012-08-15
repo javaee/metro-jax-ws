@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,7 +59,7 @@ import org.xml.sax.SAXParseException;
  * <p>
  * However, to make the error handling easy (and make it work
  * with visitor patterns nicely),
- * none of the methods on thi class throws {@link org.xml.sax.SAXException}.
+ * none of the methods on this class throws {@link org.xml.sax.SAXException}.
  * Instead, when the compilation needs to be aborted,
  * it throws {@link AbortException}, which is unchecked.
  *

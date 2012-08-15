@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -82,7 +82,7 @@ public abstract class WSToolsObjectFactory {
      *
      * @return true if there is no error, otherwise false
      *
-     * @see {@link #wsimport(OutputStream, Container, String[])}
+     * @see #wsimport(OutputStream, Container, String[])
      */
     public boolean wsimport(OutputStream logStream, String[] args) {
         return wsimport(logStream, Container.NONE, args);
@@ -106,7 +106,7 @@ public abstract class WSToolsObjectFactory {
      * artifacts like wrapper, exception bean classes etc.
      *
      * @return true if there is no error, otherwise false
-     * @see {@link #wsgen(OutputStream, Container, String[])}
+     * @see #wsgen(OutputStream, Container, String[])
      */
     public boolean wsgen(OutputStream logStream, String[] args) {
         return wsgen(logStream, Container.NONE, args);

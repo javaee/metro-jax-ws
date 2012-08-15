@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,13 +56,13 @@ import java.lang.annotation.*;
 public @interface WsgenProtocol {
     /**
      * Token for wsgen -wsdl[:protocol]
-     * @return
+     * @return Token for wsgen -wsdl[:protocol]
      */
     String token();
 
     /**
      * The corresponding lexical string used to create BindingID
-     * @return
+     * @return lexical string used to create BindingID
      */
     String lexical();
 }

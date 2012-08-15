@@ -181,7 +181,7 @@ public class WsImport2 extends MatchingTask {
     /**
      * Provides a way to directly pass wsimport commandline options through nested arg
      * instead of a separate attribute for each option.
-     * @return
+     * @return argument created
      */
     public Commandline.Argument createArg() {
         return cmd.createArgument();
