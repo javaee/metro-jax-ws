@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -158,7 +158,7 @@ public interface SEIModel {
     @NotNull String getWSDLLocation();
 
     /**
-     * wsdl:service qualified name for the port associated with the {@link SEIModel)
+     * wsdl:service qualified name for the port associated with the {@link SEIModel}
      *
      * @return wsdl:service@name value - always non-null
      */
@@ -170,14 +170,14 @@ public interface SEIModel {
     @NotNull WSDLPort getPort();
 
     /**
-     * Value of the wsdl:port name associated with the {@link SEIModel)
+     * Value of the wsdl:port name associated with the {@link SEIModel}
      *
      * @return wsdl:service/wsdl:port@name value, always non-null
      */
     @NotNull QName getPortName();
 
     /**
-     * Value of wsdl:portType bound to the port associated with the {@link SEIModel)
+     * Value of wsdl:portType bound to the port associated with the {@link SEIModel}
      *
      * @return
      */
@@ -189,7 +189,7 @@ public interface SEIModel {
     @NotNull QName getBoundPortTypeName();
 
     /**
-     * Namespace of the wsd;:port associated with the {@link SEIModel)
+     * Namespace of the wsd;:port associated with the {@link SEIModel}
      */
     @NotNull String getTargetNamespace();
 }

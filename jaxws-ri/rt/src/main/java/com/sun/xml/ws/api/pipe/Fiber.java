@@ -574,8 +574,8 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
 
     /**
      * Marks this Fiber as cancelled.  A cancelled Fiber will never invoke its completion callback
-     * @param mayInterrupt if cancel should use {@link Thread.interrupt()}
-     * @see java.util.Future.cancel
+     * @param mayInterrupt if cancel should use {@link Thread#interrupt()}
+     * @see java.util.concurrent.Future#cancel(boolean) 
      * @since 2.2.6
      */
     public void cancel(boolean mayInterrupt) {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -240,7 +240,7 @@ public class ServerTubeAssemblerContext {
      * encode/decode entire MIME messages in SOAP binding)
      *
      * @return codec to be used for web service requests
-     * @see {@link Codecs}
+     * @see Codecs
      */
     public @NotNull Codec getCodec() {
         return codec;
@@ -262,7 +262,7 @@ public class ServerTubeAssemblerContext {
      * serving requests concurrently.
      *
      * @param codec codec to be used for web service requests
-     * @see {@link Codecs}
+     * @see Codecs
      */
     public void setCodec(@NotNull Codec codec) {
         this.codec = codec;

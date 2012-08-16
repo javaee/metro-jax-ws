@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -108,7 +108,7 @@ public interface Databinding {
 	 * Deserializes a response XML(SOAP) message to a JavaCallInfo instance
 	 * representing the return value or exception of a JAVA method call.
 	 * 
-	 * @param soap The response message
+	 * @param message The response message
 	 * @param call The JavaCallInfo instance to be updated
 	 * 
 	 * @return The JavaCallInfo updated with the return value or exception of a
@@ -200,9 +200,9 @@ public interface Databinding {
 		Builder wsdlSource(Source wsdlSource);
 
 		/**
-		 * Sets the EntityResolver for reading the WSDL
+		 * Sets the {@link EntityResolver} for reading the WSDL
 		 * 
-		 * @param wsdlURL The wsdlURL to set
+		 * @param entityResolver The {@link EntityResolver} to set
 		 * 
          * @return this Builder instance
 		 */

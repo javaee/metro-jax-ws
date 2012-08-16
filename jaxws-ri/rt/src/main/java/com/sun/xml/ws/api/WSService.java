@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -97,13 +97,13 @@ public abstract class WSService extends ServiceDelegate implements ComponentRegi
     public abstract <T> T getPort(WSEndpointReference epr, Class<T> portInterface, WebServiceFeature... features);
 
     /**
-     * Works like {@link #createDispatch(EndpointReference, Class, Mode, WebServiceFeature[])}
+     * Works like {@link #createDispatch(javax.xml.ws.EndpointReference, java.lang.Class, javax.xml.ws.Service.Mode, javax.xml.ws.WebServiceFeature[])}
      * but it takes the port name separately, so that EPR without embedded metadata can be used.
      */
     public abstract <T> Dispatch<T> createDispatch(QName portName, WSEndpointReference wsepr, Class<T> aClass, Service.Mode mode, WebServiceFeature... features);
 
     /**
-     * Works like {@link #createDispatch(EndpointReference, JAXBContext, Mode, WebServiceFeature[])}
+     * Works like {@link #createDispatch(javax.xml.ws.EndpointReference, javax.xml.bind.JAXBContext, javax.xml.ws.Service.Mode, javax.xml.ws.WebServiceFeature[])}
      * but it takes the port name separately, so that EPR without embedded metadata can be used.
      */
     public abstract Dispatch<Object> createDispatch(QName portName, WSEndpointReference wsepr, JAXBContext jaxbContext, Service.Mode mode, WebServiceFeature... features);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -135,7 +135,7 @@ public interface WSDLBoundPortType extends WSDLFeaturedObject, WSDLExtensible {
      *
      * @param operation wsdl:operation@name value. Must be non-null.
      * @param part      wsdl:part@name such as value of soap:header@part. Must be non-null.
-     * @param mode      {@link Mode#IN} or {@link Mode@OUT}. Must be non-null.
+     * @param mode      {@link Mode#IN} or {@link Mode#OUT}. Must be non-null.
      * @return null if the binding could not be resolved for the part.
      */
     ParameterBinding getBinding(QName operation, String part, Mode mode);

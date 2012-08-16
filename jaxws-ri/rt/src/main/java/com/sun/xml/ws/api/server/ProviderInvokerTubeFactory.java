@@ -80,7 +80,13 @@ public abstract class ProviderInvokerTubeFactory<T> {
     }
 
     /**
-     * @param
+     * @param classLoader
+     * @param container
+     * @param implType
+     * @param invoker
+     * @param argsBuilder
+     * @param isAsync
+     * 
      * @return
      */
     public static <T> ProviderInvokerTube<T> create(@Nullable final ClassLoader classLoader,

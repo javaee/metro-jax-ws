@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -336,7 +336,7 @@ public abstract class Stubs {
 
     /**
      * Creates a new {@link Message}-based {@link Dispatch} stub that connects to the given pipe.
-     * The returned dispatch is always {@link Service.Mode#MESSAGE}.
+     * The returned dispatch is always {@link Mode#MESSAGE}.
      *
      * @param portName
      *      see {@link Service#createDispatch(QName, Class, Service.Mode)}.
@@ -359,7 +359,7 @@ public abstract class Stubs {
 
     /**
      * Creates a new {@link Message}-based {@link Dispatch} stub that connects to the given pipe.
-     * The returned dispatch is always {@link Service.Mode#MESSAGE}.
+     * The returned dispatch is always {@link Mode#MESSAGE}.
      *
      * @param portInfo
      *      see <a href="#param">common parameters</a>
@@ -396,7 +396,7 @@ public abstract class Stubs {
 
     /**
      * Creates a new {@link Message}-based {@link Dispatch} stub that connects to the given pipe.
-     * The returned dispatch is always {@link Service.Mode#MESSAGE}.
+     * The returned dispatch is always {@link Mode#MESSAGE}.
      *
      * @param portInfo
      *      see <a href="#param">common parameters</a>

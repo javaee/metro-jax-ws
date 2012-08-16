@@ -1,5 +1,6 @@
 package com.sun.xml.ws.api.server;
 
+import com.sun.xml.ws.server.WSEndpointImpl;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -238,8 +238,8 @@ public abstract class WSEndpoint<T> implements ComponentRegistry {
      * one-way message processing happens correctly. {@link Packet#webServiceContextDelegate}
      * should have the correct value, so that some {@link WebServiceContext} methods correctly.
      *
-     * @see {@link Packet#transportBackChannel}
-     * @see {@link Packet#webServiceContextDelegate}
+     * @see Packet#transportBackChannel
+     * @see Packet#webServiceContextDelegate
      * 
      * @param request web service request
      * @param callback callback to get response packet
@@ -251,7 +251,7 @@ public abstract class WSEndpoint<T> implements ComponentRegistry {
     /**
      * Schedule invocation of web service asynchronously.
      *
-     * @see {@link #schedule(Packet, CompletionCallback)}
+     * @see #schedule(Packet, CompletionCallback)
      *
      * @param request web service request
      * @param callback callback to get response packet(exception if there is one)
@@ -692,7 +692,7 @@ public abstract class WSEndpoint<T> implements ComponentRegistry {
      * @param wsdlAddress
      * @param metadata
      * @param referenceParameters
-     * @return 
+     * @return EndpointReference instance based on passed parameters and values obtained from current instance
      */
     public abstract <T extends EndpointReference> T getEndpointReference(Class<T> clazz,
             String address, String wsdlAddress, List<Element> metadata,
