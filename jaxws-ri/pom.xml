@@ -327,10 +327,10 @@
 
     <modules>
         <module>bom</module>
-        <module>docs</module>
         <module>bundles/jaxws-rt</module>
         <module>bundles/jaxws-tools</module>
         <module>extras</module>
+        <module>docs</module>
         <module>bundles</module>
     </modules>
 
