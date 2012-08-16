@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,7 +68,7 @@ import java.util.Map;
  * <ol>
  *  <li>Accepts Object[] that represents arguments for a Java method,
  *      and creates {@link com.sun.xml.ws.message.jaxb.JAXBMessage} that represents a request message.
- *  <li>Takes a {@link com.sun.xml.ws.api.message.Message] that represents a response,
+ *  <li>Takes a {@link com.sun.xml.ws.api.message.Message} that represents a response,
  *      and extracts the return value (and updates {@link javax.xml.ws.Holder }s.)
  * </ol>
  *
@@ -227,10 +227,10 @@ public class StubHandler implements ClientCallBridge {
      * @param args proxy invocation arguments
      * @return Message for the arguments
      */
-    public Packet createRequestPacket(JavaCallInfo call) {
-        Message msg = bodyBuilder.createMessage(call.getParameters());
+    public Packet createRequestPacket(JavaCallInfo args) {
+        Message msg = bodyBuilder.createMessage(args.getParameters());
 
-        for (MessageFiller filler : inFillers) filler.fillIn(call.getParameters(),msg);
+        for (MessageFiller filler : inFillers) filler.fillIn(args.getParameters(),msg);
 
         Packet req = (Packet)packetFactory.createContext(msg);
         req.setState(Packet.State.ClientRequest);

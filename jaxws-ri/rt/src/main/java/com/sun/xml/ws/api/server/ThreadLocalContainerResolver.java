@@ -92,7 +92,7 @@ public class ThreadLocalContainerResolver extends ContainerResolver {
     }
     
     /**
-     * Used by {@link Engine} to wrap asynchronous {@link Fiber} executions
+     * Used by {@link com.sun.xml.ws.api.pipe.Engine} to wrap asynchronous {@link com.sun.xml.ws.api.pipe.Fiber} executions
      * @param container Container
      * @param ex Executor to wrap
      * @return an Executor that will set the container during executions of Runnables

@@ -137,7 +137,7 @@ public abstract class ResponseBuilder {
         }
     }
     /**
-     * {@link PartBuilder} keyed by the element name (inside the wrapper element.)
+     * {@link ResponseBuilder.PartBuilder} keyed by the element name (inside the wrapper element.)
      */
     protected Map<QName,WrappedPartBuilder> wrappedParts = null;
     protected QName wrapperName;

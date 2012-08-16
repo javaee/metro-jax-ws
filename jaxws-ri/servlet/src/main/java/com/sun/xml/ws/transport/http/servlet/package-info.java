@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,8 +47,9 @@
  *
  * <h2>Compatibility</h2>
  * <p>
- * {@link WSServlet} and {@link WSServletContextListener} class names
- * show up in the user appliation, so we need to be careful in changing them.
+ * {@link com.sun.xml.ws.transport.http.servlet.WSServlet}
+ * and {@link com.sun.xml.ws.transport.http.servlet.WSServletContextListener} class names
+ * show up in the user application, so we need to be careful in changing them.
  *
  * <b>Other parts of the code, including actual definitions of the above classes,
  * are subject to change without notice.</b>

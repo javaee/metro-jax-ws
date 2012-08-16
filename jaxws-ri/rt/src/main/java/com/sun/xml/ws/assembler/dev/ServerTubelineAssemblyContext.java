@@ -63,7 +63,7 @@ public interface ServerTubelineAssemblyContext extends TubelineAssemblyContext {
      * encode/decode entire MIME messages in SOAP binding)
      *
      * @return codec to be used for web service requests
-     * @see {@link com.sun.xml.ws.api.pipe.Codecs}
+     * @see com.sun.xml.ws.api.pipe.Codecs
      */
     @NotNull
     Codec getCodec();
@@ -139,7 +139,7 @@ public interface ServerTubelineAssemblyContext extends TubelineAssemblyContext {
      * serving requests concurrently.
      *
      * @param codec codec to be used for web service requests
-     * @see {@link com.sun.xml.ws.api.pipe.Codecs}
+     * @see com.sun.xml.ws.api.pipe.Codecs
      */
     void setCodec(@NotNull
     Codec codec);

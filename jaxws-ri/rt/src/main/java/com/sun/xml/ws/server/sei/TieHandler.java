@@ -73,7 +73,7 @@ import java.util.logging.Logger;
  * <p>
  * This class mainly performs the following two tasks:
  * <ol>
- *  <li>Takes a {@link Message] that represents a request,
+ *  <li>Takes a {@link Message} that represents a request,
  *      and extracts the arguments (and updates {@link Holder}s.)
  *  <li>Accepts return value and {@link Holder} arguments for a Java method,
  *      and creates {@link JAXBMessage} that represents a response message.

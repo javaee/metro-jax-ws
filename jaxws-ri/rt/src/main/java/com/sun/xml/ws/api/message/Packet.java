@@ -351,9 +351,10 @@ public final class Packet
     public BindingProvider proxy;
 
     /**
-     * Determines if the governing {@link Adapter} or {@link Fiber.CompletionCallback} will handle delivering
-     * response messages targeted at non-anonymous endpoint addresses.  Prior to the introduction of this
-     * flag the {@link WsaServerTube} would deliver non-anonymous responses.
+     * Determines if the governing {@link Adapter} or {@link com.sun.xml.ws.api.pipe.Fiber.CompletionCallback}
+     * will handle delivering response messages targeted at non-anonymous endpoint
+     * addresses.  Prior to the introduction of this flag
+     * the {@link WsaServerTube} would deliver non-anonymous responses.
      */
     public boolean isAdapterDeliversNonAnonymousResponse;
 
