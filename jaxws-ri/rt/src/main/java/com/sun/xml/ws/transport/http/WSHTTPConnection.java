@@ -127,7 +127,7 @@ public abstract class WSHTTPConnection extends BasePropertySet {
      * the previously set value. If not, this method adds it.
      *
      * <p>
-     * Note that this method and {@link #setResponseHeaders(Map&lt;String,List&lt;String>>)}
+     * Note that this method and {@link #setResponseHeaders(java.util.Map)}
      * may be invoked in any arbitrary order.
      *
      * @param value
@@ -363,7 +363,7 @@ public abstract class WSHTTPConnection extends BasePropertySet {
     /**
      * Subclasses are expected to override
      *
-     * @return
+     * @return a {@link String} containing the protocol name and version number
      */
     public String getProtocol() {
         return "HTTP/1.1";
@@ -373,7 +373,7 @@ public abstract class WSHTTPConnection extends BasePropertySet {
      * Subclasses are expected to override
      *
      * @since JAX-WS RI 2.2.2
-     * @return
+     * @return value of given cookie
      */
     public String getCookie(String name) {
         return null;
@@ -390,8 +390,6 @@ public abstract class WSHTTPConnection extends BasePropertySet {
 
     /**
      * Subclasses are expected to override
-     *
-     * @return
      */
     public void setContentLengthResponseHeader(int value) {
     }

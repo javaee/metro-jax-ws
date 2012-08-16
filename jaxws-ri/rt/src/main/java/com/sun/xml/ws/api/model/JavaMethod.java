@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,6 +46,7 @@ import com.sun.xml.ws.api.model.soap.SOAPBinding;
 
 import javax.xml.namespace.QName;
 import java.lang.reflect.Method;
+import javax.jws.WebService;
 
 /**
  * Abstracts the annotated {@link Method} of a SEI.
@@ -63,18 +64,18 @@ public interface JavaMethod {
      * On the server side, it uses this for invocation of the web service
      *
      * <p>
-     * {@link @WebService}(endpointInterface="I")
+     * {@literal @}{@link WebService}(endpointInterface="I")
      * class A { }
      *
      * In this case, it retuns A's method 
      *
      * <p>
-     * {@link @WebService}(endpointInterface="I")
+     * {@literal @}{@link WebService}(endpointInterface="I")
      * class A implements I { }
      * In this case, it returns A's method
      *
      * <p>
-     * {@link @WebService}
+     * {@literal @}{@link WebService}
      * class A { }
      * In this case, it returns A's method
      *  
@@ -88,17 +89,17 @@ public interface JavaMethod {
      * Returns the SEI method if there is one.
      *
      * <p>
-     * {@link @WebService}(endpointInterface="I")
+     * {@literal @}{@link WebService}(endpointInterface="I")
      * class A { }
      * In this case, it retuns I's method
      *
      * <p>
-     * {@link @WebService}(endpointInterface="I")
+     * {@literal @}{@link WebService}(endpointInterface="I")
      * class A implements I { }
      * In this case, it returns I's method
      *
      * <p>
-     * {@link @WebService}
+     * {@literal @}{@link WebService}
      * class A { }
      * In this case, it returns A's method
      *

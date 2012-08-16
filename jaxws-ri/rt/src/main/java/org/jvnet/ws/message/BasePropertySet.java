@@ -83,7 +83,7 @@ public abstract class BasePropertySet implements PropertySet {
     protected static class PropertyMap extends HashMap<String,Accessor> {}
 
     /**
-     * Map representing the Fields and Methods annotated with {@link Property}.
+     * Map representing the Fields and Methods annotated with {@link PropertySet.Property}.
      * Model of {@link PropertySet} class.
      *
      * <p>
@@ -103,7 +103,7 @@ public abstract class BasePropertySet implements PropertySet {
     protected abstract PropertyMap getPropertyMap();
 
     /**
-     * This method parses a class for fields and methods with {@link Property}.
+     * This method parses a class for fields and methods with {@link PropertySet.Property}.
      */
     protected static PropertyMap parse(final Class clazz) {
         // make all relevant fields and methods accessible.

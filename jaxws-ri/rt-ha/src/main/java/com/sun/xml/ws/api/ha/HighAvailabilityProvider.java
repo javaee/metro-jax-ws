@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -200,12 +200,12 @@ public enum HighAvailabilityProvider {
     /**
      * Retrieves {@link BackingStoreFactory} implementation of the requested type.
      * In case this method is executed outside an HA environment (e.g. standalone mode),
-     * {@link StoreType.NOOP} implementation is returned.
+     * {@link StoreType#NOOP} implementation is returned.
      *
      * @param type type of the {@link BackingStoreFactory} implementation to be retrieved
      *
      * @return {@link BackingStoreFactory} implementation of the requested type.
-     * When executed outside HA environment, {@link StoreType.NOOP} implementation
+     * When executed outside HA environment, {@link StoreType#NOOP} implementation
      * is returned.
      *
      * @throws HighAvailabilityProviderException in case the method is executed inside

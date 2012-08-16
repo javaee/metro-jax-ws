@@ -92,14 +92,14 @@ public class SAAJFactory {
      *            specified implementation of  <code>MessageFactory</code>.
      * @see SAAJMetaFactory
      */
-	public static MessageFactory getMessageFactory(String saajFactoryString) throws SOAPException {
+	public static MessageFactory getMessageFactory(String protocol) throws SOAPException {
 		for (SAAJFactory s : ServiceFinder.find(SAAJFactory.class)) {
-			MessageFactory mf = s.createMessageFactory(saajFactoryString);
+			MessageFactory mf = s.createMessageFactory(protocol);
 			if (mf != null)
 				return mf;
 		}
     	
-    	return instance.createMessageFactory(saajFactoryString);
+    	return instance.createMessageFactory(protocol);
 	}
 
     /**
@@ -120,14 +120,14 @@ public class SAAJFactory {
      *            specified <code>SOAPFactory</code>
      * @see SAAJMetaFactory
      */
-	public static SOAPFactory getSOAPFactory(String saajFactoryString) throws SOAPException {
+	public static SOAPFactory getSOAPFactory(String protocol) throws SOAPException {
 		for (SAAJFactory s : ServiceFinder.find(SAAJFactory.class)) {
-			SOAPFactory sf = s.createSOAPFactory(saajFactoryString);
+			SOAPFactory sf = s.createSOAPFactory(protocol);
 			if (sf != null)
 				return sf;
 		}
     	
-    	return instance.createSOAPFactory(saajFactoryString);
+    	return instance.createSOAPFactory(protocol);
 	}
 	
 	/**
@@ -200,9 +200,9 @@ public class SAAJFactory {
      * @return Created SAAJPMessage
      * @throws SOAPException if SAAJ processing fails
      */
-    public SAAJMessage readAsSAAJ(Packet p) throws SOAPException {
-        SOAPVersion v = p.getMessage().getSOAPVersion();
-        SOAPMessage msg = readAsSOAPMessage(v, p.getMessage());
+    public SAAJMessage readAsSAAJ(Packet packet) throws SOAPException {
+        SOAPVersion v = packet.getMessage().getSOAPVersion();
+        SOAPMessage msg = readAsSOAPMessage(v, packet.getMessage());
         return new SAAJMessage(msg);
     }
     
@@ -229,8 +229,8 @@ public class SAAJFactory {
      *            specified implementation of  <code>MessageFactory</code>.
      * @see SAAJMetaFactory
      */
-	public MessageFactory createMessageFactory(String saajFactoryString) throws SOAPException {
-		return MessageFactory.newInstance(saajFactoryString);
+	public MessageFactory createMessageFactory(String protocol) throws SOAPException {
+		return MessageFactory.newInstance(protocol);
 	}
 	
     /**
@@ -251,8 +251,8 @@ public class SAAJFactory {
      *            specified <code>SOAPFactory</code>
      * @see SAAJMetaFactory
      */
-	public SOAPFactory createSOAPFactory(String saajFactoryString) throws SOAPException {
-		return SOAPFactory.newInstance(saajFactoryString);
+	public SOAPFactory createSOAPFactory(String protocol) throws SOAPException {
+		return SOAPFactory.newInstance(protocol);
 	}
 	
 	/**

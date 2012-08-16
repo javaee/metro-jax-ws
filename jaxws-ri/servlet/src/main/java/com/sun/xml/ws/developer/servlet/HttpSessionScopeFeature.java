@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,12 +45,12 @@ import com.sun.xml.ws.api.FeatureConstructor;
 import javax.xml.ws.WebServiceFeature;
 
 /**
- * {@link WebServiceFeature} for {@link @HttpSessionScope}.
+ * {@link WebServiceFeature} for {@link HttpSessionScope}.
  * @author Kohsuke Kawaguchi
  */
 public class HttpSessionScopeFeature extends WebServiceFeature {
     /**
-     * Constant value identifying the {@link @HttpSessionScope} feature.
+     * Constant value identifying the {@link HttpSessionScope} feature.
      */
     public static final String ID = "http://jax-ws.dev.java.net/features/servlet/httpSessionScope";
 

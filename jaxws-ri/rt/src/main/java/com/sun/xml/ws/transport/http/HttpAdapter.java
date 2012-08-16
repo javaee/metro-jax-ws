@@ -245,7 +245,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      *
      * <p>
      * To populate a request {@link Packet} with more info,
-     * define {@link PropertySet.Property properties} on
+     * define {@link org.jvnet.ws.message.PropertySet.Property properties} on
      * {@link WSHTTPConnection}.
      *
      * @param connection to receive/send HTTP messages for web service endpoints
