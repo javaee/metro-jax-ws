@@ -44,6 +44,7 @@ import com.sun.istack.Nullable;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.wsdl.*;
+import com.sun.xml.ws.model.RuntimeModeler;
 
 import javax.jws.WebParam.Mode;
 import javax.jws.soap.SOAPBinding.Style;
@@ -397,7 +398,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
      * For rpclit gives namespace value on soapbinding:body@namespace
      *
      * @return   non-null for rpclit and null for doclit
-     * @see com.sun.xml.ws.model.RuntimeModeler#processRpcMethod(com.sun.xml.ws.model.JavaMethodImpl, java.lang.String, java.lang.String, java.lang.reflect.Method))
+     * @see RuntimeModeler#processRpcMethod(JavaMethodImpl, String, String, Method)
      */
     public String getRequestNamespace(){
         return (reqNamespace != null)?reqNamespace:name.getNamespaceURI();
@@ -412,7 +413,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
      * For rpclit gives namespace value on soapbinding:body@namespace
      *
      * @return   non-null for rpclit and null for doclit
-     *      * @see com.sun.xml.ws.modeler.RuntimeModeler#processRpcMethod(com.sun.xml.ws.model.JavaMethod, String, javax.jws.WebMethod, String, java.lang.reflect.Method, javax.jws.WebService)
+     * @see RuntimeModeler#processRpcMethod(JavaMethodImpl, String, String, Method)
      */
     public String getResponseNamespace(){
         return (respNamespace!=null)?respNamespace:name.getNamespaceURI();
