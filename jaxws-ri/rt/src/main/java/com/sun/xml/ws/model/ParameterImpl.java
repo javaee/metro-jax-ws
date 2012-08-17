@@ -158,7 +158,7 @@ public class ParameterImpl implements Parameter {
 
     /**
      * Sometimes we need to overwrite the typeReferenc, such as during patching for rpclit
-     * @see AbstractSEIModelImpl#applyParameterBinding(com.sun.xml.ws.model.wsdl.WSDLBoundPortTypeImpl)
+     * @see AbstractSEIModelImpl#applyRpcLitParamBinding(JavaMethodImpl, WrapperParameter, WSDLBoundPortType, WebParam.Mode)
      * @deprecated 
      */
     void setTypeReference(TypeReference type){

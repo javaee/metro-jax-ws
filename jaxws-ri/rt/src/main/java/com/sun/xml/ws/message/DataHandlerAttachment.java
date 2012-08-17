@@ -66,7 +66,7 @@ public final class DataHandlerAttachment implements Attachment {
     String contentIdNoAngleBracket;
 
     /**
-     * This will be constructed by {@link AttachmentMarshallerImpl}
+     * This will be constructed by {@link com.sun.xml.ws.message.jaxb.AttachmentMarshallerImpl}
      */
     public DataHandlerAttachment(@NotNull String contentId, @NotNull DataHandler dh) {
         this.dh = dh;

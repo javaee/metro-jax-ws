@@ -91,6 +91,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.EndpointReference;
 import javax.xml.ws.RespectBindingFeature;
+import javax.xml.ws.Response;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;

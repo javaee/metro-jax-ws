@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,7 @@ public abstract class TubeCloner {
      * Invoked by a client of a tube to clone the whole pipeline.
      *
      * <p>
-     * {@link Tube}s implementing the {@link Tube#copy(TubeClonerImpl)} method
+     * {@link Tube}s implementing the {@link Tube#copy(com.sun.xml.ws.api.pipe.TubeCloner)} method
      * shall use {@link #copy(Tube)} method.
      *
      * @param p
@@ -81,7 +81,7 @@ public abstract class TubeCloner {
     }
 
     /**
-     * Invoked by a {@link Tube#copy(TubeClonerImpl)} implementation
+     * Invoked by a {@link Tube#copy(com.sun.xml.ws.api.pipe.TubeCloner)} implementation
      * to copy a reference to another pipe.
      *
      * <p>

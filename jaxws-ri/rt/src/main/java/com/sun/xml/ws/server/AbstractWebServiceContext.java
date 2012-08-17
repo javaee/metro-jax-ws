@@ -43,6 +43,7 @@ package com.sun.xml.ws.server;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WSWebServiceContext;
+import com.sun.xml.ws.server.provider.AsyncProviderInvokerTube;
 import com.sun.istack.NotNull;
 import org.w3c.dom.Element;
 
@@ -56,7 +57,8 @@ import java.security.Principal;
  * {@link Packet} and concrete implementations provide it via
  * {@link #getRequestPacket()}.
  *
- * @see InvokerTube, AsyncProviderInvokerTube
+ * @see InvokerTube,
+ * @see AsyncProviderInvokerTube
  *
  * @author Jitendra Kotamraju
  */

@@ -44,6 +44,7 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.bind.marshaller.SAX2DOMEx;
 import com.sun.xml.ws.addressing.WsaPropertyBag;
+import com.sun.xml.ws.addressing.WsaServerTube;
 import com.sun.xml.ws.addressing.WsaTubeHelper;
 import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.EndpointAddress;
@@ -158,7 +159,7 @@ import java.nio.channels.WritableByteChannel;
  *  <li>this class needs to be cloneable since Message is copiable.
  *  <li>The three live views aren't implemented correctly. It will be
  *      more work to do so, although I'm sure it's possible.
- *  <li>{@link Property} annotation is to make it easy
+ *  <li>{@link PropertySet.Property} annotation is to make it easy
  *      for {@link MessageContext} to export properties on this object,
  *      but it probably needs some clean up.
  * </ol>

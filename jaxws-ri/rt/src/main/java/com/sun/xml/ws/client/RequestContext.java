@@ -88,7 +88,7 @@ import static javax.xml.ws.handler.MessageContext.HTTP_REQUEST_HEADERS;
  * For better performance, we wan't use strongly typed field as much as possible
  * to avoid reflection and unnecessary collection iterations;
  *
- * Using {@link MapView} implementation allows client to use {@link Map} interface
+ * Using {@link org.jvnet.ws.message.BasePropertySet.MapView} implementation allows client to use {@link Map} interface
  * in a way that all the strongly typed properties are reflected to the fields
  * right away. Any additional (extending) properties can be added by client aswell;
  * those would be processed using iterating the {@link MapView} and their processing,

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -117,7 +117,7 @@ public interface BindingContext {
      * Creates a mini-marshaller/unmarshaller that can process a {@link TypeInfo}.
      *
      * @return
-     *      null if the specified reference is not given to {@link BindingContext#newInstance}.
+     *      null if the specified reference is not given to {@link BindingContext#newWrapperInstace(Class)}.
      *
      * @since 2.0 EA1
      */
@@ -219,7 +219,7 @@ public interface BindingContext {
      *
      * @throws IllegalArgumentException
      *      if the parameter is null or not a part of the {@link TypeInfo}s specified
-     *      in the {@link BindingContext#newInstance} method.
+     *      in the {@link BindingContext#newWrapperInstace(Class)} method.
      *
      * @return null
      *      if the referenced type is an anonymous and therefore doesn't have a name. 

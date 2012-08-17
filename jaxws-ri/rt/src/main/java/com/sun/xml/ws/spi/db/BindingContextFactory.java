@@ -130,7 +130,7 @@ abstract public class BindingContextFactory {
 	 * @param databinding mode/flavor or the package name of the JAXBContext implementation.
 	 * @return
 	 */
-	abstract protected boolean isFor(String str);		
+	abstract protected boolean isFor(String databinding);		
 
 	/**
 	 * @deprecated - Does jaxws need this?

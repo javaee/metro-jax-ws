@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -113,7 +113,7 @@ public interface WSBindingProvider extends BindingProvider, Closeable, Component
      * @param headers
      *      Can be null or empty.
      * @throws UnsupportedOperationException
-     *      If this {@lini WSBindingProvider} is a {@link Dispatch}
+     *      If this {@link WSBindingProvider} is a {@link Dispatch}
      *      that does not use JAXB.
      */
     void setOutboundHeaders(Object... headers);

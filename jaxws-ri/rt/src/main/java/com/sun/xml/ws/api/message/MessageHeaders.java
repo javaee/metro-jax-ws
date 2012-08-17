@@ -117,12 +117,12 @@ public interface MessageHeaders {
      * @param header
      * @return
      */
-    public boolean isUnderstood(QName name);
+    public boolean isUnderstood(QName header);
     
     /**
      * True if the header has been explicitly marked understood, false otherwise
      * @param header
      * @return
      */
-    public boolean isUnderstood(String nsUri, String localName);
+    public boolean isUnderstood(String nsUri, String header);
 }

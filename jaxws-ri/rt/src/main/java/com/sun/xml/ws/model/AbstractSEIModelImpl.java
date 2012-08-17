@@ -340,7 +340,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
     }
 
     /**
-     * Applies binding related information to the RpcLitPayload. The payload map is populated correctl
+     * Applies binding related information to the RpcLitPayload. The payload map is populated correctly
      * @return
      * Returns attachment parameters if/any.
      */

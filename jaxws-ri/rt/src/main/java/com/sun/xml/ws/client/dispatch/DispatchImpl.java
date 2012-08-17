@@ -170,9 +170,8 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
     }
     /**
      *
-     * @param port    dispatch instance is associated with this wsdl port qName
+     * @param portportInfo dispatch instance is associated with this wsdl port qName
      * @param mode    Service.mode associated with this Dispatch instance - Service.mode.MESSAGE or Service.mode.PAYLOAD
-     * @param owner   Service that created the Dispatch
      * @param pipe    Master pipe for the pipeline
      * @param binding Binding of this Dispatch instance, current one of SOAP/HTTP or XML/HTTP
      * @param allowFaultResponseMsg A packet containing a SOAP fault message is allowed as the response to a request on this dispatch instance.
