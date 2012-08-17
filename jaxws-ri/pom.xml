@@ -363,10 +363,9 @@
                 <property>
                     <name>dev</name>
                 </property>
-                <!-- TODO: Fix me on JDK 7 -->
-                <jdk>1.6</jdk>
             </activation>
             <modules>
+                <!-- TODO: Fix me on JDK 7 -->
                 <module>tests/unit</module>
             </modules>
         </profile>
