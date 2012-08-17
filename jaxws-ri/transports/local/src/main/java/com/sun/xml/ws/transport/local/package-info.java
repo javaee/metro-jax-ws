@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,16 +51,16 @@
  *
  * <p>
  * This package comes with two transports. One is the legacy
- * {@link LocalTransportFactory "local" transport}, which effectively
+ * {@link com.sun.xml.ws.transport.local.LocalTransportFactory "local" transport}, which effectively
  * deploys a new service instance every time you create a new proxy/dispatch.
  * This is not only waste of computation, but it prevents services of the same
  * application from talking with each other.
  *
  * <p>
- * {@link InVmTransportFactory The "in-vm" transport} is the modern version
+ * {@link com.sun.xml.ws.transport.local.InVmTransportFactory The "in-vm" transport} is the modern version
  * of the local transport that fixes this problem. You first deploy a new
- * application by using {@link InVmServer},
- * {@link InVmServer#getAddress() obtain its address}, configure the JAX-WS RI
+ * application by using {@link com.sun.xml.ws.transport.local.InVmServer},
+ * {@link com.sun.xml.ws.transport.local.InVmServer#getAddress() obtain its address}, configure the JAX-WS RI
  * with that endpoint, then use that to talk to the running service.
  */
 package com.sun.xml.ws.transport.local;
