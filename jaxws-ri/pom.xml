@@ -330,11 +330,21 @@
         <module>bundles/jaxws-rt</module>
         <module>bundles/jaxws-tools</module>
         <module>extras</module>
-        <module>docs</module>
-        <module>bundles</module>
     </modules>
 
     <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <property>
+                    <name>!dev</name>
+                </property>
+            </activation>
+            <modules>
+                <module>docs</module>
+                <module>bundles</module>
+            </modules>
+        </profile>
         <profile>
             <id>re-build</id>
             <activation>
