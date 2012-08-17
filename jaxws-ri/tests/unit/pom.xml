@@ -148,6 +148,12 @@
             </exclusions>
         </dependency>
         -->
+        
+        <!-- TODO: needed on mac? -->
+        <dependency>
+            <groupId>com.sun.org.apache.xml.internal</groupId>
+            <artifactId>resolver</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
