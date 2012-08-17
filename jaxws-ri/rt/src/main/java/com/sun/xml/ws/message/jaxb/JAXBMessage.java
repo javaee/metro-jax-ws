@@ -380,7 +380,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
             String encoding = XMLStreamWriterUtil.getEncoding(sw);
 
             // Get output stream and use JAXB UTF-8 writer
-            OutputStream os = XMLStreamWriterUtil.getOutputStream(sw);
+            OutputStream os = bridge.supportOutputStream() ? XMLStreamWriterUtil.getOutputStream(sw) : null;
 			if (rawContext != null) {
 				Marshaller m = rawContext.createMarshaller();
 				m.setProperty("jaxb.fragment", Boolean.TRUE);
@@ -390,7 +390,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
 				else
 					m.marshal(jaxbObject, sw);
 			} else {
-				if (os != null && bridge.supportOutputStream() && encoding != null && encoding.equalsIgnoreCase(SOAPBindingCodec.UTF8_ENCODING)) {
+				if (os != null  && encoding != null && encoding.equalsIgnoreCase(SOAPBindingCodec.UTF8_ENCODING)) {
 					bridge.marshal(jaxbObject, os, sw.getNamespaceContext(), am);
 				} else {
 					bridge.marshal(jaxbObject, sw, am);

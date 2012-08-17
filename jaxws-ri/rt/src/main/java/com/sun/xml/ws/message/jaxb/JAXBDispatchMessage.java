@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -208,7 +208,7 @@ public class JAXBDispatchMessage extends AbstractMessageImpl {
             String encoding = XMLStreamWriterUtil.getEncoding(sw);
 
             // Get output stream and use JAXB UTF-8 writer
-            OutputStream os = XMLStreamWriterUtil.getOutputStream(sw);
+            OutputStream os = bridge.supportOutputStream() ? XMLStreamWriterUtil.getOutputStream(sw) : null;
             if (rawContext != null) {
                 Marshaller m = rawContext.createMarshaller();
                 m.setProperty("jaxb.fragment", Boolean.FALSE);
@@ -221,7 +221,7 @@ public class JAXBDispatchMessage extends AbstractMessageImpl {
 
             } else {
 
-                if (os != null && bridge.supportOutputStream() && encoding != null && encoding.equalsIgnoreCase(SOAPBindingCodec.UTF8_ENCODING)) {
+                if (os != null && encoding != null && encoding.equalsIgnoreCase(SOAPBindingCodec.UTF8_ENCODING)) {
                     bridge.marshal(jaxbObject, os, sw.getNamespaceContext(), am);
                 } else {
                     bridge.marshal(jaxbObject, sw, am);

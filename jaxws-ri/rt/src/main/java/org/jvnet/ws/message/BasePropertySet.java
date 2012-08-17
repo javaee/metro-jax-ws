@@ -83,6 +83,17 @@ public abstract class BasePropertySet implements PropertySet {
     protected static class PropertyMap extends HashMap<String,Accessor> {}
 
     /**
+     * PropertyMapEntry represents a Map.Entry in the PropertyMap with more efficient access.
+     */
+    static public class PropertyMapEntry {
+        public PropertyMapEntry(String k, Accessor v) {
+            key = k; value = v;
+        }
+        String key;
+        Accessor value;
+    }
+    
+    /**
      * Map representing the Fields and Methods annotated with {@link PropertySet.Property}.
      * Model of {@link PropertySet} class.
      *
@@ -102,6 +113,18 @@ public abstract class BasePropertySet implements PropertySet {
      */
     protected abstract PropertyMap getPropertyMap();
 
+    /**
+     * A more efficient representation of PropertyMap.
+     */
+    protected PropertyMapEntry[] getPropertyMapEntries() {
+        PropertyMap pm = getPropertyMap();       
+        final PropertyMapEntry[] modelEntries = new PropertyMapEntry[pm.size()];
+        int i = 0;
+        for (final Entry<String, Accessor> e : pm.entrySet()) {
+            modelEntries[i++] = new PropertyMapEntry(e.getKey(), e.getValue());
+        }
+        return modelEntries;
+    }
     /**
      * This method parses a class for fields and methods with {@link PropertySet.Property}.
      */
@@ -284,14 +307,19 @@ public abstract class BasePropertySet implements PropertySet {
         boolean extensible;
 
         MapView(boolean extensible) {
-            super(getPropertyMap().entrySet().size());
+//          super(getPropertyMap().entrySet().size());
+        	super(getPropertyMapEntries().length);
             this.extensible = extensible;
             initialize();
         }
 
         public void initialize() {
-            for (final Entry<String, Accessor> e : getPropertyMap().entrySet()) {
-                super.put(e.getKey(), e.getValue());
+//            for (final Entry<String, Accessor> e : getPropertyMap().entrySet()) {
+//                super.put(e.getKey(), e.getValue());
+//            }
+            PropertyMapEntry[] entries = getPropertyMapEntries();
+            for (int i = 0; i < entries.length; i++) {
+            	super.put(entries[i].key, entries[i].value);
             }
         }
 

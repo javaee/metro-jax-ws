@@ -93,6 +93,7 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.MTOMFeature;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -1065,13 +1066,23 @@ public final class Packet
 
     // completes TypedMap
     private static final PropertyMap model;
+    private static final PropertyMapEntry[] modelEntries;
 
     static {
         model = parse(Packet.class);
+        modelEntries = new PropertyMapEntry[model.size()];
+        int i = 0;
+        for (final Entry<String, Accessor> e : model.entrySet()) {
+            modelEntries[i++] = new PropertyMapEntry(e.getKey(), e.getValue());
+        }
     }
 
     protected PropertyMap getPropertyMap() {
         return model;
+    }
+    
+    protected PropertyMapEntry[] getPropertyMapEntries() {
+        return modelEntries;
     }
 
     private static final Logger LOGGER = Logger.getLogger(Packet.class.getName());
