@@ -346,6 +346,19 @@
             </modules>
         </profile>
         <profile>
+            <id>dev-impl</id>
+            <activation>
+                <property>
+                    <name>dev</name>
+                </property>
+                <!-- TODO: Fix me on JDK 7 -->
+                <jdk>1.6</jdk>
+            </activation>
+            <modules>
+                <module>tests/unit</module>
+            </modules>
+        </profile>
+        <profile>
             <id>re-build</id>
             <activation>
                 <property>
