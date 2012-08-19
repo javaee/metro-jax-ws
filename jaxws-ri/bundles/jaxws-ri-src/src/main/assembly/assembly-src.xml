@@ -65,6 +65,17 @@
                 <include>${project.groupId}:jaxws-tools:*:sources</include>
             </includes>
         </dependencySet>
+        <dependencySet>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+            <outputDirectory>jaxws-ri/lib</outputDirectory>
+            <directoryMode>0755</directoryMode>
+            <fileMode>0644</fileMode>
+            <includes>
+                <include>*:javax.servlet:*</include>
+            </includes>
+        </dependencySet>
     </dependencySets>
     <fileSets>
         <fileSet>
@@ -74,9 +85,16 @@
                 <include>*.jar</include>
             </includes>
             <excludes>
-                    <exclude>**/jaxws-rt.jar</exclude>
-                    <exclude>**/jaxws-tools.jar</exclude>
-                </excludes>
+                <exclude>**/jaxws-rt.jar</exclude>
+                <exclude>**/jaxws-tools.jar</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>jaxws-ri</outputDirectory>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>*.xml</include>
+            </includes>
         </fileSet>
     </fileSets>
 </assembly>
