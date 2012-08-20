@@ -52,42 +52,46 @@
 
     <includeBaseDirectory>true</includeBaseDirectory>
     <baseDirectory>jaxws-ri</baseDirectory>
-    <moduleSets>
-        <moduleSet>
-            <includeSubModules>true</includeSubModules>
-            <excludes>
-                <exclude>*:docs:*</exclude>
-                <exclude>*:release-documentation:*</exclude>
-                <exclude>*:www:*</exclude>
-                <exclude>*:samples:*</exclude>
-                <exclude>*:project:*</exclude>
-            </excludes>
-            <sources>
-                <excludeSubModuleDirectories>false</excludeSubModuleDirectories>
-                <includeModuleDirectory>true</includeModuleDirectory>
-                <directoryMode>0755</directoryMode>
-                <fileMode>0644</fileMode>
-                <fileSets>
-                    <fileSet>
-                        <includes>
-                            <include>**/src/main/**</include>
-                            <include>**/pom.xml</include>
-                        </includes>
-                        <excludes>
-                            <exclude>**/target/**</exclude>
-                        </excludes>
-                    </fileSet>
-                </fileSets>
-            </sources>
-        </moduleSet>
-    </moduleSets>
     <fileSets>
         <fileSet>
+            <directory>${project.basedir}</directory>
             <outputDirectory>/</outputDirectory>
-            <includes>
-                <include>src/main/**</include>
-                <include>pom.xml</include>
-            </includes>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <excludes>
+                <exclude>**/${project.build.directory}/**</exclude>
+                <!-- exclude docs/samples-->
+                <exclude>docs/**</exclude>
+                <exclude>samples/**</exclude>
+                <!-- exclude tests -->
+                <exclude>tests/**</exclude>
+                <!-- exclude optional modules -->
+                <exclude>eclipselink_*/**</exclude>
+                <exclude>transports/**</exclude>
+                <exclude>extras/**</exclude>
+                <exclude>bundles/jaxws-ri-*/**</exclude>
+                <!-- exclude idea files -->
+                <exclude>**/*.iml</exclude>
+                <exclude>**/*.ipr</exclude>
+                <!-- exclude ant files -->
+                <exclude>etc/**</exclude>
+                <exclude>build*.xml</exclude>
+                <exclude>project.properties</exclude>
+                <exclude>rt/build.xml</exclude>
+                <exclude>rt-fi/build.xml</exclude>
+                <exclude>rt-ha/build.xml</exclude>
+                <exclude>servlet/build.xml</exclude>
+                <exclude>httpspi-servlet/build.xml</exclude>
+                <exclude>tools/wscompile/build.xml</exclude>
+                <!-- exclude ivy files -->
+                <exclude>**/ivy*</exclude>
+                <!-- exclude various scripts -->
+                <exclude>**/build*.sh</exclude>
+                <exclude>**/build*.bat</exclude>
+                <exclude>**/hudson*</exclude>
+                <!-- exclude obsolete filse -->
+                <exclude>*.html</exclude>
+                <exclude>*.txt</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <outputDirectory>/</outputDirectory>
