@@ -156,6 +156,24 @@
                     <groupId>com.sun.istack</groupId>
                     <artifactId>istack-commons-maven-plugin</artifactId>
                     <version>${istack-commons.version}</version>
+                    <executions>
+                        <execution>
+                            <id>rs-gen</id>
+                            <goals>
+                                <goal>rs-gen</goal>
+                            </goals>
+                            <configuration>
+                                <resources>
+                                    <directory>${project.basedir}/src/main/resources</directory>
+                                    <includes>
+                                        <include>**/*.properties</include>
+                                    </includes>
+                                </resources>
+                                <destDir>${project.build.directory}/generated-sources/rsrc-gen</destDir>
+                                <license>${project.parent.basedir}/src/main/resources/CDDL+GPLv2.xml</license>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
