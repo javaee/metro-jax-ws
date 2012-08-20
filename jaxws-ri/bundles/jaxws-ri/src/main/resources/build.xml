@@ -67,7 +67,7 @@
         <echo message="  into \${java.home}/lib/endorsed for JAX-WS RI ${project.version} to prevent"/>
         <echo message="  conflicts between the JAX-WS 2.1 classes"/>
         <echo message="  bundled with JDK6 and JAX-WS 2.2 bundled with JAX-WS RI ${project.version}."/>
-        <echo message="  See http://java.sun.com/j2se/1.5.0/docs/guide/standards/ for more on endorsed standards override mechanism"/>
+        <echo message="  See http://docs.oracle.com/javase/6/docs/technotes/guides/standards/ for more on endorsed standards override mechanism"/>
         <echo/>
         <echo message="  You must have write-permissions on the JDK 6 directory."/>
         <echo message="  This is a concern when using a system-wide JDK installation."/>
