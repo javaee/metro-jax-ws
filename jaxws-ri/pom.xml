@@ -400,6 +400,7 @@
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>wagon-maven-plugin</artifactId>
                         <version>1.0-beta-4</version>
+                        <inherited>false</inherited>
                         <executions>
                             <execution>
                                 <id>get-license</id>

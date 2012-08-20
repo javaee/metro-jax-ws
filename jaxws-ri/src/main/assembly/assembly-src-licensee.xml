@@ -98,4 +98,19 @@
             <directory>${project.build.directory}/license</directory>
         </fileSet>
     </fileSets>
+    <files>
+        <file>
+            <outputDirectory>/</outputDirectory>
+            <source>${project.basedir}/src/main/resources/src-build-readme.txt</source>
+            <destName>README</destName>
+        </file>
+        <file>
+            <outputDirectory>/</outputDirectory>
+            <source>${project.basedir}/src/main/resources/ThirdPartyLicense.txt</source>
+        </file>
+        <file>
+            <outputDirectory>/</outputDirectory>
+            <source>${project.basedir}/src/main/resources/distributionREADME_WMforJava2.0.txt</source>
+        </file>
+    </files>
 </assembly>

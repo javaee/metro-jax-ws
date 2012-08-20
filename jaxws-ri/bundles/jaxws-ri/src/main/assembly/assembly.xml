@@ -68,6 +68,18 @@
                 <include>bin/*.sh</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>${project.parent.parent.basedir}/src/main/resources</directory>
+            <outputDirectory>jaxws-ri</outputDirectory>
+            <directoryMode>0755</directoryMode>
+            <fileMode>0644</fileMode>
+            <includes>
+                <include>CDDL+GPLv2.txt</include>
+                <include>LICENSE.txt</include>
+                <include>ThirdPartyLicense.txt</include>
+                <include>distributionREADME_WMforJava2.0.txt</include>
+            </includes>
+        </fileSet>
     </fileSets>
     <dependencySets>
         <dependencySet>
