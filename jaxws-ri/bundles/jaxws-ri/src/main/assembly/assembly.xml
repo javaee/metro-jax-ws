@@ -57,6 +57,7 @@
             <fileMode>0644</fileMode>
             <excludes>
                 <exclude>bin/*.sh</exclude>
+                <exclude>build.xml</exclude>
             </excludes>
         </fileSet>
         <fileSet>
@@ -134,4 +135,10 @@
             </includes>
         </dependencySet>
     </dependencySets>
+    <files>
+        <file>
+            <source>${project.build.directory}/filtered/build.xml</source>
+            <outputDirectory>jaxws-ri</outputDirectory>
+        </file>
+    </files>
 </assembly>
