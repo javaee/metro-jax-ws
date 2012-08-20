@@ -91,6 +91,15 @@
         </fileSet>
         <fileSet>
             <outputDirectory>jaxws-ri</outputDirectory>
+            <directory>${project.build.directory}/dependency/jaxws-ri</directory>
+            <includes>
+                <include>CDDL+GPLv2.txt</include>
+                <include>LICENSE.txt</include>
+                <include>ThirdPartyLicense.txt</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>jaxws-ri</outputDirectory>
             <directory>src/main/resources</directory>
             <includes>
                 <include>*.xml</include>
