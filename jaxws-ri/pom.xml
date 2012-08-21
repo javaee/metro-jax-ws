@@ -81,6 +81,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javadoc.links.dir>${project.parent.basedir}/src/main/javadoc-link</javadoc.links.dir>
         <javadoc.links.offline>false</javadoc.links.offline>
+        <findbugs.skip>false</findbugs.skip>
+        <findbugs.threshold>Default</findbugs.threshold>
+        <findbugs.exclude></findbugs.exclude>
     </properties>
 
     <build>
@@ -314,6 +317,24 @@
                     <version>2.3.7</version>
                     <extensions>true</extensions>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>2.5.1</version>
+                    <configuration>
+                        <skip>${findbugs.skip}</skip>
+                        <threshold>${findbugs.threshold}</threshold>
+                        <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+                        <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
+                        <fork>true</fork>
+                        <jvmArgs>-Xms64m -Xmx256m</jvmArgs>    
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -354,6 +375,23 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>findbugs-maven-plugin</artifactId>
+                            <configuration>
+                                <skip>${findbugs.skip}</skip>
+                                <threshold>${findbugs.threshold}</threshold>
+                                <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
+                            </configuration>
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
             </plugin>
         </plugins>
     </build>
