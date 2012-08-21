@@ -49,7 +49,7 @@
     <property name="build.home" value="${basedir}/target"/>
     <property name="lib.home" value="${basedir}/lib"/>
     <property name="docs.home" value="${basedir}/docs"/>
-    <property name="logs.dir" value="${build.home}/junit-reports"/>
+    <property name="logs.dir" value="${build.home}/surefire-reports"/>
     <property name="test" value="testcases"/>
     <property name="jaxws-hudson-project" value="jaxws-ri-2.2.2"/>
     <property name="hudson-relative-artifact-location" value="jaxws-ri"/> 
