@@ -55,7 +55,7 @@
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-eclipselink-plugin</artifactId>
 
-    <name>JAX-WS RI Eclpselink Plugin</name>
+    <name>JAX-WS RI Eclipselink Plugin</name>
     <description>Pluggable databinding module employing Eclipselink JAXB (MOXy)</description>
 
     <dependencies>

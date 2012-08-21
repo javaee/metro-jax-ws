@@ -55,7 +55,7 @@
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>sdo-eclipselink-plugin</artifactId>
 
-    <name>JAX-WS RI Eclpselink SDO Plugin</name>
+    <name>JAX-WS RI Eclipselink SDO Plugin</name>
     <description>Pluggable databinding module employing Eclipselink SDO</description>
 
     <dependencies>
