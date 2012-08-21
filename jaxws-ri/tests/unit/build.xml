@@ -51,7 +51,7 @@
     <property name="docs.home" value="${basedir}/docs"/>
     <property name="logs.dir" value="${build.home}/surefire-reports"/>
     <property name="test" value="testcases"/>
-    <property name="jaxws-hudson-project" value="jaxws-ri-2.2.2"/>
+    <property name="jaxws-hudson-project" value="jaxws-ri-22x-maven"/>
     <property name="hudson-relative-artifact-location" value="jaxws-ri"/> 
     <!-- Additional arguments to test harness -->
     <property name="args" value=""/>
@@ -72,15 +72,6 @@
     </tstamp>
     <property name="build.id" value="${now}(${user.name})"/>
 
-    <path id="javac.classpath">
-        <fileset dir="." includes="lib/**/*.jar"/>
-    </path>
-
-    <path id="runtime.classpath">
-        <path refid="javac.classpath"/>
-        <pathelement location="build/classes"/>
-        <pathelement location="${java.home}/../lib/tools.jar"/>
-    </path>
     <property name="proxy.host" value="www-proxy.us.oracle.com"/>
     <target name="probe-proxy">
         <condition property="proxy.not.needed">
@@ -126,15 +117,15 @@
     </target>
 
     <target name="get-jaxws-image" unless="jaxwsdir">
-        <get src="http://hudson-sca.us.oracle.com/job/${jaxws-hudson-project}/lastSuccessfulBuild/artifact/${hudson-relative-artifact-location}/build/jaxws-ri.zip"
-             dest="build/jaxws-ri.zip"/>
-        <unzip src="build/jaxws-ri.zip" dest="build"/>
+        <get src="http://sysifos-sol.cz.oracle.com/hudson/job/${jaxws-hudson-project}/lastSuccessfulBuild/artifact/jaxws-ri/bundles/jaxws-ri/target/jaxws-ri.zip"
+             dest="${build.home}/jaxws-ri.zip"/>
+        <unzip src="${build.home}/jaxws-ri.zip" dest="${build.home}"/>
         <!-- for JDK6 endorsed dir -->
-        <mkdir dir="build/jaxws-ri/lib1"/>
-        <copydir src="build/jaxws-ri/lib" dest="build/jaxws-ri/lib1" includes="*-api.jar,activation.jar"/>
+        <mkdir dir="${build.home}/jaxws-ri/lib1"/>
+        <copydir src="${build.home}/jaxws-ri/lib" dest="${build.home}/jaxws-ri/lib1" includes="jaxb-api.jar,jaxws-api.jar,saaj-api.jar"/>
 
-        <get src="http://hudson-sca.us.oracle.com/job/${jaxws-hudson-project}/lastSuccessfulBuild/artifact/${hudson-relative-artifact-location}/transports/local/build/jaxws-local-transport.jar"
-             dest="build/jaxws-local-transport.jar"/>
+        <get src="http://sysifos-sol.cz.oracle.com/hudson/job/${jaxws-hudson-project}/lastSuccessfulBuild/artifact/jaxws-ri/transports/local/target/jaxws-local-transport-2.2.8-SNAPSHOT.jar"
+             dest="${build.home}/jaxws-local-transport.jar"/>
     </target>
 
     <!-- Run tests on jaxws wspace -->
@@ -149,20 +140,20 @@
 
     <!-- Run tests on jaxws image -->
     <target name="run-jaxws-image-local" unless="jaxwsdir">
-        <property name="path-to-jaxws-image" location="build/jaxws-ri"/>
+        <property name="path-to-jaxws-image" location="${build.home}/jaxws-ri"/>
         <run-tests>
             <arguments>
                 <arg value="-cp:jaxws-image"/>
                 <arg path="${path-to-jaxws-image}"/>
                 <arg value="-transport"/>
-                <arg path="build/jaxws-local-transport.jar"/>
+                <arg path="${build.home}/jaxws-local-transport.jar"/>
             </arguments>
         </run-tests>
     </target>
 
 
     <target name="run-jaxws-image-with-tomcat-embedded" unless="jaxwsdir">
-        <property name="path-to-jaxws-image" location="build/jaxws-ri"/>
+        <property name="path-to-jaxws-image" location="build.home/jaxws-ri"/>
         <run-tests>
             <arguments>
                 <arg value="-cp:jaxws-image"/>
@@ -248,7 +239,7 @@
                 <jvmarg  line="-Djava.endorsed.dirs=${endorsed.dir} ${libraries.dir.prop} ${jvm.opts.prop}"/>
 
                 <!--jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,address=8000" />
-               <jvmarg value="-Xdebug"/-->
+                <jvmarg value="-Xdebug"/-->
             </java>
 
             <mkdir dir="${logs.dir}/html"/>
