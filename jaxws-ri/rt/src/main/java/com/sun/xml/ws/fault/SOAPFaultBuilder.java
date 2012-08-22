@@ -185,7 +185,18 @@ public abstract class SOAPFaultBuilder {
      * @param soapVersion non-null
      */
     public static Message createSOAPFaultMessage(SOAPVersion soapVersion, CheckedExceptionImpl ceModel, Throwable ex) {
-        return createSOAPFaultMessage(soapVersion, ceModel, ex, null);
+        // Sometimes InvocationTargetException.getCause() is null
+        // but InvocationTargetException.getTargetException() contains the real exception
+        // even though they are supposed to be equivalent.
+        // If we only look at .getCause this results in the real exception being lost.
+        // Looks like a JDK bug.
+        final Throwable t =
+            ex instanceof java.lang.reflect.InvocationTargetException
+            ?
+            ((java.lang.reflect.InvocationTargetException)ex).getTargetException()
+            :
+            ex;
+        return createSOAPFaultMessage(soapVersion, ceModel, t, null);
     }
 
     /**
