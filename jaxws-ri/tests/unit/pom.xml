@@ -247,28 +247,36 @@
                     <value>IN-VM</value>
                 </property>
             </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>jaxws-ri</artifactId>
-                    <version>${project.version}</version>
-                    <type>zip</type>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>wagon-maven-plugin</artifactId>
+                        <version>1.0-beta-4</version>
+                        <inherited>false</inherited>
                         <executions>
                             <execution>
-                                <id>unpack-dependencies</id>
+                                <id>download-ri</id>
+                                <phase>test</phase>
                                 <goals>
-                                    <goal>unpack-dependencies</goal>
+                                    <goal>download-single</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>target/tested-ri</outputDirectory>
-                                    <includeArtifactIds>jaxws-ri</includeArtifactIds>
+                                    <url>${hudson.build.id}</url>
+                                    <fromFile>artifact/jaxws-ri/bundles/jaxws-ri/target/jaxws-ri.zip</fromFile>
+                                    <toDir>target/tested-ri</toDir>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>download-transport</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>download-single</goal>
+                                </goals>
+                                <configuration>
+                                    <url>${hudson.build.id}</url>
+                                    <fromFile>artifact/jaxws-ri/transports/local/target/jaxws-local-transport-${project.version}.jar</fromFile>
+                                    <toDir>target/tested-ri</toDir>
                                 </configuration>
                             </execution>
                         </executions>
@@ -285,6 +293,7 @@
                                 <phase>test</phase>
                                 <configuration combine.self="override">
                                     <target>
+                                        <unzip src="target/tested-ri/jaxws-ri.zip" dest="target/tested-ri"/>
                                         <property name="ri.endorsed.dir" value="target/tested-ri/jaxws-ri/lib1"/>
                                         <mkdir dir="${ri.endorsed.dir}"/>
                                         <copy todir="${ri.endorsed.dir}">
@@ -325,6 +334,8 @@
                                         <argument>-cp:jaxws-image</argument>
                                         <argument>${project.basedir}/target/tested-ri/jaxws-ri</argument>
                                         <argument>-r</argument>
+                                        <argument>-transport</argument>
+                                        <argument>target/tested-ri/jaxws-local-transport-${project.version}.jar</argument>
                                         <argument>${project.basedir}/testcases</argument>
                                     </arguments>
                                 </configuration>
@@ -342,28 +353,24 @@
                     <value>LWHS</value>
                 </property>
             </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>jaxws-ri</artifactId>
-                    <version>${project.version}</version>
-                    <type>zip</type>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>wagon-maven-plugin</artifactId>
+                        <version>1.0-beta-4</version>
+                        <inherited>false</inherited>
                         <executions>
                             <execution>
-                                <id>unpack-dependencies</id>
+                                <id>download-ri</id>
+                                <phase>test</phase>
                                 <goals>
-                                    <goal>unpack-dependencies</goal>
+                                    <goal>download-single</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>target/tested-ri</outputDirectory>
-                                    <includeArtifactIds>jaxws-ri</includeArtifactIds>
+                                    <url>${hudson.build.id}</url>
+                                    <fromFile>artifact/jaxws-ri/bundles/jaxws-ri/target/jaxws-ri.zip</fromFile>
+                                    <toDir>target/tested-ri</toDir>
                                 </configuration>
                             </execution>
                         </executions>
@@ -380,6 +387,7 @@
                                 <phase>test</phase>
                                 <configuration combine.self="override">
                                     <target>
+                                        <unzip src="target/tested-ri/jaxws-ri.zip" dest="target/tested-ri"/>
                                         <property name="ri.endorsed.dir" value="target/tested-ri/jaxws-ri/lib1"/>
                                         <mkdir dir="${ri.endorsed.dir}"/>
                                         <copy todir="${ri.endorsed.dir}">
@@ -438,28 +446,24 @@
                     <value>TOMCAT</value>
                 </property>
             </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>jaxws-ri</artifactId>
-                    <version>${project.version}</version>
-                    <type>zip</type>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>wagon-maven-plugin</artifactId>
+                        <version>1.0-beta-4</version>
+                        <inherited>false</inherited>
                         <executions>
                             <execution>
-                                <id>unpack-dependencies</id>
+                                <id>download-ri</id>
+                                <phase>test</phase>
                                 <goals>
-                                    <goal>unpack-dependencies</goal>
+                                    <goal>download-single</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>target/tested-ri</outputDirectory>
-                                    <includeArtifactIds>jaxws-ri</includeArtifactIds>
+                                    <url>${hudson.build.id}</url>
+                                    <fromFile>artifact/jaxws-ri/bundles/jaxws-ri/target/jaxws-ri.zip</fromFile>
+                                    <toDir>target/tested-ri</toDir>
                                 </configuration>
                             </execution>
                         </executions>
@@ -476,6 +480,7 @@
                                 <phase>test</phase>
                                 <configuration combine.self="override">
                                     <target>
+                                        <unzip src="target/tested-ri/jaxws-ri.zip" dest="target/tested-ri"/>
                                         <property name="ri.endorsed.dir" value="target/tested-ri/jaxws-ri/lib1"/>
                                         <mkdir dir="${ri.endorsed.dir}"/>
                                         <copy todir="${ri.endorsed.dir}">
