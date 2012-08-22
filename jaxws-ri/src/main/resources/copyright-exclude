@@ -29,6 +29,7 @@
 /copyright-exclude
 /LICENSE.txt
 /CDDL+GPLv2.txt
+CDDL+GPLv2.html
 /copyright.txt
 /ThirdPartyLicense.txt
 /distributionREADME_WMforJava2.0.txt
@@ -37,3 +38,7 @@ eclipselink_jaxb/src/test/resources/etc/attach.text
 /docs/
 .commented
 .jaxws-ri
+/.auth
+/ant/resources/TWSDLExtensionHandler
+/package-list
+
