@@ -95,6 +95,7 @@
             <includes>
                 <include>javax.xml.bind:jaxb-api</include>
                 <include>javax.xml.ws:jaxws-api</include>
+                <include>javax.xml.soap:saaj-api</include>
                 <include>${project.groupId}:jaxws-rt</include>
                 <include>${project.groupId}:jaxws-tools</include>
             </includes>
