@@ -10,7 +10,7 @@
     and Distribution License("CDDL") (collectively, the "License").  You
     may not use this file except in compliance with the License.  You can
     obtain a copy of the License at
-    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
     or packager/legal/LICENSE.txt.  See the License for the specific
     language governing permissions and limitations under the License.
 
@@ -40,6 +40,7 @@
     holder.
 
 -->
+
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/" xmlns:gm="http://base.google.com/ns-metadata/1.0" xmlns:g="http://base.google.com/ns/1.0" xmlns:batch="http://schemas.google.com/gdata/batch">
 <id>http://www.google.com/base/feeds/snippets</id>
 <updated>2007-08-31T23:29:11.367Z</updated>

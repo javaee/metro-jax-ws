@@ -10,7 +10,7 @@
     and Distribution License("CDDL") (collectively, the "License").  You
     may not use this file except in compliance with the License.  You can
     obtain a copy of the License at
-    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
     or packager/legal/LICENSE.txt.  See the License for the specific
     language governing permissions and limitations under the License.
 
@@ -40,6 +40,7 @@
     holder.
 
 -->
+
 <wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://spews.pmg.net/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://spews.pmg.net/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://spews.pmg.net/">
