@@ -338,6 +338,18 @@
                                         <argument>target/tested-ri/jaxws-local-transport-${project.version}.jar</argument>
                                         <argument>${project.basedir}/testcases</argument>
                                     </arguments>
+                                    <successCodes>
+                                        <successCode>0</successCode>
+                                        <successCode>1</successCode>
+                                        <successCode>2</successCode>
+                                        <successCode>3</successCode>
+                                        <successCode>5</successCode>
+                                        <successCode>6</successCode>
+                                        <successCode>7</successCode>
+                                        <successCode>8</successCode>
+                                        <successCode>9</successCode>
+                                        <successCode>10</successCode>
+                                    </successCodes>
                                 </configuration>
                             </execution>
                         </executions>
@@ -431,6 +443,18 @@
                                         <argument>-lwhs</argument>
                                         <argument>${project.basedir}/testcases</argument>
                                     </arguments>
+                                    <successCodes>
+                                        <successCode>0</successCode>
+                                        <successCode>1</successCode>
+                                        <successCode>2</successCode>
+                                        <successCode>3</successCode>
+                                        <successCode>5</successCode>
+                                        <successCode>6</successCode>
+                                        <successCode>7</successCode>
+                                        <successCode>8</successCode>
+                                        <successCode>9</successCode>
+                                        <successCode>10</successCode>
+                                    </successCodes>
                                 </configuration>
                             </execution>
                         </executions>
@@ -525,6 +549,18 @@
                                         <argument>${tomcat.home}</argument>
                                         <argument>${project.basedir}/testcases</argument>
                                     </arguments>
+                                    <successCodes>
+                                        <successCode>0</successCode>
+                                        <successCode>1</successCode>
+                                        <successCode>2</successCode>
+                                        <successCode>3</successCode>
+                                        <successCode>5</successCode>
+                                        <successCode>6</successCode>
+                                        <successCode>7</successCode>
+                                        <successCode>8</successCode>
+                                        <successCode>9</successCode>
+                                        <successCode>10</successCode>
+                                    </successCodes>
                                 </configuration>
                             </execution>
                         </executions>
