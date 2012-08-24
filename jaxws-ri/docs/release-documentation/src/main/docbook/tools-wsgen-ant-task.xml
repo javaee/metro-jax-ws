@@ -259,7 +259,24 @@ holder.
         <para>The <literal>classpath</literal> attribute is a <link
         xlink:href="http://ant.apache.org/manual/using.html#path">path-like
         structure</link> and can also be set via nested
-        <literal>&lt;classpath&gt;</literal> elements. Before this task can be
+        <literal>&lt;classpath&gt;</literal> elements. </para>
+
+        <para>There is an optional element <literal>external-metadata</literal> which can be used if there are any
+            web service metadata to be specified in xml file instead of java annotations: </para>
+
+        <informalexample>
+            <programlisting language="xml"><![CDATA[<wsgen
+        resourcedestdir="${wsdl.dir}"
+        sei="fromjava.server.AddNumbersImpl">
+    <classpath refid="compile.classpath"/>
+    <external-metadata file="metadata-AddNumbersImpl.xml"/>
+</wsgen>]]></programlisting>
+        </informalexample>
+
+        <para>For details see
+            <xref linkend="users-guide-external-metadata" xrefstyle="select:title" />.</para>
+
+        <para>Before this task can be
         used, a <literal>&lt;taskdef&gt;</literal> element needs to be added
         to the project as given below:</para>
 

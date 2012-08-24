@@ -257,6 +257,26 @@ holder.
                     </row>
 
                     <row>
+                        <entry><para><literal>external-metadata-fromjava</literal></para></entry>
+
+                        <entry><para>Demonstrates how to develop web service without using java
+                            annotations - metadata are being provided with xml descriptors. This
+                            allows to expose as a web service already deployed implementations.
+                            This sample uses fromjava (better to say from java binary) approach.
+                        </para></entry>
+                    </row>
+
+                    <row>
+                        <entry><para><literal>external-metadata-fromwsdl</literal></para></entry>
+
+                        <entry><para>Demonstrates how to develop web service without using java
+                            annotations - metadata are being provided with xml descriptors. This
+                            allows to expose as a web service already deployed implementations.
+                            This sample uses fromwsdl approach.
+                        </para></entry>
+                    </row>
+
+                    <row>
                         <entry><para><literal>inline-customize</literal></para></entry>
 
                         <entry><para>Demonstrates how a client application and

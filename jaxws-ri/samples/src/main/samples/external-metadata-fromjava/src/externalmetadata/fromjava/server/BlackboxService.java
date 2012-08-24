@@ -37,17 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package externalmetadata.fromwsdl.server;
+package externalmetadata.fromjava.server;
 
 /**
  * Simple service to test external definition of metadata (instead of
- * annotations there are xml descriptors)
+ * annotations there are xml descriptors);
+ * This would be typically some implementation where we can't change/add java annotations
+ * - for example we have no source code for this class
  *
  * @author Miroslav Kos (miroslav.kos at oracle.com)
  */
-public class ExternalMetadataServiceImpl {
+public class BlackboxService {
 
     public void doSomething() {
         // doesn't need to do anything ...
+        System.out.println("method [externalmetadata.fromjava.server.BlackboxServiceImpl.doSomething] invoked. Did something ...");
     }
+
 }

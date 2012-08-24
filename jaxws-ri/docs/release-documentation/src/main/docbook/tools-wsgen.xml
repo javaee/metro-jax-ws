@@ -260,6 +260,14 @@ holder.
                         Must be used in conjunction with the
                         <option>-wsdl</option> option.</entry>
                     </row>
+                    <row>
+                        <entry><literal>-x &lt;path&gt;</literal></entry>
+
+                        <entry>Used to specify <xref linkend="users-guide-external-metadata" xrefstyle="select:title" />
+                            xml descriptor to be used. If there are more such files,
+                            the option must be used before each of those.
+                        </entry>
+                    </row>
                 </tbody>
             </tgroup>
         </informaltable>

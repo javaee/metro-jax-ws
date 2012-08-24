@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<project basedir="." default="help" name="external-metadata-fromwsdl">
+
+    <import file="etc/deploy-targets.xml"/>
+
+    <path id="jaxws.classpath">
+        <pathelement location="${java.home}/../lib/tools.jar"/>
+        <fileset dir="${lib.home}">
+            <include name="*.jar"/>
+            <exclude name="j2ee.jar"/>
+        </fileset>
+    </path>
+
+    <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+        <classpath refid="jaxws.classpath"/>
+    </taskdef>
+
+    <taskdef name="wsgen" classname="com.sun.tools.ws.ant.WsGen">
+        <classpath refid="jaxws.classpath"/>
+    </taskdef>
+
+
+    <target name="setup">
+        <mkdir dir="${build.home}"/>
+        <mkdir dir="${build.classes.home}"/>
+        <mkdir dir="${build.war.home}"/>
+    </target>
+
+    <target name="build-server-java" depends="setup">
+
+        <wsimport
+                debug="true"
+                verbose="${verbose}"
+                keep="true"
+                destdir="${build.classes.home}"
+                package="externalmetadata.fromwsdl.server"
+                wsdl="${basedir}/etc/blackbox.wsdl">
+        </wsimport>
+
+        <javac
+                debug="true"
+                fork="true"
+                srcdir="${basedir}/src"
+                destdir="${build.classes.home}"
+                includes="**/server/**,**/common/**">
+            <classpath refid="jaxws.classpath"/>
+        </javac>
+
+        <!-- copy handlers descriptor file -->
+        <copy todir="${build.classes.home}">
+            <fileset dir="${basedir}/src">
+                <include name="**/server/**/*.xml"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.home}" includeEmptyDirs="true"/>
+    </target>
+
+    <target name="create-war">
+        <war warfile="${build.war.home}/jaxws-${ant.project.name}.war" webxml="etc/web.xml">
+            <webinf dir="${basedir}/etc" includes="sun-jaxws.xml"/>
+            <zipfileset
+                    dir="${basedir}/etc"
+                    includes="*.wsdl, *.xsd"
+                    prefix="WEB-INF/wsdl"/>
+            <zipfileset
+                    dir="${basedir}/etc"
+                    includes="external-metadata.xml"
+                    prefix="WEB-INF/classes"/>
+            <classes dir="${build.classes.home}"/>
+        </war>
+    </target>
+
+    <target name="generate-client" depends="setup">
+        <wsimport
+                debug="true"
+                verbose="${verbose}"
+                keep="true"
+                destdir="${build.classes.home}"
+                package="externalmetadata.fromwsdl.client"
+                wsdl="http://localhost:8080/jaxws-${ant.project.name}/WS?wsdl">
+        </wsimport>
+    </target>
+
+    <target name="client" depends="generate-client">
+        <javac
+                fork="true"
+                srcdir="${basedir}/src"
+                destdir="${build.classes.home}"
+                includes="**/client/**,**/common/**">
+            <classpath refid="jaxws.classpath"/>
+        </javac>
+    </target>
+
+    <target name="run">
+        <java fork="true" classname="externalmetadata.fromwsdl.client.BlackboxServiceClient">
+            <classpath>
+                <path refid="jaxws.classpath"/>
+                <pathelement location="${build.classes.home}"/>
+                <pathelement location="${basedir}/etc"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="help">
+        <echo message="server:            Builds and deploy the service endpoint WAR"/>
+        <echo message="client:            Builds the client"/>
+        <echo message="run:               Runs the client"/>
+        <echo message="server-j2se:       Builds and deploy the Endpoint API based service"/>
+        <echo message="server-j2se-stop:  Stops Endpoint API based service"/>
+
+    </target>
+
+    <target name="server" depends="setup">
+
+        <antcall target="clean"/>
+
+        <antcall target="build-server-java"/>
+
+        <antcall target="create-war"/>
+
+        <antcall target="deploy"/>
+    </target>
+
+    <target name="server-j2se" depends="setup">
+        <antcall target="clean"/>
+
+        <antcall target="build-server-java"/>
+
+        <echo message="Starting endpoint... To stop: ant server-j2se-stop "/>
+
+        <java fork="true" classname="externalmetadata.fromwsdl.server.J2SETester">
+            <!--<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,address=8000" />-->
+            <!--<jvmarg value="-Xdebug" />-->
+            <classpath>
+                <path refid="jaxws.classpath"/>
+                <pathelement location="${build.classes.home}"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="server-j2se-stop" depends="setup">
+        <get src="http://localhost:9090/stop" dest="stop.status"/>
+    </target>
+
+</project>

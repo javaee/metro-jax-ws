@@ -72,5 +72,7 @@ holder.
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-war-file-packaging.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-interoperability.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-endpoint-api.xml" />
+<!--<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-databinding.xml" />-->
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-external-metadata.xml" />
 
 </chapter>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+
+The contents of this file are subject to the terms of either the GNU
+General Public License Version 2 only ("GPL") or the Common Development
+and Distribution License("CDDL") (collectively, the "License").  You
+may not use this file except in compliance with the License.  You can
+obtain a copy of the License at
+http://glassfish.java.net/public/CDDL+GPL_1_1.html
+or packager/legal/LICENSE.txt.  See the License for the specific
+language governing permissions and limitations under the License.
+
+When distributing the software, include this License Header Notice in each
+file and include the License file at packager/legal/LICENSE.txt.
+
+GPL Classpath Exception:
+Oracle designates this particular file as subject to the "Classpath"
+exception as provided by Oracle in the GPL Version 2 section of the License
+file that accompanied this code.
+
+Modifications:
+If applicable, add the following below the License Header, with the fields
+enclosed by brackets [] replaced by your own identifying information:
+"Portions Copyright [year] [name of copyright owner]"
+
+Contributor(s):
+If you wish your version of this file to be governed by only the CDDL or
+only the GPL Version 2, indicate your decision by adding "[Contributor]
+elects to include this software in this distribution under the [CDDL or GPL
+Version 2] license."  If you don't indicate a single choice of license, a
+recipient has the option to distribute your version of this file under
+either the CDDL, the GPL Version 2 or to extend the choice of license to
+its licensees as provided above.  However, if you add GPL Version 2 code
+and therefore, elected the GPL Version 2 license, then the option applies
+only if the new code is made subject to such option by the copyright
+holder.
+
+        -->
+<!DOCTYPE book [
+<!ENTITY % ents SYSTEM "docbook.ent">
+%ents;
+]>
+<section version="5.0" xml:id="users-guide-external-metadata" xml:lang="en"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+        >
+    <title>External Web Service Metadata</title>
+
+    <para>It's one of goals of JAX-WS RI to make development of web services as simple as possible, so using of java
+        annotations perfectly makes sense. However there are usecases where it is impossible to use them.
+        For example if we need to expose existing component as a web service, but we have no source code, just binaries.
+        In such scenarios we need not to rely on annotations and JAX-WS RI framework needs a different way how to obtain
+        necessary metadata. The solution is to provide metadata in xml files and to configure JAX-WS RI framework in a
+        way it's aware of them.
+    </para>
+
+    <section xml:id="external-metadata-xml-per-file">
+        <title>Configuration files</title>
+        <para>To specify classes' metadata externally, each java class requires separate file. The way how JAX-WS RI framework
+            handles this metadata depends on attributes of xml root element <option>java-wsdl-mapping</option>:
+        </para>
+
+        <example>
+            <title><filename>webservices.war/WEB-INF/classes/external-metadata.xml</filename></title>
+            <programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<java-wsdl-mapping xmlns="http://xmlns.oracle.com/webservices/jaxws-databinding"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://xmlns.oracle.com/webservices/jaxws-databinding jaxws-ri-external-metadata.xsd"
+       java-type-name="org.example.BlackBoxImpl"
+       existing-annotations="ignore"
+       databinding="glassfish.jaxb">
+
+    <web-service name="" target-namespace="mynamespace"/>
+
+</java-wsdl-mapping>]]>
+            </programlisting>
+        </example>
+
+        <itemizedlist>
+            <listitem>
+                <literal>java-type-name="org.example.BlackBoxImpl"</literal>
+                <para>attribute defines what class is the definition file for. Having this information in xml file
+                allows us to provide just list of xml files and framework itself knows what to do with those.</para>
+            </listitem>
+            <listitem>
+                <literal>existing-annotations="ignore"</literal>
+                <para>This attribute says if and how should be java annotations found in the java class handled.
+                    Possible values are:
+                    <itemizedlist>
+                        <listitem>
+                            <literal>ignore</literal>
+                            <para>- annotations found in java class are ignored; JAX-WS RI framework behaves as if
+                                there was no other metadata than one in xml file</para>
+                        </listitem>
+                        <listitem>
+                            <literal>merge</literal>
+                            <para>- annotations found in java class are considered, but metadata in xml file is
+                                overriding them; if an annotation is present in java file only, framework uses it,
+                                if found in both annotation and xml file, the latter one is hiding the first one.
+                            </para>
+                        </listitem>
+                    </itemizedlist>
+                </para>
+            </listitem>
+        </itemizedlist>
+
+    </section>
+
+    <section xml:id="external-metadata-xsd">
+        <title>XSD Schema</title>
+        <para>
+            As you probably noticed in an example above, there is a new schema for configuration files:
+            <link xlink:href="http://xmlns.oracle.com/webservices/jaxws-databinding/1.0/jaxws-databinding.xsd">http://xmlns.oracle.com/webservices/jaxws-databinding</link>.
+            The schema is designed to reflect Web Service Metadata (JSR-181) and JAX-WS Annotations (JSR-224) so structure
+            should be really intuitive to developers - see following table:
+
+            <table frame="all" xml:id="external-metadata-annotation-element-mapping-table">
+                <title>Mapping java <literal>@Annotation</literal>-s to xml elements examples</title>
+
+                <tgroup cols="2" colsep="1" rowsep="1">
+                    <thead>
+                        <row>
+                            <entry>@Annotation</entry>
+                            <entry>corresponding xml element</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry><para><literal>javax.jws.WebService(name="AddNumbers", portName="AddNumbersPort")</literal></para></entry>
+                            <entry><para><literal><![CDATA[<web-service name="AddNumbers" port-name="AddNumbersPort" />]]></literal></para></entry>
+                        </row>
+                        <row>
+                            <entry><para><literal>javax.xml.ws.WebServiceProvider(
+                                targetNamespace="urn:test",
+                                serviceName="Endpoint",
+                                portName="EndpointPort")
+                            </literal></para></entry>
+                            <entry><para><literal><![CDATA[<web-service-provider
+                            target-namespace="urn:test"
+                            service-name="Endpoint"
+                            port-name="EndpointPort" />]]></literal></para></entry>
+                        </row>
+                        <row>
+                            <entry><para><literal>javax.xml.ws.ServiceMode(Service.Mode.MESSAGE)</literal></para> </entry>
+                            <entry><para><literal><![CDATA[<service-mode value="MESSAGE" />]]></literal></para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+
+
+        </para>
+    </section>
+
+    <section xml:id="external-metadata-passing-configurations">
+        <title>Passing Configuration Files to JAX-WS RI</title>
+        <para>
+            There are different stages where we need to pass the collection of files to JAX-WS RI framework:
+
+            <itemizedlist>
+                <listitem>
+                    <para>wsgen: when starting "from java" - better to say if we have no wsdl prepared,
+                        we need to pass the classpath to implementations to be used together with a list of external
+                        metadata files to wsgen. Therefore wsgen tool has a new option <literal>-x &lt;path&gt;</literal>.
+                        If there are several such files, the option must be repeated before each path.
+                        Corresponding ant task supports new nested element "external-metadata", see following example:
+
+                        <example>
+                            <title>wsgen ant task example: <filename>build.xml</filename></title>
+                            <programlisting><![CDATA[<wsgen  sei="org.example.server.BlackboxService"
+                destdir="${build.classes.home}"
+                resourcedestdir="${build.classes.home}"
+                sourcedestdir="${build.classes.home}"
+                keep="true"
+                verbose="true"
+                genwsdl="true"
+                protocol="soap1.1"
+                extension="false"
+                inlineSchemas="false">
+
+            <externalmetadata file="${basedir}/etc/external-metadata.xml" />
+            <classpath>
+                <pathelement location="${build.classes.home}"/>
+            </classpath>
+
+        </wsgen>
+]]></programlisting>
+                        </example>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>wsimport - if you start from wsdl, no extra parameter is necessary - artifacts are generated
+                        on wsdl only and external metadata are required later, in runtime.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>runtime - in runtime, it's necessary to tell somehow to container (Servlet or JEE) what xml
+                        files to load.
+                        Currently, JAX-WS RI Servlet deployment is supported -
+                        <literal>sun-jaxws.xml</literal> schema has been updated to support new elements -
+                        <literal><![CDATA[<external-metadata>]]></literal>, saying to a container to parse the resources
+                        when doing a deployment:
+
+                        <example>
+                            <title><filename>webservice-module.war/WEB-INF/sun-jaxws.xml</filename></title>
+                            <programlisting><![CDATA[
+<?xml encoding="UTF-8" version="1.0" ?>
+<endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
+    <endpoint implementation="org.example.server.BlackboxService" url-pattern="/WS" name="WS">
+        <external-metadata resource="external-metadata.xml" />
+    </endpoint>
+</endpoints>]]></programlisting>
+                        </example>
+                    </para>
+                </listitem>
+            </itemizedlist>
+
+        </para>
+    </section>
+
+    <para>For more complete example see samples.</para>
+
+    <section xml:id="external-metadata-a">
+        <title></title>
+    </section>
+</section>
