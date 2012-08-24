@@ -518,6 +518,9 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
+                        <configuration>
+                            <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>alt-deploy</id>
