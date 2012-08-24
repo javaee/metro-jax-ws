@@ -77,6 +77,12 @@
         </repository>
     </repositories>
 
+    <scm>
+        <connection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri</developerConnection>
+        <url>http://java.net/projects/jax-ws/sources/sources/show/branches/jaxws22</url>
+    </scm>
+
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
