@@ -41,19 +41,21 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>net.java</groupId>
         <artifactId>jvnet-parent</artifactId>
         <version>3</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-ri-bom</artifactId>
     <packaging>pom</packaging>
-    <version>2.2.8-promoted-b145</version>
+    <version>2.2.8-SNAPSHOT</version>
 
     <name>JAX-WS RI Dependency POM</name>
     <description>JAX-WS Reference Implementation Dependency POM</description>
@@ -106,10 +108,10 @@
     </developers>
 
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/jax-ws~sources/tags/project-2.2.8-promoted-b145/jaxws-ri</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/jax-ws~sources/tags/project-2.2.8-promoted-b145/jaxws-ri
+        <connection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri
         </developerConnection>
-        <url>http://java.net/projects/jax-ws/sources/sources/show/tags/project-2.2.8-promoted-b145/jaxws22</url>
+        <url>http://java.net/projects/jax-ws/sources/sources/show/branches/jaxws22</url>
     </scm>
 
     <issueManagement>
