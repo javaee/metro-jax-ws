@@ -54,22 +54,28 @@ import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 /**
  * wsgen task for use with the JAXWS project.
- *
  */
 public class WsGen2 extends MatchingTask {
+
     private CommandlineJava cmd = new CommandlineJava();
-    /*************************  -classpath option *************************/
+    /**
+     * **********************  -classpath option ************************
+     */
     protected Path compileClasspath = null;
+
+    /**
+     * List of external metadata files; those are necessary if it's impossible to use/modify
+     * annotations in ws implementation (for example only binaries are available)
+     */
+    private List<ExternalMetadata> externalMetadataFiles = new ArrayList<ExternalMetadata>();
 
     /**
      * Gets the classpath.
@@ -121,15 +127,21 @@ public class WsGen2 extends MatchingTask {
         setClasspath(classpath);
     }
 
-    /*************************  -d option *************************/
+    /**
+     * **********************  -d option ************************
+     */
     private File destDir = null;
 
-    /** Gets the base directory to output generated class. **/
+    /**
+     * Gets the base directory to output generated class. *
+     */
     public File getDestdir() {
         return this.destDir;
     }
 
-    /** Sets the base directory to output generated class. **/
+    /**
+     * Sets the base directory to output generated class. *
+     */
     public void setDestdir(File base) {
         this.destDir = base;
     }
@@ -165,143 +177,205 @@ public class WsGen2 extends MatchingTask {
      * This is used only when fork is true. With fork=false which is default, it is handled way before in the WrapperTask.
      */
     private boolean xendorsed = false;
+
     public void setXendorsed(boolean xendorsed) {
         this.xendorsed = xendorsed;
     }
+
     public boolean isXendorsed() {
         return xendorsed;
     }
 
-    /********************  -extensions option **********************/
+    /**
+     * *****************  -extensions option *********************
+     */
     protected boolean extension;
 
-    /** Gets the "extension" flag. **/
+    /**
+     * Gets the "extension" flag. *
+     */
     public boolean getExtension() {
         return extension;
     }
 
-    /** Sets the "extension" flag. **/
+    /**
+     * Sets the "extension" flag. *
+     */
     public void setExtension(boolean extension) {
         this.extension = extension;
     }
 
-    /********************  -inlineSchemas option **********************/
+    /**
+     * *****************  -inlineSchemas option *********************
+     */
     protected boolean inlineSchemas;
 
-    /** Gets the "inlineSchemas" flag. **/
+    /**
+     * Gets the "inlineSchemas" flag. *
+     */
     public boolean getInlineSchemas() {
         return inlineSchemas;
     }
 
-    /** Sets the "inlineSchemas" flag. **/
+    /**
+     * Sets the "inlineSchemas" flag. *
+     */
     public void setInlineSchemas(boolean inlineSchemas) {
         this.inlineSchemas = inlineSchemas;
     }
-    
-    /*************************  -keep option *************************/
+
+    /**
+     * **********************  -keep option ************************
+     */
     private boolean keep = false;
 
-    /** Gets the "keep" flag. **/
+    /**
+     * Gets the "keep" flag. *
+     */
     public boolean getKeep() {
         return keep;
     }
 
-    /** Sets the "keep" flag. **/
+    /**
+     * Sets the "keep" flag. *
+     */
     public void setKeep(boolean keep) {
         this.keep = keep;
     }
 
-    /*************************  -fork option *************************/
+    /**
+     * **********************  -fork option ************************
+     */
     private boolean fork = false;
 
-    /** Gets the "fork" flag. **/
+    /**
+     * Gets the "fork" flag. *
+     */
     public boolean getFork() {
         return fork;
     }
 
-    /** Sets the "fork" flag. **/
+    /**
+     * Sets the "fork" flag. *
+     */
     public void setFork(boolean fork) {
         this.fork = fork;
     }
 
-    /*************************  -r option *************************/
+    /**
+     * **********************  -r option ************************
+     */
     private File resourceDestDir = null;
 
-    /** Gets the directory for non-class generated files. **/
+    /**
+     * Gets the directory for non-class generated files. *
+     */
     public File getResourcedestdir() {
         return this.resourceDestDir;
     }
 
-    /** Sets the directory for non-class generated files. **/
+    /**
+     * Sets the directory for non-class generated files. *
+     */
     public void setResourcedestdir(File resourceDir) {
         this.resourceDestDir = resourceDir;
     }
 
-    /*************************  -O option *************************/
+    /**
+     * **********************  -O option ************************
+     */
     private boolean optimize = false;
 
-    /** Gets the optimize flag. **/
+    /**
+     * Gets the optimize flag. *
+     */
     public boolean getOptimize() {
         return optimize;
     }
 
-    /** Sets the optimize flag. **/
+    /**
+     * Sets the optimize flag. *
+     */
     public void setOptimize(boolean optimize) {
         this.optimize = optimize;
     }
 
-    /*************************  -s option *************************/
+    /**
+     * **********************  -s option ************************
+     */
     private File sourceDestDir;
 
-    /** Sets the directory to place generated source java files. **/
+    /**
+     * Sets the directory to place generated source java files. *
+     */
     public void setSourcedestdir(File sourceBase) {
         keep = true;
         this.sourceDestDir = sourceBase;
     }
 
-    /** Gets the directory to place generated source java files. **/
+    /**
+     * Gets the directory to place generated source java files. *
+     */
     public File getSourcedestdir() {
         return sourceDestDir;
     }
 
-    /*************************  -encoding option *************************/
+    /**
+     * **********************  -encoding option ************************
+     */
     private String encoding;
 
-    /** Sets the encoding for generated source java files. **/
+    /**
+     * Sets the encoding for generated source java files. *
+     */
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
 
-    /** Gets the encoding for generated source java files. **/
+    /**
+     * Gets the encoding for generated source java files. *
+     */
     public String getEncoding() {
         return encoding;
     }
 
-    /*************************  -verbose option *************************/
+    /**
+     * **********************  -verbose option ************************
+     */
     protected boolean verbose = false;
 
-    /** Gets the "verbose" flag. **/
+    /**
+     * Gets the "verbose" flag. *
+     */
     public boolean getVerbose() {
         return verbose;
     }
 
-    /** Sets the "verbose" flag. **/
+    /**
+     * Sets the "verbose" flag. *
+     */
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
     }
 
-     /*************************  -g option *************************/
-     private boolean debug = false;
+    /**
+     * **********************  -g option ************************
+     */
+    private boolean debug = false;
 
-     /** Gets the debug flag. **/
-     public boolean getDebug() {
-         return debug;
-     }
+    /**
+     * Gets the debug flag. *
+     */
+    public boolean getDebug() {
+        return debug;
+    }
 
-     /** Sets the debug flag. **/
-     public void setDebug(boolean debug) {
-         this.debug = debug;
-     }
+    /**
+     * Sets the debug flag. *
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
 
     public boolean isXnocompile() {
         return xnocompile;
@@ -311,63 +385,91 @@ public class WsGen2 extends MatchingTask {
         this.xnocompile = xnocompile;
     }
 
-    /** do not compile generated classes **/
+    /**
+     * do not compile generated classes *
+     */
     private boolean xnocompile = false;
 
-     /*************************  -wsdl option *************************/
-     private boolean genWsdl = false;
+    /**
+     * **********************  -wsdl option ************************
+     */
+    private boolean genWsdl = false;
 
-     /** Gets the genWsdl flag. **/
-     public boolean getGenwsdl() {
-         return genWsdl;
-     }
+    /**
+     * Gets the genWsdl flag. *
+     */
+    public boolean getGenwsdl() {
+        return genWsdl;
+    }
 
-     /** Sets the genWsdl flag. **/
-     public void setGenwsdl(boolean genWsdl) {
-         this.genWsdl = genWsdl;
-     }
-     
-     /*************  protocol option used only with -wsdl option*****************/
-     private String protocol = "";
+    /**
+     * Sets the genWsdl flag. *
+     */
+    public void setGenwsdl(boolean genWsdl) {
+        this.genWsdl = genWsdl;
+    }
 
-     /** Gets the protocol. **/
-     public String getProtocol() {
-         return protocol;
-     }
+    /**
+     * **********  protocol option used only with -wsdl option****************
+     */
+    private String protocol = "";
 
-     /** Sets the protocol. **/
-     public void setProtocol(String protocol) {
-         this.protocol = protocol;
-     }     
+    /**
+     * Gets the protocol. *
+     */
+    public String getProtocol() {
+        return protocol;
+    }
 
-     /*************  serviceName option used only with -wsdl option*****************/
-     private String serviceName = null;
+    /**
+     * Sets the protocol. *
+     */
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
 
-     /** Gets the serviceName. **/
-     public String getServicename() {
-         return serviceName;
-     }
+    /**
+     * **********  serviceName option used only with -wsdl option****************
+     */
+    private String serviceName = null;
 
-     /** Sets the serviceName. **/
-     public void setServicename(String name) {
-         this.serviceName = name;
-     }        
-     
-     /*************  portName option used only with -wsdl option*****************/
-     private String portName = null;
+    /**
+     * Gets the serviceName. *
+     */
+    public String getServicename() {
+        return serviceName;
+    }
 
-     /** Gets the portName. **/
-     public String getPortname() {
-         return portName;
-     }
+    /**
+     * Sets the serviceName. *
+     */
+    public void setServicename(String name) {
+        this.serviceName = name;
+    }
 
-     /** Sets the serviceName. **/
-     public void setPortname(String name) {
-         this.portName = name;
-     }       
-     
+    /**
+     * **********  portName option used only with -wsdl option****************
+     */
+    private String portName = null;
+
+    /**
+     * Gets the portName. *
+     */
+    public String getPortname() {
+        return portName;
+    }
+
+    /**
+     * Sets the serviceName. *
+     */
+    public void setPortname(String name) {
+        this.portName = name;
+    }
+
     /***********************  include ant runtime **********************/
-    /** not sure if these methods are needed */
+    /**
+     * not sure if these methods are needed
+     */
     private boolean includeAntRuntime = false;
 
     /**
@@ -386,7 +488,9 @@ public class WsGen2 extends MatchingTask {
     }
 
     /***********************  include java runtime **********************/
-    /** not sure if these methods are needed */
+    /**
+     * not sure if these methods are needed
+     */
     private boolean includeJavaRuntime = false;
 
     /**
@@ -406,12 +510,14 @@ public class WsGen2 extends MatchingTask {
     }
 
     private String sei;
+
     /**
      * @return Returns the sei.
      */
     public String getSei() {
         return sei;
     }
+
     public void setSei(String endpointImplementationClass) {
         this.sei = endpointImplementationClass;
     }
@@ -429,7 +535,7 @@ public class WsGen2 extends MatchingTask {
     private void setupWscompileForkCommand() {
 
         ClassLoader loader = this.getClass().getClassLoader();
-        while(loader!=null && !(loader instanceof AntClassLoader)) {
+        while (loader != null && !(loader instanceof AntClassLoader)) {
             loader = loader.getParent();
         }
 
@@ -459,11 +565,11 @@ public class WsGen2 extends MatchingTask {
         cmd.setClassname("com.sun.tools.ws.WsGen");
         setupWscompileArgs();
         //cmd.createArgument(true).setLine(forkCmd.toString());
-        
+
     }
 
     private void setupWscompileArgs() {
-        
+
         // d option
         if (null != getDestdir() && !getDestdir().getName().equals("")) {
             cmd.createArgument().setValue("-d");
@@ -481,7 +587,7 @@ public class WsGen2 extends MatchingTask {
         }
 
         //-Xendorsed option
-        if(isXendorsed()){
+        if (isXendorsed()) {
             cmd.createArgument().setValue("-Xendorsed");
         }
 
@@ -491,14 +597,14 @@ public class WsGen2 extends MatchingTask {
         }
 
         //-Xnocompile option
-        if(isXnocompile()){
+        if (isXnocompile()) {
             cmd.createArgument().setValue("-Xnocompile");
         }
 
         if (getGenwsdl()) {
             String tmp = "-wsdl";
             if (protocol.length() > 0)
-                tmp += ":"+protocol;
+                tmp += ":" + protocol;
             cmd.createArgument().setValue(tmp);
 
             if (serviceName != null && serviceName.length() > 0) {
@@ -514,8 +620,8 @@ public class WsGen2 extends MatchingTask {
                 cmd.createArgument().setValue("-inlineSchemas");
             }
         }
-        
-        
+
+
         // r option
         if (null != getResourcedestdir() && !getResourcedestdir().getName().equals("")) {
             cmd.createArgument().setValue("-r");
@@ -543,15 +649,23 @@ public class WsGen2 extends MatchingTask {
             cmd.createArgument().setValue("-verbose");
         }
 
+        if (externalMetadataFiles != null) {
+            for (ExternalMetadata file : externalMetadataFiles) {
+                cmd.createArgument().setValue("-x");
+                cmd.createArgument().setValue(file.file);
+            }
+        }
 
         if (getSei() != null) {
             cmd.createArgument().setValue(getSei());
         }
-        
+
     }
 
 
-    /** Called by the project to let the task do it's work **/
+    /**
+     * Called by the project to let the task do it's work *
+     */
     public void execute() throws BuildException {
         /* Create an instance of the rmic, redirecting output to
          * the project log
@@ -559,25 +673,25 @@ public class WsGen2 extends MatchingTask {
         LogOutputStream logstr = null;
         boolean ok = false;
         try {
-            if(fork){
+            if (fork) {
                 setupWscompileForkCommand();
             } else {
                 if (cmd.getVmCommand().size() > 1) {
-                    log("JVM args ignored when same JVM is used.",Project.MSG_WARN);
+                    log("JVM args ignored when same JVM is used.", Project.MSG_WARN);
                 }
                 setupWscompileCommand();
             }
             if (fork) {
                 if (verbose) {       // Fix for CR 6444561
                     log(ToolVersion.VERSION.BUILD_VERSION);
-                    log("command line: "+"wsgen "+cmd.toString());
+                    log("command line: " + "wsgen " + cmd.toString());
                 }
                 int status = run(cmd.getCommandline());
                 ok = (status == 0);
             } else {
                 if (verbose) {                // Fix for CR 6444561
                     log(ToolVersion.VERSION.BUILD_VERSION);
-                    log("command line: "+"wsgen "+cmd.getJavaCommand().toString());
+                    log("command line: " + "wsgen " + cmd.getJavaCommand().toString());
                 }
                 logstr = new LogOutputStream(this, Project.MSG_WARN);
 
@@ -592,7 +706,7 @@ public class WsGen2 extends MatchingTask {
             }
             if (!ok) {
                 if (!verbose) {
-                    log("Command invoked: "+"wsgen "+cmd.toString());
+                    log("Command invoked: " + "wsgen " + cmd.toString());
                 }
                 throw new BuildException("wsgen failed", location);
             }
@@ -601,7 +715,7 @@ public class WsGen2 extends MatchingTask {
                 if (ex instanceof BuildException) {
                     throw (BuildException) ex;
                 } else {
-                    throw new BuildException("Error starting wsgen: ", ex,
+                    throw new BuildException("Error starting wsgen: " + ex.getMessage(), ex,
                             getLocation());
                 }
             } else {
@@ -627,8 +741,7 @@ public class WsGen2 extends MatchingTask {
     private int run(String[] command) throws BuildException {
         FileOutputStream fos = null;
         Execute exe = null;
-        LogStreamHandler logstr = new LogStreamHandler(this,
-            Project.MSG_INFO, Project.MSG_WARN);
+        LogStreamHandler logstr = new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN);
         exe = new Execute(logstr);
         exe.setAntRun(project);
         exe.setCommandline(command);
@@ -681,4 +794,24 @@ public class WsGen2 extends MatchingTask {
         s = s.substring(s.lastIndexOf(":") + 1);
         return s.indexOf('!') < 0 ? s : s.substring(0, s.indexOf('!'));
     }
+
+    public ExternalMetadata createExternalMetadata() {                                 // 3
+        ExternalMetadata e = new ExternalMetadata();
+        externalMetadataFiles.add(e);
+        return e;
+    }
+
+    public class ExternalMetadata {
+        String file;
+
+        public String getFile() {
+            return file;
+        }
+
+        public void setFile(String file) {
+            this.file = file;
+        }
+    }
+
+
 }

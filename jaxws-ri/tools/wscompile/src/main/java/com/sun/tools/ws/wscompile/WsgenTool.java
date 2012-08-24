@@ -310,7 +310,12 @@ public class WsgenTool {
     private List<File> getExternalFiles(List<String> exts) {
         List<File> files = new ArrayList<File>();
         for (String ext : exts) {
-            File file = new File(options.sourceDir.getAbsolutePath() + File.separator + ext);
+            // first try absolute path ...
+            File file = new File(ext);
+            if (!file.exists()) {
+                // then relative path ...
+                file = new File(options.sourceDir.getAbsolutePath() + File.separator + ext);
+            }
             files.add(file);
         }
         return files;
