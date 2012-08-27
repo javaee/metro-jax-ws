@@ -177,7 +177,8 @@
                 <groupId>javax.jws</groupId>
                 <artifactId>jsr181-api</artifactId>
                 <version>1.0-MR1</version>
-                <scope>provided</scope>
+                <!-- TODO: revisit me - required by metro -->
+                <!--<scope>provided</scope>-->
             </dependency>
             <dependency>
                 <groupId>org.glassfish</groupId>
