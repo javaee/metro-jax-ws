@@ -40,15 +40,13 @@
     holder.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>docs</artifactId>
-        <version>2.2.8-SNAPSHOT</version>
+        <version>2.2.8-promoted-b145</version>
     </parent>
 
     <groupId>com.sun.xml.ws</groupId>
@@ -115,15 +113,15 @@
                         </goals>
                         <configuration>
                             <target>
-                                <echo message="Preparing char entities"/>
-                                <mkdir dir="${src.dir}"/>
+                                <echo message="Preparing char entities" />
+                                <mkdir dir="${src.dir}" />
                                 <copy todir="${src.dir}">
-                                    <fileset dir="src/main/docbook" includes="*.*"/>
+                                    <fileset dir="src/main/docbook" includes="*.*" />
                                 </copy>
-                                <replace file="${src.dir}/docbook.ent" token="$version" value="${project.version}"/>
+                                <replace file="${src.dir}/docbook.ent" token="$version" value="${project.version}" />
 
-                                <replace file="${src.dir}/docbook.ent" token="$release.spec.version" value="${jaxws-api.version}"/>
-                                <replace file="${src.dir}/docbook.ent" token="$release.impl.version" value="${project.version}"/>
+                                <replace file="${src.dir}/docbook.ent" token="$release.spec.version" value="${jaxws-api.version}" />
+                                <replace file="${src.dir}/docbook.ent" token="$release.impl.version" value="${project.version}" />
                             </target>
                         </configuration>
                     </execution>
