@@ -505,36 +505,6 @@
             </build>
         </profile>
         <profile>
-            <id>alt-deploy-profile</id>
-            <activation>
-                <property>
-                    <name>alternate.deploy.repo</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <configuration>
-                            <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>alt-deploy</id>
-                                <goals>
-                                    <goal>deploy</goal>
-                                </goals>
-                                <configuration>
-                                    <altDeploymentRepository>${alternate.deploy.repo}</altDeploymentRepository>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>release-profile</id>
             <build>
                 <plugins>
