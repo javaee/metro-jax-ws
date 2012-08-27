@@ -39,7 +39,7 @@
     holder.
 
 -->
-<descriptor since="2.2.8" uses="ri">
+<descriptor since="2.2.8" uses="ri" skip="true">
     <description>ExternalMetadataFeature end2end test</description>
     <service basedir="./server" class="externalmetadata.fromwsdl.server.ExternalMetadataServiceImpl">
         <wsdl href="external.wsdl"/>
