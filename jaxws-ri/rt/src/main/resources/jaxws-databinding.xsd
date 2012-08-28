@@ -50,8 +50,6 @@
 
 
  -->
-<!--TODO-Miran: get target namespace and xml schema ID assigned from proper authority (?) -->
-<!--xmlns="http://xmlns.oracle.com/webservices/jaxws-databinding"-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            targetNamespace="http://xmlns.oracle.com/webservices/jaxws-databinding"
            xmlns="http://xmlns.oracle.com/webservices/jaxws-databinding"
