@@ -275,7 +275,7 @@
                                 </goals>
                                 <configuration>
                                     <url>${hudson.build.id}</url>
-                                    <fromFile>artifact/jaxws-ri/transports/local/target/jaxws-local-transport-${project.version}.jar</fromFile>
+                                    <fromFile>artifact/jaxws-ri/transports/local/target/jaxws-local-transport.jar</fromFile>
                                     <toDir>target/tested-ri</toDir>
                                 </configuration>
                             </execution>
@@ -335,7 +335,7 @@
                                         <argument>${project.basedir}/target/tested-ri/jaxws-ri</argument>
                                         <argument>-r</argument>
                                         <argument>-transport</argument>
-                                        <argument>target/tested-ri/jaxws-local-transport-${project.version}.jar</argument>
+                                        <argument>target/tested-ri/jaxws-local-transport.jar</argument>
                                         <argument>${project.basedir}/testcases</argument>
                                     </arguments>
                                     <successCodes>
