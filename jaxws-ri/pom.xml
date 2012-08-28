@@ -89,6 +89,7 @@
         <findbugs.skip>false</findbugs.skip>
         <findbugs.threshold>Default</findbugs.threshold>
         <findbugs.exclude />
+        <netbeans.hint.jdkPlatform>JDK_1.6</netbeans.hint.jdkPlatform>
     </properties>
 
     <build>
