@@ -284,7 +284,6 @@
                         <dependencySourceExcludes>
                             <dependencySourceExclude>com.sun.xml.ws:*</dependencySourceExclude>
                         </dependencySourceExcludes>
-                        <isOffline>${javadoc.links.offline}</isOffline>
                         <additionalJOption>-J-Djava.endorsed.dirs=${endorsed.dir}</additionalJOption>
                         <offlineLinks>
                             <offlineLink>
