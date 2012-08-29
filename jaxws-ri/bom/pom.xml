@@ -522,5 +522,25 @@
                 <tools.jar>${java.home}/../Classes/classes.jar</tools.jar>
             </properties>
         </profile>
+        <profile>
+            <id>staging</id>
+            <repositories>
+                <repository>
+                    <id>releases.java.net</id>
+                    <url>https://maven.java.net/content/repositories/releases/</url>
+                    <layout>default</layout>
+                </repository>
+                <repository>
+                    <id>staging.java.net</id>
+                    <url>https://maven.java.net/content/groups/staging/</url>
+                    <layout>default</layout>
+                </repository>
+                <repository>
+                    <id>eclipse</id>
+                    <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
+                    <layout>default</layout>
+                </repository>
+            </repositories>
+        </profile>
     </profiles>
 </project>
