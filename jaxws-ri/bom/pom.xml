@@ -274,8 +274,8 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>javax.servlet</artifactId>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
                 <version>${servlet-api.version}</version>
             </dependency>
             <dependency>
@@ -472,26 +472,26 @@
     </dependencies>
 
     <properties>
-        <ant.version>1.7.0</ant.version>
+        <ant.version>1.8.0</ant.version>
         <asm.version>3.1</asm.version>
-        <commonj.sdo.version>2.1.1.v200905221342</commonj.sdo.version>
-        <eclipselink.version>2.4.0-RC2</eclipselink.version>
+        <commonj.sdo.version>2.1.1.v201112051852</commonj.sdo.version>
+        <eclipselink.version>2.4.0</eclipselink.version>
         <fi.version>1.2.12</fi.version>
         <fi-api.version>1.0</fi-api.version>
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
-        <ha-api.version>3.1.8</ha-api.version>
+        <ha-api.version>3.1.9</ha-api.version>
         <istack-commons.version>2.13</istack-commons.version>
         <jaxb-api.version>2.2.7</jaxb-api.version>
         <jaxb-impl.version>2.2.7-b41</jaxb-impl.version>
         <jaxws-api.version>2.2.8</jaxws-api.version>
         <junit.version>3.8.1</junit.version>
         <mail.version>1.4.5</mail.version>
-        <management-api.version>3.0.0-b012</management-api.version>
+        <management-api.version>3.1.0-b001</management-api.version>
         <mimepull.version>1.8</mimepull.version>
         <policy.version>2.3.1</policy.version>
         <saaj-api.version>1.3.4</saaj-api.version>
         <saaj-impl.version>1.3.19</saaj-impl.version>
-        <servlet-api.version>3.0</servlet-api.version>
+        <servlet-api.version>3.0.1</servlet-api.version>
         <stax2-api.version>3.1.1</stax2-api.version>
         <stax-ex.version>1.7.1</stax-ex.version>
         <streambuffer.version>1.5</streambuffer.version>

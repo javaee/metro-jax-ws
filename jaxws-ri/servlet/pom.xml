@@ -69,8 +69,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.servlet</artifactId>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
         </dependency>
     </dependencies>
 
