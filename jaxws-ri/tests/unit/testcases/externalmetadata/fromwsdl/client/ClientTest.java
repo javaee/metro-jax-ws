@@ -67,7 +67,7 @@ public class ClientTest extends TestCase {
 
     public void test() throws SOAPException, IOException {
 
-        ServiceName port = new ExternalMetadataService().getServiceNamePort();
+        ServiceName port = new ExternalMetadataServiceImplService().getServiceNamePort();
         port.doSomething();
 
         // -- TEST dispatch: http://java.net/jira/browse/JAX_WS-1014 : Bug <12883765>
@@ -75,7 +75,8 @@ public class ClientTest extends TestCase {
                 "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
                 "<S:Body><doSomething xmlns=\"my-target-namespace\"/></S:Body></S:Envelope>";
 
-        ExternalMetadataService service = new ExternalMetadataService();
+//        ExternalMetadataService service = new ExternalMetadataService();
+        ExternalMetadataServiceImplService service = new ExternalMetadataServiceImplService();
         Dispatch<SOAPMessage> dispatch = service.createDispatch(new QName("my-target-namespace", "ServiceNamePort"), SOAPMessage.class, Service.Mode.MESSAGE);
 
         Map<String, List> headersMap = new HashMap<String, List>();

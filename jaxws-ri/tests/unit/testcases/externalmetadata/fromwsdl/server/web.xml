@@ -63,7 +63,7 @@
 
     <servlet-mapping>
         <servlet-name>externalmetadata.fromwsdl</servlet-name>
-        <url-pattern>/EchoImpl</url-pattern>
+        <url-pattern>/WS</url-pattern>
     </servlet-mapping>
 
     <session-config>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -39,7 +40,7 @@
     holder.
 
 -->
-<descriptor since="2.2.8" uses="ri" skip="true">
+<descriptor since="2.2.8" uses="ri">
     <description>ExternalMetadataFeature end2end test</description>
     <service basedir="./server" class="externalmetadata.fromwsdl.server.ExternalMetadataServiceImpl">
         <wsdl href="external.wsdl"/>
