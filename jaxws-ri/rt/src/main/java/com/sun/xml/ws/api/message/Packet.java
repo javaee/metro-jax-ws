@@ -675,7 +675,21 @@ public final class Packet
      * handler when this request has been processed.
      */
     public Boolean nonNullAsyncHandlerGiven;
-    
+
+    /**
+     * USE-CASE:
+     * WS-AT is enabled, but there is no WSDL available.
+     * If Packet.isRequestReplyMEP() is Boolean.TRUE then WS-AT should
+     * add the TX context.
+     *
+     * This value is exposed to users via facades at higher abstraction layers.
+     * The user should NEVER use Packet directly.
+     * This value should ONLY be set by users.
+     */
+    private Boolean isRequestReplyMEP;
+    public Boolean isRequestReplyMEP() { return isRequestReplyMEP; }
+    public void setRequestReplyMEP(final Boolean x) { isRequestReplyMEP = x; }
+
     /**
      * Lazily created set of handler-scope property names.
      *
