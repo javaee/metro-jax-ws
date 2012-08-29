@@ -483,7 +483,6 @@
         <istack-commons.version>2.13</istack-commons.version>
         <jaxb-api.version>2.2.7</jaxb-api.version>
         <jaxb-impl.version>2.2.7-b41</jaxb-impl.version>
-        <jaxb-xjc.version>2.2.7-b41</jaxb-xjc.version>
         <jaxws-api.version>2.2.8</jaxws-api.version>
         <junit.version>3.8.1</junit.version>
         <mail.version>1.4.5</mail.version>
@@ -498,36 +497,6 @@
         <streambuffer.version>1.5</streambuffer.version>
         <woodstox-core-asl.version>4.1.2</woodstox-core-asl.version>
     </properties>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>1.3.1</version>
-                <configuration>
-                    <properties>
-                        <property>
-                            <name>jaxb-impl.version</name>
-                            <version>[${jaxb-impl.version},2.2.8-!)</version>
-                        </property>
-                        <property>
-                            <name>jaxb-xjc.version</name>
-                            <version>[${jaxb-xjc.version},2.2.8-!)</version>
-                        </property>
-                        <property>
-                            <name>jaxb-api.version</name>
-                            <version>[${jaxb-api.version},2.3-!)</version>
-                        </property>
-                        <property>
-                            <name>jaxws-api.version</name>
-                            <version>[${jaxws-api.version},2.3-!)</version>
-                        </property>
-                    </properties>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     
     <profiles>
         <profile>
@@ -571,6 +540,31 @@
                     <layout>default</layout>
                 </repository>
             </repositories>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>versions-maven-plugin</artifactId>
+                        <version>1.3.1</version>
+                        <configuration>
+                            <properties>
+                                <property>
+                                    <name>jaxb-api.version</name>
+                                    <version>[${jaxb-api.version},2.3-!)</version>
+                                </property>
+                                <property>
+                                    <name>jaxb-impl.version</name>
+                                    <version>[${jaxb-impl.version},2.2.8-!)</version>
+                                </property>
+                                <property>
+                                    <name>jaxws-api.version</name>
+                                    <version>[${jaxws-api.version},2.3-!)</version>
+                                </property>
+                            </properties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
