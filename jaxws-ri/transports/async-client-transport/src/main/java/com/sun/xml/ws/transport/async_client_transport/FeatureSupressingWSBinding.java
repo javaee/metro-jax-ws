@@ -54,6 +54,7 @@ import javax.xml.ws.WebServiceFeature;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
+import org.jvnet.ws.message.MessageContextFactory;
 
 /**
  * Supresses a feature from WSBinding 
@@ -114,5 +115,40 @@ public class FeatureSupressingWSBinding implements WSBinding {
 
     public WSFeatureList getFeatures() {
         return newFtrs;
+    }
+
+    @Override
+    public boolean isOperationFeatureEnabled(Class<? extends WebServiceFeature> type, QName qname) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <F extends WebServiceFeature> F getOperationFeature(Class<F> type, QName qname) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public WSFeatureList getOperationFeatures(QName qname) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public WSFeatureList getInputMessageFeatures(QName qname) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public WSFeatureList getOutputMessageFeatures(QName qname) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public WSFeatureList getFaultMessageFeatures(QName qname, QName qname1) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public MessageContextFactory getMessageContextFactory() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -108,7 +108,7 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
         return new ClientTubeAssemblerContext(
                 context.getAddress(), context.getWsdlModel(), context.getBindingProvider(),
                 recreateBinding(context.getBinding()),
-                context.getContainer(), context.getCodec(), context.getSEIModel());
+                context.getContainer(), context.getCodec(), context.getSEIModel(), context.getSEI());
     }
 
     private static WSBinding recreateBinding(WSBinding binding) {
