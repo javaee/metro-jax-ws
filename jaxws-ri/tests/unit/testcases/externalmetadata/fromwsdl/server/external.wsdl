@@ -81,9 +81,9 @@
             </output>
         </operation>
     </binding>
-    <service name="ExternalMetadataService">
+    <service name="ExternalMetadataServiceImplService">
         <port name="ServiceNamePort" binding="tns:ServiceNamePortBinding">
-            <soap:address location="http://localhost:8080/jaxws-databinding-fromwsdl/WS"/>
+            <soap:address location="http://localhost:8080/externalmetadata.fromwsdl.server/ExternalMetadataServiceImpl?wsdl"/>
         </port>
     </service>
 </definitions>

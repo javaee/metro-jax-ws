@@ -63,7 +63,7 @@
 
     <servlet-mapping>
         <servlet-name>externalmetadata.fromwsdl</servlet-name>
-        <url-pattern>/WS</url-pattern>
+        <url-pattern>/ExternalMetadataServiceImpl</url-pattern>
     </servlet-mapping>
 
     <session-config>

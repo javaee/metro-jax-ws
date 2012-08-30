@@ -42,7 +42,7 @@
 -->
 <endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
 
-    <endpoint implementation="externalmetadata.fromwsdl.server.ExternalMetadataServiceImpl" url-pattern="/WS" name="WS">
+    <endpoint implementation="externalmetadata.fromwsdl.server.ExternalMetadataServiceImpl" url-pattern="/ExternalMetadataServiceImpl" name="ExternalMetadataServiceImpl">
         <external-metadata resource="external-metadata.xml" />
     </endpoint>
 
