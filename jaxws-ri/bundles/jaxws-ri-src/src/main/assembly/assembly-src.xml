@@ -74,7 +74,7 @@
             <directoryMode>0755</directoryMode>
             <fileMode>0644</fileMode>
             <includes>
-                <include>*:javax.servlet:*</include>
+                <include>*:javax.servlet-api:*</include>
             </includes>
         </dependencySet>
     </dependencySets>
