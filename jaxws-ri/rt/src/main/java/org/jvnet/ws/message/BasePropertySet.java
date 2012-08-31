@@ -80,7 +80,29 @@ public abstract class BasePropertySet implements PropertySet {
      * <p>
      * Just giving it an alias to make the use of this class more fool-proof.
      */
-    protected static class PropertyMap extends HashMap<String,Accessor> {}
+    protected static class PropertyMap extends HashMap<String,Accessor> {
+
+        // the entries are often being iterated through so performance can be improved
+        // by their caching instead of iterating through the original (immutable) map each time
+        PropertyMapEntry[] cachedEntries = null;
+
+        PropertyMapEntry[] getPropertyMapEntries() {
+            if (cachedEntries == null) {
+                cachedEntries = createPropertyMapEntries();
+            }
+            return cachedEntries;
+        }
+
+        private PropertyMapEntry[] createPropertyMapEntries() {
+            final PropertyMapEntry[] modelEntries = new PropertyMapEntry[size()];
+            int i = 0;
+            for (final Entry<String, Accessor> e : entrySet()) {
+                modelEntries[i++] = new PropertyMapEntry(e.getKey(), e.getValue());
+            }
+            return modelEntries;
+        }
+
+    }
 
     /**
      * PropertyMapEntry represents a Map.Entry in the PropertyMap with more efficient access.
@@ -113,18 +135,6 @@ public abstract class BasePropertySet implements PropertySet {
      */
     protected abstract PropertyMap getPropertyMap();
 
-    /**
-     * A more efficient representation of PropertyMap.
-     */
-    protected PropertyMapEntry[] getPropertyMapEntries() {
-        PropertyMap pm = getPropertyMap();       
-        final PropertyMapEntry[] modelEntries = new PropertyMapEntry[pm.size()];
-        int i = 0;
-        for (final Entry<String, Accessor> e : pm.entrySet()) {
-            modelEntries[i++] = new PropertyMapEntry(e.getKey(), e.getValue());
-        }
-        return modelEntries;
-    }
     /**
      * This method parses a class for fields and methods with {@link PropertySet.Property}.
      */
@@ -307,19 +317,16 @@ public abstract class BasePropertySet implements PropertySet {
         boolean extensible;
 
         MapView(boolean extensible) {
-//          super(getPropertyMap().entrySet().size());
-        	super(getPropertyMapEntries().length);
+        	super(getPropertyMap().getPropertyMapEntries().length);
             this.extensible = extensible;
             initialize();
         }
 
         public void initialize() {
-//            for (final Entry<String, Accessor> e : getPropertyMap().entrySet()) {
-//                super.put(e.getKey(), e.getValue());
-//            }
-            PropertyMapEntry[] entries = getPropertyMapEntries();
-            for (int i = 0; i < entries.length; i++) {
-            	super.put(entries[i].key, entries[i].value);
+            // iterate (cached) array instead of map to speed things up ...
+            PropertyMapEntry[] entries = getPropertyMap().getPropertyMapEntries();
+            for (PropertyMapEntry entry : entries) {
+                super.put(entry.key, entry.value);
             }
         }
 
