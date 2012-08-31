@@ -431,6 +431,12 @@
                 <artifactId>sdo-eclipselink-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>jaxws-ri</artifactId>
+                <type>zip</type>
+                <version>${jaxws.ri.version}</version>
+            </dependency>
 
             <!-- TODO:
 
