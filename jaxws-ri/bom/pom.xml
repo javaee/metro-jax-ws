@@ -435,7 +435,7 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>jaxws-ri</artifactId>
                 <type>zip</type>
-                <version>${jaxws.ri.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <!-- TODO:
