@@ -277,12 +277,18 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
 
     JavaMethod getJavaMethod(Method method, JavaWsdlMappingType r) {
 
+        JavaWsdlMappingType.JavaMethods javaMethods = r.getJavaMethods();
+        if (javaMethods == null) {
+            return null;
+        }
+
         List<JavaMethod> sameName = new ArrayList<JavaMethod>();
-        for (JavaMethod jm : r.getJavaMethods().getJavaMethod()) {
+        for (JavaMethod jm : javaMethods.getJavaMethod()) {
             if (method.getName().equals(jm.getName())) {
                 sameName.add(jm);
             }
         }
+
         if (sameName.isEmpty()) {
             return null;
         } else {
