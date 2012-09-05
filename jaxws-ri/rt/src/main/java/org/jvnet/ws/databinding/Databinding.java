@@ -182,6 +182,8 @@ public interface Databinding {
 		Builder portName(QName portName);
 		
 		/**
+                 * @deprecated - no replacement - this was never implemented
+                 *
 		 * Sets the WSDL URL where the WSDL can be read from
 		 * 
 		 * @param wsdlURL The wsdlURL to set
@@ -191,6 +193,8 @@ public interface Databinding {
 		Builder wsdlURL(URL wsdlURL);
 
 		/**
+                 * @deprecated - no replacement - this was never implemented
+                 *
 		 * Sets the WSDL Source where the WSDL can be read from
 		 * 
 		 * @param wsdlSource The wsdlSource to set
@@ -200,6 +204,8 @@ public interface Databinding {
 		Builder wsdlSource(Source wsdlSource);
 
 		/**
+                 * @deprecated - no replacement - this was never implemented
+                 *
 		 * Sets the {@link EntityResolver} for reading the WSDL
 		 * 
 		 * @param entityResolver The {@link EntityResolver} to set
