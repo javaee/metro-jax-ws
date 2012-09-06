@@ -87,7 +87,7 @@
         <javadoc.links.dir>${project.parent.basedir}/src/main/javadoc-link</javadoc.links.dir>
         <javadoc.links.offline>false</javadoc.links.offline>
         <findbugs.skip>false</findbugs.skip>
-        <findbugs.threshold>Default</findbugs.threshold>
+        <findbugs.threshold>High</findbugs.threshold>
         <findbugs.exclude />
         <netbeans.hint.jdkPlatform>JDK_1.6</netbeans.hint.jdkPlatform>
     </properties>
@@ -332,10 +332,19 @@
                         <skip>${findbugs.skip}</skip>
                         <threshold>${findbugs.threshold}</threshold>
                         <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-                        <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
+                        <excludeFilterFile>
+                            exclude-common.xml,${findbugs.exclude}
+                        </excludeFilterFile>
                         <fork>true</fork>
                         <jvmArgs>-Xms64m -Xmx256m</jvmArgs>    
                     </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.glassfish.findbugs</groupId>
+                            <artifactId>findbugs</artifactId>
+                            <version>1.0</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
