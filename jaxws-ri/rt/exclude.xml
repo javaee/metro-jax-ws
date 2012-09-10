@@ -59,4 +59,9 @@
             <Bug pattern="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"/>
         </Or>
     </Match>
+    <Match>
+        <Class>com.sun.xml.ws.api.pipe.Fiber</Class>
+        <Method params="com.sun.xml.ws.api.pipe.Tube">_doRun</Method>
+        <Bug>UL_UNRELEASED_LOCK</Bug>
+    </Match>
 </FindBugsFilter>
