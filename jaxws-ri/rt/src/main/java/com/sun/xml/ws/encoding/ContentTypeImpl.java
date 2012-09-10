@@ -105,14 +105,17 @@ public final class ContentTypeImpl implements com.sun.xml.ws.api.pipe.ContentTyp
         }
     }
 
+    @Override
     public String getContentType() {
         return contentType;
     }
 
+    @Override
     public String getSOAPActionHeader() {
         return soapAction;
     }
 
+    @Override
     public String getAcceptHeader() {
         return accept;
     }

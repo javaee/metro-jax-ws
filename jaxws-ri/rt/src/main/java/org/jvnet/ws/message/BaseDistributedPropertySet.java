@@ -48,7 +48,6 @@ import com.sun.xml.ws.client.ResponseContext;
 
 import javax.xml.ws.WebServiceContext;
 
-
 import java.util.AbstractMap;
 import java.util.Map.Entry;
 import java.util.HashSet;
@@ -105,14 +104,17 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
         this.viewthis = super.createView();
     }
     
+    @Override
     public void addSatellite(@NotNull PropertySet satellite) {
         addSatellite(satellite.getClass(), satellite);
     }
 
+    @Override
     public void addSatellite(@NotNull Class keyClass, @NotNull PropertySet satellite) {
         satellites.put(keyClass, satellite);
     }
 
+    @Override
     public void removeSatellite(PropertySet satellite) {
         satellites.remove(satellite.getClass());
     }
@@ -123,11 +125,12 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
         }
     }
 
+    @Override
     public void copySatelliteInto(MessageContext r) {
         copySatelliteInto((DistributedPropertySet)r);
     }
     
-    public @Nullable <T extends org.jvnet.ws.message.PropertySet> T getSatellite(Class<T> satelliteClass) {
+    public @Override @Nullable <T extends org.jvnet.ws.message.PropertySet> T getSatellite(Class<T> satelliteClass) {
         T satellite = (T) satellites.get(satelliteClass);
         if (satellite != null)
                 return satellite;

@@ -40,7 +40,6 @@
 
 package com.sun.xml.ws.api;
 
-
 import com.sun.istack.Nullable;
 
 import javax.xml.ws.WebServiceException;
@@ -170,6 +169,7 @@ public final class EndpointAddress {
         ProxySelector sel =
             java.security.AccessController.doPrivileged(
                 new java.security.PrivilegedAction<ProxySelector>() {
+                    @Override
                     public ProxySelector run() {
                         return ProxySelector.getDefault();
                     }
@@ -224,7 +224,6 @@ public final class EndpointAddress {
      *      if the code is written correctly this shall never happen.
      */
     public URLConnection openConnection() throws IOException {
-        assert url!=null : uri+" doesn't have the corresponding URL";
         if (url == null) {
             throw new WebServiceException("URI="+uri+" doesn't have the corresponding URL");
         }
@@ -241,6 +240,7 @@ public final class EndpointAddress {
         return url.openConnection();
     }
 
+    @Override
     public String toString() {
         return stringForm;
     }

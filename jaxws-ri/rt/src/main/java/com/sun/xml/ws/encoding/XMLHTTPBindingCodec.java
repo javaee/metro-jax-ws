@@ -56,7 +56,6 @@ import com.sun.xml.ws.util.ByteArrayBuffer;
 
 import javax.activation.DataSource;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -131,15 +130,14 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
         fiCodec = getFICodec();
     }
     
+    @Override
     public String getMimeType() {
         return null;
     }
     
     @Override
     public ContentType getStaticContentType(Packet packet) {
-//        setRootCodec(packet);
-        
-        ContentType ct = null;
+        ContentType ct;
         if (packet.getInternalMessage() instanceof MessageDataSource) {
             final MessageDataSource mds = (MessageDataSource)packet.getInternalMessage();
             if (mds.hasUnconsumedDataSource()) {
@@ -158,8 +156,6 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
     
     @Override
     public ContentType encode(Packet packet, OutputStream out) throws IOException {
-//        setRootCodec(packet);
-        
         if (packet.getInternalMessage() instanceof MessageDataSource) {
             final MessageDataSource mds = (MessageDataSource)packet.getInternalMessage();
             if (mds.hasUnconsumedDataSource())
@@ -169,6 +165,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
         return setAcceptHeader(packet, super.encode(packet, out));
     }
 
+    @Override
     public ContentType encode(Packet packet, WritableByteChannel buffer) {
         throw new UnsupportedOperationException();
     }
@@ -204,10 +201,12 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
         }
     }
     
+    @Override
     protected void decode(MimeMultipartParser mpp, Packet packet) throws IOException {
         // This method will never be invoked
     }
     
+    @Override
     public MimeCodec copy() {
         return new XMLHTTPBindingCodec(features);
     }
@@ -281,6 +280,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
         }
     }    
 
+    @Override
     protected Codec getMimeRootCodec(Packet p) {
         /**
          * The following logic is only for outbound packets

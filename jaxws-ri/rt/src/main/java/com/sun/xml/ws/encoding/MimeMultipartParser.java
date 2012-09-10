@@ -40,13 +40,11 @@
 
 package com.sun.xml.ws.encoding;
 
-
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentEx;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
-import com.sun.xml.ws.developer.StreamingDataHandler;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.ByteArrayDataSource;
 
@@ -68,6 +66,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Parses Mime multipart message into primary part and attachment parts. It
@@ -169,20 +169,28 @@ public final class MimeMultipartParser {
             this.part = part;
         }
 
-        public @NotNull String getContentId() {
+        public @NotNull @Override String getContentId() {
             return part.getContentId();
         }
 
-        public @NotNull String getContentType() {
+        public @NotNull @Override String getContentType() {
             return part.getContentType();
         }
 
+        @Override
         public byte[] asByteArray() {
             if (buf == null) {
                 ByteArrayBuffer baf = new ByteArrayBuffer();
                 try {
                     baf.write(part.readOnce());
                 } catch(IOException ioe) {
+                    if (baf != null) {
+                        try {
+                            baf.close();
+                        } catch (IOException ex) {
+                            Logger.getLogger(MimeMultipartParser.class.getName()).log(Level.FINE, null, ex);
+                        }
+                    }
                     throw new WebServiceException(ioe);
                 }
                 buf = baf.toByteArray();
@@ -190,23 +198,27 @@ public final class MimeMultipartParser {
             return buf;
         }
 
+        @Override
         public DataHandler asDataHandler() {
             return (buf != null)
                 ? new DataSourceStreamingDataHandler(new ByteArrayDataSource(buf,getContentType()))
                 : new MIMEPartStreamingDataHandler(part);
         }
 
+        @Override
         public Source asSource() {
             return (buf != null)
                 ? new StreamSource(new ByteArrayInputStream(buf))
                 : new StreamSource(part.read());
         }
 
+        @Override
         public InputStream asInputStream() {
             return (buf != null)
                 ? new ByteArrayInputStream(buf) : part.read();
         }
 
+        @Override
         public void writeTo(OutputStream os) throws IOException {
             if (buf != null) {
                 os.write(buf);
@@ -221,31 +233,38 @@ public final class MimeMultipartParser {
             }
         }
 
+        @Override
         public void writeTo(SOAPMessage saaj) throws SOAPException {
             saaj.createAttachmentPart().setDataHandler(asDataHandler());
         }
 
         // AttachmentEx methods begin here
+        @Override
         public Iterator<MimeHeader> getMimeHeaders() {
             final Iterator<? extends Header> ih = part.getAllHeaders()
                     .iterator();
             return new Iterator<MimeHeader>() {
+                @Override
                 public boolean hasNext() {
                     return ih.hasNext();
                 }
 
+                @Override
                 public MimeHeader next() {
                     final Header hdr = ih.next();
                     return new AttachmentEx.MimeHeader() {
+                        @Override
                         public String getValue() {
                             return hdr.getValue();
                         }
+                        @Override
                         public String getName() {
                             return hdr.getName();
                         }
                     };
                 }
 
+                @Override
                 public void remove() {
                     throw new UnsupportedOperationException();
                 }

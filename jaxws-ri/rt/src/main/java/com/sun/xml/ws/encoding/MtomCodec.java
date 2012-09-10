@@ -60,7 +60,6 @@ import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
 import com.sun.xml.ws.streaming.MtomStreamWriter;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.server.UnsupportedMediaException;
-import static com.sun.xml.ws.binding.WebServiceFeatureList.getFeature;    
 import org.jvnet.staxex.Base64Data;
 import org.jvnet.staxex.NamespaceContextEx;
 import org.jvnet.staxex.XMLStreamReaderEx;
@@ -73,7 +72,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.bind.attachment.AttachmentMarshaller;
 import java.io.IOException;
@@ -89,7 +87,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Mtom messge Codec. It can be used even for non-soap message's mtom encoding.
+ * Mtom message Codec. It can be used even for non-soap message's mtom encoding.
  *
  * @author Vivek Pandey
  * @author Jitendra Kotamraju
@@ -121,6 +119,7 @@ public class MtomCodec extends MimeCodec {
      *
      * @return A non-null content type for soap11 or soap 1.2 content type
      */
+    @Override
     public ContentType getStaticContentType(Packet packet) {
         return getStaticContentTypeStatic(packet, version);
     }
@@ -156,6 +155,7 @@ public class MtomCodec extends MimeCodec {
         return packet.soapAction != null? ";action=\\\""+packet.soapAction+"\\\"" : "";
     }
 
+    @Override
     public ContentType encode(Packet packet, OutputStream out) throws IOException {
         ContentTypeImpl ctImpl = (ContentTypeImpl) this.getStaticContentType(packet);
         String boundary = ctImpl.getBoundary();
@@ -251,10 +251,12 @@ public class MtomCodec extends MimeCodec {
         }
     }
 
+    @Override
     public ContentType encode(Packet packet, WritableByteChannel buffer) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public MtomCodec copy() {
         return new MtomCodec(version, (StreamSOAPCodec)codec.copy(), features);
     }
@@ -327,6 +329,7 @@ public class MtomCodec extends MimeCodec {
             this.myMtomFeature = myMtomFeature;
         }
 
+        @Override
         public void writeBinary(byte[] data, int start, int len, String contentType) throws XMLStreamException {
             //check threshold and if less write as base64encoded value
             if(myMtomFeature.getThreshold() > len){
@@ -337,15 +340,18 @@ public class MtomCodec extends MimeCodec {
             writeBinary(bab);
         }
 
+        @Override
         public void writeBinary(DataHandler dataHandler) throws XMLStreamException {
             // TODO how do we check threshold and if less inline the data
             writeBinary(new ByteArrayBuffer(dataHandler, boundary));
         }
 
+        @Override
         public OutputStream writeBinary(String contentType) throws XMLStreamException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void writePCDATA(CharSequence data) throws XMLStreamException {
             if(data == null)
                 return;
@@ -388,9 +394,11 @@ public class MtomCodec extends MimeCodec {
          * While writing, it calls the AttachmentMarshaller methods for adding attachments.
          * JAXB writes xop:Include in this case.
          */
+        @Override
         public AttachmentMarshaller getAttachmentMarshaller() {
             return new AttachmentMarshaller() {
 
+                @Override
                 public String addMtomAttachment(DataHandler data, String elementNamespace, String elementLocalName) {
                     // Should we do the threshold processing on DataHandler ? But that would be
                     // expensive as DataHolder need to read the data again from its source
@@ -399,6 +407,7 @@ public class MtomCodec extends MimeCodec {
                     return "cid:"+bab.contentId;
                 }
 
+                @Override
                 public String addMtomAttachment(byte[] data, int offset, int length, String mimeType, String elementNamespace, String elementLocalName) {
                     // inline the data based on the threshold
                     if (myMtomFeature.getThreshold() > length) {
@@ -409,6 +418,7 @@ public class MtomCodec extends MimeCodec {
                     return "cid:"+bab.contentId;
                 }
 
+                @Override
                 public String addSwaRefAttachment(DataHandler data) {
                     ByteArrayBuffer bab = new ByteArrayBuffer(data, boundary);
                     mtomAttachments.add(bab);
@@ -426,29 +436,34 @@ public class MtomCodec extends MimeCodec {
             return this.mtomAttachments;
         }
         
+        @Override
         public String getEncoding() {
             return XMLStreamWriterUtil.getEncoding(writer);
         }
 
-        private class MtomNamespaceContextEx implements NamespaceContextEx {
+        private static class MtomNamespaceContextEx implements NamespaceContextEx {
             private NamespaceContext nsContext;
 
             public MtomNamespaceContextEx(NamespaceContext nsContext) {
                 this.nsContext = nsContext;
             }
 
+            @Override
             public Iterator<Binding> iterator() {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public String getNamespaceURI(String prefix) {
                 return nsContext.getNamespaceURI(prefix);
             }
 
+            @Override
             public String getPrefix(String namespaceURI) {
                 return nsContext.getPrefix(namespaceURI);
             }
 
+            @Override
             public Iterator getPrefixes(String namespaceURI) {
                 return nsContext.getPrefixes(namespaceURI);
             }
@@ -480,6 +495,7 @@ public class MtomCodec extends MimeCodec {
             this.mimeMP = mimeMP;
         }
 
+        @Override
         public CharSequence getPCDATA() throws XMLStreamException {
             if(xopReferencePresent){
                 return base64AttData;
@@ -487,11 +503,13 @@ public class MtomCodec extends MimeCodec {
             return reader.getText();
         }
 
+        @Override
         public NamespaceContextEx getNamespaceContext() {
             NamespaceContext nsContext = reader.getNamespaceContext();
             return new MtomNamespaceContextEx(nsContext);
         }
 
+        @Override
         public String getElementTextTrim() throws XMLStreamException {
             throw new UnsupportedOperationException();
         }
@@ -503,24 +521,29 @@ public class MtomCodec extends MimeCodec {
                 this.nsContext = nsContext;
             }
 
+            @Override
             public Iterator<Binding> iterator() {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public String getNamespaceURI(String prefix) {
                 return nsContext.getNamespaceURI(prefix);
             }
 
+            @Override
             public String getPrefix(String namespaceURI) {
                 return nsContext.getPrefix(namespaceURI);
             }
 
+            @Override
             public Iterator getPrefixes(String namespaceURI) {
                 return nsContext.getPrefixes(namespaceURI);
             }
 
         }
 
+        @Override
         public int getTextLength() {
             if (xopReferencePresent) {
                 return base64AttData.length();
@@ -528,6 +551,7 @@ public class MtomCodec extends MimeCodec {
             return reader.getTextLength();
         }
 
+        @Override
         public int getTextStart() {
             if (xopReferencePresent) {
                 return 0;
@@ -535,12 +559,14 @@ public class MtomCodec extends MimeCodec {
             return reader.getTextStart();
         }
 
+        @Override
         public int getEventType() {
             if(xopReferencePresent)
                 return XMLStreamConstants.CHARACTERS;
             return super.getEventType();
         }
 
+        @Override
         public int next() throws XMLStreamException {
             int event = reader.next();
             if (event == XMLStreamConstants.START_ELEMENT && reader.getLocalName().equals(XOP_LOCALNAME) && reader.getNamespaceURI().equals(XOP_NAMESPACEURI)) {
@@ -588,6 +614,7 @@ public class MtomCodec extends MimeCodec {
             return mimeMP.getAttachmentPart(cid);
         }
 
+        @Override
         public char[] getTextCharacters() {
             if (xopReferencePresent) {
                 char[] chars = new char[base64AttData.length()];
@@ -597,6 +624,7 @@ public class MtomCodec extends MimeCodec {
             return reader.getTextCharacters();
         }
 
+        @Override
         public int getTextCharacters(int sourceStart, char[] target, int targetStart, int length) throws XMLStreamException {
             if(xopReferencePresent){
                 if(target == null){
@@ -624,6 +652,7 @@ public class MtomCodec extends MimeCodec {
             return reader.getTextCharacters(sourceStart, target, targetStart, length);
         }
 
+        @Override
         public String getText() {
             if (xopReferencePresent) {
                 return base64AttData.toString();

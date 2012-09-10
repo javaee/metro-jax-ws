@@ -196,7 +196,7 @@ final public class TieHandler implements EndpointCallBridge {
     */
     private EndpointResponseMessageBuilder createResponseMessageBuilder(List<MessageFiller> fillers) {
 
-        EndpointResponseMessageBuilder bodyBuilder = null;
+        EndpointResponseMessageBuilder tmpBodyBuilder = null;
         List<ParameterImpl> rp = javaMethodModel.getResponseParameters();
 
         for (ParameterImpl param : rp) {
@@ -206,14 +206,14 @@ final public class TieHandler implements EndpointCallBridge {
             case BODY:
                 if(param.isWrapperStyle()) {
                     if(param.getParent().getBinding().isRpcLit()) {
-                        bodyBuilder = new EndpointResponseMessageBuilder.RpcLit((WrapperParameter)param,
+                        tmpBodyBuilder = new EndpointResponseMessageBuilder.RpcLit((WrapperParameter)param,
                             soapVersion);
                     } else {
-                        bodyBuilder = new EndpointResponseMessageBuilder.DocLit((WrapperParameter)param,
+                        tmpBodyBuilder = new EndpointResponseMessageBuilder.DocLit((WrapperParameter)param,
                             soapVersion);
                     }
                 } else {
-                    bodyBuilder = new EndpointResponseMessageBuilder.Bare(param, soapVersion);
+                    tmpBodyBuilder = new EndpointResponseMessageBuilder.Bare(param, soapVersion);
                 }
                 break;
             case HEADER:
@@ -229,20 +229,20 @@ final public class TieHandler implements EndpointCallBridge {
             }
         }
 
-        if (bodyBuilder == null) {
+        if (tmpBodyBuilder == null) {
             // no parameter binds to body. we create an empty message
             switch(soapVersion) {
             case SOAP_11:
-                bodyBuilder = EndpointResponseMessageBuilder.EMPTY_SOAP11;
+                tmpBodyBuilder = EndpointResponseMessageBuilder.EMPTY_SOAP11;
                 break;
             case SOAP_12:
-                bodyBuilder = EndpointResponseMessageBuilder.EMPTY_SOAP12;
+                tmpBodyBuilder = EndpointResponseMessageBuilder.EMPTY_SOAP12;
                 break;
             default:
                 throw new AssertionError();
             }
         }
-        return bodyBuilder;
+        return tmpBodyBuilder;
     }
 
     public Object[] readRequest(Message reqMsg) {
@@ -259,7 +259,6 @@ final public class TieHandler implements EndpointCallBridge {
     
     public Message createResponse(JavaCallInfo call) {
         Message responseMessage;
-        Object ret = call.getReturnValue();
         if (call.getException() == null) {
             responseMessage = isOneWay ? null : createResponseMessage(call.getParameters(), call.getReturnValue());
         } else {
@@ -328,6 +327,7 @@ final public class TieHandler implements EndpointCallBridge {
 
     private static final Logger LOGGER = Logger.getLogger(TieHandler.class.getName());
 
+    @Override
 	public JavaCallInfo deserializeRequest(Packet req) {
 		JavaCallInfo call = new JavaCallInfo();
 		call.setMethod(this.getMethod());
@@ -336,6 +336,7 @@ final public class TieHandler implements EndpointCallBridge {
 		return call;
 	}
 
+    @Override
 	public Packet serializeResponse(JavaCallInfo call) {
             Message msg = this.createResponse(call);
             Packet p = (msg == null) ? (Packet)packetFactory.createContext() : (Packet)packetFactory.createContext(msg);
@@ -343,6 +344,7 @@ final public class TieHandler implements EndpointCallBridge {
             return p;
 	}
 	
+    @Override
     public JavaMethod getOperationModel() {
         return javaMethodModel;
     }

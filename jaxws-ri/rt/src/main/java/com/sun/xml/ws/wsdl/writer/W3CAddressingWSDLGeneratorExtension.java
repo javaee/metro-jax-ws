@@ -161,7 +161,7 @@ public class W3CAddressingWSDLGeneratorExtension extends WSDLGeneratorExtension 
     public void addBindingExtension(TypedXmlWriter binding) {
         if (!enabled)
             return;
-        UsingAddressing ua = binding._element(AddressingVersion.W3C.wsdlExtensionTag, UsingAddressing.class);
+        binding._element(AddressingVersion.W3C.wsdlExtensionTag, UsingAddressing.class);
         /*
         Do not generate wsdl:required=true
         if(required) {

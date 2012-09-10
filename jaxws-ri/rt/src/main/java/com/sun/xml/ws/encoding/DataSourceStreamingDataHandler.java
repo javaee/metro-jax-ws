@@ -40,8 +40,6 @@
 
 package com.sun.xml.ws.encoding;
 
-import org.jvnet.mimepull.MIMEPart;
-
 import javax.activation.DataSource;
 import java.io.*;
 
@@ -56,22 +54,30 @@ public class DataSourceStreamingDataHandler extends StreamingDataHandler {
         super(ds);
     }
 
+    @Override
     public InputStream readOnce() throws IOException {
         return getInputStream();
     }
 
+    @Override
     public void moveTo(File file) throws IOException {
         InputStream in = getInputStream();
         OutputStream os = new FileOutputStream(file);
-        byte[] temp = new byte[8192];
-        int len;
-        while((len=in.read(temp)) != -1) {
-            os.write(temp, 0, len);
+        try {
+            byte[] temp = new byte[8192];
+            int len;
+            while((len=in.read(temp)) != -1) {
+                os.write(temp, 0, len);
+            }
+            in.close();
+        } finally {
+            if (os != null) {
+                os.close();
+            }
         }
-        in.close();
-        os.close();
     }
 
+    @Override
     public void close() throws IOException {
         // nothing to do here
     }

@@ -49,6 +49,10 @@
             <Class name="com.sun.xml.ws.developer.StreamingDataHandler"/>
             <Class name="com.sun.xml.ws.transport.http.server.HttpEndpoint"/>
             <Class name="com.sun.xml.ws.api.databinding.DatabindingFactory"/>
+            <Class name="com.sun.xml.ws.encoding.SOAPBindingCodec"/>
+            <Class name="com.sun.xml.ws.encoding.StreamSOAPCodec"/>
+            <Class name="com.sun.xml.ws.wsdl.writer.WSDLResolver"/>
+            <Class name="com.sun.xml.ws.Closeable"/>
         </Or>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
     </Match>
@@ -63,5 +67,17 @@
         <Class>com.sun.xml.ws.api.pipe.Fiber</Class>
         <Method returns="boolean" params="com.sun.xml.ws.api.pipe.Tube">_doRun</Method>
         <Bug pattern="UL_UNRELEASED_LOCK"/>
+    </Match>
+    <Match>
+        <Class>com.sun.xml.ws.streaming</Class>
+        <Bug pattern="SF_SWITCH_FALLTHROUGH"/>
+    </Match>
+    <Match>
+        <Class>com.sun.xml.ws.encoding.XMLHTTPBindingCodec</Class>
+        <Bug pattern="NP_LOAD_OF_KNOWN_NULL_VALUE"/>
+    </Match>
+    <Match>
+        <Class>com.sun.xml.ws.encoding.ContentTypeImpl$Builder</Class>
+        <Bug pattern="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"/>
     </Match>
 </FindBugsFilter>

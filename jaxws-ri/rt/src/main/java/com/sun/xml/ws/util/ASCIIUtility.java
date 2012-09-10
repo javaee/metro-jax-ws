@@ -42,8 +42,6 @@ package com.sun.xml.ws.util;
 
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
 /**
@@ -134,22 +132,6 @@ public class ASCIIUtility {
             theChars[i++] = (char)(b[j++]&0xff);
 
         return new String(theChars);
-    }
-
-    public static byte[] getBytes(String s) {
-        char [] chars= s.toCharArray();
-        int size = chars.length;
-        byte[] bytes = new byte[size];
-
-        for (int i = 0; i < size;)
-            bytes[i] = (byte) chars[i++];
-        return bytes;
-    }
-
-    public static byte[] getBytes(InputStream is) throws IOException {
-        ByteArrayBuffer bab = new ByteArrayBuffer();
-        bab.write(is);
-        return bab.toByteArray();
     }
 
     public static void copyStream(InputStream is, OutputStream out) throws IOException {
