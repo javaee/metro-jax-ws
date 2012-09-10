@@ -152,8 +152,8 @@ public class WrapperBond<T> implements XMLBridge<T> {
 //			System.out.println("======== " + output.getNamespaceContext().getPrefix(typeInfo.tagName.getNamespaceURI()));
 //			System.out.println("======== " + output.getNamespaceContext().getNamespaceURI(""));
 		} catch (XMLStreamException e) {
-			e.printStackTrace();
-			new DatabindingException(e);
+//			e.printStackTrace();
+			throw new DatabindingException(e);
 		}
 		if (w.bridges != null) for (int i = 0; i < w.bridges.length; i++) {
 //			System.out.println("======== bond " + w.bridges[i].getTypeInfo().tagName);
@@ -162,7 +162,7 @@ public class WrapperBond<T> implements XMLBridge<T> {
 		try {
 			output.writeEndElement();
 		} catch (XMLStreamException e) {
-			new DatabindingException(e);
+			throw new DatabindingException(e);
 		}
 	}
 	

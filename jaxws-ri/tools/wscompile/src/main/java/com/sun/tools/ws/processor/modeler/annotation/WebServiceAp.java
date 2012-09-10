@@ -40,6 +40,7 @@
 
 package com.sun.tools.ws.processor.modeler.annotation;
 
+import com.sun.istack.logging.Logger;
 import com.sun.tools.ws.processor.generator.GeneratorUtil;
 import com.sun.tools.ws.processor.modeler.ModelerException;
 import com.sun.tools.ws.resources.WebserviceapMessages;
@@ -72,6 +73,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * WebServiceAp is a AnnotationProcessor for processing javax.jws.* and
@@ -104,6 +106,8 @@ import java.util.Set;
 @SupportedOptions({WebServiceAp.DO_NOT_OVERWRITE, WebServiceAp.IGNORE_NO_WEB_SERVICE_FOUND_WARNING})
 public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
 
+    private static final Logger LOGGER = Logger.getLogger(WebServiceAp.class);
+    
     public static final String DO_NOT_OVERWRITE = "doNotOverWrite";
     public static final String IGNORE_NO_WEB_SERVICE_FOUND_WARNING = "ignoreNoWebServiceFoundWarning";
 
@@ -241,9 +245,14 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
     }
 
     protected void report(String msg) {
-        PrintStream outStream = out != null ? out : new PrintStream(out, true);
-        outStream.println(msg);
-        outStream.flush();
+        if (out == null) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "No output set for web service annotation processor reporting.");
+            }
+            return;
+        }
+        out.println(msg);
+        out.flush();
     }
 
     @Override

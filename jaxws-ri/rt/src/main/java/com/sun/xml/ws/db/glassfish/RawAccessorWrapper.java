@@ -46,38 +46,44 @@ import com.sun.xml.bind.api.AccessorException;
 import com.sun.xml.bind.api.RawAccessor;
 
 @SuppressWarnings("unchecked")
-public class RawAccessorWrapper implements PropertyAccessor {	
-	private RawAccessor accessor;
+public class RawAccessorWrapper implements PropertyAccessor {
 
-	public RawAccessorWrapper(RawAccessor a) {
-		accessor = a;
-	}
+    private RawAccessor accessor;
 
-	public boolean equals(Object obj) {
-		return accessor.equals(obj);
-	}
+    public RawAccessorWrapper(RawAccessor a) {
+        accessor = a;
+    }
 
-	public Object get(Object bean) throws DatabindingException {
-		try {
-			return accessor.get(bean);
-		} catch (AccessorException e) {
-			throw new DatabindingException(e);
-		}
-	}
+    @Override
+    public boolean equals(Object obj) {
+        return accessor.equals(obj);
+    }
 
-	public int hashCode() {
-		return accessor.hashCode();
-	}
+    @Override
+    public Object get(Object bean) throws DatabindingException {
+        try {
+            return accessor.get(bean);
+        } catch (AccessorException e) {
+            throw new DatabindingException(e);
+        }
+    }
 
-	public void set(Object bean, Object value) throws DatabindingException {
-		try {
-			accessor.set(bean, value);
-		} catch (AccessorException e) {
-			throw new DatabindingException(e);
-		}
-	}
+    @Override
+    public int hashCode() {
+        return accessor.hashCode();
+    }
 
-	public String toString() {
-		return accessor.toString();
-	}
+    @Override
+    public void set(Object bean, Object value) throws DatabindingException {
+        try {
+            accessor.set(bean, value);
+        } catch (AccessorException e) {
+            throw new DatabindingException(e);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return accessor.toString();
+    }
 }

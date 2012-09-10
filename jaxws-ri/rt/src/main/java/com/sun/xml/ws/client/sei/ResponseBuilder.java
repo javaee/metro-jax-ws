@@ -119,7 +119,7 @@ public abstract class ResponseBuilder {
             this.setter = setter;
         }
         final Object readResponse(Object[] args, XMLStreamReader r, AttachmentSet att) throws JAXBException {
-            Object obj = null;
+            Object obj;
             AttachmentUnmarshallerImpl au = (att != null)?new AttachmentUnmarshallerImpl(att):null;
             if (bridge instanceof RepeatedElementBridge) {
                 RepeatedElementBridge rbridge = (RepeatedElementBridge)bridge; 
@@ -184,6 +184,7 @@ public abstract class ResponseBuilder {
     static final class None extends ResponseBuilder {
         private None(){
         }
+        @Override
         public Object readResponse(Message msg, Object[] args) {           
             msg.consume();
             return null;
@@ -194,7 +195,7 @@ public abstract class ResponseBuilder {
      * The singleton instance that produces null return value.
      * Used for operations that doesn't have any output.
      */
-    public static ResponseBuilder NONE = new None();
+    public final static ResponseBuilder NONE = new None();
 
     /**
      * Returns the 'uninitialized' value for the given type.
@@ -202,6 +203,7 @@ public abstract class ResponseBuilder {
      * <p>
      * For primitive types, it's '0', and for reference types, it's null.
      */
+    @SuppressWarnings("element-type-mismatch")
     public static Object getVMUninitializedValue(Type type) {
         // if this map returns null, that means the 'type' is a reference type,
         // in which case 'null' is the correct null value, so this code is correct.
@@ -233,6 +235,7 @@ public abstract class ResponseBuilder {
             this.nullValue = nullValue;
             this.setter = setter;
         }
+        @Override
         public Object readResponse(Message msg, Object[] args) {
             return setter.put(nullValue, args);
         }
@@ -264,6 +267,7 @@ public abstract class ResponseBuilder {
             this(builders.toArray(new ResponseBuilder[builders.size()]));
         }
 
+        @Override
         public Object readResponse(Message msg, Object[] args) throws JAXBException, XMLStreamException {
             Object retVal = null;
             for (ResponseBuilder builder : builders) {
@@ -324,6 +328,7 @@ public abstract class ResponseBuilder {
             }
         }
         
+        @Override
         public Object readResponse(Message msg, Object[] args) throws JAXBException, XMLStreamException {
             // TODO not to loop
             for (Attachment att : msg.getAttachments()) {
@@ -346,6 +351,7 @@ public abstract class ResponseBuilder {
             super(param, setter);
         }
         
+        @Override
         Object mapAttachment(Attachment att, Object[] args) {
             return setter.put(att.asDataHandler(), args);
         }
@@ -356,6 +362,7 @@ public abstract class ResponseBuilder {
             super(param, setter);
         }
 
+        @Override
         Object mapAttachment(Attachment att, Object[] args) {
             att.getContentType();
             StringDataContentHandler sdh = new StringDataContentHandler();
@@ -374,6 +381,7 @@ public abstract class ResponseBuilder {
             super(param, setter);
         }
         
+        @Override
         Object mapAttachment(Attachment att, Object[] args) {
             return setter.put(att.asByteArray(), args);
         }
@@ -384,6 +392,7 @@ public abstract class ResponseBuilder {
             super(param, setter);
         }
         
+        @Override
         Object mapAttachment(Attachment att, Object[] args) {
             return setter.put(att.asSource(), args);
         }
@@ -394,6 +403,7 @@ public abstract class ResponseBuilder {
             super(param, setter);
         }
         
+        @Override
         Object mapAttachment(Attachment att, Object[] args) {
             Image image;
             InputStream is = null;
@@ -420,6 +430,7 @@ public abstract class ResponseBuilder {
             super(param, setter);
         }
         
+        @Override
         Object mapAttachment(Attachment att, Object[] args) {
             return setter.put(att.asInputStream(), args);
         }
@@ -430,6 +441,7 @@ public abstract class ResponseBuilder {
             super(param, setter);
         }
         
+        @Override
         Object mapAttachment(Attachment att, Object[] args) throws JAXBException {
             Object obj = param.getXMLBridge().unmarshal(att.asInputStream());
             return setter.put(obj, args);
@@ -461,6 +473,7 @@ public abstract class ResponseBuilder {
      * @return null
      *      if the parsing fails.
      */
+    @SuppressWarnings("FinalStaticMethod")
     public static final String getWSDLPartName(com.sun.xml.ws.api.message.Attachment att){
         String cId = att.getContentId();
 
@@ -526,6 +539,7 @@ public abstract class ResponseBuilder {
             }
         }
 
+        @Override
         public Object readResponse(Message msg, Object[] args) throws JAXBException {
             com.sun.xml.ws.api.message.Header header = null;
             Iterator<com.sun.xml.ws.api.message.Header> it =
@@ -563,6 +577,7 @@ public abstract class ResponseBuilder {
             this.setter = setter;
         }
 
+        @Override
         public Object readResponse(Message msg, Object[] args) throws JAXBException {
             return setter.put( msg.readPayloadAsJAXB(bridge), args );
         }
@@ -588,7 +603,7 @@ public abstract class ResponseBuilder {
             Class wrapperType = (Class) wrapper.getTypeInfo().type;     
             dynamicWrapper = WrapperComposite.class.equals(wrapperType);
 
-            List<PartBuilder> parts = new ArrayList<PartBuilder>();
+            List<PartBuilder> tempParts = new ArrayList<PartBuilder>();
 
             List<ParameterImpl> children = wp.getWrapperChildren();
             for (ParameterImpl p : children) {
@@ -602,7 +617,7 @@ public abstract class ResponseBuilder {
                     wrappedParts.put( p.getName(), new WrappedPartBuilder(xmlBridge, setterFactory.get(p)));
                 } else {                
                     try {                        
-                        parts.add(new PartBuilder(
+                        tempParts.add(new PartBuilder(
                                     wp.getOwner().getBindingContext().getElementPropertyAccessor(
                                         wrapperType,
                                         name.getNamespaceURI(),
@@ -618,9 +633,10 @@ public abstract class ResponseBuilder {
                     }
                 }
             }
-            this.parts = parts.toArray(new PartBuilder[parts.size()]);
+            this.parts = tempParts.toArray(new PartBuilder[tempParts.size()]);
         }
 
+        @Override
         public Object readResponse(Message msg, Object[] args) throws JAXBException, XMLStreamException {
             if (dynamicWrapper) return readWrappedResponse(msg, args);
             Object retVal = null;
@@ -708,6 +724,7 @@ public abstract class ResponseBuilder {
             }
         }
 
+        @Override
         public Object readResponse(Message msg, Object[] args) throws JAXBException, XMLStreamException {
             return readWrappedResponse(msg, args);
         }

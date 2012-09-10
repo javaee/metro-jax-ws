@@ -111,6 +111,7 @@ public abstract class EndpointArgumentsBuilder {
     static final class None extends EndpointArgumentsBuilder {
         private None(){
         }
+        @Override
         public void readRequest(Message msg, Object[] args) {
             msg.consume();
         }
@@ -120,7 +121,7 @@ public abstract class EndpointArgumentsBuilder {
      * The singleton instance that produces null return value.
      * Used for operations that doesn't have any output.
      */
-    public static EndpointArgumentsBuilder NONE = new None();
+    public final static EndpointArgumentsBuilder NONE = new None();
 
     /**
      * Returns the 'uninitialized' value for the given type.
@@ -128,6 +129,7 @@ public abstract class EndpointArgumentsBuilder {
      * <p>
      * For primitive types, it's '0', and for reference types, it's null.
      */
+    @SuppressWarnings("element-type-mismatch")
     public static Object getVMUninitializedValue(Type type) {
         // if this map returns null, that means the 'type' is a reference type,
         // in which case 'null' is the correct null value, so this code is correct.

@@ -178,7 +178,7 @@ public class XmlUtil {
     }
 
     public static String getTextForNode(Node node) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         NodeList children = node.getChildNodes();
         if (children.getLength() == 0)
@@ -341,15 +341,19 @@ public class XmlUtil {
      * {@link ErrorHandler} that always treat the error as fatal.
      */
     public static final ErrorHandler DRACONIAN_ERROR_HANDLER = new ErrorHandler() {
+        @Override
         public void warning(SAXParseException exception) {
         }
 
+        @Override
         public void error(SAXParseException exception) throws SAXException {
             throw exception;
         }
 
+        @Override
         public void fatalError(SAXParseException exception) throws SAXException {
             throw exception;
         }
     };
+    
 }

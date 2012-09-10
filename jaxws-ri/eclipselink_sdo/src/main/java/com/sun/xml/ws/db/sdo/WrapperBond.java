@@ -78,29 +78,32 @@ public class WrapperBond<T> implements XMLBridge<T> {
         this.typeInfo = ti;
     }
     
+    @Override
     public BindingContext context() {
         return parent;
     }
 
+    @Override
     public TypeInfo getTypeInfo() {
         return typeInfo;
     }
 
+    @Override
     public final void marshal(T object, ContentHandler contentHandler, AttachmentMarshaller am) throws JAXBException {
         WrapperComposite w = (WrapperComposite) object;
         Attributes att = new Attributes() {
-            public int getLength() { return 0; }
-            public String getURI(int index) { return null; }
-            public String getLocalName(int index)  { return null; }
-            public String getQName(int index) { return null; }
-            public String getType(int index) { return null; }
-            public String getValue(int index)  { return null; }
-            public int getIndex(String uri, String localName)  { return 0; }
-            public int getIndex(String qName) {  return 0; }
-            public String getType(String uri, String localName)  { return null; }
-            public String getType(String qName)  { return null; }
-            public String getValue(String uri, String localName)  { return null; }
-            public String getValue(String qName)  { return null; }
+            @Override public int getLength() { return 0; }
+            @Override public String getURI(int index) { return null; }
+            @Override public String getLocalName(int index)  { return null; }
+            @Override public String getQName(int index) { return null; }
+            @Override public String getType(int index) { return null; }
+            @Override public String getValue(int index)  { return null; }
+            @Override public int getIndex(String uri, String localName)  { return 0; }
+            @Override public int getIndex(String qName) {  return 0; }
+            @Override public String getType(String uri, String localName)  { return null; }
+            @Override public String getType(String qName)  { return null; }
+            @Override public String getValue(String uri, String localName)  { return null; }
+            @Override public String getValue(String qName)  { return null; }
         };
         try {
             contentHandler.startElement(typeInfo.tagName.getNamespaceURI(), typeInfo.tagName.getLocalPart(), WrapperPrefix_ + typeInfo.tagName.getLocalPart(), att);
@@ -125,21 +128,25 @@ public class WrapperBond<T> implements XMLBridge<T> {
 //      bridge.marshal(object, contentHandler, am);
     }
 
+    @Override
     public void marshal(T object, Node output) throws JAXBException {
         throw new UnsupportedOperationException();
 //      bridge.marshal(object, output);
 //      bridge.marshal((T) convert(object), output);
     }
 
+    @Override
     public void marshal(T object, OutputStream output, NamespaceContext nsContext, AttachmentMarshaller am) throws JAXBException {
 //      bridge.marshal((T) convert(object), output, nsContext, am);
     }
     
+    @Override
     public final void marshal(T object, Result result) throws JAXBException {
         throw new UnsupportedOperationException();
 //      bridge.marshal(object, result);
     }
 
+    @Override
     public final void marshal(T object, XMLStreamWriter output, AttachmentMarshaller am) throws JAXBException {
         WrapperComposite w = (WrapperComposite) object;
         try {
@@ -157,7 +164,7 @@ public class WrapperBond<T> implements XMLBridge<T> {
 //          System.out.println("======== " + output.getNamespaceContext().getNamespaceURI(""));
         } catch (XMLStreamException e) {
             e.printStackTrace();
-            new DatabindingException(e);
+            throw new DatabindingException(e);
         }
         if (w.bridges != null) for (int i = 0; i < w.bridges.length; i++) {
             if (w.bridges[i] instanceof RepeatedElementBridge) {
@@ -172,34 +179,39 @@ public class WrapperBond<T> implements XMLBridge<T> {
         try {
             output.writeEndElement();
         } catch (XMLStreamException e) {
-            new DatabindingException(e);
+            throw new DatabindingException(e);
         }
     }
     
+    @Override
     public final T unmarshal(InputStream in) throws JAXBException {
         //EndpointArgumentsBuilder.RpcLit.readRequest
         throw new UnsupportedOperationException();      
 //      return bridge.unmarshal(in);
     }
 
+    @Override
     public final T unmarshal(Node n, AttachmentUnmarshaller au) throws JAXBException {
         //EndpointArgumentsBuilder.RpcLit.readRequest
         throw new UnsupportedOperationException();      
 //      return bridge.unmarshal(n, au);
     }
 
+    @Override
     public final T unmarshal(Source in, AttachmentUnmarshaller au) throws JAXBException {
         //EndpointArgumentsBuilder.RpcLit.readRequest
         throw new UnsupportedOperationException();      
 //      return bridge.unmarshal(in, au);
     }
 
+    @Override
     public final T unmarshal(XMLStreamReader in, AttachmentUnmarshaller au) throws JAXBException {
         //EndpointArgumentsBuilder.RpcLit.readRequest
         throw new UnsupportedOperationException();      
 //      return bridge.unmarshal(in, au);
     }
 
+    @Override
     public boolean supportOutputStream() {
         return false;
     }

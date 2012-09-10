@@ -45,6 +45,7 @@ import com.sun.xml.ws.api.pipe.Pipe;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.helper.PipeAdapter;
 import com.sun.xml.ws.assembler.dev.TubelineAssemblyContext;
+import java.text.MessageFormat;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -63,10 +64,12 @@ class TubelineAssemblyContextImpl implements TubelineAssemblyContext {
     private Pipe adaptedHead;
     private List<Tube> tubes = new LinkedList<Tube>();
 
+    @Override
     public Tube getTubelineHead() {
         return head;
     }
 
+    @Override
     public Pipe getAdaptedTubelineHead() {
         if (adaptedHead == null) {
             adaptedHead = PipeAdapter.adapt(head);
@@ -84,12 +87,13 @@ class TubelineAssemblyContextImpl implements TubelineAssemblyContext {
         adaptedHead = null;
         
         if (LOGGER.isLoggable(Level.FINER)) {
-            LOGGER.finer(String.format("Added '{0}' tube instance to the tubeline.", (newHead == null) ? null : newHead.getClass().getName()));
+            LOGGER.finer(MessageFormat.format("Added '{0}' tube instance to the tubeline.", (newHead == null) ? null : newHead.getClass().getName()));
         }
 
         return true;
     }
 
+    @Override
     public <T> T getImplementation(Class<T> type) {
         for (Tube tube : tubes) {
             if (type.isInstance(tube)) {

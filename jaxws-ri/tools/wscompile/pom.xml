@@ -59,6 +59,7 @@
 
     <properties>
         <ant.version>1.8.4</ant.version>
+        <findbugs.exclude>exclude.xml</findbugs.exclude>
     </properties>
 
     <dependencies>

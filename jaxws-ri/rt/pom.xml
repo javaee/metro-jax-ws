@@ -57,6 +57,10 @@
     <name>JAX-WS RI Runtime (rt)</name>
     <description>JAX-WS Reference Implementation Runtime</description>
 
+    <properties>
+        <findbugs.exclude>exclude.xml</findbugs.exclude>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>com.sun.xml.ws</groupId>

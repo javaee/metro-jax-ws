@@ -91,14 +91,15 @@ public final class MetadataFinder extends DOMForest{
 
     }
 
+    @SuppressWarnings("element-type-mismatch")
     public void parseWSDL(){
         // parse source grammars
         for (InputSource value : options.getWSDLs()) {
             String systemID = value.getSystemId();
             errorReceiver.pollAbort();
 
-            Document dom ;
-            Element doc = null;
+            Document dom;
+            Element doc;
 
             try {
             //if there is entity resolver use it
@@ -152,6 +153,7 @@ public final class MetadataFinder extends DOMForest{
             this.errorReceiver = errReceiver;
         }
 
+        @Override
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
             InputSource inputSource = null;
 
@@ -231,6 +233,7 @@ public final class MetadataFinder extends DOMForest{
     // overide default SSL HttpClientVerifier to always return true
     // effectively overiding Hostname client verification when using SSL
     private static class HttpClientVerifier implements HostnameVerifier {
+        @Override
         public boolean verify(String s, SSLSession sslSession) {
             return true;
         }
@@ -278,7 +281,7 @@ public final class MetadataFinder extends DOMForest{
         }
         //no wsdl with wsdl:service found, throw error
         if(rootWSDL == null){
-            StringBuffer strbuf = new StringBuffer();
+            StringBuilder strbuf = new StringBuilder();
             for(String str : rootWsdls){
                 strbuf.append(str);
                 strbuf.append('\n');

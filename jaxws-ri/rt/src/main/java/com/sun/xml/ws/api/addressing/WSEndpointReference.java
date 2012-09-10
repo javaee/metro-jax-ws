@@ -608,18 +608,20 @@ public final class WSEndpointReference  implements WSDLExtension {
         MutableXMLStreamBuffer xsb = new MutableXMLStreamBuffer();
         XMLFilterImpl filter = new XMLFilterImpl() {
             private boolean inAddress = false;
+            @Override
             public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
                 if(localName.equals("Address") && uri.equals(version.nsUri))
                     inAddress = true;
                 super.startElement(uri,localName,qName,atts);
             }
 
+            @Override
             public void characters(char ch[], int start, int length) throws SAXException {
                 if(!inAddress)
                     super.characters(ch, start, length);
             }
 
-
+            @Override
             public void endElement(String uri, String localName, String qName) throws SAXException {
                 if(inAddress)
                     super.characters(newAddress.toCharArray(),0,newAddress.length());
@@ -813,7 +815,8 @@ public final class WSEndpointReference  implements WSDLExtension {
      */
     public XMLStreamReader read(final @NotNull String localName) throws XMLStreamException {
         return new StreamReaderBufferProcessor(infoset) {
-            protected void processElement(String prefix, String uri, String _localName) {
+            @Override
+            protected void processElement(String prefix, String uri, String _localName, boolean inScope) {
                 if (_depth == 0)
                     _localName = localName;
                 super.processElement(prefix, uri, _localName, isInscope(infoset,_depth));
@@ -890,14 +893,17 @@ public final class WSEndpointReference  implements WSDLExtension {
                 return ln;
             }
 
+            @Override
             public void writeStartElement(String localName) throws XMLStreamException {
                 super.writeStartElement(override(localName));
             }
 
+            @Override
             public void writeStartElement(String namespaceURI, String localName) throws XMLStreamException {
                 super.writeStartElement(namespaceURI, override(localName));
             }
 
+            @Override
             public void writeStartElement(String prefix, String localName, String namespaceURI) throws XMLStreamException {
                 super.writeStartElement(prefix, override(localName), namespaceURI);
             }
@@ -927,9 +933,7 @@ public final class WSEndpointReference  implements WSDLExtension {
      * @deprecated - use addReferenceParametersToList(MessageHeaders)
      */
     public void addReferenceParametersToList(HeaderList outbound) {
-        for (Header header : referenceParameters) {
-            outbound.add(header);
-        }
+        outbound.addAll(Arrays.asList(referenceParameters));
     }
 
     /**
@@ -976,6 +980,7 @@ public final class WSEndpointReference  implements WSDLExtension {
      * Gets the QName of the EndpointReference element.
      * @return
      */
+    @Override
     public QName getName() {
         return rootElement;
     }
@@ -992,6 +997,7 @@ public final class WSEndpointReference  implements WSDLExtension {
             this.rootLocalName = rootLocalName;
         }
 
+        @Override
         protected void processElement(String uri, String localName, String qName, boolean inscope) throws SAXException {
             if(root) {
                 root = false;

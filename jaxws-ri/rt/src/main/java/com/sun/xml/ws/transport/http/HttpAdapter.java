@@ -40,7 +40,6 @@
 
 package com.sun.xml.ws.transport.http;
 
-
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.SOAPVersion;
@@ -906,7 +905,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     /**
      * Dumps what goes across HTTP transport.
      */
-    public static boolean dump = false;
+    public static volatile boolean dump = false;
 
     public static boolean publishStatusPage = true;
 
@@ -923,5 +922,8 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         }
     }
 
+    public static void setDump(boolean dumpMessages) {
+        HttpAdapter.dump = dumpMessages;
+    }
     private static final Logger LOGGER = Logger.getLogger(HttpAdapter.class.getName());
 }

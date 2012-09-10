@@ -96,6 +96,7 @@ public class DefaultAuthenticator extends Authenticator {
         parseAuth();
     }
 
+    @Override
     protected PasswordAuthentication getPasswordAuthentication() {
         //If user sets proxy user and passwd and the RequestType is from proxy server then create
         // PasswordAuthentication using proxyUser and proxyClass;
@@ -103,9 +104,9 @@ public class DefaultAuthenticator extends Authenticator {
             return new PasswordAuthentication(proxyUser, proxyPasswd.toCharArray());
         }
         for(AuthInfo auth:authInfo){
-            if(auth.matchingHost(getRequestingURL())){
-                return new PasswordAuthentication(auth.getUser(), auth.getPassword().toCharArray());
-            }
+                if(auth.matchingHost(getRequestingURL())){
+                    return new PasswordAuthentication(auth.getUser(), auth.getPassword().toCharArray());
+                }
         }
         return null;
     }
@@ -119,6 +120,7 @@ public class DefaultAuthenticator extends Authenticator {
         try {
             AccessController.doPrivileged(new PrivilegedAction<Void>() {
 
+                @Override
                 public Void run() {
                     f.setAccessible(true);
                     return null;
@@ -130,7 +132,7 @@ public class DefaultAuthenticator extends Authenticator {
         } finally {
             if (f != null) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
-
+                    @Override
                     public Void run() {
                         f.setAccessible(false);
                         return null;

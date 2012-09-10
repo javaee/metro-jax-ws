@@ -69,7 +69,6 @@ import com.sun.tools.ws.wsdl.parser.WSDLParser;
 import com.sun.tools.xjc.api.S2JJAXBModel;
 import com.sun.tools.xjc.api.TypeAndAnnotation;
 import com.sun.tools.xjc.api.XJC;
-import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingHelper;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.xml.sax.InputSource;
@@ -110,10 +109,12 @@ public class WSDLModeler extends WSDLModelerBase {
 
     private JAXBModelBuilder jaxbModelBuilder;
 
+    @Override
     public Model buildModel() {
         try {
             parser = new WSDLParser(options, errReceiver, forest);
             parser.addParserListener(new ParserListener() {
+                @Override
                 public void ignoringExtension(Entity entity, QName name, QName parent) {
                     if (parent.equals(WSDLConstants.QNAME_TYPES)) {
                         // check for a schema element with the wrong namespace URI
@@ -125,6 +126,7 @@ public class WSDLModeler extends WSDLModelerBase {
 
                 }
 
+                @Override
                 public void doneParsingEntity(QName element, Entity entity) {
                 }
             });
@@ -155,7 +157,7 @@ public class WSDLModeler extends WSDLModelerBase {
                 return model;
             }
             // give up
-            StringBuffer conflictList = new StringBuffer();
+            StringBuilder conflictList = new StringBuilder();
             boolean first = true;
             for (Iterator iter =
                     classNameCollector.getConflictingClassNames().iterator();
@@ -223,7 +225,6 @@ public class WSDLModeler extends WSDLModelerBase {
                     ) {
                 processService((com.sun.tools.ws.wsdl.document.Service) iter.next(),
                         model, document);
-                hasServices = true;
             }
         } else {
             // emit a warning if there are no service definitions
@@ -408,7 +409,7 @@ public class WSDLModeler extends WSDLModelerBase {
                             null;
                     Set operations =
                             portType.getOperationsNamed(bindingOperation.getName());
-                    if (operations.size() == 0) {
+                    if (operations.isEmpty()) {
                         // the WSDL document is invalid
                         error(bindingOperation, ModelerMessages.WSDLMODELER_INVALID_BINDING_OPERATION_NOT_IN_PORT_TYPE(bindingOperation.getName(), binding.getName()));
                     } else if (operations.size() == 1) {
@@ -1222,7 +1223,6 @@ public class WSDLModeler extends WSDLModelerBase {
             return isAsync;
 
         // then into wsdl:portType
-        QName portTypeName = new QName(portType.getDefining().getTargetNamespaceURI(), portType.getName());
         jaxwsCustomization = (JAXWSBinding) getExtensionOfType(portType, JAXWSBinding.class);
         isAsync = (jaxwsCustomization != null) ? jaxwsCustomization.isEnableAsyncMapping() : null;
         if (isAsync != null)
@@ -1326,7 +1326,6 @@ public class WSDLModeler extends WSDLModelerBase {
             Fault fault = new Fault(faultName, portTypeFault);
             fault.setWsdlFaultName(portTypeFault.getName());
             setDocumentationIfPresent(fault, portTypeFault.getDocumentation());
-            String faultNamespaceURI = null;
             if (bindingFault != null) {
                 //get the soapbind:fault from wsdl:fault in the binding
                 SOAPFault soapFault = (SOAPFault) getExtensionOfType(bindingFault, SOAPFault.class);
@@ -1359,10 +1358,6 @@ public class WSDLModeler extends WSDLModelerBase {
                     warning(soapFault, ModelerMessages.WSDLMODELER_WARNING_R_2716_R_2726("soapbind:fault", soapFault.getName()));
                 }
 
-                faultNamespaceURI = soapFault.getNamespace();
-            }
-            if (faultNamespaceURI == null) {
-                faultNamespaceURI = portTypeFault.getMessage().getNamespaceURI();
             }
 
             com.sun.tools.ws.wsdl.document.Message faultMessage = portTypeFault.resolveMessage(info.document);
@@ -1640,7 +1635,7 @@ public class WSDLModeler extends WSDLModelerBase {
     }
 
     private List<Parameter> getDoclitParameters(Request req, Response res, List<MessagePart> parameterList) {
-        if (parameterList.size() == 0)
+        if (parameterList.isEmpty())
             return new ArrayList<Parameter>();
         List<Parameter> params = new ArrayList<Parameter>();
         Message inMsg = getInputMessage();
@@ -1993,6 +1988,7 @@ public class WSDLModeler extends WSDLModelerBase {
         }
     }
 
+    @Override
     protected boolean isConflictingPortClassName(String name) {
         return false;
     }
@@ -2225,13 +2221,13 @@ public class WSDLModeler extends WSDLModelerBase {
     }
 
     protected void buildJAXBModel(WSDLDocument wsdlDocument) {
-        JAXBModelBuilder jaxbModelBuilder = new JAXBModelBuilder(options, classNameCollector, forest, errReceiver);
+        JAXBModelBuilder tempJaxbModelBuilder = new JAXBModelBuilder(options, classNameCollector, forest, errReceiver);
         //set the java package where wsdl artifacts will be generated
         //if user provided package name  using -p switch (or package property on wsimport ant task)
         //ignore the package customization in the wsdl and schema bidnings
         //formce the -p option only in the first pass
         if (explicitDefaultPackage != null) {
-            jaxbModelBuilder.getJAXBSchemaCompiler().forcePackageName(options.defaultPackage);
+            tempJaxbModelBuilder.getJAXBSchemaCompiler().forcePackageName(options.defaultPackage);
         } else {
             options.defaultPackage = getJavaPackage();
         }
@@ -2239,10 +2235,10 @@ public class WSDLModeler extends WSDLModelerBase {
         //create pseudo schema for async operations(if any) response bean
         List<InputSource> schemas = PseudoSchemaBuilder.build(this, options, errReceiver);
         for (InputSource schema : schemas) {
-            jaxbModelBuilder.getJAXBSchemaCompiler().parseSchema(schema);
+            tempJaxbModelBuilder.getJAXBSchemaCompiler().parseSchema(schema);
         }
-        jaxbModelBuilder.bind();
-        this.jaxbModelBuilder = jaxbModelBuilder;
+        tempJaxbModelBuilder.bind();
+        this.jaxbModelBuilder = tempJaxbModelBuilder;
     }
 
     protected String getJavaPackage() {
@@ -2339,26 +2335,11 @@ public class WSDLModeler extends WSDLModelerBase {
         String candidateName = getJavaNameForOperation(operation);
         JavaMethod method = new JavaMethod(candidateName, options, errReceiver);
         Request request = operation.getRequest();
-        Iterator requestBodyBlocks = request.getBodyBlocks();
-        Block requestBlock =
-                (requestBodyBlocks.hasNext()
-                        ? request.getBodyBlocks().next()
-                        : null);
 
         Response response = operation.getResponse();
-        Iterator responseBodyBlocks = null;
-        Block responseBlock;
-        if (response != null) {
-            responseBodyBlocks = response.getBodyBlocks();
-            responseBlock =
-                    responseBodyBlocks.hasNext()
-                            ? response.getBodyBlocks().next()
-                            : null;
-        }
 
         // build a signature of the form "opName%arg1type%arg2type%...%argntype so that we
         // detect overloading conflicts in the generated java interface/classes
-        String signature = candidateName;
         for (Iterator iter = request.getParameters(); iter.hasNext();) {
             Parameter parameter = (Parameter) iter.next();
 
@@ -2379,7 +2360,6 @@ public class WSDLModeler extends WSDLModelerBase {
             method.addParameter(javaParameter);
             parameter.setJavaParameter(javaParameter);
 
-            signature += "%" + parameterType.getName();
         }
 
         if (response != null) {
@@ -2529,7 +2509,7 @@ public class WSDLModeler extends WSDLModelerBase {
     protected List<MessagePart> getParameterOrder() {
         List<MessagePart> params = new ArrayList<MessagePart>();
         String parameterOrder = info.portTypeOperation.getParameterOrder();
-        java.util.List<String> parameterList = new ArrayList<String>();
+        java.util.List<String> parameterList;
         boolean parameterOrderPresent = false;
         if ((parameterOrder != null) && !(parameterOrder.trim().equals(""))) {
             parameterList = XmlUtil.parseTokenList(parameterOrder);
@@ -2651,7 +2631,6 @@ public class WSDLModeler extends WSDLModelerBase {
             }
             //parameterOrder attribute is not valid, we ignore it
             warning(info.operation.getEntity(), ModelerMessages.WSDLMODELER_INVALID_PARAMETER_ORDER_INVALID_PARAMETER_ORDER(info.operation.getName().getLocalPart()));
-            parameterOrderPresent = false;
             parameterList.clear();
         }
 
@@ -2693,6 +2672,7 @@ public class WSDLModeler extends WSDLModelerBase {
         return options.defaultPackage + "." + prefix + suffix;
     }
 
+    @Override
     protected boolean isConflictingServiceClassName(String name) {
         return conflictsWithSEIClass(name) || conflictsWithJAXBClass(name) || conflictsWithExceptionClass(name);
     }
@@ -2712,6 +2692,7 @@ public class WSDLModeler extends WSDLModelerBase {
         return exceptionNames != null && exceptionNames.contains(name);
     }
 
+    @Override
     protected boolean isConflictingExceptionClassName(String name) {
         return conflictsWithSEIClass(name) || conflictsWithJAXBClass(name);
     }

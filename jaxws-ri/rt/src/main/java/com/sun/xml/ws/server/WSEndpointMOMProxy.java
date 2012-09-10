@@ -91,6 +91,7 @@ public class WSEndpointMOMProxy extends WSEndpoint implements ManagedObjectManag
      *
      * @return an ManagedObjectManager instance
      */
+    @Override
     public ManagedObjectManager getManagedObjectManager() {
         if (managedObjectManager == null) {
             managedObjectManager = wsEndpoint.obtainManagedObjectManager();
@@ -116,122 +117,152 @@ public class WSEndpointMOMProxy extends WSEndpoint implements ManagedObjectManag
         return wsEndpoint;
     }
 
+    @Override
     public void suspendJMXRegistration() {
         getManagedObjectManager().suspendJMXRegistration();
     }
 
+    @Override
     public void resumeJMXRegistration() {
         getManagedObjectManager().resumeJMXRegistration();
     }
 
+    @Override
     public boolean isManagedObject(Object obj) {
         return getManagedObjectManager().isManagedObject(obj);
     }
 
+    @Override
     public GmbalMBean createRoot() {
         return getManagedObjectManager().createRoot();
     }
 
+    @Override
     public GmbalMBean createRoot(Object root) {
         return getManagedObjectManager().createRoot(root);
     }
 
+    @Override
     public GmbalMBean createRoot(Object root, String name) {
         return getManagedObjectManager().createRoot(root, name);
     }
 
+    @Override
     public Object getRoot() {
         return getManagedObjectManager().getRoot();
     }
 
+    @Override
     public GmbalMBean register(Object parent, Object obj, String name) {
         return getManagedObjectManager().register(parent, obj, name);
     }
 
+    @Override
     public GmbalMBean register(Object parent, Object obj) {
         return getManagedObjectManager().register(parent, obj);
     }
 
+    @Override
     public GmbalMBean registerAtRoot(Object obj, String name) {
         return getManagedObjectManager().registerAtRoot(obj, name);
     }
 
+    @Override
     public GmbalMBean registerAtRoot(Object obj) {
         return getManagedObjectManager().registerAtRoot(obj);
     }
 
+    @Override
     public void unregister(Object obj) {
         getManagedObjectManager().unregister(obj);
     }
 
+    @Override
     public ObjectName getObjectName(Object obj) {
         return getManagedObjectManager().getObjectName(obj);
     }
 
+    @Override
     public AMXClient getAMXClient(Object obj) {
         return getManagedObjectManager().getAMXClient(obj);
     }
 
+    @Override
     public Object getObject(ObjectName oname) {
         return getManagedObjectManager().getObject(oname);
     }
 
+    @Override
     public void stripPrefix(String... str) {
         getManagedObjectManager().stripPrefix(str);
     }
 
+    @Override
     public void stripPackagePrefix() {
         getManagedObjectManager().stripPackagePrefix();
     }
 
+    @Override
     public String getDomain() {
         return getManagedObjectManager().getDomain();
     }
 
+    @Override
     public void setMBeanServer(MBeanServer server) {
         getManagedObjectManager().setMBeanServer(server);
     }
 
+    @Override
     public MBeanServer getMBeanServer() {
         return getManagedObjectManager().getMBeanServer();
     }
 
+    @Override
     public void setResourceBundle(ResourceBundle rb) {
         getManagedObjectManager().setResourceBundle(rb);
     }
 
+    @Override
     public ResourceBundle getResourceBundle() {
         return getManagedObjectManager().getResourceBundle();
     }
 
+    @Override
     public void addAnnotation(AnnotatedElement element, Annotation annotation) {
         getManagedObjectManager().addAnnotation(element, annotation);
     }
 
+    @Override
     public void setRegistrationDebug(RegistrationDebugLevel level) {
         getManagedObjectManager().setRegistrationDebug(level);
     }
 
+    @Override
     public void setRuntimeDebug(boolean flag) {
         getManagedObjectManager().setRuntimeDebug(flag);
     }
 
+    @Override
     public void setTypelibDebug(int level) {
         getManagedObjectManager().setTypelibDebug(level);
     }
 
+    @Override
     public void setJMXRegistrationDebug(boolean flag) {
         getManagedObjectManager().setJMXRegistrationDebug(flag);
     }
 
+    @Override
     public String dumpSkeleton(Object obj) {
         return getManagedObjectManager().dumpSkeleton(obj);
     }
 
+    @Override
     public void suppressDuplicateRootReport(boolean suppressReport) {
         getManagedObjectManager().suppressDuplicateRootReport(suppressReport);
     }
 
+    @Override
     public void close() throws IOException {
         getManagedObjectManager().close();
     }
@@ -276,7 +307,7 @@ public class WSEndpointMOMProxy extends WSEndpoint implements ManagedObjectManag
 
     @Override
     public WSDLPort getPort() {
-        return this.getPort();
+        return this.wsEndpoint.getPort();
     }
 
     @Override

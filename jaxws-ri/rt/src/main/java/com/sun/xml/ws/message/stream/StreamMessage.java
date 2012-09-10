@@ -148,7 +148,7 @@ public class StreamMessage extends AbstractMessageImpl {
      * that points at the start element of the payload, and headers.
      *
      * <p>
-     * This method creaets a {@link Message} from a payload.
+     * This method creates a {@link Message} from a payload.
      *
      * @param headers
      *      if null, it means no headers. if non-null,

@@ -265,8 +265,9 @@ public class SDOUtils {
         return closureDocs;
     }
 
+    @SuppressWarnings("CallToThreadDumpStack")
     private static Source loadSourceFromURL(String systemID) {
-        Source targetXSD = null;
+        Source targetXSD;
         try {
             URL targetURL = new URL(systemID);
             InputStream is = targetURL.openStream();
@@ -282,7 +283,6 @@ public class SDOUtils {
     private static Source getImports(Source currentDoc, Set<String> importedDocs) {
         Document doc = createDOM(currentDoc);
         Element root = doc.getDocumentElement();
-        QName rootName = new QName(root.getNamespaceURI(), root.getLocalName());
 
         try {
             NodeList imports = root.getElementsByTagNameNS(SCHEMA_INCLUDE_QNAME.getNamespaceURI(), SCHEMA_INCLUDE_QNAME.getLocalPart());
@@ -392,6 +392,7 @@ public class SDOUtils {
     }
 
 
+    @SuppressWarnings("CallToThreadDumpStack")
     public static void printDOM(Source src) {
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -547,7 +548,6 @@ public class SDOUtils {
     public static Set<SchemaInfo> getSchemas(String filePath) throws Exception {
         Set<SchemaInfo> schemas = new HashSet<SchemaInfo>();
         
-        QName QNAME_SCHEMA = new QName("http://www.w3.org/2001/XMLSchema", "schema");
         Document document = newDocumentBuilder().parse(new File(filePath));
         Element rootEl = document.getDocumentElement();
         if (QNAME_SCHEMA.equals(new QName(rootEl.getNamespaceURI(), rootEl.getLocalName()))) {
