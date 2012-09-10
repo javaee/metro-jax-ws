@@ -61,7 +61,7 @@
     </Match>
     <Match>
         <Class>com.sun.xml.ws.api.pipe.Fiber</Class>
-        <Method params="com.sun.xml.ws.api.pipe.Tube">_doRun</Method>
-        <Bug>UL_UNRELEASED_LOCK</Bug>
+        <Method returns="boolean" params="com.sun.xml.ws.api.pipe.Tube">_doRun</Method>
+        <Bug pattern="UL_UNRELEASED_LOCK"/>
     </Match>
 </FindBugsFilter>
