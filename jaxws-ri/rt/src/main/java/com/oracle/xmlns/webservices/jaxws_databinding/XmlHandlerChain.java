@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.oracle.xmlns.webservices.jaxws_databinding;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -61,10 +60,7 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="local-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="target-namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="class-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="part-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="file" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -72,132 +68,48 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "request-wrapper")
-public class RequestWrapper implements javax.xml.ws.RequestWrapper {
+@XmlRootElement(name = "handler-chain")
+public class XmlHandlerChain implements javax.jws.HandlerChain {
 
-    @XmlAttribute(name = "local-name")
-    protected String localName;
-    @XmlAttribute(name = "target-namespace")
-    protected String targetNamespace;
-    @XmlAttribute(name = "class-name")
-    protected String className;
-    @XmlAttribute(name = "part-name")
-    protected String partName;
+    @XmlAttribute(name = "file")
+    protected String file;
 
     /**
-     * Gets the value of the localName property.
+     * Gets the value of the file property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getLocalName() {
-        if (localName == null) {
-            return "";
-        } else {
-            return localName;
-        }
+    public String getFile() {
+        return file;
     }
 
     /**
-     * Sets the value of the localName property.
+     * Sets the value of the file property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setLocalName(String value) {
-        this.localName = value;
-    }
-
-    /**
-     * Gets the value of the targetNamespace property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getTargetNamespace() {
-        if (targetNamespace == null) {
-            return "";
-        } else {
-            return targetNamespace;
-        }
-    }
-
-    /**
-     * Sets the value of the targetNamespace property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setTargetNamespace(String value) {
-        this.targetNamespace = value;
-    }
-
-    /**
-     * Gets the value of the className property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getClassName() {
-        if (className == null) {
-            return "";
-        } else {
-            return className;
-        }
-    }
-
-    /**
-     * Sets the value of the className property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setClassName(String value) {
-        this.className = value;
-    }
-
-    public String getPartName() {
-        return partName;
-    }
-
-    public void setPartName(String partName) {
-        this.partName = partName;
+    public void setFile(String value) {
+        this.file = value;
     }
 
     @Override
-    public String localName() {
-        return nullSafe(localName);
+    public String file() {
+        return nullSafe(file);
     }
 
     @Override
-    public String targetNamespace() {
-        return nullSafe(targetNamespace);
-    }
-
-    @Override
-    public String className() {
-        return nullSafe(className);
-    }
-
-    @Override
-    public String partName() {
-        return nullSafe(partName);
+    public String name() {
+        return ""; // deprecated, so let's ignore it ...
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.xml.ws.RequestWrapper.class;
+        return javax.jws.HandlerChain.class;
     }
 }

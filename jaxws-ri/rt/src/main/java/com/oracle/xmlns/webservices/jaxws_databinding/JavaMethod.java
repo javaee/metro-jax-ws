@@ -100,12 +100,12 @@ import java.util.Map;
 public class JavaMethod {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "web-endpoint", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = WebEndpoint.class, required = false),
-        @XmlElementRef(name = "oneway", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = Oneway.class, required = false),
-        @XmlElementRef(name = "action", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = Action.class, required = false),
-        @XmlElementRef(name = "soap-binding", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = SoapBinding.class, required = false),
-        @XmlElementRef(name = "web-result", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = WebResult.class, required = false),
-        @XmlElementRef(name = "web-method", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = WebMethod.class, required = false)
+        @XmlElementRef(name = "web-endpoint", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlWebEndpoint.class, required = false),
+        @XmlElementRef(name = "oneway", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlOneway.class, required = false),
+        @XmlElementRef(name = "action", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlAction.class, required = false),
+        @XmlElementRef(name = "soap-binding", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlSOAPBinding.class, required = false),
+        @XmlElementRef(name = "web-result", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlWebResult.class, required = false),
+        @XmlElementRef(name = "web-method", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlWebMethod.class, required = false)
     })
     @XmlAnyElement
     protected List<Object> methodAnnotation;
@@ -134,12 +134,12 @@ public class JavaMethod {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link WebEndpoint }
-     * {@link Oneway }
-     * {@link Action }
-     * {@link SoapBinding }
-     * {@link WebResult }
-     * {@link WebMethod }
+     * {@link XmlWebEndpoint }
+     * {@link XmlOneway }
+     * {@link XmlAction }
+     * {@link XmlSOAPBinding }
+     * {@link XmlWebResult }
+     * {@link XmlWebMethod }
      * {@link Element }
      * 
      * 

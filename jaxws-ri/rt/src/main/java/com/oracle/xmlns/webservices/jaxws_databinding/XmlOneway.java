@@ -37,17 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.oracle.xmlns.webservices.jaxws_databinding;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.ws.Service;
-
 import java.lang.annotation.Annotation;
-
-import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
 
 
 /**
@@ -62,7 +58,8 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" default="PAYLOAD" />
+ *       &lt;sequence>
+ *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -72,47 +69,11 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "service-mode")
-public class ServiceMode implements javax.xml.ws.ServiceMode {
-
-    @XmlAttribute(name = "value")
-    protected String value;
-
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getValue() {
-        if (value == null) {
-            return "PAYLOAD";
-        } else {
-            return value;
-        }
-    }
-
-    /**
-     * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public Service.Mode value() {
-        return Service.Mode.valueOf(nullSafe(value, "PAYLOAD"));
-    }
+@XmlRootElement(name = "oneway")
+public class XmlOneway implements javax.jws.Oneway {
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.xml.ws.ServiceMode.class;
+        return javax.jws.Oneway.class;
     }
 }

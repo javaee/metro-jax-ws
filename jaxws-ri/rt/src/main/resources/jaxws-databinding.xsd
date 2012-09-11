@@ -495,6 +495,7 @@
             <xs:attribute name="name" type="xs:string"/>
             <xs:attribute name="targetNamespace" type="xs:string"/>
             <xs:attribute name="faultBean" type="xs:string"/>
+            <xs:attribute name="messageName" type="xs:string"/>
         </xs:complexType>
     </xs:element>
 

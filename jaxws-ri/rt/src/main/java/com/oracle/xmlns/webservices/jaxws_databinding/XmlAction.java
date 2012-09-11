@@ -39,14 +39,17 @@
  */
 
 package com.oracle.xmlns.webservices.jaxws_databinding;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
-import static com.oracle.xmlns.webservices.jaxws_databinding.Util.findClass;
 import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
 
 
@@ -62,84 +65,124 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="className" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;sequence>
+ *         &lt;element ref="{http://xmlns.oracle.com/webservices/jaxws-databinding}fault-action" maxOccurs="unbounded" minOccurs="0"/>
+ *       &lt;/sequence>
+ *       &lt;attribute name="input" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="output" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "fault-action")
-public class FaultAction implements javax.xml.ws.FaultAction {
+@XmlType(name = "", propOrder = {
+    "faultAction"
+})
+@XmlRootElement(name = "action")
+public class XmlAction implements javax.xml.ws.Action {
 
-    @XmlAttribute(name = "className", required = true)
-    protected String className;
-    @XmlAttribute(name = "value")
-    protected String value;
+    @XmlElement(name = "fault-action")
+    protected List<XmlFaultAction> faultAction;
+    @XmlAttribute(name = "input")
+    protected String input;
+    @XmlAttribute(name = "output")
+    protected String output;
 
     /**
-     * Gets the value of the className property.
+     * Gets the value of the faultAction property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the faultAction property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getFaultAction().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link XmlFaultAction }
+     * 
+     * 
+     */
+    public List<XmlFaultAction> getFaultAction() {
+        if (faultAction == null) {
+            faultAction = new ArrayList<XmlFaultAction>();
+        }
+        return this.faultAction;
+    }
+
+    /**
+     * Gets the value of the input property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getClassName() {
-        return className;
+    public String getInput() {
+        return nullSafe(input);
     }
 
     /**
-     * Sets the value of the className property.
+     * Sets the value of the input property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setClassName(String value) {
-        this.className = value;
+    public void setInput(String value) {
+        this.input = value;
     }
 
     /**
-     * Gets the value of the value property.
+     * Gets the value of the output property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getValue() {
-        return nullSafe(value);
+    public String getOutput() {
+        return nullSafe(output);
     }
 
     /**
-     * Sets the value of the value property.
+     * Sets the value of the output property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setOutput(String value) {
+        this.output = value;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends Exception> className() {
-        return (Class<Exception>) findClass(className);
+    public String input() {
+        return nullSafe(input);
     }
 
     @Override
-    public String value() {
-        return nullSafe(value);
+    public String output() {
+        return nullSafe(output);
+    }
+
+    @Override
+    public javax.xml.ws.FaultAction[] fault() {
+        return new javax.xml.ws.FaultAction[0];
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.xml.ws.FaultAction.class;
+        return javax.xml.ws.Action.class;
     }
 }

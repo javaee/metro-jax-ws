@@ -43,6 +43,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.ws.Service;
+import java.lang.annotation.Annotation;
+
+import static com.oracle.xmlns.webservices.jaxws_databinding.Util.findClass;
+import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
 
 
 /**
@@ -58,26 +63,32 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="targetNamespace" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="faultBean" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="mappedName" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="wsdlLocation" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "web-fault")
-public class WebFault {
+@XmlRootElement(name = "web-service-ref")
+public class XmlWebServiceRef implements javax.xml.ws.WebServiceRef {
 
     @XmlAttribute(name = "name")
     protected String name;
-    @XmlAttribute(name = "targetNamespace")
-    protected String targetNamespace;
-    @XmlAttribute(name = "faultBean")
-    protected String faultBean;
+    @XmlAttribute(name = "type")
+    protected String type;
+    @XmlAttribute(name = "mappedName")
+    protected String mappedName;
+    @XmlAttribute(name = "value")
+    protected String value;
+    @XmlAttribute(name = "wsdlLocation")
+    protected String wsdlLocation;
+    @XmlAttribute(name = "lookup")
+    protected String lookup;
 
     /**
      * Gets the value of the name property.
@@ -104,51 +115,148 @@ public class WebFault {
     }
 
     /**
-     * Gets the value of the targetNamespace property.
+     * Gets the value of the type property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getTargetNamespace() {
-        return targetNamespace;
+    public String getType() {
+        return type;
     }
 
     /**
-     * Sets the value of the targetNamespace property.
+     * Sets the value of the type property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setTargetNamespace(String value) {
-        this.targetNamespace = value;
+    public void setType(String value) {
+        this.type = value;
     }
 
     /**
-     * Gets the value of the faultBean property.
+     * Gets the value of the mappedName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getFaultBean() {
-        return faultBean;
+    public String getMappedName() {
+        return mappedName;
     }
 
     /**
-     * Sets the value of the faultBean property.
+     * Sets the value of the mappedName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setFaultBean(String value) {
-        this.faultBean = value;
+    public void setMappedName(String value) {
+        this.mappedName = value;
     }
 
+    /**
+     * Gets the value of the value property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value of the value property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    /**
+     * Gets the value of the wsdlLocation property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getWsdlLocation() {
+        return wsdlLocation;
+    }
+
+    /**
+     * Sets the value of the wsdlLocation property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setWsdlLocation(String value) {
+        this.wsdlLocation = value;
+    }
+
+    public String getLookup() {
+        return lookup;
+    }
+
+    public void setLookup(String lookup) {
+        this.lookup = lookup;
+    }
+
+    @Override
+    public String name() {
+        return nullSafe(name);
+    }
+
+    @Override
+    public Class<?> type() {
+        if (type == null) {
+            return Object.class;
+        }
+        return findClass(type);
+    }
+
+    @Override
+    public String mappedName() {
+        return nullSafe(mappedName);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Class<? extends Service> value() {
+        if (value == null) {
+            return Service.class;
+        }
+        return (Class<Service>) findClass(value);
+    }
+
+    @Override
+    public String wsdlLocation() {
+        return nullSafe(wsdlLocation);
+    }
+
+    @Override
+    public String lookup() {
+        return nullSafe(lookup);
+    }
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return javax.xml.ws.WebServiceRef.class;
+    }
 }

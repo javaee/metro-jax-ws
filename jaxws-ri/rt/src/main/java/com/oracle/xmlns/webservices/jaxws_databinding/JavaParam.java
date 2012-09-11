@@ -84,7 +84,7 @@ import java.util.Map;
 @XmlRootElement(name = "java-param")
 public class JavaParam {
 
-    @XmlElementRef(name = "web-param", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = WebParam.class, required = false)
+    @XmlElementRef(name = "web-param", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlWebParam.class, required = false)
     @XmlAnyElement
     protected List<Object> paramAnnotation;
     @XmlAttribute(name = "java-type")
@@ -110,7 +110,7 @@ public class JavaParam {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link WebParam }
+     * {@link XmlWebParam }
      * {@link Element }
      * 
      * 

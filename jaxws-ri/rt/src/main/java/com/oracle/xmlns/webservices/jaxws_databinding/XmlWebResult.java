@@ -43,10 +43,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.ws.Service;
 import java.lang.annotation.Annotation;
 
-import static com.oracle.xmlns.webservices.jaxws_databinding.Util.findClass;
 import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
 
 
@@ -62,11 +60,10 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="mappedName" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="wsdlLocation" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="header" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="part-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="target-namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -74,21 +71,45 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "web-service-ref")
-public class WebServiceRef implements javax.xml.ws.WebServiceRef {
+@XmlRootElement(name = "web-result")
+public class XmlWebResult implements javax.jws.WebResult {
 
+    @XmlAttribute(name = "header")
+    protected Boolean header;
     @XmlAttribute(name = "name")
     protected String name;
-    @XmlAttribute(name = "type")
-    protected String type;
-    @XmlAttribute(name = "mappedName")
-    protected String mappedName;
-    @XmlAttribute(name = "value")
-    protected String value;
-    @XmlAttribute(name = "wsdlLocation")
-    protected String wsdlLocation;
-    @XmlAttribute(name = "lookup")
-    protected String lookup;
+    @XmlAttribute(name = "part-name")
+    protected String partName;
+    @XmlAttribute(name = "target-namespace")
+    protected String targetNamespace;
+
+    /**
+     * Gets the value of the header property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isHeader() {
+        if (header == null) {
+            return false;
+        } else {
+            return header;
+        }
+    }
+
+    /**
+     * Sets the value of the header property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setHeader(Boolean value) {
+        this.header = value;
+    }
 
     /**
      * Gets the value of the name property.
@@ -99,7 +120,11 @@ public class WebServiceRef implements javax.xml.ws.WebServiceRef {
      *     
      */
     public String getName() {
-        return name;
+        if (name == null) {
+            return "";
+        } else {
+            return name;
+        }
     }
 
     /**
@@ -115,107 +140,59 @@ public class WebServiceRef implements javax.xml.ws.WebServiceRef {
     }
 
     /**
-     * Gets the value of the type property.
+     * Gets the value of the partName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getType() {
-        return type;
+    public String getPartName() {
+        if (partName == null) {
+            return "";
+        } else {
+            return partName;
+        }
     }
 
     /**
-     * Sets the value of the type property.
+     * Sets the value of the partName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setType(String value) {
-        this.type = value;
+    public void setPartName(String value) {
+        this.partName = value;
     }
 
     /**
-     * Gets the value of the mappedName property.
+     * Gets the value of the targetNamespace property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getMappedName() {
-        return mappedName;
+    public String getTargetNamespace() {
+        if (targetNamespace == null) {
+            return "";
+        } else {
+            return targetNamespace;
+        }
     }
 
     /**
-     * Sets the value of the mappedName property.
+     * Sets the value of the targetNamespace property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setMappedName(String value) {
-        this.mappedName = value;
-    }
-
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    /**
-     * Gets the value of the wsdlLocation property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getWsdlLocation() {
-        return wsdlLocation;
-    }
-
-    /**
-     * Sets the value of the wsdlLocation property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setWsdlLocation(String value) {
-        this.wsdlLocation = value;
-    }
-
-    public String getLookup() {
-        return lookup;
-    }
-
-    public void setLookup(String lookup) {
-        this.lookup = lookup;
+    public void setTargetNamespace(String value) {
+        this.targetNamespace = value;
     }
 
     @Override
@@ -224,39 +201,22 @@ public class WebServiceRef implements javax.xml.ws.WebServiceRef {
     }
 
     @Override
-    public Class<?> type() {
-        if (type == null) {
-            return Object.class;
-        }
-        return findClass(type);
+    public String partName() {
+        return nullSafe(partName);
     }
 
     @Override
-    public String mappedName() {
-        return nullSafe(mappedName);
+    public String targetNamespace() {
+        return nullSafe(targetNamespace);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends Service> value() {
-        if (value == null) {
-            return Service.class;
-        }
-        return (Class<Service>) findClass(value);
-    }
-
-    @Override
-    public String wsdlLocation() {
-        return nullSafe(wsdlLocation);
-    }
-
-    @Override
-    public String lookup() {
-        return nullSafe(lookup);
+    public boolean header() {
+        return nullSafe(header, false);
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.xml.ws.WebServiceRef.class;
+        return javax.jws.WebResult.class;
     }
 }

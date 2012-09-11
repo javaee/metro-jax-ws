@@ -60,86 +60,63 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="header" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *       &lt;attribute name="mode" type="{http://xmlns.oracle.com/webservices/jaxws-databinding}web-param-mode" default="IN" />
+ *       &lt;attribute name="endpoint-interface" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="part-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="port-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="service-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *       &lt;attribute name="target-namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="wsdl-location" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "web-param")
-public class WebParam implements javax.jws.WebParam {
+@XmlRootElement(name = "web-service")
+public class XmlWebService implements javax.jws.WebService {
 
-    @XmlAttribute(name = "header")
-    protected Boolean header;
-    @XmlAttribute(name = "mode")
-    protected WebParamMode mode;
+    @XmlAttribute(name = "endpoint-interface")
+    protected String endpointInterface;
     @XmlAttribute(name = "name")
     protected String name;
-    @XmlAttribute(name = "part-name")
-    protected String partName;
+    @XmlAttribute(name = "port-name")
+    protected String portName;
+    @XmlAttribute(name = "service-name")
+    protected String serviceName;
     @XmlAttribute(name = "target-namespace")
     protected String targetNamespace;
+    @XmlAttribute(name = "wsdl-location")
+    protected String wsdlLocation;
 
     /**
-     * Gets the value of the header property.
+     * Gets the value of the endpointInterface property.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link String }
      *     
      */
-    public boolean isHeader() {
-        if (header == null) {
-            return false;
+    public String getEndpointInterface() {
+        if (endpointInterface == null) {
+            return "";
         } else {
-            return header;
+            return endpointInterface;
         }
     }
 
     /**
-     * Sets the value of the header property.
+     * Sets the value of the endpointInterface property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link String }
      *     
      */
-    public void setHeader(Boolean value) {
-        this.header = value;
-    }
-
-    /**
-     * Gets the value of the mode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link WebParamMode }
-     *     
-     */
-    public WebParamMode getMode() {
-        if (mode == null) {
-            return WebParamMode.IN;
-        } else {
-            return mode;
-        }
-    }
-
-    /**
-     * Sets the value of the mode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link WebParamMode }
-     *     
-     */
-    public void setMode(WebParamMode value) {
-        this.mode = value;
+    public void setEndpointInterface(String value) {
+        this.endpointInterface = value;
     }
 
     /**
@@ -171,31 +148,59 @@ public class WebParam implements javax.jws.WebParam {
     }
 
     /**
-     * Gets the value of the partName property.
+     * Gets the value of the portName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getPartName() {
-        if (partName == null) {
+    public String getPortName() {
+        if (portName == null) {
             return "";
         } else {
-            return partName;
+            return portName;
         }
     }
 
     /**
-     * Sets the value of the partName property.
+     * Sets the value of the portName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setPartName(String value) {
-        this.partName = value;
+    public void setPortName(String value) {
+        this.portName = value;
+    }
+
+    /**
+     * Gets the value of the serviceName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getServiceName() {
+        if (serviceName == null) {
+            return "";
+        } else {
+            return serviceName;
+        }
+    }
+
+    /**
+     * Sets the value of the serviceName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setServiceName(String value) {
+        this.serviceName = value;
     }
 
     /**
@@ -226,14 +231,37 @@ public class WebParam implements javax.jws.WebParam {
         this.targetNamespace = value;
     }
 
-    @Override
-    public String name() {
-        return nullSafe(name);
+    /**
+     * Gets the value of the wsdlLocation property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getWsdlLocation() {
+        if (wsdlLocation == null) {
+            return "";
+        } else {
+            return wsdlLocation;
+        }
+    }
+
+    /**
+     * Sets the value of the wsdlLocation property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setWsdlLocation(String value) {
+        this.wsdlLocation = value;
     }
 
     @Override
-    public String partName() {
-        return nullSafe(partName);
+    public String name() {
+        return nullSafe(name);
     }
 
     @Override
@@ -242,17 +270,27 @@ public class WebParam implements javax.jws.WebParam {
     }
 
     @Override
-    public Mode mode() {
-        return nullSafe(mode, Mode.IN);
+    public String serviceName() {
+        return nullSafe(serviceName);
     }
 
     @Override
-    public boolean header() {
-        return nullSafe(header, false);
+    public String portName() {
+        return nullSafe(portName);
+    }
+
+    @Override
+    public String wsdlLocation() {
+        return nullSafe(wsdlLocation);
+    }
+
+    @Override
+    public String endpointInterface() {
+        return nullSafe(endpointInterface);
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.jws.WebParam.class;
+        return javax.jws.WebService.class;
     }
 }

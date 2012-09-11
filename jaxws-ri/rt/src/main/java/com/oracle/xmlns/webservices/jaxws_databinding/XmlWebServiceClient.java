@@ -60,64 +60,25 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="endpoint-interface" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="port-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="service-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="target-namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="wsdl-location" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="targetNamespace" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="wsdlLocation" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "web-service")
-public class WebService implements javax.jws.WebService {
+@XmlRootElement(name = "web-service-client")
+public class XmlWebServiceClient implements javax.xml.ws.WebServiceClient {
 
-    @XmlAttribute(name = "endpoint-interface")
-    protected String endpointInterface;
     @XmlAttribute(name = "name")
     protected String name;
-    @XmlAttribute(name = "port-name")
-    protected String portName;
-    @XmlAttribute(name = "service-name")
-    protected String serviceName;
-    @XmlAttribute(name = "target-namespace")
+    @XmlAttribute(name = "targetNamespace")
     protected String targetNamespace;
-    @XmlAttribute(name = "wsdl-location")
+    @XmlAttribute(name = "wsdlLocation")
     protected String wsdlLocation;
-
-    /**
-     * Gets the value of the endpointInterface property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEndpointInterface() {
-        if (endpointInterface == null) {
-            return "";
-        } else {
-            return endpointInterface;
-        }
-    }
-
-    /**
-     * Sets the value of the endpointInterface property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEndpointInterface(String value) {
-        this.endpointInterface = value;
-    }
 
     /**
      * Gets the value of the name property.
@@ -128,11 +89,7 @@ public class WebService implements javax.jws.WebService {
      *     
      */
     public String getName() {
-        if (name == null) {
-            return "";
-        } else {
-            return name;
-        }
+        return name;
     }
 
     /**
@@ -148,62 +105,6 @@ public class WebService implements javax.jws.WebService {
     }
 
     /**
-     * Gets the value of the portName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPortName() {
-        if (portName == null) {
-            return "";
-        } else {
-            return portName;
-        }
-    }
-
-    /**
-     * Sets the value of the portName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPortName(String value) {
-        this.portName = value;
-    }
-
-    /**
-     * Gets the value of the serviceName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getServiceName() {
-        if (serviceName == null) {
-            return "";
-        } else {
-            return serviceName;
-        }
-    }
-
-    /**
-     * Sets the value of the serviceName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setServiceName(String value) {
-        this.serviceName = value;
-    }
-
-    /**
      * Gets the value of the targetNamespace property.
      * 
      * @return
@@ -212,11 +113,7 @@ public class WebService implements javax.jws.WebService {
      *     
      */
     public String getTargetNamespace() {
-        if (targetNamespace == null) {
-            return "";
-        } else {
-            return targetNamespace;
-        }
+        return targetNamespace;
     }
 
     /**
@@ -240,11 +137,7 @@ public class WebService implements javax.jws.WebService {
      *     
      */
     public String getWsdlLocation() {
-        if (wsdlLocation == null) {
-            return "";
-        } else {
-            return wsdlLocation;
-        }
+        return wsdlLocation;
     }
 
     /**
@@ -270,27 +163,12 @@ public class WebService implements javax.jws.WebService {
     }
 
     @Override
-    public String serviceName() {
-        return nullSafe(serviceName);
-    }
-
-    @Override
-    public String portName() {
-        return nullSafe(portName);
-    }
-
-    @Override
     public String wsdlLocation() {
         return nullSafe(wsdlLocation);
     }
 
     @Override
-    public String endpointInterface() {
-        return nullSafe(endpointInterface);
-    }
-
-    @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.jws.WebService.class;
+        return javax.xml.ws.WebServiceClient.class;
     }
 }

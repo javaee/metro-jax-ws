@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.oracle.xmlns.webservices.jaxws_databinding;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -60,9 +61,10 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="style" type="{http://xmlns.oracle.com/webservices/jaxws-databinding}soap-binding-style" default="DOCUMENT" />
- *       &lt;attribute name="use" type="{http://xmlns.oracle.com/webservices/jaxws-databinding}soap-binding-use" default="LITERAL" />
- *       &lt;attribute name="parameter-style" type="{http://xmlns.oracle.com/webservices/jaxws-databinding}soap-binding-parameter-style" default="WRAPPED" />
+ *       &lt;attribute name="local-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="target-namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="class-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="part-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -70,117 +72,132 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "soap-binding")
-public class SoapBinding implements javax.jws.soap.SOAPBinding {
+@XmlRootElement(name = "request-wrapper")
+public class XmlRequestWrapper implements javax.xml.ws.RequestWrapper {
 
-    @XmlAttribute(name = "style")
-    protected SoapBindingStyle style;
-    @XmlAttribute(name = "use")
-    protected SoapBindingUse use;
-    @XmlAttribute(name = "parameter-style")
-    protected SoapBindingParameterStyle parameterStyle;
+    @XmlAttribute(name = "local-name")
+    protected String localName;
+    @XmlAttribute(name = "target-namespace")
+    protected String targetNamespace;
+    @XmlAttribute(name = "class-name")
+    protected String className;
+    @XmlAttribute(name = "part-name")
+    protected String partName;
 
     /**
-     * Gets the value of the style property.
+     * Gets the value of the localName property.
      * 
      * @return
      *     possible object is
-     *     {@link SoapBindingStyle }
+     *     {@link String }
      *     
      */
-    public SoapBindingStyle getStyle() {
-        if (style == null) {
-            return SoapBindingStyle.DOCUMENT;
+    public String getLocalName() {
+        if (localName == null) {
+            return "";
         } else {
-            return style;
+            return localName;
         }
     }
 
     /**
-     * Sets the value of the style property.
+     * Sets the value of the localName property.
      * 
      * @param value
      *     allowed object is
-     *     {@link SoapBindingStyle }
+     *     {@link String }
      *     
      */
-    public void setStyle(SoapBindingStyle value) {
-        this.style = value;
+    public void setLocalName(String value) {
+        this.localName = value;
     }
 
     /**
-     * Gets the value of the use property.
+     * Gets the value of the targetNamespace property.
      * 
      * @return
      *     possible object is
-     *     {@link SoapBindingUse }
+     *     {@link String }
      *     
      */
-    public SoapBindingUse getUse() {
-        if (use == null) {
-            return SoapBindingUse.LITERAL;
+    public String getTargetNamespace() {
+        if (targetNamespace == null) {
+            return "";
         } else {
-            return use;
+            return targetNamespace;
         }
     }
 
     /**
-     * Sets the value of the use property.
+     * Sets the value of the targetNamespace property.
      * 
      * @param value
      *     allowed object is
-     *     {@link SoapBindingUse }
+     *     {@link String }
      *     
      */
-    public void setUse(SoapBindingUse value) {
-        this.use = value;
+    public void setTargetNamespace(String value) {
+        this.targetNamespace = value;
     }
 
     /**
-     * Gets the value of the parameterStyle property.
+     * Gets the value of the className property.
      * 
      * @return
      *     possible object is
-     *     {@link SoapBindingParameterStyle }
+     *     {@link String }
      *     
      */
-    public SoapBindingParameterStyle getParameterStyle() {
-        if (parameterStyle == null) {
-            return SoapBindingParameterStyle.WRAPPED;
+    public String getClassName() {
+        if (className == null) {
+            return "";
         } else {
-            return parameterStyle;
+            return className;
         }
     }
 
     /**
-     * Sets the value of the parameterStyle property.
+     * Sets the value of the className property.
      * 
      * @param value
      *     allowed object is
-     *     {@link SoapBindingParameterStyle }
+     *     {@link String }
      *     
      */
-    public void setParameterStyle(SoapBindingParameterStyle value) {
-        this.parameterStyle = value;
+    public void setClassName(String value) {
+        this.className = value;
+    }
+
+    public String getPartName() {
+        return partName;
+    }
+
+    public void setPartName(String partName) {
+        this.partName = partName;
     }
 
     @Override
-    public Style style() {
-        return nullSafe(style, Style.DOCUMENT);
+    public String localName() {
+        return nullSafe(localName);
     }
 
     @Override
-    public Use use() {
-        return nullSafe(use, Use.LITERAL);
+    public String targetNamespace() {
+        return nullSafe(targetNamespace);
     }
 
     @Override
-    public ParameterStyle parameterStyle() {
-        return nullSafe(parameterStyle, ParameterStyle.WRAPPED);
+    public String className() {
+        return nullSafe(className);
+    }
+
+    @Override
+    public String partName() {
+        return nullSafe(partName);
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.jws.soap.SOAPBinding.class;
+        return javax.xml.ws.RequestWrapper.class;
     }
 }

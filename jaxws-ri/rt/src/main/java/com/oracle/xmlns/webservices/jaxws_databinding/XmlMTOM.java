@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.ws.soap.MTOM;
 import java.lang.annotation.Annotation;
 
 import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
@@ -60,50 +61,93 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
+ *       &lt;attribute name="threshold" type="{http://www.w3.org/2001/XMLSchema}int" default="0" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "binding-type")
-public class BindingType implements javax.xml.ws.BindingType {
+@XmlRootElement(name = "mtom")
+public class XmlMTOM implements MTOM {
 
-    @XmlAttribute(name = "value")
-    protected String value;
+    @XmlAttribute(name = "enabled")
+    protected Boolean enabled;
+    @XmlAttribute(name = "threshold")
+    protected Integer threshold;
 
     /**
-     * Gets the value of the value property.
+     * Gets the value of the enabled property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public String getValue() {
-        return value;
+    public boolean isEnabled() {
+        if (enabled == null) {
+            return true;
+        } else {
+            return enabled;
+        }
     }
 
     /**
-     * Sets the value of the value property.
+     * Sets the value of the enabled property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setEnabled(Boolean value) {
+        this.enabled = value;
+    }
+
+    /**
+     * Gets the value of the threshold property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public int getThreshold() {
+        if (threshold == null) {
+            return  0;
+        } else {
+            return threshold;
+        }
+    }
+
+    /**
+     * Sets the value of the threshold property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setThreshold(Integer value) {
+        this.threshold = value;
     }
 
     @Override
-    public String value() {
-        return nullSafe(value);
+    public boolean enabled() {
+        return nullSafe(enabled, Boolean.TRUE);
     }
+
+    @Override
+    public int threshold() {
+        return nullSafe(threshold, 0);
+    }
+
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.xml.ws.BindingType.class;
+        return MTOM.class;
     }
 }

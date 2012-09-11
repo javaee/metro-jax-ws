@@ -61,6 +61,7 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;attribute name="header" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="mode" type="{http://xmlns.oracle.com/webservices/jaxws-databinding}web-param-mode" default="IN" />
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *       &lt;attribute name="part-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *       &lt;attribute name="target-namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
@@ -71,11 +72,13 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "web-result")
-public class WebResult implements javax.jws.WebResult {
+@XmlRootElement(name = "web-param")
+public class XmlWebParam implements javax.jws.WebParam {
 
     @XmlAttribute(name = "header")
     protected Boolean header;
+    @XmlAttribute(name = "mode")
+    protected WebParamMode mode;
     @XmlAttribute(name = "name")
     protected String name;
     @XmlAttribute(name = "part-name")
@@ -109,6 +112,34 @@ public class WebResult implements javax.jws.WebResult {
      */
     public void setHeader(Boolean value) {
         this.header = value;
+    }
+
+    /**
+     * Gets the value of the mode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link WebParamMode }
+     *     
+     */
+    public WebParamMode getMode() {
+        if (mode == null) {
+            return WebParamMode.IN;
+        } else {
+            return mode;
+        }
+    }
+
+    /**
+     * Sets the value of the mode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link WebParamMode }
+     *     
+     */
+    public void setMode(WebParamMode value) {
+        this.mode = value;
     }
 
     /**
@@ -211,12 +242,17 @@ public class WebResult implements javax.jws.WebResult {
     }
 
     @Override
+    public Mode mode() {
+        return nullSafe(mode, Mode.IN);
+    }
+
+    @Override
     public boolean header() {
         return nullSafe(header, false);
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.jws.WebResult.class;
+        return javax.jws.WebParam.class;
     }
 }

@@ -38,11 +38,13 @@
  * holder.
  */
 package com.oracle.xmlns.webservices.jaxws_databinding;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.ws.soap.AddressingFeature;
 import java.lang.annotation.Annotation;
 
 import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
@@ -60,10 +62,6 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="local-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="target-namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="class-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="part-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -71,132 +69,48 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "response-wrapper")
-public class ResponseWrapper implements javax.xml.ws.ResponseWrapper {
+@XmlRootElement(name = "addressing")
+public class XmlAddressing implements javax.xml.ws.soap.Addressing {
 
-    @XmlAttribute(name = "local-name")
-    protected String localName;
-    @XmlAttribute(name = "target-namespace")
-    protected String targetNamespace;
-    @XmlAttribute(name = "class-name")
-    protected String className;
-    @XmlAttribute(name = "part-name")
-    protected String partName;
+    @XmlAttribute(name = "enabled")
+    protected Boolean enabled;
 
-    /**
-     * Gets the value of the localName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getLocalName() {
-        if (localName == null) {
-            return "";
-        } else {
-            return localName;
-        }
+    @XmlAttribute(name = "required")
+    protected Boolean required;
+
+    public Boolean getEnabled() {
+        return enabled();
     }
 
-    /**
-     * Sets the value of the localName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setLocalName(String value) {
-        this.localName = value;
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
-    /**
-     * Gets the value of the targetNamespace property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getTargetNamespace() {
-        if (targetNamespace == null) {
-            return "";
-        } else {
-            return targetNamespace;
-        }
+    public Boolean getRequired() {
+        return required();
     }
 
-    /**
-     * Sets the value of the targetNamespace property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setTargetNamespace(String value) {
-        this.targetNamespace = value;
-    }
-
-    /**
-     * Gets the value of the className property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getClassName() {
-        if (className == null) {
-            return "";
-        } else {
-            return className;
-        }
-    }
-
-    /**
-     * Sets the value of the className property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setClassName(String value) {
-        this.className = value;
-    }
-
-    public String getPartName() {
-        return partName;
-    }
-
-    public void setPartName(String partName) {
-        this.partName = partName;
+    public void setRequired(Boolean required) {
+        this.required = required;
     }
 
     @Override
-    public String localName() {
-        return nullSafe(localName);
+    public boolean enabled() {
+        return nullSafe(enabled, true);
     }
 
     @Override
-    public String targetNamespace() {
-        return nullSafe(targetNamespace);
+    public boolean required() {
+        return nullSafe(required, false);
     }
 
     @Override
-    public String className() {
-        return nullSafe(className);
-    }
-
-    @Override
-    public String partName() {
-        return nullSafe(partName);
+    public AddressingFeature.Responses responses() {
+        return AddressingFeature.Responses.ALL;
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.xml.ws.ResponseWrapper.class;
+        return javax.xml.ws.soap.Addressing.class;
     }
 }

@@ -60,9 +60,7 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="targetNamespace" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="wsdlLocation" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -70,105 +68,42 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "web-service-client")
-public class WebServiceClient implements javax.xml.ws.WebServiceClient {
+@XmlRootElement(name = "binding-type")
+public class XmlBindingType implements javax.xml.ws.BindingType {
 
-    @XmlAttribute(name = "name")
-    protected String name;
-    @XmlAttribute(name = "targetNamespace")
-    protected String targetNamespace;
-    @XmlAttribute(name = "wsdlLocation")
-    protected String wsdlLocation;
+    @XmlAttribute(name = "value")
+    protected String value;
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the value property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getName() {
-        return name;
+    public String getValue() {
+        return value;
     }
 
     /**
-     * Sets the value of the name property.
+     * Sets the value of the value property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
-    }
-
-    /**
-     * Gets the value of the targetNamespace property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getTargetNamespace() {
-        return targetNamespace;
-    }
-
-    /**
-     * Sets the value of the targetNamespace property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setTargetNamespace(String value) {
-        this.targetNamespace = value;
-    }
-
-    /**
-     * Gets the value of the wsdlLocation property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getWsdlLocation() {
-        return wsdlLocation;
-    }
-
-    /**
-     * Sets the value of the wsdlLocation property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setWsdlLocation(String value) {
-        this.wsdlLocation = value;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override
-    public String name() {
-        return nullSafe(name);
+    public String value() {
+        return nullSafe(value);
     }
-
-    @Override
-    public String targetNamespace() {
-        return nullSafe(targetNamespace);
-    }
-
-    @Override
-    public String wsdlLocation() {
-        return nullSafe(wsdlLocation);
-    }
-
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.xml.ws.WebServiceClient.class;
+        return javax.xml.ws.BindingType.class;
     }
 }

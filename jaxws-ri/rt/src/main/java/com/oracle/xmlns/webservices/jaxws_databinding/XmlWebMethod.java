@@ -37,6 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.oracle.xmlns.webservices.jaxws_databinding;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -60,7 +61,9 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="file" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="action" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="exclude" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="operation-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -68,48 +71,117 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "handler-chain")
-public class HandlerChain implements javax.jws.HandlerChain {
+@XmlRootElement(name = "web-method")
+public class XmlWebMethod implements javax.jws.WebMethod {
 
-    @XmlAttribute(name = "file")
-    protected String file;
+    @XmlAttribute(name = "action")
+    protected String action;
+    @XmlAttribute(name = "exclude")
+    protected Boolean exclude;
+    @XmlAttribute(name = "operation-name")
+    protected String operationName;
 
     /**
-     * Gets the value of the file property.
+     * Gets the value of the action property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getFile() {
-        return file;
+    public String getAction() {
+        if (action == null) {
+            return "";
+        } else {
+            return action;
+        }
     }
 
     /**
-     * Sets the value of the file property.
+     * Sets the value of the action property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setFile(String value) {
-        this.file = value;
+    public void setAction(String value) {
+        this.action = value;
+    }
+
+    /**
+     * Gets the value of the exclude property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isExclude() {
+        if (exclude == null) {
+            return false;
+        } else {
+            return exclude;
+        }
+    }
+
+    /**
+     * Sets the value of the exclude property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setExclude(Boolean value) {
+        this.exclude = value;
+    }
+
+    /**
+     * Gets the value of the operationName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOperationName() {
+        if (operationName == null) {
+            return "";
+        } else {
+            return operationName;
+        }
+    }
+
+    /**
+     * Sets the value of the operationName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOperationName(String value) {
+        this.operationName = value;
     }
 
     @Override
-    public String file() {
-        return nullSafe(file);
+    public String operationName() {
+        return nullSafe(operationName);
     }
 
     @Override
-    public String name() {
-        return ""; // deprecated, so let's ignore it ...
+    public String action() {
+        return nullSafe(action);
+    }
+
+    @Override
+    public boolean exclude() {
+        return nullSafe(exclude, false);
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.jws.HandlerChain.class;
+        return javax.jws.WebMethod.class;
     }
 }

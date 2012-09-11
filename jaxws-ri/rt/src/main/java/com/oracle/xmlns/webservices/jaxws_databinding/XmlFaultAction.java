@@ -41,9 +41,13 @@
 package com.oracle.xmlns.webservices.jaxws_databinding;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.lang.annotation.Annotation;
+
+import static com.oracle.xmlns.webservices.jaxws_databinding.Util.findClass;
+import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
 
 
 /**
@@ -58,22 +62,84 @@ import java.lang.annotation.Annotation;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *       &lt;/sequence>
+ *       &lt;attribute name="className" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "oneway")
-public class Oneway implements javax.jws.Oneway {
+@XmlRootElement(name = "fault-action")
+public class XmlFaultAction implements javax.xml.ws.FaultAction {
+
+    @XmlAttribute(name = "className", required = true)
+    protected String className;
+    @XmlAttribute(name = "value")
+    protected String value;
+
+    /**
+     * Gets the value of the className property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getClassName() {
+        return className;
+    }
+
+    /**
+     * Sets the value of the className property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setClassName(String value) {
+        this.className = value;
+    }
+
+    /**
+     * Gets the value of the value property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getValue() {
+        return nullSafe(value);
+    }
+
+    /**
+     * Sets the value of the value property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Class<? extends Exception> className() {
+        return (Class<Exception>) findClass(className);
+    }
+
+    @Override
+    public String value() {
+        return nullSafe(value);
+    }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.jws.Oneway.class;
+        return javax.xml.ws.FaultAction.class;
     }
 }

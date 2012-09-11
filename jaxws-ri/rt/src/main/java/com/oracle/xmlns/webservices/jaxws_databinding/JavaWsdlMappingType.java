@@ -116,14 +116,14 @@ public class JavaWsdlMappingType {
     @XmlElement(name = "xml-schema-mapping")
     protected JavaWsdlMappingType.XmlSchemaMapping xmlSchemaMapping;
     @XmlElementRefs({
-        @XmlElementRef(name = "web-service-client", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = WebServiceClient.class, required = false),
-        @XmlElementRef(name = "binding-type", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = BindingType.class, required = false),
-        @XmlElementRef(name = "web-service", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = WebService.class, required = false),
-        @XmlElementRef(name = "web-fault", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = WebFault.class, required = false),
-        @XmlElementRef(name = "service-mode", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = ServiceMode.class, required = false),
-        @XmlElementRef(name = "mtom", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = Mtom.class, required = false),
-        @XmlElementRef(name = "handler-chain", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = HandlerChain.class, required = false),
-        @XmlElementRef(name = "soap-binding", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = SoapBinding.class, required = false)
+        @XmlElementRef(name = "web-service-client", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlWebServiceClient.class, required = false),
+        @XmlElementRef(name = "binding-type", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlBindingType.class, required = false),
+        @XmlElementRef(name = "web-service", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlWebService.class, required = false),
+        @XmlElementRef(name = "web-fault", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlWebFault.class, required = false),
+        @XmlElementRef(name = "service-mode", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlServiceMode.class, required = false),
+        @XmlElementRef(name = "mtom", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlMTOM.class, required = false),
+        @XmlElementRef(name = "handler-chain", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlHandlerChain.class, required = false),
+        @XmlElementRef(name = "soap-binding", namespace = "http://xmlns.oracle.com/webservices/jaxws-databinding", type = XmlSOAPBinding.class, required = false)
     })
     @XmlAnyElement
     protected List<Object> classAnnotation;
@@ -186,15 +186,15 @@ public class JavaWsdlMappingType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link WebServiceClient }
-     * {@link BindingType }
-     * {@link WebService }
-     * {@link WebFault }
-     * {@link ServiceMode }
-     * {@link Mtom }
-     * {@link HandlerChain }
+     * {@link XmlWebServiceClient }
+     * {@link XmlBindingType }
+     * {@link XmlWebService }
+     * {@link XmlWebFault }
+     * {@link XmlServiceMode }
+     * {@link XmlMTOM }
+     * {@link XmlHandlerChain }
      * {@link Element }
-     * {@link SoapBinding }
+     * {@link XmlSOAPBinding }
      * 
      * 
      */

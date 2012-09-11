@@ -88,51 +88,51 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebEndpoint }
+     * Create an instance of {@link XmlWebEndpoint }
      * 
      */
-    public WebEndpoint createWebEndpoint() {
-        return new WebEndpoint();
+    public XmlWebEndpoint createWebEndpoint() {
+        return new XmlWebEndpoint();
     }
 
     /**
-     * Create an instance of {@link Mtom }
+     * Create an instance of {@link XmlMTOM }
      * 
      */
-    public Mtom createMtom() {
-        return new Mtom();
+    public XmlMTOM createMtom() {
+        return new XmlMTOM();
     }
 
     /**
-     * Create an instance of {@link WebServiceClient }
+     * Create an instance of {@link XmlWebServiceClient }
      * 
      */
-    public WebServiceClient createWebServiceClient() {
-        return new WebServiceClient();
+    public XmlWebServiceClient createWebServiceClient() {
+        return new XmlWebServiceClient();
     }
 
     /**
-     * Create an instance of {@link ServiceMode }
+     * Create an instance of {@link XmlServiceMode }
      * 
      */
-    public ServiceMode createServiceMode() {
-        return new ServiceMode();
+    public XmlServiceMode createServiceMode() {
+        return new XmlServiceMode();
     }
 
     /**
-     * Create an instance of {@link BindingType }
+     * Create an instance of {@link XmlBindingType }
      * 
      */
-    public BindingType createBindingType() {
-        return new BindingType();
+    public XmlBindingType createBindingType() {
+        return new XmlBindingType();
     }
 
     /**
-     * Create an instance of {@link WebServiceRef }
+     * Create an instance of {@link XmlWebServiceRef }
      * 
      */
-    public WebServiceRef createWebServiceRef() {
-        return new WebServiceRef();
+    public XmlWebServiceRef createWebServiceRef() {
+        return new XmlWebServiceRef();
     }
 
     /**
@@ -144,59 +144,59 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebParam }
+     * Create an instance of {@link XmlWebParam }
      * 
      */
-    public WebParam createWebParam() {
-        return new WebParam();
+    public XmlWebParam createWebParam() {
+        return new XmlWebParam();
     }
 
     /**
-     * Create an instance of {@link WebMethod }
+     * Create an instance of {@link XmlWebMethod }
      * 
      */
-    public WebMethod createWebMethod() {
-        return new WebMethod();
+    public XmlWebMethod createWebMethod() {
+        return new XmlWebMethod();
     }
 
     /**
-     * Create an instance of {@link WebResult }
+     * Create an instance of {@link XmlWebResult }
      * 
      */
-    public WebResult createWebResult() {
-        return new WebResult();
+    public XmlWebResult createWebResult() {
+        return new XmlWebResult();
     }
 
     /**
-     * Create an instance of {@link Oneway }
+     * Create an instance of {@link XmlOneway }
      * 
      */
-    public Oneway createOneway() {
-        return new Oneway();
+    public XmlOneway createOneway() {
+        return new XmlOneway();
     }
 
     /**
-     * Create an instance of {@link SoapBinding }
+     * Create an instance of {@link XmlSOAPBinding }
      * 
      */
-    public SoapBinding createSoapBinding() {
-        return new SoapBinding();
+    public XmlSOAPBinding createSoapBinding() {
+        return new XmlSOAPBinding();
     }
 
     /**
-     * Create an instance of {@link Action }
+     * Create an instance of {@link XmlAction }
      * 
      */
-    public Action createAction() {
-        return new Action();
+    public XmlAction createAction() {
+        return new XmlAction();
     }
 
     /**
-     * Create an instance of {@link FaultAction }
+     * Create an instance of {@link XmlFaultAction }
      * 
      */
-    public FaultAction createFaultAction() {
-        return new FaultAction();
+    public XmlFaultAction createFaultAction() {
+        return new XmlFaultAction();
     }
 
     /**
@@ -208,51 +208,51 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link HandlerChain }
+     * Create an instance of {@link XmlHandlerChain }
      * 
      */
-    public HandlerChain createHandlerChain() {
-        return new HandlerChain();
+    public XmlHandlerChain createHandlerChain() {
+        return new XmlHandlerChain();
     }
 
     /**
-     * Create an instance of {@link WebServiceProvider }
+     * Create an instance of {@link XmlWebServiceProvider }
      * 
      */
-    public WebServiceProvider createWebServiceProvider() {
-        return new WebServiceProvider();
+    public XmlWebServiceProvider createWebServiceProvider() {
+        return new XmlWebServiceProvider();
     }
 
     /**
-     * Create an instance of {@link WebFault }
+     * Create an instance of {@link XmlWebFault }
      * 
      */
-    public WebFault createWebFault() {
-        return new WebFault();
+    public XmlWebFault createWebFault() {
+        return new XmlWebFault();
     }
 
     /**
-     * Create an instance of {@link ResponseWrapper }
+     * Create an instance of {@link XmlResponseWrapper }
      * 
      */
-    public ResponseWrapper createResponseWrapper() {
-        return new ResponseWrapper();
+    public XmlResponseWrapper createResponseWrapper() {
+        return new XmlResponseWrapper();
     }
 
     /**
-     * Create an instance of {@link WebService }
+     * Create an instance of {@link XmlWebService }
      * 
      */
-    public WebService createWebService() {
-        return new WebService();
+    public XmlWebService createWebService() {
+        return new XmlWebService();
     }
 
     /**
-     * Create an instance of {@link RequestWrapper }
+     * Create an instance of {@link XmlRequestWrapper }
      * 
      */
-    public RequestWrapper createRequestWrapper() {
-        return new RequestWrapper();
+    public XmlRequestWrapper createRequestWrapper() {
+        return new XmlRequestWrapper();
     }
 
     /**

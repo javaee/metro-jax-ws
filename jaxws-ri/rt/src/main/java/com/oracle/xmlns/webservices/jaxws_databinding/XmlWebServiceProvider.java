@@ -43,7 +43,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.ws.soap.MTOM;
 import java.lang.annotation.Annotation;
 
 import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
@@ -61,93 +60,147 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
- *       &lt;attribute name="threshold" type="{http://www.w3.org/2001/XMLSchema}int" default="0" />
+ *       &lt;attribute name="targetNamespace" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="serviceName" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="portName" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="wsdlLocation" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "mtom")
-public class Mtom implements MTOM {
+@XmlRootElement(name = "web-service-provider")
+public class XmlWebServiceProvider implements javax.xml.ws.WebServiceProvider {
 
-    @XmlAttribute(name = "enabled")
-    protected Boolean enabled;
-    @XmlAttribute(name = "threshold")
-    protected Integer threshold;
+    @XmlAttribute(name = "targetNamespace")
+    protected String targetNamespace;
+    @XmlAttribute(name = "serviceName")
+    protected String serviceName;
+    @XmlAttribute(name = "portName")
+    protected String portName;
+    @XmlAttribute(name = "wsdlLocation")
+    protected String wsdlLocation;
 
     /**
-     * Gets the value of the enabled property.
+     * Gets the value of the targetNamespace property.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link String }
      *     
      */
-    public boolean isEnabled() {
-        if (enabled == null) {
-            return true;
-        } else {
-            return enabled;
-        }
+    public String getTargetNamespace() {
+        return targetNamespace;
     }
 
     /**
-     * Sets the value of the enabled property.
+     * Sets the value of the targetNamespace property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link String }
      *     
      */
-    public void setEnabled(Boolean value) {
-        this.enabled = value;
+    public void setTargetNamespace(String value) {
+        this.targetNamespace = value;
     }
 
     /**
-     * Gets the value of the threshold property.
+     * Gets the value of the serviceName property.
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public int getThreshold() {
-        if (threshold == null) {
-            return  0;
-        } else {
-            return threshold;
-        }
+    public String getServiceName() {
+        return serviceName;
     }
 
     /**
-     * Sets the value of the threshold property.
+     * Sets the value of the serviceName property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public void setThreshold(Integer value) {
-        this.threshold = value;
+    public void setServiceName(String value) {
+        this.serviceName = value;
+    }
+
+    /**
+     * Gets the value of the portName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPortName() {
+        return portName;
+    }
+
+    /**
+     * Sets the value of the portName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPortName(String value) {
+        this.portName = value;
+    }
+
+    /**
+     * Gets the value of the wsdlLocation property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getWsdlLocation() {
+        return wsdlLocation;
+    }
+
+    /**
+     * Sets the value of the wsdlLocation property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setWsdlLocation(String value) {
+        this.wsdlLocation = value;
     }
 
     @Override
-    public boolean enabled() {
-        return nullSafe(enabled, Boolean.TRUE);
+    public String wsdlLocation() {
+        return nullSafe(wsdlLocation);
     }
 
     @Override
-    public int threshold() {
-        return nullSafe(threshold, 0);
+    public String serviceName() {
+        return nullSafe(serviceName);
+    }
+
+    @Override
+    public String targetNamespace() {
+        return nullSafe(targetNamespace);
+    }
+
+    @Override
+    public String portName() {
+        return nullSafe(portName);
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return MTOM.class;
+        return javax.xml.ws.WebServiceProvider.class;
     }
 }

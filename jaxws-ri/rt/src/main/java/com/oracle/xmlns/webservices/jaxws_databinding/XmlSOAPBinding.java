@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.oracle.xmlns.webservices.jaxws_databinding;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -61,9 +60,9 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="action" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *       &lt;attribute name="exclude" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *       &lt;attribute name="operation-name" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
+ *       &lt;attribute name="style" type="{http://xmlns.oracle.com/webservices/jaxws-databinding}soap-binding-style" default="DOCUMENT" />
+ *       &lt;attribute name="use" type="{http://xmlns.oracle.com/webservices/jaxws-databinding}soap-binding-use" default="LITERAL" />
+ *       &lt;attribute name="parameter-style" type="{http://xmlns.oracle.com/webservices/jaxws-databinding}soap-binding-parameter-style" default="WRAPPED" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -71,117 +70,117 @@ import static com.oracle.xmlns.webservices.jaxws_databinding.Util.nullSafe;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "web-method")
-public class WebMethod implements javax.jws.WebMethod {
+@XmlRootElement(name = "soap-binding")
+public class XmlSOAPBinding implements javax.jws.soap.SOAPBinding {
 
-    @XmlAttribute(name = "action")
-    protected String action;
-    @XmlAttribute(name = "exclude")
-    protected Boolean exclude;
-    @XmlAttribute(name = "operation-name")
-    protected String operationName;
+    @XmlAttribute(name = "style")
+    protected SoapBindingStyle style;
+    @XmlAttribute(name = "use")
+    protected SoapBindingUse use;
+    @XmlAttribute(name = "parameter-style")
+    protected SoapBindingParameterStyle parameterStyle;
 
     /**
-     * Gets the value of the action property.
+     * Gets the value of the style property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link SoapBindingStyle }
      *     
      */
-    public String getAction() {
-        if (action == null) {
-            return "";
+    public SoapBindingStyle getStyle() {
+        if (style == null) {
+            return SoapBindingStyle.DOCUMENT;
         } else {
-            return action;
+            return style;
         }
     }
 
     /**
-     * Sets the value of the action property.
+     * Sets the value of the style property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link SoapBindingStyle }
      *     
      */
-    public void setAction(String value) {
-        this.action = value;
+    public void setStyle(SoapBindingStyle value) {
+        this.style = value;
     }
 
     /**
-     * Gets the value of the exclude property.
+     * Gets the value of the use property.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link SoapBindingUse }
      *     
      */
-    public boolean isExclude() {
-        if (exclude == null) {
-            return false;
+    public SoapBindingUse getUse() {
+        if (use == null) {
+            return SoapBindingUse.LITERAL;
         } else {
-            return exclude;
+            return use;
         }
     }
 
     /**
-     * Sets the value of the exclude property.
+     * Sets the value of the use property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link SoapBindingUse }
      *     
      */
-    public void setExclude(Boolean value) {
-        this.exclude = value;
+    public void setUse(SoapBindingUse value) {
+        this.use = value;
     }
 
     /**
-     * Gets the value of the operationName property.
+     * Gets the value of the parameterStyle property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link SoapBindingParameterStyle }
      *     
      */
-    public String getOperationName() {
-        if (operationName == null) {
-            return "";
+    public SoapBindingParameterStyle getParameterStyle() {
+        if (parameterStyle == null) {
+            return SoapBindingParameterStyle.WRAPPED;
         } else {
-            return operationName;
+            return parameterStyle;
         }
     }
 
     /**
-     * Sets the value of the operationName property.
+     * Sets the value of the parameterStyle property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link SoapBindingParameterStyle }
      *     
      */
-    public void setOperationName(String value) {
-        this.operationName = value;
+    public void setParameterStyle(SoapBindingParameterStyle value) {
+        this.parameterStyle = value;
     }
 
     @Override
-    public String operationName() {
-        return nullSafe(operationName);
+    public Style style() {
+        return nullSafe(style, Style.DOCUMENT);
     }
 
     @Override
-    public String action() {
-        return nullSafe(action);
+    public Use use() {
+        return nullSafe(use, Use.LITERAL);
     }
 
     @Override
-    public boolean exclude() {
-        return nullSafe(exclude, false);
+    public ParameterStyle parameterStyle() {
+        return nullSafe(parameterStyle, ParameterStyle.WRAPPED);
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return javax.jws.WebMethod.class;
+        return javax.jws.soap.SOAPBinding.class;
     }
 }
