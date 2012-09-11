@@ -46,7 +46,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.io.*;
 
 /**
  * HTTP request and response headers are represented by this class which implements
@@ -99,29 +98,32 @@ public class Headers implements Map<String,List<String>> {
         if (len == 0) {
             return key;
         }
-        char[] b = new char [len];
-        String s = null;
-            b = key.toCharArray();
-            if (b[0] >= 'a' && b[0] <= 'z') {
-                b[0] = (char)(b[0] - ('a' - 'A'));
+        char[] b;
+        String s;
+        b = key.toCharArray();
+        if (b[0] >= 'a' && b[0] <= 'z') {
+            b[0] = (char) (b[0] - ('a' - 'A'));
+        }
+        for (int i = 1; i < len; i++) {
+            if (b[i] >= 'A' && b[i] <= 'Z') {
+                b[i] = (char) (b[i] + ('a' - 'A'));
             }
-            for (int i=1; i<len; i++) {
-                if (b[i] >= 'A' && b[i] <= 'Z') {
-                    b[i] = (char) (b[i] + ('a' - 'A'));
-                }
-            }
-            s = new String (b);
+        }
+        s = new String(b);
         return s;
     }
 
+    @Override
     public int size() {
         return map.size();
     }
 
+    @Override
     public boolean isEmpty() {
         return map.isEmpty();
     }
 
+    @Override
     public boolean containsKey(Object key) {
         if (key == null) {
             return false;
@@ -132,10 +134,12 @@ public class Headers implements Map<String,List<String>> {
         return map.containsKey (normalize((String)key));
     }
 
+    @Override
     public boolean containsValue(Object value) {
         return map.containsValue(value);
     }
 
+    @Override
     public List<String> get(Object key) {
         return map.get(normalize((String)key));
     }
@@ -154,6 +158,7 @@ public class Headers implements Map<String,List<String>> {
         return l.get(0);
     }
 
+    @Override
     public List<String> put(String key, List<String> value) {
         return map.put (normalize(key), value);
     }
@@ -189,36 +194,44 @@ public class Headers implements Map<String,List<String>> {
     }
 
 
+    @Override
     public List<String> remove(Object key) {
         return map.remove(normalize((String)key));
     }
 
+    @Override
     public void putAll(Map<? extends String,? extends List<String>> t)  {
         for(Entry<? extends String, ? extends List<String>> entry : t.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
     }
 
+    @Override
     public void clear() {
         map.clear();
     }
 
+    @Override
     public Set<String> keySet() {
         return map.keySet();
     }
 
+    @Override
     public Collection<List<String>> values() {
         return map.values();
     }
 
+    @Override
     public Set<Entry<String, List<String>>> entrySet() {
         return map.entrySet();
     }
 
+    @Override
     public boolean equals(Object o) {
         return map.equals(o);
     }
 
+    @Override
     public int hashCode() {
         return map.hashCode();
     }

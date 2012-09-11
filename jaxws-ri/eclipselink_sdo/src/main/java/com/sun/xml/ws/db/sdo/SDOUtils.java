@@ -110,34 +110,41 @@ public class SDOUtils {
     private static final QName SCHEMA_IMPORT_QNAME = new QName(NS_XSD, "import");
     public static final QName QNAME_SCHEMA = new QName(NS_XMLNS, "schema");
 
-
-    static TransformerFactory transformerFactory = null;
-    static DocumentBuilderFactory dbf = null;
+    static volatile TransformerFactory transformerFactory = null;
+    static volatile DocumentBuilderFactory dbf = null;
 
     public static Transformer newTransformer() {
-        if (transformerFactory == null)
-            transformerFactory = TransformerFactory.newInstance();
+        if (transformerFactory == null) {
+            synchronized(SDOUtils.class) {
+                if (transformerFactory == null) {
+                    transformerFactory = TransformerFactory.newInstance();
+                }
+            }
+        }
         try {
             return transformerFactory.newTransformer();
-        }
-        catch (TransformerConfigurationException e) {
+        } catch (TransformerConfigurationException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static DocumentBuilder newDocumentBuilder() {
         if (dbf == null) {
-            dbf = DocumentBuilderFactory.newInstance();
-            dbf.setValidating(false);
-            dbf.setNamespaceAware(true);
-            dbf.setIgnoringElementContentWhitespace(true);
-            dbf.setIgnoringComments(true);
+            synchronized(SDOUtils.class) {
+                if (dbf == null) {
+                    DocumentBuilderFactory tmpDBF = DocumentBuilderFactory.newInstance();
+                    tmpDBF.setValidating(false);
+                    tmpDBF.setNamespaceAware(true);
+                    tmpDBF.setIgnoringElementContentWhitespace(true);
+                    tmpDBF.setIgnoringComments(true);
+                    dbf = tmpDBF;
+                }
+            }
         }
         try {
             DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
             return documentBuilder;
-        }
-        catch (ParserConfigurationException e) {
+        } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -415,6 +422,7 @@ public class SDOUtils {
     }
 
     // note only use for debugging, once the reader is read, the cursor can't be set back
+    @SuppressWarnings("CallToThreadDumpStack")
     public static void printXMLReader(XMLStreamReader xml) {
           try {
             Document doc = SDOUtils.newDocument();
@@ -422,8 +430,7 @@ public class SDOUtils {
             Stax2SAXAdapter adapter = new Stax2SAXAdapter(xml, false);
             adapter.parse(handler);
             printDOM(new DOMSource(doc));
-          }
-          catch (Exception e) {
+          } catch (Exception e) {
               e.printStackTrace();
           }
     }
@@ -496,8 +503,7 @@ public class SDOUtils {
                 Class cls = Thread.currentThread().getContextClassLoader().loadClass(javaType);
                 Type type = typeHelper.getType(cls);
                 return type == null ? false : true;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
@@ -557,8 +563,11 @@ public class SDOUtils {
             Element types = null;
             Node n = rootEl.getFirstChild();
             while (types == null) {
-                if (n instanceof Element && ((Element)n).getLocalName().equals("types")) types = (Element)n;
-                else n = n.getNextSibling();
+                if (n instanceof Element && ((Element)n).getLocalName().equals("types")) {
+                    types = (Element)n;
+                } else {
+                    n = n.getNextSibling();
+                }
             }
             NodeList nl = types.getChildNodes();
             for (int i = 0; i < nl.getLength(); i++ ) {

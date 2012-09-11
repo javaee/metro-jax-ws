@@ -57,6 +57,10 @@
     <name>JAX-WS RI Eclipselink Plugin</name>
     <description>Pluggable databinding module employing Eclipselink JAXB (MOXy)</description>
 
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>javax.mail</groupId>

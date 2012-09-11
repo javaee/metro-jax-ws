@@ -40,7 +40,6 @@
 
 package com.sun.xml.ws.db.sdo;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,7 +81,7 @@ import commonj.sdo.helper.XSDHelper;
  * Time: 9:48:11 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SDOContextWrapper implements BindingContext {
+public final class SDOContextWrapper implements BindingContext {
     
     public static final String SDO_SCHEMA_INFO = "com.sun.xml.ws.db.sdo.SCHEMA_INFO";
     
@@ -117,7 +116,7 @@ public class SDOContextWrapper implements BindingContext {
         if (contextResolver == null) {
             defaultContext = SDOHelperContext.getHelperContext();
             contextResolver = new HelperContextResolver() {
-                //@Override
+                @Override
                 public HelperContext getHelperContext(boolean isClient,
                         QName serviceName, Map<String, Object> properties) {
                     return defaultContext;
@@ -145,10 +144,10 @@ public class SDOContextWrapper implements BindingContext {
     }
     
     public HelperContext getHelperContext() {
-        return contextResolver.getHelperContext(isClient, serviceName,
-                properties);
+        return contextResolver.getHelperContext(isClient, serviceName, properties);
     }
 
+    @Override
     public Object newWrapperInstace(Class<?> wrapperType) {
         return getHelperContext().getDataFactory()
                 .create(wrapperType);
@@ -176,54 +175,54 @@ public class SDOContextWrapper implements BindingContext {
         initialized = true;
     }
 
-    //@Override
+    @Override
     public Marshaller createMarshaller() throws JAXBException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    //@Override
+    @Override
     public Unmarshaller createUnmarshaller() throws JAXBException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    //@Override
+    @Override
     public JAXBContext getJAXBContext() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    //@Override
+    @Override
     public boolean hasSwaRef() {
         // TODO Auto-generated method stub
         return false;
     }
 
-    //@Override
+    @Override
     public QName getElementName(Object o) throws JAXBException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    //@Override
+    @Override
     public QName getElementName(Class o) throws JAXBException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    //@Override
+    @Override
     public XMLBridge createBridge(TypeInfo ref) {
         return WrapperComposite.class.equals(ref.type) ? 
                 new com.sun.xml.ws.spi.db.WrapperBridge(this, ref) : new SDOBond(this, ref);
     }
 
-    //@Override
+    @Override
     public XMLBridge createFragmentBridge() {
         return new SDOBond(this, null);
     }
 
-    //@Override
+    @Override
     public <B, V> PropertyAccessor<B, V> getElementPropertyAccessor(
             Class<B> wrapperBean, String nsUri, String localName)
             throws JAXBException {
@@ -235,13 +234,13 @@ public class SDOContextWrapper implements BindingContext {
         return wa.getPropertyAccessor(nsUri, localName);
     }
 
-    //@Override
+    @Override
     public List<String> getKnownNamespaceURIs() {
         // TODO
         return new ArrayList<String>();
     }
 
-    //@Override
+    @Override
     public void generateSchema(SchemaOutputResolver outputResolver)
             throws IOException {
         try {
@@ -250,8 +249,9 @@ public class SDOContextWrapper implements BindingContext {
             for (SchemaInfo si : suppliedSchemas) {
                 Result res = outputResolver.createOutput(si.getTargetNamespace(),
                         si.getSystemID());
-                if (si.getSchemaSource() != null)
+                if (si.getSchemaSource() != null) {
                     tx.transform(si.getSchemaSource(), res);
+                }
                 else {
                     StreamSource ss = new StreamSource(si.getSchemaLocation());
                     ss.setSystemId(si.getSystemID());
@@ -273,23 +273,28 @@ public class SDOContextWrapper implements BindingContext {
         return compiler;
     }
 
-    //@Override
+    @Override
     public QName getTypeName(TypeInfo tr) {
         QName res = model.getXsdTypeName(((Class<?>) tr.type).getName());
-        if (res != null)
+        if (res != null) {
             return res;
+        }
         HelperContext hc = contextResolver.getHelperContext(isClient, serviceName, properties);
         TypeHelper th = hc.getTypeHelper();
         Type t = th.getType((Class<?>) tr.type);
         XSDHelper helper = hc.getXSDHelper();
         String localName = helper.getLocalName(t);
         String namespaceURI = helper.getNamespaceURI(t);
-        if (namespaceURI == null) namespaceURI = t.getURI();
-        if (localName == null) localName = t.getName();
+        if (namespaceURI == null) {
+            namespaceURI = t.getURI();
+        }
+        if (localName == null) {
+            localName = t.getName();
+        }
         return new QName(namespaceURI == null ? "" : namespaceURI, localName);
     }
 
-    //@Override
+    @Override
     public String getBuildId() {
         return Version.getBuildRevision();
     }

@@ -59,6 +59,7 @@ import javax.servlet.http.HttpServletResponse;
 public class WSServlet extends HttpServlet {
     private WSServletDelegate delegate = null;
 
+    @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
         delegate = getDelegate(servletConfig);

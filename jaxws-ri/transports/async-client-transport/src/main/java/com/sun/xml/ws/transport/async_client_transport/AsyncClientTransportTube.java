@@ -57,6 +57,7 @@ import com.sun.istack.NotNull;
 
 import javax.xml.stream.XMLStreamWriter;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -75,7 +76,7 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
     protected AsyncClientTransportTube(ClientTubeAssemblerContext context) {
         super(TransportTubeFactory.create(Thread.currentThread().getContextClassLoader(), recreateClientContext(context)));
         this.binding = context.getBinding();
-        AddressingVersion addrVersion = binding.getAddressingVersion();
+        addrVersion = binding.getAddressingVersion();
         AsyncClientTransportFeature nonanonftr = binding.getFeature(AsyncClientTransportFeature.class);
         if (addrVersion != null && nonanonftr.isEnabled()) {
             if (nonanonftr.getReceiver() == null) {
@@ -117,18 +118,20 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
                 binding).getFeatures().toArray());
     }
 
+    @Override
     public AbstractTubeImpl copy(TubeCloner cloner) {
         return new AsyncClientTransportTube(this, cloner);
     }
 
     public
     @NotNull
+    @Override
     NextAction processRequest(Packet request) {
         if (request.expectReply) {
             setNonAnnonymousReplyTo(request.getMessage(), binding.getAddressingVersion(), nonAnonymousHeader);
             String msgId = getMessageId(request.getMessage());
             nonAnonHandler.addNonAnonymousResponseHandler(msgId, new ClientResponseHandler(request));
-            LOGGER.fine("Sending request with message id" + msgId);
+            LOGGER.log(Level.FINE, "Sending request with message id{0}", msgId);
             //requestSender.sendAsync(request, new SyncResponseHandler(msgId, nonAnonHandler));
             requestSender.send(request);
             return doSuspend();
@@ -141,16 +144,19 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
 
     public
     @NotNull
+    @Override
     NextAction processResponse(Packet response) {
         return doReturnWith(response);
     }
 
     public
     @NotNull
+    @Override
     NextAction processException(Throwable t) {
         return doThrow(t);
     }
 
+    @Override
     public void preDestroy() {
         responseReceiver.unregister(nonAnonHandler);
         requestSender.close();
@@ -179,9 +185,9 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
 
         }
 
-
+        @Override
         public void onReceive(@NotNull Message msg) {
-            LOGGER.info("Client being resumed for processing message with id" + getRelatesTo(msg));
+            LOGGER.log(Level.INFO, "Client being resumed for processing message with id{0}", getRelatesTo(msg));
             try {
                 if (dump) {
                     System.out.println("Received message: ");
@@ -199,6 +205,7 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
             fiber.resume(reply);
         }
 
+        @Override
         public void onError(@NotNull Throwable t) {
             fiber.resume(t);
         }
@@ -221,13 +228,14 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
             waiting.clear();
         }
 
+        @Override
         public void onReceive(final @NotNull Message response) {
             String msgId = getRelatesTo(response);
-            LOGGER.fine("Received message with id" + msgId);
+            LOGGER.log(Level.FINE, "Received message with id{0}", msgId);
             if (msgId != null) {
                 final NonAnonymousResponseHandler handler = waiting.remove(msgId);
                 if (handler == null) {
-                    LOGGER.warning("Received unexpected message with realtesTo id = " + msgId);
+                    LOGGER.log(Level.WARNING, "Received unexpected message with realtesTo id = {0}", msgId);
                 } else {
                     handler.onReceive(response);
                     /*
@@ -246,6 +254,7 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
             }
         }
 
+        @Override
         public void onError(@NotNull Throwable t) {
             // no op
         }
@@ -262,13 +271,14 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
             this.nonAnonResponseTracker = nonAnonResponseTracker;
         }
 
+        @Override
         public void onCompletion(@NotNull Packet response) {
             Message responseMessage = response.getMessage();
             if (responseMessage != null) {
                 if (responseMessage.hasPayload()) {
                     String relatesToId = getRelatesTo(responseMessage);
                     if (!msgId.equals(relatesToId)) {
-                        LOGGER.warning("Received unexpected message for id = " + msgId + "with id = " + getMessageId(responseMessage));
+                        LOGGER.log(Level.WARNING, "Received unexpected message for id = {0}with id = {1}", new Object[]{msgId, getMessageId(responseMessage)});
                     }
                     NonAnonymousResponseHandler responseHandler = nonAnonResponseTracker.remove(msgId);
                     if (responseHandler != null) {
@@ -279,8 +289,9 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
             }
         }
 
+        @Override
         public void onCompletion(@NotNull Throwable error) {
-            LOGGER.warning("Received unexpected error for request with id = " + msgId);
+            LOGGER.log(Level.WARNING, "Received unexpected error for request with id = {0}", msgId);
 
             NonAnonymousResponseHandler responseHandler = nonAnonResponseTracker.remove(msgId);
             if (responseHandler != null) {
@@ -303,7 +314,7 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
     /**
      * Dumps what goes across NonAnonymousResponseTube.
      */
-    public static boolean dump;
+    public static final boolean dump;
 
     static {
         boolean b;

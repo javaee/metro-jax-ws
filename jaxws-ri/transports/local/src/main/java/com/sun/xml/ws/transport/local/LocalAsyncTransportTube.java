@@ -80,7 +80,7 @@ final class LocalAsyncTransportTube extends AbstractTubeImpl {
      * Represents the service running inside the local transport.
      *
      * We use {@link HttpAdapter}, so that the local transport
-     * excercise as much server code as possible. If this were
+     * exercise as much server code as possible. If this were
      * to be done "correctly" we should write our own {@link Adapter}
      * for the local transport.
      */
@@ -117,7 +117,7 @@ final class LocalAsyncTransportTube extends AbstractTubeImpl {
         cloner.add(that,this);
     }
 
-    public @NotNull NextAction processException(@NotNull Throwable t) {
+    public @Override @NotNull NextAction processException(@NotNull Throwable t) {
         return doThrow(t);
     }
 
@@ -129,10 +129,9 @@ final class LocalAsyncTransportTube extends AbstractTubeImpl {
         final Packet request;
 
         MyClosedCallback(Packet request) {
-
             this.request = request;
-            this.requestContentType = requestContentType;
-            this.requestAccept = requestAccept;
+            this.requestContentType = request.getContentType().getContentType();
+            this.requestAccept = request.getContentType().getAcceptHeader().toString();
             fiber = Fiber.current();
         }
 
@@ -145,6 +144,8 @@ final class LocalAsyncTransportTube extends AbstractTubeImpl {
             requestAccept = ct.getAcceptHeader();
         }
 
+        @Override
+        @SuppressWarnings("CallToThreadDumpStack")
         public void onClosed() {
             String responseContentType = getResponseContentType(con);
 
@@ -206,13 +207,15 @@ final class LocalAsyncTransportTube extends AbstractTubeImpl {
         Map<String, List<String>> rsph = con.getResponseHeaders();
         if(rsph!=null) {
             List<String> c = rsph.get("Content-Type");
-            if(c!=null && !c.isEmpty())
+            if(c!=null && !c.isEmpty()) {
                 return c.get(0);
+            }
         }
         return null;
     }
 
     @NotNull
+    @Override
     public NextAction processRequest(@NotNull Packet request) {
         try {
         // Set up WSConnection with tranport headers, request content
@@ -249,8 +252,9 @@ final class LocalAsyncTransportTube extends AbstractTubeImpl {
             reqHeaders.put("Accept", Collections.singletonList(requestAccept));
         }
 
-        if(dump)
-            dump(con,"request",reqHeaders);
+        if (dump) {
+            dump(con, "request", reqHeaders);
+        }
 
         //Packet serverReq = adapter.decodePacket(con, codec);
         adapter.invokeAsync(con);
@@ -261,14 +265,17 @@ final class LocalAsyncTransportTube extends AbstractTubeImpl {
     }
 
     @NotNull
+    @Override
     public NextAction processResponse(@NotNull Packet response) {
         return doReturnWith(response);
     }
 
+    @Override
     public void preDestroy() {
         // Nothing to do here. Intenionally left empty
     }
 
+    @Override
     public LocalAsyncTransportTube copy(TubeCloner cloner) {
         return new LocalAsyncTransportTube(this, cloner);
     }

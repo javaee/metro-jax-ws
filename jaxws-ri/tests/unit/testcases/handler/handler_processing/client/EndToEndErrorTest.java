@@ -767,7 +767,7 @@ public class EndToEndErrorTest extends TestCaseBase {
      * Have one of the server handlers throw a soap protocol
      * exception and check that the proper methods are called.
      * This version removes all the client-side handlers to
-     * test a differnt (simpler) path through the client code.
+     * test a different (simpler) path through the client code.
      */
     public void testServerInboundSOAPExceptionNoClientHandlers()
         throws Exception {

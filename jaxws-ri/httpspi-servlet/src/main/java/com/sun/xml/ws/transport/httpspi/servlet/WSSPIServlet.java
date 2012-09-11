@@ -40,8 +40,6 @@
 
 package com.sun.xml.ws.transport.httpspi.servlet;
 
-import com.sun.xml.ws.transport.httpspi.servlet.WSServletDelegate;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

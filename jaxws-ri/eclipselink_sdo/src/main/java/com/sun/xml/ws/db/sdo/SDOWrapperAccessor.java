@@ -64,7 +64,7 @@ import java.util.List;
  * Time: 10:40:31 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SDOWrapperAccessor extends WrapperAccessor {
+public final class SDOWrapperAccessor extends WrapperAccessor {
 
     private SDOContextWrapper contextWrapper = null;
     protected Class<?> contentClass;
@@ -126,21 +126,24 @@ public class SDOWrapperAccessor extends WrapperAccessor {
             this.type = type;
         }
 
+        @Override
         public Class getType() {
             return type;
         }
 
+        @Override
         public <A> A getAnnotation(Class<A> annotationType) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         // get the property value from the wrapper intance
+        @Override
         public Object get(Object instance) {
             if (instance instanceof DataObject) {
                 DataObject wrapperBean = (DataObject) instance;
                 Property p = wrapperBean.getInstanceProperty(qname.getLocalPart());
                 if (p == null) {
-                    throw new SDODatabindingException("Property not found: " + p);
+                    throw new SDODatabindingException("Property not found: " + qname.getLocalPart());
                 }
                 Object o = wrapperBean.get(p);
                 return SDOUtils.unwrapPrimitives(o);
@@ -150,12 +153,13 @@ public class SDOWrapperAccessor extends WrapperAccessor {
         }
 
         // set the property of the instance to the value
+        @Override
         public void set(Object instance, Object value) {
             if (instance instanceof DataObject) {
                 DataObject wrapperBean = (DataObject) instance;
                 Property p = wrapperBean.getInstanceProperty(qname.getLocalPart());
                 if (p == null) {
-                    throw new SDODatabindingException("Property not found: " + p);
+                    throw new SDODatabindingException("Property not found: " + qname.getLocalPart());
                 }
                 wrapperBean.set(p, value);
             } else {

@@ -41,6 +41,7 @@
 package com.sun.xml.ws.transport.async_client_transport;
 
 import com.sun.xml.ws.api.message.Message;
+import java.util.logging.Level;
 import javax.xml.ws.*;
 import java.util.logging.Logger;
 
@@ -56,44 +57,49 @@ public class DefaultNonAnonymousResponseReceiver implements NonAnonymousResponse
         this.nonanonAddress = nonanonAddress;
     }
 
+    @Override
     public void register(NonAnonymousResponseHandler<Message> nonAnonymousResponseHandler) {
         e = Endpoint.create(bindingId, new DefaultNonAnonymousEndpoint(nonAnonymousResponseHandler));
         if(nonanonAddress == null) {
             nonanonAddress = NonAnonymousAddressAllocator.getInstance().createNonAnonymousAddress();
 
         }
-        LOGGER.info("Starting NonAnonymousResponseReceiver on:"+nonanonAddress);
+        LOGGER.log(Level.INFO, "Starting NonAnonymousResponseReceiver on:{0}", nonanonAddress);
         try {
         e.publish(nonanonAddress);
-        }catch(Exception e) {
-           e.printStackTrace();
-           throw new WebServiceException(e);
+        } catch (Exception ex) {
+//           ex.printStackTrace();
+           throw new WebServiceException(ex);
         }
     }
 
+    @Override
     public void unregister(NonAnonymousResponseHandler<Message> nonAnonymousResponseHandler) {
-        if (e != null)
+        if (e != null) {
             e.stop();
+        }
     }
 
+    @Override
     public String getAddress() {
         return nonanonAddress;
-
     }
 
     @ServiceMode(value= Service.Mode.MESSAGE)
     @WebServiceProvider(serviceName ="RINonAnonService", portName ="RINonAnonPort",targetNamespace ="http://jax-ws//foo")
-    private class DefaultNonAnonymousEndpoint implements Provider<Message> {
+    private static class DefaultNonAnonymousEndpoint implements Provider<Message> {
         private NonAnonymousResponseHandler<Message> handler;
 
         private DefaultNonAnonymousEndpoint(NonAnonymousResponseHandler<Message> handler) {
             this.handler = handler;
         }
 
+        @Override
         public Message invoke(Message m) {
-            LOGGER.fine("Message receieved by"+ this.getClass());
-            if (handler != null)
+            LOGGER.log(Level.FINE, "Message receieved by{0}", this.getClass());
+            if (handler != null) {
                 handler.onReceive(m);
+            }
             return null;
         }
     }

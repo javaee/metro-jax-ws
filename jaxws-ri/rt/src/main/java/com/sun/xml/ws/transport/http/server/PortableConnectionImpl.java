@@ -106,19 +106,19 @@ final class PortableConnectionImpl extends WSHTTPConnection implements WebServic
     }
 
     @Override
-	public void setResponseHeader(String key, List<String> value) {
-		httpExchange.getResponseHeaders().put(key, value);
-	}
+    public void setResponseHeader(String key, List<String> value) {
+        httpExchange.getResponseHeaders().put(key, value);
+    }
 
-	@Override
-	public Set<String> getRequestHeaderNames() {
+    @Override
+    public Set<String> getRequestHeaderNames() {
         return httpExchange.getRequestHeaders().keySet();
-	}
+    }
 
-	@Override
-	public List<String> getRequestHeaderValues(String headerName) {
-		return httpExchange.getRequestHeaders().get(headerName);
-	}
+    @Override
+    public List<String> getRequestHeaderValues(String headerName) {
+        return httpExchange.getRequestHeaders().get(headerName);
+    }
 
     @Override
     @Property({MessageContext.HTTP_RESPONSE_HEADERS,Packet.OUTBOUND_TRANSPORT_HEADERS})
@@ -142,11 +142,11 @@ final class PortableConnectionImpl extends WSHTTPConnection implements WebServic
         return status;
     }
 
-    public @NotNull InputStream getInput() throws IOException {
+    public @Override @NotNull InputStream getInput() throws IOException {
         return httpExchange.getRequestBody();
     }
 
-    public @NotNull OutputStream getOutput() throws IOException {
+    public @Override @NotNull OutputStream getOutput() throws IOException {
         assert !outputWritten;
         outputWritten = true;
 
@@ -154,23 +154,26 @@ final class PortableConnectionImpl extends WSHTTPConnection implements WebServic
         return httpExchange.getResponseBody();
     }
 
-    public @NotNull WebServiceContextDelegate getWebServiceContextDelegate() {
+    public @Override @NotNull WebServiceContextDelegate getWebServiceContextDelegate() {
         return this;
     }
 
+    @Override
     public Principal getUserPrincipal(Packet request) {
         return httpExchange.getUserPrincipal();
     }
 
+    @Override
     public boolean isUserInRole(Packet request, String role) {
         return httpExchange.isUserInRole(role);
     }
 
-    public @NotNull String getEPRAddress(Packet request, WSEndpoint endpoint) {
+    public @Override @NotNull String getEPRAddress(Packet request, WSEndpoint endpoint) {
         PortAddressResolver resolver = adapter.owner.createPortAddressResolver(getBaseAddress());
         String address = resolver.getAddressFor(endpoint.getServiceName(), endpoint.getPortName().getLocalPart());
-        if(address==null)
+        if(address==null) {
             throw new WebServiceException(WsservletMessages.SERVLET_NO_ADDRESS_AVAILABLE(endpoint.getPortName()));
+        }
         return address;
     }
 
@@ -189,12 +192,14 @@ final class PortableConnectionImpl extends WSHTTPConnection implements WebServic
         return httpExchange.getAttribute(MessageContext.SERVLET_REQUEST);
     }
 
+    @Override
     public String getWSDLAddress(@NotNull Packet request, @NotNull WSEndpoint endpoint) {
         String eprAddress = getEPRAddress(request,endpoint);
-        if(adapter.getEndpoint().getPort() != null)
+        if(adapter.getEndpoint().getPort() != null) {
             return eprAddress+"?wsdl";
-        else
+        } else {
             return null;
+        }
     }
 
     @Override
@@ -247,26 +252,27 @@ final class PortableConnectionImpl extends WSHTTPConnection implements WebServic
         httpExchange.addResponseHeader("Content-Length", ""+value);
     }
 
-	@Override
-	public String getRequestURI() {
-		return httpExchange.getRequestURI().toString();
-	}
+    @Override
+    public String getRequestURI() {
+        return httpExchange.getRequestURI().toString();
+    }
 
-	@Override
-	public String getRequestScheme() {
-		return httpExchange.getScheme();
-	}
+    @Override
+    public String getRequestScheme() {
+        return httpExchange.getScheme();
+    }
 
-	@Override
-	public String getServerName() {
-		return httpExchange.getLocalAddress().getHostName();
-	}
+    @Override
+    public String getServerName() {
+        return httpExchange.getLocalAddress().getHostName();
+    }
 
-	@Override
-	public int getServerPort() {
-		return httpExchange.getLocalAddress().getPort();
-	}
-	
+    @Override
+    public int getServerPort() {
+        return httpExchange.getLocalAddress().getPort();
+    }
+
+    @Override
     protected PropertyMap getPropertyMap() {
         return model;
     }

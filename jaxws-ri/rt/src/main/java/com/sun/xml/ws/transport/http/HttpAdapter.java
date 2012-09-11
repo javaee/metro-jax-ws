@@ -176,7 +176,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      *
      * @param sdef service definition
      */
-    public void initWSDLMap(ServiceDefinition sdef) {
+    public final void initWSDLMap(ServiceDefinition sdef) {
         this.serviceDefinition = sdef;
         if(sdef==null) {
             wsdls = Collections.emptyMap();
@@ -228,6 +228,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         }
     }
     
+    @Override
     protected HttpToolkit createToolkit() {
         return new HttpToolkit();
     }
@@ -271,8 +272,9 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             // metadata query. let the interceptor run
             for (Component c : endpoint.getComponents()) {
                 HttpMetadataPublisher spi = c.getSPI(HttpMetadataPublisher.class);
-                if (spi != null && spi.handleMetadataRequest(this, connection))
-                    return true; // handled
+                if (spi != null && spi.handleMetadataRequest(this, connection)) {
+                    return true;
+                } // handled
             }
 
             if (isMetadataQuery(connection.getQueryString())) {
@@ -360,10 +362,12 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 LOGGER.log(Level.INFO, "Received WS-I BP non-conformant Unquoted SoapAction HTTP header: {0}", soapAction);
             }
             String fixedSoapAction = soapAction;
-            if(!soapAction.startsWith("\""))
+            if(!soapAction.startsWith("\"")) {
                 fixedSoapAction = "\"" + fixedSoapAction;
-            if(!soapAction.endsWith("\""))
+            }
+            if(!soapAction.endsWith("\"")) {
                 fixedSoapAction = fixedSoapAction + "\"";
+            }
             return fixedSoapAction;
         }
         return soapAction;
@@ -414,8 +418,9 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             if (!con.isClosed()) {
                 // set the response code if not already set
                 // for example, 415 may have been set earlier for Unsupported Content-Type
-                if (con.getStatus() == 0)
+                if (con.getStatus() == 0) {
                     con.setStatus(WSHTTPConnection.ONEWAY);
+                }
                 // close the response channel now
                 try {
                     con.getOutput().close(); // no payload
@@ -548,6 +553,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             }
 
             endpoint.process(request, new WSEndpoint.CompletionCallback() {
+                @Override
                 public void onCompletion(@NotNull Packet response) {
                     try {
                         try {
@@ -568,6 +574,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     public static  final CompletionCallback NO_OP_COMPLETION_CALLBACK = new CompletionCallback() {
 
+        @Override
         public void onCompletion() {
             //NO-OP
         }
@@ -587,24 +594,25 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             super.handle(con);
         }
 
+        @Override
         protected void encodePacket(WSHTTPConnection con, @NotNull Packet packet, @NotNull Codec codec) throws IOException {
             HttpAdapter.this.encodePacket(packet, con, codec);
         }
 
-        protected @Nullable String getAcceptableMimeTypes(WSHTTPConnection con) {
+        protected @Override @Nullable String getAcceptableMimeTypes(WSHTTPConnection con) {
             return null;
         }
 
-        protected @Nullable TransportBackChannel getTransportBackChannel(WSHTTPConnection con) {
+        protected @Override @Nullable TransportBackChannel getTransportBackChannel(WSHTTPConnection con) {
             return new Oneway(con);
         }
 
-        protected @NotNull
+        protected @Override @NotNull
         PropertySet getPropertySet(WSHTTPConnection con) {
             return con;
         }
 
-        protected @NotNull WebServiceContextDelegate getWebServiceContextDelegate(WSHTTPConnection con) {
+        protected @Override @NotNull WebServiceContextDelegate getWebServiceContextDelegate(WSHTTPConnection con) {
             return con.getWebServiceContextDelegate();
         }
     }
@@ -616,6 +624,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         Oneway(WSHTTPConnection con) {
             this.con = con;
         }
+        @Override
         public void close() {
             if (!closed) {
                 closed = true;
@@ -741,6 +750,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         final String address = portAddressResolver.getAddressFor(endpoint.getServiceName(), endpoint.getPortName().getLocalPart());
         assert address != null;
         return new DocumentAddressResolver() {
+            @Override
             public String getRelativeAddressFor(@NotNull SDDocument current, @NotNull SDDocument referenced) {
                 // the map on endpoint should account for all SDDocument
                 assert revWsdls.containsKey(referenced);
@@ -907,7 +917,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      */
     public static volatile boolean dump = false;
 
-    public static boolean publishStatusPage = true;
+    public static volatile boolean publishStatusPage = true;
 
     static {
         try {

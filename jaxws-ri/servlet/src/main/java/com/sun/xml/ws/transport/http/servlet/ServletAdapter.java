@@ -85,9 +85,9 @@ public class ServletAdapter extends HttpAdapter implements BoundEndpoint {
         this.name = name;
         // registers itself with the container
         Module module = endpoint.getContainer().getSPI(Module.class);
-        if(module==null)
-            LOGGER.warning("Container "+endpoint.getContainer()+" doesn't support "+Module.class);
-        else {
+        if (module == null) {
+            LOGGER.log(Level.WARNING, "Container {0} doesn''t support {1}", new Object[]{endpoint.getContainer(), Module.class});
+        } else {
             module.getBoundEndpoints().add(this);
         }
 
@@ -119,16 +119,19 @@ public class ServletAdapter extends HttpAdapter implements BoundEndpoint {
 
 
     @NotNull
+    @Override
     public URI getAddress() {
         WebModule webModule = endpoint.getContainer().getSPI(WebModule.class);
-        if(webModule==null)
-            // this is really a bug in the container implementation
+        if(webModule==null) {
             throw new WebServiceException("Container "+endpoint.getContainer()+" doesn't support "+WebModule.class);
+        }
 
         return getAddress(webModule.getContextPath());
     }
 
-    public @NotNull URI getAddress(String baseAddress) {
+    @Override
+    @NotNull
+    public URI getAddress(String baseAddress) {
         String adrs = baseAddress+getValidPath();
         try {
             return new URI(adrs);
@@ -146,8 +149,11 @@ public class ServletAdapter extends HttpAdapter implements BoundEndpoint {
      */
     public QName getPortName() {
         WSDLPort port = getEndpoint().getPort();
-        if(port==null)  return null;
-        else            return port.getName();
+        if (port == null) {
+            return null;
+        } else {
+            return port.getName();
+        }
     }
 
     /**
@@ -204,6 +210,7 @@ public class ServletAdapter extends HttpAdapter implements BoundEndpoint {
                 new WSAsyncListener(connection, callback).addListenerTo(asyncContext,completionCheck);
                 //asyncContext.setTimeout(10000L);// TODO get it from @ or config file
                 super.invokeAsync(connection, new CompletionCallback() {
+                    @Override
                     public void onCompletion() {
                         synchronized (completionCheck) {
                             if(!completionCheck.isCompleted()) {
@@ -227,7 +234,7 @@ public class ServletAdapter extends HttpAdapter implements BoundEndpoint {
     /**
      * Synchronizes the CompletionHandler action and Container's timeout action.
      */
-    class AsyncCompletionCheck {
+    static class AsyncCompletionCheck {
         boolean completed = false;
         synchronized void markComplete() {
             completed = true;
@@ -252,6 +259,7 @@ public class ServletAdapter extends HttpAdapter implements BoundEndpoint {
         super.handle(connection);
     }
 
+    @Override
     public String toString() {
         return super.toString()+"[name="+name+']';
     }

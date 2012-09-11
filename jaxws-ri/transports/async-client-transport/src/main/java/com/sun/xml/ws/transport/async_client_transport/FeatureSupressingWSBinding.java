@@ -61,11 +61,9 @@ import org.jvnet.ws.message.MessageContextFactory;
  * @author Rama.Pulavarthi@sun.com
  */
 public class FeatureSupressingWSBinding implements WSBinding {
-    Class<? extends WebServiceFeature> supressedftr;
     WSBinding original;
     final WSFeatureList newFtrs;
     public FeatureSupressingWSBinding(Class<? extends WebServiceFeature> supressedftr, WSBinding binding) {
-        this.supressedftr = supressedftr;
         this.original = binding;
         WebServiceFeature[] origFtrs= original.getFeatures().toArray();
         List<WebServiceFeature> newFtrList =  new ArrayList<WebServiceFeature>();
@@ -77,42 +75,52 @@ public class FeatureSupressingWSBinding implements WSBinding {
         newFtrs = new WebServiceFeatureList(newFtrList.toArray(new WebServiceFeature[newFtrList.size()]));
     }
 
+    @Override
     public SOAPVersion getSOAPVersion() {
         return original.getSOAPVersion();
     }
 
+    @Override
     public AddressingVersion getAddressingVersion() {
         return original.getAddressingVersion();
     }
 
+    @Override
     public BindingID getBindingId() {
         return original.getBindingId();
     }
 
+    @Override
     public List<Handler> getHandlerChain() {
         return original.getHandlerChain();
     }
 
+    @Override
     public void setHandlerChain(List<Handler> chain) {
         original.setHandlerChain(chain);
     }
     
+    @Override
     public Set<QName> getKnownHeaders() {
     	return original.getKnownHeaders();
     }
 
+    @Override
     public String getBindingID() {
         return original.getBindingID();
     }
 
+    @Override
     public boolean isFeatureEnabled(@NotNull Class<? extends WebServiceFeature> feature) {
         return newFtrs.isEnabled(feature);
     }
 
+    @Override
     public <F extends WebServiceFeature> F getFeature(@NotNull Class<F> featureType) {
         return newFtrs.get(featureType);
     }
 
+    @Override
     public WSFeatureList getFeatures() {
         return newFtrs;
     }

@@ -80,67 +80,83 @@ final class EndpointHttpExchange extends HttpExchange {
         this.resHeaders = new ExchangeResponseHeaders(res);
     }
 
+    @Override
     public Map<String, List<String>> getRequestHeaders() {
         return reqHeaders;
     }
 
+    @Override
     public Map<String, List<String>> getResponseHeaders() {
         return resHeaders;
     }
 
+    @Override
     public String getRequestURI() {
         return req.getRequestURI();
     }
 
+    @Override
     public String getContextPath() {
         return req.getContextPath();
     }
 
+    @Override
     public String getRequestMethod() {
         return req.getMethod();
     }
 
+    @Override
     public HttpContext getHttpContext() {
         return httpContext;
     }
 
+    @Override
     public void close() throws IOException {
     }
 
+    @Override
     public String getRequestHeader(String name) {
         return reqHeaders.getFirst(name);
     }
 
+    @Override
     public void addResponseHeader(String name, String value) {
         resHeaders.add(name, value);
     }
 
+    @Override
     public InputStream getRequestBody() throws IOException {
         return req.getInputStream();
     }
 
+    @Override
     public OutputStream getResponseBody() throws IOException {
         return res.getOutputStream();
     }
 
+    @Override
     public void setStatus(int rCode) {
         res.setStatus(rCode);
     }
 
+    @Override
     public InetSocketAddress getRemoteAddress() {
         return null;
         // Only from 2.4
         // return InetSocketAddress.createUnresolved(req.getRemoteAddr(), req.getRemotePort());
     }
 
+    @Override
     public InetSocketAddress getLocalAddress() {
         return InetSocketAddress.createUnresolved(req.getServerName(), req.getServerPort());
     }
 
+    @Override
     public String getProtocol() {
         return req.getProtocol();
     }
 
+    @Override
     public Object getAttribute(String name) {
         if (name.equals(MessageContext.SERVLET_CONTEXT)) {
             return servletContext;
@@ -152,26 +168,32 @@ final class EndpointHttpExchange extends HttpExchange {
         return null;
     }
 
+    @Override
     public Set<String> getAttributeNames() {
         return attributes;
     }
 
+    @Override
     public Principal getUserPrincipal() {
         return req.getUserPrincipal();
     }
 
+    @Override
     public boolean isUserInRole(String role) {
         return req.isUserInRole(role);
     }
 
+    @Override
     public String getScheme() {
         return req.getScheme();
     }
 
+    @Override
     public String getPathInfo() {
         return req.getPathInfo();
     }
 
+    @Override
     public String getQueryString() {
         return req.getQueryString();
     }

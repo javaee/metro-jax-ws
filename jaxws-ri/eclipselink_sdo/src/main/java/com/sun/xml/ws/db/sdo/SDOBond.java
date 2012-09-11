@@ -64,7 +64,6 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -75,15 +74,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
-//import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -117,13 +113,13 @@ public class SDOBond<T>  implements XMLBridge<T> {
         this.theType = context.getTypeHelper().getType(javaType);      
     }
     
-    public SDOBond(Class<T> type, QName xml) {
-        logger.entering("SDOBond", "constructor");
-        javaType = type;
-        xmlTag = xml;
-        HelperContext context = parent.getHelperContext();
-        this.theType = context.getTypeHelper().getType(javaType);      
-    }
+//    public SDOBond(Class<T> type, QName xml) {
+//        logger.entering("SDOBond", "constructor");
+//        javaType = type;
+//        xmlTag = xml;
+//        HelperContext context = parent.getHelperContext();
+//        this.theType = context.getTypeHelper().getType(javaType);      
+//    }
 
     public QName getXmlTag() {
         return xmlTag;
@@ -140,15 +136,17 @@ public class SDOBond<T>  implements XMLBridge<T> {
             }            
             HelperContext context = parent.getHelperContext();
             SDOAttachmentUnmarshaller unmarshaller = null;
-            if (au != null)
+            if (au != null) {
                 unmarshaller = new SDOAttachmentUnmarshaller(au);
+            }
 
             DataFactory dataFactory = context.getDataFactory();
             DataObject loadOptions = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
             //bug 8680450
             loadOptions.set(SDOConstants.TYPE_LOAD_OPTION, theType);
-            if (unmarshaller != null)
-              loadOptions.set(SDOConstants.ATTACHMENT_UNMARSHALLER_OPTION, unmarshaller);
+            if (unmarshaller != null) {
+                loadOptions.set(SDOConstants.ATTACHMENT_UNMARSHALLER_OPTION, unmarshaller);
+            }
             XMLDocument xdoc = context.getXMLHelper().load(src, null, loadOptions);
             DataObject obj = xdoc.getRootObject();
             Object o = SDOUtils.unwrapPrimitives(obj);
@@ -160,13 +158,17 @@ public class SDOBond<T>  implements XMLBridge<T> {
     }
 
     private Object deserializePrimitives(Source src) throws Exception {
-        if (javaType == null) return null;
+        if (javaType == null) {
+            return null;
+        }
         String value = null;
         if (src instanceof StAXSource) {
             StAXSource staxSrc = (StAXSource)src;
             XMLStreamReader xr = staxSrc.getXMLStreamReader();
-            if(xr.isStartElement()) xr.next();
-            StringBuffer sb = new StringBuffer(); 
+            if(xr.isStartElement()) {
+                xr.next();
+            }
+            StringBuilder sb = new StringBuilder(); 
             while(xr.isCharacters()) {
                 sb.append(xr.getText());
                 xr.next();
@@ -188,28 +190,32 @@ public class SDOBond<T>  implements XMLBridge<T> {
             // content class does not accept null or empty value, such as BigDecimal, Integer etc
             // these type of empty value will cause toplink data helper to fail, workaround to prevent such failures
             if (value.length() == 0) {
-                if (logger.isLoggable(Level.FINEST))
+                if (logger.isLoggable(Level.FINEST)) {
                     logger.finest("Deserialized primitive part has 0 length text, result is null");
+                }
                 return null;
             }            
         }
         
-        if (logger.isLoggable(Level.FINEST))
-            logger.finest("Deserialized primitive part " + o);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.log(Level.FINEST, "Deserialized primitive part {0}", o);
+        }
         return o;
     }
 
     private String serializePrimitive(Object obj, Class<?> contentClass) {
-        if (logger.isLoggable(Level.FINEST))
-            logger.finest("Primitive class to be serialized ==> " + contentClass);    
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.log(Level.FINEST, "Primitive class to be serialized ==> {0}", contentClass);
+        }    
         HelperContext context = parent.getHelperContext();
         Type type = context.getTypeHelper().getType(contentClass);
-        if (type != null)
+        if (type != null) {
             return ((SDODataHelper) context.getDataHelper()).convertToStringValue(obj, type);
+        }
         
-        if (logger.isLoggable(Level.FINE))
-        logger.fine("Invalid SDO primitive type: "
-                + contentClass.getClass().getName());
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "Invalid SDO primitive type: {0}", contentClass.getClass().getName());
+        }
         throw new SDODatabindingException("Invalid SDO primitive type: "
                 + contentClass.getClass().getName());
     }
@@ -230,9 +236,8 @@ public class SDOBond<T>  implements XMLBridge<T> {
         }
     }
 
-    //@Override
+    @Override
     public BindingContext context() {
-
         return parent;
     }
     
@@ -242,8 +247,9 @@ public class SDOBond<T>  implements XMLBridge<T> {
         try {
             HelperContext context = parent.getHelperContext();
             SDOAttachmentMarshaller marshaller = null;
-            if (am != null)
+            if (am != null) {
                 marshaller = new SDOAttachmentMarshaller(am);
+            }
 
             // check Primitives for T
             SDOXMLHelper sdoXMLHelper = (SDOXMLHelper) context.getXMLHelper();
@@ -272,7 +278,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         }
     }
 
-    //@Override
+    @Override
     public void marshal(T object, XMLStreamWriter output,
             AttachmentMarshaller am) throws JAXBException {
         /*  Didn't work due to bug 8539542
@@ -311,7 +317,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         }
     }
 
-    //@Override
+    @Override
     public void marshal(T object, OutputStream output,
             NamespaceContext nsContext, AttachmentMarshaller am)
             throws JAXBException {
@@ -337,7 +343,6 @@ public class SDOBond<T>  implements XMLBridge<T> {
                         .append(xmlTag.getLocalPart()).append(">");
             } else {
                 // Unbound namespace!
-                prefix = "ns1";
                 sb.append("<ns1:").append(xmlTag.getLocalPart())
                         .append(" xmlns:ns1=\"")
                         .append(xmlTag.getNamespaceURI()).append("\"")
@@ -350,7 +355,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         }
     }
 
-    //@Override
+    @Override
     public void marshal(T object, Node output) throws JAXBException {
         Result res = new DOMResult(output);
         if (object instanceof DataObject) {
@@ -361,7 +366,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         serializeToResult(value, res);
     }
 
-    //@Override
+    @Override
     public void marshal(T object, ContentHandler contentHandler,
             AttachmentMarshaller am) throws JAXBException {
         Result res = new SAXResult(contentHandler);
@@ -374,7 +379,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         serializeToResult(value, res);
     }
 
-    //@Override
+    @Override
     public void marshal(T object, Result result) throws JAXBException {
         if (object instanceof DataObject) {
             serializeDataObject((DataObject) object, result, null);
@@ -385,42 +390,36 @@ public class SDOBond<T>  implements XMLBridge<T> {
         serializeToResult(value, result);
     }
 
-    //@Override
+    @Override
     public T unmarshal(XMLStreamReader in, AttachmentUnmarshaller au)
             throws JAXBException {
         return deserialize(new StAXSource(in), au);
-//        return deserialize(new com.sun.xml.ws.util.xml.StAXSource(in, true), au);
     }
 
-    //@Override
+    @Override
     public T unmarshal(Source in, AttachmentUnmarshaller au)
             throws JAXBException {
         return deserialize(in, au);
     }
 
-    //@Override
+    @Override
     public T unmarshal(InputStream in) throws JAXBException {
         return deserialize(new StreamSource(in), null);
     }
 
-    //@Override
+    @Override
     public T unmarshal(Node n, AttachmentUnmarshaller au) throws JAXBException {
         return deserialize(new DOMSource(n), au);
     }
 
-    //@Override
+    @Override
     public TypeInfo getTypeInfo() {
         return ti;
     }
 
-    //@Override
+    @Override
     public boolean supportOutputStream() {
         return true;
     }
     
-    private String getExceptionStackTrace(Throwable t) {
-        StringWriter sw = new StringWriter();
-        t.printStackTrace(new PrintWriter(sw));
-        return sw.toString();
-    }
 }

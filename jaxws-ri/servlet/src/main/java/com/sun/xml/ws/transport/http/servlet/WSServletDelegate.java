@@ -77,7 +77,7 @@ import java.util.logging.Logger;
 public class WSServletDelegate {
 
     /**
-     * All {@link ServletAdapter}s that are deployed in the current web appliation.
+     * All {@link ServletAdapter}s that are deployed in the current web application.
      */
     public final List<ServletAdapter> adapters;
 
@@ -89,8 +89,9 @@ public class WSServletDelegate {
     public WSServletDelegate(List<ServletAdapter> adapters, ServletContext context) {
         this.adapters = adapters;
 
-        for(ServletAdapter info : adapters)
+        for(ServletAdapter info : adapters) {
             registerEndpointUrlPattern(info);
+        }
 
         localizerMap.put(defaultLocalizer.getLocale(), defaultLocalizer);
 
@@ -101,8 +102,9 @@ public class WSServletDelegate {
         // compatibility.
         String publishStatusPageParam =
             context.getInitParameter(WSServlet.JAXWS_RI_PROPERTY_PUBLISH_STATUS_PAGE);
-        if(publishStatusPageParam!=null)
+        if (publishStatusPageParam != null) {
             HttpAdapter.publishStatusPage = Boolean.parseBoolean(publishStatusPageParam);
+        }
     }
 
     public void destroy() {
@@ -157,6 +159,7 @@ public class WSServletDelegate {
                 probe.startedEvent(path);
 
                 target.invokeAsync(context, request, response, new HttpAdapter.CompletionCallback() {
+                    @Override
                     public void onCompletion() {
                         probe.endedEvent(path);
                     }

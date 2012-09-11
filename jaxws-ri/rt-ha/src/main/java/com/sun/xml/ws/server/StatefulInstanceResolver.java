@@ -165,38 +165,47 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             return instance;
         }
 
+        @Override
         public long _storeable_getVersion() {
             return version;
         }
 
+        @Override
         public void _storeable_setVersion(long version) {
             this.version = version;
         }
 
+        @Override
         public long _storeable_getLastAccessTime() {
             return lastAccess;
         }
 
+        @Override
         public void _storeable_setLastAccessTime(long time) {
             lastAccess = time;
         }
 
+        @Override
         public long _storeable_getMaxIdleTime() {
             return maxIdleTime;
         }
 
+        @Override
         public void _storeable_setMaxIdleTime(long time) {
             maxIdleTime = time;
         }
 
+        @Override
         public String[] _storeable_getAttributeNames() {
             return new String[0];
         }
 
+        @Override
         public boolean[] _storeable_getDirtyStatus() {
             return new boolean[0];
         }
 
+        @Override
         public void _storeable_writeState(OutputStream os) throws IOException {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream boos = new ObjectOutputStream(bos);
@@ -214,6 +223,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             oos.close();
         }
 
+        @Override
         public void _storeable_readState(InputStream is) throws IOException {
             ObjectInputStream ois = new ObjectInputStream(is);
             version = ois.readLong();
@@ -232,7 +242,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
      */
     private final class Instance {
         final @NotNull T instance;
-        TimerTask task;
+        volatile TimerTask task;
 
         public Instance(T instance) {
             this.instance = instance;
@@ -243,9 +253,12 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
          */
         public synchronized void restartTimer() {
             cancel();
-            if (timeoutMilliseconds == 0) return; // no timer
+            if (timeoutMilliseconds == 0) {
+                return;
+            } // no timer
 
             task = new TimerTask() {
+                @Override
                 public void run() {
                     try {
                         Callback<T> cb = timeoutCallback;
@@ -282,6 +295,10 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                 }
             }
             task = null;
+        }
+        
+        public synchronized void setTask(TimerTask t) {
+            this.task = t;
         }
 
     }
@@ -334,10 +351,11 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             return flbk;
         }
 
-        if (id == null)
+        if (id == null) {
             throw new WebServiceException(ServerMessages.STATEFUL_COOKIE_HEADER_REQUIRED(COOKIE_TAG));
-        else
+        } else {
             throw new WebServiceException(ServerMessages.STATEFUL_COOKIE_HEADER_INCORRECT(COOKIE_TAG, id));
+        }
     }
 
     /*
@@ -355,27 +373,30 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
         haMap = new HAMap();
 
-        if (endpoint.getBinding().getAddressingVersion() == null)
-            // addressing is not enabled.
+        if (endpoint.getBinding().getAddressingVersion() == null) {
             throw new WebServiceException(ServerMessages.STATEFUL_REQURES_ADDRESSING(clazz));
+        }
 
         // inject StatefulWebServiceManager.
         for (Field field : clazz.getDeclaredFields()) {
             if (field.getType() == StatefulWebServiceManager.class) {
-                if (!Modifier.isStatic(field.getModifiers()))
+                if (!Modifier.isStatic(field.getModifiers())) {
                     throw new WebServiceException(ServerMessages.STATIC_RESOURCE_INJECTION_ONLY(StatefulWebServiceManager.class, field));
+                }
                 new InjectionPlan.FieldInjectionPlan<T, StatefulWebServiceManager>(field).inject(null, this);
             }
         }
 
         for (Method method : clazz.getDeclaredMethods()) {
             Class[] paramTypes = method.getParameterTypes();
-            if (paramTypes.length != 1)
-                continue;   // not what we are looking for
+            if (paramTypes.length != 1) {
+                continue;
+            }   // not what we are looking for
 
             if (paramTypes[0] == StatefulWebServiceManager.class) {
-                if (!Modifier.isStatic(method.getModifiers()))
+                if (!Modifier.isStatic(method.getModifiers())) {
                     throw new WebServiceException(ServerMessages.STATIC_RESOURCE_INJECTION_ONLY(StatefulWebServiceManager.class, method));
+                }
 
                 new InjectionPlan.MethodInjectionPlan<T, StatefulWebServiceManager>(method).inject(null, this);
             }
@@ -399,20 +420,24 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     }
 
     @NotNull
+    @Override
     public W3CEndpointReference export(T o) {
         return export(W3CEndpointReference.class, o);
     }
 
     @NotNull
+    @Override
     public <EPR extends EndpointReference> EPR export(Class<EPR> epr, T o) {
         return export(epr, o, null);
     }
 
+    @Override
     public <EPR extends EndpointReference> EPR export(Class<EPR> epr, T o, EPRRecipe recipe) {
         return export(epr, InvokerTube.getCurrentPacket(), o, recipe);
     }
 
     @NotNull
+    @Override
     public <EPR extends EndpointReference> EPR export(Class<EPR> epr, WebServiceContext context, T o) {
         if (context instanceof WSWebServiceContext) {
             WSWebServiceContext wswsc = (WSWebServiceContext) context;
@@ -423,46 +448,56 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     }
 
     @NotNull
+    @Override
     public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, @NotNull Packet currentRequest, T o) {
         return export(adrsVer, currentRequest, o, null);
     }
 
+    @Override
     public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, @NotNull Packet currentRequest, T o, EPRRecipe recipe) {
         return export(adrsVer, currentRequest.webServiceContextDelegate.getEPRAddress(currentRequest, owner),
                 currentRequest.webServiceContextDelegate.getWSDLAddress(currentRequest, owner), o, recipe);
     }
 
     @NotNull
+    @Override
     public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, String endpointAddress, T o) {
         return export(adrsVer, endpointAddress, null, o, null);
     }
 
     @NotNull
     public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, String endpointAddress, String wsdlAddress, T o, EPRRecipe recipe) {
-        if (endpointAddress == null)
+        if (endpointAddress == null) {
             throw new IllegalArgumentException("No address available");
+        }
 
         String key = haMap.get(o);
 
-        if (key != null) return createEPR(key, adrsVer, endpointAddress, wsdlAddress, recipe);
+        if (key != null) {
+            return createEPR(key, adrsVer, endpointAddress, wsdlAddress, recipe);
+        }
 
         // not exported yet.
         synchronized (this) {
             // double check now in the synchronization block to
             // really make sure that we can export.
             key = haMap.get(o);
-            if (key != null) return createEPR(key, adrsVer, endpointAddress, wsdlAddress, recipe);
+            if (key != null) {
+                return createEPR(key, adrsVer, endpointAddress, wsdlAddress, recipe);
+            }
 
-            if (o != null)
+            if (o != null) {
                 prepare(o);
+            }
             key = UUID.randomUUID().toString();
             Instance instance = new Instance(o);
             if (logger.isLoggable(Level.FINEST)) {
                 logger.log(Level.FINEST, "Storing instance ID/Instance/Object/TimerTask = [ {0} / {1} / {2} / {3} ]", new Object[]{key, instance, instance.instance, instance.task});
             }
             haMap.put(key, instance);
-            if (timeoutMilliseconds != 0)
+            if (timeoutMilliseconds != 0) {
                 instance.restartTimer();
+            }
         }
 
         return createEPR(key, adrsVer, endpointAddress, wsdlAddress, recipe);
@@ -515,17 +550,21 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         return eprClass.cast(owner.getEndpointReference(eprClass, address, wsdlAddress, metadata, referenceParameters));
     }
 
+    @Override
     public void unexport(@Nullable T o) {
-        if (o == null) return;
+        if (o == null) {
+            return;
+        }
         Instance i = haMap.remove(o);
         if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("Removed Instance = [ " + o + " ], remaining instance keys = [ " + haMap.instances.keySet() + " ]");
+            logger.log(Level.FINEST, "Removed Instance = [ {0} ], remaining instance keys = [ {1} ]", new Object[]{o, haMap.instances.keySet()});
         }
         if (i != null) {
             i.cancel();
         }
     }
 
+    @Override
     public T resolve(EndpointReference epr) {
         class CookieSniffer extends DefaultHandler {
             StringBuilder buf = new StringBuilder();
@@ -533,14 +572,16 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
             @Override
             public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-                if (localName.equals(COOKIE_TAG.getLocalPart()) && uri.equals(COOKIE_TAG.getNamespaceURI()))
+                if (localName.equals(COOKIE_TAG.getLocalPart()) && uri.equals(COOKIE_TAG.getNamespaceURI())) {
                     inCookie = true;
+                }
             }
 
             @Override
             public void characters(char ch[], int start, int length) throws SAXException {
-                if (inCookie)
+                if (inCookie) {
                     buf.append(ch, start, length);
+                }
             }
 
             @Override
@@ -552,20 +593,25 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         epr.writeTo(new SAXResult(sniffer));
 
         Instance o = haMap.get(sniffer.buf.toString());
-        if (o != null)
+        if (o != null) {
             return o.instance;
+        }
         return null;
     }
 
+    @Override
     public void setFallbackInstance(T o) {
-        if (o != null)
+        if (o != null) {
             prepare(o);
+        }
         this.fallback = o;
     }
 
+    @Override
     public void setTimeout(long milliseconds, Callback<T> callback) {
-        if (milliseconds < 0)
+        if (milliseconds < 0) {
             throw new IllegalArgumentException();
+        }
         this.timeoutMilliseconds = milliseconds;
         this.timeoutCallback = callback;
         haMap.getExpiredTask().cancel();
@@ -577,6 +623,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         }
     }
 
+    @Override
     public void touch(T o) {
         Instance i = haMap.touch(o);
         if (i != null) {
@@ -623,6 +670,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
         private TimerTask newExpiredTask() {
             expiredTask = new TimerTask() {
+                @Override
                 public void run() {
                     HighAvailabilityProvider.removeExpired(bs);
                 }
@@ -665,9 +713,8 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             boolean isNew = oldi == null;
             if (!isNew) {
                 reverseInstances.remove(oldi.instance);
-
                 // reuse the original timeout task
-                newi.task = oldi.task;
+                newi.setTask(oldi.task);
             }
 
             instances.put(id, newi);
