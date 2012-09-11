@@ -75,7 +75,7 @@
   <description>testSimple</description>
   <![CDATA[
         feature = new com.sun.xml.ws.developer.SchemaValidationFeature();
-        echoPort1 = echoService.getEchoPort(feature);
+        echoPort1 = echoService.getEchoPort(new WebServiceFeature[] {feature});
         assertEquals("test", echoPort1.echoString("test"));
   ]]></client>
 

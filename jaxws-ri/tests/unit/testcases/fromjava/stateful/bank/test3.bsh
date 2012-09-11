@@ -41,7 +41,7 @@
 // time out test
 aEpr = bankServicePort.getAccount(999999999);
 
-a = accountService.getPort(aEpr,Account.class);
+a = accountService.getPort(aEpr,Account.class, new WebServiceFeature[0]);
 assertTrue(a!=null);
 a.deposit(100);
 v = a.getBalance();

@@ -47,7 +47,8 @@
   <client name="rest_testAdd" sideEffectFree="true">
   <description>testAdd</description>
   <![CDATA[
-    proxy = echoImplService.getEchoImplPort(new com.sun.xml.ws.developer.BindingTypeFeature(com.sun.xml.ws.developer.JAXWSProperties.REST_BINDING));
+    feature = new com.sun.xml.ws.developer.BindingTypeFeature(com.sun.xml.ws.developer.JAXWSProperties.REST_BINDING);
+    proxy = echoImplService.getEchoImplPort(new WebServiceFeature[] {feature});
     assertEquals(5, proxy.add(2,3));
 System.out.println(""+proxy.add(2,3));
   ]]></client>

@@ -43,7 +43,7 @@ aEpr = bankServicePort.getAccount(0);
 
 // not available today
 // a = aEpr.getPort(Account.class);
-a = accountService.getPort(aEpr,Account.class);
+a = accountService.getPort(aEpr,Account.class, new WebServiceFeature[0]);
 assertTrue(a!=null);
 a.deposit(100);
 v = a.getBalance();
