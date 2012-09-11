@@ -402,6 +402,9 @@ public final class WSEndpointReference  implements WSDLExtension {
             }
         }
 
+    private static boolean isEmty(QName qname) {
+        return qname == null || qname.toString().trim().length()== 0;
+    }
 
     private static void writeW3CMetaData(StreamWriterBufferCreator writer,
                                          QName service,
@@ -411,8 +414,8 @@ public final class WSEndpointReference  implements WSDLExtension {
     	
         
     	//.NET treate empty metaData element as bad request.
-        if (service == null && port == null && portType == null && metadata == null && wsdlAddress == null)
-        return;
+        if (isEmty(service) && isEmty(port) && isEmty(portType) && metadata == null/* && wsdlAddress == null*/)
+            return;
         writer.writeStartElement(AddressingVersion.W3C.getPrefix(),
                 AddressingVersion.W3C.eprType.wsdlMetadata.getLocalPart(), AddressingVersion.W3C.nsUri);
         writer.writeNamespace(AddressingVersion.W3C.getWsdlPrefix(),
