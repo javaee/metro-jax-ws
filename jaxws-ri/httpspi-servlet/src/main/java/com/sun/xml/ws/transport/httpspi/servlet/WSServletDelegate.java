@@ -69,7 +69,7 @@ import java.util.logging.Logger;
 public class WSServletDelegate {
 
     /**
-     * All {@link EndpointAdapter}s that are deployed in the current web appliation.
+     * All {@link EndpointAdapter}s that are deployed in the current web application.
      */
     public final List<EndpointAdapter> adapters;
 
@@ -79,18 +79,19 @@ public class WSServletDelegate {
     public WSServletDelegate(List<EndpointAdapter> adapters, ServletContext context) {
         this.adapters = adapters;
 
-        for(EndpointAdapter info : adapters)
+        for(EndpointAdapter info : adapters) {
             registerEndpointUrlPattern(info);
+        }
 
         if (logger.isLoggable(Level.INFO)) {
-            logger.info("Initializing Servlet for "+fixedUrlPatternEndpoints);
+            logger.log(Level.INFO, "Initializing Servlet for {0}", fixedUrlPatternEndpoints);
         }
 
     }
 
     public void destroy() {
         if (logger.isLoggable(Level.INFO)) {
-            logger.info("Destroying Servlet for "+fixedUrlPatternEndpoints);
+            logger.log(Level.INFO, "Destroying Servlet for {0}", fixedUrlPatternEndpoints);
         }
 
         for(EndpointAdapter a : adapters) {
@@ -108,7 +109,7 @@ public class WSServletDelegate {
             EndpointAdapter target = getTarget(request);
             if (target != null) {
                 if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest("Got request for endpoint "+target.getUrlPattern());
+                    logger.log(Level.FINEST, "Got request for endpoint {0}", target.getUrlPattern());
                 }
                 target.handle(context, request, response);
             } else {
@@ -148,7 +149,7 @@ public class WSServletDelegate {
             EndpointAdapter target = getTarget(request);
             if (target != null) {
                 if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest("Got request for endpoint "+target.getUrlPattern());
+                    logger.log(Level.FINEST, "Got request for endpoint {0}", target.getUrlPattern());
                 }
             } else {
                 writeNotFoundErrorPage(response, "Invalid request");
@@ -206,12 +207,12 @@ public class WSServletDelegate {
         String urlPattern = a.getUrlPattern();
         if (urlPattern.indexOf("*.") != -1) {
             // cannot deal with implicit mapping right now
-            logger.warning("Ignoring implicit url-pattern "+urlPattern);
+            logger.log(Level.WARNING, "Ignoring implicit url-pattern {0}", urlPattern);
         } else if (urlPattern.endsWith("/*")) {
             pathUrlPatternEndpoints.add(a);
         } else {
             if (fixedUrlPatternEndpoints.containsKey(urlPattern)) {
-                logger.warning("Ignoring duplicate url-pattern "+urlPattern);
+                logger.log(Level.WARNING, "Ignoring duplicate url-pattern {0}", urlPattern);
             } else {
                 fixedUrlPatternEndpoints.put(urlPattern, a);
             }
