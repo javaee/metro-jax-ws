@@ -167,9 +167,9 @@ public final class RequestContext extends BaseDistributedPropertySet {
     }
 
     public void setContentNegotiationString(String s) {
-        if (s == null)
+        if (s == null) {
             contentNegotiation = ContentNegotiation.none;
-        else {
+        } else {
             try {
                 contentNegotiation = ContentNegotiation.valueOf(s);
             } catch (IllegalArgumentException e) {

@@ -81,7 +81,9 @@ public enum ContentNegotiation {
         try {
             String value = System.getProperty(PROPERTY);
             
-            if (value == null) return none;
+            if (value == null) {
+                return none;
+            }
             
             return valueOf(value);
         } catch (Exception e) {

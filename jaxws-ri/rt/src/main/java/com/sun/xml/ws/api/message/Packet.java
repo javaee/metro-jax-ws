@@ -93,7 +93,6 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.MTOMFeature;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -392,17 +391,19 @@ public final class Packet
      */
     @Property(BindingProvider.ENDPOINT_ADDRESS_PROPERTY)
     public String getEndPointAddressString() {
-        if (endpointAddress == null)
+        if (endpointAddress == null) {
             return null;
-        else
+        } else {
             return endpointAddress.toString();
+        }
     }
 
     public void setEndPointAddressString(String s) {
-        if (s == null)
+        if (s == null) {
             this.endpointAddress = null;
-        else
+        } else {
             this.endpointAddress = EndpointAddress.create(s);
+        }
     }
 
     /**
@@ -419,9 +420,9 @@ public final class Packet
     }
 
     public void setContentNegotiationString(String s) {
-        if (s == null)
+        if (s == null) {
             contentNegotiation = null;
-        else {
+        } else {
             try {
                 contentNegotiation = ContentNegotiation.valueOf(s);
             } catch (IllegalArgumentException e) {
@@ -736,8 +737,9 @@ public final class Packet
     public final Set<String> getHandlerScopePropertyNames(boolean readOnly) {
         Set<String> o = this.handlerScopePropertyNames;
         if (o == null) {
-            if (readOnly)
+            if (readOnly) {
                 return Collections.emptySet();
+            }
             o = new HashSet<String>();
             this.handlerScopePropertyNames = o;
         }
