@@ -1104,7 +1104,7 @@ public final class Packet
     }
     
     Codec codec = null;
-    Codec getCodec() {
+    public Codec getCodec() {
         if (codec != null) return codec;
         if (endpoint != null) {
             codec = endpoint.createCodec();
