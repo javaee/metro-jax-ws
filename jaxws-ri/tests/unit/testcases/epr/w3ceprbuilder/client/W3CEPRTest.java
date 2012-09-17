@@ -125,7 +125,7 @@ public class W3CEPRTest extends TestCase {
         W3CEndpointReference epr = builder.build();
         DOMResult result= new DOMResult();
         epr.writeTo(result);
-        assertTrue(EprUtil.validateEPR(result.getNode(), W3CEndpointReference.class, getEndpointAddress(), null, null, null, getEndpointAddress()+"?wsdl"));
+        assertTrue(EprUtil.validateEPR(result.getNode(), W3CEndpointReference.class, getEndpointAddress(), null, null, null, null));
 //        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //        epr.writeTo(new StreamResult(baos));
 //        baos.writeTo(System.out);
