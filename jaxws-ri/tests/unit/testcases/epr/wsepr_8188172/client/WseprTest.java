@@ -96,11 +96,22 @@ public class WseprTest extends TestCase {
      * Empty Metadata element should not exsit in EndpointReference element.
      * @throws Exception
      */
-    public void testMetadata() throws Exception {   	
+    public void testMetadataWithNullParams() throws Exception {   	
     	WSEndpointReference wSEndpointReference = new WSEndpointReference(AddressingVersion.W3C, address, null, null, null, null, null, referenceParameters);
     	Node md = string2Doc(wSEndpointReference.toString(), "wsa:Metadata");	
     	validateEndpointReference(wSEndpointReference.toString());
     	assertNull("EndpointReference element should not contain empty Metadata element.",md);
+    }
+
+    /**
+     * Empty Metadata element should not exsit in EndpointReference element.
+     * @throws Exception
+     */
+    public void testMetadataWithEmptyParams() throws Exception {
+      WSEndpointReference wSEndpointReference = new WSEndpointReference(AddressingVersion.W3C, address, new QName("",""), new QName("",""), new QName("",""), null, "", referenceParameters);
+      Node md = string2Doc(wSEndpointReference.toString(), "wsa:Metadata");
+      validateEndpointReference(wSEndpointReference.toString());
+      assertNull("EndpointReference element should not contain empty Metadata element.",md);
     }
 
     private Node string2Doc (String xml, String tagName) throws Exception {
