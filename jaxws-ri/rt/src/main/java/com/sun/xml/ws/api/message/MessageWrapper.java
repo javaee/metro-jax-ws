@@ -92,6 +92,7 @@ class MessageWrapper extends StreamMessage {
         super(m.getSOAPVersion());
         packet = p;
         delegate = m;
+        streamDelegate = (m instanceof StreamMessage) ? (StreamMessage) m : null;
     }  
     
     public int hashCode() {
