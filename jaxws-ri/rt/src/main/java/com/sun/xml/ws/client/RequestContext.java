@@ -54,8 +54,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.jvnet.ws.message.BaseDistributedPropertySet;
-import org.jvnet.ws.message.PropertySet;
-import org.jvnet.ws.message.DistributedPropertySet;
 
 import static javax.xml.ws.BindingProvider.*;
 import static javax.xml.ws.handler.MessageContext.HTTP_REQUEST_HEADERS;
@@ -90,7 +88,7 @@ import static javax.xml.ws.handler.MessageContext.HTTP_REQUEST_HEADERS;
  *
  * Using {@link org.jvnet.ws.message.BasePropertySet.MapView} implementation allows client to use {@link Map} interface
  * in a way that all the strongly typed properties are reflected to the fields
- * right away. Any additional (extending) properties can be added by client aswell;
+ * right away. Any additional (extending) properties can be added by client as well;
  * those would be processed using iterating the {@link MapView} and their processing,
  * of course, would be slower.
  * <p>
@@ -141,10 +139,11 @@ public final class RequestContext extends BaseDistributedPropertySet {
     }
 
     public void setEndPointAddressString(String s) {
-        if (s == null)
+        if (s == null) {
             throw new IllegalArgumentException();
-        else
+        } else {
             this.endpointAddress = EndpointAddress.create(s);
+        }
     }
 
     public void setEndpointAddress(@NotNull EndpointAddress epa) {

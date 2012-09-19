@@ -84,7 +84,7 @@ public abstract class BasePropertySet implements PropertySet {
 
         // the entries are often being iterated through so performance can be improved
         // by their caching instead of iterating through the original (immutable) map each time
-        PropertyMapEntry[] cachedEntries = null;
+        transient PropertyMapEntry[] cachedEntries = null;
 
         PropertyMapEntry[] getPropertyMapEntries() {
             if (cachedEntries == null) {
@@ -142,6 +142,7 @@ public abstract class BasePropertySet implements PropertySet {
         // make all relevant fields and methods accessible.
         // this allows runtime to skip the security check, so they runs faster.
         return AccessController.doPrivileged(new PrivilegedAction<PropertyMap>() {
+            @Override
             public PropertyMap run() {
                 PropertyMap props = new PropertyMap();
                 for (Class c=clazz; c!=null; c=c.getSuperclass()) {
@@ -206,14 +207,17 @@ public abstract class BasePropertySet implements PropertySet {
             this.name = name;
         }
 
+        @Override
         public String getName() {
             return name;
         }
 
+        @Override
         public boolean hasValue(PropertySet props) {
             return get(props)!=null;
         }
 
+        @Override
         public Object get(PropertySet props) {
             try {
                 return f.get(props);
@@ -222,6 +226,7 @@ public abstract class BasePropertySet implements PropertySet {
             }
         }
 
+        @Override
         public void set(PropertySet props, Object value) {
             try {
                 f.set(props,value);
@@ -252,18 +257,22 @@ public abstract class BasePropertySet implements PropertySet {
             this.setter = setter;
             this.name = value;
             getter.setAccessible(true);
-            if(setter!=null)
+            if (setter!=null) {
                 setter.setAccessible(true);
+            }
         }
 
+        @Override
         public String getName() {
             return name;
         }
 
+        @Override
         public boolean hasValue(PropertySet props) {
             return get(props)!=null;
         }
 
+        @Override
         public Object get(PropertySet props) {
             try {
                 return getter.invoke(props);
@@ -275,9 +284,11 @@ public abstract class BasePropertySet implements PropertySet {
             }
         }
 
+        @Override
         public void set(PropertySet props, Object value) {
-            if(setter==null)
+            if(setter==null) {
                 throw new ReadOnlyPropertyException(getName());
+            }
             try {
                 setter.invoke(props,value);
             } catch (IllegalAccessException e) {
@@ -294,10 +305,12 @@ public abstract class BasePropertySet implements PropertySet {
          */
         private Exception handle(InvocationTargetException e) {
             Throwable t = e.getTargetException();
-            if(t instanceof Error)
+            if (t instanceof Error) {
                 throw (Error)t;
-            if(t instanceof RuntimeException)
+            }
+            if (t instanceof RuntimeException) {
                 throw (RuntimeException)t;
+            }
             throw new Error(e);
         }
     }
@@ -310,7 +323,7 @@ public abstract class BasePropertySet implements PropertySet {
      *
      * @see com.sun.xml.ws.api.PropertySet#asMap() method
      */
-    class MapView extends HashMap<String, Object> {
+    final class MapView extends HashMap<String, Object> {
 
         // flag if it should allow store also different properties
         // than the from strongly typed fields
@@ -332,7 +345,6 @@ public abstract class BasePropertySet implements PropertySet {
 
         @Override
         public Object get(Object key) {
-
             Object o = super.get(key);
             if (o instanceof Accessor) {
                 return ((Accessor) o).get(BasePropertySet.this);
@@ -380,7 +392,8 @@ public abstract class BasePropertySet implements PropertySet {
 
         @Override
         public Object remove(Object key) {
-            Object o = super.get(key);
+            Object o;
+            o = super.get(key);
             if (o instanceof Accessor) {
                 ((Accessor)o).set(BasePropertySet.this, null);
             }
@@ -388,6 +401,7 @@ public abstract class BasePropertySet implements PropertySet {
         }
     }
 
+    @Override
     public final boolean containsKey(Object key) {
         return get(key)!=null;
     }
@@ -400,10 +414,12 @@ public abstract class BasePropertySet implements PropertySet {
      *      convention, but if anything but {@link String} is passed, this method
      *      just returns null.
      */
+    @Override
     public Object get(Object key) {
         Accessor sp = getPropertyMap().get(key);
-        if(sp!=null)
+        if (sp != null) {
             return sp.get(this);
+        }
         throw new IllegalArgumentException("Undefined property "+key);
     }
 
@@ -420,6 +436,7 @@ public abstract class BasePropertySet implements PropertySet {
      *
      * @see Property
      */
+    @Override
     public Object put(String key, Object value) {
         Accessor sp = getPropertyMap().get(key);
         if(sp!=null) {
@@ -434,11 +451,12 @@ public abstract class BasePropertySet implements PropertySet {
     /**
      * Checks if this {@link PropertySet} supports a property of the given name.
      */
-    @SuppressWarnings("element-type-mismatch")
+    @Override
     public boolean supports(Object key) {
         return getPropertyMap().containsKey(key);
     }
 
+    @Override
     public Object remove(Object key) {
         Accessor sp = getPropertyMap().get(key);
         if(sp!=null) {
@@ -468,11 +486,13 @@ public abstract class BasePropertySet implements PropertySet {
      *      always non-null valid instance.
      */
     @Deprecated
+    @Override
     public final Map<String,Object> createMapView() {
         final Set<Entry<String,Object>> core = new HashSet<Entry<String,Object>>();
         createEntrySet(core);
 
         return new AbstractMap<String, Object>() {
+            @Override
             public Set<Entry<String,Object>> entrySet() {
                 return core;
             }
@@ -491,6 +511,7 @@ public abstract class BasePropertySet implements PropertySet {
      *
      * @return always non-null valid instance.
      */
+    @Override
     public Map<String, Object> asMap() {
         if (mapView == null) {
             mapView = createView();
@@ -515,14 +536,17 @@ public abstract class BasePropertySet implements PropertySet {
     protected void createEntrySet(Set<Entry<String,Object>> core) {
         for (final Entry<String, Accessor> e : getPropertyMap().entrySet()) {
             core.add(new Entry<String, Object>() {
+                @Override
                 public String getKey() {
                     return e.getKey();
                 }
 
+                @Override
                 public Object getValue() {
                     return e.getValue().get(BasePropertySet.this);
                 }
 
+                @Override
                 public Object setValue(Object value) {
                     Accessor acc = e.getValue();
                     Object old = acc.get(BasePropertySet.this);

@@ -177,8 +177,9 @@ public class EndpointReferenceUtil {
                             e.getLocalName().equals(MemberSubmissionAddressingConstants.MEX_METADATA.getLocalPart())) {
                         NodeList nl = e.getElementsByTagNameNS(WSDLConstants.NS_WSDL,
                                 WSDLConstants.QNAME_DEFINITIONS.getLocalPart());
-                        if(nl != null)
+                        if(nl != null) {
                             wsdlElement = (Element) nl.item(0);
+                        }
                     }
                 }
             }
@@ -187,8 +188,9 @@ public class EndpointReferenceUtil {
                 DOMUtil.serializeNode(wsdlElement, writer);
             }
 
-            if (w3cMetadataWritten)
+            if (w3cMetadataWritten) {
                 writer.writeEndElement();
+            }
             //TODO revisit this
             //write extension elements
             if ((msEpr.elements != null) && (msEpr.elements.size() > 0)) {
@@ -215,20 +217,21 @@ public class EndpointReferenceUtil {
 
     private static boolean w3cMetadataWritten = false;
 
-    private static void writeW3CMetadata(StreamWriterBufferCreator writer) throws XMLStreamException {
-        if (!w3cMetadataWritten) {
-            writer.writeStartElement(AddressingVersion.W3C.getPrefix(), AddressingVersion.W3C.eprType.wsdlMetadata.getLocalPart(), AddressingVersion.W3C.nsUri);
-            w3cMetadataWritten = true;
-        }
-    }
-
+//    private static void writeW3CMetadata(StreamWriterBufferCreator writer) throws XMLStreamException {
+//        if (!w3cMetadataWritten) {
+//            writer.writeStartElement(AddressingVersion.W3C.getPrefix(), AddressingVersion.W3C.eprType.wsdlMetadata.getLocalPart(), AddressingVersion.W3C.nsUri);
+//            w3cMetadataWritten = true;
+//        }
+//    }
+//
     private static MemberSubmissionEndpointReference toMSEpr(W3CEndpointReference w3cEpr) {
         DOMResult result = new DOMResult();
         w3cEpr.writeTo(result);
         Node eprNode = result.getNode();
         Element e = DOMUtil.getFirstElementChild(eprNode);
-        if (e == null)
+        if (e == null) {
             return null;
+        }
 
         MemberSubmissionEndpointReference msEpr = new MemberSubmissionEndpointReference();
 
@@ -238,12 +241,11 @@ public class EndpointReferenceUtil {
                 Element child = (Element) nodes.item(i);
                 if (child.getNamespaceURI().equals(AddressingVersion.W3C.nsUri) &&
                         child.getLocalName().equals(AddressingVersion.W3C.eprType.address)) {
-                    if (msEpr.addr == null)
+                    if (msEpr.addr == null) {
                         msEpr.addr = new MemberSubmissionEndpointReference.Address();
+                    }
                     msEpr.addr.uri = XmlUtil.getTextForNode(child);
 
-                    //now add the attribute extensions
-                    msEpr.addr.attributes = getAttributes(child);
                 } else if (child.getNamespaceURI().equals(AddressingVersion.W3C.nsUri) &&
                         child.getLocalName().equals("ReferenceParameters")) {
                     NodeList refParams = child.getChildNodes();
@@ -264,8 +266,9 @@ public class EndpointReferenceUtil {
                     Element wsdlDefinitions = null;
                     for (int j = 0; j < metadata.getLength(); j++) {
                         Node node = metadata.item(j);
-                        if (node.getNodeType() != Node.ELEMENT_NODE)
+                        if (node.getNodeType() != Node.ELEMENT_NODE) {
                             continue;
+                        }
 
                         Element elm = (Element) node;
                         if ((elm.getNamespaceURI().equals(AddressingVersion.W3C.wsdlNsUri) ||
@@ -279,13 +282,15 @@ public class EndpointReferenceUtil {
                             String name = XmlUtil.getLocalPart(service);
 
                             //if there is no service name then its not a valid EPR but lets continue as its optional anyway
-                            if (name == null)
+                            if (name == null) {
                                 continue;
+                            }
 
                             if (prefix != null) {
                                 String ns = elm.lookupNamespaceURI(prefix);
-                                if (ns != null)
+                                if (ns != null) {
                                     msEpr.serviceName.name = new QName(ns, name, prefix);
+                                }
                             } else {
                                 msEpr.serviceName.name = new QName(null, name);
                             }
@@ -300,13 +305,15 @@ public class EndpointReferenceUtil {
                             String name = XmlUtil.getLocalPart(portType);
 
                             //if there is no portType name then its not a valid EPR but lets continue as its optional anyway
-                            if (name == null)
+                            if (name == null) {
                                 continue;
+                            }
 
                             if (prefix != null) {
                                 String ns = elm.lookupNamespaceURI(prefix);
-                                if (ns != null)
+                                if (ns != null) {
                                     msEpr.portTypeName.name = new QName(ns, name, prefix);
+                                }
                             } else {
                                 msEpr.portTypeName.name = new QName(null, name);
                             }
@@ -387,18 +394,21 @@ public class EndpointReferenceUtil {
 
         NamedNodeMap nm = node.getAttributes();
         for (int i = 0; i < nm.getLength(); i++) {
-            if (attribs == null)
+            if (attribs == null) {
                 attribs = new HashMap<QName, String>();
+            }
             Node n = nm.item(i);
             String prefix = fixNull(n.getPrefix());
             String ns = fixNull(n.getNamespaceURI());
             String localName = n.getLocalName();
-            if (prefix.equals("xmlns") || prefix.length() == 0 && localName.equals("xmlns"))
+            if (prefix.equals("xmlns") || prefix.length() == 0 && localName.equals("xmlns")) {
                 continue;
+            }
 
             //exclude some attributes
-            if (!localName.equals(AddressingVersion.W3C.eprType.portName))
+            if (!localName.equals(AddressingVersion.W3C.eprType.portName)) {
                 attribs.put(new QName(ns, localName, prefix), n.getNodeValue());
+            }
         }
         return attribs;
     }
@@ -406,8 +416,11 @@ public class EndpointReferenceUtil {
     private static
     @NotNull
     String fixNull(@Nullable String s) {
-        if (s == null) return "";
-        else return s;
+        if (s == null) {
+            return "";
+        } else {
+            return s;
+        }
     }
 
 }

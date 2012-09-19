@@ -50,7 +50,7 @@ import javax.xml.validation.Validator;
  * An {@link ErrorHandler} to receive errors encountered during the
  * {@link Validator#validate} method invocation. Specify
  * a custom handler in {@link SchemaValidation}, {@link SchemaValidationFeature}
- * to customize the error handling process during validaiton.
+ * to customize the error handling process during validation.
  *
  * @see SchemaValidation
  * @author Jitendra Kotamraju

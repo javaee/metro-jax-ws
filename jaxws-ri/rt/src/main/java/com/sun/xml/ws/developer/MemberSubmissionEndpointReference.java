@@ -96,8 +96,9 @@ public final class MemberSubmissionEndpointReference extends EndpointReference i
      */
     public MemberSubmissionEndpointReference(@NotNull Source source) {
 
-        if (source == null)
+        if (source == null) {
             throw new WebServiceException("Source parameter can not be null on constructor");
+        }
 
         try {
             Unmarshaller unmarshaller = MemberSubmissionEndpointReference.msjc.createUnmarshaller();
@@ -117,6 +118,7 @@ public final class MemberSubmissionEndpointReference extends EndpointReference i
         }
     }
 
+    @Override
     public void writeTo(Result result) {
         try {
             Marshaller marshaller = MemberSubmissionEndpointReference.msjc.createMarshaller();

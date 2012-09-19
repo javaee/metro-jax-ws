@@ -243,14 +243,17 @@ public class WSServiceDelegate extends WSService {
      */
     public WSServiceDelegate(@Nullable Source wsdl, @Nullable WSDLServiceImpl service, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass, WebServiceFeatureList features) {
         //we cant create a Service without serviceName
-        if (serviceName == null)
+        if (serviceName == null) {
             throw new WebServiceException(ClientMessages.INVALID_SERVICE_NAME_NULL(serviceName));
+        }
 
         this.features = features;
         
         InitParams initParams = INIT_PARAMS.get();
         INIT_PARAMS.set(null);  // mark it as consumed
-        if(initParams==null)    initParams = EMPTY_PARAMS;
+        if(initParams==null) {
+            initParams = EMPTY_PARAMS;
+        }
 
         this.serviceName = serviceName;
         this.serviceClass = serviceClass;
@@ -421,23 +424,25 @@ public class WSServiceDelegate extends WSService {
         return createEndpointIFBaseProxy(wsepr,portName,portInterface,features, spi);
     }
     
+    @Override
     public <T> T getPort(Class<T> portInterface, WebServiceFeature... features) {
         //get the portType from SEI
         QName portTypeName = RuntimeModeler.getPortTypeName(portInterface, getMetadadaReader(new WebServiceFeatureList(features), portInterface.getClassLoader()));
-        WSDLServiceImpl wsdlService = this.wsdlService;
-        if(wsdlService == null) {
+        WSDLServiceImpl tmpWsdlService = this.wsdlService;
+        if (tmpWsdlService == null) {
             // assigning it to local variable and not setting it back to this.wsdlService intentionally
             // as we don't want to include the service instance with information gathered from sei
-            wsdlService = getWSDLModelfromSEI(portInterface);
+            tmpWsdlService = getWSDLModelfromSEI(portInterface);
             //still null? throw error need wsdl metadata to create a proxy
-            if(wsdlService == null) {
+            if(tmpWsdlService == null) {
                 throw new WebServiceException(ProviderApiMessages.NO_WSDL_NO_PORT(portInterface.getName()));
             }
         }
         //get the first port corresponding to the SEI
-        WSDLPortImpl port = wsdlService.getMatchingPort(portTypeName);
-        if (port == null)
-                throw new WebServiceException(ClientMessages.UNDEFINED_PORT_TYPE(portTypeName));
+        WSDLPortImpl port = tmpWsdlService.getMatchingPort(portTypeName);
+        if (port == null) {
+            throw new WebServiceException(ClientMessages.UNDEFINED_PORT_TYPE(portTypeName));
+        }
         QName portName = port.getName();
         return getPort(portName, portInterface,features);
     }
@@ -713,6 +718,7 @@ public class WSServiceDelegate extends WSService {
         return ports.keySet().iterator();
     }
 
+    @Override
     public URL getWSDLDocumentLocation() {
         if(wsdlService==null)   return null;
         try {
@@ -725,8 +731,9 @@ public class WSServiceDelegate extends WSService {
     private <T> T createEndpointIFBaseProxy(@Nullable WSEndpointReference epr,QName portName, Class<T> portInterface,
                                             WebServiceFeatureList webServiceFeatures, SEIPortInfo eif) {
         //fail if service doesnt have WSDL
-        if (wsdlService == null)
+        if (wsdlService == null) {
             throw new WebServiceException(ClientMessages.INVALID_SERVICE_NO_WSDL(serviceName));
+        }
 
         if (wsdlService.get(portName)==null) {
             throw new WebServiceException(
@@ -755,7 +762,6 @@ public class WSServiceDelegate extends WSService {
     }
     
     protected InvocationHandler getStubHandler(BindingImpl binding, SEIPortInfo eif, @Nullable WSEndpointReference epr) {
-    	SEIPortInfo spi = (SEIPortInfo) eif;
     	return new SEIStub(eif, binding, eif.model, epr);
     }
 
@@ -764,8 +770,9 @@ public class WSServiceDelegate extends WSService {
      */
     private StringBuilder buildWsdlPortNames() {
         Set<QName> wsdlPortNames = new HashSet<QName>();
-        for (WSDLPortImpl port : wsdlService.getPorts())
+        for (WSDLPortImpl port : wsdlService.getPorts()) {
             wsdlPortNames.add(port.getName());
+        }
         return buildNameList(wsdlPortNames);
     }
 
@@ -842,7 +849,8 @@ public class WSServiceDelegate extends WSService {
         return wsdlService;
     }
 
-     class DaemonThreadFactory implements ThreadFactory {
+    static class DaemonThreadFactory implements ThreadFactory {
+        @Override
         public Thread newThread(Runnable r) {
             Thread daemonThread = new Thread(r);
             daemonThread.setDaemon(Boolean.TRUE);

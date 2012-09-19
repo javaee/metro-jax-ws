@@ -97,8 +97,9 @@ public class AddressingUtils {
             throw new IllegalArgumentException(AddressingMessages.NULL_BINDING());
         }
         
-        if (binding.isFeatureEnabled(SuppressAutomaticWSARequestHeadersFeature.class))
+        if (binding.isFeatureEnabled(SuppressAutomaticWSARequestHeadersFeature.class)) {
             return;
+        }
         
         //See if WSA headers are already set by the user.
         MessageHeaders hl = packet.getMessage().getMessageHeaders();
@@ -131,7 +132,7 @@ public class AddressingUtils {
         }
         if (!binding.isFeatureEnabled(OneWayFeature.class)) {
             // standard oneway
-            fillRequestAddressingHeaders(headers, packet, addressingVersion, binding.getSOAPVersion(), oneway, effectiveInputAction, addressingVersion.isRequired(binding));
+            fillRequestAddressingHeaders(headers, packet, addressingVersion, binding.getSOAPVersion(), oneway, effectiveInputAction, AddressingVersion.isRequired(binding));
         } else {
             // custom oneway
             fillRequestAddressingHeaders(headers, packet, addressingVersion, binding.getSOAPVersion(), binding.getFeature(OneWayFeature.class), oneway, effectiveInputAction);
@@ -230,12 +231,6 @@ public class AddressingUtils {
 
         return to;
     }
-//TODO do we need this?
-    public static void readResponseAddressingHeaders(MessageHeaders headers, WSDLPort wsdlPort, WSBinding binding) {
-        // read Action
-        String wsaAction = getAction(headers, binding.getAddressingVersion(), binding.getSOAPVersion());
-        // TODO: validate client-inbound Action
-    }
     
     private static Header getFirstHeader(MessageHeaders headers, QName name, boolean markUnderstood, SOAPVersion sv) {
         if (sv == null) {
@@ -254,9 +249,9 @@ public class AddressingUtils {
     }
     
     private static void fillRequestAddressingHeaders(@NotNull MessageHeaders headers, @NotNull Packet packet, @NotNull AddressingVersion av, @NotNull SOAPVersion sv, @NotNull OneWayFeature of, boolean oneway, @NotNull String action) {
-        if (!oneway&&!of.isUseAsyncWithSyncInvoke() && Boolean.TRUE.equals(packet.isSynchronousMEP))
+        if (!oneway&&!of.isUseAsyncWithSyncInvoke() && Boolean.TRUE.equals(packet.isSynchronousMEP)) {
             fillRequestAddressingHeaders(headers, packet, av, sv, oneway, action);
-        else {
+        } else {
             fillCommonAddressingHeaders(headers, packet, av, sv, action, false);
     
             // wsa:ReplyTo

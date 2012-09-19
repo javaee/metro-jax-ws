@@ -45,7 +45,6 @@ import com.sun.istack.localization.Localizable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.MetadataReader;
 import com.sun.xml.ws.api.model.ExceptionType;
@@ -624,7 +623,7 @@ public class RuntimeModeler {
      * @param method the method to model
      */
     private void processMethod(Method method) {
-        int mods = method.getModifiers();
+//        int mods = method.getModifiers();
         WebMethod webMethod = getAnnotation(method, WebMethod.class);
         if (webMethod != null && webMethod.exclude()) return;
 /*

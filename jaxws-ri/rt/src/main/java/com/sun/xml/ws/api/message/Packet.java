@@ -227,8 +227,9 @@ public final class Packet
      * @return may null. See the class javadoc for when it's null.
      */
     public Message getMessage() {
-        if (message != null && !(message instanceof MessageWrapper)) 
-            message = new MessageWrapper(this, message); 
+        if (message != null && !(message instanceof MessageWrapper)) {
+            message = new MessageWrapper(this, message);
+        } 
         return  message;
     }
     
@@ -237,10 +238,12 @@ public final class Packet
     }
 
     public WSBinding getBinding() {
-    	if (endpoint != null)
-    		return endpoint.getBinding();
-    	if (proxy != null)
-    		return (WSBinding) proxy.getBinding();
+    	if (endpoint != null) {
+            return endpoint.getBinding();
+        }
+    	if (proxy != null) {
+            return (WSBinding) proxy.getBinding();
+        }
     	return null;
     }
     /**
@@ -267,8 +270,9 @@ public final class Packet
     public final
     @Nullable
     QName getWSDLOperation() {
-        if (wsdlOperation != null)
+        if (wsdlOperation != null) {
             return wsdlOperation;
+        }
 
         OperationDispatcher opDispatcher = null;
         if (endpoint != null) {
@@ -483,7 +487,9 @@ public final class Packet
     @Property(JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY)
     /*package*/ HeaderList getHeaderList() {
         Message msg = getMessage();
-        if (msg == null) return null;
+        if (msg == null) {
+            return null;
+        }
         return msg.getHeaders();
     }
 
@@ -898,11 +904,13 @@ public final class Packet
         r.setState(State.ServerResponse);
         AddressingVersion av = binding.getAddressingVersion();
         // populate WS-A headers only if WS-A is enabled
-        if (av == null)
+        if (av == null) {
             return r;
+        }
         
-        if (getMessage() == null)
+        if (getMessage() == null) {
             return r;
+        }
         
         //populate WS-A headers only if the request has addressing headers
         String inputAction = AddressingUtils.getAction(getMessage().getMessageHeaders(), av, binding.getSOAPVersion());
@@ -910,8 +918,9 @@ public final class Packet
             return r;
         }
         // if one-way, then dont populate any WS-A headers
-        if (r.getMessage() == null || (wsdlPort != null && getMessage().isOneWay(wsdlPort)))
+        if (r.getMessage() == null || (wsdlPort != null && getMessage().isOneWay(wsdlPort))) {
             return r;
+        }
 
         // otherwise populate WS-Addressing headers
         populateAddressingHeaders(binding, r, wsdlPort, seiModel);
@@ -938,8 +947,9 @@ public final class Packet
         Packet responsePacket = createClientResponse(responseMessage);
         responsePacket.setState(State.ServerResponse);
         // populate WS-A headers only if WS-A is enabled
-        if (addressingVersion == null)
+        if (addressingVersion == null) {
             return responsePacket;
+        }
         //populate WS-A headers only if the request has addressing headers
         String inputAction = AddressingUtils.getAction(this.getMessage().getMessageHeaders(), addressingVersion, soapVersion);
         if (inputAction == null) {
@@ -979,10 +989,12 @@ public final class Packet
         Message msg = getMessage();
         // wsa:To
         WSEndpointReference replyTo = null;
-    	if (wpb != null)
-    		replyTo = wpb.getReplyToFromRequest();
-    	if (replyTo == null)
-    		replyTo = AddressingUtils.getReplyTo(msg.getMessageHeaders(), av, sv);
+    	if (wpb != null) {
+            replyTo = wpb.getReplyToFromRequest();
+        }
+    	if (replyTo == null) {
+            replyTo = AddressingUtils.getReplyTo(msg.getMessageHeaders(), av, sv);
+        }
 
         // wsa:Action, add if the message doesn't already contain it,
         // generally true for SEI case where there is SEIModel or WSDLModel
@@ -1001,25 +1013,31 @@ public final class Packet
 
         // wsa:RelatesTo
         String mid = null;
-        if (wpb != null)
-        	mid = wpb.getMessageID();
-        if (mid == null)
-        	mid = AddressingUtils.getMessageID(msg.getMessageHeaders(), av, sv);
-        if (mid != null)
+        if (wpb != null) {
+            mid = wpb.getMessageID();
+        }
+        if (mid == null) {
+            mid = AddressingUtils.getMessageID(msg.getMessageHeaders(), av, sv);
+        }
+        if (mid != null) {
             hl.addOrReplace(new RelatesToHeader(av.relatesToTag, mid));
+        }
 		
 
         // populate reference parameters
         WSEndpointReference refpEPR = null;
         if (responsePacket.getMessage().isFault()) {
             // choose FaultTo
-        	if (wpb != null)
-        		refpEPR = wpb.getFaultToFromRequest();
-        	if (refpEPR == null)
-        		refpEPR = AddressingUtils.getFaultTo(msg.getMessageHeaders(), av, sv);
+            if (wpb != null) {
+                refpEPR = wpb.getFaultToFromRequest();
+            }
+            if (refpEPR == null) {
+                refpEPR = AddressingUtils.getFaultTo(msg.getMessageHeaders(), av, sv);
+            }
             // if FaultTo is null, then use ReplyTo
-            if (refpEPR == null)
+            if (refpEPR == null) {
                 refpEPR = replyTo;
+            }
         } else {
             // choose ReplyTo
             refpEPR = replyTo;
@@ -1033,7 +1051,9 @@ public final class Packet
     private void populateAddressingHeaders(WSBinding binding, Packet responsePacket, WSDLPort wsdlPort, SEIModel seiModel) {
         AddressingVersion addressingVersion = binding.getAddressingVersion();
 
-        if (addressingVersion == null) return;
+        if (addressingVersion == null) {
+            return;
+        }
 
         WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort, seiModel, binding);
         String action = responsePacket.getMessage().isFault() ?
@@ -1087,17 +1107,20 @@ public final class Packet
         model = parse(Packet.class);
     }
 
+    @Override
     protected PropertyMap getPropertyMap() {
         return model;
     }
     
     private static final Logger LOGGER = Logger.getLogger(Packet.class.getName());
 
+    @Override
     public SOAPMessage getSOAPMessage() throws SOAPException {
         return getAsSOAPMessage();
     }
     
     //TODO replace the message to a SAAJMEssage issue - JRFSAAJMessage or SAAJMessage?
+    @Override
     public SOAPMessage getAsSOAPMessage() throws SOAPException {
         Message msg = this.getMessage();
         return (msg != null) ? msg.readAsSOAPMessage(this, this.getState().isInbound()) : null;
@@ -1105,7 +1128,9 @@ public final class Packet
     
     Codec codec = null;
     public Codec getCodec() {
-        if (codec != null) return codec;
+        if (codec != null) {
+            return codec;
+        }
         if (endpoint != null) {
             codec = endpoint.createCodec();
         }
@@ -1116,9 +1141,12 @@ public final class Packet
         return codec;
     } 
 
+    @Override
     public ContentType writeTo( OutputStream out ) throws IOException {
         Message msg = getInternalMessage();
-        if (msg instanceof MessageWritable) return ((MessageWritable)msg).writeTo(out);
+        if (msg instanceof MessageWritable) {
+            return ((MessageWritable)msg).writeTo(out);
+        }
         return getCodec().encode(this, out);
     }
     
@@ -1175,9 +1203,14 @@ public final class Packet
         return mtomFeature; 
     }
 
+    @Override
     public ContentType getContentType() {
-        if (contentType == null) contentType = getInternalContentType();
-        if (contentType == null) contentType = getCodec().getStaticContentType(this);
+        if (contentType == null) {
+            contentType = getInternalContentType();
+        }
+        if (contentType == null) {
+            contentType = getCodec().getStaticContentType(this);
+        }
         if (contentType == null) {
             //TODO write to buffer
         }
@@ -1186,7 +1219,9 @@ public final class Packet
     
     public ContentType getInternalContentType() {
         Message msg = getInternalMessage();
-        if (msg instanceof MessageWritable) return ((MessageWritable)msg).getContentType();
+        if (msg instanceof MessageWritable) {
+            return ((MessageWritable)msg).getContentType();
+        }
         return contentType;
     }
 
@@ -1241,8 +1276,12 @@ public final class Packet
             if (getMtomAcceptable() == null && getMtomRequest() == null) {
                 return true;                
             } else {
-                if (getMtomAcceptable() != null &&  getMtomAcceptable() && getState().equals(State.ServerResponse)) return true;
-                if (getMtomRequest() != null && getMtomRequest() && getState().equals(State.ServerResponse)) return true;
+                if (getMtomAcceptable() != null &&  getMtomAcceptable() && getState().equals(State.ServerResponse)) {
+                    return true;
+                }
+                if (getMtomRequest() != null && getMtomRequest() && getState().equals(State.ServerResponse)) {
+                    return true;
+                }
             }
         }
         return false;

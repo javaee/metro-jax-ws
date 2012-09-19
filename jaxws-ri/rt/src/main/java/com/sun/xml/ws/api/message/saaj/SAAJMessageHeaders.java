@@ -79,12 +79,16 @@ public class SAAJMessageHeaders implements MessageHeaders {
      */
     private void initHeaderUnderstanding() {
         SOAPHeader soapHeader = ensureSOAPHeader();
-        if (soapHeader == null) return;
+        if (soapHeader == null) {
+            return;
+        }
 
         Iterator allHeaders = soapHeader.examineAllHeaderElements();
         while(allHeaders.hasNext()) {
             SOAPHeaderElement nextHdrElem = (SOAPHeaderElement) allHeaders.next();
-            if (nextHdrElem == null) continue;
+            if (nextHdrElem == null) {
+                continue;
+            }
             if (nextHdrElem.getMustUnderstand()) {
                 notUnderstood(nextHdrElem.getElementQName());
             }
@@ -95,15 +99,17 @@ public class SAAJMessageHeaders implements MessageHeaders {
         
     }
 
-    //    @Override
+    @Override
     public void understood(Header header) {
         understood(header.getNamespaceURI(), header.getLocalPart());
     }
     
+    @Override
     public void understood(String nsUri, String localName) {
         understood(new QName(nsUri, localName));
     }
     
+    @Override
     public void understood(QName qName) {
         if (notUnderstoodCount == null) {
             notUnderstoodCount = new HashMap<QName, Integer>();
@@ -130,26 +136,29 @@ public class SAAJMessageHeaders implements MessageHeaders {
         
     }
     
+    @Override
     public boolean isUnderstood(Header header) {
         return isUnderstood(header.getNamespaceURI(), header.getLocalPart());
     }
+    @Override
     public boolean isUnderstood(String nsUri, String localName) {
         return isUnderstood(new QName(nsUri, localName));
     }
     
+    @Override
     public boolean isUnderstood(QName name) {
-        if (understoodHeaders == null) return false;
+        if (understoodHeaders == null) {
+            return false;
+        }
         return understoodHeaders.contains(name);
     }
 
-
-//    @Override
     public boolean isUnderstood(int index) {
         // TODO Auto-generated method stub
         return false;
     }
     
-//    @Override
+    @Override
     public Header get(String nsUri, String localName, boolean markAsUnderstood) {
         SOAPHeaderElement h = find(nsUri, localName);
         if (h != null) {
@@ -161,21 +170,24 @@ public class SAAJMessageHeaders implements MessageHeaders {
         return null;
     }
     
-//    @Override
+    @Override
     public Header get(QName name, boolean markAsUnderstood) {
         return get(name.getNamespaceURI(), name.getLocalPart(), markAsUnderstood);
     }
     
-    //@Override
+    @Override
     public Iterator<Header> getHeaders(QName headerName,
             boolean markAsUnderstood) {
         return getHeaders(headerName.getNamespaceURI(), headerName.getLocalPart(), markAsUnderstood);
     }
 
+    @Override
     public Iterator<Header> getHeaders(final String nsUri, final String localName,
             final boolean markAsUnderstood) {
         SOAPHeader soapHeader = ensureSOAPHeader();
-        if (soapHeader == null) return null;
+        if (soapHeader == null) {
+            return null;
+        }
         Iterator allHeaders = soapHeader.examineAllHeaderElements();
         if (markAsUnderstood) {
             //mark all the matchingheaders as understood up front
@@ -199,10 +211,11 @@ public class SAAJMessageHeaders implements MessageHeaders {
         return new HeaderReadIterator(allHeaders, nsUri, localName);
     }
     
+    @Override
     public Iterator<Header> getHeaders(String nsUri, boolean markAsUnderstood) {
         return getHeaders(nsUri, null, markAsUnderstood);
     }
-    //@Override
+    @Override
     public boolean add(Header header) {
         try {
             header.writeTo(sm);
@@ -224,17 +237,21 @@ public class SAAJMessageHeaders implements MessageHeaders {
         return true;
     }
     
-//    @Override
+    @Override
     public Header remove(QName name) {
         return remove(name.getNamespaceURI(), name.getLocalPart());
     }
     
-//    @Override
+    @Override
     public Header remove(String nsUri, String localName) {
         SOAPHeader soapHeader = ensureSOAPHeader();
-        if (soapHeader == null) return null;
+        if (soapHeader == null) {
+            return null;
+        }
         SOAPHeaderElement headerElem = find(nsUri, localName);
-        if (headerElem == null) return null;
+        if (headerElem == null) {
+            return null;
+        }
         headerElem = (SOAPHeaderElement) soapHeader.removeChild(headerElem);
 
         //it might have been a nonSAAJHeader - remove from that map
@@ -251,55 +268,29 @@ public class SAAJMessageHeaders implements MessageHeaders {
     }
     
     private void removeNotUnderstood(QName hdrName) {
-        if (notUnderstoodCount == null) return;
+        if (notUnderstoodCount == null) {
+            return;
+        }
         Integer notUnderstood = notUnderstoodCount.get(hdrName);
         if (notUnderstood != null) {
             int intNotUnderstood = notUnderstood;
             intNotUnderstood--;
-            if (intNotUnderstood <= 0) notUnderstoodCount.remove(hdrName);
+            if (intNotUnderstood <= 0) {
+                notUnderstoodCount.remove(hdrName);
+            }
         }
         
     }
-
-    private SOAPHeaderElement find(Header h) {
-        if (isNonSAAJHeader(h)) {
-            return findNonSAAJHeader(h);
-        } else {
-            SAAJHeader saajHdr = (SAAJHeader) h;
-            return find(saajHdr.getWrappedNode());
-        }
-    }
-    
-    private SOAPHeaderElement findNonSAAJHeader(Header h) {
-        if (nonSAAJHeaders == null) return null;
-        for (Map.Entry<SOAPHeaderElement, Header> entry : nonSAAJHeaders.entrySet()) {
-            if (h.equals(entry.getValue())) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
-    
-    private SOAPHeaderElement find(SOAPHeaderElement headerElem) {
-        SOAPHeader soapHeader = ensureSOAPHeader();
-        if (soapHeader == null) return null;
-        Iterator allHeaders = soapHeader.examineAllHeaderElements();
-        while(allHeaders.hasNext()) {
-            SOAPHeaderElement nextHdrElem = (SOAPHeaderElement) allHeaders.next();
-            if (headerElem.equals(nextHdrElem)) {
-                return nextHdrElem;
-            }
-        }
-        return null;
-    }
-    
+        
     private SOAPHeaderElement find(QName qName) {
         return find(qName.getNamespaceURI(), qName.getLocalPart());
     }
     
     private SOAPHeaderElement find(String nsUri, String localName) {
         SOAPHeader soapHeader = ensureSOAPHeader();
-        if (soapHeader == null) return null;
+        if (soapHeader == null) {
+            return null;
+        }
         Iterator allHeaders = soapHeader.examineAllHeaderElements();
         while(allHeaders.hasNext()) {
             SOAPHeaderElement nextHdrElem = (SOAPHeaderElement) allHeaders.next();
@@ -359,27 +350,38 @@ public class SAAJMessageHeaders implements MessageHeaders {
     }
     
     private void removeNonSAAJHeader(SOAPHeaderElement headerElem) {
-        if (nonSAAJHeaders != null) nonSAAJHeaders.remove(headerElem);
+        if (nonSAAJHeaders != null) {
+            nonSAAJHeaders.remove(headerElem);
+        }
     }
 
+    @Override
     public boolean addOrReplace(Header header) {
         remove(header.getNamespaceURI(), header.getLocalPart());
         return add(header);
     }
 
+    @Override
     public Set<QName> getUnderstoodHeaders() {
         return understoodHeaders;
     }
     
+    @Override
     public Set<QName> getNotUnderstoodHeaders(Set<String> roles,
             Set<QName> knownHeaders, WSBinding binding) {
         Set<QName> notUnderstoodHeaderNames = new HashSet<QName>();
-        if (notUnderstoodCount == null) return notUnderstoodHeaderNames;
+        if (notUnderstoodCount == null) {
+            return notUnderstoodHeaderNames;
+        }
         for (QName headerName : notUnderstoodCount.keySet()) {
             int count = notUnderstoodCount.get(headerName);
-            if (count <= 0) continue;
+            if (count <= 0) {
+                continue;
+            }
             SOAPHeaderElement hdrElem = find(headerName);
-            if (!hdrElem.getMustUnderstand()) continue;
+            if (!hdrElem.getMustUnderstand()) {
+                continue;
+            }
             SAAJHeader hdr = new SAAJHeader(hdrElem);
             //mustUnderstand attribute is true - but there may be
             //additional criteria
@@ -387,7 +389,9 @@ public class SAAJMessageHeaders implements MessageHeaders {
             if (roles != null) {
                 understood = !roles.contains(hdr.getRole(soapVersion));
             }
-            if (understood) continue;
+            if (understood) {
+                continue;
+            }
             //if it must be understood see if it is understood by the binding
             //or is in knownheaders
             if (binding != null && binding instanceof SOAPBindingImpl) {
@@ -398,14 +402,19 @@ public class SAAJMessageHeaders implements MessageHeaders {
                     }
                 }
             }
-            if (!understood) notUnderstoodHeaderNames.add(headerName);
+            if (!understood) {
+                notUnderstoodHeaderNames.add(headerName);
+            }
         }
         return notUnderstoodHeaderNames;
     }
 
+    @Override
     public Iterator<Header> getHeaders() {
         SOAPHeader soapHeader = ensureSOAPHeader();
-        if (soapHeader == null) return null;
+        if (soapHeader == null) {
+            return null;
+        }
         Iterator allHeaders = soapHeader.examineAllHeaderElements();
         return new HeaderReadIterator(allHeaders, null, null);
     }
@@ -423,22 +432,29 @@ public class SAAJMessageHeaders implements MessageHeaders {
             this.myLocalName = localName;
         }
 
+        @Override
         public boolean hasNext() {
-            if (current == null) advance();
+            if (current == null) {
+                advance();
+            }
             return (current != null);
         }
 
+        @Override
         public Header next() {
             if (!hasNext()) {
                 return null;
             }
-            if (current == null) return null;
+            if (current == null) {
+                return null;
+            }
 
             SAAJHeader ret = new SAAJHeader(current);
             current = null;
             return ret;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }

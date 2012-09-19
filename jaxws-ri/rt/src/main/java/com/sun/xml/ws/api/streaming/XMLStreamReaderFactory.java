@@ -59,6 +59,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.logging.Logger;
 import java.security.AccessController;
+import java.util.logging.Level;
 
 /**
  * Factory for {@link XMLStreamReader}.
@@ -69,6 +70,7 @@ import java.security.AccessController;
  * 
  * @author Kohsuke Kawaguchi
  */
+@SuppressWarnings("StaticNonFinalUsedInInitialization")
 public abstract class XMLStreamReaderFactory {
 
     private static final Logger LOGGER = Logger.getLogger(XMLStreamReaderFactory.class.getName());
@@ -84,20 +86,23 @@ public abstract class XMLStreamReaderFactory {
 
         // this system property can be used to disable the pooling altogether,
         // in case someone hits an issue with pooling in the production system.
-        if(!getProperty(XMLStreamReaderFactory.class.getName()+".noPool"))
+        if(!getProperty(XMLStreamReaderFactory.class.getName()+".noPool")) {
             f = Zephyr.newInstance(xif);
+        }
 
         if(f==null) {
             // is this Woodstox?
-            if(xif.getClass().getName().equals("com.ctc.wstx.stax.WstxInputFactory"))
+            if (xif.getClass().getName().equals("com.ctc.wstx.stax.WstxInputFactory")) {
                 f = new Woodstox(xif);
+            }
         }
 
-        if(f==null)
+        if (f==null) {
             f = new Default();
+        }
 
         theInstance = f;
-        LOGGER.fine("XMLStreamReaderFactory instance is = "+theInstance);
+        LOGGER.log(Level.FINE, "XMLStreamReaderFactory instance is = {0}", theInstance);
     }
 
     private static XMLInputFactory getXMLInputFactory() {
@@ -124,7 +129,9 @@ public abstract class XMLStreamReaderFactory {
      * the JAX-WS RI uses.
      */
     public static void set(XMLStreamReaderFactory f) {
-        if(f==null) throw new IllegalArgumentException();
+        if(f==null) {
+            throw new IllegalArgumentException();
+        }
         theInstance = f;
     }
 
@@ -228,7 +235,7 @@ public abstract class XMLStreamReaderFactory {
     /**
      * {@link XMLStreamReaderFactory} implementation for SJSXP/JAXP RI.
      */
-    public static final class Zephyr extends XMLStreamReaderFactory {
+    private static final class Zephyr extends XMLStreamReaderFactory {
         private final XMLInputFactory xif;
 
         private final ThreadLocal<XMLStreamReader> pool = new ThreadLocal<XMLStreamReader>();
@@ -359,7 +366,7 @@ public abstract class XMLStreamReaderFactory {
      * it may run into (see <a href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=555">
      * race condition</a>). Hence, using a XMLInputFactory per theread.
      */
-    public static final class Default extends XMLStreamReaderFactory {
+    private static final class Default extends XMLStreamReaderFactory {
 
         private final ThreadLocal<XMLInputFactory> xif = new ThreadLocal<XMLInputFactory>() {
             @Override
@@ -396,7 +403,7 @@ public abstract class XMLStreamReaderFactory {
      * <p>
      * This is useful when you know your {@link XMLInputFactory} is thread-safe by itself.
      */
-    public static class NoLock extends XMLStreamReaderFactory {
+    private static class NoLock extends XMLStreamReaderFactory {
         private final XMLInputFactory xif;
 
         public NoLock(XMLInputFactory xif) {
@@ -428,7 +435,7 @@ public abstract class XMLStreamReaderFactory {
      * Handles Woodstox's XIF but set properties to do the string interning.
      * Woodstox {@link XMLInputFactory} is thread safe.
      */
-    public static final class Woodstox extends NoLock {
+    private static final class Woodstox extends NoLock {
         public Woodstox(XMLInputFactory xif) {
             super(xif);
             xif.setProperty("org.codehaus.stax2.internNsUris",true);

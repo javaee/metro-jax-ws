@@ -47,13 +47,10 @@ import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.WSService;
-import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.NonAnonymousResponseProcessor;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.AddressingUtils;
-import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.message.Messages;
@@ -64,19 +61,13 @@ import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.client.Stub;
 import com.sun.xml.ws.developer.JAXWSProperties;
-import com.sun.xml.ws.developer.WSBindingProvider;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.message.FaultDetailHeader;
 import com.sun.xml.ws.resources.AddressingMessages;
-import com.sun.xml.ws.binding.BindingImpl;
 
 import javax.xml.soap.SOAPFault;
-import javax.xml.ws.AsyncHandler;
-import javax.xml.ws.Dispatch;
-import javax.xml.ws.Response;
 import javax.xml.ws.WebServiceException;
 import java.net.URI;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -114,6 +105,7 @@ public class WsaServerTube extends WsaTube {
         endpoint = that.endpoint;
     }
 
+    @Override
     public WsaServerTube copy(TubeCloner cloner) {
         return new WsaServerTube(this, cloner);
     }
@@ -121,7 +113,9 @@ public class WsaServerTube extends WsaTube {
     @Override
     public @NotNull NextAction processRequest(Packet request) {
         Message msg = request.getMessage();
-        if(msg==null)   return doInvoke(next,request); // hmm?
+        if (msg == null) {
+            return doInvoke(next,request);
+        } // hmm?
 
         // expose bunch of addressing related properties for advanced applications 
         request.addSatellite(new WsaPropertyBag(addressingVersion,soapVersion,request));
@@ -161,8 +155,12 @@ public class WsaServerTube extends WsaTube {
         }
 
         // defaulting
-        if (replyTo == null)    replyTo = addressingVersion.anonymousEpr;
-        if (faultTo == null)    faultTo = replyTo;
+        if (replyTo == null) {
+            replyTo = addressingVersion.anonymousEpr;
+        }
+        if (faultTo == null) {
+            faultTo = replyTo;
+        }
 
         // Save a copy into the packet such that we can save it with that
         // packet if we're going to deliver the response at a later time
@@ -177,9 +175,9 @@ public class WsaServerTube extends WsaTube {
         Packet p = validateInboundHeaders(request);
         // if one-way message and WS-A header processing fault has occurred,
         // then do no further processing
-        if (p.getMessage() == null)
-            // request message is invalid, exception is logged by now  and response is sent back  with null message
+        if (p.getMessage() == null) {
             return doReturnWith(p);
+        }
 
         // if we find an error in addressing header, just turn around the direction here
         if (p.getMessage().isFault()) {
@@ -223,8 +221,9 @@ public class WsaServerTube extends WsaTube {
     @Override
     public @NotNull NextAction processResponse(Packet response) {
         Message msg = response.getMessage();
-        if (msg ==null)
-            return doReturnWith(response);  // one way message. Nothing to see here. Move on.
+        if (msg ==null) {
+            return doReturnWith(response);
+        }  // one way message. Nothing to see here. Move on.
 
         String to = AddressingUtils.getTo(msg.getMessageHeaders(), 
                 addressingVersion, soapVersion);
@@ -252,17 +251,14 @@ public class WsaServerTube extends WsaTube {
                 get(WsaPropertyBag.WSA_FAULTTO_FROM_REQUEST);
         }
 
-        WSEndpointReference target = msg.isFault()?faultTo:replyTo;
-        
+        WSEndpointReference target = msg.isFault() ? faultTo : replyTo;       
         if (target == null && response.proxy instanceof Stub) {
         	target = ((Stub) response.proxy).getWSEndpointReference();
         }
-
-        if(target.isAnonymous() || isAnonymousRequired )
-            // the response will go back the back channel. most common case
+        if (target == null || target.isAnonymous() || isAnonymousRequired) {
             return doReturnWith(response);
-
-        if(target.isNone()) {
+        }
+        if (target.isNone()) {
             // the caller doesn't want to hear about it, so proceed like one-way
             response.setMessage(null);
             return doReturnWith(response);
@@ -315,20 +311,23 @@ public class WsaServerTube extends WsaTube {
         //For instance this may be a RM CreateSequence message.
         WSDLBoundOperation wsdlBoundOperation = getWSDLBoundOperation(packet);
 
-        if (wsdlBoundOperation == null)
+        if (wsdlBoundOperation == null) {
             return;
+        }
 
         String gotA = AddressingUtils.getAction(
                 packet.getMessage().getMessageHeaders(),
                 addressingVersion, soapVersion);
 
-        if (gotA == null)
+        if (gotA == null) {
             throw new WebServiceException(AddressingMessages.VALIDATION_SERVER_NULL_ACTION());
+        }
 
         String expected = helper.getInputAction(packet);
         String soapAction = helper.getSOAPAction(packet);
-        if (helper.isInputActionDefault(packet) && (soapAction != null && !soapAction.equals("")))
+        if (helper.isInputActionDefault(packet) && (soapAction != null && !soapAction.equals(""))) {
             expected = soapAction;
+        }
 
         if (expected != null && !gotA.equals(expected)) {
             throw new ActionNotSupportedException(gotA);
@@ -346,6 +345,7 @@ public class WsaServerTube extends WsaTube {
         checkNonAnonymousAddresses(replyTo,faultTo);
     }
 
+    @SuppressWarnings("ResultOfObjectAllocationIgnored")
     private void checkNonAnonymousAddresses(WSEndpointReference replyTo, WSEndpointReference faultTo) {
         if (!replyTo.isAnonymous()) {
             try {

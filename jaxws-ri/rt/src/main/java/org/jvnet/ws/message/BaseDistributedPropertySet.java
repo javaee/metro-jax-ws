@@ -132,8 +132,9 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
     
     public @Override @Nullable <T extends org.jvnet.ws.message.PropertySet> T getSatellite(Class<T> satelliteClass) {
         T satellite = (T) satellites.get(satelliteClass);
-        if (satellite != null)
-                return satellite;
+        if (satellite != null) {
+            return satellite;
+        }
         
         for (PropertySet child : satellites.values()) {
             if (satelliteClass.isInstance(child)) {
@@ -154,8 +155,9 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
     public Object get(Object key) {
         // check satellites
         for (PropertySet child : satellites.values()) {
-            if(child.supports(key))
+            if (child.supports(key)) {
                 return child.get(key);
+            }
         }
 
         // otherwise it must be the master
@@ -166,8 +168,9 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
     public Object put(String key, Object value) {
         // check satellites
         for (PropertySet child : satellites.values()) {
-            if(child.supports(key))
+            if(child.supports(key)) {
                 return child.put(key,value);
+            }
         }
 
         // otherwise it must be the master
@@ -178,8 +181,9 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
     public boolean supports(Object key) {
         // check satellites
         for (PropertySet child : satellites.values()) {
-            if(child.supports(key))
+            if (child.supports(key)) {
                 return true;
+            }
         }
 
         return super.supports(key);
@@ -189,8 +193,9 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
     public Object remove(Object key) {
         // check satellites
         for (PropertySet child : satellites.values()) {
-            if(child.supports(key))
+            if (child.supports(key)) {
                 return child.remove(key);
+            }
         }
 
         return super.remove(key);
@@ -216,8 +221,9 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
         @Override
         public Object get(Object key) {
             for (PropertySet child : satellites.values()) {
-                if (child.supports(key))
+                if (child.supports(key)) {
                     return child.get(key);
+                }
             }
             
             return viewthis.get(key);
@@ -236,7 +242,11 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
         public Set<Entry<String, Object>> entrySet() {
             Set<Entry<String, Object>> entries = new HashSet<Entry<String, Object>>();
             for (PropertySet child : satellites.values()) {
-                entries.addAll(child.asMap().entrySet());
+                for (Entry<String,Object> entry : child.asMap().entrySet()) {
+                    // the code below is here to avoid entries.addAll(child.asMap().entrySet()); which works differently on JDK6/7
+                    // see DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS
+                    entries.add(new SimpleImmutableEntry<String, Object>(entry.getKey(), entry.getValue()));
+                }
             }
             entries.addAll(viewthis.entrySet());
             
@@ -246,8 +256,9 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
         @Override
         public Object put(String key, Object value) {
             for (PropertySet child : satellites.values()) {
-                if (child.supports(key))
+                if (child.supports(key)) {
                     return child.put(key, value);
+                }
             }
             
             return viewthis.put(key, value);
@@ -262,8 +273,9 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
         @Override
         public Object remove(Object key) {
             for (PropertySet child : satellites.values()) {
-                if (child.supports(key))
+                if (child.supports(key)) {
                     return child.remove(key);
+                }
             }
             
             return viewthis.remove(key);

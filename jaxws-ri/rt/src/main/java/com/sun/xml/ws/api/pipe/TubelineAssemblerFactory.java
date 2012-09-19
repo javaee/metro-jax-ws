@@ -47,6 +47,7 @@ import com.sun.xml.ws.api.pipe.helper.PipeAdapter;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.assembler.MetroTubelineAssembler;
 import com.sun.xml.ws.util.ServiceFinder;
+import java.util.logging.Level;
 
 import java.util.logging.Logger;
 
@@ -100,15 +101,16 @@ public abstract class TubelineAssemblerFactory {
             TubelineAssemblerFactory taf = container.getSPI(TubelineAssemblerFactory.class);
             if(taf!=null) {
                 TubelineAssembler a = taf.doCreate(bindingId);
-                if(a!=null)
+                if (a != null) {
                     return a;
+                }
             }
         }
 
         for (TubelineAssemblerFactory factory : ServiceFinder.find(TubelineAssemblerFactory.class, classLoader)) {
             TubelineAssembler assembler = factory.doCreate(bindingId);
             if (assembler != null) {
-                TubelineAssemblerFactory.logger.fine(factory.getClass() + " successfully created " + assembler);
+                TubelineAssemblerFactory.logger.log(Level.FINE, "{0} successfully created {1}", new Object[]{factory.getClass(), assembler});
                 return assembler;
             }
         }
@@ -117,7 +119,7 @@ public abstract class TubelineAssemblerFactory {
         for (PipelineAssemblerFactory factory : ServiceFinder.find(PipelineAssemblerFactory.class,classLoader)) {
             PipelineAssembler assembler = factory.doCreate(bindingId);
             if(assembler!=null) {
-                logger.fine(factory.getClass()+" successfully created "+assembler);
+                logger.log(Level.FINE, "{0} successfully created {1}", new Object[]{factory.getClass(), assembler});
                 return new TubelineAssemblerAdapter(assembler);
             }
         }
@@ -133,6 +135,7 @@ public abstract class TubelineAssemblerFactory {
             this.assembler = assembler;
         }
 
+        @Override
         public @NotNull Tube createClient(@NotNull ClientTubeAssemblerContext context) {
             ClientPipeAssemblerContext ctxt = new ClientPipeAssemblerContext(
                     context.getAddress(), context.getWsdlModel(), context.getService(),
@@ -140,6 +143,7 @@ public abstract class TubelineAssemblerFactory {
             return PipeAdapter.adapt(assembler.createClient(ctxt));
         }
 
+        @Override
         public @NotNull Tube createServer(@NotNull ServerTubeAssemblerContext context) {
             return PipeAdapter.adapt(assembler.createServer((ServerPipeAssemblerContext) context));
         }

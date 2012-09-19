@@ -72,7 +72,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
 
 import org.jvnet.ws.databinding.DatabindingModeFeature;
 
@@ -105,8 +104,9 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 
     void postProcess() {
         // should be called only once.
-        if (jaxbContext != null)
+        if (jaxbContext != null) {
             return;
+        }
         populateMaps();
         createJAXBContext();
     }
@@ -122,7 +122,9 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
             putOp(m.getOperationQName(),m);
 
         }
-        if (databinding != null) ((com.sun.xml.ws.db.DatabindingImpl)databinding).freeze(port);
+        if (databinding != null) {
+            ((com.sun.xml.ws.db.DatabindingImpl)databinding).freeze(port);
+        }
     }
 
     /**
@@ -130,6 +132,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
      */
     abstract protected void populateMaps();
 
+    @Override
     public Pool.Marshaller getMarshallerPool() {
         return marshallers;
     }
@@ -138,10 +141,12 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
      * @return the <code>JAXBRIContext</code>
      * @deprecated
      */
+    @Override
     public JAXBContext getJAXBContext() {
     	JAXBContext jc = bindingContext.getJAXBContext();
-    	if (jc != null) return jc;
-    	if (jaxbContext == null && jc instanceof JAXBRIContext) jaxbContext = (JAXBRIContext) bindingContext.getJAXBContext();
+    	if (jc != null) {
+            return jc;
+        }
     	return jaxbContext;
     }
 
@@ -177,8 +182,9 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
         final List<Class> cls = new ArrayList<Class>(types.size() + additionalClasses.size());
 
         cls.addAll(additionalClasses);
-        for (TypeInfo type : types)
+        for (TypeInfo type : types) {
             cls.add((Class) type.type);
+        }
 
         try {
             //jaxbContext = JAXBRIContext.newInstance(cls, types, targetNamespace, false);
@@ -186,7 +192,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
             bindingContext = AccessController.doPrivileged(new PrivilegedExceptionAction<BindingContext>() {
                 public BindingContext run() throws Exception {
                     if(LOGGER.isLoggable(Level.FINEST)) {
-                        LOGGER.log(Level.FINEST,"Creating JAXBContext with classes="+cls+" and types="+types);
+                        LOGGER.log(Level.FINEST, "Creating JAXBContext with classes={0} and types={1}", new Object[]{cls, types});
                     }
                     UsesJAXBContextFeature f = features.get(UsesJAXBContextFeature.class);
 					DatabindingModeFeature dbf = features.get(DatabindingModeFeature.class);
@@ -198,8 +204,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
                     databindingInfo.properties().put(JAXBContextFactory.class.getName(), factory);
                     if (dbf != null) {
                         if (LOGGER.isLoggable(Level.FINE))
-                            LOGGER.fine("DatabindingModeFeature in SEI specifies mode: "
-                                    + dbf.getMode());
+                            LOGGER.log(Level.FINE, "DatabindingModeFeature in SEI specifies mode: {0}", dbf.getMode());
                         databindingInfo.setDatabindingMode(dbf
                                 .getMode());
                     }

@@ -48,6 +48,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Reads a input stream completely and creates a new stream
@@ -63,6 +65,8 @@ public class ReadAllStream extends InputStream {
     private boolean readAll;
     private boolean closed;
 
+    private static final Logger LOGGER = Logger.getLogger(ReadAllStream.class.getName());
+    
     public ReadAllStream() {
         memStream = new MemoryStream();
         fileStream = new FileStream();
@@ -90,6 +94,7 @@ public class ReadAllStream extends InputStream {
         }
     }
 
+    @Override
     public int read() throws IOException {
         int ch = memStream.read();
         if (ch == -1) {
@@ -107,6 +112,7 @@ public class ReadAllStream extends InputStream {
         return len;
     }
 
+    @Override
     public void close() throws IOException {
         if (!closed) {
             memStream.close();
@@ -135,6 +141,7 @@ public class ReadAllStream extends InputStream {
             fin = new FileInputStream(tempFile);
         }
 
+        @Override
         public int read() throws IOException {
             return (fin != null) ? fin.read() : -1;
         }
@@ -150,7 +157,10 @@ public class ReadAllStream extends InputStream {
                 fin.close();
             }
             if (tempFile != null) {
-                tempFile.delete();
+                boolean success = tempFile.delete();
+                if (!success) {
+                    LOGGER.log(Level.INFO, "File {0} could not be deleted", tempFile);
+                }
             }
         }
     }
@@ -183,12 +193,15 @@ public class ReadAllStream extends InputStream {
                 byte[] buf = new byte[8192];
                 int read = fill(in, buf);
                 total += read;
-                if (read != 0)
+                if (read != 0) {
                     add(buf, read);
-                if (read != buf.length)
-                    return true;        // EOF
-                if (total > inMemory)
-                    return false;       // Reached in-memory size
+                }
+                if (read != buf.length) {
+                    return true;
+                }        // EOF
+                if (total > inMemory) {
+                    return false; // Reached in-memory size
+                }       
             }
         }
 
@@ -201,6 +214,7 @@ public class ReadAllStream extends InputStream {
             return total;
         }
 
+        @Override
         public int read() throws IOException {
             if (!fetch()) {
                 return -1;

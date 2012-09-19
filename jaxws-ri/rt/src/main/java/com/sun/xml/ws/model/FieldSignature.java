@@ -127,11 +127,11 @@ final class FieldSignature {
     }
 
     private static String args(ParameterizedType p) {
-        String sig = "<";
+        StringBuilder sig = new StringBuilder("<");
         for(Type t : p.getActualTypeArguments()) {
-            sig += vms(t);
+            sig.append(vms(t));
         }
-        return sig+">";
+        return sig.append(">").toString();
     }
 
 }

@@ -62,7 +62,7 @@ import com.sun.xml.ws.api.pipe.Pipe;
 import com.sun.xml.ws.binding.SOAPBindingImpl;
 import com.sun.xml.ws.protocol.soap.ClientMUTube;
 import com.sun.xml.ws.protocol.soap.ServerMUTube;
-import com.sun.xml.ws.resources.AddressingMessages;
+import java.util.Arrays;
 
 /**
  * A list of {@link Header}s on a {@link Message}.
@@ -185,9 +185,7 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
      * Adds all the headers.
      */
     public void addAll(Header... headers) {
-        for (Header header : headers) {
-            add(header);
-        }
+        addAll(Arrays.asList(headers));
     }
 
     /**
@@ -257,6 +255,7 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
      *      if the given header is not {@link #contains(Object) contained}
      *      in this header.
      */
+    @Override
     public void understood(@NotNull Header header) {
         int sz = size();
         for (int i = 0; i < sz; i++) {
@@ -276,9 +275,8 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
      *      be marked as <a href="#MU">"understood"</a>.
      * @return null if not found.
      */
-    public
-    @Nullable
-    Header get(@NotNull String nsUri, @NotNull String localName, boolean markAsUnderstood) {
+    @Override
+    public @Nullable Header get(@NotNull String nsUri, @NotNull String localName, boolean markAsUnderstood) {
         int len = size();
         for (int i = 0; i < len; i++) {
             Header h = get(i);
@@ -309,9 +307,8 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
      * @return null
      *      if not found.
      */
-    public
-    @Nullable
-    Header get(@NotNull QName name, boolean markAsUnderstood) {
+    @Override
+    public @Nullable Header get(@NotNull QName name, boolean markAsUnderstood) {
         return get(name.getNamespaceURI(), name.getLocalPart(), markAsUnderstood);
     }
 
@@ -345,12 +342,14 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
      */
     public
     @NotNull
+    @Override
     Iterator<Header> getHeaders(@NotNull final String nsUri, @NotNull final String localName, final boolean markAsUnderstood) {
         return new Iterator<Header>() {
 
             int idx = 0;
             Header next;
 
+            @Override
             public boolean hasNext() {
                 if (next == null) {
                     fetch();
@@ -358,6 +357,7 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
                 return next != null;
             }
 
+            @Override
             public Header next() {
                 if (next == null) {
                     fetch();
@@ -386,6 +386,7 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
                 }
             }
 
+            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }
@@ -397,6 +398,7 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
      */
     public
     @NotNull
+    @Override
     Iterator<Header> getHeaders(@NotNull QName headerName, final boolean markAsUnderstood) {
         return getHeaders(headerName.getNamespaceURI(), headerName.getLocalPart(), markAsUnderstood);
     }
@@ -424,12 +426,14 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
      */
     public
     @NotNull
+    @Override
     Iterator<Header> getHeaders(@NotNull final String nsUri, final boolean markAsUnderstood) {
         return new Iterator<Header>() {
 
             int idx = 0;
             Header next;
 
+            @Override
             public boolean hasNext() {
                 if (next == null) {
                     fetch();
@@ -437,6 +441,7 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
                 return next != null;
             }
 
+            @Override
             public Header next() {
                 if (next == null) {
                     fetch();
@@ -465,37 +470,11 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
                 }
             }
 
+            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }
         };
-    }
-
-    /**
-     * Gets the first {@link Header} of the specified name targeted at the
-     * current implicit role.
-     *
-     * @param name name of the header
-     * @param markUnderstood
-     *      If this parameter is true, the returned headers will
-     *      be marked as <a href="#MU">"understood"</a> when they are returned
-     *      from {@link Iterator#next()}.
-     * @return null if header not found
-     */
-    private Header getFirstHeader(QName name, boolean markUnderstood, SOAPVersion sv) {
-        if (sv == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_SOAP_VERSION());
-        }
-
-        Iterator<Header> iter = getHeaders(name.getNamespaceURI(), name.getLocalPart(), markUnderstood);
-        while (iter.hasNext()) {
-            Header h = iter.next();
-            if (h.getRole(sv).equals(sv.implicitRole)) {
-                return h;
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -661,6 +640,7 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
      */
     public
     @Nullable
+    @Override
     Header remove(@NotNull String nsUri, @NotNull String localName) {
         int len = size();
         for (int i = 0; i < len; i++) {
@@ -683,6 +663,7 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
      * @return
      *      always true. Don't use the return value.
      */
+    @Override
     public boolean addOrReplace(Header header) {
         for (int i=0; i < size(); i++) {
           Header hdr = get(i);
@@ -715,6 +696,7 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
      */
     public
     @Nullable
+    @Override
     Header remove(@NotNull QName name) {
         return remove(name.getNamespaceURI(), name.getLocalPart());
     }
@@ -806,11 +788,12 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
     @Override
     public boolean remove(Object o) {
         if (o != null) {
-            for (int index = 0; index < this.size(); index++)
+            for (int index = 0; index < this.size(); index++) {
                 if (o.equals(this.get(index))) {
                     remove(index);
                     return true;
                 }
+            }
         }
 
         return false;
@@ -842,18 +825,21 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
 
     public void readResponseAddressingHeaders(WSDLPort wsdlPort, WSBinding binding) {
         // read Action
-        String wsaAction = getAction(binding.getAddressingVersion(), binding.getSOAPVersion());
+//        String wsaAction = getAction(binding.getAddressingVersion(), binding.getSOAPVersion());
         // TODO: validate client-inbound Action
     }
 
+    @Override
     public void understood(QName name) {
        get(name, true);
     }
 
+    @Override
     public void understood(String nsUri, String localName) {
         get(nsUri, localName, true);
     }
     
+    @Override
     public Set<QName> getUnderstoodHeaders() {
         Set<QName> understoodHdrs = new HashSet<QName>();
         for (int i = 0; i < size(); i++) {
@@ -866,10 +852,12 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
 //        throw new UnsupportedOperationException("getUnderstoodHeaders() is not implemented by HeaderList");
     }
     
+    @Override
     public boolean isUnderstood(Header header) {
         return isUnderstood(header.getNamespaceURI(), header.getLocalPart());
     }
     
+    @Override
     public boolean isUnderstood(String nsUri, String localName) {
         for (int i = 0; i < size(); i++) {
             Header h = get(i);
@@ -880,13 +868,17 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
         return false;
     }
     
+    @Override
     public boolean isUnderstood(QName name) {
         return isUnderstood(name.getNamespaceURI(), name.getLocalPart());
     }
     
+    @Override
     public Set<QName> getNotUnderstoodHeaders(Set<String> roles, Set<QName> knownHeaders, WSBinding binding) {
         Set<QName> notUnderstoodHeaders = null;
-        if (roles == null) roles = new HashSet<String>();
+        if (roles == null) {
+            roles = new HashSet<String>();
+        }
         SOAPVersion effectiveSoapVersion = getEffectiveSOAPVersion(binding);
         roles.add(effectiveSoapVersion.implicitRole);
         for (int i = 0; i < size(); i++) {
@@ -898,16 +890,18 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
                         //if binding is null, no further checks needed...we already
                         //know this header is not understood from the isUnderstood
                         //check above
-                        if (notUnderstoodHeaders == null)
+                        if (notUnderstoodHeaders == null) {
                             notUnderstoodHeaders = new HashSet<QName>();
+                        }
                         notUnderstoodHeaders.add(qName);
                     } else {
                         // if the binding is not null, see if the binding can understand it
                         if (binding instanceof SOAPBindingImpl && !((SOAPBindingImpl) binding).understandsHeader(qName)) {
                             if (!knownHeaders.contains(qName)) {
                                 //logger.info("Element not understood=" + qName);
-                                if (notUnderstoodHeaders == null)
+                                if (notUnderstoodHeaders == null) {
                                     notUnderstoodHeaders = new HashSet<QName>();
+                                }
                                 notUnderstoodHeaders.add(qName);
                             }
                         }
@@ -920,7 +914,9 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
 
     private SOAPVersion getEffectiveSOAPVersion(WSBinding binding) {
         SOAPVersion mySOAPVersion = (soapVersion != null) ? soapVersion : binding.getSOAPVersion();
-        if (mySOAPVersion == null) mySOAPVersion = SOAPVersion.SOAP_11;
+        if (mySOAPVersion == null) {
+            mySOAPVersion = SOAPVersion.SOAP_11;
+        }
         return mySOAPVersion;
     }
 
@@ -928,6 +924,7 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
        this.soapVersion = soapVersion;
     }
 
+    @Override
     public Iterator<Header> getHeaders() {
         return iterator();
     }

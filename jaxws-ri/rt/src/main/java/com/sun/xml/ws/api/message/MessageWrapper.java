@@ -75,15 +75,17 @@ class MessageWrapper extends StreamMessage {
     Message delegate;
     StreamMessage streamDelegate;
     
-
+    @Override
     public void writePayloadTo(ContentHandler contentHandler, ErrorHandler errorHandler, boolean fragment) throws SAXException {
         streamDelegate.writePayloadTo(contentHandler, errorHandler, fragment);
     }
 
+    @Override
     public String getBodyPrologue() {
         return streamDelegate.getBodyPrologue();
     }
 
+    @Override
     public String getBodyEpilogue() {
         return streamDelegate.getBodyEpilogue();
     }
@@ -92,17 +94,20 @@ class MessageWrapper extends StreamMessage {
         super(m.getSOAPVersion());
         packet = p;
         delegate = m;
-        streamDelegate = (m instanceof StreamMessage) ? (StreamMessage) m : null;
+        streamDelegate = (m instanceof StreamMessage) ? (StreamMessage) m : null; 
     }  
     
+    @Override
     public int hashCode() {
         return delegate.hashCode();
     }
 
+    @Override
     public boolean equals(Object obj) {
         return delegate.equals(obj);
     }
 
+    @Override
     public boolean hasHeaders() {
         return delegate.hasHeaders();
     }
@@ -111,74 +116,95 @@ class MessageWrapper extends StreamMessage {
      * Deprecated - use getMessageHeaders() instead
      */
     @Deprecated
+    @Override
     public HeaderList getHeaders() {
         return delegate.getHeaders();
     }
 
+    @Override
     public AttachmentSet getAttachments() {
         return delegate.getAttachments();
     }
 
+    @Override
     public String toString() {
         return delegate.toString();
     }
 
+    @Override
     public boolean isOneWay(WSDLPort port) {
         return delegate.isOneWay(port);
     }
 
+    @Override
     public String getPayloadLocalPart() {
         return delegate.getPayloadLocalPart();
     }
 
+    @Override
     public String getPayloadNamespaceURI() {
         return delegate.getPayloadNamespaceURI();
     }
 
+    @Override
     public boolean hasPayload() {
         return delegate.hasPayload();
     }
 
+    @Override
     public boolean isFault() {
         return delegate.isFault();
     }
 
+    @Override
     public QName getFirstDetailEntryName() {
         return delegate.getFirstDetailEntryName();
     }
 
+    @Override
     public Source readEnvelopeAsSource() {
         //TODO if (delegate instanceof SAAJMessage)
         return delegate.readEnvelopeAsSource();
     }
 
+    @Override
     public Source readPayloadAsSource() {
         //TODO if (delegate instanceof SAAJMessage)
         return delegate.readPayloadAsSource();
     }
 
+    @Override
     public SOAPMessage readAsSOAPMessage() throws SOAPException {
-        if (!(delegate instanceof SAAJMessage)) delegate = toSAAJ(packet, null);
+        if (!(delegate instanceof SAAJMessage)) {
+            delegate = toSAAJ(packet, null);
+        }
         return delegate.readAsSOAPMessage();
     }
     
+    @Override
     public SOAPMessage readAsSOAPMessage(Packet p, boolean inbound) throws SOAPException {
-        if (!(delegate instanceof SAAJMessage)) delegate = toSAAJ(p, inbound);
+        if (!(delegate instanceof SAAJMessage)) {
+            delegate = toSAAJ(p, inbound);
+        }
         return delegate.readAsSOAPMessage();
     }
 
+    @Override
     public Object readPayloadAsJAXB(Unmarshaller unmarshaller) throws JAXBException {
         return delegate.readPayloadAsJAXB(unmarshaller);
     }
 
+    @Override
     public <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException {
         return delegate.readPayloadAsJAXB(bridge);
     }
 
+    @Override
     public <T> T readPayloadAsJAXB(XMLBridge<T> bridge) throws JAXBException {
         return delegate.readPayloadAsJAXB(bridge);
     }
 
+    @Override
     public XMLStreamReader readPayload() {
         try {
             return delegate.readPayload();
@@ -188,35 +214,43 @@ class MessageWrapper extends StreamMessage {
         return null;
     }
 
+    @Override
     public void consume() {
         delegate.consume();
     }
 
+    @Override
     public void writePayloadTo(XMLStreamWriter sw) throws XMLStreamException {
         delegate.writePayloadTo(sw);
     }
 
+    @Override
     public void writeTo(XMLStreamWriter sw) throws XMLStreamException {
         delegate.writeTo(sw);
     }
 
+    @Override
     public void writeTo(ContentHandler contentHandler, ErrorHandler errorHandler)
             throws SAXException {
         delegate.writeTo(contentHandler, errorHandler);
     }
 
+    @Override
     public Message copy() {
         return delegate.copy();
     }
 
+    @Override
     public String getID(WSBinding binding) {
         return delegate.getID(binding);
     }
 
+    @Override
     public String getID(AddressingVersion av, SOAPVersion sv) {
         return delegate.getID(av, sv);
     }
 
+    @Override
     public SOAPVersion getSOAPVersion() {
         return delegate.getSOAPVersion();
     }

@@ -104,9 +104,7 @@ public class DOMUtil {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         } catch (ParserConfigurationException pce) {
-            IllegalArgumentException iae = new IllegalArgumentException(pce.getMessage());
-            iae.initCause(pce);
-            throw iae;
+            throw new IllegalArgumentException(pce);
         }
         return null;
     }
@@ -141,6 +139,7 @@ public class DOMUtil {
                     case Node.ELEMENT_NODE:
                         serializeNode((Element) child, writer);
                         break;
+                    default: break;
                 }
             }
         }
@@ -237,8 +236,9 @@ public class DOMUtil {
         for (Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) {
             if (n.getNodeType() == Node.ELEMENT_NODE) {
                 Element c = (Element) n;
-                if (c.getLocalName().equals(local) && c.getNamespaceURI().equals(nsUri))
+                if (c.getLocalName().equals(local) && c.getNamespaceURI().equals(nsUri)) {
                     return c;
+                }
             }
         }
         return null;
@@ -247,8 +247,11 @@ public class DOMUtil {
     private static
     @NotNull
     String fixNull(@Nullable String s) {
-        if (s == null) return "";
-        else return s;
+        if (s == null) {
+            return "";
+        } else {
+            return s;
+        }
     }
 
     /**
