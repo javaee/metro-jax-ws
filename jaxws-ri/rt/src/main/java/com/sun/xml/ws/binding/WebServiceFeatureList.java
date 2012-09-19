@@ -259,9 +259,14 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
             for (Method builderMethod : builder.getClass().getDeclaredMethods()) {
                 if (!builderMethod.equals(buildMethod)) {
                     final String methodName = builderMethod.getName();
+                    // TODO this line is temporary until org.jvnet.ws to com.oracle.webservice package move is complete
+                    if ("build".equals(methodName)) { continue; }
                     final Method annotationMethod = annotation.annotationType().getDeclaredMethod(methodName);
                     final Object annotationFieldValue = annotationMethod.invoke(annotation);
                     final Object[] arg = { annotationFieldValue };
+                    if (skipDuringOrgJvnetWsToComOracleWebservicesPackageMove(builderMethod, annotationFieldValue)) {
+                        continue;
+                    }
                     builderMethod.invoke(builder, arg);
                 }
             }
@@ -279,6 +284,32 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
         } catch (final InvocationTargetException e) {
             throw new WebServiceException(e);
         }
+    }
+
+    // TODO this will be removed after package move is complete.
+    private static boolean skipDuringOrgJvnetWsToComOracleWebservicesPackageMove(
+        final Method builderMethod,
+        final Object annotationFieldValue)
+    {
+        final Class<?> annotationFieldValueClass = annotationFieldValue.getClass();
+        if (! annotationFieldValueClass.isEnum()) {
+            return false;
+        }
+        final Class<?>[] builderMethodParameterTypes = builderMethod.getParameterTypes();
+        if (builderMethodParameterTypes.length != 1) {
+            throw new WebServiceException("expected only 1 parameter");
+        }
+        final String builderParameterTypeName = builderMethodParameterTypes[0].getName();
+        if (! builderParameterTypeName.startsWith("com.oracle.webservices.userapi.test.apinew") &&
+            ! builderParameterTypeName.startsWith("com.oracle.webservices.api")) {
+            return false;
+        }
+        final String annotationFieldValueTypeName = annotationFieldValueClass.getName();
+        if (annotationFieldValueTypeName.startsWith("com.oracle.webservices.userapi.test.apiold") ||
+            annotationFieldValueTypeName.startsWith("org.jvnet.ws")) {
+            return true;
+        }
+        return false;
     }
 
     public Iterator<WebServiceFeature> iterator() {
