@@ -244,7 +244,7 @@ public class WSServiceDelegate extends WSService {
     public WSServiceDelegate(@Nullable Source wsdl, @Nullable WSDLServiceImpl service, @NotNull QName serviceName, @NotNull final Class<? extends Service> serviceClass, WebServiceFeatureList features) {
         //we cant create a Service without serviceName
         if (serviceName == null) {
-            throw new WebServiceException(ClientMessages.INVALID_SERVICE_NAME_NULL(serviceName));
+            throw new WebServiceException(ClientMessages.INVALID_SERVICE_NAME_NULL(null));
         }
 
         this.features = features;

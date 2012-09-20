@@ -61,7 +61,7 @@ public class DatabindingProviderImpl implements DatabindingProvider {
 	Map<String, Object> properties;
 	
 	public void init(Map<String, Object> p) {
-		properties = p;
+            properties = p;
 	}
 	
 	DatabindingImpl getCachedDatabindingImpl(DatabindingConfig config) {

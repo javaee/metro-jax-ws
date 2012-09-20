@@ -49,6 +49,8 @@ import java.util.HashMap;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A simple in-memory java.net.CookieStore implementation
@@ -58,6 +60,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since 1.6
  */
 class InMemoryCookieStore implements CookieStore {
+    
+    private static final Logger LOGGER = Logger.getLogger(HttpTransportPipe.class.getName());
+    
     // the in-memory representation of cookies
     private List<HttpCookie> cookieJar = null;
 
@@ -86,6 +91,7 @@ class InMemoryCookieStore implements CookieStore {
     /**
      * Add one cookie into cookie store.
      */
+    @Override
     public void add(URI uri, HttpCookie cookie) {
         // pre-condition : argument can't be null
         if (cookie == null) {
@@ -121,6 +127,7 @@ class InMemoryCookieStore implements CookieStore {
      *  3) not expired.
      * See RFC 2965 sec. 3.3.4 for more detail.
      */
+    @Override
     public List<HttpCookie> get(URI uri) {
         // argument can't be null
         if (uri == null) {
@@ -145,6 +152,7 @@ class InMemoryCookieStore implements CookieStore {
     /**
      * Get all cookies in cookie store, except those have expired
      */
+    @Override
     public List<HttpCookie> getCookies() {
         List<HttpCookie> rt;
 
@@ -156,8 +164,11 @@ class InMemoryCookieStore implements CookieStore {
                     it.remove();
                 }
             }
-        } finally {
             rt = Collections.unmodifiableList(cookieJar);
+        } catch (Exception e) {
+            rt = Collections.unmodifiableList(cookieJar);
+            LOGGER.log(Level.INFO, null, e);
+        } finally {
             lock.unlock();
         }
 
@@ -168,8 +179,9 @@ class InMemoryCookieStore implements CookieStore {
      * Get all URIs, which are associated with at least one cookie
      * of this cookie store.
      */
+    @Override
     public List<URI> getURIs() {
-        List<URI> uris = new ArrayList<URI>();
+        List<URI> uris;
 
         lock.lock();
         try {
@@ -183,8 +195,11 @@ class InMemoryCookieStore implements CookieStore {
                     it.remove();
                 }
             }
+            uris = new ArrayList<URI>(uriIndex.keySet());
+        } catch (Exception e) {
+            uris = new ArrayList<URI>(uriIndex.keySet());
+            LOGGER.log(Level.INFO, null, e);
         } finally {
-            uris.addAll(uriIndex.keySet());
             lock.unlock();
         }
 
@@ -195,6 +210,7 @@ class InMemoryCookieStore implements CookieStore {
     /**
      * Remove a cookie from store
      */
+    @Override
     public boolean remove(URI uri, HttpCookie ck) {
         // argument can't be null
         if (ck == null) {
@@ -216,6 +232,7 @@ class InMemoryCookieStore implements CookieStore {
     /**
      * Remove all cookies in this cookie store.
      */
+    @Override
     public boolean removeAll() {
         lock.lock();
         try {
@@ -273,7 +290,7 @@ class InMemoryCookieStore implements CookieStore {
             return host.equalsIgnoreCase(domain);
         } else if (lengthDiff > 0) {
             // need to check H & D component
-            String H = host.substring(0, lengthDiff);
+//            String H = host.substring(0, lengthDiff);
             String D = host.substring(lengthDiff);
 
             return (D.equalsIgnoreCase(domain));
@@ -347,8 +364,9 @@ class InMemoryCookieStore implements CookieStore {
                             if (!ck.hasExpired()) {
                                 // don't add twice
                                 if ((secureLink || !ck.getSecure()) &&
-                                        !cookies.contains(ck))
+                                        !cookies.contains(ck)) {
                                     cookies.add(ck);
+                                }
                             } else {
                                 it.remove();
                                 cookieJar.remove(ck);
@@ -390,7 +408,7 @@ class InMemoryCookieStore implements CookieStore {
     // the path will be taken into account when path-match algorithm applied
     //
     private URI getEffectiveURI(URI uri) {
-        URI effectiveURI = null;
+        URI effectiveURI;
         try {
             effectiveURI = new URI("http",
                                    uri.getHost(),

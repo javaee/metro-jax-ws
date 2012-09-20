@@ -61,6 +61,9 @@
             <Class name="com.sun.xml.ws.api.databinding.Databinding"/>
             <Class name="com.sun.xml.ws.api.databinding.JavaCallInfo"/>
             <Class name="com.sun.xml.ws.api.pipe.ContentType"/>
+            <Class name="com.sun.xml.ws.wsdl.writer.WSDLResolver"/>
+            <Class name="com.sun.xml.ws.encoding.SOAPBindingCodec"/>
+            <Class name="com.sun.xml.ws.encoding.StreamSOAPCodec"/>
         </Or>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
     </Match>
@@ -72,41 +75,67 @@
         </Or>
     </Match>
     <Match>
-        <Class name="com.sun.xml.ws.api.pipe.Fiber"/>
+        <Or>
+            <Class name="com.sun.xml.ws.api.pipe.Fiber"/>
+        </Or>
         <Method returns="boolean" params="com.sun.xml.ws.api.pipe.Tube">_doRun</Method>
         <Bug pattern="UL_UNRELEASED_LOCK"/>
     </Match>
     <Match>
-        <Class name="com.sun.xml.ws.streaming"/>
+        <Or>
+            <Class name="com.sun.xml.ws.streaming.DOMStreamReader"/>
+            <Class name="com.sun.xml.ws.api.pipe.Fiber"/>
+        </Or>
         <Bug pattern="SF_SWITCH_FALLTHROUGH"/>
     </Match>
     <Match>
-        <Class name="com.sun.xml.ws.encoding.XMLHTTPBindingCodec"/>
+        <Or>
+            <Class name="com.sun.xml.ws.encoding.XMLHTTPBindingCodec"/>
+        </Or>
         <Bug pattern="NP_LOAD_OF_KNOWN_NULL_VALUE"/>
     </Match>
     <Match>
-        <Class name="com.sun.xml.ws.encoding.ContentTypeImpl$Builder"/>
+        <Or>
+            <Class name="com.sun.xml.ws.encoding.ContentTypeImpl$Builder"/>
+        </Or>
         <Bug pattern="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"/>
     </Match>
     <Match>
-        <Class name="org.jvnet.ws.message.BasePropertySet$MapView"/>
-        <Bug pattern="WMI_WRONG_MAP_ITERATOR"/>
-    </Match>
-    <Match>
-        <Class name="com.sun.xml.ws.api.DistributedPropertySet"/>
-        <Class name="com.sun.xml.ws.api.message.Packet"/>
-        <Class name="com.sun.xml.ws.client.RequestContext"/>
+        <Or>
+            <Class name="com.sun.xml.ws.api.DistributedPropertySet"/>
+            <Class name="com.sun.xml.ws.api.message.Packet"/>
+            <Class name="com.sun.xml.ws.client.RequestContext"/>
+        </Or>
         <Bug pattern="NM_WRONG_PACKAGE"/>
     </Match>
     <Match>
-        <Class name="com.sun.xml.ws.developer.ValidationErrorHandler"/>
+        <Or>
+            <Class name="com.sun.xml.ws.developer.ValidationErrorHandler"/>
+            <Class name="com.sun.xml.ws.client.sei.SEIMethodHandler"/>
+            <Class name="com.sun.xml.ws.addressing.EndpointReferenceUtil"/>
+        </Or>
         <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
     </Match>
     <Match>
-        <Class name="com.sun.xml.ws.util.NamespaceSupport$Context"/>
+        <Or>
+            <Class name="com.sun.xml.ws.fault.TextType"/>
+        </Or>
+        <Bug name="URF_UNREAD_FIELD"/>
+    </Match>
+    <Match>
+        <Or>
+            <Class name="com.sun.xml.ws.util.NamespaceSupport$Context"/>
+        </Or>
         <Bug pattern="ES_COMPARING_STRINGS_WITH_EQ"/>
     </Match>
     <Match>
         <Package name="com.sun.xml.ws.org.objectweb.asm"/>
+    </Match>
+    <Match>
+        <Or>
+            <Class name="com.sun.xml.ws.transport.http.client.HttpCookie"/>
+            <Class name="com.sun.xml.ws.transport.http.client.CookieManager"/>
+        </Or>
+        <Bug pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ"/>
     </Match>
 </FindBugsFilter>

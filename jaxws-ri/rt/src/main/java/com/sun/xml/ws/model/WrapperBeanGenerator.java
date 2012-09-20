@@ -272,7 +272,7 @@ public class WrapperBeanGenerator {
 
     static Class createRequestWrapperBean(String className, Method method, QName reqElemName, ClassLoader cl) {
 
-        LOGGER.fine("Request Wrapper Class : "+className);
+        LOGGER.log(Level.FINE, "Request Wrapper Class : {0}", className);
 
         List<Field> requestMembers = RUNTIME_GENERATOR.collectRequestBeanMembers(
                 method);
@@ -291,7 +291,7 @@ public class WrapperBeanGenerator {
 
     static Class createResponseWrapperBean(String className, Method method, QName resElemName, ClassLoader cl) {
 
-        LOGGER.fine("Response Wrapper Class : "+className);
+        LOGGER.log(Level.FINE, "Response Wrapper Class : {0}", className);
 
         List<Field> responseMembers = RUNTIME_GENERATOR.collectResponseBeanMembers(method);
 

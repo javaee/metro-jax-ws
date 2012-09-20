@@ -116,6 +116,7 @@ public class RuntimeWSDLParser {
     private final XMLEntityResolver resolver;
 
     private final PolicyResolver policyResolver;
+
     /**
      * The {@link WSDLParserExtension}. Always non-null.
      */
@@ -239,10 +240,6 @@ public class RuntimeWSDLParser {
 
         return wsdlParser.wsdlDoc;
     }
-
-    private static WSDLModelImpl tryWithMex(@NotNull RuntimeWSDLParser wsdlParser, @NotNull URL wsdlLoc, @NotNull EntityResolver resolver, boolean isClientSide, Container container, Throwable e, PolicyResolver policyResolver, WSDLParserExtension... extensions) throws SAXException, XMLStreamException {
-    	return tryWithMex(wsdlParser, wsdlLoc, resolver, isClientSide, container, e, Service.class, policyResolver, extensions);
-    }
     
     private static WSDLModelImpl tryWithMex(@NotNull RuntimeWSDLParser wsdlParser, @NotNull URL wsdlLoc, @NotNull EntityResolver resolver, boolean isClientSide, Container container, Throwable e, Class serviceClass, PolicyResolver policyResolver, WSDLParserExtension... extensions) throws SAXException, XMLStreamException {
         ArrayList<Throwable> exceptions = new ArrayList<Throwable>();
@@ -262,10 +259,6 @@ public class RuntimeWSDLParser {
         throw new InaccessibleWSDLException(exceptions);                
     }
 
-    private WSDLModelImpl parseUsingMex(@NotNull URL wsdlLoc, @NotNull EntityResolver resolver, boolean isClientSide, Container container, PolicyResolver policyResolver, WSDLParserExtension[] extensions) throws IOException, SAXException, XMLStreamException, URISyntaxException {
-    	return parseUsingMex(wsdlLoc, resolver, isClientSide, container, Service.class, policyResolver, extensions);
-    }
-    
     private WSDLModelImpl parseUsingMex(@NotNull URL wsdlLoc, @NotNull EntityResolver resolver, boolean isClientSide, Container container, Class serviceClass, PolicyResolver policyResolver, WSDLParserExtension[] extensions) throws IOException, SAXException, XMLStreamException, URISyntaxException {
         //try MEX
         MetaDataResolver mdResolver = null;
@@ -363,10 +356,6 @@ public class RuntimeWSDLParser {
         this.extensionFacade =  new WSDLParserExtensionFacade(this.extensions.toArray(new WSDLParserExtension[0]));
     }
 
-    private Parser resolveWSDL(@Nullable URL wsdlLoc, @NotNull Source wsdlSource) throws IOException, SAXException, XMLStreamException {
-    	return resolveWSDL(wsdlLoc, wsdlSource, Service.class);
-    }
-    
     private Parser resolveWSDL(@Nullable URL wsdlLoc, @NotNull Source wsdlSource, Class serviceClass) throws IOException, SAXException, XMLStreamException {
         String systemId = wsdlSource.getSystemId();
 
@@ -385,22 +374,22 @@ public class RuntimeWSDLParser {
             	}
             }
         }
-        if(parser == null){
-        	//If a WSDL source is provided that is known to be readable, then
-        	//prioritize that over the URL - this avoids going over the network
-        	//an additional time if a valid WSDL Source is provided - Deva Sagar 09/20/2011
-        	if (wsdlSource != null && isKnownReadableSource(wsdlSource)) {
-            	parser = new Parser(wsdlLoc, createReader(wsdlSource));
-        	} else if (wsdlLoc != null) {
-        		parser = new Parser(wsdlLoc, createReader(wsdlLoc, serviceClass));
-        	}
-        	
-        	//parser could still be null if isKnownReadableSource returns
-        	//false and wsdlLoc is also null. Fall back to using Source based 
-        	//parser since Source is not null
-        	if (parser == null) {
-        		parser = new Parser(wsdlLoc, createReader(wsdlSource));
-        	}
+        if (parser == null) {
+            //If a WSDL source is provided that is known to be readable, then
+            //prioritize that over the URL - this avoids going over the network
+            //an additional time if a valid WSDL Source is provided - Deva Sagar 09/20/2011
+            if (isKnownReadableSource(wsdlSource)) {
+                parser = new Parser(wsdlLoc, createReader(wsdlSource));
+            } else if (wsdlLoc != null) {
+                parser = new Parser(wsdlLoc, createReader(wsdlLoc, serviceClass));
+            }
+
+            //parser could still be null if isKnownReadableSource returns
+            //false and wsdlLoc is also null. Fall back to using Source based 
+            //parser since Source is not null
+            if (parser == null) {
+                parser = new Parser(wsdlLoc, createReader(wsdlSource));
+            }
         }
         return parser;
     }

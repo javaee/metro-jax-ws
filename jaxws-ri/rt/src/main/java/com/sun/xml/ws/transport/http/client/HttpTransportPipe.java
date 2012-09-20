@@ -56,8 +56,6 @@ import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.util.StreamUtils;
 
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
@@ -80,22 +78,13 @@ import java.util.logging.Logger;
  * @author Jitendra Kotamraju
  */
 public class HttpTransportPipe extends AbstractTubeImpl {
-	private static final Logger LOGGER = Logger.getLogger(HttpTransportPipe.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HttpTransportPipe.class.getName());
 
     private final Codec codec;
     private final WSBinding binding;
     private static final List<String> USER_AGENT = Collections.singletonList(RuntimeVersion.VERSION.toString());
     private final CookieHandler cookieJar;      // shared object among the tubes
     private final boolean sticky;
-
-//    // Need to use JAXB first to register DatatypeConverter
-//    static {
-//        try {
-//            JAXBContext.newInstance().createUnmarshaller();
-//        } catch(JAXBException je) {
-//            // Nothing much can be done. Intentionally left empty
-//        }
-//    }
 
     public HttpTransportPipe(Codec codec, WSBinding binding) {
         this.codec = codec;
@@ -128,14 +117,17 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         cloner.add(that,this);
     }
 
+    @Override
     public NextAction processException(@NotNull Throwable t) {
         return doThrow(t);
     }
 
+    @Override
     public NextAction processRequest(@NotNull Packet request) {
         return doReturnWith(process(request));
     }
 
+    @Override
     public NextAction processResponse(@NotNull Packet response) {
         return doReturnWith(response);
     }
@@ -186,8 +178,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                     writeSOAPAction(reqHeaders, ct.getSOAPActionHeader());
                 }
                 
-                if(dump || LOGGER.isLoggable(Level.FINER))
+                if (dump || LOGGER.isLoggable(Level.FINER)) {
                     dump(buf, "HTTP request", reqHeaders);
+                }
                 
                 buf.writeTo(con.getOutput());
             } else {
@@ -380,7 +373,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         if (user != null) {
             String pw = (String) context.invocationProperties.get(BindingProvider.PASSWORD_PROPERTY);
             if (pw != null) {
-                StringBuffer buf = new StringBuffer(user);
+                StringBuilder buf = new StringBuilder(user);
                 buf.append(":");
                 buf.append(pw);
                 String creds = DatatypeConverter.printBase64Binary(buf.toString().getBytes());
@@ -395,18 +388,22 @@ public class HttpTransportPipe extends AbstractTubeImpl {
      */
     private void writeSOAPAction(Map<String, List<String>> reqHeaders, String soapAction) {
         //dont write SOAPAction HTTP header for SOAP 1.2 messages.
-        if(SOAPVersion.SOAP_12.equals(binding.getSOAPVersion()))
+        if(SOAPVersion.SOAP_12.equals(binding.getSOAPVersion())) {
             return;
-        if (soapAction != null)
+        }
+        if (soapAction != null) {
             reqHeaders.put("SOAPAction", Collections.singletonList(soapAction));
-        else
+        } else {
             reqHeaders.put("SOAPAction", Collections.singletonList("\"\""));
+        }
     }
 
+    @Override
     public void preDestroy() {
         // nothing to do. Intentionally left empty.
     }
 
+    @Override
     public HttpTransportPipe copy(TubeCloner cloner) {
         return new HttpTransportPipe(this,cloner);
     }
@@ -443,7 +440,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     /**
      * Dumps what goes across HTTP transport.
      */
-    public static boolean dump;
+    public final static boolean dump;
 
     static {
         boolean b;

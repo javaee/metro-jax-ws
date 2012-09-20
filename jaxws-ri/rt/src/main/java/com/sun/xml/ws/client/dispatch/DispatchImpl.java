@@ -55,7 +55,6 @@ import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Fiber;
 import com.sun.xml.ws.api.pipe.Tube;
-import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ContainerResolver;
 import com.sun.xml.ws.binding.BindingImpl;
@@ -81,8 +80,6 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
-import javax.xml.ws.WebServiceClient;
-import javax.xml.ws.WebEndpoint;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -92,11 +89,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -327,7 +320,7 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
                 Packet request = createPacket(in);
                 request.setState(Packet.State.ClientRequest);
                 setProperties(request,false);
-                Packet response = process(request,requestContext,this);
+                process(request,requestContext,this);
             } catch(WebServiceException e){
                 //it could be a WebServiceException or a ProtocolException
                 throw e;

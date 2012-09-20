@@ -173,6 +173,7 @@ final class OutboundReferenceParameterHeader extends AbstractHeaderImpl {
                         break;
                     case 1:
                         state = 2;
+                        break;
                     default: 
                         break;
                 }

@@ -110,8 +110,8 @@ final class SourceUtils {
         String namespaceUri = null;
 
         if(isDOMSource()){
-            DOMSource domSource = (DOMSource)src;
-            Node n = domSource.getNode();
+            DOMSource domSrc = (DOMSource)src;
+            Node n = domSrc.getNode();
             if(n.getNodeType()== Node.DOCUMENT_NODE) {
                 n = ((Document)n).getDocumentElement();
             }            
@@ -161,15 +161,16 @@ final class SourceUtils {
                             writer.writeStartElement(uri, localName);
                         }
                     } else {
-                        assert uri != null;
+//                        assert uri != null;
 
                         if(prefix.length() > 0){
                             /**
                              * Before we write the
                              */
                             String writerURI = null;
-                            if (writer.getNamespaceContext() != null)
+                            if (writer.getNamespaceContext() != null) {
                                 writerURI = writer.getNamespaceContext().getNamespaceURI(prefix);
+                            }
                             String writerPrefix = writer.getPrefix(uri);
                             if(declarePrefix(prefix, uri, writerPrefix, writerURI)){
                                 writer.writeStartElement(prefix, localName, uri);
@@ -187,11 +188,14 @@ final class SourceUtils {
                     // Write namespace declarations
                     for (int i = 0; i < n; i++) {
                         String nsPrefix = reader.getNamespacePrefix(i);
-                        if (nsPrefix == null) nsPrefix = "";
+                        if (nsPrefix == null) {
+                            nsPrefix = "";
+                        }
                         // StAX returns null for default ns
                         String writerURI = null;
-                        if (writer.getNamespaceContext() != null)
+                        if (writer.getNamespaceContext() != null) {
                             writerURI = writer.getNamespaceContext().getNamespaceURI(nsPrefix);
+                        }
 
                         // Zephyr: Why is this returning null?
                         // Compare nsPrefix with prefix because of [1] (above)
@@ -230,6 +234,9 @@ final class SourceUtils {
                     break;
                 case XMLStreamConstants.CHARACTERS:
                     writer.writeCharacters(reader.getText());
+                    break;
+                default: 
+                    break;
             }
         } while (state != XMLStreamConstants.END_DOCUMENT);
         reader.close();
@@ -243,8 +250,9 @@ final class SourceUtils {
      */
     private static void setUndeclaredPrefix(String prefix, String readerURI, XMLStreamWriter writer) throws XMLStreamException {
         String writerURI = null;
-        if (writer.getNamespaceContext() != null)
+        if (writer.getNamespaceContext() != null) {
             writerURI = writer.getNamespaceContext().getNamespaceURI(prefix);
+        }
 
         if (writerURI == null) {
             writer.setPrefix(prefix, readerURI != null ? readerURI : "");
@@ -261,8 +269,9 @@ final class SourceUtils {
      */
     private static boolean declarePrefix(String rPrefix, String rUri, String wPrefix, String wUri){
         if (wUri == null ||((wPrefix != null) && !rPrefix.equals(wPrefix))||
-                (rUri != null && !wUri.equals(rUri)))
+                (rUri != null && !wUri.equals(rUri))) {
             return true;
+        }
         return false;
     }
 }

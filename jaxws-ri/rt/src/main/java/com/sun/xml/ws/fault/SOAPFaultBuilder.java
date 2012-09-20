@@ -44,7 +44,6 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Message;
-import com.sun.xml.ws.api.model.CheckedException;
 import com.sun.xml.ws.api.model.ExceptionType;
 import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
@@ -517,7 +516,6 @@ public abstract class SOAPFaultBuilder {
             } catch (JAXBException e1) {
                 //Should we throw Internal Server Error???
                 faultString = e.getMessage();
-                faultCode = getDefaultFaultCode(soapVersion);
             }
         }
 
@@ -561,17 +559,19 @@ public abstract class SOAPFaultBuilder {
     /**
      * Set to false if you don't want the generated faults to have stack trace in it.
      */
-    public static boolean captureStackTrace;
+    public static final boolean captureStackTrace;
 
     /*package*/ static final String CAPTURE_STACK_TRACE_PROPERTY = SOAPFaultBuilder.class.getName()+".captureStackTrace";
 
     static {
+        boolean tmpVal = false;
         try {
-            captureStackTrace = Boolean.getBoolean(CAPTURE_STACK_TRACE_PROPERTY);
+            tmpVal = Boolean.getBoolean(CAPTURE_STACK_TRACE_PROPERTY);
         } catch (SecurityException e) {
             // ignore
         }
-
+        captureStackTrace = tmpVal;
+                
         try {
             JAXB_CONTEXT = JAXBContext.newInstance(SOAP11Fault.class, SOAP12Fault.class);
         } catch (JAXBException e) {

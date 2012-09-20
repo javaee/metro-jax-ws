@@ -405,15 +405,8 @@ final class HttpCookie implements Cloneable {
      */
 
     public void setDomain(String pattern) {
-        if (pattern != null)
-            domain = pattern.toLowerCase();
-        else
-            domain = pattern;
+        domain = (pattern == null) ? null : pattern.toLowerCase();
     }
-
-
-
-
 
     /**
      * Returns the domain name set for this cookie. The form of
@@ -940,7 +933,7 @@ final class HttpCookie implements Cloneable {
     private static HttpCookie parseInternal(String header)
     {
         HttpCookie cookie = null;
-        String namevaluePair = null;
+        String namevaluePair;
 
         StringTokenizer tokenizer = new StringTokenizer(header, ";");
 
@@ -1082,7 +1075,7 @@ final class HttpCookie implements Cloneable {
     private String toNetscapeHeaderString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(getName() + "=" + getValue());
+        sb.append(getName()).append("=").append(getValue());
 
         return sb.toString();
     }
@@ -1095,12 +1088,15 @@ final class HttpCookie implements Cloneable {
         StringBuilder sb = new StringBuilder();
 
         sb.append(getName()).append("=\"").append(getValue()).append('"');
-        if (getPath() != null)
+        if (getPath() != null) {
             sb.append(";$Path=\"").append(getPath()).append('"');
-        if (getDomain() != null)
+        }
+        if (getDomain() != null) {
             sb.append(";$Domain=\"").append(getDomain()).append('"');
-        if (getPortlist() != null)
+        }
+        if (getPortlist() != null) {
             sb.append(";$Port=\"").append(getPortlist()).append('"');
+        }
 
         return sb.toString();
     }

@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map.Entry;
 
 /**
  * CookieManager provides a concrete implementation of {@link CookieHandler},
@@ -282,9 +284,10 @@ public class CookieManager extends CookieHandler
         if (cookieJar == null)
             return;
 
-        for (String headerKey : responseHeaders.keySet()) {
+        for (Entry<String, List<String>> entry : responseHeaders.entrySet()) {
             // RFC 2965 3.2.2, key must be 'Set-Cookie2'
             // we also accept 'Set-Cookie' here for backward compatibility
+            String headerKey = entry.getKey();
             if (headerKey == null
                 || !(headerKey.equalsIgnoreCase("Set-Cookie2")
                      || headerKey.equalsIgnoreCase("Set-Cookie")
@@ -294,7 +297,7 @@ public class CookieManager extends CookieHandler
                 continue;
             }
 
-            for (String headerValue : responseHeaders.get(headerKey)) {
+            for (String headerValue : entry.getValue()) {
                 try {
                     List<HttpCookie> cookies = HttpCookie.parse(headerValue);
                     for (HttpCookie cookie : cookies) {
@@ -432,8 +435,8 @@ public class CookieManager extends CookieHandler
         return cookieHeader;
     }
 
-
-    static class CookiePathComparator implements Comparator<HttpCookie> {
+    static class CookiePathComparator implements Comparator<HttpCookie>, Serializable {
+        @Override
         public int compare(HttpCookie c1, HttpCookie c2) {
             if (c1 == c2) return 0;
             if (c1 == null) return -1;
@@ -451,4 +454,5 @@ public class CookieManager extends CookieHandler
                 return 0;
         }
     }
+
 }

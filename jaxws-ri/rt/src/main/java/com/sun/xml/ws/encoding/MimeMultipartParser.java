@@ -184,6 +184,8 @@ public final class MimeMultipartParser {
                 try {
                     baf.write(part.readOnce());
                 } catch(IOException ioe) {
+                    throw new WebServiceException(ioe);
+                } finally {
                     if (baf != null) {
                         try {
                             baf.close();
@@ -191,7 +193,6 @@ public final class MimeMultipartParser {
                             Logger.getLogger(MimeMultipartParser.class.getName()).log(Level.FINE, null, ex);
                         }
                     }
-                    throw new WebServiceException(ioe);
                 }
                 buf = baf.toByteArray();
             }

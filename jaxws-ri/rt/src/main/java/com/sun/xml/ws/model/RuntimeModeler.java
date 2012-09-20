@@ -1583,7 +1583,9 @@ public class RuntimeModeler {
                 if (implClass.getPackage() != null) {
                     packageName = implClass.getPackage().getName();
                 }
-                targetNamespace = getNamespace(packageName);
+                if (packageName != null) {
+                    targetNamespace = getNamespace(packageName);
+                }
                 if (targetNamespace == null) {
                     throw new RuntimeModelerException("runtime.modeler.no.package",
                         implClass.getName());

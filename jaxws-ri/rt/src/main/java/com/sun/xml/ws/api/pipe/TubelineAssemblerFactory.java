@@ -145,6 +145,9 @@ public abstract class TubelineAssemblerFactory {
 
         @Override
         public @NotNull Tube createServer(@NotNull ServerTubeAssemblerContext context) {
+            if (!(context instanceof ServerPipeAssemblerContext)) {
+                throw new IllegalArgumentException("{0} is not instance of ServerPipeAssemblerContext");
+            }
             return PipeAdapter.adapt(assembler.createServer((ServerPipeAssemblerContext) context));
         }
     }

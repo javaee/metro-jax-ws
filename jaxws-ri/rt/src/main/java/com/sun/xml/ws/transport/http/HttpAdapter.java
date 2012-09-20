@@ -617,7 +617,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         }
     }
 
-    final class Oneway implements TransportBackChannel {
+    static final class Oneway implements TransportBackChannel {
         WSHTTPConnection con;
         boolean closed;
 

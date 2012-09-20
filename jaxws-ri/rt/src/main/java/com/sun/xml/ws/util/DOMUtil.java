@@ -125,6 +125,7 @@ public class DOMUtil {
                 switch (child.getNodeType()) {
                     case Node.PROCESSING_INSTRUCTION_NODE:
                         writer.writeProcessingInstruction(child.getNodeValue());
+                        break;
                     case Node.DOCUMENT_TYPE_NODE:
                         break;
                     case Node.CDATA_SECTION_NODE:

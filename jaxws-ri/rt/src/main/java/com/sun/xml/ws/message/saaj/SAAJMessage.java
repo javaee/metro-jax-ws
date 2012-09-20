@@ -539,7 +539,7 @@ public class SAAJMessage extends Message {
     private static final AttributesImpl EMPTY_ATTS = new AttributesImpl();
     private static final LocatorImpl NULL_LOCATOR = new LocatorImpl();
 
-    private class SAAJAttachment implements AttachmentEx {
+    private static class SAAJAttachment implements AttachmentEx {
 
         final AttachmentPart ap;
         

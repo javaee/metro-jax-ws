@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.transport;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -89,7 +90,7 @@ public class Headers extends TreeMap<String,List<String>> {
     private static final InsensitiveComparator INSTANCE = new InsensitiveComparator();
 
     // case-insensitive string comparison of HTTP header names.
-    private static final class InsensitiveComparator implements Comparator<String> {
+    private static final class InsensitiveComparator implements Comparator<String>, Serializable {
         public int compare(String o1, String o2) {
             if (o1 == null && o2 == null)
                 return 0;
