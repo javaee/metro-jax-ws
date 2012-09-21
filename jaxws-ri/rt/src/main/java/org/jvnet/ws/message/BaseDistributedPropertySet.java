@@ -248,7 +248,11 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
                     entries.add(new SimpleImmutableEntry<String, Object>(entry.getKey(), entry.getValue()));
                 }
             }
-            entries.addAll(viewthis.entrySet());
+            for (Entry<String,Object> entry : viewthis.entrySet()) {
+                // the code below is here to avoid entries.addAll(child.asMap().entrySet()); which works differently on JDK6/7
+                // see DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS
+                entries.add(new SimpleImmutableEntry<String, Object>(entry.getKey(), entry.getValue()));
+            }
             
             return entries;
         }

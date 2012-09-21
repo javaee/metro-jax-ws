@@ -110,9 +110,17 @@
     </Match>
     <Match>
         <Or>
+            <Class name="org.jvnet.ws.message.BasePropertySet$MapView"/>
+        </Or>
+        <Bug pattern="WMI_WRONG_MAP_ITERATOR"/>
+    </Match>
+    <Match>
+        <Or>
             <Class name="com.sun.xml.ws.developer.ValidationErrorHandler"/>
             <Class name="com.sun.xml.ws.client.sei.SEIMethodHandler"/>
-            <Class name="com.sun.xml.ws.addressing.EndpointReferenceUtil"/>
+            <Class name="com.sun.xml.ws.developer.MemberSubmissionEndpointReference$ServiceNameType"/>
+            <Class name="com.sun.xml.ws.developer.MemberSubmissionEndpointReference$AttributedQName"/>
+            <Class name="com.sun.xml.ws.developer.MemberSubmissionEndpointReference$AttributedQName"/>
         </Or>
         <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
     </Match>

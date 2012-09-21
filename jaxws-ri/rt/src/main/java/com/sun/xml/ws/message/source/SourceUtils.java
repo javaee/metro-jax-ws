@@ -69,9 +69,9 @@ final class SourceUtils {
 
     int srcType;
 
-    private final int domSource = 1;
-    private final int streamSource = 2;
-    private final int saxSource=4;
+    private static final int domSource = 1;
+    private static final int streamSource = 2;
+    private static final int saxSource=4;
 
     public SourceUtils(Source src) {
         if(src instanceof StreamSource){
