@@ -117,17 +117,17 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
     private final @NotNull ServerTubeAssemblerContext context;
 
     private Map<QName, WSEndpointReference.EPRExtension> endpointReferenceExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
-        /**
-     * Set to true once we start shutting down this endpoint.
-     * Used to avoid running the clean up processing twice.
-         * 
-         * @see #dispose()
-         */
-        private boolean disposed;
-
-        private final Class<T> implementationClass;
-    private final @NotNull WSDLProperties wsdlProperties;
-        private final Set<Component> componentRegistry = new CopyOnWriteArraySet<Component>();
+    /**
+     * Set to true once we start shutting down this endpoint. Used to avoid
+     * running the clean up processing twice.
+     *
+     * @see #dispose()
+     */
+    private boolean disposed;
+    private final Class<T> implementationClass;
+    private final @NotNull
+    WSDLProperties wsdlProperties;
+    private final Set<Component> componentRegistry = new CopyOnWriteArraySet<Component>();
 
     protected WSEndpointImpl(@NotNull QName serviceName, @NotNull QName portName, WSBinding binding,
                    Container container, SEIModel seiModel, WSDLPort port,
@@ -398,26 +398,27 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
     }
 
         public synchronized void dispose() {
-                if (disposed)
-                        return;
-                disposed = true;
+            if (disposed) {
+                return;
+            }
+            disposed = true;
 
-    masterTubeline.preDestroy();
+            masterTubeline.preDestroy();
 
-                for (Handler handler : binding.getHandlerChain()) {
-                        for (Method method : handler.getClass().getMethods()) {
-                                if (method.getAnnotation(PreDestroy.class) == null) {
-                                        continue;
-                                }
-                                try {
-                                        method.invoke(handler);
-                                } catch (Exception e) {
-                    logger.log(Level.WARNING, HandlerMessages.HANDLER_PREDESTROY_IGNORE(e.getMessage()), e);
-                                }
-                                break;
-                        }
+            for (Handler handler : binding.getHandlerChain()) {
+                for (Method method : handler.getClass().getMethods()) {
+                    if (method.getAnnotation(PreDestroy.class) == null) {
+                        continue;
+                    }
+                    try {
+                        method.invoke(handler);
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, HandlerMessages.HANDLER_PREDESTROY_IGNORE(e.getMessage()), e);
+                    }
+                    break;
                 }
-        closeManagedObjectManager();
+            }
+            closeManagedObjectManager();
             LazyMOMProvider.INSTANCE.unregisterEndpoint(this);
         }
 

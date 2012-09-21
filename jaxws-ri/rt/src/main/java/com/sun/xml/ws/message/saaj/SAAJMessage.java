@@ -668,7 +668,7 @@ public class SAAJMessage extends Message {
      * SAAJ wants '&lt;' and '>' for the content ID, but {@link AttachmentSet}
      * doesn't. S this class also does the conversion between them.
      */
-    private class SAAJAttachmentSet implements AttachmentSet {
+    private static class SAAJAttachmentSet implements AttachmentSet {
 
         private Map<String, Attachment> attMap;
         private Iterator attIter;

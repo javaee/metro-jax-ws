@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -338,12 +339,13 @@ public final class RequestContext extends BaseDistributedPropertySet {
         Map<String, List<String>> myHeaders = (Map<String, List<String>>) asMap().get(HTTP_REQUEST_HEADERS);
         if ((packetHeaders != null) && (myHeaders != null)) {
             //update the headers set in soap message with those in request context
-            for (String key : myHeaders.keySet()) {
+            for (Entry<String, List<String>> entry : myHeaders.entrySet()) {
+                String key = entry.getKey();
                 if (key != null && key.trim().length() != 0) {
                     List<String> listFromPacket = packetHeaders.get(key);
                     //if the two headers contain the same key, combine the value
                     if (listFromPacket != null) {
-                        listFromPacket.addAll(myHeaders.get(key));
+                        listFromPacket.addAll(entry.getValue());
                     } else {
                         //add the headers  in request context to those set in soap message
                         packetHeaders.put(key, myHeaders.get(key));
@@ -381,6 +383,7 @@ public final class RequestContext extends BaseDistributedPropertySet {
         return new RequestContext(this);
     }
 
+    @Override
     protected PropertyMap getPropertyMap() {
         return propMap;
     }

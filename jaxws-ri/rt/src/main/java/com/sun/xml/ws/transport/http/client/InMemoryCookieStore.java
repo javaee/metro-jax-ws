@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -351,9 +352,10 @@ class InMemoryCookieStore implements CookieStore {
                                 Map<T, List<HttpCookie>> cookieIndex,
                                 Comparable<T> comparator, boolean secureLink)
     {
-        for (T index : cookieIndex.keySet()) {
+        for (Entry<T, List<HttpCookie>> entry : cookieIndex.entrySet()) {
+            T index = entry.getKey();
             if (comparator.compareTo(index) == 0) {
-                List<HttpCookie> indexedCookies = cookieIndex.get(index);
+                List<HttpCookie> indexedCookies = entry.getValue();
                 // check the list of cookies associated with this domain
                 if (indexedCookies != null) {
                     Iterator<HttpCookie> it = indexedCookies.iterator();
