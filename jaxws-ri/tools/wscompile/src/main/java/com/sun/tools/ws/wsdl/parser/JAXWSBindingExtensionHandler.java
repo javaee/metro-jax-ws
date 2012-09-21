@@ -176,17 +176,6 @@ public class JAXWSBindingExtensionHandler extends AbstractExtensionHandler {
     }
 
     /**
-     *
-     * @param context
-     * @param parent
-     * @param e
-     */
-    private void parseJAXBBindings(com.sun.tools.ws.api.wsdl.TWSDLParserContext context, TWSDLExtensible parent, Element e) {
-        JAXWSBinding binding = (JAXWSBinding)parent;
-        binding.addJaxbBindings(e);
-    }
-
-    /**
      * @param context
      * @param parent
      * @param e
@@ -294,8 +283,6 @@ public class JAXWSBindingExtensionHandler extends AbstractExtensionHandler {
         if((partName == null) || (msgName == null))
             return;
 
-        String val = XmlUtil.getAttributeOrNull(msgPartElm, "element");
-
         String element = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.ELEMENT_ATTR);
         String name = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NAME_ATTR);
 
@@ -347,24 +334,6 @@ public class JAXWSBindingExtensionHandler extends AbstractExtensionHandler {
         jaxwsBinding.setClassName(new CustomName(className, javaDoc));
     }
 
-
-    /**
-     * @param context
-     * @param jaxwsBinding
-     * @param e
-     */
-    private void parseException(com.sun.tools.ws.api.wsdl.TWSDLParserContext context, JAXWSBinding jaxwsBinding, Element e) {
-        for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
-            Element e2 = Util.nextElement(iter);
-            if (e2 == null)
-                break;
-            if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.CLASS)){
-                String className = XmlUtil.getAttributeOrNull(e2, JAXWSBindingsConstants.NAME_ATTR);
-                String javaDoc = getJavaDoc(e2);
-                jaxwsBinding.setException(new com.sun.tools.ws.wsdl.document.jaxws.Exception(new CustomName(className, javaDoc)));
-            }
-        }
-    }
 
     public boolean handleDefinitionsExtension(TWSDLParserContext context, TWSDLExtensible parent, Element e) {
         return parseGlobalJAXWSBindings(context, parent, e);

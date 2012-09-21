@@ -72,7 +72,7 @@ public class AnnotationProcessorContext {
     public SeiContext getSeiContext(Name seiName) {
         SeiContext context = seiContextMap.get(seiName);
         if (context == null) {
-            context = new SeiContext(seiName);
+            context = new SeiContext();
             addSeiContext(seiName, context);
         }
         return context;
@@ -122,14 +122,17 @@ public class AnnotationProcessorContext {
         private Map<String, WrapperInfo> resOperationWrapperMap = new HashMap<String, WrapperInfo>();
         private Map<Name, FaultInfo> exceptionBeanMap = new HashMap<Name, FaultInfo>();
 
-        private Name seiName;
         private Name seiImplName;
         private boolean implementsSei;
         private String namespaceUri;
 
-        public SeiContext(Name seiName) {
-            this.seiName = seiName;
-        }
+        public SeiContext() {};
+        
+        /**
+         * @deprecated use empty constructor, seiName value is ignored
+         * @param seiName 
+         */
+        public SeiContext(Name seiName) {};
 
         public void setImplementsSei(boolean implementsSei) {
             this.implementsSei = implementsSei;

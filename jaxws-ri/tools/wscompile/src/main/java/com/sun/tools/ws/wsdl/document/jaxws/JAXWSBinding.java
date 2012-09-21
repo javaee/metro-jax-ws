@@ -306,19 +306,6 @@ public class JAXWSBinding extends ExtensionImpl {
         this.className = className;
     }
 
-    /**
-     * @return Returns the exception.
-     */
-    public Exception getException() {
-        return exception;
-    }
-    /**
-     * @param exception The exception to set.
-     */
-    public void setException(Exception exception) {
-        this.exception = exception;
-    }
-
     private String wsdlNamespace;
     private String wsdlLocation;
     private String node;
@@ -331,7 +318,6 @@ public class JAXWSBinding extends ExtensionImpl {
 //    private Boolean enableAdditionalHeaderMapping;
     private Boolean enableMimeContentMapping;
     private Boolean isProvider;
-    private Exception exception;
 
     private Set<Element> jaxbBindings;
 

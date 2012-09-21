@@ -65,6 +65,7 @@ import javax.xml.ws.BindingType;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Holder;
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,12 +100,12 @@ public final class JwsImplGenerator extends GeneratorBase {
 		jwsImplGenerator.init(model, options, receiver);
 		jwsImplGenerator.doGeneration();
 		// print a warning message while implFiles.size() is zero
-		if (jwsImplGenerator.implFiles.size() == 0) {
+		if (jwsImplGenerator.implFiles.isEmpty()) {
 			StringBuffer msg = new StringBuffer();
 			if (options.implServiceName != null)
-				msg.append("serviceName=[" + options.implServiceName + "] ");
+				msg.append("serviceName=[").append(options.implServiceName).append("] ");
 			if (options.implPortName != null)
-				msg.append("portName=[" + options.implPortName + "] ");
+				msg.append("portName=[").append(options.implPortName).append("] ");
 
 			if (msg.length() > 0)
 				msg.append(", Not found in wsdl file.\n");
@@ -122,7 +123,7 @@ public final class JwsImplGenerator extends GeneratorBase {
 	public static boolean moveToImplDestDir(List<String> gImplFiles,
 	    WsimportOptions options, ErrorReceiver receiver) {
 		if (options.implDestDir == null || gImplFiles == null
-		    || gImplFiles.size() == 0)
+		    || gImplFiles.isEmpty())
 			return true;
 
 		List<ImplFile> generatedImplFiles = ImplFile.toImplFiles(gImplFiles);
@@ -543,7 +544,10 @@ public final class JwsImplGenerator extends GeneratorBase {
 			ret = options.implDestDir;
 		}
 
-		ret.mkdirs();
+		boolean created = ret.mkdirs();
+                if (options.verbose && !created) {
+                    System.out.println(MessageFormat.format("Directory not created: {0}", ret));
+                }
 		return ret;
 	}
 

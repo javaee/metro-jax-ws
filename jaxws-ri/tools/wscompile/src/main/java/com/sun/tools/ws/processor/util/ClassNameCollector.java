@@ -159,9 +159,6 @@ public class ClassNameCollector extends ExtendedModelVisitor
             _exceptions.add(fault.getJavaException());
             addExceptionClassName(fault.getJavaException().getName());
 
-            if (fault.getParentFault() != null) {
-                preVisit(fault.getParentFault());
-            }
             for (Iterator iter = fault.getSubfaults();
                 iter != null && iter.hasNext();) {
 

@@ -213,7 +213,7 @@ public class WSDLFetcher {
 
     private String sanitize(String fileName) {
         fileName = fileName.replace('?', '.');
-        StringBuffer sb = new StringBuffer(fileName);
+        StringBuilder sb = new StringBuilder(fileName);
         for (int i = 0; i < sb.length(); i++) {
             char c = sb.charAt(i);
             if (Character.isLetterOrDigit(c) ||
@@ -231,8 +231,11 @@ public class WSDLFetcher {
     }
 
     private File getWSDLDownloadDir() {
-        File wsdlDir = new File(options.destDir,WSDL_PATH);
-        wsdlDir.mkdirs();
+        File wsdlDir = new File(options.destDir, WSDL_PATH);
+        boolean created = wsdlDir.mkdirs();
+        if (options.verbose && !created) {
+            listener.message(WscompileMessages.WSCOMPILE_NO_SUCH_DIRECTORY(wsdlDir));
+        }
         return wsdlDir;
     }
 

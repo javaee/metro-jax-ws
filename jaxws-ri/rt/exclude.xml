@@ -116,6 +116,7 @@
     </Match>
     <Match>
         <Or>
+            <Class name="com.sun.xml.ws.addressing.WsaTubeHelper"/>
             <Class name="com.sun.xml.ws.developer.ValidationErrorHandler"/>
             <Class name="com.sun.xml.ws.client.sei.SEIMethodHandler"/>
             <Class name="com.sun.xml.ws.developer.MemberSubmissionEndpointReference$ServiceNameType"/>
@@ -126,6 +127,7 @@
     </Match>
     <Match>
         <Or>
+            <Class name="com.sun.xml.ws.db.DatabindingProviderImpl"/>
             <Class name="com.sun.xml.ws.fault.TextType"/>
         </Or>
         <Bug name="URF_UNREAD_FIELD"/>

@@ -41,7 +41,6 @@
 package com.sun.tools.ws.processor.model;
 
 import com.sun.codemodel.JClass;
-import com.sun.tools.ws.processor.generator.GeneratorUtil;
 import com.sun.tools.ws.processor.model.java.JavaException;
 import com.sun.tools.ws.wsdl.framework.Entity;
 
@@ -49,7 +48,6 @@ import javax.xml.namespace.QName;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  *
@@ -64,7 +62,6 @@ public class Fault extends ModelObject {
     public Fault(String name, Entity entity) {
         super(entity);
         this.name = name;
-        parentFault = null;
     }
 
     public String getName() {
@@ -95,12 +92,8 @@ public class Fault extends ModelObject {
         visitor.visit(this);
     }
 
-    public Fault getParentFault() {
-        return parentFault;
-    }
-
     public Iterator getSubfaults() {
-        if (subfaults.size() == 0) {
+        if (subfaults.isEmpty()) {
             return null;
         }
         return subfaults.iterator();
@@ -118,7 +111,7 @@ public class Fault extends ModelObject {
 
     public Iterator getAllFaults() {
         Set allFaults = getAllFaultsSet();
-        if (allFaults.size() == 0) {
+        if (allFaults.isEmpty()) {
             return null;
         }
         return allFaults.iterator();
@@ -175,7 +168,6 @@ public class Fault extends ModelObject {
     private String name;
     private Block block;
     private JavaException javaException;
-    private Fault parentFault;
     private Set subfaults = new HashSet();
     private QName elementName = null;
     private String javaMemberName = null;

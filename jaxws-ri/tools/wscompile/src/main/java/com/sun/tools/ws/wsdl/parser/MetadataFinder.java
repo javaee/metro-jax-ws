@@ -143,12 +143,10 @@ public final class MetadataFinder extends DOMForest{
     }
 
     public static class WSEntityResolver implements EntityResolver {
-        EntityResolver parentResolver;
         WsimportOptions options;
         ErrorReceiver errorReceiver;
 
         public WSEntityResolver(WsimportOptions options, ErrorReceiver errReceiver) {
-            this.parentResolver = options.entityResolver;
             this.options = options;
             this.errorReceiver = errReceiver;
         }

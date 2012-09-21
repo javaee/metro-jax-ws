@@ -739,8 +739,7 @@ public class WsGen2 extends MatchingTask {
      * Executes the given classname with the given arguments in a separate VM.
      */
     private int run(String[] command) throws BuildException {
-        FileOutputStream fos = null;
-        Execute exe = null;
+        Execute exe;
         LogStreamHandler logstr = new LogStreamHandler(this, Project.MSG_INFO, Project.MSG_WARN);
         exe = new Execute(logstr);
         exe.setAntRun(project);
@@ -801,7 +800,7 @@ public class WsGen2 extends MatchingTask {
         return e;
     }
 
-    public class ExternalMetadata {
+    public static class ExternalMetadata {
         String file;
 
         public String getFile() {

@@ -682,7 +682,6 @@ public class WSDLModeler extends WSDLModelerBase {
         }
 
         info.operation = operation;
-        info.uniqueOperationName = uniqueOperationName;
 
         //attachment
         SOAPBody soapRequestBody = getSOAPRequestBody();

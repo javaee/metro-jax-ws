@@ -58,17 +58,12 @@ public class WSDLLocation {
         if (idPos >= max) {
             LocationContext newContexts[] = new LocationContext[max * 2];
             System.arraycopy(contexts, 0, newContexts, 0, max);
-            max *= 2;
             contexts = newContexts;
         }
         currentContext = contexts[idPos];
         if (currentContext == null) {
             contexts[idPos] = currentContext = new LocationContext();
         }
-        if (idPos > 0) {
-            currentContext.setParent(contexts[idPos - 1]);
-        }
-
     }
 
     public void pop() {
@@ -78,7 +73,7 @@ public class WSDLLocation {
         }
     }
 
-    public void reset() {
+    public final void reset() {
         contexts = new LocationContext[32];
         idPos = 0;
         contexts[idPos] = currentContext = new LocationContext();
@@ -106,11 +101,6 @@ public class WSDLLocation {
             return location;
         }
 
-        void setParent(LocationContext parent) {
-            parentLocation = parent;
-        }
-
         private String location;
-        private LocationContext parentLocation;
     }
 }

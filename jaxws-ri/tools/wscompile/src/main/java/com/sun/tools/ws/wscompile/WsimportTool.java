@@ -71,6 +71,7 @@ import javax.xml.ws.EndpointContext;
 import java.io.*;
 import java.util.*;
 import java.net.Authenticator;
+import java.text.MessageFormat;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import org.xml.sax.SAXException;
@@ -268,11 +269,12 @@ public class WsimportTool {
             synchronized (generatedFiles) {
                 for (File file : generatedFiles) {
                     if (!file.getName().endsWith(".java")) {
-                        file.delete();
+                        boolean deleted = file.delete();
+                        if (options.verbose && !deleted) {
+                            System.out.println(MessageFormat.format("{0} could not be deleted.", file));
+                        }
                         trackedRootPackages.add(file.getParentFile());
-
                     }
-
                 }
             }
             //remove empty package dirs 
@@ -288,7 +290,6 @@ public class WsimportTool {
         if(!options.keep) {
             options.removeGeneratedFiles();
         }
-
     }
 
     private void addClassesToGeneratedFiles() throws IOException {

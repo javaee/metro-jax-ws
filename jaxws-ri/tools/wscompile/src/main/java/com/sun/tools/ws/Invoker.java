@@ -255,7 +255,7 @@ public final class Invoker {
      * {@link MaskingClassLoader} to prevent the parent
      * classLoader from loading
      */
-    public static String[] maskedPackages = new String[]{
+    public static final String[] maskedPackages = new String[]{
         "com.sun.istack.tools.",
         "com.sun.tools.jxc.",
         "com.sun.tools.xjc.",
@@ -275,13 +275,16 @@ public final class Invoker {
      * Escape hatch to work around IBM JDK problem.
      * See http://www-128.ibm.com/developerworks/forums/dw_thread.jsp?nav=false&forum=367&thread=164718&cat=10
      */
-    public static boolean noSystemProxies = false;
+    public static final boolean noSystemProxies;
 
     static {
+        boolean noSysProxiesProperty = false;
         try {
-            noSystemProxies = Boolean.getBoolean(Invoker.class.getName()+".noSystemProxies");
+            noSysProxiesProperty = Boolean.getBoolean(Invoker.class.getName()+".noSystemProxies");
         } catch(SecurityException e) {
             // ignore
+        } finally {
+            noSystemProxies = noSysProxiesProperty;
         }
     }
 }

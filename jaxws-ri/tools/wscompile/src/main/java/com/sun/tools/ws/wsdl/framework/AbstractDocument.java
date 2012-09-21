@@ -49,8 +49,6 @@ import com.sun.tools.ws.resources.WsdlMessages;
 import javax.xml.namespace.QName;
 import java.util.*;
 
-import org.xml.sax.helpers.LocatorImpl;
-
 /**
  * An abstract class for documents containing entities.
  *
@@ -178,10 +176,11 @@ public abstract class AbstractDocument {
     private final Set includedDocuments;
     private final List includedEntities;
 
-    private class LocallyValidatingAction implements EntityAction {
+    private static class LocallyValidatingAction implements EntityAction {
         public LocallyValidatingAction() {
         }
 
+        @Override
         public void perform(Entity entity) {
             try {
                 entity.validateThis();

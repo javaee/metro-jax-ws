@@ -47,7 +47,6 @@ import com.sun.tools.ws.processor.model.Fault;
 import com.sun.tools.ws.processor.model.Operation;
 import com.sun.tools.ws.processor.model.Port;
 import com.sun.tools.ws.processor.model.java.JavaException;
-import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
 import com.sun.tools.ws.processor.modeler.Modeler;
 import com.sun.tools.ws.resources.ModelerMessages;
 import com.sun.tools.ws.wscompile.AbortException;
@@ -64,10 +63,8 @@ import com.sun.tools.ws.wsdl.document.soap.*;
 import com.sun.tools.ws.wsdl.framework.Entity;
 import com.sun.tools.ws.wsdl.framework.GloballyKnown;
 import com.sun.tools.ws.wsdl.framework.NoSuchEntityException;
-import com.sun.tools.ws.wsdl.parser.DOMForest;
 import com.sun.tools.ws.wsdl.parser.WSDLParser;
 import com.sun.tools.ws.wsdl.parser.MetadataFinder;
-import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingHelper;
 
 import org.xml.sax.helpers.LocatorImpl;
@@ -747,7 +744,6 @@ public abstract class WSDLModelerBase implements Modeler {
     protected Map<String,JavaException> _javaExceptions;
     protected Map _faultTypeToStructureMap;
     protected Map<QName, Port> _bindingNameToPortMap;
-    protected boolean useWSIBasicProfile = true;
 
     private final Set<String> reqResNames = new HashSet<String>();
 
@@ -783,17 +779,7 @@ public abstract class WSDLModelerBase implements Modeler {
 
         // additional data
         public Operation operation;
-        public String uniqueOperationName;
     }
-
-    public static class WSDLExceptionInfo {
-        public String exceptionType;
-        public QName wsdlMessage;
-        public String wsdlMessagePartName;
-        public HashMap constructorOrder; // mapping of element name to
-                                             // constructor order (of type Integer)
-    }
-
 
     protected WSDLParser parser;
     protected WSDLDocument document;

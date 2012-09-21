@@ -51,6 +51,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -195,13 +196,6 @@ public class Options {
         return compatibilityMode == EXTENSION;
     }
 
-    /**
-     * Target direcoty when producing files.
-     */
-    public File targetDir = new File(".");
-
-
-
     public boolean debug = false;
 
     /**
@@ -228,7 +222,10 @@ public class Options {
     public void removeGeneratedFiles(){
         for(File file : generatedFiles){
             if (file.getName().endsWith(".java")) {
-                file.delete();
+                boolean deleted = file.delete();
+                if (verbose && !deleted) {
+                    System.out.println(MessageFormat.format("{0} could not be deleted.", file));
+                }
             }
         }
         generatedFiles.clear();        
@@ -250,7 +247,10 @@ public class Options {
         synchronized (generatedFiles) {
             for (File file : generatedFiles) {
                 if (file.getName().endsWith(".java")) {
-                    file.delete();
+                    boolean deleted = file.delete();
+                    if (verbose && !deleted) {
+                        System.out.println(MessageFormat.format("{0} could not be deleted.", file));
+                    }
                 }
             }
             generatedFiles.clear();

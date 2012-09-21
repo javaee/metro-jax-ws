@@ -153,8 +153,6 @@ public class WsgenTool {
 
     private final Container container;
 
-    private int round = 0;
-
     /*
      * To take care of JDK6-JDK6u3, where 2.1 API classes are not there
      */
