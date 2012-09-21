@@ -42,6 +42,15 @@
 
 <FindBugsFilter>
     <Match>
+        <!-- Invoker is not supposed to be called from outside code - it's a CLI interface only. 
+        In any case, the classes below are supposed to be called from environment which has necessary security permissions.
+        -->
+        <Class name="com.sun.tools.ws.Invoker"/>
+        <Class name="com.sun.tools.ws.wscompile.Options"/>
+        <Class name="com.sun.tools.ws.wscompile.WsgenTool"/>
+        <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
+    </Match>
+    <Match>
         <Class name="com.sun.tools.ws.util.xml.XmlUtil"/>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
     </Match>
