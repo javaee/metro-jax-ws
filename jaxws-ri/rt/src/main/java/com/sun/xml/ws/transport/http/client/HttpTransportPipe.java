@@ -440,7 +440,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     /**
      * Dumps what goes across HTTP transport.
      */
-    public final static boolean dump;
+    public static boolean dump;
 
     static {
         boolean b;
