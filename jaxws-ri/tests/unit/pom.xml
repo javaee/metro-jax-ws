@@ -185,56 +185,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>prepare-dependencies</id>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>target/dependencies</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>jaxws-unit-tests</id>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <phase>test</phase>
-                        <configuration>
-                            <target>
-                                <property name="libraries.dir" value="target/dependencies"/>
-                                <condition property="test.args" value="${ws.args}" else="-version ${project.osgi.version}">
-                                    <isset property="ws.args"/>
-                                </condition>
-                                <condition property="test.test" value="${ws.test}" else="testcases">
-                                    <isset property="ws.test"/>
-                                </condition>
-                                <condition property="test.jvmOpts" value="${ws.jvmOpts}" else="">
-                                    <isset property="ws.jvmOpts"/>
-                                </condition>
-                                <ant dir="${basedir}" target="run">
-                                    <property name="args" value="${test.args}"/>
-                                    <property name="test" value="${test.test}"/>
-                                    <property name="jvmOpts" value="${test.jvmOpts}"/>
-                                    <property name="jaxwsdir" location="${basedir}/../.."/>
-                                    <property name="endorsed.dir" value="${endorsed.dir}"/>
-                                    <property name="libraries.dir" value="${libraries.dir}"/>
-                                </ant>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
     
@@ -561,6 +511,109 @@
                                         <successCode>9</successCode>
                                         <successCode>10</successCode>
                                     </successCodes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
+        <profile>
+            <id>mvn-test</id>
+            <activation>
+                <property>
+                    <name>mvnplugin</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.glassfish.metro</groupId>
+                        <artifactId>harness-maven-plugin</artifactId>
+                        <version>0.1-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>ws-test</goal>
+                                </goals>
+                                <configuration>
+                                    <endorsedDir>${endorsed.dir}</endorsedDir>
+                                    <tests>${project.basedir}/testcases</tests>
+                                    <version>${project.osgi.version}</version>
+                                    <!--<debug>true</debug>-->
+                                    <args>
+                                        <arg>-cp:jaxws ${project.basedir}/../..</arg>
+                                    </args>
+                                    <vmArgs>
+                                        <vmArg>-Dhttp.proxyHost=www-proxy.us.oracle.com</vmArg>
+                                        <vmArg>-Dhttp.proxyPort=80</vmArg>
+                                        <vmArg>-Dhttps.proxyHost=www-proxy.us.oracle.com</vmArg>
+                                        <vmArg>-Dhttps.proxyPort=80</vmArg>
+                                    </vmArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>ant-test</id>
+            <activation>
+                <property>
+                    <name>!mvnplugin</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>prepare-dependencies</id>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>jaxws-unit-tests</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <phase>test</phase>
+                                <configuration>
+                                    <target>
+                                        <property name="libraries.dir" value="target/dependencies"/>
+                                        <condition property="test.args" value="${ws.args}" else="-version ${project.osgi.version}">
+                                            <isset property="ws.args"/>
+                                        </condition>
+                                        <condition property="test.test" value="${ws.test}" else="testcases">
+                                            <isset property="ws.test"/>
+                                        </condition>
+                                        <condition property="test.jvmOpts" value="${ws.jvmOpts}" else="">
+                                            <isset property="ws.jvmOpts"/>
+                                        </condition>
+                                        <ant dir="${basedir}" target="run">
+                                            <property name="args" value="${test.args}"/>
+                                            <property name="test" value="${test.test}"/>
+                                            <property name="jvmOpts" value="${test.jvmOpts}"/>
+                                            <property name="jaxwsdir" location="${basedir}/../.."/>
+                                            <property name="endorsed.dir" value="${endorsed.dir}"/>
+                                            <property name="libraries.dir" value="${libraries.dir}"/>
+                                        </ant>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
