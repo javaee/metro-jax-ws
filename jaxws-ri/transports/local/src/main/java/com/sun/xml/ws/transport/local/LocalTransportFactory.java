@@ -70,10 +70,12 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  */
 public final class LocalTransportFactory extends TransportTubeFactory {
+    @Override
     public Tube doCreate(@NotNull ClientTubeAssemblerContext context) {
         URI adrs = context.getAddress().getURI();
-        if(!(adrs.getScheme().equals("local") || adrs.getScheme().equals("local-async")))
+        if(!(adrs.getScheme().equals("local") || adrs.getScheme().equals("local-async"))) {
             return null;
+        }
         return adrs.getScheme().equals("local")
                 ? new LocalTransportTube(adrs,createServerService(adrs),context.getCodec())
                 : new LocalAsyncTransportTube(adrs,createServerService(adrs),context.getCodec());
@@ -113,6 +115,7 @@ public final class LocalTransportFactory extends TransportTubeFactory {
             Thread.currentThread().getContextClassLoader(),
             new FileSystemResourceLoader(new File(outputDir)), null,
             new AdapterFactory<WSEndpoint>() {
+                @Override
                 public WSEndpoint createAdapter(String name, String urlPattern, WSEndpoint<?> endpoint) {
                     return endpoint;
                 }

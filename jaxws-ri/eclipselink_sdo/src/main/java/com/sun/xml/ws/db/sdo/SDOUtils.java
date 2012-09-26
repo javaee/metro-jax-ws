@@ -215,7 +215,7 @@ public class SDOUtils {
         SDODatabindingSchemaResolver schemaResolver = new SDODatabindingSchemaResolver(schemas);
         for (Source source : schemas) {
             //SDOUtils.printDOM(source);
-            List<Type> lt = xsdHelper.define(source, schemaResolver);
+            xsdHelper.define(source, schemaResolver);
         }
     }
 

@@ -41,11 +41,6 @@
 -->
 
 <FindBugsFilter>
-    <Match>
-        <Class>com.sun.xml.ws.db.toplink.JAXBContextFactory</Class>
-        <Bug pattern="WMI_WRONG_MAP_ITERATOR"/>
-    </Match>
-
     <!--
     Low priority, low rank - usually unfixable to keep compatibility
     -->

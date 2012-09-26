@@ -102,7 +102,7 @@ public class DeploymentDescriptorParser<A> {
         this.adapterFactory = adapterFactory;
 
         collectDocs("/WEB-INF/wsdl/");
-        logger.fine("war metadata="+docs);
+        logger.log(Level.FINE, "war metadata={0}", docs);
     }
 
     /**
@@ -167,8 +167,9 @@ public class DeploymentDescriptorParser<A> {
         if (paths != null) {
             for (String path : paths) {
                 if (path.endsWith("/")) {
-                    if(path.endsWith("/CVS/") || path.endsWith("/.svn/"))
+                    if(path.endsWith("/CVS/") || path.endsWith("/.svn/")) {
                         continue;
+                    }
                     collectDocs(path);
                 } else {
                     URL res = loader.getResource(path);
@@ -196,8 +197,7 @@ public class DeploymentDescriptorParser<A> {
 
                 String name = getMandatoryNonEmptyAttribute(reader, ATTR_NAME);
                 if (!names.add(name)) {
-                    logger.warning("sun-jaxws.xml contains duplicate endpoint names. "+
-                            "The first duplicate name is = "+name);
+                    logger.log(Level.WARNING,"sun-jaxws.xml contains duplicate endpoint names. "+"The first duplicate name is = {0}", name);
                 }
 
                 String implementationName =
@@ -207,9 +207,20 @@ public class DeploymentDescriptorParser<A> {
                 QName serviceName = getQNameAttribute(reader, ATTR_SERVICE);
                 QName portName = getQNameAttribute(reader, ATTR_PORT);
 
+                ArrayList<WebServiceFeature> features = new ArrayList<WebServiceFeature>();
+                
                 //get enable-mtom attribute value
                 String enable_mtom = getAttribute(reader, ATTR_ENABLE_MTOM);
                 String mtomThreshold = getAttribute(reader, ATTR_MTOM_THRESHOLD_VALUE);
+                
+                if (Boolean.valueOf(enable_mtom)) {
+                    if (mtomThreshold != null) {
+                        features.add(new MTOMFeature(true, Integer.valueOf(mtomThreshold)));
+                    } else {
+                        features.add(new MTOMFeature(true));
+                    }
+                }
+                
                 String bindingId = getAttribute(reader, ATTR_BINDING);
                 if (bindingId != null) {
                     // Convert short-form tokens to API's binding ids
@@ -231,7 +242,7 @@ public class DeploymentDescriptorParser<A> {
 
                 adapters.add(adapterFactory.createAdapter(name, urlPattern,
                         implementorClass, serviceName, portName, bindingId,
-                        metadata));
+                        metadata, features.toArray(new WebServiceFeature[features.size()])));
 
             } else {
                 failWithLocalName("runtime.parser.invalidElement", reader);
@@ -290,10 +301,12 @@ public class DeploymentDescriptorParser<A> {
     }
     */
 
-    private static boolean checkMtomConflict(MTOMFeature lhs, MTOMFeature rhs) {
-        if(lhs==null || rhs==null)  return false;
-        return lhs.isEnabled() ^ rhs.isEnabled();
-    }
+//    private static boolean checkMtomConflict(MTOMFeature lhs, MTOMFeature rhs) {
+//        if (lhs==null || rhs==null) {
+//            return false;
+//        }
+//        return lhs.isEnabled() ^ rhs.isEnabled();
+//    }
 
     /**
      * JSR-109 defines short-form tokens for standard binding Ids. These are

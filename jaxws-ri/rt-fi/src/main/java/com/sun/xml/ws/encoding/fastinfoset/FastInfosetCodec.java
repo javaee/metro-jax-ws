@@ -55,7 +55,6 @@ import java.io.BufferedInputStream;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.WebServiceException;
 import java.io.OutputStream;
 import java.io.InputStream;
@@ -125,7 +124,7 @@ public class FastInfosetCodec implements Codec {
     public void decode(InputStream in, String contentType, Packet packet) throws IOException {
         /* Implements similar logic as the XMLMessage.create(String, InputStream).
          * But it's faster, as we know the InputStream has FastInfoset content*/
-        Message message = null;
+        Message message;
         in = hasSomeData(in);
         if (in != null) {
             message = Messages.createUsingPayload(new FastInfosetSource(in),
@@ -149,16 +148,7 @@ public class FastInfosetCodec implements Codec {
             return _serializer = createNewStreamWriter(out, _retainState);
         }
     }
-    
-    private XMLStreamReader getXMLStreamReader(InputStream in) {
-        if (_parser != null) {
-            _parser.setInputStream(in);
-            return _parser;
-        } else {
-            return _parser = createNewStreamReader(in, _retainState);
-        }
-    }
-    
+        
     /**
      * Creates a new {@link FastInfosetCodec} instance.
      *

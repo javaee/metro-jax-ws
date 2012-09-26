@@ -67,7 +67,7 @@ import java.util.List;
 public final class SDOWrapperAccessor extends WrapperAccessor {
 
     private SDOContextWrapper contextWrapper = null;
-    protected Class<?> contentClass;
+    private Class<?> contentClass;
 
     public SDOWrapperAccessor(SDOContextWrapper contextWrapper, Class<?> wrapperBean) {
         this.contextWrapper = contextWrapper;

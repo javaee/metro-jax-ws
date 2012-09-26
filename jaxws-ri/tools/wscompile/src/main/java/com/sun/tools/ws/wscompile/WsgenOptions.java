@@ -262,9 +262,6 @@ public class WsgenOptions extends Options {
         if(!isImplClass){
             throw new BadCommandLineException(WscompileMessages.WSGEN_CLASS_MUST_BE_IMPLEMENTATION_CLASS(clazz.getName()));
         }
-        if(noWebServiceEndpoint){
-            throw new BadCommandLineException(WscompileMessages.WSGEN_NO_WEBSERVICES_CLASS(clazz.getName()));
-        }
         endpoint = clazz;
         validateBinding();
     }

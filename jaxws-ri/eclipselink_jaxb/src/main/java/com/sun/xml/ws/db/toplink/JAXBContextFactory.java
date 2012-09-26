@@ -203,7 +203,7 @@ public class JAXBContextFactory extends BindingContextFactory {
         return null;
     }
     static DocumentBuilderFactory docBuilderFactory;
-    static String OxmTns = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm";
+    static String OXMTNS = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm";
 
     // TODO - fix with new secure factory util class
     static {
@@ -218,7 +218,7 @@ public class JAXBContextFactory extends BindingContextFactory {
         extMapping.put(wrpCls.getPackage().getName(), new DOMSource(xmlbindings));
         Element javatypes = child(xmlbindings, "java-types");
         Element javatype = null;
-        NodeList javatypeList = xmlbindings.getElementsByTagNameNS(OxmTns, "java-type");
+        NodeList javatypeList = xmlbindings.getElementsByTagNameNS(OXMTNS, "java-type");
         for (int i = 0; javatype == null && i < javatypeList.getLength(); i++) {
             Element e = (Element) javatypeList.item(i);
             if (wrpCls.getName().equals(e.getAttribute("name"))) {
@@ -226,17 +226,17 @@ public class JAXBContextFactory extends BindingContextFactory {
             }
         }
         if (javatype == null) {
-            javatype = javatypes.getOwnerDocument().createElementNS(OxmTns, "java-type");
+            javatype = javatypes.getOwnerDocument().createElementNS(OXMTNS, "java-type");
             javatype.setAttribute("name", wrpCls.getName());
             javatypes.appendChild(javatype);
             if (xmlRootElement != null) {
-                Element r = javatype.getOwnerDocument().createElementNS(OxmTns, "xml-root-element");
+                Element r = javatype.getOwnerDocument().createElementNS(OXMTNS, "xml-root-element");
                 r.setAttribute("name", xmlRootElement.name());
                 r.setAttribute("namespace", xmlRootElement.namespace());
                 javatype.appendChild(r);
             }
             if (xmlType != null) {
-                Element r = javatype.getOwnerDocument().createElementNS(OxmTns, "xml-type");
+                Element r = javatype.getOwnerDocument().createElementNS(OXMTNS, "xml-type");
                 r.setAttribute("name", xmlType.name());
                 r.setAttribute("namespace", xmlType.namespace());
                 StringBuilder propOrdr = new StringBuilder();
@@ -254,9 +254,9 @@ public class JAXBContextFactory extends BindingContextFactory {
     }
 
     Element child(Element parent, String name) {
-        NodeList list = parent.getElementsByTagNameNS(OxmTns, name);
+        NodeList list = parent.getElementsByTagNameNS(OXMTNS, name);
         if (list == null || list.getLength() == 0) {
-            Element c = parent.getOwnerDocument().createElementNS(OxmTns, name);
+            Element c = parent.getOwnerDocument().createElementNS(OXMTNS, name);
             parent.appendChild(c);
             return c;
         } else {
@@ -292,7 +292,7 @@ public class JAXBContextFactory extends BindingContextFactory {
             try {
                 DocumentBuilder builder = docBuilderFactory.newDocumentBuilder();
                 Document doc = builder.newDocument();
-                xmlbindings = doc.createElementNS(OxmTns, "xml-bindings");
+                xmlbindings = doc.createElementNS(OXMTNS, "xml-bindings");
                 doc.appendChild(xmlbindings);
             } catch (ParserConfigurationException e) {
                 throw new WebServiceException(e.getMessage(), e);

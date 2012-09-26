@@ -61,12 +61,12 @@ class InvokerImpl extends Invoker {
     private final Class implType;
     private final Object impl;
     private final Method postConstructMethod;
-    private final Method preDestroyMethod;
+//    private final Method preDestroyMethod;
 
     InvokerImpl(Class implType) {
         this.implType = implType;
         postConstructMethod = findAnnotatedMethod(implType, PostConstruct.class);
-        preDestroyMethod = findAnnotatedMethod(implType, PreDestroy.class);
+//        preDestroyMethod = findAnnotatedMethod(implType, PreDestroy.class);
         try {
             impl = implType.newInstance();
         } catch (InstantiationException e) {

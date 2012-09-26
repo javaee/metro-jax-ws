@@ -89,10 +89,12 @@ public class SAX2StaxContentHandler implements ContentHandler {
         writeDocument = false;
     }
 
+    @Override
     public void setDocumentLocator(Locator locator) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void startDocument() throws SAXException {
         if (writeDocument) {
             try {
@@ -105,6 +107,7 @@ public class SAX2StaxContentHandler implements ContentHandler {
         }
     }
 
+    @Override
     public void endDocument() throws SAXException {
         if (writeDocument) {
             try {
@@ -117,6 +120,7 @@ public class SAX2StaxContentHandler implements ContentHandler {
         }
     }
 
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
 
         if (prefix.equals("xml")) {
@@ -126,6 +130,7 @@ public class SAX2StaxContentHandler implements ContentHandler {
         prefixMappings.add(new PrefixMapping(prefix, uri));
     }
 
+    @Override
     public void endPrefixMapping(String string) throws SAXException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -139,6 +144,7 @@ public class SAX2StaxContentHandler implements ContentHandler {
         return prefix;
     }
 
+    @Override
     public void startElement(String ns, String local, String qname, Attributes attributes) throws SAXException {
         try {
             String prefix = getPrefix(qname);
@@ -183,6 +189,7 @@ public class SAX2StaxContentHandler implements ContentHandler {
         }
     }
 
+    @Override
     public void endElement(String string, String string1, String string2) throws SAXException {
         try {
             xwriter.writeEndElement();
@@ -192,6 +199,7 @@ public class SAX2StaxContentHandler implements ContentHandler {
         }
     }
 
+    @Override
     public void characters(char[] chars, int i, int i1) throws SAXException {
         try {
             xwriter.writeCharacters(chars, i, i1);
@@ -201,6 +209,7 @@ public class SAX2StaxContentHandler implements ContentHandler {
         }
     }
 
+    @Override
     public void ignorableWhitespace(char[] chars, int i, int i1) throws SAXException {
         try {
             xwriter.writeCharacters(chars, i, i1);
@@ -210,6 +219,7 @@ public class SAX2StaxContentHandler implements ContentHandler {
         }
     }
 
+    @Override
     public void processingInstruction(String string, String string1) throws SAXException {
         try {
             xwriter.writeProcessingInstruction(string, string1);
@@ -219,6 +229,7 @@ public class SAX2StaxContentHandler implements ContentHandler {
         }
     }
 
+    @Override
     public void skippedEntity(String string) throws SAXException {
         try {
             xwriter.writeEntityRef(string);
