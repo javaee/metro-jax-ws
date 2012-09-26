@@ -589,6 +589,22 @@
                     <value>true</value>
                 </property>
             </activation>
+            <pluginRepositories>
+                <pluginRepository>
+                    <!-- temporary definition for harness plugin to be found-->
+                    <id>temp</id>
+                    <url>https://maven.java.net/content/repositories/snapshots</url>
+                    <releases>
+                        <enabled>false</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
+                    <layout>default</layout>
+                </pluginRepository>
+            </pluginRepositories>
             <properties>
                 <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
                 <!-- DEFAULT = JAXB, TOPLINK = MOXy -->
