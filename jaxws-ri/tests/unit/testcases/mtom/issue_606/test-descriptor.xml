@@ -41,7 +41,8 @@
 
 -->
 
-<descriptor since="2.1.5">
+<descriptor since="2.1.5" uses="servlet">
+    <!-- uses="servlet" to avoid running this test in lwhs container -->
     <description>Tests MTOM's mime part boundary condition</description>
 
     <service basedir="./server">
