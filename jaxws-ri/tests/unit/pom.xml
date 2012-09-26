@@ -589,8 +589,54 @@
                     <value>true</value>
                 </property>
             </activation>
+            <properties>
+                <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+                <!-- DEFAULT = JAXB, TOPLINK = MOXy -->
+                <ws.databinding>DEFAULT</ws.databinding>
+                <!-- IN_VM, LWHS, TOMCAT (requires tomcat.home to be set) -->
+                <ws.transport>IN_VM</ws.transport>
+                <ws.test>${project.basedir}/testcases</ws.test>
+            </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.4</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-endorsed</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${endorsed.dir}</outputDirectory>
+                                    <silent>false</silent>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>javax.xml.bind</groupId>
+                                            <artifactId>jaxb-api</artifactId>
+                                            <version>${jaxb-api.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>javax.xml.soap</groupId>
+                                            <artifactId>saaj-api</artifactId>
+                                            <version>${saaj-api.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>javax.xml.ws</groupId>
+                                            <artifactId>jaxws-api</artifactId>
+                                            <version>${jaxws-api.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.glassfish.metro</groupId>
                         <artifactId>harness-maven-plugin</artifactId>
@@ -602,8 +648,12 @@
                                 </goals>
                                 <configuration>
                                     <endorsedDir>${endorsed.dir}</endorsedDir>
-                                    <tests>${project.basedir}/testcases</tests>
+                                    <tests>${ws.test}</tests>
                                     <version>${project.osgi.version}</version>
+                                    <databinding>${ws.databinding}</databinding>
+                                    <transport>${ws.transport}</transport>
+                                    <imageUrl>${hudson.build.id}/artifact/jaxws-ri/bundles/jaxws-ri/target/jaxws-ri.zip</imageUrl>
+                                    <transportUrl>${hudson.build.id}/artifact/jaxws-ri/transports/local/target/jaxws-local-transport.jar</transportUrl>
                                     <!--<debug>true</debug>-->
                                     <args>
                                         <arg>-cp:jaxws ${project.basedir}/../..</arg>
