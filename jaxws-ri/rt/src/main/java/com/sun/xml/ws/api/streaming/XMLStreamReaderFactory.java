@@ -366,7 +366,7 @@ public abstract class XMLStreamReaderFactory {
      * it may run into (see <a href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=555">
      * race condition</a>). Hence, using a XMLInputFactory per theread.
      */
-    private static final class Default extends XMLStreamReaderFactory {
+    public static final class Default extends XMLStreamReaderFactory {
 
         private final ThreadLocal<XMLInputFactory> xif = new ThreadLocal<XMLInputFactory>() {
             @Override
@@ -403,7 +403,7 @@ public abstract class XMLStreamReaderFactory {
      * <p>
      * This is useful when you know your {@link XMLInputFactory} is thread-safe by itself.
      */
-    private static class NoLock extends XMLStreamReaderFactory {
+    public static class NoLock extends XMLStreamReaderFactory {
         private final XMLInputFactory xif;
 
         public NoLock(XMLInputFactory xif) {
@@ -435,7 +435,7 @@ public abstract class XMLStreamReaderFactory {
      * Handles Woodstox's XIF but set properties to do the string interning.
      * Woodstox {@link XMLInputFactory} is thread safe.
      */
-    private static final class Woodstox extends NoLock {
+    public static final class Woodstox extends NoLock {
         public Woodstox(XMLInputFactory xif) {
             super(xif);
             xif.setProperty("org.codehaus.stax2.internNsUris",true);

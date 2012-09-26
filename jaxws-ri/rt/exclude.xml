@@ -148,4 +148,25 @@
         </Or>
         <Bug pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ"/>
     </Match>
+    <Match>
+        <Or>
+            <Class name="com.sun.xml.ws.db.toplink.JAXBBond$CustomXMLStreamReaderReader"/>
+        </Or>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
+
+    <!--
+    Low priority, low rank - usually unfixable to keep compatibility
+    -->
+    <Match>
+        <Bug pattern="NM_CONFUSING"/>
+    </Match>
+    
+    <!--
+    Low priority, low rank - but potential cause of NPEs when the code changes slightly
+    -->
+    <Match>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+    </Match>
+
 </FindBugsFilter>

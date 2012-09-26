@@ -500,7 +500,7 @@
         <servlet-api.version>3.0.1</servlet-api.version>
         <stax2-api.version>3.1.1</stax2-api.version>
         <stax-ex.version>1.7.1</stax-ex.version>
-        <streambuffer.version>1.5</streambuffer.version>
+        <streambuffer.version>1.5.1</streambuffer.version>
         <woodstox-core-asl.version>4.1.2</woodstox-core-asl.version>
     </properties>
     
