@@ -480,14 +480,6 @@ holder.
         </section>
     </section>
 
-    <section xml:id="running-wsimport-task-on-jdk-6">
-        <title>Running <command>wsimport</command> Task on JDK 6</title>
-
-        <para><emphasis role="bold">To run on JDK 6 follow these <xref
-        linkend="running-on-jdk6"
-        xrefstyle="select:title" />.</emphasis></para>
-    </section>
-
     <section xml:id="examples">
         <title><command>wsimport</command> Examples</title>
 

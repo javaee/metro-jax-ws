@@ -293,13 +293,6 @@ holder.
         contains the list of classes required by the JAX-WS tools.</para>
     </section>
 
-    <section xml:id="running-wsgen-task-on-jdk-6">
-        <title>Running <command>wsgen</command> Task on JDK 6</title>
-
-        <para>To run on JDK 6 follow these <xref linkend="running-on-jdk6"
-        xrefstyle="select:title" />.</para>
-    </section>
-
     <section xml:id="wsgen-task-example">
         <title><command>wsgen</command> Task Example</title>
 

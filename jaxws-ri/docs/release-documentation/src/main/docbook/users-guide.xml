@@ -65,14 +65,12 @@ holder.
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-soap-1-2.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-wsdl-customization.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-annotations.xml" />
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-why-ws-addressing.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-ws-addressing.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-stateful-webservice.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-catalog.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-war-file-packaging.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-interoperability.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-endpoint-api.xml" />
-<!--<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-databinding.xml" />-->
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-modular-databinding.xml"/>
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="users-guide-external-metadata.xml" />
-
 </chapter>

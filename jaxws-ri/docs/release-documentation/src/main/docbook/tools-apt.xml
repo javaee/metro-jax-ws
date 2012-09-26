@@ -53,16 +53,7 @@ holder.
          xmlns:m="http://www.w3.org/1998/Math/MathML">
     <title><command>apt</command></title>
 
-    <section xml:id="section-8324588054404016">
-        <title><command>apt</command></title>
-
-        <para>Be aware that <command>apt</command> was deprecated. And has been replaced by
-            <link xlink:href="http://www.jcp.org/en/jsr/detail?id=269">Pluggable Annotation Processing API</link>
-            Please use <command>javac</command> for <xref
-            linkend="tools-annotation-processing" xrefstyle="select:title" /> purposes.
-        </para>
-
-        <para>The <command>apt</command> tool provides a facility for
+        <para>The <command>apt</command> tool provided a facility for
         programmatically processing the annotations added to Java by <link
         xlink:href="http://www.jcp.org/en/jsr/detail?id=175">JSR 175</link>,
         <emphasis>Metadata Facility for the Java</emphasis> TM
@@ -70,243 +61,23 @@ holder.
         programmers to declare new kinds of structured modifiers that can be
         associated with program elements, fields, methods, classes,
         etc.</para>
+         
+        <para>The <command>javac</command> completely replaced functionality
+        provided by <command>apt</command>. It was done within implementation of <link
+        xlink:href="http://www.jcp.org/en/jsr/detail?id=269">JSR 269</link>,
+        <emphasis>Pluggable Annotation Processing API</emphasis>.
+        So it's expected programmers to use <command>javac</command> instead of
+        <command>apt</command>.</para>
 
-        <para>The <command>apt</command> tool generates the portable artifacts
-        used in JAX-WS services.</para>
-    </section>
+        <para>Using <command>javac</command> with JAX-WS annotation processor
+        will generate portable artifacts used in JAX-WS services.</para>
 
-    <section xml:id="running-apt-on-jdk-6">
-        <title>Running <command>apt</command> on JDK 6</title>
+        <para>
+            Be aware that the <command>apt</command> tool and its associated API,
+            <command>com.sun.mirror.\*</command>, are being deprecated in JDK 7.
+        </para>
 
-        <para>To run on JDK 6 follow these <xref linkend="running-on-jdk6"
-        xrefstyle="select:title" />.</para>
-    </section>
-
-    <section xml:id="moztocid408933">
-        <title><command>apt</command> Syntax</title>
-
-        <cmdsynopsis>
-            <command>apt</command>
-
-            <group choice="plain" rep="repeat">
-                <arg choice="opt">APT_AND_JAVAC_OPTION</arg>
-            </group>
-
-            <group choice="plain" rep="repeat">
-                <arg choice="req" rep="norepeat">SOURCE_FILE</arg>
-            </group>
-        </cmdsynopsis>
-
-        <para>The following table lists the <command>apt</command>
-        options:</para>
-
-        <informaltable frame="all">
-            <tgroup cols="2" colsep="1" rowsep="1">
-                <thead>
-                    <row>
-                        <entry>Option</entry>
-
-                        <entry>Description</entry>
-                    </row>
-                </thead>
-
-                <tbody>
-                    <row>
-                        <entry><literal>-classpath
-                        &lt;path&gt;</literal></entry>
-
-                        <entry>Specifies where to find user class files and
-                        annotation processor factories.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-cp &lt;path&gt;</literal></entry>
-
-                        <entry>Same as <literal>-classpath
-                        &lt;path&gt;</literal>.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-d &lt;path&gt;</literal></entry>
-
-                        <entry>Specifies where to place processor and
-                        <literal>javac</literal> generated class
-                        files.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-s &lt;path&gt;</literal></entry>
-
-                        <entry>Specifies where to place processor generated
-                        source files.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-source
-                        &lt;release&gt;</literal></entry>
-
-                        <entry>Provide source compatibility with the specified
-                        release.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-version</literal></entry>
-
-                        <entry>Version information.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-help</literal></entry>
-
-                        <entry>Print a synopsis of standard options; use
-                        <command>javac -help</command> for more
-                        options.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-X</literal></entry>
-
-                        <entry>Print a synopsis of non-standard
-                        options.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-J&lt;flag&gt;</literal></entry>
-
-                        <entry>Pass <literal>&lt;flag&gt;</literal> directly
-                        to the runtime system.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-A[key[=value]]</literal></entry>
-
-                        <entry>Options to pass to annotation
-                        processors.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>nocompile</literal></entry>
-
-                        <entry>Do not compile source files to class
-                        files.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-print</literal></entry>
-
-                        <entry>Print out a textual representation of the
-                        specified types.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-factorypath
-                        &lt;path&gt;</literal></entry>
-
-                        <entry>Specify where to find annotation processor
-                        factories.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-factory
-                        &lt;class&gt;</literal></entry>
-
-                        <entry>Name of
-                        <literal>AnnotationProcessorFactory</literal> to use;
-                        bypasses default discovery process.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-g</literal></entry>
-
-                        <entry>Generate all debugging info.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-g:none</literal></entry>
-
-                        <entry>Generate no debugging info.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-g:{lines,vars,source}</literal></entry>
-
-                        <entry>Generate only some debugging info.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-nowarn</literal></entry>
-
-                        <entry>Generate no warnings.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-verbose</literal></entry>
-
-                        <entry>Output messages about what
-                        <command>apt</command> and <command>javac</command>
-                        are doing.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-deprecation</literal></entry>
-
-                        <entry>Output source locations where deprecated APIs
-                        are used.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-sourcepath
-                        &lt;path&gt;</literal></entry>
-
-                        <entry>Specify where to find input source
-                        files.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-bootclasspath
-                        &lt;path&gt;</literal></entry>
-
-                        <entry>Override location of bootstrap class
-                        files.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-endorseddirs
-                        &lt;dirs&gt;</literal></entry>
-
-                        <entry>Override location of endorsed standards
-                        path.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-encoding
-                        &lt;encoding&gt;</literal></entry>
-
-                        <entry>Specify character encoding used by source
-                        files.</entry>
-                    </row>
-
-                    <row>
-                        <entry><literal>-target
-                        &lt;release&gt;</literal></entry>
-
-                        <entry>Generate class files for a specific virtual
-                        machine version.</entry>
-                    </row>
-                </tbody>
-            </tgroup>
-        </informaltable>
-
-        <para>It is important when using <command>apt</command> with JAX-WS to
-        specify all of the JAR files in the distributed JAX-WS bundle in the
-        classpath passed to <command>apt</command>. The <literal>-sourcepath
-        &lt;path&gt;</literal> option must also be provided so that
-        <command>apt</command> and the JAX-WS annotation processor can find
-        all types referenced by a web service endpoint implementation
-        class.</para>
-
-        <para>For more information on <command>apt</command> please refer to
-        the <command>apt</command> documentation <link
-        xlink:href="http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html">here</link>.</para>
-    </section>
+        <para>For more information on this compiler please see <xref
+        linkend="tools-annotation-processing" xrefstyle="select:title" />.</para>
+                       
 </section>

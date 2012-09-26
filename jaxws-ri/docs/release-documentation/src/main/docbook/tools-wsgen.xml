@@ -87,13 +87,6 @@ holder.
         </itemizedlist>
     </section>
 
-    <section xml:id="running-wsgen-on-jdk-6">
-        <title>Running <command>wsgen</command> on JDK 6</title>
-
-        <para>To run on JDK 6 follow these <xref linkend="running-on-jdk6"
-        xrefstyle="select:title" />.</para>
-    </section>
-
     <section xml:id="wsgen-syntax">
         <title><command>wsgen</command> Syntax</title>
 

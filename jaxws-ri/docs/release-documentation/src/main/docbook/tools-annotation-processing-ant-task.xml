@@ -125,13 +125,6 @@ holder.
         contains the list of classes required by the JAX-WS tools.</para>
     </section>
 
-    <section xml:id="running-ap-task-on-jdk-6">
-        <title>Running <command>annotationProcessing</command> Task on JDK 6</title>
-
-        <para>To run on JDK 6 follow these <xref linkend="running-on-jdk6"
-        xrefstyle="select:title" />.</para>
-    </section>
-
     <section xml:id="section-26459256796099617">
         <title><command>annotationProcessing</command> Task Examples</title>
 
@@ -185,7 +178,7 @@ holder.
     <section xml:id="deprecated-apt">
         <title><command>Apt</command> Ant task</title>
         <para>
-            For backwards compatibility <command>Apt</command> Ant task is still exists, but marked as deprecated,
+            For backwards compatibility <command>Apt</command> Ant task still exists, but is marked as deprecated,
             and can be used with certain restrictions.
         </para>
     </section>

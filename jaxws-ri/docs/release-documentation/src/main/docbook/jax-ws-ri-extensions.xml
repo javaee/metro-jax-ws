@@ -55,6 +55,107 @@ holder.
          xmlns:db="http://docbook.org/ns/docbook">
 <title>Extensions</title>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="jax-ws-ri-extensions-extensions.xml" />
+    <para>This page contains information about &jax-ws.product.name; specific
+    features and extensions:</para>
+
+    <section xml:id="sending-and-receiving-soap-headers">
+        <title>Sending and Receiving SOAP Headers</title>
+
+        <para>At times you need a way to send and receive SOAP headers in your
+        message - these headers may not be defined in the WSDL binding but
+        your application needs to do it anyway. One approach has been to write
+        a <literal>SOAPHandler</literal> to do it, but its more work and is
+        expensive as <literal>SOAPHandlers</literal> work on
+        <literal>SOAPMesssage</literal> which is DOM based and JAX-WS runtime
+        would need to do conversion from its abstract
+        <literal>Message</literal> representation to
+        <literal>SOAPMessage</literal> and vice versa.</para>
+
+        <para>There is a way to do it on the client side by downcasting the
+        proxy to <literal>WSBindingProvider</literal> and use methods on
+        it.</para>
+
+        <section xml:id="sending-soap-headers">
+            <title>Sending SOAP Headers</title>
+
+            <para>You would downcasting the proxy to
+            <literal>WSBindingProvider</literal> and set the
+            <literal>Outbound</literal> headers.</para>
+
+            <informalexample>
+                <programlisting language="java"><![CDATA[HelloService helloService = new HelloService();
+HelloPort port = helloService.getHelloPort();
+WSBindingProvider bp = (WSBindingProvider) port;
+
+bp.setOutboundHeaders(
+        // simple string value as a header, like stringValue
+        Headers.create(new QName("simpleHeader"), "stringValue"),
+        // create a header from JAXB object
+        Headers.create(jaxbContext, myJaxbObject));]]></programlisting>
+            </informalexample>
+        </section>
+
+        <section xml:id="receiving-soap-headers">
+            <title>Receiving SOAP Headers</title>
+
+            <informalexample>
+                <programlisting language="java"><![CDATA[List<Header> inboundHeaders = bp.getInboundHeaders();]]></programlisting>
+            </informalexample>
+        </section>
+    </section>
+
+    <section xml:id="message-logging">
+        <title>Message logging</title>
+
+        <para>Web Services developers generally need to see SOAP Messages that
+        are transferred between client and service for debugging. There are
+        SOAP Monitors for this job, but you need modify the client or server
+        code to use those tools. &jax-ws.product.name.short; provides logging
+        of SOAP messages</para>
+
+        <section xml:id="on-the-client">
+            <title>On the client</title>
+
+            <para>Set system property</para>
+
+            <informalexample>
+                <programlisting><![CDATA[com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=true]]></programlisting>
+            </informalexample>
+        </section>
+
+        <section xml:id="on-the-server-side">
+            <title>On the server side</title>
+
+            <para>Set system property</para>
+
+            <informalexample>
+                <programlisting><![CDATA[com.sun.xml.ws.transport.http.HttpAdapter.dump=true]]></programlisting>
+            </informalexample>
+        </section>
+    </section>
+
+    <section xml:id="propagation-of-server-side-stacktrace">
+        <title>Propagation of Server-side Stacktrace</title>
+
+        <para>This is a very useful feature while developing Web Services.
+        Often the soap fault messages for not user defined faults does not
+        convey enough information about the problem. &jax-ws.product.name.short;
+        relieves you from digging out the server logs to find out the stacktrace.
+        Whole stacktrace (including nested exceptions) can be propagated in the
+        SOAP Fault and the complete exception stacktrace can be made visible to
+        the client as cause of <literal>SOAPFaultException</literal>.</para>
+
+        <section xml:id="enabling-propagation-of-server-side-stacktrace">
+            <title>Enabling propagation of Server-side stacktrace</title>
+
+            <para>Propagation of Stack trace is off by default. To turn it on
+            for your Web Service Application to send the complete stack trace,
+            set the system property</para>
+
+            <informalexample>
+                <programlisting><![CDATA[com.sun.xml.ws.fault.SOAPFaultBuilder.captureStackTrace=true]]></programlisting>
+            </informalexample>
+        </section>
+    </section>
 
 </chapter>
