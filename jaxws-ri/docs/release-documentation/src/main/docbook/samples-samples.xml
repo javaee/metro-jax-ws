@@ -449,10 +449,7 @@ holder.
 
         <orderedlist>
             <listitem>
-                <para>Download Java 2 Standard Edition 5.0 Update 2 or later (
-                <link
-                xlink:href="http://java.sun.com/javase/downloads/index.jsp">J2SE
-                5.0</link>). Set <literal>JAVA_HOME</literal> to the J2SE 5.0
+                <para>Download Java SE 6 or later. Set <literal>JAVA_HOME</literal> to the J2SE
                 installation directory.</para>
             </listitem>
 

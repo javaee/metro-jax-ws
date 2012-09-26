@@ -63,6 +63,7 @@
     <xi:include href="release-notes.xml" />
     <xi:include href="users-guide.xml" />
     <xi:include href="tools.xml" />
+    <xi:include href="faq.xml" />
     <xi:include href="jax-ws-ri-extensions.xml" />
     <xi:include href="samples.xml" />
 

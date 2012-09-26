@@ -135,28 +135,28 @@ holder.
     <section xml:id="section-302002852812141">
         <title>Useful Links</title>
 
-        <para>Please use the <link
-        xlink:href="http://www.java.net/forums/glassfish/metro-and-jaxb">Metro
-        and JAXB</link> forum for feedback.</para>
+        <itemizedlist>
+            <listitem>
+                <para>Please use the <link
+                xlink:href="http://www.java.net/forums/glassfish/metro-and-jaxb">Metro
+                and JAXB</link> forum for feedback.</para>
+            </listitem>
 
-        <para>JAX-WS has a project page on Java.net: <link
-        xlink:href="http://jax-ws.java.net">http://jax-ws.java.net</link>.</para>
+            <listitem>
+                <para>JAX-WS has a project page on Java.net: 
+                    <link xlink:href="http://jax-ws.java.net">http://jax-ws.java.net</link>.
+                </para>
+            </listitem>
 
-        <section xml:id="other-links">
-            <title>Other links</title>
-            <para><link xlink:href="http://java.net/projects/jax-ws/lists">Mailing List</link></para>
+            <listitem>
+                <para><link xlink:href="http://java.net/projects/jax-ws/lists">JAX-WS Mailing Lists</link></para>
+            </listitem>
 
-            <para><link xlink:href="mailto:users@jax-ws.java.net">User
-                Feedback</link></para>
-
-            <para><link xlink:href="http://jax-ws.java.net/faq/index.html">FAQ</link></para>
-
-            <para><link
-                    xlink:href="http://jax-ws.java.net/roadmap/jaxws-roadmap.html">RoadMap</link></para>
-
-            <para><link xlink:href="http://java.net/jira/browse/JAX_WS">Issue
-                Tracker</link></para>
-        </section>
-
+            <listitem>
+                <para>
+                    <link xlink:href="http://java.net/jira/browse/JAX_WS">Issue Tracker</link>
+                </para>
+            </listitem>
+        </itemizedlist>
     </section>
 </chapter>
