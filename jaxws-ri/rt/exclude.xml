@@ -43,6 +43,11 @@
 <FindBugsFilter>
     <Match>
         <Or>
+            <Class name="org.jvnet.ws.message.BaseDistributedPropertySet"/>
+            <Class name="org.jvnet.ws.message.BasePropertySet"/>
+            <Class name="org.jvnet.ws.message.BasePropertySet$PropertyMap"/>
+            <Class name="org.jvnet.ws.message.MessageContextFactory"/>
+            <Class name="org.jvnet.ws.message.ReadOnlyPropertyException"/>
             <Class name="com.sun.xml.ws.api.message.MessageContextFactory"/>
             <Class name="com.sun.xml.ws.api.server.Invoker"/>
             <Class name="com.sun.xml.ws.server.InvokerTube"/>
