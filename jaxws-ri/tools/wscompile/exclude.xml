@@ -50,10 +50,18 @@
         <Class name="com.sun.tools.ws.wscompile.WsgenTool"/>
         <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>
     </Match>
+    <!--
+    Can't do much about these, but we should not ingore the warning for any new clases
+    so that we don't find ourselves in the same hell with new classes 
+    -->
     <Match>
         <Class name="com.sun.tools.ws.util.xml.XmlUtil"/>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
     </Match>
+    <!--
+    For backw. compatibility it's nearly impossible to replace URL without extensive
+    testing.
+    -->
     <Match>
         <Or>
             <Class name="com.sun.tools.ws.wscompile.AuthInfo"/>

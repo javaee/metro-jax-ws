@@ -41,6 +41,10 @@
 -->
 
 <FindBugsFilter>
+    <!--
+    Can't do much about these, but we should not ingore the warning for any new clases
+    so that we don't find ourselves in the same hell with new classes 
+    -->
     <Match>
         <Or>
             <Class name="org.jvnet.ws.message.BaseDistributedPropertySet"/>
@@ -60,6 +64,10 @@
         </Or>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
     </Match>
+    <!--
+    Can't do much about these, but we should not ingore the warning for any new clases
+    so that we don't find ourselves in the same hell with new classes 
+    -->
     <Match>
         <Or>
             <Class name="com.sun.xml.ws.Closeable"/>
@@ -72,6 +80,19 @@
         </Or>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
     </Match>
+    <!--
+    Can't do much about these, but we should not ingore the warning for any new clases
+    so that we don't find ourselves in the same hell with new classes 
+    -->
+    <Match>
+        <Or>
+            <Class name="com.sun.xml.ws.api.DistributedPropertySet"/>
+            <Class name="com.sun.xml.ws.api.message.Packet"/>
+            <Class name="com.sun.xml.ws.client.RequestContext"/>
+        </Or>
+        <Bug pattern="NM_WRONG_PACKAGE"/>
+    </Match>
+    
     <Match>
         <Or>
             <Class name="com.sun.xml.ws.db.glassfish.BridgeWrapper"/>
@@ -79,6 +100,9 @@
             <Bug pattern="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"/>
         </Or>
     </Match>
+    <!--
+    Class reviewed thoroughly multiple times, consensus is the warning is invalid.
+    -->
     <Match>
         <Or>
             <Class name="com.sun.xml.ws.api.pipe.Fiber"/>
@@ -107,18 +131,13 @@
     </Match>
     <Match>
         <Or>
-            <Class name="com.sun.xml.ws.api.DistributedPropertySet"/>
-            <Class name="com.sun.xml.ws.api.message.Packet"/>
-            <Class name="com.sun.xml.ws.client.RequestContext"/>
-        </Or>
-        <Bug pattern="NM_WRONG_PACKAGE"/>
-    </Match>
-    <Match>
-        <Or>
             <Class name="org.jvnet.ws.message.BasePropertySet$MapView"/>
         </Or>
         <Bug pattern="WMI_WRONG_MAP_ITERATOR"/>
     </Match>
+    <!--
+    Usually the field is read elsewhere in metro/wls code.
+    -->
     <Match>
         <Or>
             <Class name="com.sun.xml.ws.addressing.WsaTubeHelper"/>
@@ -137,21 +156,30 @@
         </Or>
         <Bug name="URF_UNREAD_FIELD"/>
     </Match>
-    <Match>
-        <Or>
-            <Class name="com.sun.xml.ws.util.NamespaceSupport$Context"/>
-        </Or>
-        <Bug pattern="ES_COMPARING_STRINGS_WITH_EQ"/>
-    </Match>
+    <!--
+    We don't own asm.
+    -->
     <Match>
         <Package name="com.sun.xml.ws.org.objectweb.asm"/>
     </Match>
+    <!--
+    As designed.
+    -->
     <Match>
         <Or>
             <Class name="com.sun.xml.ws.transport.http.client.HttpCookie"/>
             <Class name="com.sun.xml.ws.transport.http.client.CookieManager"/>
         </Or>
         <Bug pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ"/>
+    </Match>
+    <!--
+    As designed.
+    -->
+    <Match>
+        <Or>
+            <Class name="com.sun.xml.ws.util.NamespaceSupport$Context"/>
+        </Or>
+        <Bug pattern="ES_COMPARING_STRINGS_WITH_EQ"/>
     </Match>
     <Match>
         <Or>
