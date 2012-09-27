@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.model.wsdl;
 
+import com.oracle.webservices.api.message.BasePropertySet;
+import com.oracle.webservices.api.message.PropertySet;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
@@ -47,8 +49,6 @@ import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import javax.xml.namespace.QName;
 import javax.xml.ws.handler.MessageContext;
 
-import org.jvnet.ws.message.BasePropertySet;
-import org.jvnet.ws.message.PropertySet;
 
 import org.xml.sax.InputSource;
 

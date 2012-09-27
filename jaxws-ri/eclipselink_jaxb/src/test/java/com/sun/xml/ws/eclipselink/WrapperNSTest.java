@@ -57,9 +57,9 @@ import org.jvnet.ws.databinding.Databinding;
 import org.jvnet.ws.databinding.DatabindingFactory;
 import org.jvnet.ws.databinding.DatabindingModeFeature;
 import org.jvnet.ws.databinding.JavaCallInfo;
-import org.jvnet.ws.message.MessageContext;
 import org.w3c.dom.Node;
 
+import com.oracle.webservices.api.message.MessageContext;
 
 public class WrapperNSTest extends TestCase {
 

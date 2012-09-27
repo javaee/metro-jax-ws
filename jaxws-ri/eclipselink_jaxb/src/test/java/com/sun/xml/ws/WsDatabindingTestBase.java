@@ -58,7 +58,8 @@ import junit.framework.TestCase;
 
 import org.jvnet.ws.databinding.DatabindingModeFeature;
 import org.jvnet.ws.databinding.JavaCallInfo;
-import org.jvnet.ws.message.ContentType;
+
+import com.oracle.webservices.api.message.ContentType;
 
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.databinding.Databinding;

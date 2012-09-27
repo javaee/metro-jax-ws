@@ -43,7 +43,7 @@ package com.sun.xml.ws.api.message;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.jvnet.ws.message.ContentType;
+import com.oracle.webservices.api.message.ContentType;
 
 /**
  * A Message implementation may implement this interface as an alternative way to write the

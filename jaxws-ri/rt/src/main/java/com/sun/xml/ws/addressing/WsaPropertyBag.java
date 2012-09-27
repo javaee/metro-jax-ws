@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.addressing;
 
+import com.oracle.webservices.api.message.BasePropertySet;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
@@ -53,7 +54,6 @@ import com.sun.xml.ws.developer.JAXWSProperties;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.jvnet.ws.message.BasePropertySet;
 
 /**
  * Provides access to the Addressing headers.

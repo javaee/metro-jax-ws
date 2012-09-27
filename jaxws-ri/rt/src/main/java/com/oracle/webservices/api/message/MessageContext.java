@@ -38,10 +38,15 @@
  * holder.
  */
 
-package org.jvnet.ws.message;
+package com.oracle.webservices.api.message;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
 
 /**
  * MessageContext represents a container of a SOAP message and all the properties
@@ -58,9 +63,21 @@ import java.io.OutputStream;
  *
  * @author shih-chang.chen@oracle.com
  */
-@Deprecated
-public interface MessageContext 
-	extends DistributedPropertySet, com.oracle.webservices.api.message.MessageContext {
+public interface MessageContext extends DistributedPropertySet {
+    /**
+     * Gets the SAAJ SOAPMessage representation of the SOAP message.
+     *
+     * @return The SOAPMessage
+     */
+    SOAPMessage getAsSOAPMessage() throws SOAPException;
+    
+    /**
+     * Gets the SAAJ SOAPMessage representation of the SOAP message.
+     * @deprecated use getAsSOAPMessage
+     * @return The SOAPMessage
+     */
+    SOAPMessage getSOAPMessage() throws SOAPException;
+
     /**
      * Writes the XML infoset portion of this MessageContext
      * (from &lt;soap:Envelope> to &lt;/soap:Envelope>).
@@ -78,6 +95,16 @@ public interface MessageContext
      */
     ContentType writeTo( OutputStream out ) throws IOException;
 
+    /**
+     * The version of {@link #writeTo(OutputStream)}
+     * that writes to NIO {@link ByteBuffer}.
+     *
+     * <p>
+     * TODO: for the convenience of implementation, write
+     * an adapter that wraps {@link WritableByteChannel} to {@link OutputStream}.
+     */
+//  ContentType writeTo( WritableByteChannel buffer );
+    
     /**
      * Gets the Content-type of this message. For an out-bound message that this getContentType() 
      * method returns a null, the Content-Type can be determined only by calling the writeTo

@@ -49,32 +49,8 @@ import com.sun.xml.ws.encoding.ContentTypeImpl;
  *
  * @author Vivek Pandey
  */
-public interface ContentType {
-    
-    /**
-     * Gives non-null Content-Type header value.
-     */
-    public String getContentType();
-
-    /**
-     * Gives SOAPAction transport header value. It will be non-null only for SOAP 1.1 messages. In other cases
-     * it MUST be null. The SOAPAction transport header should be written out only when its non-null.
-     *
-     * @return It can be null, in that case SOAPAction header should be written.
-     */
-    public String getSOAPActionHeader();
-
-    /**
-     * Controls the Accept transport header, if the transport supports it.
-     * Returning null means the transport need not add any new header.
-     *
-     * <p>
-     * We realize that this is not an elegant abstraction, but
-     * this would do for now. If another person comes and asks for
-     * a similar functionality, we'll define a real abstraction.
-     */
-    public String getAcceptHeader();
-    
+@Deprecated
+public interface ContentType extends com.oracle.webservices.api.message.ContentType {
     static public class Builder {
         private String contentType;
         private String soapAction;
@@ -87,8 +63,32 @@ public interface ContentType {
         public Builder charset    (String s) {charset = s;     return this; }
         public ContentType build() {
             //TODO Do we want to remove this implementation dependency?
-            return new ContentTypeImpl(contentType, soapAction, accept, charset);
+            return new DepContentTypeImpl(
+            		new ContentTypeImpl(contentType, soapAction, accept, charset));
         }
+    }
+    
+    public static class DepContentTypeImpl implements ContentType {
+    	private final ContentTypeImpl delegate;
+    	
+    	public DepContentTypeImpl(com.oracle.webservices.api.message.ContentType delegate) {
+    		this.delegate = (ContentTypeImpl) delegate;
+    	}
+
+		@Override
+		public String getContentType() {
+			return delegate.getContentType();
+		}
+
+		@Override
+		public String getSOAPActionHeader() {
+			return delegate.getSOAPActionHeader();
+		}
+
+		@Override
+		public String getAcceptHeader() {
+			return delegate.getAcceptHeader();
+		}
     }
 }
 

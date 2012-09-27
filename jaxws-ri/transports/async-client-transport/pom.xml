@@ -86,6 +86,7 @@
                                     com.sun.xml.ws.transport.async_client_transport;version=${project.osgi.version}
                                 </Export-Package>
                                 <Import-Package>
+                                    com.oracle.webservices.api.message;version=${project.osgi.version},
                                     com.sun.xml.ws.api;version=${project.osgi.version},
                                     com.sun.xml.ws.api.addressing;version=${project.osgi.version},
                                     com.sun.xml.ws.api.message;version=${project.osgi.version},

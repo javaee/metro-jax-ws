@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.api.message;
 
+import com.oracle.webservices.api.message.ContentType;
+import com.oracle.webservices.api.message.PropertySet;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.bind.marshaller.SAX2DOMEx;
@@ -72,8 +74,6 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.DispatchException;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
 
-import org.jvnet.ws.message.ContentType;
-import org.jvnet.ws.message.PropertySet;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -167,6 +167,8 @@ import java.nio.channels.WritableByteChannel;
  * @author Kohsuke Kawaguchi
  */
 public final class Packet 
+	// Packet must continue to extend/implement deprecated interfaces until downstream
+	// usage is updated.
     extends org.jvnet.ws.message.BaseDistributedPropertySet 
     implements org.jvnet.ws.message.MessageContext {
 
@@ -1141,17 +1143,23 @@ public final class Packet
         return codec;
     } 
 
-    @Override
-    public ContentType writeTo( OutputStream out ) throws IOException {
-        Message msg = getInternalMessage();
-        if (msg instanceof MessageWritable) {
-            return ((MessageWritable)msg).writeTo(out);
-        }
-        return getCodec().encode(this, out);
+    private org.jvnet.ws.message.ContentType wrap(
+    		com.oracle.webservices.api.message.ContentType contentType) {
+    	return new org.jvnet.ws.message.ContentType.DepContentTypeImpl(contentType);
     }
     
-    public ContentType writeTo( WritableByteChannel buffer ) {
-        return getCodec().encode(this, buffer);
+
+    @Override
+    public org.jvnet.ws.message.ContentType writeTo( OutputStream out ) throws IOException {
+        Message msg = getInternalMessage();
+        if (msg instanceof MessageWritable) {
+            return wrap(((MessageWritable)msg).writeTo(out));
+        }
+        return wrap(getCodec().encode(this, out));
+    }
+    
+    public org.jvnet.ws.message.ContentType writeTo( WritableByteChannel buffer ) {
+        return wrap(getCodec().encode(this, buffer));
     }
     
     private ContentType contentType;
@@ -1204,7 +1212,7 @@ public final class Packet
     }
 
     @Override
-    public ContentType getContentType() {
+    public org.jvnet.ws.message.ContentType getContentType() {
         if (contentType == null) {
             contentType = getInternalContentType();
         }
@@ -1214,7 +1222,7 @@ public final class Packet
         if (contentType == null) {
             //TODO write to buffer
         }
-        return contentType;
+        return wrap(contentType);
     }
     
     public ContentType getInternalContentType() {

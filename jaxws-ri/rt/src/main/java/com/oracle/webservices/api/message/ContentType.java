@@ -38,52 +38,57 @@
  * holder.
  */
 
-package org.jvnet.ws.message;
+package com.oracle.webservices.api.message;
 
-import java.io.IOException;
-import java.io.OutputStream;
+//TODO Do we want to remove this implementation dependency?
+import com.sun.xml.ws.encoding.ContentTypeImpl;
 
 /**
- * MessageContext represents a container of a SOAP message and all the properties
- * including the transport headers.
+ * A Content-Type transport header that will be returned by {@link MessageContext#write(java.io.OutputStream)}.
+ * It will provide the Content-Type header and also take care of SOAP 1.1 SOAPAction header.
  *
- * MessageContext is a composite {@link PropertySet} that combines properties exposed from multiple
- * {@link PropertySet}s into one.
- *
- * <p>
- * This implementation allows one {@link PropertySet} to assemble
- * all properties exposed from other "satellite" {@link PropertySet}s.
- * (A satellite may itself be a {@link DistributedPropertySet}, so
- * in general this can form a tree.)
- *
- * @author shih-chang.chen@oracle.com
+ * @author Vivek Pandey
  */
-@Deprecated
-public interface MessageContext 
-	extends DistributedPropertySet, com.oracle.webservices.api.message.MessageContext {
+public interface ContentType {
+    
     /**
-     * Writes the XML infoset portion of this MessageContext
-     * (from &lt;soap:Envelope> to &lt;/soap:Envelope>).
-     *
-     * @param out
-     *      Must not be null. The caller is responsible for closing the stream,
-     *      not the callee.
-     *
-     * @return
-     *      The MIME content type of the encoded message (such as "application/xml").
-     *      This information is often ncessary by transport.
-     *
-     * @throws IOException
-     *      if a {@link OutputStream} throws {@link IOException}.
+     * Gives non-null Content-Type header value.
      */
-    ContentType writeTo( OutputStream out ) throws IOException;
+    public String getContentType();
 
     /**
-     * Gets the Content-type of this message. For an out-bound message that this getContentType() 
-     * method returns a null, the Content-Type can be determined only by calling the writeTo
-     * method to write the MessageContext to an OutputStream.
-     * 
-     * @return The MIME content type of this message
+     * Gives SOAPAction transport header value. It will be non-null only for SOAP 1.1 messages. In other cases
+     * it MUST be null. The SOAPAction transport header should be written out only when its non-null.
+     *
+     * @return It can be null, in that case SOAPAction header should be written.
      */
-    ContentType getContentType();
+    public String getSOAPActionHeader();
+
+    /**
+     * Controls the Accept transport header, if the transport supports it.
+     * Returning null means the transport need not add any new header.
+     *
+     * <p>
+     * We realize that this is not an elegant abstraction, but
+     * this would do for now. If another person comes and asks for
+     * a similar functionality, we'll define a real abstraction.
+     */
+    public String getAcceptHeader();
+    
+    static public class Builder {
+        private String contentType;
+        private String soapAction;
+        private String accept;
+        private String charset;
+        
+        public Builder contentType(String s) {contentType = s; return this; }
+        public Builder soapAction (String s) {soapAction = s;  return this; }
+        public Builder accept     (String s) {accept = s;      return this; }
+        public Builder charset    (String s) {charset = s;     return this; }
+        public ContentType build() {
+            //TODO Do we want to remove this implementation dependency?
+            return new ContentTypeImpl(contentType, soapAction, accept, charset);
+        }
+    }
 }
+

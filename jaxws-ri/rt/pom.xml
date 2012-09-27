@@ -178,6 +178,7 @@
                             <instructions>
                                 <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
                                 <Export-Package>
+                                    com.oracle.webservices.api.message;version=${project.version},
                                     com.sun.xml.ws.addressing.model;version=${project.version},
                                     com.sun.xml.ws.addressing.policy;version=${project.version},
                                     com.sun.xml.ws.addressing.v200408;version=${project.version},

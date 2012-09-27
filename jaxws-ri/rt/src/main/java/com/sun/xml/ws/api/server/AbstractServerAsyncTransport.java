@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.api.server;
 
+import com.oracle.webservices.api.message.PropertySet;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.message.Message;
@@ -49,7 +50,6 @@ import com.sun.xml.ws.util.Pool;
 
 import java.io.IOException;
 
-import org.jvnet.ws.message.PropertySet;
 
 /**
  * Partial server side async transport implementation. It manages pooling of

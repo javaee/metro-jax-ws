@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.binding;
 
+import com.oracle.webservices.api.message.MessageContextFactory;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
@@ -62,7 +63,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map;
 
-import org.jvnet.ws.message.MessageContextFactory;
 
 /**
  * Instances are created by the service, which then
@@ -303,11 +303,11 @@ public abstract class BindingImpl implements WSBinding {
         features.add(newFeature);
     }
 
-    public synchronized @NotNull MessageContextFactory getMessageContextFactory () {
+    public synchronized @NotNull org.jvnet.ws.message.MessageContextFactory getMessageContextFactory () {
         if (messageContextFactory == null) {
             messageContextFactory = MessageContextFactory.createFactory(getFeatures().toArray());
         }
-        return messageContextFactory;
+        return org.jvnet.ws.message.MessageContextFactory.wrap(messageContextFactory);
     }
 
     /**

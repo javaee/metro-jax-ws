@@ -78,15 +78,14 @@ import com.sun.istack.Nullable;
  *
  * @author Kohsuke Kawaguchi
  */
-public interface DistributedPropertySet extends org.jvnet.ws.message.PropertySet {
+@Deprecated
+public interface DistributedPropertySet extends com.oracle.webservices.api.message.DistributedPropertySet {
 
-    public @Nullable <T extends org.jvnet.ws.message.PropertySet> T getSatellite(Class<T> satelliteClass);
+    public void addSatellite(PropertySet satellite);
 
-    public void addSatellite(org.jvnet.ws.message.PropertySet satellite);
+    public void addSatellite(Class keyClass, PropertySet satellite);
 
-    public void addSatellite(Class keyClass, org.jvnet.ws.message.PropertySet satellite);
+    public void removeSatellite(PropertySet satellite);
 
-    public void removeSatellite(org.jvnet.ws.message.PropertySet satellite);
-
-    public void copySatelliteInto(org.jvnet.ws.message.MessageContext r);
+    public void copySatelliteInto(MessageContext r);
 }

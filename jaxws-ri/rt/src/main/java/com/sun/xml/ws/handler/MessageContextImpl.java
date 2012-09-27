@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.handler;
 
+import com.oracle.webservices.api.message.ReadOnlyPropertyException;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.Packet;
@@ -51,7 +52,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.jvnet.ws.message.ReadOnlyPropertyException;
 
 /**
  *

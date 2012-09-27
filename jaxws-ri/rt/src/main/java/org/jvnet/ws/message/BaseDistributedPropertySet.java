@@ -91,203 +91,24 @@ import java.util.Set;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class BaseDistributedPropertySet extends BasePropertySet implements DistributedPropertySet {
-    
-    /**
-     * All {@link PropertySet}s that are bundled into this {@link PropertySet}.
-     */
-    private final Map<Class, PropertySet> satellites = new IdentityHashMap<Class, PropertySet>();
-
-    private final Map<String, Object> viewthis;
-    
-    public BaseDistributedPropertySet() {
-        this.viewthis = super.createView();
-    }
-    
-    @Override
-    public void addSatellite(@NotNull PropertySet satellite) {
-        addSatellite(satellite.getClass(), satellite);
+@Deprecated
+public abstract class BaseDistributedPropertySet 
+	extends com.oracle.webservices.api.message.BaseDistributedPropertySet implements DistributedPropertySet {
+	
+    public void addSatellite(PropertySet satellite) {
+    	super.addSatellite(satellite);
     }
 
-    @Override
-    public void addSatellite(@NotNull Class keyClass, @NotNull PropertySet satellite) {
-        satellites.put(keyClass, satellite);
+    public void addSatellite(Class keyClass, PropertySet satellite) {
+    	super.addSatellite(keyClass, satellite);
     }
 
-    @Override
     public void removeSatellite(PropertySet satellite) {
-        satellites.remove(satellite.getClass());
+    	super.removeSatellite(satellite);
     }
 
-    public void copySatelliteInto(@NotNull DistributedPropertySet r) {
-        for (Map.Entry<Class, PropertySet> entry : satellites.entrySet()) {
-            r.addSatellite(entry.getKey(), entry.getValue());
-        }
-    }
-
-    @Override
     public void copySatelliteInto(MessageContext r) {
-        copySatelliteInto((DistributedPropertySet)r);
+    	super.copySatelliteInto(r);
     }
     
-    public @Override @Nullable <T extends org.jvnet.ws.message.PropertySet> T getSatellite(Class<T> satelliteClass) {
-        T satellite = (T) satellites.get(satelliteClass);
-        if (satellite != null) {
-            return satellite;
-        }
-        
-        for (PropertySet child : satellites.values()) {
-            if (satelliteClass.isInstance(child)) {
-                return satelliteClass.cast(child);
-            }
-
-            if (DistributedPropertySet.class.isInstance(child)) {
-                satellite = DistributedPropertySet.class.cast(child).getSatellite(satelliteClass);
-                if (satellite != null) {
-                    return satellite;
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Object get(Object key) {
-        // check satellites
-        for (PropertySet child : satellites.values()) {
-            if (child.supports(key)) {
-                return child.get(key);
-            }
-        }
-
-        // otherwise it must be the master
-        return super.get(key);
-    }
-
-    @Override
-    public Object put(String key, Object value) {
-        // check satellites
-        for (PropertySet child : satellites.values()) {
-            if(child.supports(key)) {
-                return child.put(key,value);
-            }
-        }
-
-        // otherwise it must be the master
-        return super.put(key,value);
-    }
-
-    @Override
-    public boolean supports(Object key) {
-        // check satellites
-        for (PropertySet child : satellites.values()) {
-            if (child.supports(key)) {
-                return true;
-            }
-        }
-
-        return super.supports(key);
-    }
-
-    @Override
-    public Object remove(Object key) {
-        // check satellites
-        for (PropertySet child : satellites.values()) {
-            if (child.supports(key)) {
-                return child.remove(key);
-            }
-        }
-
-        return super.remove(key);
-    }
-
-    @Override
-    protected void createEntrySet(Set<Entry<String, Object>> core) {
-        super.createEntrySet(core);
-        for (PropertySet child : satellites.values()) {
-            ((BasePropertySet) child).createEntrySet(core);
-        }
-    }
-    
-    protected Map<String, Object> asMapLocal() {
-        return viewthis;
-    }
-    
-    protected boolean supportsLocal(Object key) {
-        return super.supports(key);
-    }
-    
-    class DistributedMapView extends AbstractMap<String, Object> {
-        @Override
-        public Object get(Object key) {
-            for (PropertySet child : satellites.values()) {
-                if (child.supports(key)) {
-                    return child.get(key);
-                }
-            }
-            
-            return viewthis.get(key);
-        }
-        
-        @Override
-        public int size() {
-            int size = viewthis.size();
-            for (PropertySet child : satellites.values()) {
-                size += child.asMap().size();
-            }
-            return size;
-        }
-
-        @Override
-        public Set<Entry<String, Object>> entrySet() {
-            Set<Entry<String, Object>> entries = new HashSet<Entry<String, Object>>();
-            for (PropertySet child : satellites.values()) {
-                for (Entry<String,Object> entry : child.asMap().entrySet()) {
-                    // the code below is here to avoid entries.addAll(child.asMap().entrySet()); which works differently on JDK6/7
-                    // see DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS
-                    entries.add(new SimpleImmutableEntry<String, Object>(entry.getKey(), entry.getValue()));
-                }
-            }
-            for (Entry<String,Object> entry : viewthis.entrySet()) {
-                // the code below is here to avoid entries.addAll(child.asMap().entrySet()); which works differently on JDK6/7
-                // see DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS
-                entries.add(new SimpleImmutableEntry<String, Object>(entry.getKey(), entry.getValue()));
-            }
-            
-            return entries;
-        }
-
-        @Override
-        public Object put(String key, Object value) {
-            for (PropertySet child : satellites.values()) {
-                if (child.supports(key)) {
-                    return child.put(key, value);
-                }
-            }
-            
-            return viewthis.put(key, value);
-        }
-
-        @Override
-        public void clear() {
-            satellites.clear();
-            viewthis.clear();
-        }
-
-        @Override
-        public Object remove(Object key) {
-            for (PropertySet child : satellites.values()) {
-                if (child.supports(key)) {
-                    return child.remove(key);
-                }
-            }
-            
-            return viewthis.remove(key);
-        }
-    }
-
-    @Override
-    protected Map<String, Object> createView() {
-        return new DistributedMapView();
-    }
 }

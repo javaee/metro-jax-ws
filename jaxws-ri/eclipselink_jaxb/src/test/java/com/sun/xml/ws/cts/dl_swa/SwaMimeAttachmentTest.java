@@ -58,8 +58,9 @@ import javax.xml.ws.handler.MessageContext;
 
 import org.jvnet.ws.databinding.DatabindingModeFeature;
 import org.jvnet.ws.databinding.JavaCallInfo;
-import org.jvnet.ws.message.ContentType;
 import org.xml.sax.EntityResolver;
+
+import com.oracle.webservices.api.message.ContentType;
 
 import com.sun.xml.ws.InVmWSDLResolver;
 import com.sun.xml.ws.WsDatabindingTestBase;

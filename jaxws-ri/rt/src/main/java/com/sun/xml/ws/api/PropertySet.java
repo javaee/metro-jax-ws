@@ -50,7 +50,7 @@ import java.util.Map.Entry;
  * @deprecated Use org.jvnet.ws.message.PropertySet instead.
  * @author snajper
  */
-public abstract class PropertySet extends org.jvnet.ws.message.BasePropertySet {
+public abstract class PropertySet extends com.oracle.webservices.api.message.BasePropertySet {
     /**
      * Represents the list of strongly-typed known properties
      * (keyed by property names.)
@@ -59,13 +59,13 @@ public abstract class PropertySet extends org.jvnet.ws.message.BasePropertySet {
      * Just giving it an alias to make the use of this class more fool-proof.
      * @deprecated
      */
-    protected static class PropertyMap extends org.jvnet.ws.message.BasePropertySet.PropertyMap {}
+    protected static class PropertyMap extends com.oracle.webservices.api.message.BasePropertySet.PropertyMap {}
 
     /**
      * @deprecated
      */
     protected static PropertyMap parse(final Class clazz) {
-        org.jvnet.ws.message.BasePropertySet.PropertyMap pm = org.jvnet.ws.message.BasePropertySet.parse(clazz);
+        com.oracle.webservices.api.message.BasePropertySet.PropertyMap pm = com.oracle.webservices.api.message.BasePropertySet.parse(clazz);
         PropertyMap map = new PropertyMap();
         map.putAll(pm);
         return map;

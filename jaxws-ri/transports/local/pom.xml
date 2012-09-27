@@ -85,6 +85,7 @@
                                     com.sun.xml.ws.transport.local;version=${project.osgi.version}
                                 </Export-Package>
                                 <Import-Package>
+                                    com.oracle.webservices.api.message;version=${project.osgi.version},
                                     com.sun.xml.ws.api;version=${project.osgi.version},
                                     com.sun.xml.ws.api.message;version=${project.osgi.version},
                                     com.sun.xml.ws.api.pipe;version=${project.osgi.version},

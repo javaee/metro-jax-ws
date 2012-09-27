@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.transport.http;
 
+import com.oracle.webservices.api.message.BasePropertySet;
+import com.oracle.webservices.api.message.PropertySet;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.message.Packet;
@@ -56,8 +58,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jvnet.ws.message.BasePropertySet;
-import org.jvnet.ws.message.PropertySet;
 
 /**
  * The view of an HTTP exchange from the point of view of JAX-WS.

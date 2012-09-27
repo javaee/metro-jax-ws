@@ -42,21 +42,25 @@ package org.jvnet.ws.message;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
 
+import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.SOAPVersion; // TODO leaking RI APIs
-import com.sun.xml.ws.util.ServiceFinder;
+import com.sun.xml.ws.encoding.ContentTypeImpl;
 
 import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.ws.WebServiceFeature;
 
 import org.jvnet.ws.EnvelopeStyle;
+import org.jvnet.ws.EnvelopeStyle.Style;
 
-public abstract class MessageContextFactory
+@Deprecated
+public abstract class MessageContextFactory extends com.oracle.webservices.api.message.MessageContextFactory
 {   
-    private static final MessageContextFactory DEFAULT = new com.sun.xml.ws.api.message.MessageContextFactory(new WebServiceFeature[0]);
-
     protected abstract MessageContextFactory newFactory(WebServiceFeature ... f);
     
     public abstract MessageContext createContext();
@@ -80,12 +84,201 @@ public abstract class MessageContextFactory
     }
     
     static public MessageContextFactory createFactory(ClassLoader cl, WebServiceFeature ...f) {
-        for (MessageContextFactory factory : ServiceFinder.find(MessageContextFactory.class, cl)) {
-            MessageContextFactory newfac = factory.newFactory(f);
-            if (newfac != null) return newfac;
-        }
-        return new com.sun.xml.ws.api.message.MessageContextFactory(f);
+        return wrap(
+        		com.oracle.webservices.api.message.MessageContextFactory.createFactory(cl, f));
     }  
+    
+    private static final class MCWrapper implements MessageContext {
+    	private com.oracle.webservices.api.message.MessageContext mc;
+    	
+    	public MCWrapper(com.oracle.webservices.api.message.MessageContext mc) {
+    		this.mc = mc;
+    	}
+
+		@Override
+		public void addSatellite(Class keyClass, com.oracle.webservices.api.message.PropertySet satellite) {
+			mc.addSatellite(keyClass, satellite);
+		}
+
+		@Override
+		public @Nullable
+		<T extends com.oracle.webservices.api.message.PropertySet> T getSatellite(Class<T> satelliteClass) {
+			return mc.getSatellite(satelliteClass);
+		}
+
+		@Override
+		public void addSatellite(com.oracle.webservices.api.message.PropertySet satellite) {
+			mc.addSatellite(satellite);
+		}
+
+		@Override
+		public void removeSatellite(com.oracle.webservices.api.message.PropertySet satellite) {
+			mc.removeSatellite(satellite);
+		}
+
+		@Override
+		public void copySatelliteInto(
+				com.oracle.webservices.api.message.MessageContext r) {
+			mc.copySatelliteInto(r);
+		}
+
+		@Override
+		public boolean containsKey(Object key) {
+			return mc.containsKey(key);
+		}
+
+		@Override
+		public Object get(Object key) {
+			return mc.get(key);
+		}
+
+		@Override
+		public Object put(String key, Object value) {
+			return mc.put(key, value);
+		}
+
+		@Override
+		public boolean supports(Object key) {
+			return mc.supports(key);
+		}
+
+		@Override
+		public Object remove(Object key) {
+			return mc.remove(key);
+		}
+
+		@Override
+		@Deprecated
+		public Map<String, Object> createMapView() {
+			return mc.createMapView();
+		}
+
+		@Override
+		public Map<String, Object> asMap() {
+			return mc.asMap();
+		}
+
+		@Override
+		public SOAPMessage getAsSOAPMessage() throws SOAPException {
+			return mc.getAsSOAPMessage();
+		}
+
+		@Override
+		public SOAPMessage getSOAPMessage() throws SOAPException {
+			return mc.getSOAPMessage();
+		}
+
+		@Override
+		public void addSatellite(PropertySet satellite) {
+			mc.addSatellite(satellite);
+		}
+
+		@Override
+		public void removeSatellite(PropertySet satellite) {
+			mc.removeSatellite(satellite);
+		}
+
+		@Override
+		public void copySatelliteInto(MessageContext otherMessageContext) {
+			mc.copySatelliteInto(otherMessageContext);
+		}
+
+		@Override
+		public void addSatellite(Class keyClass, PropertySet satellite) {
+			mc.addSatellite(keyClass, satellite);
+		}
+    	
+		@Override
+		public ContentType writeTo(OutputStream out) throws IOException {
+			return new ContentType.DepContentTypeImpl((ContentTypeImpl)mc.writeTo(out));
+		}
+
+		@Override
+		public ContentType getContentType() {
+			return new ContentType.DepContentTypeImpl((ContentTypeImpl)mc.getContentType());
+		}
+
+    }
+    
+    public static org.jvnet.ws.message.MessageContextFactory wrap(
+    		com.oracle.webservices.api.message.MessageContextFactory mcf) {
+    	if (mcf instanceof MessageContextFactory)
+    		return (MessageContextFactory) mcf;
+    	return new MCFWrapper(mcf);
+    }
+    
+    public static org.jvnet.ws.message.MessageContext wrap(
+    		com.oracle.webservices.api.message.MessageContext mc) {
+    	if (mc instanceof MessageContext)
+    		return (MessageContext) mc;
+    	return new MCWrapper(mc);
+    }
+    
+    private static final class MCFWrapper extends MessageContextFactory {
+    	private com.oracle.webservices.api.message.MessageContextFactory mcf;
+    	
+    	public MCFWrapper(com.oracle.webservices.api.message.MessageContextFactory mcf) {
+    		this.mcf = mcf;
+    	}
+
+		@Override
+		protected MessageContextFactory newFactory(WebServiceFeature... f) {
+			throw new UnsupportedOperationException(); // Intentionally not supported
+		}
+
+		@Override
+		public MessageContext createContext() {
+			return wrap(mcf.createContext());
+		}
+
+		@Override
+		public MessageContext createContext(SOAPMessage m) {
+			return wrap(mcf.createContext(m));
+		}
+
+		@Override
+		public MessageContext createContext(Source m) {
+			return wrap(mcf.createContext(m));
+		}
+
+		@Override
+		public MessageContext createContext(Source m, Style envelopeStyle) {
+			return wrap(mcf.createContext(m, envelopeStyle));
+		}
+
+		@Override
+		public MessageContext createContext(InputStream in, String contentType)
+				throws IOException {
+			return wrap(mcf.createContext(in, contentType));
+		}
+
+		@Override
+		@Deprecated
+		public MessageContext createContext(InputStream in, MimeHeaders headers)
+				throws IOException {
+			return wrap(mcf.createContext(in, headers));
+		}
+
+		@Override
+		@Deprecated
+		public MessageContext doCreate() {
+			return wrap(mcf.doCreate());
+
+		}
+
+		@Override
+		@Deprecated
+		public MessageContext doCreate(SOAPMessage m) {
+			return wrap(mcf.doCreate(m));
+		}
+
+		@Override
+		@Deprecated
+		public MessageContext doCreate(Source x, SOAPVersion soapVersion) {
+			return wrap(mcf.doCreate(x, soapVersion));
+		}
+    	
+    }
 
     @Deprecated
     public abstract MessageContext doCreate();
@@ -100,48 +293,20 @@ public abstract class MessageContextFactory
 
     @Deprecated
     public static MessageContext create(final ClassLoader... classLoader) {
-        return serviceFinder(classLoader,
-                             new Creator() {
-                                 public MessageContext create(final MessageContextFactory f) {
-                                     return f.doCreate();
-                                 }
-                             });
+        return wrap(
+        		com.oracle.webservices.api.message.MessageContextFactory.create(classLoader));
     }
 
     @Deprecated
     public static MessageContext create(final SOAPMessage m, final ClassLoader... classLoader) {
-        return serviceFinder(classLoader,
-                             new Creator() {
-                                 public MessageContext create(final MessageContextFactory f) {
-                                     return f.doCreate(m);
-                                 }
-                             });
+        return wrap(
+        		com.oracle.webservices.api.message.MessageContextFactory.create(m, classLoader));
     }
 
     @Deprecated
     public static MessageContext create(final Source m, final SOAPVersion v, final ClassLoader... classLoader) {
-        return serviceFinder(classLoader,
-                             new Creator() {
-                                 public MessageContext create(final MessageContextFactory f) {
-                                     return f.doCreate(m, v);
-                                 }
-                             });
-    }
-
-    @Deprecated
-    private static MessageContext serviceFinder(final ClassLoader[] classLoader, final Creator creator) {
-        final ClassLoader cl = classLoader.length == 0 ? null : classLoader[0];
-        for (MessageContextFactory factory : ServiceFinder.find(MessageContextFactory.class, cl)) {
-            final MessageContext messageContext = creator.create(factory);
-            if (messageContext != null)
-                return messageContext;
-        }
-        return creator.create(DEFAULT);
-    }
-
-    @Deprecated
-    private static interface Creator {
-        public MessageContext create(MessageContextFactory f);
+        return wrap(
+        		com.oracle.webservices.api.message.MessageContextFactory.create(m, v, classLoader));
     }
 }
 

@@ -268,6 +268,7 @@ public final class Invoker {
         "org.codehaus.stax2.", //wsimport, wsgen ant task
         "com.sun.xml.messaging.saaj.", //wsgen ant task
         "com.sun.xml.ws.",
+        "com.oracle.webservices.api.", //wsgen
         "org.jvnet.ws." //wsgen
     };
 

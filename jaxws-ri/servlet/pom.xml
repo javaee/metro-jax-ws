@@ -95,6 +95,7 @@
                                     com.sun.xml.ws.transport.http.servlet;version=${project.version}
                                 </Export-Package>
                                 <Import-Package>
+                                    com.oracle.webservices.api.message;version=${jaxws-rt.version},
                                     com.sun.istack.localization;version=${jaxb-impl.version},
                                     com.sun.xml.ws.api;version=${jaxws-rt.version}, 
                                     com.sun.xml.ws.api.ha;version=${jaxws-rt.version}, 
@@ -115,7 +116,7 @@
                                     javax.xml.ws;version=${jaxws-api.version},
                                     javax.xml.ws.http;version=${jaxws-api.version},
                                     javax.xml.ws.spi;version=${jaxws-api.version},
-                                    org.glassfish.external.probe.provider.annotations, 
+                                    org.glassfish.external.probe.provider.annotations,
                                     org.jvnet.ws.message;version=${jaxws-rt.version}
                                 </Import-Package>
                             </instructions>

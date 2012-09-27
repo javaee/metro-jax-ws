@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.transport.http.client;
 
+import com.oracle.webservices.api.message.BasePropertySet;
+import com.oracle.webservices.api.message.PropertySet;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.client.ResponseContext;
 
@@ -47,8 +49,6 @@ import javax.xml.ws.handler.MessageContext;
 import java.util.List;
 import java.util.Map;
 
-import org.jvnet.ws.message.BasePropertySet;
-import org.jvnet.ws.message.PropertySet;
 
 /**
  * Properties exposed from {@link HttpTransportPipe} for {@link ResponseContext}.

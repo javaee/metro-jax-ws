@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.client;
 
+import com.oracle.webservices.api.message.BaseDistributedPropertySet;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.message.Packet;
@@ -54,7 +55,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.jvnet.ws.message.BaseDistributedPropertySet;
 
 import static javax.xml.ws.BindingProvider.*;
 import static javax.xml.ws.handler.MessageContext.HTTP_REQUEST_HEADERS;
@@ -87,7 +87,7 @@ import static javax.xml.ws.handler.MessageContext.HTTP_REQUEST_HEADERS;
  * For better performance, we wan't use strongly typed field as much as possible
  * to avoid reflection and unnecessary collection iterations;
  *
- * Using {@link org.jvnet.ws.message.BasePropertySet.MapView} implementation allows client to use {@link Map} interface
+ * Using {@link com.oracle.webservices.api.message.BasePropertySet.MapView} implementation allows client to use {@link Map} interface
  * in a way that all the strongly typed properties are reflected to the fields
  * right away. Any additional (extending) properties can be added by client as well;
  * those would be processed using iterating the {@link MapView} and their processing,

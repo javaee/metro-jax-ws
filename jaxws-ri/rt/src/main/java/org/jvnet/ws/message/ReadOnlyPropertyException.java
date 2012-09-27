@@ -46,18 +46,11 @@ package org.jvnet.ws.message;
  *
  * @author Kohsuke Kawaguchi
  */
-public class ReadOnlyPropertyException extends IllegalArgumentException {
-    private final String propertyName;
+@Deprecated
+public class ReadOnlyPropertyException extends com.oracle.webservices.api.message.ReadOnlyPropertyException {
 
     public ReadOnlyPropertyException(String propertyName) {
-        super(propertyName+" is a read-only property.");
-        this.propertyName = propertyName;
+    	super(propertyName);
     }
 
-    /**
-     * Gets the name of the property that was read-only.
-     */
-    public String getPropertyName() {
-        return propertyName;
-    }
 }

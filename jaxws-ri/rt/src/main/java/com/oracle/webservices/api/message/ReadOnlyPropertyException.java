@@ -38,52 +38,26 @@
  * holder.
  */
 
-package org.jvnet.ws.message;
-
-import java.io.IOException;
-import java.io.OutputStream;
+package com.oracle.webservices.api.message;
 
 /**
- * MessageContext represents a container of a SOAP message and all the properties
- * including the transport headers.
+ * Used to indicate that {@link PropertySet#put(String, Object)} failed
+ * because a property is read-only.
  *
- * MessageContext is a composite {@link PropertySet} that combines properties exposed from multiple
- * {@link PropertySet}s into one.
- *
- * <p>
- * This implementation allows one {@link PropertySet} to assemble
- * all properties exposed from other "satellite" {@link PropertySet}s.
- * (A satellite may itself be a {@link DistributedPropertySet}, so
- * in general this can form a tree.)
- *
- * @author shih-chang.chen@oracle.com
+ * @author Kohsuke Kawaguchi
  */
-@Deprecated
-public interface MessageContext 
-	extends DistributedPropertySet, com.oracle.webservices.api.message.MessageContext {
-    /**
-     * Writes the XML infoset portion of this MessageContext
-     * (from &lt;soap:Envelope> to &lt;/soap:Envelope>).
-     *
-     * @param out
-     *      Must not be null. The caller is responsible for closing the stream,
-     *      not the callee.
-     *
-     * @return
-     *      The MIME content type of the encoded message (such as "application/xml").
-     *      This information is often ncessary by transport.
-     *
-     * @throws IOException
-     *      if a {@link OutputStream} throws {@link IOException}.
-     */
-    ContentType writeTo( OutputStream out ) throws IOException;
+public class ReadOnlyPropertyException extends IllegalArgumentException {
+    private final String propertyName;
+
+    public ReadOnlyPropertyException(String propertyName) {
+        super(propertyName+" is a read-only property.");
+        this.propertyName = propertyName;
+    }
 
     /**
-     * Gets the Content-type of this message. For an out-bound message that this getContentType() 
-     * method returns a null, the Content-Type can be determined only by calling the writeTo
-     * method to write the MessageContext to an OutputStream.
-     * 
-     * @return The MIME content type of this message
+     * Gets the name of the property that was read-only.
      */
-    ContentType getContentType();
+    public String getPropertyName() {
+        return propertyName;
+    }
 }

@@ -44,10 +44,10 @@ package com.sun.xml.ws.api.pipe;
  * A Content-Type transport header that will be returned by {@link Codec#encode(com.sun.xml.ws.api.message.Packet, java.io.OutputStream)}.
  * It will provide the Content-Type header and also take care of SOAP 1.1 SOAPAction header.
  *
- * @see org.jvnet.ws.message.ContentType
+ * @see com.oracle.webservices.api.message.ContentType
  * TODO: rename to ContentMetadata?
  *
  * @author Vivek Pandey
  */
-public interface ContentType extends org.jvnet.ws.message.ContentType {
+public interface ContentType extends com.oracle.webservices.api.message.ContentType {
 }

@@ -57,8 +57,8 @@ import javax.xml.ws.soap.MTOMFeature;
 
 import org.jvnet.ws.EnvelopeStyle;
 import org.jvnet.ws.EnvelopeStyleFeature;
-import org.jvnet.ws.message.MessageContext;
 
+import com.oracle.webservices.api.message.MessageContext;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.pipe.Codec;
@@ -105,26 +105,26 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
     }
 
 
-    public MessageContext createContext() {
+    public org.jvnet.ws.message.MessageContext createContext() {
         return packet(null);
     }
 
-    public MessageContext createContext(SOAPMessage soap) {
+    public org.jvnet.ws.message.MessageContext createContext(SOAPMessage soap) {
         throwIfIllegalMessageArgument(soap);
         return packet(Messages.create(soap));
     }
 
-    public MessageContext createContext(Source m, EnvelopeStyle.Style envelopeStyle) {
+    public org.jvnet.ws.message.MessageContext createContext(Source m, EnvelopeStyle.Style envelopeStyle) {
         throwIfIllegalMessageArgument(m);
         return packet(Messages.create(m, SOAPVersion.from(envelopeStyle)));
     }
 
-    public MessageContext createContext(Source m) {
+    public org.jvnet.ws.message.MessageContext createContext(Source m) {
         throwIfIllegalMessageArgument(m);
         return packet(Messages.create(m, SOAPVersion.from(singleSoapStyle)));
     }
     
-    public MessageContext createContext(InputStream in, String contentType) throws IOException {
+    public org.jvnet.ws.message.MessageContext createContext(InputStream in, String contentType) throws IOException {
         throwIfIllegalMessageArgument(in);
         //TODO when do we use xmlCodec?
         Packet p = packet(null);
@@ -136,7 +136,7 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
      * @deprecated http://java.net/jira/browse/JAX_WS-1077
      */
     @Deprecated 
-    public MessageContext createContext(InputStream in, MimeHeaders headers) throws IOException {
+    public org.jvnet.ws.message.MessageContext createContext(InputStream in, MimeHeaders headers) throws IOException {
         String contentType = getHeader(headers, "Content-Type");
         Packet packet = (Packet) createContext(in, contentType);
         packet.acceptableMimeTypes = getHeader(headers, "Accept");
@@ -190,15 +190,15 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
     }
 
     @Deprecated
-    public MessageContext doCreate() {
+    public org.jvnet.ws.message.MessageContext doCreate() {
         return packet(null);
     }
     @Deprecated
-    public MessageContext doCreate(SOAPMessage m) {
+    public org.jvnet.ws.message.MessageContext doCreate(SOAPMessage m) {
         return createContext(m);
     }
     @Deprecated
-    public MessageContext doCreate(Source x, SOAPVersion soapVersion) {
+    public org.jvnet.ws.message.MessageContext doCreate(Source x, SOAPVersion soapVersion) {
         return packet(Messages.create(x, soapVersion));
     }
 }

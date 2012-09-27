@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.api;
 
+import com.oracle.webservices.api.message.MessageContextFactory;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
@@ -54,7 +55,6 @@ import javax.xml.ws.handler.Handler;
 import java.util.List;
 import java.util.Set;
 
-import org.jvnet.ws.message.MessageContextFactory;
 
 /**
  * JAX-WS implementation of {@link Binding}.
@@ -215,5 +215,5 @@ public interface WSBinding extends Binding {
     /**
      * @return A MessageContextFactory configured according to the binding's features.
      */
-    @NotNull MessageContextFactory getMessageContextFactory();
+    @NotNull org.jvnet.ws.message.MessageContextFactory getMessageContextFactory();
 }

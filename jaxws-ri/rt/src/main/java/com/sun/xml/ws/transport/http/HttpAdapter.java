@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.transport.http;
 
+import com.oracle.webservices.api.message.PropertySet;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.SOAPVersion;
@@ -84,7 +85,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jvnet.ws.message.PropertySet;
 
 /**
  * {@link Adapter} that receives messages in HTTP.
@@ -245,7 +245,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      *
      * <p>
      * To populate a request {@link Packet} with more info,
-     * define {@link org.jvnet.ws.message.PropertySet.Property properties} on
+     * define {@link com.oracle.webservices.api.message.PropertySet.Property properties} on
      * {@link WSHTTPConnection}.
      *
      * @param connection to receive/send HTTP messages for web service endpoints
