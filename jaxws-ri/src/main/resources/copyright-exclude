@@ -42,3 +42,5 @@ eclipselink_jaxb/src/test/resources/etc/attach.text
 /jsr181.pom
 /bom/
 NamespaceContextImpl.java
+.svnignore
+.svn
