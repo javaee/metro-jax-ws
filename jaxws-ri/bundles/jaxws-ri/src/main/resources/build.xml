@@ -124,7 +124,7 @@
         <echo message="Backing up \${catalina.home}/conf/catalina.properties..."/>
         <copy file="\${catalina.home}/conf/catalina.properties" tofile="\${catalina.home}/conf/catalina.properties.backup"/>
         <echo message="Adding JAX-WS RI jars to shared.loader property in \${catalina.home}/conf/catalina.properties..."/>
-        <replace file="\${catalina.home}/conf/catalina.properties" token="shared.loader=" value="shared.loader=$\${catalina.home}/shared/lib/*.jar,"/>
+        <replace file="\${catalina.home}/conf/catalina.properties" token="shared.loader=" value="shared.loader=$${catalina.home}/shared/lib/*.jar,"/>
     </target>
 
     <target name="uninstall">
