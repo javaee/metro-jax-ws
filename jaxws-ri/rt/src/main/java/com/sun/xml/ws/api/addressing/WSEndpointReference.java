@@ -951,8 +951,13 @@ public final class WSEndpointReference  implements WSDLExtension {
      * to the given {@link HeaderList}.
      * @deprecated - use addReferenceParametersToList(MessageHeaders)
      */
+    @SuppressWarnings("ManualArrayToCollectionCopy")
     public void addReferenceParametersToList(HeaderList outbound) {
-        outbound.addAll(Arrays.asList(referenceParameters));
+        // implemented through iteration because of unsupportedoperation exception thrown from addAll method on headerlist
+        // do not change
+        for (Header header : referenceParameters) {
+            outbound.add(header);
+        }
     }
 
     /**
