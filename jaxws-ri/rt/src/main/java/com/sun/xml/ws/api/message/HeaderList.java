@@ -183,7 +183,9 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
 
     /**
      * Adds all the headers.
+     * @deprecated throws UnsupportedOperationException from some HeaderList implementations - better iterate over items one by one
      */
+    @Deprecated
     public void addAll(Header... headers) {
         addAll(Arrays.asList(headers));
     }
