@@ -45,6 +45,8 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.addressing.NonAnonymousResponseProcessor;
+import com.sun.xml.ws.api.addressing.AddressingVersion;
+import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.ha.HaInfo;
 import com.sun.xml.ws.api.message.ExceptionHasMessage;
@@ -390,9 +392,14 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     {
     	return (connStatus == HttpURLConnection.HTTP_FORBIDDEN); // add more for future.
     }
+    
+    private boolean isNonAnonymousUri(EndpointAddress addr){
+    	return (addr != null) && !addr.toString().equals(AddressingVersion.W3C.anonymousUri) &&
+    			!addr.toString().equals(AddressingVersion.MEMBER.anonymousUri);
+    }
 
     private void encodePacket(@NotNull Packet packet, @NotNull WSHTTPConnection con, @NotNull Codec codec) throws IOException {
-    	if (packet.endpointAddress != null) {
+    	if (isNonAnonymousUri(packet.endpointAddress) && packet.getMessage() != null) {
             try {
                 // Message is targeted to non-anonymous response endpoint.
                 // After call to non-anonymous processor, typically, packet.getMessage() will be null
