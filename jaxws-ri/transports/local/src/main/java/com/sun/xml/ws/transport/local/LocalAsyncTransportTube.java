@@ -131,7 +131,7 @@ final class LocalAsyncTransportTube extends AbstractTubeImpl {
         MyClosedCallback(Packet request) {
             this.request = request;
             this.requestContentType = request.getContentType().getContentType();
-            this.requestAccept = request.getContentType().getAcceptHeader().toString();
+            this.requestAccept = request.getContentType().getAcceptHeader();
             fiber = Fiber.current();
         }
 

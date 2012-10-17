@@ -71,7 +71,7 @@ final class LocalConnectionImpl extends WSHTTPConnection implements WebServiceCo
 
     private final Map<String, List<String>> reqHeaders;
     private Map<String, List<String>> rspHeaders = null;
-    protected int statusCode;
+    private int statusCode;
     private ByteArrayBuffer baos;
     /**
      * The address of the endpoint to which this message is sent.
