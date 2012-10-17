@@ -88,6 +88,20 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
         assertTrue("Locked jars: " + files, files.isEmpty());
     }
 
+    public void testWsImportLockJarURLs() throws IOException, URISyntaxException {
+        if (isOldJDK()) {
+            Logger.getLogger(WsImportTaskTest.class.getName()).warning("Old JDK - 7+ is required - skipping jar URL locking test");
+            return;
+        }
+        if (isAntPre18()) {
+            Logger.getLogger(WsImportTaskTest.class.getName()).warning("Old Ant - 1.8+ is required - skipping jar locking test");
+            return;
+        }
+        assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-client-jarurl", "clean"));
+        List<String> files = listDirs(apiDir, libDir);
+        assertTrue("Locked jars: " + files, files.isEmpty());
+    }
+
     public void testEncoding() throws IOException {
         //this fails because one task uses invalid attributte
         assertEquals(1, AntExecutor.exec(script, apiDir, "wsimport-client-encoding"));

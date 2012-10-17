@@ -165,67 +165,81 @@ public final class MetadataFinder extends DOMForest{
                 boolean redirect;
                 URL url = JAXWSUtils.getFileOrURL(inputSource.getSystemId());
                 URLConnection conn = url.openConnection();
-                do {
-                    if (conn instanceof HttpsURLConnection) {
-                        if (options.disableSSLHostnameVerification) {
-                            ((HttpsURLConnection) conn).setHostnameVerifier(new HttpClientVerifier());
+                boolean jarConnUseCache = true;
+                try {
+                    do {
+                        if (conn instanceof HttpsURLConnection) {
+                            if (options.disableSSLHostnameVerification) {
+                                ((HttpsURLConnection) conn).setHostnameVerifier(new HttpClientVerifier());
+                            }
                         }
-                    }
-                    redirect = false;
-                    if (conn instanceof HttpURLConnection) {
-                        ((HttpURLConnection) conn).setInstanceFollowRedirects(false);
-                    }
+                        redirect = false;
+                        if (conn instanceof HttpURLConnection) {
+                            ((HttpURLConnection) conn).setInstanceFollowRedirects(false);
+                        }
 
-                    try {
-                        is = conn.getInputStream();
-                        //is = sun.net.www.protocol.http.HttpURLConnection.openConnectionCheckRedirects(conn);
-                    } catch (IOException e) {
+                        //see http://java.net/jira/browse/JAX_WS-1087
+                        if (conn instanceof JarURLConnection) {
+                            if (conn.getUseCaches()) {
+                                conn.setUseCaches(jarConnUseCache = false);
+                            }
+                        }
+
+                        try {
+                            is = conn.getInputStream();
+                            //is = sun.net.www.protocol.http.HttpURLConnection.openConnectionCheckRedirects(conn);
+                        } catch (IOException e) {
+                            if (conn instanceof HttpURLConnection) {
+                                HttpURLConnection httpConn = ((HttpURLConnection) conn);
+                                int code = httpConn.getResponseCode();
+                                if (code == 401) {
+                                    errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_INFO_NEEDED(e.getMessage(),
+                                            systemId, DefaultAuthenticator.defaultAuthfile), null, e));
+                                    throw new AbortException();
+                                }
+                                //FOR other code we will retry with MEX
+                            }
+                            throw e;
+                        }
+
+                        //handle 302 or 303, JDK does not seem to handle 302 very well.
+                        //Need to redesign this a bit as we need to throw better error message for IOException in this case
                         if (conn instanceof HttpURLConnection) {
                             HttpURLConnection httpConn = ((HttpURLConnection) conn);
                             int code = httpConn.getResponseCode();
-                            if (code == 401) {
-                                errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_INFO_NEEDED(e.getMessage(),
-                                        systemId, DefaultAuthenticator.defaultAuthfile), null, e));
-                                throw new AbortException();
-                            }
-                            //FOR other code we will retry with MEX
-                        }
-                        throw e;
-                    }
-
-                    //handle 302 or 303, JDK does not seem to handle 302 very well.
-                    //Need to redesign this a bit as we need to throw better error message for IOException in this case
-                    if (conn instanceof HttpURLConnection) {
-                        HttpURLConnection httpConn = ((HttpURLConnection) conn);
-                        int code = httpConn.getResponseCode();
-                        if (code == 302 || code == 303) {
-                            //retry with the value in Location header
-                            List<String> seeOther = httpConn.getHeaderFields().get("Location");
-                            if (seeOther != null && seeOther.size() > 0) {
-                                URL newurl = new URL(url, seeOther.get(0));
-                                if (!newurl.equals(url)) {
-                                    errorReceiver.info(new SAXParseException(WscompileMessages.WSIMPORT_HTTP_REDIRECT(code, seeOther.get(0)), null));
-                                    url = newurl;
-                                    httpConn.disconnect();
-                                    if (redirects >= 5) {
-                                        errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_MAX_REDIRECT_ATTEMPT(), null));
-                                        throw new AbortException();
+                            if (code == 302 || code == 303) {
+                                //retry with the value in Location header
+                                List<String> seeOther = httpConn.getHeaderFields().get("Location");
+                                if (seeOther != null && seeOther.size() > 0) {
+                                    URL newurl = new URL(url, seeOther.get(0));
+                                    if (!newurl.equals(url)) {
+                                        errorReceiver.info(new SAXParseException(WscompileMessages.WSIMPORT_HTTP_REDIRECT(code, seeOther.get(0)), null));
+                                        url = newurl;
+                                        httpConn.disconnect();
+                                        if (redirects >= 5) {
+                                            errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_MAX_REDIRECT_ATTEMPT(), null));
+                                            throw new AbortException();
+                                        }
+                                        conn = url.openConnection();
+                                        inputSource.setSystemId(url.toExternalForm());
+                                        redirects++;
+                                        redirect = true;
                                     }
-                                    conn = url.openConnection();
-                                    inputSource.setSystemId(url.toExternalForm());
-                                    redirects++;
-                                    redirect = true;
                                 }
                             }
                         }
+                    } while (redirect);
+                } finally {
+                    if (!jarConnUseCache) {
+                        conn.setUseCaches(true);
                     }
-                } while (redirect);
+                }
                 inputSource.setByteStream(is);
             }
 
             return inputSource;
         }
-                
+
     }
 
     // overide default SSL HttpClientVerifier to always return true

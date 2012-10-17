@@ -93,6 +93,22 @@
         </wsimport>
     </target>
 
+    <target name="wsimport-client-jarurl" depends="wsimport-init">
+        <property name="wsdl.jar" location="${lib.dir}/wsdl.jar"/>
+        <jar destfile="${wsdl.jar}">
+            <fileset dir="${basedir}" includes="hello.wsdl"/>
+        </jar>
+        <wsimport
+            sourcedestdir="${build.dir}"
+            destdir="${build.dir}"
+            wsdl="jar:file:/${wsdl.jar}!/hello.wsdl"
+            extension="true"
+            verbose="true"
+            xendorsed="true"
+            xnocompile="false">
+        </wsimport>
+    </target>
+
     <target name="wsimport-client-encoding" depends="wsimport-init">
         <wsimport
             sourcedestdir="${build.dir}"
