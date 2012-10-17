@@ -95,13 +95,17 @@
 
     <target name="wsimport-client-jarurl" depends="wsimport-init">
         <property name="wsdl.jar" location="${lib.dir}/wsdl.jar"/>
+        <condition property="jar.url.prefix" value="jar:file:/" else="jar:file:">
+            <os family="windows"/>
+        </condition>
+        <property name="" value="${lib.dir}/wsdl.jar"/>
         <jar destfile="${wsdl.jar}">
             <fileset dir="${basedir}" includes="hello.wsdl"/>
         </jar>
         <wsimport
             sourcedestdir="${build.dir}"
             destdir="${build.dir}"
-            wsdl="jar:file:/${wsdl.jar}!/hello.wsdl"
+            wsdl="${jar.url.prefix}${wsdl.jar}!/hello.wsdl"
             extension="true"
             verbose="true"
             xendorsed="true"
