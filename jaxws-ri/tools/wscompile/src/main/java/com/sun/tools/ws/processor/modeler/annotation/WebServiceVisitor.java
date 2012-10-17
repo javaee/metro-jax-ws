@@ -156,6 +156,8 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
                 postProcessWebService(webService, e);
                 serviceImplName = null;
             }
+            default:
+                break;
         }
         return null;
     }
@@ -399,6 +401,8 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
                     processMethods((TypeElement) ((DeclaredType) superclass).asElement());
                 }
             }
+            default:
+                break;
         }
     }
 

@@ -209,7 +209,6 @@ public class WsgenOptions extends Options {
 
 
     private boolean isImplClass;
-    private boolean noWebServiceEndpoint;
 
     public void validate() throws BadCommandLineException {
         if(nonclassDestDir == null)
