@@ -172,7 +172,7 @@ public final class WSServletContextListener
             if (!unregisteredUrlPatterns.isEmpty()) {
                 //register WSServlet Dynamically
                 ServletRegistration.Dynamic registration = context.addServlet("Dynamic JAXWS Servlet", WSServlet.class);
-                registration.addMapping(unregisteredUrlPatterns.toArray(new String[]{}));
+                registration.addMapping(unregisteredUrlPatterns.toArray(new String[unregisteredUrlPatterns.size()]));
                 registration.setAsyncSupported(true);
 
             }
