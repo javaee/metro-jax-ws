@@ -84,6 +84,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.management.ObjectName;
 
 /**
  * {@link WSEndpoint} implementation.
@@ -632,8 +633,11 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
         }
     }
 
+    private static final Logger monitoringLogger = Logger.getLogger(com.sun.xml.ws.util.Constants.LoggingDomain + ".monitoring");
+
     // This can be called independently of WSEndpoint.dispose.
     // Example: the WSCM framework calls this before dispose.
+    @Override
     public void closeManagedObjectManager() {
         synchronized (managedObjectManagerLock) {
             if (managedObjectManagerClosed == true) {
@@ -649,15 +653,23 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
                 }
                 
                 if (close) {
-                    // no further notification on scope change
-                    MonitorBase.closeMOM(managedObjectManager);
+                    try {
+                        final ObjectName name = managedObjectManager.getObjectName(managedObjectManager.getRoot());
+                        // The name is null when the MOM is a NOOP.
+                        if (name != null) {
+                            monitoringLogger.log(Level.INFO, "Closing Metro monitoring root: {0}", name);
+                        }
+                        managedObjectManager.close();
+                    } catch (java.io.IOException e) {
+                        monitoringLogger.log(Level.WARNING, "Ignoring error when closing Managed Object Manager", e);
+                    }
                 }
             }
             managedObjectManagerClosed = true;
         }
     }
 
-    public @NotNull ServerTubeAssemblerContext getAssemblerContext() {
+    public @NotNull @Override ServerTubeAssemblerContext getAssemblerContext() {
         return context;
     }
 }

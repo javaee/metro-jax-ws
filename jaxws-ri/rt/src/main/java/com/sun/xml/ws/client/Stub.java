@@ -102,6 +102,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.management.ObjectName;
 
 /**
  * Base class for stubs, which accept method invocations from
@@ -264,10 +267,11 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             this.wsdlPort = wsdlPort != null ? wsdlPort : (portInfo != null ? portInfo.getPort() : null);
             this.portname = portname;
             if (portname == null) {
-                if (portInfo != null)
-                        this.portname = portInfo.getPortName();
-                else if (wsdlPort != null)
-                        this.portname = wsdlPort.getName();
+                if (portInfo != null) {
+                    this.portname = portInfo.getPortName();
+                } else if (wsdlPort != null) {
+                    this.portname = wsdlPort.getName();
+                }
             }
             this.binding = binding;
     
@@ -277,10 +281,11 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             }
     
             // if there is an EPR, EPR's address should be used for invocation instead of default address
-            if (epr != null)
+            if (epr != null) {
                 this.requestContext.setEndPointAddressString(epr.getAddress());
-            else
+            } else {
                 this.requestContext.setEndpointAddress(defaultEndPointAddress);
+            }
             this.engine = new Engine(toString(), owner.getContainer(), owner.getExecutor());
             this.endpointReference = epr;
             wsdlProperties = (wsdlPort == null) ? new WSDLDirectProperties(owner.getServiceName(), portname) : new WSDLPortProperties(wsdlPort);
@@ -292,10 +297,11 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     
             managedObjectManager = new MonitorRootClient(this).createManagedObjectManager(this);
     
-            if (master != null)
+            if (master != null) {
                 this.tubes = new TubePool(master);
-            else
+            } else {
                 this.tubes = new TubePool(createPipeline(portInfo, binding));
+            }
     
             addrVersion = binding.getAddressingVersion();
     
@@ -324,8 +330,9 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 
         TubelineAssembler assembler = TubelineAssemblerFactory.create(
                 Thread.currentThread().getContextClassLoader(), bindingId, owner.getContainer());
-        if (assembler == null)
-            throw new WebServiceException("Unable to process bindingID=" + bindingId);    // TODO: i18n
+        if (assembler == null) {
+            throw new WebServiceException("Unable to process bindingID=" + bindingId); // TODO: i18n
+        }
         return assembler.createClient(
                 new ClientTubeAssemblerContext(
                         portInfo.getEndpointAddress(),
@@ -358,6 +365,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         }
     }
 
+    @Override
     public WSPortInfo getPortInfo() {
         return portInfo;
     }
@@ -369,8 +377,9 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     public
     @Nullable
     OperationDispatcher getOperationDispatcher() {
-        if (operationDispatcher == null && wsdlPort != null)
+        if (operationDispatcher == null && wsdlPort != null) {
             operationDispatcher = new OperationDispatcher(wsdlPort, binding, null);
+        }
         return operationDispatcher;
     }
 
@@ -433,8 +442,9 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         packet.component = this;
         configureRequestPacket(packet, requestContext);
         Pool<Tube> pool = tubes;
-        if (pool == null)
+        if (pool == null) {
             throw new WebServiceException("close method has already been invoked"); // TODO: i18n
+        } 
 
         Fiber fiber = engine.createFiber();
         // then send it away!
@@ -512,30 +522,35 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         configureRequestPacket(request, requestContext);
 
         final Pool<Tube> pool = tubes;
-        if (pool == null)
+        if (pool == null) {
             throw new WebServiceException("close method has already been invoked"); // TODO: i18n
+        } 
 
         final Fiber fiber = engine.createFiber();
         
         receiver.setCancelable(fiber);
         
         // check race condition on cancel
-        if (receiver.isCancelled())
-                return;
+        if (receiver.isCancelled()) {
+            return;
+        }
         
         FiberContextSwitchInterceptorFactory fcsif = owner.getSPI(FiberContextSwitchInterceptorFactory.class);
-        if(fcsif != null)
+        if (fcsif != null) {
             fiber.addInterceptor(fcsif.create());
+        }
         
         // then send it away!
         final Tube tube = pool.take();
 
         Fiber.CompletionCallback fiberCallback = new Fiber.CompletionCallback() {
+            @Override
             public void onCompletion(@NotNull Packet response) {
                 pool.recycle(tube);
                 completionCallback.onCompletion(response);
             }
 
+            @Override
             public void onCompletion(@NotNull Throwable error) {
                 // let's not reuse tubes as they might be in a wrong state, so not
                 // calling pool.recycle()
@@ -549,7 +564,10 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
                         getBinding().isFeatureEnabled(SyncStartForAsyncFeature.class) &&
                         !requestContext.containsKey(PREVENT_SYNC_START_FOR_ASYNC_INVOKE));
     }
+    
+    private static final Logger monitoringLogger = Logger.getLogger(com.sun.xml.ws.util.Constants.LoggingDomain + ".monitoring");
 
+    @Override
     public void close() {
         if (tubes != null) {
             // multi-thread safety of 'close' needs to be considered more carefully.
@@ -559,19 +577,27 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             tubes = null;
             p.preDestroy();
         }
-        if (managedObjectManagerClosed) {
-            return;
-        } else {
-            com.sun.xml.ws.server.MonitorBase.closeMOM(managedObjectManager);
+        if (!managedObjectManagerClosed) {
+            try {
+                final ObjectName name = managedObjectManager.getObjectName(managedObjectManager.getRoot());
+                // The name is null when the MOM is a NOOP.
+                if (name != null) {
+                    monitoringLogger.log(Level.INFO, "Closing Metro monitoring root: {0}", name);
+                }
+                managedObjectManager.close();
+            } catch (java.io.IOException e) {
+                monitoringLogger.log(Level.WARNING, "Ignoring error when closing Managed Object Manager", e);
+            }
             managedObjectManagerClosed = true;
         }
-
     }
     
+    @Override
     public final WSBinding getBinding() {
         return binding;
     }
 
+    @Override
     public final Map<String, Object> getRequestContext() {
         return requestContext.asMap();
     }
@@ -580,21 +606,28 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         requestContext = cleanRequestContext.copy();
     }
 
+    @Override
     public final ResponseContext getResponseContext() {
         return responseContext;
     }
 
+    @Override
     public void setResponseContext(ResponseContext rc) {
         this.responseContext = rc;
     }
 
+    @Override
     public String toString() {
         return RuntimeVersion.VERSION + ": Stub for " + getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
     }
 
+    @Override
     public final WSEndpointReference getWSEndpointReference() {
-        if (binding.getBindingID().equals(HTTPBinding.HTTP_BINDING))
-            throw new java.lang.UnsupportedOperationException(ClientMessages.UNSUPPORTED_OPERATION("BindingProvider.getEndpointReference(Class<T> class)", "XML/HTTP Binding", "SOAP11 or SOAP12 Binding"));
+        if (binding.getBindingID().equals(HTTPBinding.HTTP_BINDING)) {
+            throw new java.lang.UnsupportedOperationException(
+                        ClientMessages.UNSUPPORTED_OPERATION("BindingProvider.getEndpointReference(Class<T> class)", "XML/HTTP Binding", "SOAP11 or SOAP12 Binding")
+                    );
+        }
 
         if (endpointReference != null) {
             return endpointReference;
@@ -630,18 +663,23 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     }
 
 
+    @Override
     public final W3CEndpointReference getEndpointReference() {
-        if (binding.getBindingID().equals(HTTPBinding.HTTP_BINDING))
-            throw new java.lang.UnsupportedOperationException(ClientMessages.UNSUPPORTED_OPERATION("BindingProvider.getEndpointReference()", "XML/HTTP Binding", "SOAP11 or SOAP12 Binding"));
+        if (binding.getBindingID().equals(HTTPBinding.HTTP_BINDING)) {
+            throw new java.lang.UnsupportedOperationException(
+                        ClientMessages.UNSUPPORTED_OPERATION("BindingProvider.getEndpointReference()", "XML/HTTP Binding", "SOAP11 or SOAP12 Binding"));
+        }
         return getEndpointReference(W3CEndpointReference.class);
     }
 
+    @Override
     public final <T extends EndpointReference> T getEndpointReference(Class<T> clazz) {
         return getWSEndpointReference().toSpec(clazz);
     }
 
     public
     @NotNull
+    @Override
     ManagedObjectManager getManagedObjectManager() {
         return managedObjectManager;
     }
@@ -651,25 +689,29 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 // WSBindingProvider methods
 //
 //
+    @Override
     public final void setOutboundHeaders(List<Header> headers) {
         if (headers == null) {
             this.userOutboundHeaders = null;
         } else {
             for (Header h : headers) {
-                if (h == null)
+                if (h == null) {
                     throw new IllegalArgumentException();
+                }
             }
             userOutboundHeaders = headers.toArray(new Header[headers.size()]);
         }
     }
 
+    @Override
     public final void setOutboundHeaders(Header... headers) {
         if (headers == null) {
             this.userOutboundHeaders = null;
         } else {
             for (Header h : headers) {
-                if (h == null)
+                if (h == null) {
                     throw new IllegalArgumentException();
+                }
             }
             Header[] hl = new Header[headers.length];
             System.arraycopy(headers, 0, hl, 0, headers.length);
@@ -677,24 +719,29 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         }
     }
 
+    @Override
     public final List<Header> getInboundHeaders() {
         return Collections.unmodifiableList((HeaderList)
                 responseContext.get(JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY));
     }
 
+    @Override
     public final void setAddress(String address) {
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, address);
     }
     
+    @Override
     public <S> S getSPI(Class<S> spiType) {
         for (Component c : components) {
             S s = c.getSPI(spiType);
-            if (s != null)
+            if (s != null) {
                 return s;
+            }
         }
         return owner.getSPI(spiType);
     }
     
+    @Override
     public Set<Component> getComponents() {
         return components;
     }
