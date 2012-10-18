@@ -50,14 +50,12 @@ import javax.xml.namespace.QName;
 public interface HTTPConstants {
 
     // namespace URIs
-    public static String NS_WSDL_HTTP = "http://schemas.xmlsoap.org/wsdl/http/";
+    static final String NS_WSDL_HTTP = "http://schemas.xmlsoap.org/wsdl/http/";
 
     // QNames
-    public static QName QNAME_ADDRESS = new QName(NS_WSDL_HTTP, "address");
-    public static QName QNAME_BINDING = new QName(NS_WSDL_HTTP, "binding");
-    public static QName QNAME_OPERATION = new QName(NS_WSDL_HTTP, "operation");
-    public static QName QNAME_URL_ENCODED =
-        new QName(NS_WSDL_HTTP, "urlEncoded");
-    public static QName QNAME_URL_REPLACEMENT =
-        new QName(NS_WSDL_HTTP, "urlReplacement");
+    static final QName QNAME_ADDRESS = new QName(NS_WSDL_HTTP, "address");
+    static final QName QNAME_BINDING = new QName(NS_WSDL_HTTP, "binding");
+    static final QName QNAME_OPERATION = new QName(NS_WSDL_HTTP, "operation");
+    static final QName QNAME_URL_ENCODED = new QName(NS_WSDL_HTTP, "urlEncoded");
+    static final QName QNAME_URL_REPLACEMENT = new QName(NS_WSDL_HTTP, "urlReplacement");
 }

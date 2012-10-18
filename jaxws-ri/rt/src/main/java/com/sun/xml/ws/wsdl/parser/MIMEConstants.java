@@ -44,13 +44,13 @@ import javax.xml.namespace.QName;
 
 
 interface MIMEConstants {
+
     // namespace URIs
-    public static String NS_WSDL_MIME = "http://schemas.xmlsoap.org/wsdl/mime/";
+    static final String NS_WSDL_MIME = "http://schemas.xmlsoap.org/wsdl/mime/";
 
     // QNames
-    public static QName QNAME_CONTENT = new QName(NS_WSDL_MIME, "content");
-    public static QName QNAME_MULTIPART_RELATED =
-        new QName(NS_WSDL_MIME, "multipartRelated");
-    public static QName QNAME_PART = new QName(NS_WSDL_MIME, "part");
-    public static QName QNAME_MIME_XML = new QName(NS_WSDL_MIME, "mimeXml");
+    static final QName QNAME_CONTENT = new QName(NS_WSDL_MIME, "content");
+    static final QName QNAME_MULTIPART_RELATED = new QName(NS_WSDL_MIME, "multipartRelated");
+    static final QName QNAME_PART = new QName(NS_WSDL_MIME, "part");
+    static final QName QNAME_MIME_XML = new QName(NS_WSDL_MIME, "mimeXml");
 }
