@@ -126,6 +126,7 @@ public final class SDOContextWrapper implements BindingContext {
         suppliedSchemas = (Set<SchemaInfo>) properties.get(SDO_SCHEMA_INFO);
         config(suppliedSchemas);
         SDOUtils.registerSDOContext(getHelperContext(), schemas);
+        serviceName = null;
     }
 
     public void config(Set<SchemaInfo> schemas) {

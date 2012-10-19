@@ -42,7 +42,7 @@
 
 <FindBugsFilter>
     <!--
-    Can't do much about these, but we should not ingore the warning for any new clases
+    Can't do much about these, but we should not ignore the warning for any new clases
     so that we don't find ourselves in the same hell with new classes 
     -->
     <Match>
@@ -77,6 +77,10 @@
             <Class name="com.sun.xml.ws.wsdl.writer.WSDLResolver"/>
             <Class name="com.sun.xml.ws.encoding.SOAPBindingCodec"/>
             <Class name="com.sun.xml.ws.encoding.StreamSOAPCodec"/>
+            <Class name="org.jvnet.ws.message.ContentType"/>
+            <Class name="org.jvnet.ws.message.PropertySet"/>
+            <Class name="org.jvnet.ws.message.DistributedPropertySet"/>
+            <Class name="org.jvnet.ws.message.MessageContext"/>
         </Or>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
     </Match>
@@ -136,7 +140,7 @@
         <Bug pattern="WMI_WRONG_MAP_ITERATOR"/>
     </Match>
     <!--
-    Usually the field is read elsewhere in metro/wls code.
+    Usually the field is read elsewhere in metro/wls code, or it's a JAXB field read by reflection or asm generated class accessor.
     -->
     <Match>
         <Or>
@@ -154,7 +158,7 @@
             <Class name="com.sun.xml.ws.db.DatabindingProviderImpl"/>
             <Class name="com.sun.xml.ws.fault.TextType"/>
         </Or>
-        <Bug name="URF_UNREAD_FIELD"/>
+        <Bug pattern="URF_UNREAD_FIELD"/>
     </Match>
     <!--
     We don't own asm.

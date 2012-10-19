@@ -220,7 +220,13 @@ public class RepeatedElementBridge<T> implements XMLBridge<T> {
                 }   
                 @Override
                 public Object next() throws NoSuchElementException {
-                    return java.lang.reflect.Array.get(c, index++);
+                    Object retVal = null;
+                    try {
+                        retVal = java.lang.reflect.Array.get(c, index++);
+                    } catch (ArrayIndexOutOfBoundsException ex) {
+                        throw new NoSuchElementException();
+                    }
+                    return retVal;
                 }
                 @Override
                 public void remove() {}        

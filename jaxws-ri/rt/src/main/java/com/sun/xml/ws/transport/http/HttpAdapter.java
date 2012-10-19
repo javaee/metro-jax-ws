@@ -848,7 +848,9 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * Generates the listing of all services.
      */
     private void writeWebServicesHtmlPage(WSHTTPConnection con) throws IOException {
-        if (!publishStatusPage) return;
+        if (!publishStatusPage) {
+            return;
+        }
 
         // TODO: resurrect the ability to localize according to the current request.
 
@@ -926,6 +928,10 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     public static volatile boolean publishStatusPage = true;
 
+    public static synchronized void setPublishStatus(boolean publish) {
+        publishStatusPage = publish;
+    }
+    
     static {
         try {
             dump = Boolean.getBoolean(HttpAdapter.class.getName()+".dump");
@@ -933,7 +939,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             // OK to ignore this
         }
         try {
-            publishStatusPage = System.getProperty(HttpAdapter.class.getName()+".publishStatusPage").equals("true");
+            setPublishStatus(System.getProperty(HttpAdapter.class.getName()+".publishStatusPage").equals("true"));
         } catch( Throwable t ) {
             // OK to ignore this
         }
