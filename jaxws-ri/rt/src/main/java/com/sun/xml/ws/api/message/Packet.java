@@ -56,6 +56,7 @@ import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.WSDLOperationMapping;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Codec;
@@ -67,6 +68,7 @@ import com.sun.xml.ws.api.server.WebServiceContextDelegate;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.developer.JAXWSProperties;
+import com.sun.xml.ws.encoding.MtomCodec;
 import com.sun.xml.ws.message.RelatesToHeader;
 import com.sun.xml.ws.message.StringHeader;
 import com.sun.xml.ws.util.DOMUtil;
@@ -170,7 +172,7 @@ public final class Packet
 	// Packet must continue to extend/implement deprecated interfaces until downstream
 	// usage is updated.
     extends org.jvnet.ws.message.BaseDistributedPropertySet 
-    implements org.jvnet.ws.message.MessageContext {
+    implements org.jvnet.ws.message.MessageContext, MessageMetadata {
 
     /**
      * Creates a {@link Packet} that wraps a given {@link Message}.
@@ -185,6 +187,7 @@ public final class Packet
     public Packet(Message request) {
         this();
         this.message = request;
+        if (message != null) message.setMessageMedadata(this);
     }
     
     /**
@@ -217,7 +220,7 @@ public final class Packet
         if (copyMessage && this.message != null) {
             copy.message = this.message.copy();
         }
-
+        if (copy.message != null) copy.message.setMessageMedadata(copy);
         return copy;
     }
 
@@ -255,7 +258,10 @@ public final class Packet
      */
     public void setMessage(Message message) {
         this.message = message;
+        if (message != null) this.message.setMessageMedadata(this);
     }
+    
+    private WSDLOperationMapping wsdlOperationMapping = null;
 
     private QName wsdlOperation;
 
@@ -272,10 +278,14 @@ public final class Packet
     public final
     @Nullable
     QName getWSDLOperation() {
-        if (wsdlOperation != null) {
-            return wsdlOperation;
-        }
+        if (wsdlOperation != null) return wsdlOperation;
+        if ( wsdlOperationMapping == null)  wsdlOperationMapping = getWSDLOperationMapping();
+        if ( wsdlOperationMapping != null ) wsdlOperation = wsdlOperationMapping.getOperationName();
+        return wsdlOperation;
+    }
 
+    public WSDLOperationMapping getWSDLOperationMapping() {
+        if (wsdlOperationMapping != null) return wsdlOperationMapping;
         OperationDispatcher opDispatcher = null;
         if (endpoint != null) {
             opDispatcher = endpoint.getOperationDispatcher();
@@ -285,13 +295,13 @@ public final class Packet
         //OpDispatcher is null when there is no WSDLModel
         if (opDispatcher != null) {
             try {
-                wsdlOperation = opDispatcher.getWSDLOperationQName(this);
+                wsdlOperationMapping = opDispatcher.getWSDLOperationMapping(this);
             } catch (DispatchException e) {
                 //Ignore, this might be a protocol message which may not have a wsdl operation
                 //LOGGER.info("Cannot resolve wsdl operation that this Packet is targeted for.");
             }
         }
-        return wsdlOperation;
+        return wsdlOperationMapping;        
     }
 
     /**
@@ -888,7 +898,8 @@ public final class Packet
     	response.wasTransportSecure = request.wasTransportSecure;
     	response.transportBackChannel = request.transportBackChannel;
     	response.endpointAddress = request.endpointAddress;    	
-    	response.wsdlOperation = request.wsdlOperation;
+    	response.wsdlOperation = request.wsdlOperation;        
+    	response.wsdlOperationMapping = request.wsdlOperationMapping;
     	response.acceptableMimeTypes = request.acceptableMimeTypes;
     	response.endpoint = request.endpoint;
     	response.proxy = request.proxy;
@@ -1193,9 +1204,49 @@ public final class Packet
         return mtomAcceptable;
     }
 
-    public void setMtomAcceptable(Boolean mtomAcceptable) {
-        this.mtomAcceptable = mtomAcceptable;
+    Boolean checkMtomAcceptable;
+    public void checkMtomAcceptable() {
+        if (checkMtomAcceptable == null) {
+            if (acceptableMimeTypes == null || isFastInfosetDisabled) {
+                checkMtomAcceptable = false;
+            } else {
+                checkMtomAcceptable = (acceptableMimeTypes.indexOf(MtomCodec.XOP_XML_MIME_TYPE) != -1);
+//                StringTokenizer st = new StringTokenizer(acceptableMimeTypes, ",");
+//                while (st.hasMoreTokens()) {
+//                    final String token = st.nextToken().trim();
+//                    if (token.toLowerCase().contains(MtomCodec.XOP_XML_MIME_TYPE)) {
+//                        mtomAcceptable = true;
+//                    }
+//                }
+//                if (mtomAcceptable == null) mtomAcceptable = false;
+            }
+        }
+        mtomAcceptable = checkMtomAcceptable;
     }
+    
+    private Boolean fastInfosetAcceptable;
+
+    public Boolean getFastInfosetAcceptable(String fiMimeType) {
+        if (fastInfosetAcceptable == null) {
+            if (acceptableMimeTypes == null || isFastInfosetDisabled) {
+                fastInfosetAcceptable = false;
+            } else {
+                fastInfosetAcceptable = (acceptableMimeTypes.indexOf(fiMimeType) != -1);
+            }
+//        if (accept == null || isFastInfosetDisabled) return false;
+//        
+//        StringTokenizer st = new StringTokenizer(accept, ",");
+//        while (st.hasMoreTokens()) {
+//            final String token = st.nextToken().trim();
+//            if (token.equalsIgnoreCase(fiMimeType)) {
+//                return true;
+//            }
+//        }
+//        return false;
+        }
+        return fastInfosetAcceptable;
+    }
+
     
     public void setMtomFeature(MTOMFeature mtomFeature) {
         this.mtomFeature = mtomFeature;
@@ -1326,5 +1377,14 @@ public final class Packet
      */
     public void removeSatellite(com.sun.xml.ws.api.PropertySet satellite) {
         super.removeSatellite(satellite);
+    }
+
+    /**
+     * This is propogated from SOAPBindingCodec and will affect isMtomAcceptable and isFastInfosetAcceptable
+     */
+    private boolean isFastInfosetDisabled;
+    
+    public void setFastInfosetDisabled(boolean b) {
+        isFastInfosetDisabled = b;
     }
 }

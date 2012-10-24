@@ -44,6 +44,7 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.WSDLOperationMapping;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.Message;
@@ -80,15 +81,20 @@ public class OperationDispatcher {
     }
 
     /**
-     *
+     * @deprecated use getWSDLOperationMapping(Packet request)
      * @param request Packet
      * @return QName of the wsdl operation.
      * @throws DispatchException if a unique operartion cannot be associated with this packet.
      */
     public @NotNull QName getWSDLOperationQName(Packet request) throws DispatchException {
-        QName opName;
+        WSDLOperationMapping m = getWSDLOperationMapping(request);
+        return m != null ? m.getOperationName() : null;
+    }
+
+    public @NotNull WSDLOperationMapping getWSDLOperationMapping(Packet request) throws DispatchException {
+        WSDLOperationMapping opName;
         for(WSDLOperationFinder finder: opFinders) {
-            opName = finder.getWSDLOperationQName(request);
+            opName = finder.getWSDLOperationMapping(request);
             if(opName != null)
                 return opName;
         }
@@ -100,6 +106,5 @@ public class OperationDispatcher {
         Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
                 binding.getSOAPVersion(), faultString, binding.getSOAPVersion().faultCodeClient);
         throw new DispatchException(faultMsg);
-
     }
 }

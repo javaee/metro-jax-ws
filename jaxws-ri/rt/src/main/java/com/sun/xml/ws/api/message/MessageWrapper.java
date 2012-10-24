@@ -95,6 +95,7 @@ class MessageWrapper extends StreamMessage {
         packet = p;
         delegate = m;
         streamDelegate = (m instanceof StreamMessage) ? (StreamMessage) m : null; 
+        setMessageMedadata(p);
     }  
     
     @Override
@@ -258,5 +259,11 @@ class MessageWrapper extends StreamMessage {
     @Override
     public @NotNull MessageHeaders getMessageHeaders() {
         return delegate.getMessageHeaders();
+    }
+
+    @Override
+    public void setMessageMedadata(MessageMetadata metadata) {
+        super.setMessageMedadata(metadata);
+        delegate.setMessageMedadata(metadata);
     }
 }

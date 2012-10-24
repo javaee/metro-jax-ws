@@ -64,6 +64,7 @@ import com.sun.xml.ws.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.MEP;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.WSDLOperationMapping;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
@@ -88,7 +89,8 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
 	
     AbstractSEIModelImpl seiModel;
 	Map<Method, StubHandler> stubHandlers;
-    QNameMap<TieHandler> wsdlOpMap = new QNameMap<TieHandler>();
+//    QNameMap<TieHandler> wsdlOpMap = new QNameMap<TieHandler>();
+	Map<JavaMethodImpl, TieHandler> wsdlOpMap = new HashMap<JavaMethodImpl, TieHandler>();
 	Map<Method, TieHandler> tieHandlers = new HashMap<Method, TieHandler>();
     OperationDispatcher operationDispatcher;
     OperationDispatcher operationDispatcherNoWsdl;
@@ -110,7 +112,7 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
 //    if(!clientConfig) {
 		for(JavaMethodImpl jm: seiModel.getJavaMethods()) if (!jm.isAsync()) {
             TieHandler th = new TieHandler(jm, seiModel.getWSBinding(), packetFactory);
-            wsdlOpMap.put(jm.getOperationQName(), th);
+            wsdlOpMap.put(jm, th);
             tieHandlers.put(th.getMethod(), th);
         }
 //    }
@@ -155,16 +157,18 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
         }
     }
 
-    public QName resolveOperationQName(Packet req) throws DispatchException {
-        return (operationDispatcher != null)?
-                operationDispatcher.getWSDLOperationQName(req):
-                operationDispatcherNoWsdl.getWSDLOperationQName(req);
+    public JavaMethodImpl resolveJavaMethod(Packet req) throws DispatchException {
+        WSDLOperationMapping m = req.getWSDLOperationMapping();
+        if (m == null) m = (operationDispatcher != null) ?
+                operationDispatcher.getWSDLOperationMapping(req):
+                operationDispatcherNoWsdl.getWSDLOperationMapping(req);
+        return (JavaMethodImpl) m.getJavaMethod();
     }
 
 	public JavaCallInfo deserializeRequest(Packet req) {
 		JavaCallInfo call = new JavaCallInfo();
 		try {
-			QName wsdlOp = resolveOperationQName(req);
+		    JavaMethodImpl wsdlOp = resolveJavaMethod(req);
 			TieHandler tie = wsdlOpMap.get(wsdlOp);
 			call.setMethod(tie.getMethod());
 			Object[] args = tie.readRequest(req.getMessage());
@@ -231,7 +235,7 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
 	}
 	
 	public EndpointCallBridge getEndpointBridge(Packet req) throws DispatchException {
-		QName wsdlOp = resolveOperationQName(req);
+        JavaMethodImpl wsdlOp = resolveJavaMethod(req);
 		return wsdlOpMap.get(wsdlOp);
 	}
 

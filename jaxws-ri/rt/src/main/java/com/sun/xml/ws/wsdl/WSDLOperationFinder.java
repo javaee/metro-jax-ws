@@ -41,9 +41,13 @@
 package com.sun.xml.ws.wsdl;
 
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.WSDLOperationMapping;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 
@@ -73,11 +77,52 @@ public abstract class WSDLOperationFinder {
      * An implementation should return null when it cannot dispatch to a unique method based on the information it processes.
      * In such case, other OperationFinders are queried to resolve a WSDL operation.
      * It should throw an instance of DispatchException if it finds incorrect information in the packet.
+     * 
+     * @deprecated use getWSDLOperationMapping(Packet request)
      *
      * @param request  Request Packet that is used to find the associated WSDLOperation
      * @return QName of the WSDL Operation that this request correponds to.
      *          null when it cannot find a unique operation to dispatch to.
      * @throws DispatchException When the information in the Packet is invalid
      */
-    public abstract QName getWSDLOperationQName(Packet request) throws DispatchException;
+    public QName getWSDLOperationQName(Packet request) throws DispatchException {
+        WSDLOperationMapping m = getWSDLOperationMapping(request);
+        return m != null ? m.getOperationName() : null;
+    }
+    
+    public WSDLOperationMapping getWSDLOperationMapping(Packet request) throws DispatchException {
+        return null;
+    }
+    
+    protected WSDLOperationMapping wsdlOperationMapping(JavaMethodImpl j) {
+        return new WSDLOperationMappingImpl(j.getOperation(), j);
+    }
+    
+    protected WSDLOperationMapping wsdlOperationMapping(WSDLBoundOperation o) {
+        return new WSDLOperationMappingImpl(o, null);
+    }
+    
+    static class WSDLOperationMappingImpl implements WSDLOperationMapping {
+        private WSDLBoundOperation wsdlOperation;
+        private JavaMethod javaMethod;
+        private QName operationName;
+        
+        WSDLOperationMappingImpl(WSDLBoundOperation wsdlOperation, JavaMethodImpl javaMethod) {
+            this.wsdlOperation = wsdlOperation;
+            this.javaMethod = javaMethod;
+            operationName = (javaMethod != null) ? javaMethod.getOperationQName() : wsdlOperation.getName();
+        }
+
+        public WSDLBoundOperation getWSDLBoundOperation() {
+            return wsdlOperation;
+        }
+        
+        public JavaMethod getJavaMethod() {
+            return javaMethod;
+        }
+        
+        public QName getOperationName() {
+            return operationName;
+        }
+    }
 }

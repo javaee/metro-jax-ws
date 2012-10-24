@@ -44,6 +44,7 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.WSDLOperationMapping;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.message.Packet;
@@ -64,11 +65,11 @@ import java.util.Map;
  * @author Jitendra Kotamraju
  */
 final class SOAPActionBasedOperationFinder extends WSDLOperationFinder {
-    private final Map<String, QName> methodHandlers;
+    private final Map<String, WSDLOperationMapping> methodHandlers;
 
     public SOAPActionBasedOperationFinder(WSDLPort wsdlModel, WSBinding binding, @Nullable SEIModel seiModel) {
         super(wsdlModel,binding,seiModel);
-        methodHandlers = new HashMap<String, QName>();
+        methodHandlers = new HashMap<String, WSDLOperationMapping>();
 
         // Find if any SOAPAction repeat for operations
         Map<String, Integer> unique = new HashMap<String, Integer>();
@@ -88,18 +89,19 @@ final class SOAPActionBasedOperationFinder extends WSDLOperationFinder {
                 // Set up method handlers only for unique SOAPAction values so
                 // that dispatching happens consistently for a method
                 if (unique.get(soapAction) == 1) {
-                    methodHandlers.put('"' + soapAction + '"', m.getOperationQName());
+                    methodHandlers.put('"' + soapAction + '"', wsdlOperationMapping(m));
                 }
             }
         } else {
             for(WSDLBoundOperation wsdlOp: wsdlModel.getBinding().getBindingOperations()) {
-                methodHandlers.put(wsdlOp.getSOAPAction(),wsdlOp.getName());
+                methodHandlers.put(wsdlOp.getSOAPAction(), wsdlOperationMapping(wsdlOp));
             }
         }
 
     }
 
-    public QName getWSDLOperationQName(Packet request) {
+//  public QName getWSDLOperationQName(Packet request) {
+    public WSDLOperationMapping getWSDLOperationMapping(Packet request) throws DispatchException {
         return request.soapAction == null ? null : methodHandlers.get(request.soapAction);
     }
 }

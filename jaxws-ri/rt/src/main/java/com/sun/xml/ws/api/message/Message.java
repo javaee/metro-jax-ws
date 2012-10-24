@@ -49,6 +49,7 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.WSDLOperationMapping;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundPortType;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
@@ -268,6 +269,15 @@ public abstract class Message {
 
     private WSDLBoundOperation operation = null;
 
+    private WSDLOperationMapping wsdlOperationMapping = null;
+
+    private MessageMetadata messageMetadata = null;
+    
+    public void setMessageMedadata(MessageMetadata metadata) {
+        messageMetadata = metadata;
+    }
+
+
     /**
      * Returns the operation of which this message is an instance of.
      *
@@ -297,6 +307,10 @@ public abstract class Message {
      */
     @Deprecated
     public final @Nullable WSDLBoundOperation getOperation(@NotNull WSDLBoundPortType boundPortType) {
+        if (operation == null && messageMetadata != null) {
+            if (wsdlOperationMapping == null) wsdlOperationMapping = messageMetadata.getWSDLOperationMapping();
+            if (wsdlOperationMapping != null) operation = wsdlOperationMapping.getWSDLBoundOperation();
+        }
         if(operation==null)
             operation = boundPortType.getOperation(getPayloadNamespaceURI(),getPayloadLocalPart());
         return operation;
@@ -342,6 +356,13 @@ public abstract class Message {
      */
     @Deprecated
     public final @Nullable JavaMethod getMethod(@NotNull SEIModel seiModel) {
+        if (wsdlOperationMapping == null && messageMetadata != null) {
+            wsdlOperationMapping = messageMetadata.getWSDLOperationMapping();
+        }
+        if (wsdlOperationMapping != null) {
+            return wsdlOperationMapping.getJavaMethod();
+        }
+        //fall back to the original logic which could be incorrect ...
         String localPart = getPayloadLocalPart();
         String nsUri;
         if (localPart == null) {

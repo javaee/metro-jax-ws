@@ -66,7 +66,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.StringTokenizer;
+//import java.util.StringTokenizer;
 
 /**
  * SOAP binding {@link Codec} that can handle MTOM, SwA, and SOAP messages
@@ -281,14 +281,16 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
      * Set the state so that such state is used by encode().
      */
     private void postDecode(Packet p) {
-        if(features.isEnabled(MTOMFeature.class))
-            p.setMtomAcceptable( isMtomAcceptable(p.acceptableMimeTypes) );
+        p.setFastInfosetDisabled(isFastInfosetDisabled);
+        if(features.isEnabled(MTOMFeature.class)) p.checkMtomAcceptable();
+//            p.setMtomAcceptable( isMtomAcceptable(p.acceptableMimeTypes) );
         MTOMFeature mtomFeature = features.get(MTOMFeature.class);
         if (mtomFeature != null) {
             p.setMtomFeature(mtomFeature);
         }
         if (!useFastInfosetForEncoding) {
-            useFastInfosetForEncoding = isFastInfosetAcceptable(p.acceptableMimeTypes);
+            useFastInfosetForEncoding = p.getFastInfosetAcceptable(fiMimeType);
+//          useFastInfosetForEncoding = isFastInfosetAcceptable(p.acceptableMimeTypes);
         }
     }
 
@@ -399,34 +401,34 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
                 b.length()));
     }
     
-    private boolean isFastInfosetAcceptable(String accept) {
-        if (accept == null || isFastInfosetDisabled) return false;
-        
-        StringTokenizer st = new StringTokenizer(accept, ",");
-        while (st.hasMoreTokens()) {
-            final String token = st.nextToken().trim();
-            if (token.equalsIgnoreCase(fiMimeType)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    private boolean isFastInfosetAcceptable(String accept) {
+//        if (accept == null || isFastInfosetDisabled) return false;
+//        
+//        StringTokenizer st = new StringTokenizer(accept, ",");
+//        while (st.hasMoreTokens()) {
+//            final String token = st.nextToken().trim();
+//            if (token.equalsIgnoreCase(fiMimeType)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     /*
      * Just check if the Accept header contains application/xop+xml,
      * no need to worry about q values.
      */
-    private boolean isMtomAcceptable(String accept) {
-        if (accept == null || isFastInfosetDisabled) return false;
-        StringTokenizer st = new StringTokenizer(accept, ",");
-        while (st.hasMoreTokens()) {
-            final String token = st.nextToken().trim();
-            if (token.toLowerCase().contains(MtomCodec.XOP_XML_MIME_TYPE)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    private boolean isMtomAcceptable(String accept) {
+//        if (accept == null || isFastInfosetDisabled) return false;
+//        StringTokenizer st = new StringTokenizer(accept, ",");
+//        while (st.hasMoreTokens()) {
+//            final String token = st.nextToken().trim();
+//            if (token.toLowerCase().contains(MtomCodec.XOP_XML_MIME_TYPE)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * Determines the encoding codec.
