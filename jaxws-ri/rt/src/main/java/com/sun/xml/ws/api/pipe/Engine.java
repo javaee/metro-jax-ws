@@ -61,6 +61,10 @@ public class Engine {
     public final String id;
     private final Container container;
 
+    String getId() { return id; }
+    Container getContainer() { return container; }
+    Executor getExecutor() { return threadPool; }
+    
     public Engine(String id, Executor threadPool) {
         this(id, ContainerResolver.getDefault().getContainer(), threadPool);
     }

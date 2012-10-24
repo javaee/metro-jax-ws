@@ -90,6 +90,7 @@ public abstract class AbstractTubeImpl implements Tube, Pipe {
         return na;
     }
 
+    @Deprecated
     protected final NextAction doSuspend() {
         NextAction na = new NextAction();
         na.suspend();
@@ -102,6 +103,7 @@ public abstract class AbstractTubeImpl implements Tube, Pipe {
         return na;
     }
 
+    @Deprecated
     protected final NextAction doSuspend(Tube next) {
         NextAction na = new NextAction();
         na.suspend(next);

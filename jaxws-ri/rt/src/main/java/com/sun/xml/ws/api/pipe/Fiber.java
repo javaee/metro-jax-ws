@@ -52,6 +52,8 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
 import com.sun.xml.ws.api.server.Adapter;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.ContainerResolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +65,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceException;
 
 /**
@@ -171,7 +174,7 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
         }
     }
 
-    private List<Listener> getCurrentListeners() {
+    List<Listener> getCurrentListeners() {
       synchronized(_listeners) {
          return new ArrayList<Listener>(_listeners);
       }
@@ -246,20 +249,6 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
     private List<FiberContextSwitchInterceptor> interceptors;
 
     /**
-     * Not null when {@link #interceptors} is not null.
-     */
-    private InterceptorHandler interceptorHandler;
-
-    /**
-     * This flag is set to true when a new interceptor is added.
-     * <p/>
-     * When that happens, we need to first exit the current interceptors
-     * and then reenter them, so that the newly added interceptors start
-     * taking effect. This flag is used to control that flow.
-     */
-    private boolean needsToReenter;
-
-    /**
      * Fiber's context {@link ClassLoader}.
      */
     private
@@ -301,7 +290,7 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
     private boolean startedSync;
 
     /**
-     * Callback to be invoked when a {@link Fiber} finishs execution.
+     * Callback to be invoked when a {@link Fiber} finishes execution.
      */
     public interface CompletionCallback {
         /**
@@ -598,33 +587,33 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
      * @param onExitRunnable runnable to be invoked after fiber is marked for suspension
      * @return if control loop must exit
      */
-    private boolean suspend(Runnable onExitRunnable) {
+    private boolean suspend(Holder<Boolean> isRequireUnlock, Runnable onExitRunnable) {
         if(isTraceEnabled()) {
             LOGGER.log(Level.FINE, "{0} suspending. Will have suspendedCount={1}", new Object[]{getName(), suspendedCount+1});
             if (suspendedCount > 0) {
                 LOGGER.log(Level.FINE, "WARNING - {0} suspended more than resumed. Will require more than one resume to actually resume this fiber.", getName());
-                }
             }
+        }
 
-            List<Listener> listeners = getCurrentListeners();
-            if (++suspendedCount == 1) {
-                isInsideSuspendCallbacks = true;
-                try {
-                        for (Listener listener: listeners) {
-                            try {
-                                listener.fiberSuspended(this);
-                            } catch (Throwable e) {
-                                if(isTraceEnabled())
-                                        LOGGER.log(Level.FINE, "Listener {0} threw exception: {1}", new Object[]{listener, e.getMessage()});
-                            }
-                        }
-                } finally {
-                        isInsideSuspendCallbacks = false;
+        List<Listener> listeners = getCurrentListeners();
+        if (++suspendedCount == 1) {
+            isInsideSuspendCallbacks = true;
+            try {
+                for (Listener listener: listeners) {
+                    try {
+                        listener.fiberSuspended(this);
+                    } catch (Throwable e) {
+                        if(isTraceEnabled())
+                            LOGGER.log(Level.FINE, "Listener {0} threw exception: {1}", new Object[]{listener, e.getMessage()});
+                    }
                 }
+            } finally {
+                isInsideSuspendCallbacks = false;
             }
+        }
             
-            if (suspendedCount <= 0) {
-                // suspend callback caused fiber to resume
+        if (suspendedCount <= 0) {
+            // suspend callback caused fiber to resume
             for (Listener listener: listeners) {
                 try {
                     listener.fiberResumed(this);
@@ -634,10 +623,7 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
                 }
             }
                 
-            return false;
-        }
-        
-        if (onExitRunnable != null) {
+        } else if (onExitRunnable != null) {
             // synchronous use cases cannot disconnect from the current thread
             if (!synchronous) { 
                 /* INTENTIONALLY UNLOCKING EARLY */
@@ -654,7 +640,10 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
                 } catch(Throwable t) {
                     throw new OnExitRunnableException(t);
                 }
+                
+                isRequireUnlock.value = Boolean.FALSE;
                 return true;
+                
             } else {
                 // for synchronous we will stay with current thread, so do not disconnect
                 if (isTraceEnabled())
@@ -696,13 +685,15 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
      * <li>Y.processRequest()
      * </ol>
      */
-    public void addInterceptor(@NotNull FiberContextSwitchInterceptor interceptor) {
+    public synchronized void addInterceptor(@NotNull FiberContextSwitchInterceptor interceptor) {
         if (interceptors == null) {
             interceptors = new ArrayList<FiberContextSwitchInterceptor>();
-            interceptorHandler = new InterceptorHandler();
+        } else {
+            List<FiberContextSwitchInterceptor> l = new ArrayList<FiberContextSwitchInterceptor>();
+            l.addAll(interceptors);
+            interceptors = l;
         }
         interceptors.add(interceptor);
-        needsToReenter = true;
     }
 
     /**
@@ -728,10 +719,17 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
      * @return true if the specified interceptor was removed. False if
      *         the specified interceptor was not registered with this fiber to begin with.
      */
-    public boolean removeInterceptor(@NotNull FiberContextSwitchInterceptor interceptor) {
-        if (interceptors != null && interceptors.remove(interceptor)) {
-            needsToReenter = true;
-            return true;
+    public synchronized boolean removeInterceptor(@NotNull FiberContextSwitchInterceptor interceptor) {
+        if (interceptors != null) {
+            boolean result = interceptors.remove(interceptor);
+            if (interceptors.isEmpty())
+                interceptors = null;
+            else {
+                List<FiberContextSwitchInterceptor> l = new ArrayList<FiberContextSwitchInterceptor>();
+                l.addAll(interceptors);
+                interceptors = l;
+            }
+            return result;
         }
         return false;
     }
@@ -761,20 +759,25 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
     @Deprecated
     @Override
     public void run() {
-        assert !synchronous;
-        // doRun returns true to indicate an early exit from fiber processing
-        if (!doRun()) {
-            if (startedSync && suspendedCount == 0 &&
-                (next != null || contsSize > 0)) {
-                // We bailed out of running this fiber we started as sync, and now
-                // want to finish running it async
-                startedSync = false;
-                // Start back up as an async fiber
-                dumpFiberContext("restarting (async) after startSync");
-                owner.addRunnable(this);
-            } else {
-                completionCheck();
+        Container old = ContainerResolver.getDefault().enterContainer(owner.getContainer());
+        try {
+            assert !synchronous;
+            // doRun returns true to indicate an early exit from fiber processing
+            if (!doRun()) {
+                if (startedSync && suspendedCount == 0 &&
+                    (next != null || contsSize > 0)) {
+                    // We bailed out of running this fiber we started as sync, and now
+                    // want to finish running it async
+                    startedSync = false;
+                    // Start back up as an async fiber
+                    dumpFiberContext("restarting (async) after startSync");
+                    owner.addRunnable(this);
+                } else {
+                    completionCheck();
+                }
             }
+        } finally {
+            ContainerResolver.getDefault().exitContainer(old);
         }
     }
 
@@ -879,10 +882,18 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
      * {@link Fiber#__doRun()}.
      */
     private class InterceptorHandler implements FiberContextSwitchInterceptor.Work<Tube, Tube> {
+        private final Holder<Boolean> isUnlockRequired;
+        private final List<FiberContextSwitchInterceptor> ints;
+        
         /**
          * Index in {@link Fiber#interceptors} to invoke next.
          */
         private int idx;
+        
+        public InterceptorHandler(Holder<Boolean> isUnlockRequired, List<FiberContextSwitchInterceptor> ints) {
+            this.isUnlockRequired = isUnlockRequired;
+            this.ints = ints;
+        }
 
         /**
          * Initiate the interception, and eventually invokes {@link Fiber#__doRun()}.
@@ -894,12 +905,12 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
 
         @Override
         public Tube execute(Tube next) {
-            if (idx == interceptors.size()) {
+            if (idx == ints.size()) {
                 Fiber.this.next = next;
-                if (__doRun())
+                if (__doRun(isUnlockRequired, ints))
                     return PLACEHOLDER;
             } else {
-                FiberContextSwitchInterceptor interceptor = interceptors.get(idx++);
+                FiberContextSwitchInterceptor interceptor = ints.get(idx++);
                 return interceptor.execute(Fiber.this, next, this);
             }
             return Fiber.this.next;
@@ -955,12 +966,15 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
     }
 
     private boolean _doRun(Tube next) {
-        // isAlreadyExited will be set when lock has already been released in suspend
-        boolean isAlreadyExited = false;
+        // isRequireUnlock will contain Boolean.FALSE when lock has already been released in suspend
+        Holder<Boolean> isRequireUnlock = new Holder<Boolean>(Boolean.TRUE);
         lock.lock();
         try {
+            List<FiberContextSwitchInterceptor> ints;
             ClassLoader old;
             synchronized(this) {
+                ints = interceptors;
+                
                 // currentThread is protected by the monitor for this fiber so 
                 // that it is accessible to cancel() even when the lock is held
                 currentThread = Thread.currentThread();
@@ -973,28 +987,30 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
             }
 
             try {
+                boolean needsToReenter = false;
                 do {
-                    needsToReenter = false;
-    
                     // if interceptors are set, go through the interceptors.
-                    if (interceptorHandler == null) {
+                    if (ints == null) {
                         this.next = next;
-                        if (__doRun()) {
-                            isAlreadyExited = true;
+                        if (__doRun(isRequireUnlock, ints)) {
                             return true;
                         }
                     } else {
-                        next = interceptorHandler.invoke(next);
+                        next = new InterceptorHandler(isRequireUnlock, ints).invoke(next);
                         if (next == PLACEHOLDER) {
-                            isAlreadyExited = true;
                             return true;
                         }
+                    }
+                    
+                    synchronized(this) {
+                        needsToReenter = (ints != interceptors);
+                        if (needsToReenter)
+                            ints = interceptors;
                     }
                 } while (needsToReenter);
             } catch(OnExitRunnableException o) {
                 // catching this exception indicates onExitRunnable in suspend() threw.
                 // we must still avoid double unlock
-                isAlreadyExited = true;
                 Throwable t = o.target;
                 if (t instanceof WebServiceException)
                     throw (WebServiceException) t;
@@ -1008,17 +1024,16 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
                 if (isTraceEnabled()) {
                     LOGGER.log(Level.FINE, "Thread leaving _doRun(): {0}", thread);
                 }
-                if (!isAlreadyExited) {
-                    synchronized(this) {
-                        currentThread = null;
-                    }
-                }
             }
     
             return false;
         } finally {
-            if (!isAlreadyExited)
+            if (isRequireUnlock.value) {
+                synchronized(this) {
+                    currentThread = null;
+                }
                 lock.unlock();
+            }
         }
     }
     
@@ -1027,7 +1042,7 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
      *
      * @see #doRun()
      */
-    private boolean __doRun() {
+    private boolean __doRun(Holder<Boolean> isRequireUnlock, List<FiberContextSwitchInterceptor> originalInterceptors) {
         assert(lock.isHeldByCurrentThread());
         
         final Fiber old = CURRENT_FIBER.get();
@@ -1038,7 +1053,7 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
 
         try {
             boolean abortResponse = false;
-            while(isReady() && !needsToReenter) {
+            while(isReady(originalInterceptors)) {
                 if (isCanceled) {
                     next = null;
                     throwable = null;
@@ -1121,7 +1136,7 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
                           pushCont(last);
                         }
                         next = na.next;
-                        if(suspend(na.onExitRunnable))
+                        if(suspend(isRequireUnlock, na.onExitRunnable))
                             return true; // explicitly exiting control loop
                         break;
                     default:
@@ -1187,7 +1202,7 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
     /**
      * Returns true if the fiber is ready to execute.
      */
-    private boolean isReady() {
+    private boolean isReady(List<FiberContextSwitchInterceptor> originalInterceptors) {
         if (synchronous) {
             while (suspendedCount == 1)
                 try {
@@ -1201,10 +1216,18 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
                     // when you are actually running the whole thing synchronously.
                     interrupted = true;
                 }
-            return true;
+            
+            synchronized(this) {
+                return interceptors == originalInterceptors;
+            }
         }
-        else
-            return suspendedCount<=0;
+        else {
+            if (suspendedCount>0)
+                return false;
+            synchronized(this) {
+                return interceptors == originalInterceptors;
+            }
+        }
     }
 
     private String getName() {

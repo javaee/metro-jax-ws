@@ -162,6 +162,7 @@ public final class NextAction {
     /**
      * Indicates that the fiber should be suspended.
      * Once {@link Fiber#resume(Packet) resumed}, return the response processing.
+     * @deprecated Use variants that pass {@link Runnable}
      */
     public void suspend() {
         suspend(null, null);
@@ -185,6 +186,7 @@ public final class NextAction {
      * Indicates that the fiber should be suspended.
      * Once {@link Fiber#resume(Packet) resumed}, resume with the
      * {@link Tube#processRequest(Packet)} on the given next tube.
+     * @deprecated Use variants that pass {@link Runnable}
      */
     public void suspend(Tube next) {
         suspend(next, null);
