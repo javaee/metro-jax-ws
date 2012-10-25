@@ -114,7 +114,15 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         return packet(Messages.create(soap));
     }
 
+    /**
+     * @deprecated use createContext(Source m, com.oracle.webservices.api.EnvelopeStyle.Style envelopeStyle)
+     */
     public org.jvnet.ws.message.MessageContext createContext(Source m, EnvelopeStyle.Style envelopeStyle) {
+        throwIfIllegalMessageArgument(m);
+        return packet(Messages.create(m, SOAPVersion.from(envelopeStyle)));
+    }
+
+    public MessageContext createContext(Source m, com.oracle.webservices.api.EnvelopeStyle.Style envelopeStyle) {
         throwIfIllegalMessageArgument(m);
         return packet(Messages.create(m, SOAPVersion.from(envelopeStyle)));
     }

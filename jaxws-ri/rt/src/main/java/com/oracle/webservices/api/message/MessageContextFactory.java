@@ -64,8 +64,13 @@ public abstract class MessageContextFactory
     public abstract MessageContext createContext(SOAPMessage m);
     
     public abstract MessageContext createContext(Source m);
-    
+
+    /**
+     * @deprecated
+     */
     public abstract MessageContext createContext(Source m, EnvelopeStyle.Style envelopeStyle);
+    
+    public abstract MessageContext createContext(Source m, com.oracle.webservices.api.EnvelopeStyle.Style envelopeStyle);
     
     public abstract MessageContext createContext(InputStream in, String contentType) throws IOException;
 

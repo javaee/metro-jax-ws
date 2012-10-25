@@ -1138,7 +1138,8 @@ public final class Packet
         Message msg = this.getMessage();
         return (msg != null) ? msg.readAsSOAPMessage(this, this.getState().isInbound()) : null;
     }
-    
+
+    public // TODO remove after org.jvnet.ws goes away.
     Codec codec = null;
     public Codec getCodec() {
         if (codec != null) {

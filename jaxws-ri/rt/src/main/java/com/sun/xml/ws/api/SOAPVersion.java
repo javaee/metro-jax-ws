@@ -270,22 +270,37 @@ public enum SOAPVersion {
         else
             return SOAP_11;
     }
-    
+
     public static SOAPVersion from(EnvelopeStyleFeature f) {
         EnvelopeStyle.Style[] style = f.getStyles();
         if (style.length != 1) throw new IllegalArgumentException ("The EnvelopingFeature must has exactly one Enveloping.Style");
         return from(style[0]);
     }
-    
+
+    public static SOAPVersion from(com.oracle.webservices.api.EnvelopeStyleFeature f) {
+        com.oracle.webservices.api.EnvelopeStyle.Style[] style = f.getStyles();
+        if (style.length != 1) throw new IllegalArgumentException ("The EnvelopingFeature must has exactly one Enveloping.Style");
+        return from(style[0]);
+    }
+
     public static SOAPVersion from(EnvelopeStyle.Style style) {
         switch (style) {
-        case SOAP11: return SOAP_11; 
+        case SOAP11: return SOAP_11;
         case SOAP12: return SOAP_12;
         case XML: //ERROR??
         default: return SOAP_11;
         }
     }
-    
+
+    public static SOAPVersion from(com.oracle.webservices.api.EnvelopeStyle.Style style) {
+        switch (style) {
+        case SOAP11: return SOAP_11;
+        case SOAP12: return SOAP_12;
+        case XML: //ERROR??
+        default: return SOAP_11;
+        }
+    }
+
     public EnvelopeStyleFeature toFeature() {
         return SOAP_11.equals(this) ?
             new EnvelopeStyleFeature(new EnvelopeStyle.Style[]{EnvelopeStyle.Style.SOAP11}) :

@@ -247,6 +247,11 @@ public abstract class MessageContextFactory extends com.oracle.webservices.api.m
 		}
 
 		@Override
+		public MessageContext createContext(Source m, com.oracle.webservices.api.EnvelopeStyle.Style envelopeStyle) {
+			return wrap(mcf.createContext(m, envelopeStyle));
+		}
+
+		@Override
 		public MessageContext createContext(InputStream in, String contentType)
 				throws IOException {
 			return wrap(mcf.createContext(in, contentType));

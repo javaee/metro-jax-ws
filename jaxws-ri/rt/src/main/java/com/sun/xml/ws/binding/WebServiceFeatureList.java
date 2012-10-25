@@ -546,7 +546,13 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
     }
     
     static public SOAPVersion getSoapVersion(WSFeatureList features) {
-        EnvelopeStyleFeature env = features.get(EnvelopeStyleFeature.class);
+        {
+            EnvelopeStyleFeature env = features.get(EnvelopeStyleFeature.class);
+            if (env != null) {
+                return SOAPVersion.from(env);
+            }
+        }
+        com.oracle.webservices.api.EnvelopeStyleFeature env = features.get(com.oracle.webservices.api.EnvelopeStyleFeature.class);
         return env != null ? SOAPVersion.from(env) : null;
     }
     
