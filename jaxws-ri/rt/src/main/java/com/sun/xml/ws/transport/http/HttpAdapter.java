@@ -749,7 +749,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     }
 
     public PortAddressResolver getPortAddressResolver(String baseAddress) {
-        return owner.createPortAddressResolver(baseAddress);
+        return owner.createPortAddressResolver(baseAddress, endpoint.getImplementationClass());
     }
     
     public DocumentAddressResolver getDocumentAddressResolver(

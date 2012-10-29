@@ -242,7 +242,7 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
     public @NotNull String getEPRAddress(Packet request, WSEndpoint endpoint) {
         //return WSHttpHandler.getRequestAddress(httpExchange);
         
-        PortAddressResolver resolver = adapter.owner.createPortAddressResolver(getBaseAddress());
+        PortAddressResolver resolver = adapter.owner.createPortAddressResolver(getBaseAddress(), endpoint.getImplementationClass());
         String address = resolver.getAddressFor(endpoint.getServiceName(), endpoint.getPortName().getLocalPart());
         if(address==null)
             throw new WebServiceException(WsservletMessages.SERVLET_NO_ADDRESS_AVAILABLE(endpoint.getPortName()));

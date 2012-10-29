@@ -241,7 +241,7 @@ public class EndpointFactory {
         List<SDDocumentImpl> docList = categoriseMetadata(md, serviceName, portTypeName);
         // Finds the primary WSDL and makes sure that metadata doesn't have
         // two concrete or abstract WSDLs
-        SDDocumentImpl primaryDoc = findPrimary(docList);
+        SDDocumentImpl primaryDoc = primaryWsdl != null ? SDDocumentImpl.create(primaryWsdl,serviceName,portTypeName) : findPrimary(docList);
 
         EndpointAwareTube terminal;
         WSDLPortImpl wsdlPort = null;
