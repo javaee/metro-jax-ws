@@ -77,6 +77,14 @@ holder.
         elements of type <literal>xs:base64Binary</literal> and
         <literal>xs:hexBinary</literal> is optimally transmitted. Currently
         MTOM works only with proxy port.</para>
+        <para>Note: MTOM optimization is applied right at the time when JAX-WS writes 
+        the message on to the wire. This is done to avoid any bufferring. Having 
+        a handler means that JAX-WS transforms the Message in to DOM or 
+        SOAPMessage. It results in inlined base64 encoded data and it remains so 
+        when the data is written over the wire as attachment. This is done in 
+        order to avoid unnecessary conversion to and from when handlers are being 
+        used. In short: when handlers are used, MTOM optimization does not happen.
+        </para>
 
         <section xml:id="xmmime-expectedmediatype-to-java">
             <title><literal>xmime:expectedContentType</literal> to Java type
