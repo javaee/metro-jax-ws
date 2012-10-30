@@ -300,12 +300,12 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
             throw new WebServiceException("expected only 1 parameter");
         }
         final String builderParameterTypeName = builderMethodParameterTypes[0].getName();
-        if (! builderParameterTypeName.startsWith("com.oracle.webservices.userapi.test.apinew") &&
+        if (! builderParameterTypeName.startsWith("com.oracle.webservices.test.features_annotations_enums.apinew") &&
             ! builderParameterTypeName.startsWith("com.oracle.webservices.api")) {
             return false;
         }
         final String annotationFieldValueTypeName = annotationFieldValueClass.getName();
-        if (annotationFieldValueTypeName.startsWith("com.oracle.webservices.userapi.test.apiold") ||
+        if (annotationFieldValueTypeName.startsWith("com.oracle.webservices.test.features_annotations_enums.apiold") ||
             annotationFieldValueTypeName.startsWith("org.jvnet.ws")) {
             return true;
         }
