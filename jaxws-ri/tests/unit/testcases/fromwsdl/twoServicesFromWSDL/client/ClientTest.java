@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package jaxws.twoServices.client;
+package fromwsdl.twoServices.client;
 
 import junit.framework.TestCase;
 
@@ -53,8 +53,8 @@ public class ClientTest extends TestCase {
     }
 
     public void testWs2Client() throws Exception {
-        jaxws.twoServices.client2.AddNumbersPortType port
-                = new jaxws.twoServices.client2.AddNumbersService().getAddNumbersPort();
+        fromwsdl.twoServices.client2.AddNumbersPortType port
+                = new fromwsdl.twoServices.client2.AddNumbersService().getAddNumbersPort();
         assertEquals(2242, port.addNumbers(1, 2));
     }
 }

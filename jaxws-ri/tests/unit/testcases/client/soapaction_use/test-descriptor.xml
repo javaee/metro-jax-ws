@@ -45,6 +45,7 @@
   <description>
     Test for SOAPAction with different values of BindingProvider.SOAPACTION_USE_PROPERTY
   </description>
+  <wsimport-client>-p client.soapaction_use.client</wsimport-client>
   <service basedir="./server">
   </service>
 </descriptor>
