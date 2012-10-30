@@ -40,8 +40,8 @@
 
 -->
 <endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
-    <endpoint implementation="jaxws.twoServices.server.ws1.AddNumbersImpl1" url-pattern="/AddNumbersImpl1" name="AddNumbersImpl1" wsdl="WEB-INF/wsdl/ws1/AddNumbers.wsdl">
+    <endpoint implementation="fromwsdl.twoServicesFromWSDL.server.ws1.AddNumbersImpl1" url-pattern="/AddNumbersImpl1" name="AddNumbersImpl1" wsdl="WEB-INF/wsdl/ws1/AddNumbers.wsdl">
     </endpoint>
-    <endpoint implementation="jaxws.twoServices.server.ws2.AddNumbersImpl2" url-pattern="/AddNumbersImpl2" name="AddNumbersImpl2" wsdl="WEB-INF/wsdl/ws2/AddNumbers.wsdl">
+    <endpoint implementation="fromwsdl.twoServicesFromWSDL.server.ws2.AddNumbersImpl2" url-pattern="/AddNumbersImpl2" name="AddNumbersImpl2" wsdl="WEB-INF/wsdl/ws2/AddNumbers.wsdl">
     </endpoint>
 </endpoints>

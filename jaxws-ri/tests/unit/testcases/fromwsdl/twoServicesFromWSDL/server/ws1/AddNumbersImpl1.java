@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package jaxws.twoServices.server.ws1;
+package fromwsdl.twoServicesFromWSDL.server.ws1;
 
 import javax.jws.WebService;
 import org.example.AddNumbersFault_Exception;

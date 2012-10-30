@@ -41,24 +41,24 @@
 
 -->
 <web-app>
-    <display-name>jaxws.twoServices</display-name>
+    <display-name>fromwsdl.twoServicesFromWSDL</display-name>
     <description>Tests two @WebService with fromwsdl scenario.</description>
     <listener>
         <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
     </listener>
     <servlet>
-        <servlet-name>jaxws.twoServices</servlet-name>
-        <display-name>jaxws.twoServices</display-name>
+        <servlet-name>fromwsdl.twoServicesFromWSDL</servlet-name>
+        <display-name>fromwsdl.twoServicesFromWSDL</display-name>
         <description>Tests two @WebService with fromwsdl scenario.</description>
         <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>jaxws.twoServices</servlet-name>
+        <servlet-name>fromwsdl.twoServicesFromWSDL2</servlet-name>
         <url-pattern>/AddNumbersImpl2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>jaxws.twoServices</servlet-name>
+        <servlet-name>fromwsdl.twoServicesFromWSDL1</servlet-name>
         <url-pattern>/AddNumbersImpl1</url-pattern>
     </servlet-mapping>
     <session-config>
