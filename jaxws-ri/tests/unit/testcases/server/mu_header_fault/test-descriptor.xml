@@ -45,5 +45,6 @@
   <description>
     Test for Must understand Fault Messages
   </description>
+  <wsimport-client>-p server.mu_header_fault.client</wsimport-client>
   <service basedir="./server"/>
 </descriptor>

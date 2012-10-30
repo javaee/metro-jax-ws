@@ -43,5 +43,6 @@
 
 <descriptor since="2.2" transport="http" uses="ri">
     <description>WSA tests starting from Java testing various Responses</description>
+    <wsimport-client>-p fromjava.wsa.responses.client</wsimport-client>
     <service basedir="./server"/>
 </descriptor>
