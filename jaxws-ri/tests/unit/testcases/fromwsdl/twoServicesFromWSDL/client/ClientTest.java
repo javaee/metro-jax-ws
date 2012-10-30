@@ -39,9 +39,14 @@
  */
 package fromwsdl.twoServicesFromWSDL.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import junit.framework.TestCase;
 
 public class ClientTest extends TestCase {
+
+    private static List<Integer> values = new ArrayList<Integer>(Arrays.asList(new Integer[]{1142, 2242}));
 
     public ClientTest(String name) {
         super(name);
@@ -49,12 +54,13 @@ public class ClientTest extends TestCase {
 
     public void testWs1Client() throws Exception {
         AddNumbersPortType port = new AddNumbersService().getAddNumbersPort();
-        assertEquals(1142, port.addNumbers(1, 2));
+        assertTrue(values.remove(Integer.valueOf(port.addNumbers(1, 2))));
     }
 
     public void testWs2Client() throws Exception {
         fromwsdl.twoServicesFromWSDL.client2.AddNumbersPortType port
-                = new fromwsdl.twoServices.client2.AddNumbersService().getAddNumbersPort();
-        assertEquals(2242, port.addNumbers(1, 2));
+                = new fromwsdl.twoServicesFromWSDL.client2.AddNumbersService().getAddNumbersPort();
+        assertTrue(values.remove(Integer.valueOf(port.addNumbers(1, 2))));
+        assertTrue(values.isEmpty());
     }
 }

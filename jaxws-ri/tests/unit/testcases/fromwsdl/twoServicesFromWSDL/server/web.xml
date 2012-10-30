@@ -54,12 +54,12 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>fromwsdl.twoServicesFromWSDL2</servlet-name>
-        <url-pattern>/AddNumbersImpl2</url-pattern>
+        <servlet-name>fromwsdl.twoServicesFromWSDL</servlet-name>
+        <url-pattern>/AddNumbersImpl1</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>fromwsdl.twoServicesFromWSDL1</servlet-name>
-        <url-pattern>/AddNumbersImpl1</url-pattern>
+        <servlet-name>fromwsdl.twoServicesFromWSDL</servlet-name>
+        <url-pattern>/AddNumbersImpl2</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
