@@ -288,7 +288,7 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
 
     protected SOAPBinding popSoapBinding() {
         if (pushedSoapBinding)
-            soapBindingStack.pop();
+            soapBindingStack.pop();			
         SOAPBinding soapBinding = null;
         if (!soapBindingStack.empty()) {
             soapBinding = soapBindingStack.peek();
@@ -299,6 +299,8 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
                 soapStyle = SOAPStyle.DOCUMENT;
                 wrapped = soapBinding.parameterStyle().equals(ParameterStyle.WRAPPED);
             }
+        } else {
+        	pushedSoapBinding = false;
         }
         return soapBinding;
     }
