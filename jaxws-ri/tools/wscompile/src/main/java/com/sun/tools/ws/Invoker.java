@@ -70,6 +70,46 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  */
 public final class Invoker {
+
+    /**
+     * The list of package prefixes we want the
+     * {@link MaskingClassLoader} to prevent the parent
+     * classLoader from loading
+     */
+    static final String[] maskedPackages = new String[]{
+            "com.sun.istack.tools.",
+            "com.sun.tools.jxc.",
+            "com.sun.tools.xjc.",
+            "com.sun.tools.ws.",
+            "com.sun.codemodel.",
+            "com.sun.relaxng.",
+            "com.sun.xml.xsom.",
+            "com.sun.xml.bind.",
+            "com.ctc.wstx.", //wsimport, wsgen ant task
+            "org.codehaus.stax2.", //wsimport, wsgen ant task
+            "com.sun.xml.messaging.saaj.", //wsgen ant task
+            "com.sun.xml.ws.",
+            "com.oracle.webservices.api.", //wsgen
+            "org.jvnet.ws." //wsgen
+    };
+
+    /**
+     * Escape hatch to work around IBM JDK problem.
+     * See http://www-128.ibm.com/developerworks/forums/dw_thread.jsp?nav=false&forum=367&thread=164718&cat=10
+     */
+    public static final boolean noSystemProxies;
+
+    static {
+        boolean noSysProxiesProperty = false;
+        try {
+            noSysProxiesProperty = Boolean.getBoolean(Invoker.class.getName()+".noSystemProxies");
+        } catch(SecurityException e) {
+            // ignore
+        } finally {
+            noSystemProxies = noSysProxiesProperty;
+        }
+    }
+
     static int invoke(String mainClass, String[] args) throws Throwable {
         // use the platform default proxy if available.
         // see sun.net.spi.DefaultProxySelector for details.
@@ -122,7 +162,7 @@ public final class Invoker {
 
                     // finally load the rest of the RI. The actual class files are loaded from ancestors
                     cl = new ParallelWorldClassLoader(cl,"");
-                }
+                        }
 
             }
             
@@ -250,42 +290,4 @@ public final class Invoker {
         }
     }
 
-    /**
-     * The list of package prefixes we want the
-     * {@link MaskingClassLoader} to prevent the parent
-     * classLoader from loading
-     */
-    public static final String[] maskedPackages = new String[]{
-        "com.sun.istack.tools.",
-        "com.sun.tools.jxc.",
-        "com.sun.tools.xjc.",
-        "com.sun.tools.ws.",
-        "com.sun.codemodel.",
-        "com.sun.relaxng.",
-        "com.sun.xml.xsom.",
-        "com.sun.xml.bind.",
-        "com.ctc.wstx.", //wsimport, wsgen ant task
-        "org.codehaus.stax2.", //wsimport, wsgen ant task
-        "com.sun.xml.messaging.saaj.", //wsgen ant task
-        "com.sun.xml.ws.",
-        "com.oracle.webservices.api.", //wsgen
-        "org.jvnet.ws." //wsgen
-    };
-
-    /**
-     * Escape hatch to work around IBM JDK problem.
-     * See http://www-128.ibm.com/developerworks/forums/dw_thread.jsp?nav=false&forum=367&thread=164718&cat=10
-     */
-    public static final boolean noSystemProxies;
-
-    static {
-        boolean noSysProxiesProperty = false;
-        try {
-            noSysProxiesProperty = Boolean.getBoolean(Invoker.class.getName()+".noSystemProxies");
-        } catch(SecurityException e) {
-            // ignore
-        } finally {
-            noSystemProxies = noSysProxiesProperty;
-        }
-    }
 }

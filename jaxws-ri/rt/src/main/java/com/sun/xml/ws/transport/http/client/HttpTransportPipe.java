@@ -78,13 +78,29 @@ import java.util.logging.Logger;
  * @author Jitendra Kotamraju
  */
 public class HttpTransportPipe extends AbstractTubeImpl {
+
+    private static final List<String> USER_AGENT = Collections.singletonList(RuntimeVersion.VERSION.toString());
     private static final Logger LOGGER = Logger.getLogger(HttpTransportPipe.class.getName());
+
+    /**
+     * Dumps what goes across HTTP transport.
+     */
+    public static boolean dump;
 
     private final Codec codec;
     private final WSBinding binding;
-    private static final List<String> USER_AGENT = Collections.singletonList(RuntimeVersion.VERSION.toString());
     private final CookieHandler cookieJar;      // shared object among the tubes
     private final boolean sticky;
+
+    static {
+        boolean b;
+        try {
+            b = Boolean.getBoolean(HttpTransportPipe.class.getName()+".dump");
+        } catch( Throwable t ) {
+            b = false;
+        }
+        dump = b;
+    }
 
     public HttpTransportPipe(Codec codec, WSBinding binding) {
         this.codec = codec;
@@ -133,9 +149,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     }
 
     protected HttpClientTransport getTransport(Packet request, Map<String, List<String>> reqHeaders) {
-    	return new HttpClientTransport(request, reqHeaders);
+        return new HttpClientTransport(request, reqHeaders);
     }
-    
+
     @Override
     public Packet process(Packet request) {
         HttpClientTransport con;
@@ -166,7 +182,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             ContentType ct = codec.getStaticContentType(request);
             if (ct == null) {
                 ByteArrayBuffer buf = new ByteArrayBuffer();
-                
+
                 ct = codec.encode(request, buf);
                 // data size is available, set it as Content-Length
                 reqHeaders.put("Content-Length", Collections.singletonList(Integer.toString(buf.size())));
@@ -177,11 +193,11 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                 if (binding instanceof SOAPBinding) {
                     writeSOAPAction(reqHeaders, ct.getSOAPActionHeader());
                 }
-                
+
                 if (dump || LOGGER.isLoggable(Level.FINER)) {
                     dump(buf, "HTTP request", reqHeaders);
                 }
-                
+
                 buf.writeTo(con.getOutput());
             } else {
                 // Set static Content-Type
@@ -192,7 +208,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                 if (binding instanceof SOAPBinding) {
                     writeSOAPAction(reqHeaders, ct.getSOAPActionHeader());
                 }
-                
+
                 if(dump || LOGGER.isLoggable(Level.FINER)) {
                     ByteArrayBuffer buf = new ByteArrayBuffer();
                     codec.encode(request, buf);
@@ -309,14 +325,14 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         // Every status code is OK for XML/HTTP
     }
 
-    private boolean isErrorCode(int code) {              
+    private boolean isErrorCode(int code) {
         //if(code/100 == 5/*Server-side error*/ || code/100 == 4 /*client error*/ ) {
         return code == 500 || code == 400;
     }
 
     private void addCookies(Packet context, Map<String, List<String>> reqHeaders) throws IOException {
         Boolean shouldMaintainSessionProperty =
-            (Boolean) context.invocationProperties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
+                (Boolean) context.invocationProperties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
         if (shouldMaintainSessionProperty != null && !shouldMaintainSessionProperty) {
             return;         // explicitly turned off
         }
@@ -359,7 +375,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
 
     private void recordCookies(Packet context, HttpClientTransport con) throws IOException {
         Boolean shouldMaintainSessionProperty =
-            (Boolean) context.invocationProperties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
+                (Boolean) context.invocationProperties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
         if (shouldMaintainSessionProperty != null && !shouldMaintainSessionProperty) {
             return;         // explicitly turned off
         }
@@ -430,25 +446,11 @@ public class HttpTransportPipe extends AbstractTubeImpl {
 
         String msg = baos.toString();
         if (dump) {
-          System.out.println(msg);
+            System.out.println(msg);
         }
         if (LOGGER.isLoggable(Level.FINER)) {
-          LOGGER.log(Level.FINER, msg);
+            LOGGER.log(Level.FINER, msg);
         }
     }
 
-    /**
-     * Dumps what goes across HTTP transport.
-     */
-    public static boolean dump;
-
-    static {
-        boolean b;
-        try {
-            b = Boolean.getBoolean(HttpTransportPipe.class.getName()+".dump");
-        } catch( Throwable t ) {
-            b = false;
-        }
-        dump = b;
-    }
 }

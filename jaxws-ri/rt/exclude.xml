@@ -206,4 +206,14 @@
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
     </Match>
 
+    <!--
+    HttpTransportPipe.dump can't be final - glassfish change it
+    during runtime
+    -->
+    <Match>
+        <Class name="com.sun.xml.ws.transport.http.client.HttpTransportPipe" />
+        <Bug pattern="MS_SHOULD_BE_FINAL" />
+    </Match>
+
+
 </FindBugsFilter>

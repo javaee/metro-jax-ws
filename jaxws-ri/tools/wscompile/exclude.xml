@@ -84,4 +84,19 @@
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
     </Match>
 
+    <!--
+     There is probably no use case those methods need to be invoked under security manager from untrusted code
+     (hypothetically somewhere in GF?) - if it was, we would probably know. Fixing this warning can mean opening gate
+     for attacker ...
+    -->
+    <Match>
+        <Or>
+            <!--JAX-WS-->
+            <Class name="com.sun.tools.ws.wscompile.Options" />
+            <Class name="com.sun.tools.ws.wscompile.WsgenTool" />
+            <Class name="com.sun.tools.ws.Invoker" />
+        </Or>
+        <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED" />
+    </Match>
+
 </FindBugsFilter>
