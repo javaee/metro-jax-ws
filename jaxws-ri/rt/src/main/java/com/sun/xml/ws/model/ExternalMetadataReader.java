@@ -530,21 +530,6 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
             return elems.toArray(new Element[elems.size()]);
         }
 
-        static public Class<?> classForName(String name, ClassLoader cl) throws ClassNotFoundException {
-            if (cl != null) {
-                try {
-                    return cl.loadClass(name);
-                } catch (ClassNotFoundException e) {
-                    return classForName(name);
-                }
-            }
-            return classForName(name);
-        }
-
-        static public Class<?> classForName(String name) throws ClassNotFoundException {
-            return classForName(name, Thread.currentThread().getContextClassLoader());
-        }
-
         static String documentRootNamespace(Source src) throws XMLStreamException {
             XMLInputFactory factory = XMLInputFactory.newInstance();
             XMLStreamReader streamReader = factory.createXMLStreamReader(src);
