@@ -47,6 +47,7 @@ import com.sun.xml.ws.addressing.EPRSDDocumentFilter;
 import com.sun.xml.ws.addressing.WSEPRExtension;
 import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.ComponentFeature;
+import com.sun.xml.ws.api.ComponentsFeature;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
@@ -165,6 +166,21 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
                     break;
                 default:
                     throw new IllegalArgumentException();
+            }
+        }
+        ComponentsFeature csf = binding.getFeature(ComponentsFeature.class);
+        if (csf != null) {
+            for (ComponentFeature cfi : csf.getComponentFeatures()) {
+                switch (cfi.getTarget()) {
+                    case ENDPOINT:
+                        componentRegistry.add(cfi.getComponent());
+                        break;
+                    case CONTAINER:
+                        container.getComponents().add(cfi.getComponent());
+                        break;
+                    default:
+                        throw new IllegalArgumentException();
+                }
             }
         }
 

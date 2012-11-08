@@ -49,6 +49,7 @@ import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.ComponentFeature;
 import com.sun.xml.ws.api.ComponentFeature.Target;
 import com.sun.xml.ws.api.ComponentRegistry;
+import com.sun.xml.ws.api.ComponentsFeature;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSService;
@@ -278,6 +279,13 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             ComponentFeature cf = binding.getFeature(ComponentFeature.class);
             if (cf != null && Target.STUB.equals(cf.getTarget())) {
                 components.add(cf.getComponent());
+            }
+            ComponentsFeature csf = binding.getFeature(ComponentsFeature.class);
+            if (csf != null) {
+                for (ComponentFeature cfi : csf.getComponentFeatures()) {
+                    if (Target.STUB.equals(cfi.getTarget()))
+                        components.add(cfi.getComponent());
+                }
             }
     
             // if there is an EPR, EPR's address should be used for invocation instead of default address

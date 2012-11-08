@@ -45,6 +45,7 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.Closeable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.ComponentFeature;
+import com.sun.xml.ws.api.ComponentsFeature;
 import com.sun.xml.ws.api.ComponentFeature.Target;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.WSService;
@@ -276,6 +277,21 @@ public class WSServiceDelegate extends WSService {
                     throw new IllegalArgumentException();
             }
         }
+        ComponentsFeature csf = this.features.get(ComponentsFeature.class);
+        if (csf != null) {
+            for (ComponentFeature cfi : csf.getComponentFeatures()) {
+                switch(cfi.getTarget()) {
+                    case SERVICE:
+                        getComponents().add(cfi.getComponent());
+                        break;
+                    case CONTAINER:
+                        this.container.getComponents().add(cfi.getComponent());
+                        break;
+                    default:
+                        throw new IllegalArgumentException();
+                }
+            }
+        }
 
         // load interceptor
         ServiceInterceptor interceptor = ServiceInterceptorFactory.load(this, Thread.currentThread().getContextClassLoader());
@@ -418,6 +434,13 @@ public class WSServiceDelegate extends WSService {
         if (cf != null && !Target.STUB.equals(cf.getTarget())) {
             throw new IllegalArgumentException();
         }
+        ComponentsFeature csf = features.get(ComponentsFeature.class);
+        if (csf != null) {
+            for (ComponentFeature cfi : csf.getComponentFeatures()) {
+                if (!Target.STUB.equals(cfi.getTarget()))
+                    throw new IllegalArgumentException();
+            }
+        }
         features.addAll(this.features);
 
         SEIPortInfo spi = addSEI(portName, portInterface, features);
@@ -477,6 +500,13 @@ public class WSServiceDelegate extends WSService {
         ComponentFeature cf = features.get(ComponentFeature.class);
         if (cf != null && !Target.STUB.equals(cf.getTarget())) {
             throw new IllegalArgumentException();
+        }
+        ComponentsFeature csf = features.get(ComponentsFeature.class);
+        if (csf != null) {
+            for (ComponentFeature cfi : csf.getComponentFeatures()) {
+                if (!Target.STUB.equals(cfi.getTarget()))
+                    throw new IllegalArgumentException();
+            }
         }
         features.addAll(this.features);
         
@@ -560,6 +590,13 @@ public class WSServiceDelegate extends WSService {
         ComponentFeature cf = features.get(ComponentFeature.class);
         if (cf != null && !Target.STUB.equals(cf.getTarget())) {
             throw new IllegalArgumentException();
+        }
+        ComponentsFeature csf = features.get(ComponentsFeature.class);
+        if (csf != null) {
+            for (ComponentFeature cfi : csf.getComponentFeatures()) {
+                if (!Target.STUB.equals(cfi.getTarget()))
+                    throw new IllegalArgumentException();
+            }
         }
         features.addAll(this.features);
         
