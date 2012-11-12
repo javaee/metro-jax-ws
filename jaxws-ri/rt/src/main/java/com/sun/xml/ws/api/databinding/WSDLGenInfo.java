@@ -40,9 +40,9 @@
 
 package com.sun.xml.ws.api.databinding;
 
+import com.oracle.webservices.api.databinding.WSDLResolver;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
-import org.jvnet.ws.databinding.WSDLResolver;
 
 /**
  * WSDLGenInfo provides the WSDL generation options

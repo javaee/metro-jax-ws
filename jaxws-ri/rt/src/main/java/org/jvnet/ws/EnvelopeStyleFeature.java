@@ -42,6 +42,10 @@ package org.jvnet.ws;
 
 import javax.xml.ws.WebServiceFeature;
 
+/**
+ * @deprecated Update to use com.oracle.webservices.api.EnvelopeStyleFeature
+ * @see com.oracle.webservices.api.EnvelopeStyleFeature
+ */
 public class EnvelopeStyleFeature extends WebServiceFeature {
     
     private EnvelopeStyle.Style[] styles;

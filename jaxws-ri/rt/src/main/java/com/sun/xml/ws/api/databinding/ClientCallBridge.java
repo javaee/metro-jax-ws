@@ -41,6 +41,7 @@
 package com.sun.xml.ws.api.databinding;
 
 import java.lang.reflect.Method;
+import com.oracle.webservices.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.JavaMethod;
 

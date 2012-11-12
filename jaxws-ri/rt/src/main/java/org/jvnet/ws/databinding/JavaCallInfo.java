@@ -59,6 +59,8 @@ import java.lang.reflect.Method;
  * back to the service client.
  *  
  * @author shih-chang.chen@oracle.com
+ * @deprecated Update to use com.oracle.webservices.api.databinding.JavaCallInfo
+ * @see com.oracle.webservices.api.databinding.JavaCallInfo
  */
 public interface JavaCallInfo {
 

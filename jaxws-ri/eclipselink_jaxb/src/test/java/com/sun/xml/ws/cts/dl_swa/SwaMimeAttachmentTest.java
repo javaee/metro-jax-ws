@@ -56,8 +56,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.handler.MessageContext;
 
-import org.jvnet.ws.databinding.DatabindingModeFeature;
-import org.jvnet.ws.databinding.JavaCallInfo;
+import com.oracle.webservices.api.databinding.DatabindingModeFeature;
+import com.oracle.webservices.api.databinding.JavaCallInfo;
 import org.xml.sax.EntityResolver;
 
 import com.oracle.webservices.api.message.ContentType;

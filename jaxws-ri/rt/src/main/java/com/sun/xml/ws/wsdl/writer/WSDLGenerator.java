@@ -43,6 +43,8 @@ package com.sun.xml.ws.wsdl.writer;
 
 import static com.sun.xml.bind.v2.schemagen.Util.*;
 
+import com.oracle.webservices.api.databinding.WSDLResolver;
+
 import com.sun.xml.txw2.TXW;
 import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.txw2.output.ResultFactory;
@@ -91,7 +93,6 @@ import com.sun.xml.ws.spi.db.WrapperComposite;
 import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.policy.jaxws.PolicyWSDLGeneratorExtension;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import org.jvnet.ws.databinding.WSDLResolver;
 import com.sun.xml.bind.v2.schemagen.xmlschema.Element;
 import com.sun.xml.bind.v2.schemagen.xmlschema.ComplexType;
 import com.sun.xml.bind.v2.schemagen.xmlschema.ExplicitGroup;
@@ -223,20 +224,6 @@ public class WSDLGenerator {
 
     private boolean inlineSchemas;      // TODO
 
-    /**
-     * Creates the WSDLGenerator
-     * @param model The {@link AbstractSEIModelImpl} used to generate the WSDL
-     * @param wsdlResolver The {@link WSDLResolver} to use resovle names while generating the WSDL
-     * @param binding specifies which {@link javax.xml.ws.BindingType} to generate
-     * @param extensions an array {@link WSDLGeneratorExtension} that will 
-     * be invoked to generate WSDL extensions
-     * @deprecated
-     */
-    public WSDLGenerator(AbstractSEIModelImpl model, com.sun.xml.ws.wsdl.writer.WSDLResolver wsdlResolver, WSBinding binding, Container container,
-                         Class implType, boolean inlineSchemas, WSDLGeneratorExtension... extensions) {
-        this(model, (WSDLResolver) wsdlResolver, binding, container, implType, inlineSchemas, extensions);
-    }
-    
     /**
      * Creates the WSDLGenerator
      * @param model The {@link AbstractSEIModelImpl} used to generate the WSDL

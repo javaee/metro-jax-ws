@@ -45,7 +45,6 @@ import com.sun.xml.stream.buffer.MutableXMLStreamBuffer;
 import com.sun.xml.stream.buffer.XMLStreamBufferResult;
 import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.api.server.SDDocumentSource;
-import com.sun.xml.ws.wsdl.writer.WSDLResolver;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
@@ -64,7 +63,7 @@ import java.util.Map;
  *
  * @author Jitendra Kotamraju
  */
-final class WSDLGenResolver implements WSDLResolver {
+final class WSDLGenResolver implements com.oracle.webservices.api.databinding.WSDLResolver {
     
     private final List<SDDocumentImpl> docs;
     private final List<SDDocumentSource> newDocs = new ArrayList<SDDocumentSource>();

@@ -47,7 +47,7 @@ import java.util.Map;
 
 import javax.xml.ws.WebServiceFeature;
 
-import org.jvnet.ws.databinding.DatabindingModeFeature;
+import com.oracle.webservices.api.databinding.DatabindingModeFeature;
 
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.spi.db.BindingContextFactory;

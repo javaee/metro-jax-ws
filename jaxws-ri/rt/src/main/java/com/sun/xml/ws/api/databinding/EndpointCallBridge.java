@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.api.databinding;
 
+import com.oracle.webservices.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.JavaMethod;
 

@@ -60,7 +60,7 @@ import java.lang.reflect.Method;
  *  
  * @author shih-chang.chen@oracle.com
  */
-public class JavaCallInfo implements org.jvnet.ws.databinding.JavaCallInfo {
+public class JavaCallInfo implements com.oracle.webservices.api.databinding.JavaCallInfo {
 
 	private Method method;
 	private Object[] parameters;

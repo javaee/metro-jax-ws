@@ -61,6 +61,8 @@ import javax.xml.ws.spi.WebServiceFeatureAnnotation;
  * descriptors, depending on the platform in use. 
  * 
  * @author shih-chang.chen@oracle.com
+ * @deprecated Update to use com.oracle.webservices.api.EnvelopeStyle
+ * @see com.oracle.webservices.api.EnvelopeStyle
  */
 @WebServiceFeatureAnnotation(id="", bean=org.jvnet.ws.EnvelopeStyleFeature.class)
 @Retention(RetentionPolicy.RUNTIME)

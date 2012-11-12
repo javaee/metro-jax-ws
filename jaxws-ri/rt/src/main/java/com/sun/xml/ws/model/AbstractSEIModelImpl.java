@@ -73,7 +73,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 
-import org.jvnet.ws.databinding.DatabindingModeFeature;
 
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -195,14 +194,26 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
                         LOGGER.log(Level.FINEST, "Creating JAXBContext with classes={0} and types={1}", new Object[]{cls, types});
                     }
                     UsesJAXBContextFeature f = features.get(UsesJAXBContextFeature.class);
-					DatabindingModeFeature dbf = features.get(DatabindingModeFeature.class);
+                    // new
+                    com.oracle.webservices.api.databinding.DatabindingModeFeature dmf =
+                            features.get(com.oracle.webservices.api.databinding.DatabindingModeFeature.class);
+                    // old
+					org.jvnet.ws.databinding.DatabindingModeFeature dbf = features.get(org.jvnet.ws.databinding.DatabindingModeFeature.class);
                     JAXBContextFactory factory = f!=null ? f.getFactory() : null;
                     if(factory==null)   factory=JAXBContextFactory.DEFAULT;
 
 //                    return factory.createJAXBContext(AbstractSEIModelImpl.this,cls,types);
 
                     databindingInfo.properties().put(JAXBContextFactory.class.getName(), factory);
-                    if (dbf != null) {
+                    // new
+                    if (dmf != null) {
+                        if (LOGGER.isLoggable(Level.FINE))
+                            LOGGER.log(Level.FINE, "DatabindingModeFeature in SEI specifies mode: {0}", dmf.getMode());
+                        databindingInfo.setDatabindingMode(dmf
+                                .getMode());
+                    }
+                    // old
+                    else if (dbf != null) {
                         if (LOGGER.isLoggable(Level.FINE))
                             LOGGER.log(Level.FINE, "DatabindingModeFeature in SEI specifies mode: {0}", dbf.getMode());
                         databindingInfo.setDatabindingMode(dbf

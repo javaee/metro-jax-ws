@@ -43,10 +43,10 @@ package com.sun.xml.ws.eclipselink;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
 
-import org.jvnet.ws.databinding.Databinding;
-import org.jvnet.ws.databinding.DatabindingMode;
-import org.jvnet.ws.databinding.DatabindingFactory;
-import org.jvnet.ws.databinding.DatabindingModeFeature;
+import com.oracle.webservices.api.databinding.Databinding;
+import com.oracle.webservices.api.databinding.DatabindingMode;
+import com.oracle.webservices.api.databinding.DatabindingFactory;
+import com.oracle.webservices.api.databinding.DatabindingModeFeature;
 
 import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.spi.db.JAXBWrapperAccessor;

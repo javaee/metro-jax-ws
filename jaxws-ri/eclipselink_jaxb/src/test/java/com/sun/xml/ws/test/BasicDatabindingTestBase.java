@@ -42,7 +42,7 @@ package com.sun.xml.ws.test;
 
 import javax.xml.ws.WebServiceFeature;
 
-import org.jvnet.ws.databinding.DatabindingModeFeature;
+import com.oracle.webservices.api.databinding.DatabindingModeFeature;
 
 import com.sun.xml.ws.DummyAnnotations;
 import com.sun.xml.ws.WsDatabindingTestBase;

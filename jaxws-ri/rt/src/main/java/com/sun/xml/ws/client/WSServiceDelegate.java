@@ -66,7 +66,7 @@ import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.client.HandlerConfigurator.AnnotationConfigurator;
 import com.sun.xml.ws.client.HandlerConfigurator.HandlerResolverImpl;
 import com.sun.xml.ws.client.sei.SEIStub;
-import org.jvnet.ws.databinding.ExternalMetadataFeature;
+
 import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
 import com.sun.xml.ws.developer.UsesJAXBContextFeature;
 import com.sun.xml.ws.developer.WSBindingProvider;
@@ -867,7 +867,13 @@ public class WSServiceDelegate extends WSService {
 
     private MetadataReader getMetadadaReader(WebServiceFeatureList features, ClassLoader classLoader) {
         if (features == null) return null;
-        ExternalMetadataFeature f = features.get(ExternalMetadataFeature.class);
+        // new
+        com.oracle.webservices.api.databinding.ExternalMetadataFeature ef =
+                features.get(com.oracle.webservices.api.databinding.ExternalMetadataFeature.class);
+        if (ef != null)
+            return ef.getMetadataReader(classLoader);
+        // old
+        org.jvnet.ws.databinding.ExternalMetadataFeature f = features.get(org.jvnet.ws.databinding.ExternalMetadataFeature.class);
         return f != null ? f.getMetadataReader(classLoader) : null;
     }
 

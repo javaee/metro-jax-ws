@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,11 +38,7 @@
  * holder.
  */
 
-package com.sun.xml.ws.wsdl.writer;
-
-import com.sun.istack.NotNull;
-import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.pipe.Tube;
+package com.oracle.webservices.api.databinding;
 
 import javax.xml.transform.Result;
 import javax.xml.ws.Holder;
@@ -54,42 +50,39 @@ import javax.xml.ws.Holder;
  * already contains some documents, their systemids may be used for wsdl:import,
  * and schema:import. The suggested filenames are relative urls(for e.g: EchoSchema1.xsd)
  * The Result object systemids are also relative urls(for e.g: AbsWsdl.wsdl).
- * 
- * @deprecated 
- *      Use {@link org.jvnet.ws.databinding.WSDLResolver}.
  *
  * @author Jitendra Kotamraju
  */
-public interface WSDLResolver extends org.jvnet.ws.databinding.WSDLResolver {
-//    /**
-//     * Create a Result object into which concrete WSDL is to be generated.
-//     *
-//     * @return Result for the concrete WSDL
-//     */
-//    public @NotNull Result getWSDL(@NotNull String suggestedFilename);
-//
-//    /**
-//     * Create a Result object into which abstract WSDL is to be generated. If the the
-//     * abstract WSDL is already in metadata, it is not generated.
-//     * 
-//     * Update filename if the suggested filename need to be changed in wsdl:import.
-//     * This needs to be done if the metadata contains abstract WSDL, and that systemid
-//     * needs to be reflected in concrete WSDL's wsdl:import
-//     *
-//     * @return null if abstract WSDL need not be generated
-//     */
-//    public @Nullable Result getAbstractWSDL(@NotNull Holder<String> filename);
-//
-//    /**
-//     * Create a Result object into which schema doc is to be generated. Typically if
-//     * there is a schema doc for namespace in metadata, then it is not generated.
-//     * 
-//     * Update filename if the suggested filename need to be changed in xsd:import. This
-//     * needs to be done if the metadata contains the document, and that systemid
-//     * needs to be reflected in some other document's xsd:import
-//     *
-//     * @return null if schema need not be generated
-//     */
-//    public @Nullable Result getSchemaOutput(@NotNull String namespace, @NotNull Holder<String> filename);
+public interface WSDLResolver {
+    /**
+     * Create a Result object into which concrete WSDL is to be generated.
+     *
+     * @return Result for the concrete WSDL
+     */
+    public Result getWSDL(String suggestedFilename);
+
+    /**
+     * Create a Result object into which abstract WSDL is to be generated. If the the
+     * abstract WSDL is already in metadata, it is not generated.
+     * 
+     * Update filename if the suggested filename need to be changed in wsdl:import.
+     * This needs to be done if the metadata contains abstract WSDL, and that systemid
+     * needs to be reflected in concrete WSDL's wsdl:import
+     *
+     * @return null if abstract WSDL need not be generated
+     */
+    public Result getAbstractWSDL(Holder<String> filename);
+
+    /**
+     * Create a Result object into which schema doc is to be generated. Typically if
+     * there is a schema doc for namespace in metadata, then it is not generated.
+     * 
+     * Update filename if the suggested filename need to be changed in xsd:import. This
+     * needs to be done if the metadata contains the document, and that systemid
+     * needs to be reflected in some other document's xsd:import
+     *
+     * @return null if schema need not be generated
+     */
+    public Result getSchemaOutput(String namespace, Holder<String> filename);
 
 }

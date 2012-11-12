@@ -85,7 +85,6 @@ import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.util.ServiceConfigurationError;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
-import org.jvnet.ws.databinding.ExternalMetadataFeature;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -456,9 +455,17 @@ public class EndpointFactory {
     }
 
     public static MetadataReader getExternalMetadatReader(Class<?> implType, WSBinding binding) {
-        ExternalMetadataFeature f = binding.getFeature(ExternalMetadataFeature.class);
-        if (f == null) return null;
-        return f.getMetadataReader(implType.getClassLoader());
+        // new
+        com.oracle.webservices.api.databinding.ExternalMetadataFeature ef = binding.getFeature(
+                com.oracle.webservices.api.databinding.ExternalMetadataFeature.class);
+        if (ef != null)
+            return ef.getMetadataReader(implType.getClassLoader());
+        //old
+        org.jvnet.ws.databinding.ExternalMetadataFeature f = binding.getFeature(
+                org.jvnet.ws.databinding.ExternalMetadataFeature.class);
+        if (f != null)
+            return f.getMetadataReader(implType.getClassLoader());
+        return null;
     }
 
     /**

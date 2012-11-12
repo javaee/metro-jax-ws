@@ -47,14 +47,11 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
 
-import org.jvnet.ws.message.MessageContext;
-
-import com.sun.xml.ws.api.WSFeatureList;
+import com.oracle.webservices.api.databinding.JavaCallInfo;
+import com.oracle.webservices.api.message.MessageContext;
 import com.sun.xml.ws.api.databinding.EndpointCallBridge;
-import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;
 import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
@@ -75,7 +72,6 @@ import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.RuntimeModeler;
 import com.sun.xml.ws.server.sei.TieHandler;
-import com.sun.xml.ws.util.QNameMap;
 import com.sun.xml.ws.wsdl.ActionBasedOperationSignature;
 import com.sun.xml.ws.wsdl.DispatchException;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
@@ -85,7 +81,7 @@ import com.sun.xml.ws.wsdl.OperationDispatcher;
  *
  * @author shih-chang.chen@oracle.com
  */
-public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Databinding {
+public class DatabindingImpl implements Databinding {
 	
     AbstractSEIModelImpl seiModel;
 	Map<Method, StubHandler> stubHandlers;
@@ -166,7 +162,7 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
     }
 
 	public JavaCallInfo deserializeRequest(Packet req) {
-		JavaCallInfo call = new JavaCallInfo();
+	    com.sun.xml.ws.api.databinding.JavaCallInfo call = new com.sun.xml.ws.api.databinding.JavaCallInfo();
 		try {
 		    JavaMethodImpl wsdlOp = resolveJavaMethod(req);
 			TieHandler tie = wsdlOpMap.get(wsdlOp);
@@ -253,27 +249,19 @@ public class DatabindingImpl implements Databinding, org.jvnet.ws.databinding.Da
     	getCodec().decode(in, ct, p);    	
     }
 
-    public org.jvnet.ws.databinding.JavaCallInfo createJavaCallInfo(Method method, Object[] args) {
-        return new JavaCallInfo(method, args);
+    public com.oracle.webservices.api.databinding.JavaCallInfo createJavaCallInfo(Method method, Object[] args) {
+        return new com.sun.xml.ws.api.databinding.JavaCallInfo(method, args);
     }
 
-    public MessageContext serializeRequest(org.jvnet.ws.databinding.JavaCallInfo call) {
-        return serializeRequest((JavaCallInfo)call);
-    }
-
-    public org.jvnet.ws.databinding.JavaCallInfo deserializeResponse(
-            MessageContext message, org.jvnet.ws.databinding.JavaCallInfo call) {
+    public com.oracle.webservices.api.databinding.JavaCallInfo deserializeResponse(
+            MessageContext message, com.oracle.webservices.api.databinding.JavaCallInfo call) {
         return deserializeResponse((Packet)message, (JavaCallInfo)call);
     }
 
-    public org.jvnet.ws.databinding.JavaCallInfo deserializeRequest(MessageContext message) {
+    public com.oracle.webservices.api.databinding.JavaCallInfo deserializeRequest(MessageContext message) {
         return deserializeRequest((Packet)message);
     }
 
-    public MessageContext serializeResponse(org.jvnet.ws.databinding.JavaCallInfo call) {
-        return serializeResponse((JavaCallInfo)call);
-    }
-    
     public MessageContextFactory getMessageContextFactory() {
         return packetFactory;
     }

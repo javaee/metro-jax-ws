@@ -52,12 +52,11 @@ import javax.xml.transform.Source;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 
-import org.jvnet.ws.databinding.Databinding;
-import org.jvnet.ws.databinding.DatabindingModeFeature;
-import org.jvnet.ws.databinding.Databinding.Builder;
-import org.jvnet.ws.databinding.Databinding.WSDLGenerator;
 import org.xml.sax.EntityResolver;
 
+import com.oracle.webservices.api.databinding.Databinding;
+import com.oracle.webservices.api.databinding.Databinding.Builder;
+import com.oracle.webservices.api.databinding.WSDLGenerator;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
@@ -158,8 +157,14 @@ public class DatabindingFactoryImpl extends DatabindingFactory {
 		     config.getMappingInfo().getDatabindingMode() != null)
 			return config.getMappingInfo().getDatabindingMode();
         if ( config.getFeatures() != null) for (WebServiceFeature f : config.getFeatures()) {
-            if (f instanceof DatabindingModeFeature) {
-                DatabindingModeFeature dmf = (DatabindingModeFeature) f;
+            // new
+            if (f instanceof com.oracle.webservices.api.databinding.DatabindingModeFeature) {
+                com.oracle.webservices.api.databinding.DatabindingModeFeature dmf = (com.oracle.webservices.api.databinding.DatabindingModeFeature) f;
+                return dmf.getMode();
+            }
+            // old
+            if (f instanceof org.jvnet.ws.databinding.DatabindingModeFeature) {
+                org.jvnet.ws.databinding.DatabindingModeFeature dmf = (org.jvnet.ws.databinding.DatabindingModeFeature) f;
                 return dmf.getMode();
             }
         }
@@ -257,10 +262,10 @@ public class DatabindingFactoryImpl extends DatabindingFactory {
             return type.getName().equals(name) && type.isInstance(value);
         }
 
-        public org.jvnet.ws.databinding.Databinding build() {
+        public com.oracle.webservices.api.databinding.Databinding build() {
             return factory.createRuntime(config);
         }
-        public org.jvnet.ws.databinding.Databinding.WSDLGenerator createWSDLGenerator() {
+        public com.oracle.webservices.api.databinding.WSDLGenerator createWSDLGenerator() {
             return factory.createWsdlGen(config);
         }       
     }

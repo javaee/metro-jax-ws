@@ -40,10 +40,10 @@
 
 package com.sun.xml.ws.server.sei;
 
+import com.oracle.webservices.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.databinding.EndpointCallBridge;
-import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.message.Packet;
@@ -329,7 +329,7 @@ final public class TieHandler implements EndpointCallBridge {
 
     @Override
 	public JavaCallInfo deserializeRequest(Packet req) {
-		JavaCallInfo call = new JavaCallInfo();
+        com.sun.xml.ws.api.databinding.JavaCallInfo call = new com.sun.xml.ws.api.databinding.JavaCallInfo();
 		call.setMethod(this.getMethod());
         Object[] args = this.readRequest(req.getMessage());
 		call.setParameters(args);

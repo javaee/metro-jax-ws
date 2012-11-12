@@ -51,7 +51,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
 
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
-import org.jvnet.ws.databinding.DatabindingModeFeature;
+import com.oracle.webservices.api.databinding.DatabindingModeFeature;
 
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;

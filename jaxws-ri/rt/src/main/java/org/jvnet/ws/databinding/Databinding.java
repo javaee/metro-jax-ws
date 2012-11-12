@@ -49,7 +49,6 @@ import javax.xml.transform.Source;
 import javax.xml.ws.WebServiceFeature;
 
 import org.jvnet.ws.message.MessageContext;
-import org.jvnet.ws.message.MessageContextFactory;
 import org.xml.sax.EntityResolver;
 
 /**
@@ -81,6 +80,8 @@ import org.xml.sax.EntityResolver;
  * @see org.jvnet.ws.databinding.DatabindingFactory
  * 
  * @author shih-chang.chen@oracle.com
+ * @deprecated Update to use com.oracle.webservices.api.databinding.Databinding
+ * @see com.oracle.webservices.api.databinding.Databinding
  */
 public interface Databinding {
 	
@@ -151,6 +152,8 @@ public interface Databinding {
 	 * 
      * @see org.jvnet.ws.databinding.DatabindingFactory
 	 * @author shih-chang.chen@oracle.com
+	 * @deprecated Update to use com.oracle.webservices.api.databinding.Databinding.Builder
+	 * @see com.oracle.webservices.api.databinding.Databinding.Builder
 	 */
 	public interface Builder {
 		
@@ -265,6 +268,8 @@ public interface Databinding {
     /**
      * WSDLGenerator is used to generate the WSDL representation of the service 
      * endpoint interface of the parent Databinding object.
+     * @deprecated Update to use com.oracle.webservices.api.databinding.WSDLGenerator
+     * @see com.oracle.webservices.api.databinding.WSDLGenerator
      */
     public interface WSDLGenerator {
 
@@ -315,6 +320,8 @@ public interface Databinding {
          * The Result object systemids are also relative urls(for e.g: AbsWsdl.wsdl).
          *
          * @author Jitendra Kotamraju
+         * @deprecated Update to use com.oracle.webservices.api.databinding.WSDLResolver
+         * @see com.oracle.webservices.api.databinding.WSDLResolver
          */
         public interface WSDLResolver extends org.jvnet.ws.databinding.WSDLResolver {
         }

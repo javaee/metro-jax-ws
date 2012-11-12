@@ -43,9 +43,8 @@ package com.sun.xml.ws.db;
 import java.io.File;
 import java.util.Map;
 
-import org.jvnet.ws.databinding.Databinding.WSDLGenerator;
-import org.jvnet.ws.databinding.Databinding.WSDLGenerator.WSDLResolver;
-
+import com.oracle.webservices.api.databinding.WSDLGenerator;
+import com.oracle.webservices.api.databinding.WSDLResolver;
 import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;

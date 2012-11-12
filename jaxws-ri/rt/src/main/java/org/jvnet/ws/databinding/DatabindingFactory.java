@@ -62,6 +62,8 @@ import java.util.Map;
  * @see org.jvnet.ws.databinding.Databinding
  * 
  * @author shih-chang.chen@oracle.com
+ * @deprecated Update to use com.oracle.webservices.api.databinding.DatabindingFactory
+ * @see com.oracle.webservices.api.databinding.DatabindingFactory
  */
 public abstract class DatabindingFactory {
 
@@ -106,10 +108,19 @@ public abstract class DatabindingFactory {
 	static public DatabindingFactory newInstance() {
 		try {
 			Class<?> cls = Class.forName(ImplClass);
-			return (DatabindingFactory) cls.newInstance();
+			return convertIfNecessary(cls);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private static DatabindingFactory convertIfNecessary(Class<?> cls) throws InstantiationException, IllegalAccessException {
+	    Object obj = cls.newInstance();
+	    
+	    if (obj instanceof com.oracle.webservices.api.databinding.DatabindingFactory)
+	        return new org.jvnet.ws.databinding.impl.converter.OldDatabindingFactory((com.oracle.webservices.api.databinding.DatabindingFactory) obj);
+	    
+	    return (DatabindingFactory) obj;
 	}
 }

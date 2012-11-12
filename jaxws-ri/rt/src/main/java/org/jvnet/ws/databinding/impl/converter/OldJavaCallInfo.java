@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,47 +38,49 @@
  * holder.
  */
 
-package org.jvnet.ws.databinding;
+package org.jvnet.ws.databinding.impl.converter;
 
-import javax.jws.WebService;
-import javax.xml.namespace.QName;
+import java.lang.reflect.Method;
 
-import com.sun.xml.ws.InVmWSDLResolver;
+import org.jvnet.ws.databinding.JavaCallInfo;
 
-
-import junit.framework.TestCase;
-
-public class DatabindingTest extends TestCase {
-    @WebService
-    public static class Hello1 {
-        public String echo(String str) { return str; }
+@SuppressWarnings("deprecation")
+class OldJavaCallInfo implements JavaCallInfo {
+    private final com.oracle.webservices.api.databinding.JavaCallInfo jci;
+    
+    public OldJavaCallInfo(com.oracle.webservices.api.databinding.JavaCallInfo jci) {
+        this.jci = jci;
     }
-    @WebService
-    public static interface Hello2 {
-        public String echo(String str);
+
+    @Override
+    public Method getMethod() {
+        return jci.getMethod();
     }
-    public void testWsdlGenHello() throws Exception {
-        DatabindingFactory fac = DatabindingFactory.newInstance();
-//        {
-//        Databinding.Builder builder = fac.createBuilder(null, Hello1.class);
-//        WSDLGenerator wsdlgen = builder.createWSDLGenerator();
-//        wsdlgen.inlineSchema(true);
-//        InVmWSDLResolver res = new InVmWSDLResolver();
-//        wsdlgen.generate(res);
-////        res.print();
-//        assertEquals(1, res.getAll().size());
-//        }
-        //TODO serviceName and portName
-        {
-        Databinding.Builder builder = fac.createBuilder(Hello2.class, null);
-        builder.targetNamespace("mytns");
-        builder.serviceName(new QName("mytns", "myservice"));
-        org.jvnet.ws.databinding.Databinding.WSDLGenerator wsdlgen = builder.createWSDLGenerator();
-        wsdlgen.inlineSchema(true);
-        InVmWSDLResolver res = new InVmWSDLResolver();
-        wsdlgen.generate(res);
-        res.print();
-        assertEquals(1, res.getAll().size());
-        }
+
+    @Override
+    public Object[] getParameters() {
+        return jci.getParameters();
     }
+
+    @Override
+    public Object getReturnValue() {
+        return jci.getReturnValue();
+    }
+
+    @Override
+    public void setReturnValue(Object returnValue) {
+        jci.setReturnValue(returnValue);
+    }
+
+    @Override
+    public Throwable getException() {
+        return jci.getException();
+    }
+
+    @Override
+    public void setException(Throwable exception) {
+        jci.setException(exception);
+    }
+    
 }
+

@@ -48,12 +48,12 @@ import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.soap.MTOMFeature;
 
-import org.jvnet.ws.databinding.Databinding;
-import org.jvnet.ws.databinding.DatabindingFactory;
-import org.jvnet.ws.databinding.JavaCallInfo;
-import org.jvnet.ws.message.ContentType;
-import org.jvnet.ws.message.MessageContext;
-import org.jvnet.ws.message.MessageContextFactory;
+import com.oracle.webservices.api.databinding.Databinding;
+import com.oracle.webservices.api.databinding.DatabindingFactory;
+import com.oracle.webservices.api.databinding.JavaCallInfo;
+import com.oracle.webservices.api.message.ContentType;
+import com.oracle.webservices.api.message.MessageContext;
+import com.oracle.webservices.api.message.MessageContextFactory;
 
 import com.sun.xml.ws.api.message.Packet;
 

@@ -55,6 +55,8 @@ import java.util.List;
  * components) or if it is necessary to override those.
  *
  * @author Miroslav Kos (miroslav.kos at oracle.com)
+ * @deprecated Update to use com.oracle.webservices.api.databinding.ExternalMetadataFeature
+ * @see com.oracle.webservices.api.databinding.ExternalMetadataFeature
  */
 public class ExternalMetadataFeature extends WebServiceFeature {
 
@@ -77,6 +79,8 @@ public class ExternalMetadataFeature extends WebServiceFeature {
         }
         Collections.addAll(this.resourceNames, resourceNames);
     }
+    
+    public List<String> getResourceNames() { return resourceNames; }
 
     public void addFiles(File... files) {
         if (this.files == null) {
@@ -84,6 +88,8 @@ public class ExternalMetadataFeature extends WebServiceFeature {
         }
         Collections.addAll(this.files, files);
     }
+    
+    public List<File> getFiles() { return files; }
 
     public boolean isEnabled() {
         return enabled;

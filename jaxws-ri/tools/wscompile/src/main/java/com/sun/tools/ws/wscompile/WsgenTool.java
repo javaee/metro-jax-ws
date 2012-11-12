@@ -40,6 +40,7 @@
 
 package com.sun.tools.ws.wscompile;
 
+import com.oracle.webservices.api.databinding.WSDLResolver;
 import com.sun.istack.tools.ParallelWorldClassLoader;
 import com.sun.tools.ws.ToolVersion;
 import com.sun.tools.ws.processor.modeler.annotation.WebServiceAp;
@@ -61,7 +62,6 @@ import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.model.ExternalMetadataReader;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.util.ServiceFinder;
-import com.sun.xml.ws.wsdl.writer.WSDLResolver;
 import org.xml.sax.SAXParseException;
 
 import javax.tools.DiagnosticCollector;

@@ -42,30 +42,21 @@ package com.sun.xml.ws.client.sei;
 
 //import com.sun.tools.ws.wsdl.document.soap.SOAPBinding;
 
+import com.oracle.webservices.api.databinding.JavaCallInfo;
 import com.sun.istack.NotNull;
-import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.databinding.ClientCallBridge;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Fiber;
-import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
 import com.sun.xml.ws.client.AsyncInvoker;
 import com.sun.xml.ws.client.AsyncResponseImpl;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.ResponseContext;
-import com.sun.xml.ws.fault.SOAPFaultBuilder;
-import com.sun.xml.ws.model.JavaMethodImpl;
-import com.sun.xml.ws.model.ParameterImpl;
-import com.sun.xml.ws.model.WrapperParameter;
-import org.jvnet.ws.databinding.JavaCallInfo;
 
-import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.Response;
 import javax.xml.ws.WebServiceException;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * Common part between {@link CallbackMethodHandler} and {@link PollingMethodHandler}.

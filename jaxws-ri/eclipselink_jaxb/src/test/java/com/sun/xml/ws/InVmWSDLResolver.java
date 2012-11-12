@@ -52,13 +52,13 @@ import javax.xml.ws.Holder;
 
 import org.xml.sax.SAXException;
 
+import com.oracle.webservices.api.databinding.WSDLResolver;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver.Parser;
 import com.sun.xml.ws.streaming.TidyXMLStreamReader;
-import com.sun.xml.ws.wsdl.writer.WSDLResolver;
 
-public class InVmWSDLResolver implements WSDLResolver, org.jvnet.ws.databinding.Databinding.WSDLGenerator.WSDLResolver {
+public class InVmWSDLResolver implements WSDLResolver {
 	String wsdlID = null;
 	ByteArrayOutputStream wsdlIO = null;
 	HashMap<String, ByteArrayOutputStream> files = new HashMap<String, ByteArrayOutputStream>();

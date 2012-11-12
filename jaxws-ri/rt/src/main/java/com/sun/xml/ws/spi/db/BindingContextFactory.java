@@ -48,8 +48,8 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import org.jvnet.ws.databinding.DatabindingModeFeature;
 
+import com.oracle.webservices.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.db.glassfish.JAXBRIContextFactory;
 import com.sun.xml.ws.util.ServiceConfigurationError;
 import com.sun.xml.ws.util.ServiceFinder;

@@ -46,8 +46,10 @@ import java.io.File;
 /**
  * WSDLGenerator is used to generate the WSDL representation of the service 
  * endpoint interface of the parent Databinding object.
+ * @deprecated Update to use com.oracle.webservices.api.databinding.WSDLGenerator
+ * @see com.oracle.webservices.api.databinding.WSDLGenerator
  */
-public interface WSDLGenerator {
+public interface WSDLGenerator extends org.jvnet.ws.databinding.Databinding.WSDLGenerator {
 
 	/**
 	 * Sets the inlineSchema boolean. When the inlineSchema is true, the 

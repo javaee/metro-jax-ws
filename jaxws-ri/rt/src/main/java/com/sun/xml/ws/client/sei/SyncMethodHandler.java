@@ -40,30 +40,19 @@
 
 package com.sun.xml.ws.client.sei;
 
-import com.sun.xml.ws.api.databinding.ClientCallBridge;
+import com.oracle.webservices.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.ResponseContextReceiver;
 import com.sun.xml.ws.encoding.soap.DeserializationException;
-import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
-import com.sun.xml.ws.model.CheckedExceptionImpl;
-import com.sun.xml.ws.model.JavaMethodImpl;
-import com.sun.xml.ws.model.ParameterImpl;
-import com.sun.xml.ws.model.WrapperParameter;
-import org.jvnet.ws.databinding.JavaCallInfo;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Holder;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * {@link MethodHandler} that handles synchronous method invocations.

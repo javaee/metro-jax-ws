@@ -63,9 +63,7 @@ import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingHelper;
 import com.sun.xml.ws.spi.db.TypeInfo;
 import com.sun.xml.ws.spi.db.WrapperComposite;
-import org.jvnet.ws.databinding.DatabindingMode;
-import org.jvnet.ws.EnvelopeStyleFeature;
-import org.jvnet.ws.EnvelopeStyle;
+
 import static com.sun.xml.ws.binding.WebServiceFeatureList.getSoapVersion;   
 
 import javax.jws.*;
@@ -188,8 +186,12 @@ public class RuntimeModeler {
                 MTOM mtomAn = getAnnotation(portClass, MTOM.class);
                 if (mtomAn != null) features.add(WebServiceFeatureList.getFeature(mtomAn));
             }
-            if (!features.contains(EnvelopeStyleFeature.class)) {
-                EnvelopeStyle es = getAnnotation(portClass, EnvelopeStyle.class);
+            if (!features.contains(org.jvnet.ws.EnvelopeStyleFeature.class)) {
+                org.jvnet.ws.EnvelopeStyle es = getAnnotation(portClass, org.jvnet.ws.EnvelopeStyle.class);
+                if (es != null) features.add(WebServiceFeatureList.getFeature(es));
+            }
+            if (!features.contains(com.oracle.webservices.api.EnvelopeStyleFeature.class)) {
+                com.oracle.webservices.api.EnvelopeStyle es = getAnnotation(portClass, com.oracle.webservices.api.EnvelopeStyle.class);
                 if (es != null) features.add(WebServiceFeatureList.getFeature(es));
             }
             this.wsBinding = bindingId.createBinding(features);
@@ -331,8 +333,12 @@ public class RuntimeModeler {
         model.setPortName(portName);
 
         // Check if databinding is overridden in annotation.
-        DatabindingMode dbm = getAnnotation(portClass, DatabindingMode.class);
+        // old
+        org.jvnet.ws.databinding.DatabindingMode dbm = getAnnotation(portClass, org.jvnet.ws.databinding.DatabindingMode.class);
         if (dbm != null) model.databindingInfo.setDatabindingMode(dbm.value());
+        // new
+        com.oracle.webservices.api.databinding.DatabindingMode dbm2 = getAnnotation(portClass, com.oracle.webservices.api.databinding.DatabindingMode.class);
+        if (dbm != null) model.databindingInfo.setDatabindingMode(dbm2.value());
 
         processClass(seiClass);
         if (model.getJavaMethods().size() == 0)

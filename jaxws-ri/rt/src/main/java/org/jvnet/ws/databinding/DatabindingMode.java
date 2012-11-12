@@ -45,6 +45,11 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 
+/**
+ * 
+ * @deprecated Update to use com.oracle.webservices.api.databinding.DatabindingMode
+ * @see com.oracle.webservices.api.databinding.DatabindingMode
+ */
 @WebServiceFeatureAnnotation(id="", bean=org.jvnet.ws.databinding.DatabindingModeFeature.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DatabindingMode {	

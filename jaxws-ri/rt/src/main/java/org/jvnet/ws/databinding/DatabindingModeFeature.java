@@ -45,6 +45,11 @@ import java.util.Map;
 
 import javax.xml.ws.WebServiceFeature;
 
+/**
+ * 
+ * @deprecated Update to use com.oracle.webservices.api.databinding.DatabindingModeFeature
+ * @see com.oracle.webservices.api.databinding.DatabindingModeFeature
+ */
 public class DatabindingModeFeature extends WebServiceFeature {
     /**
      * Constant value identifying the DatabindingFeature
@@ -82,6 +87,11 @@ public class DatabindingModeFeature extends WebServiceFeature {
 
     public static Builder builder() { return new Builder(new DatabindingModeFeature(null)); }
     
+    /**
+     * 
+     * @deprecated Update to use com.oracle.webservices.api.databinding.DatabindingModeFeature.Builder
+     * @see com.oracle.webservices.api.databinding.DatabindingModeFeature.Builder
+     */
     public final static class Builder {
         final private DatabindingModeFeature o;
         Builder(final DatabindingModeFeature x) { o = x; }

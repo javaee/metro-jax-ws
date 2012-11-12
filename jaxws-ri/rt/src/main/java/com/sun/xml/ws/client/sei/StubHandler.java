@@ -40,9 +40,9 @@
 
 package com.sun.xml.ws.client.sei;
 
+import com.oracle.webservices.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.databinding.ClientCallBridge;
-import com.sun.xml.ws.api.databinding.JavaCallInfo;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.message.Packet;

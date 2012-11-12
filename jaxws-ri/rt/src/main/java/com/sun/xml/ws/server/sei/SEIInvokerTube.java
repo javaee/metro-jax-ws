@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.server.sei;
 
+import com.oracle.webservices.api.databinding.JavaCallInfo;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
@@ -50,7 +51,6 @@ import com.sun.xml.ws.client.sei.MethodHandler;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.server.InvokerTube;
 import com.sun.xml.ws.wsdl.DispatchException;
-import org.jvnet.ws.databinding.JavaCallInfo;
 import java.lang.reflect.InvocationTargetException;
 
 /**

@@ -62,7 +62,7 @@ import javax.xml.ws.spi.WebServiceFeatureAnnotation;
  * 
  * @author shih-chang.chen@oracle.com
  */
-@WebServiceFeatureAnnotation(id="", bean=org.jvnet.ws.EnvelopeStyleFeature.class)
+@WebServiceFeatureAnnotation(id="", bean=com.oracle.webservices.api.EnvelopeStyleFeature.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EnvelopeStyle {
     

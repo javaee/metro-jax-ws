@@ -52,6 +52,8 @@ import javax.xml.ws.Holder;
  * The Result object systemids are also relative urls(for e.g: AbsWsdl.wsdl).
  *
  * @author Jitendra Kotamraju
+ * @deprecated Update to use com.oracle.webservices.api.databinding.WSDLResolver
+ * @see com.oracle.webservices.api.databinding.WSDLResolver
  */
 public interface WSDLResolver {
     /**
