@@ -292,8 +292,12 @@ public class DeploymentDescriptorParser<A> {
                             org.jvnet.ws.databinding.ExternalMetadataFeature.builder();
                     List<File> files = externalMetadataFeature.getFiles();
                     List<String> res = externalMetadataFeature.getResourceNames();
+                    if (files != null)
+                        builder = builder.addFiles(files.toArray(new File[files.size()]));
+                    if (res != null)
+                        builder = builder.addResources(res.toArray(new String[res.size()]));
                     binding.getFeatures().mergeFeatures(new WebServiceFeature[]{externalMetadataFeature, 
-                            builder.addFiles(files.toArray(new File[files.size()])).addResources(res.toArray(new String[res.size()])).build()}, 
+                            builder.build()}, 
                             true);
                 }
                 String urlPattern = getMandatoryNonEmptyAttribute(reader, attrs, ATTR_URL_PATTERN);
