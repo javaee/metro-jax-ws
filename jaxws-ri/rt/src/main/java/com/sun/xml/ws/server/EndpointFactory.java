@@ -392,6 +392,22 @@ public class EndpointFactory {
      *      If it doesn't have any one of @WebService or @WebServiceProvider
      *      If it has both @WebService and @WebServiceProvider annotations
      */
+    public static boolean verifyImplementorClass(Class<?> clz) {
+        return verifyImplementorClass(clz, null);
+    }
+
+    /**
+     * Verifies if the endpoint implementor class has @WebService or @WebServiceProvider
+     * annotation; passing MetadataReader instance allows to read annotations from
+     * xml descriptor instead of class's annotations
+     *
+     * @return
+     *       true if it is a Provider or AsyncProvider endpoint
+     *       false otherwise
+     * @throws java.lang.IllegalArgumentException
+     *      If it doesn't have any one of @WebService or @WebServiceProvider
+     *      If it has both @WebService and @WebServiceProvider annotations
+     */
     public static boolean verifyImplementorClass(Class<?> clz, MetadataReader metadataReader) {
 
         if (metadataReader == null) {
