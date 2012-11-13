@@ -1,4 +1,4 @@
-package com.sun.xml.ws.server;/*
+/*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
@@ -37,6 +37,8 @@ package com.sun.xml.ws.server;/*
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
+package com.sun.xml.ws.server;
 
 import junit.framework.TestCase;
 
