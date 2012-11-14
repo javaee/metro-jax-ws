@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,15 +42,19 @@ package com.sun.xml.ws.fault;
 
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import java.io.ByteArrayInputStream;
 import junit.framework.TestCase;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.Detail;
+import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
+import javax.xml.soap.SOAPMessage;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -70,6 +74,22 @@ public class SOAPFaultBuilderTest extends TestCase {
     private static final QName DETAIL2_QNAME =  new QName("http://www.example2.com/faults", "mySecondDetail");
     private static final SOAPFault FAULT_11;
     private static final SOAPFault FAULT_12;
+
+    private static final String NPE_FAULT =
+            "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+            + "<env:Header/>"
+            + "<env:Body>"
+            + "<env:Fault>"
+            + "<faultcode>env:Server</faultcode>"
+            + "<faultstring>String index out of range: -1</faultstring>"
+            + "<faultactor/>"
+            + "<detail>"
+            + "<exception>oracle.j2ee.ws.client.jaxws.JRFSOAPFaultException: Client received SOAP Fault from server : String index out of range: -1</exception>"
+            + "</detail>"
+            + "</env:Fault>"
+            + "</env:Body>"
+            + "</env:Envelope>";
+
     static {
         SOAPFault fault11 = null;
         SOAPFault fault12 = null;
@@ -129,6 +149,19 @@ public class SOAPFaultBuilderTest extends TestCase {
     public void testCreate12FaultFromFault() throws Exception {
         Message msg = SOAPFaultBuilder.createSOAPFaultMessage(SOAPVersion.SOAP_12, FAULT_12);
         verifyDetail(msg);
+    }
+
+    public void testCreateException_14504957() throws Exception {
+        MessageFactory f = MessageFactory.newInstance();
+        SOAPMessage soapMsg = f.createMessage(null, new ByteArrayInputStream(NPE_FAULT.getBytes()));
+        Message m = new SAAJMessage(soapMsg);
+        SOAPFaultBuilder builder = SOAPFaultBuilder.create(m);
+        try {
+            SOAPFaultException sex = (SOAPFaultException)builder.createException(null);
+        } catch (Throwable t) {
+            t.printStackTrace(System.out);
+            fail("Got unexpected exception: " + t.getClass().getName());
+        }
     }
 
     private void verifyDetail(Message message) throws Exception {
