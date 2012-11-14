@@ -537,7 +537,7 @@
                 </repository>
                 <repository>
                     <id>jvnet-nexus-staging</id>
-                    <url>https://maven.java.net/content/groups/staging/</url>
+                    <url>https://maven.java.net/content/repositories/staging/</url>
                     <layout>default</layout>
                 </repository>
                 <repository>
