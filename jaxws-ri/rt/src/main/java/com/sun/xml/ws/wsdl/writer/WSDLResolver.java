@@ -44,6 +44,6 @@ package com.sun.xml.ws.wsdl.writer;
  * @deprecated Use com.oracle.webservices.api.databinding.WSDLResolver directly
  * 
  */
-public interface WSDLResolver extends com.oracle.webservices.api.databinding.WSDLResolver {
+public interface WSDLResolver extends org.jvnet.ws.databinding.WSDLResolver {
 
 }
