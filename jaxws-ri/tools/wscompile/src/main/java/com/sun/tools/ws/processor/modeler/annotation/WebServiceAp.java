@@ -282,7 +282,7 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
     protected void report(String msg) {
         if (out == null) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, WebserviceapMessages.WEBSERVICEAP_NO_OUTPUT());
+                LOGGER.log(Level.FINE, "No output set for web service annotation processor reporting.");
             }
             return;
         }
