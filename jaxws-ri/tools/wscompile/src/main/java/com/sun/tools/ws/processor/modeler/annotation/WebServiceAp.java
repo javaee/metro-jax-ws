@@ -66,6 +66,7 @@ import javax.xml.ws.WebServiceProvider;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.lang.reflect.Method;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -153,7 +154,44 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
             doNotOverWrite = getOption(DO_NOT_OVERWRITE);
             ignoreNoWebServiceFoundWarning = getOption(IGNORE_NO_WEB_SERVICE_FOUND_WARNING);
 
-            String classDir = ".";
+            String classDir = parseArguments();
+            String property = System.getProperty("java.class.path");
+            options.classpath = classDir + File.pathSeparator + (property != null ? property : "");
+            isCommandLineInvocation = true;
+        }
+        options.filer = processingEnv.getFiler();
+    }
+
+    private String parseArguments() {
+        // let's try to parse JavacOptions
+
+        String classDir = null;
+        try {
+            ClassLoader cl = WebServiceAp.class.getClassLoader();
+            Class javacProcessingEnvironmentClass = Class.forName("com.sun.tools.javac.processing.JavacProcessingEnvironment", false, cl);
+            if (javacProcessingEnvironmentClass.isInstance(processingEnv)) {
+                Method getContextMethod = javacProcessingEnvironmentClass.getDeclaredMethod("getContext");
+                Object context = getContextMethod.invoke(processingEnv);
+                Class optionsClass = Class.forName("com.sun.tools.javac.util.Options", false, cl);
+                Class contextClass = Class.forName("com.sun.tools.javac.util.Context", false, cl);
+                Method instanceMethod = optionsClass.getDeclaredMethod("instance", new Class[]{contextClass});
+                Object options = instanceMethod.invoke(null, context);
+                if (options != null) {
+                    Method getMethod = optionsClass.getDeclaredMethod("get", new Class[]{String.class});
+                    Object result = getMethod.invoke(options, "-s"); // todo: we have to check for -d also
+                    if (result != null) {
+                        classDir = (String) result;
+                    }
+                    this.options.verbose = getMethod.invoke(options, "-verbose") != null;
+                }
+            }
+        } catch (Exception e) {
+            /// some Error was here - problems with reflection or security
+            processWarning(WebserviceapMessages.WEBSERVICEAP_PARSING_JAVAC_OPTIONS_ERROR());
+            report(e.getMessage());
+        }
+
+        if (classDir == null) { // some error within reflection block
             String property = System.getProperty("sun.java.command");
             if (property != null) {
                 Scanner scanner = new Scanner(property);
@@ -170,12 +208,9 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
                     }
                 }
             }
-            sourceDir = new File(classDir);
-            property = System.getProperty("java.class.path");
-            options.classpath = classDir + File.pathSeparator + (property != null ? property : "");
-            isCommandLineInvocation = true;
         }
-        options.filer = processingEnv.getFiler();
+        sourceDir = new File(classDir);
+        return classDir;
     }
 
     private boolean getOption(String key) {
@@ -247,7 +282,7 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
     protected void report(String msg) {
         if (out == null) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "No output set for web service annotation processor reporting.");
+                LOGGER.log(Level.FINE, WebserviceapMessages.WEBSERVICEAP_NO_OUTPUT());
             }
             return;
         }
