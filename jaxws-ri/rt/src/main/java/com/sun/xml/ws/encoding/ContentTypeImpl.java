@@ -54,6 +54,7 @@ public final class ContentTypeImpl implements com.sun.xml.ws.api.pipe.ContentTyp
     private String boundary;
     private String boundaryParameter;
     private String rootId;
+    private ContentType internalContentType;
 
     public ContentTypeImpl(String contentType) {
         this(contentType, null, null);
@@ -74,7 +75,8 @@ public final class ContentTypeImpl implements com.sun.xml.ws.api.pipe.ContentTyp
         if (charsetParam == null) {
             String tmpCharset = null;
             try {
-                tmpCharset = new ContentType(contentType).getParameter("charset");
+                internalContentType = new ContentType(contentType);
+                tmpCharset = internalContentType.getParameter("charset");
             } catch(Exception e) {
                 //Ignore the parsing exception.
             }
@@ -125,6 +127,10 @@ public final class ContentTypeImpl implements com.sun.xml.ws.api.pipe.ContentTyp
     }
 
     public String getBoundary() {
+        if (boundary == null) {
+            if (internalContentType == null) internalContentType = new ContentType(contentType);
+            boundary = internalContentType.getParameter("boundary");
+        }
         return boundary;
     }
 
@@ -141,6 +147,10 @@ public final class ContentTypeImpl implements com.sun.xml.ws.api.pipe.ContentTyp
     }
 
     public String getRootId() {
+        if (rootId == null) {
+            if (internalContentType == null) internalContentType = new ContentType(contentType);
+            rootId = internalContentType.getParameter("start");
+        }
         return rootId;
     }
 

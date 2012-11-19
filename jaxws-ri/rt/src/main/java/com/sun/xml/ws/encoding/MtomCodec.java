@@ -294,7 +294,7 @@ public class MtomCodec extends MimeCodec {
 
         packet.setMessage(codec.decode(mtomReader, new MimeAttachmentSet(mpp)));
         packet.setMtomFeature(mtomFeature);
-        packet.setContentType(new ContentTypeImpl(mpp.getContentType()));
+        packet.setContentType(mpp.getContentType());
     }
 
     private String getPacketEncoding(Packet packet) {

@@ -46,8 +46,13 @@ import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
+
+import com.oracle.webservices.api.message.ContentType;
+import com.oracle.webservices.api.message.MessageContext;
+import com.oracle.webservices.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
@@ -56,6 +61,8 @@ import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.message.StringHeader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 /**
  * @author Rama Pulavarthi
@@ -119,5 +126,34 @@ public class SAAJMessageTest extends TestCase {
         QName exp = new QName("urn:fault", "entry");
         assertEquals(exp, saajMsg.getFirstDetailEntryName());
     }
+    
+//    private MTOMFeature mtomf = new MTOMFeature(true);
+    private MessageContextFactory mcf = MessageContextFactory.createFactory(new MTOMFeature(true));   
 
+    public void testMtomMessageReload() throws Exception {
+        String testMtomMessageReload_01 = "multipart/related;type=\"application/xop+xml\";boundary=\"----=_Part_0_1145105632.1353005695468\";start=\"<cbe648b3-2055-413e-b8ed-877cdf0f2477>\";start-info=\"text/xml\"";
+        String testMtomMessageReload_02 = "multipart/related;type=\"application/xop+xml\";boundary=\"----=_Part_0_1145105632.1353005695468\";start=\"<6e1e30fe-9874-43ff-a9d1-c02af3969f04>\";start-info=\"text/xml\"";
+       
+        {
+            MessageContext m1 = mcf.createContext(getResource("testMtomMessageReload_01.msg"), testMtomMessageReload_01);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ContentType disiContentType = m1.writeTo(baos);  
+            byte[] bytes = baos.toByteArray();
+            String strMsg = new String(bytes);
+            assertFalse(strMsg.startsWith("--null"));
+        }
+        {
+            MessageContext m2 = mcf.createContext(getResource("testMtomMessageReload_02.msg"), testMtomMessageReload_02);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ContentType disiContentType = m2.writeTo(baos);  
+            byte[] bytes = baos.toByteArray();
+            String strMsg = new String(bytes);
+            assertFalse(strMsg.startsWith("--null"));
+        }
+    }
+    
+    private InputStream getResource(String str) throws Exception {
+//      return new File("D:/oc4j/webservices/devtest/data/cts15/DLSwaTest/" + str).toURL();
+      return Thread.currentThread().getContextClassLoader().getResource("etc/"+str).openStream();
+    }
 }

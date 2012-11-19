@@ -81,7 +81,7 @@ public final class MimeMultipartParser {
     private final String start;
     private final MIMEMessage message;
     private Attachment root;
-    private String contentType;
+    private ContentTypeImpl contentType;
     
     // Attachments without root part
     private final Map<String, Attachment> attachments = new HashMap<String, Attachment>();
@@ -89,9 +89,10 @@ public final class MimeMultipartParser {
     private boolean gotAll;
 
     public MimeMultipartParser(InputStream in, String cType, StreamingAttachmentFeature feature) {
-        this.contentType = cType;
-        ContentType ct = new ContentType(cType);
-        String boundary = ct.getParameter("boundary");
+        this.contentType = new ContentTypeImpl(cType);
+//        ContentType ct = new ContentType(cType);
+//        String boundary = ct.getParameter("boundary");
+        String boundary = contentType.getBoundary();
         if (boundary == null || boundary.equals("")) {
             throw new WebServiceException("MIME boundary parameter not found" + contentType);
         }
@@ -99,7 +100,8 @@ public final class MimeMultipartParser {
                 ? new MIMEMessage(in, boundary, feature.getConfig())
                 : new MIMEMessage(in, boundary);
         // Strip <...> from root part's Content-ID
-        String st = ct.getParameter("start");
+//        String st = ct.getParameter("start");
+        String st = contentType.getRootId();
         if (st != null && st.length() > 2 && st.charAt(0) == '<' && st.charAt(st.length()-1) == '>') {
             st = st.substring(1, st.length()-1);
         }
@@ -273,7 +275,7 @@ public final class MimeMultipartParser {
         }
     }
 
-    public String getContentType() {
+    public ContentTypeImpl getContentType() {
         return contentType;
     }
 
