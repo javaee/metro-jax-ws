@@ -42,6 +42,7 @@ package com.sun.xml.ws.server;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.stream.buffer.MutableXMLStreamBuffer;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
@@ -91,13 +92,16 @@ import org.xml.sax.SAXException;
 
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.Provider;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.soap.SOAPBinding;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -303,8 +307,9 @@ public class EndpointFactory {
         }
         // Selects only required metadata for this endpoint from the passed-in metadata
         if (primaryDoc != null) {
-            docList = findMetadataClosure(primaryDoc, docList);
+            docList = findMetadataClosure(primaryDoc, docList, resolver);
         }
+        
         ServiceDefinitionImpl serviceDefiniton = (primaryDoc != null) ? new ServiceDefinitionImpl(docList, primaryDoc) : null;
 
         return create(serviceName, portName, binding, container, seiModel, wsdlPort, implType, serviceDefiniton, 
@@ -327,8 +332,7 @@ public class EndpointFactory {
     protected <T> EndpointAwareTube createProviderInvokerTube(final Class<T> implType, final WSBinding binding,
                                                               final Invoker invoker, final Container container) {
     	return ProviderInvokerTube.create(implType, binding, invoker, container);
-    }
-    
+    }   
     /**
      * Goes through the original metadata documents and collects the required ones.
      * This done traversing from primary WSDL and its imports until it builds a
@@ -338,7 +342,7 @@ public class EndpointFactory {
      * @param docList complete metadata
      * @return new metadata that doesn't contain extraneous documnets.
      */
-    private static List<SDDocumentImpl> findMetadataClosure(SDDocumentImpl primaryDoc, List<SDDocumentImpl> docList) {
+    private static List<SDDocumentImpl> findMetadataClosure(SDDocumentImpl primaryDoc, List<SDDocumentImpl> docList, EntityResolver resolver) {
         // create a map for old metadata
         Map<String, SDDocumentImpl> oldMap = new HashMap<String, SDDocumentImpl>();
         for(SDDocumentImpl doc : docList) {
@@ -355,10 +359,24 @@ public class EndpointFactory {
             SDDocumentImpl doc = oldMap.get(url);
             if (doc == null) {
                 // old metadata doesn't have this imported doc, may be external
-                continue;
+            	if (resolver != null) {
+            		try {
+            			InputSource source = resolver.resolveEntity(null, url);
+            			if (source != null) {            				
+            				MutableXMLStreamBuffer xsb = new MutableXMLStreamBuffer();
+            				XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(source.getByteStream()); 
+            				xsb.createFromXMLStreamReader(reader);
+
+            				SDDocumentSource sdocSource = SDDocumentImpl.create(new URL(url), xsb);
+            				doc = SDDocumentImpl.create(sdocSource, null, null);
+            			} 
+            		} catch (Exception ex) {
+            			ex.printStackTrace();
+            		}
+            	} 
             }
             // Check if new metadata already contains this doc
-            if (!newMap.containsKey(url)) {
+            if (doc != null && !newMap.containsKey(url)) {
                 newMap.put(url, doc);
                 remaining.addAll(doc.getImports());
             }
