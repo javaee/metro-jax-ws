@@ -42,7 +42,7 @@
 
 <FindBugsFilter>
     <Match>
-        <Class>com.sun.xml.ws.db.toplink.JAXBContextFactory</Class>
+        <Class name="com.sun.xml.ws.db.toplink.JAXBContextFactory"/>
         <Bug pattern="WMI_WRONG_MAP_ITERATOR"/>
     </Match>
 
@@ -60,4 +60,12 @@
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
     </Match>
 
+    <!--
+    False alarm
+    -->
+    <Match>
+        <Class name="com.sun.xml.ws.db.toplink.JAXBBond$CustomXMLStreamReaderReader"/>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
+    
 </FindBugsFilter>

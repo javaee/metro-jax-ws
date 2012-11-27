@@ -88,6 +88,9 @@ import org.xml.sax.SAXException;
 import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.spi.db.TypeInfo;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class JAXBBond<T> implements XMLBridge<T> {
 
@@ -494,7 +497,7 @@ public class JAXBBond<T> implements XMLBridge<T> {
 
     public static class NewStreamWriterRecord extends XMLStreamWriterRecord {
 
-        private XMLStreamWriterEx xsw;
+        private transient XMLStreamWriterEx xsw;
 
         public NewStreamWriterRecord(XMLStreamWriterEx xsw) {
             super(xsw);
@@ -515,5 +518,13 @@ public class JAXBBond<T> implements XMLBridge<T> {
             }
             super.characters(schemaType, value, mimeType, isCData);
         }
+ 
+        private void readObject(ObjectInputStream aInputStream) throws ClassNotFoundException, IOException {
+            throw new UnsupportedOperationException();
+        }
+        
+        private void writeObject(ObjectOutputStream oos) throws IOException {
+            throw new UnsupportedOperationException();
+        }    
     }
 }
