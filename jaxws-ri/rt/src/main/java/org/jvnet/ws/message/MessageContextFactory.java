@@ -105,6 +105,11 @@ public abstract class MessageContextFactory extends com.oracle.webservices.api.m
 		<T extends com.oracle.webservices.api.message.PropertySet> T getSatellite(Class<T> satelliteClass) {
 			return mc.getSatellite(satelliteClass);
 		}
+		
+	    public Map<Class<? extends com.oracle.webservices.api.message.PropertySet>, com.oracle.webservices.api.message.PropertySet> getSatellites() {
+	        return mc.getSatellites();
+	    }
+
 
 		@Override
 		public void addSatellite(com.oracle.webservices.api.message.PropertySet satellite) {
