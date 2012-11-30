@@ -40,6 +40,8 @@
 
 package com.oracle.webservices.api.message;
 
+import java.util.Map;
+
 import com.sun.istack.Nullable;
 
 /**
@@ -82,9 +84,11 @@ public interface DistributedPropertySet extends com.oracle.webservices.api.messa
 
     public @Nullable <T extends com.oracle.webservices.api.message.PropertySet> T getSatellite(Class<T> satelliteClass);
 
+    public Map<Class<? extends com.oracle.webservices.api.message.PropertySet>, com.oracle.webservices.api.message.PropertySet> getSatellites();
+    
     public void addSatellite(com.oracle.webservices.api.message.PropertySet satellite);
 
-    public void addSatellite(Class keyClass, com.oracle.webservices.api.message.PropertySet satellite);
+    public void addSatellite(Class<? extends com.oracle.webservices.api.message.PropertySet> keyClass, com.oracle.webservices.api.message.PropertySet satellite);
 
     public void removeSatellite(com.oracle.webservices.api.message.PropertySet satellite);
 

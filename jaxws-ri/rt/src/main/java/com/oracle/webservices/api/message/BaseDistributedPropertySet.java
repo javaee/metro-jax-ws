@@ -96,7 +96,8 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
     /**
      * All {@link PropertySet}s that are bundled into this {@link PropertySet}.
      */
-    private final Map<Class, PropertySet> satellites = new IdentityHashMap<Class, PropertySet>();
+    private final Map<Class<? extends com.oracle.webservices.api.message.PropertySet>, PropertySet> satellites 
+        = new IdentityHashMap<Class<? extends com.oracle.webservices.api.message.PropertySet>, PropertySet>();
 
     private final Map<String, Object> viewthis;
     
@@ -110,7 +111,7 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
     }
 
     @Override
-    public void addSatellite(@NotNull Class keyClass, @NotNull PropertySet satellite) {
+    public void addSatellite(@NotNull Class<? extends com.oracle.webservices.api.message.PropertySet> keyClass, @NotNull PropertySet satellite) {
         satellites.put(keyClass, satellite);
     }
 
@@ -120,7 +121,7 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
     }
 
     public void copySatelliteInto(@NotNull DistributedPropertySet r) {
-        for (Map.Entry<Class, PropertySet> entry : satellites.entrySet()) {
+        for (Map.Entry<Class<? extends com.oracle.webservices.api.message.PropertySet>, PropertySet> entry : satellites.entrySet()) {
             r.addSatellite(entry.getKey(), entry.getValue());
         }
     }
@@ -130,7 +131,8 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
         copySatelliteInto((DistributedPropertySet)r);
     }
     
-    public @Override @Nullable <T extends com.oracle.webservices.api.message.PropertySet> T getSatellite(Class<T> satelliteClass) {
+    @Override
+    public @Nullable <T extends com.oracle.webservices.api.message.PropertySet> T getSatellite(Class<T> satelliteClass) {
         T satellite = (T) satellites.get(satelliteClass);
         if (satellite != null) {
             return satellite;
@@ -151,6 +153,11 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
         return null;
     }
 
+    @Override
+    public Map<Class<? extends com.oracle.webservices.api.message.PropertySet>, com.oracle.webservices.api.message.PropertySet> getSatellites() {
+        return satellites;
+    }
+    
     @Override
     public Object get(Object key) {
         // check satellites
