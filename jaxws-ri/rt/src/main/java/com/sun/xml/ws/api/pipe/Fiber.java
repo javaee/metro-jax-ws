@@ -537,7 +537,29 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
      * @param throwable exception that is used in the resumed processing
      */
     public void resume(@NotNull Throwable throwable) {
-        resume(throwable, false);
+        resume(throwable, packet, false);
+    }
+
+    /**
+     * Wakes up a suspended fiber with an exception.
+     * <p/>
+     * <p/>
+     * The execution of the suspended fiber will be resumed in the response
+     * processing direction, by calling the {@link Tube#processException(Throwable)} method
+     * on the next/first {@link Tube} in the {@link Fiber}'s processing stack with
+     * the specified exception as the parameter.
+     * <p/>
+     * <p/>
+     * This method is implemented in a race-free way. Another thread can invoke
+     * this method even before this fiber goes into the suspension mode. So the caller
+     * need not worry about synchronizing {@link NextAction#suspend()} and this method.
+     *
+     * @param throwable exception that is used in the resumed processing
+     * @param packet Packet that will be visible on the Fiber after the resume
+     * @since 2.2.8
+     */
+    public void resume(@NotNull Throwable throwable, @NotNull Packet packet) {
+        resume(throwable, packet, false);
     }
 
     /**
@@ -553,6 +575,25 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
      * @since 2.2.6
      */
     public void resume(@NotNull Throwable error,
+                       boolean forceSync) {
+        resume(error, packet, forceSync);
+    }
+
+    /**
+     * Wakes up a suspend fiber with an exception.
+     * 
+     * If forceSync is true, then the suspended fiber will resume with
+     * synchronous processing on the current thread.  This will continue
+     * until some Tube indicates that it is safe to switch to asynchronous
+     * processing.
+     * 
+     * @param error exception that is used in the resumed processing
+     * @param packet Packet that will be visible on the Fiber after the resume
+     * @param forceSync if processing begins synchronously
+     * @since 2.2.8
+     */
+    public void resume(@NotNull Throwable error,
+                       @NotNull Packet packet,
                        boolean forceSync) {
         if(isTraceEnabled())
             LOGGER.log(Level.FINE, "{0} resumed with Return Throwable", getName());

@@ -236,7 +236,7 @@ public class FiberTest extends TestCase {
         @NotNull
         public NextAction processRequest(@NotNull Packet request) {
             Container c = ContainerResolver.getDefault().getContainer();
-            calls.add(new TubeCall(TubeCallType.REQUEST, c));
+            calls.add(new TubeCall(TubeCallType.REQUEST, request, c));
             
             return doInvoke(next, request);
         }
@@ -245,7 +245,7 @@ public class FiberTest extends TestCase {
         @NotNull
         public NextAction processResponse(@NotNull Packet response) {
             Container c = ContainerResolver.getDefault().getContainer();
-            calls.add(new TubeCall(TubeCallType.RESPONSE, c));
+            calls.add(new TubeCall(TubeCallType.RESPONSE, response, c));
             
             return doReturnWith(response);
         }
@@ -253,8 +253,9 @@ public class FiberTest extends TestCase {
         @Override
         @NotNull
         public NextAction processException(@NotNull Throwable t) {
+            Packet packet = Fiber.current().getPacket();
             Container c = ContainerResolver.getDefault().getContainer();
-            calls.add(new TubeCall(TubeCallType.EXCEPTION, c));
+            calls.add(new TubeCall(TubeCallType.EXCEPTION, packet, c));
             
             return doThrow(t);
         }
@@ -1050,6 +1051,141 @@ public class FiberTest extends TestCase {
         assertEquals(0, calls.size());
     }
 
+    public void testSuspendNextRunnableResumeThrowablePacket() throws InterruptedException {
+        final Semaphore atSuspend = new Semaphore(0);
+        final Semaphore checkCompleted = new Semaphore(0);
+        final Semaphore atEnd = new Semaphore(0);
+        
+        final TestTube tubeC = new TestTube();
+        final FilterTestTube tubeB = new FilterTestTube(tubeC) {
+            @Override
+            @NotNull
+            public NextAction processRequest(@NotNull Packet request) {
+                super.processRequest(request);
+                return doSuspend(next, new Runnable() {
+                    @Override
+                    public void run() {
+                        atSuspend.release();
+                        try {
+                            checkCompleted.acquire();
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                });
+            }
+        };
+        final FilterTestTube tubeA = new FilterTestTube(tubeB);
+        
+        final Packet request = new Packet();
+        final SimpleCompletionCallback callback = new SimpleCompletionCallback() {
+            @Override
+            public void onCompletion(@NotNull Packet response) {
+                super.onCompletion(response);
+                atEnd.release();
+            }
+
+            @Override
+            public void onCompletion(@NotNull Throwable error) {
+                super.onCompletion(error);
+                atEnd.release();
+            }
+        };
+        
+        final Fiber fiber = threadPoolEngine.createFiber();
+        
+        assertNotNull(fiber);
+        
+        fiber.start(tubeA, request, callback);
+        
+        if (!atSuspend.tryAcquire(3, TimeUnit.MINUTES))
+            fail("timeout");
+        
+        assertEquals(0, atEnd.availablePermits()); // ensure test thread really blocked
+        
+        // thread is suspended
+        
+        assertNull(callback.response);
+        assertNull(callback.error);
+        
+        List<TubeCall> calls = tubeA.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(1, calls.size());
+        
+        TubeCall firstCall = calls.get(0);
+        
+        assertNotNull(firstCall);
+        assertEquals(TubeCallType.REQUEST, firstCall.callType);
+        assertEquals(testContainer, firstCall.container);
+        
+        calls = tubeB.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(1, calls.size());
+        
+        firstCall = calls.get(0);
+        
+        assertNotNull(firstCall);
+        assertEquals(TubeCallType.REQUEST, firstCall.callType);
+        assertEquals(testContainer, firstCall.container);
+        
+        calls = tubeC.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(0, calls.size());
+        
+        checkCompleted.release();
+        
+        Packet secondPacket = new Packet();
+        fiber.resume(new RuntimeException(), secondPacket);
+        
+        if (!atEnd.tryAcquire(3, TimeUnit.MINUTES))
+            fail("timeout");
+
+        assertNull(callback.response);
+        assertTrue(callback.error instanceof RuntimeException);
+        
+        calls = tubeA.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(2, calls.size());
+        
+        firstCall = calls.get(0);
+        
+        assertNotNull(firstCall);
+        assertEquals(TubeCallType.REQUEST, firstCall.callType);
+        assertEquals(testContainer, firstCall.container);
+        
+        TubeCall secondCall = calls.get(1);
+        
+        assertNotNull(secondCall);
+        assertEquals(TubeCallType.EXCEPTION, secondCall.callType);
+        assertEquals(testContainer, secondCall.container);
+        assertEquals(secondPacket, secondCall.packet);
+
+        calls = tubeB.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(2, calls.size());
+        
+        firstCall = calls.get(0);
+        
+        assertNotNull(firstCall);
+        assertEquals(TubeCallType.REQUEST, firstCall.callType);
+        assertEquals(testContainer, firstCall.container);
+        
+        secondCall = calls.get(1);
+        
+        assertNotNull(secondCall);
+        assertEquals(TubeCallType.EXCEPTION, secondCall.callType);
+        assertEquals(testContainer, secondCall.container);
+
+        calls = tubeC.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(0, calls.size());
+    }
+    
     public void testSuspendNextRunnableResumeAndReturn() throws InterruptedException {
         final Semaphore atSuspend = new Semaphore(0);
         final Semaphore checkCompleted = new Semaphore(0);

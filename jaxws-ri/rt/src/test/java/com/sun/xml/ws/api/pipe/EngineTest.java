@@ -164,10 +164,12 @@ public class EngineTest extends TestCase {
     
     static class TubeCall {
         TubeCallType callType;
+        Packet packet;
         Container container;
         
-        public TubeCall(TubeCallType callType, Container container) {
+        public TubeCall(TubeCallType callType, Packet packet, Container container) {
             this.callType = callType;
+            this.packet = packet;
             this.container = container;
         }
     }
@@ -187,7 +189,7 @@ public class EngineTest extends TestCase {
         @NotNull
         public NextAction processRequest(@NotNull Packet request) {
             Container c = ContainerResolver.getDefault().getContainer();
-            calls.add(new TubeCall(TubeCallType.REQUEST, c));
+            calls.add(new TubeCall(TubeCallType.REQUEST, request, c));
             
             return doReturnWith(request);
         }
@@ -196,7 +198,7 @@ public class EngineTest extends TestCase {
         @NotNull
         public NextAction processResponse(@NotNull Packet response) {
             Container c = ContainerResolver.getDefault().getContainer();
-            calls.add(new TubeCall(TubeCallType.RESPONSE, c));
+            calls.add(new TubeCall(TubeCallType.RESPONSE, response, c));
             
             return doReturnWith(response);
         }
@@ -204,8 +206,9 @@ public class EngineTest extends TestCase {
         @Override
         @NotNull
         public NextAction processException(@NotNull Throwable t) {
+            Packet packet = Fiber.current().getPacket();
             Container c = ContainerResolver.getDefault().getContainer();
-            calls.add(new TubeCall(TubeCallType.EXCEPTION, c));
+            calls.add(new TubeCall(TubeCallType.EXCEPTION, packet, c));
             
             return doThrow(t);
         }
