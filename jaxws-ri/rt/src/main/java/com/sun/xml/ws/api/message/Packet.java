@@ -75,6 +75,7 @@ import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.DispatchException;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
+import com.sun.xml.ws.resources.AddressingMessages;
 
 
 import org.w3c.dom.Document;
@@ -85,6 +86,7 @@ import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.WebServiceContext;
@@ -1002,11 +1004,21 @@ public final class Packet
         Message msg = getMessage();
         // wsa:To
         WSEndpointReference replyTo = null;
-    	if (wpb != null) {
-            replyTo = wpb.getReplyToFromRequest();
+        Header replyToFromRequestMsg = msg.getMessageHeaders().get(av.replyToTag, false);
+        Header replyToFromResponseMsg = hl.get(av.toTag, false);
+        boolean replaceToTag = true;
+        try{
+            if (replyToFromRequestMsg != null){
+                replyTo = replyToFromRequestMsg.readAsEPR(av);
+            }
+            if (replyToFromResponseMsg != null && replyTo == null) {
+                replaceToTag = false;
+            }
+        } catch (XMLStreamException e) {
+            throw new WebServiceException(AddressingMessages.REPLY_TO_CANNOT_PARSE(), e);
         }
-    	if (replyTo == null) {
-            replyTo = AddressingUtils.getReplyTo(msg.getMessageHeaders(), av, sv);
+    	  if (replyTo == null) {
+    	      replyTo = AddressingUtils.getReplyTo(msg.getMessageHeaders(), av, sv);
         }
 
         // wsa:Action, add if the message doesn't already contain it,
@@ -1055,7 +1067,7 @@ public final class Packet
             // choose ReplyTo
             refpEPR = replyTo;
         }
-        if (refpEPR != null) {
+        if (replaceToTag && refpEPR != null) {
             hl.addOrReplace(new StringHeader(av.toTag, refpEPR.getAddress()));
             refpEPR.addReferenceParametersToList(hl);
         }
