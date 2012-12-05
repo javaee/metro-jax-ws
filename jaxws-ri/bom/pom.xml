@@ -532,12 +532,12 @@
             <repositories>
                 <repository>
                     <id>releases.java.net</id>
-                    <url>https://maven.java.net/content/repositories/releases/</url>
+                    <url>http://maven.java.net/content/repositories/releases/</url>
                     <layout>default</layout>
                 </repository>
                 <repository>
                     <id>jvnet-nexus-staging</id>
-                    <url>https://maven.java.net/content/repositories/staging/</url>
+                    <url>http://maven.java.net/content/repositories/staging/</url>
                     <layout>default</layout>
                 </repository>
                 <repository>
