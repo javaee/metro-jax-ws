@@ -53,6 +53,9 @@
         <property name="lib.dir" value="lib"/>
         <property name="build.dir" value="build"/>
         <property name="src.dir" value="src"/>
+        <condition property="coverage" value="-Dnet.sourceforge.cobertura.datafile=${net.sourceforge.cobertura.datafile}" else="">
+            <isset property="net.sourceforge.cobertura.datafile"/>
+        </condition>
     </target>
 
     <target name="setup" depends="init">
@@ -67,6 +70,7 @@
             <fileset dir="${libs.folder}/api" />
         </copy>
         <path id="task.cp">
+            <pathelement location="${bin.folder}/generated-classes/cobertura"/>
             <pathelement location="${bin.folder}/generated-sources/rsrc-gen"/>
             <pathelement location="${bin.folder}/classes"/>
             <fileset dir="${lib.dir}" />
@@ -123,6 +127,7 @@
             <classpath>
                 <pathelement location="${src.dir}"/>
             </classpath>
+            <jvmArg line="${coverage}"/>
         </wsgen>
     </target>
 
@@ -169,7 +174,7 @@
             <classpath>
                 <pathelement location="${src.dir}"/>
             </classpath>
-            <jvmArg line="-Xmx256m"/>
+            <jvmArg line="-Xmx256m ${coverage}"/>
         </wsgen>
     </target>
 
@@ -195,6 +200,7 @@
             <classpath>
                 <pathelement location="${src.dir}"/>
             </classpath>
+            <jvmArg line="${coverage}"/>
         </wsgen>
     </target>
 

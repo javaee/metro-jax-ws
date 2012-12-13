@@ -307,5 +307,40 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>coverage</id>
+            <activation>
+                <property>
+                    <name>cobertura-build</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.glassfish.metro</groupId>
+                        <artifactId>harness-maven-plugin</artifactId>
+                        <version>0.1-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <id>jaxws-unit</id>
+                                <goals>
+                                    <goal>ws-test</goal>
+                                </goals>
+                                <configuration>
+                                    <vmArgs>
+                                        <vmArg>-Dnet.sourceforge.cobertura.datafile=${basedir}/target/cobertura.ser</vmArg>
+                                    </vmArgs>
+                                    <!--                                    <args>
+                                        <arg>-cp:jaxws-image ${project.basedir}/../../bundles/jaxws-ri/target/stage/jaxws-ri</arg>
+                                        <arg>-transport /space/sources/jws/clean-jaxws22/jaxws-ri/transports/local/target/jaxws-local-transport.jar</arg>
+                                    </args>-->
+                                    <!--<debug>true</debug>-->
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>

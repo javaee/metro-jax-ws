@@ -54,6 +54,9 @@
         <property name="build.dir" value="build"/>
         <property name="src.dir" value="src"/>
         <property name="wsdl" value="hello.wsdl"/>
+        <condition property="coverage" value="-Dnet.sourceforge.cobertura.datafile=${net.sourceforge.cobertura.datafile}" else="">
+            <isset property="net.sourceforge.cobertura.datafile"/>
+        </condition>
     </target>
 
     <target name="setup" depends="init">
@@ -68,6 +71,7 @@
             <fileset dir="${libs.folder}/api" />
         </copy>
         <path id="task.cp">
+            <pathelement location="${bin.folder}/generated-classes/cobertura"/>
             <pathelement location="${bin.folder}/generated-sources/rsrc-gen"/>
             <pathelement location="${bin.folder}/classes"/>
             <fileset dir="${lib.dir}" />
@@ -187,7 +191,9 @@
             destdir="${build.dir}"
             wsdl="${wsdl}"
             extension="true"
-            fork="true"/>
+            fork="true">
+            <jvmArg line="${coverage}"/>
+        </wsimport>
     </target>
 
     <target name="clean">

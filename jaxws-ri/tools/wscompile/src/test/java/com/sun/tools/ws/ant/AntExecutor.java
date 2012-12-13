@@ -73,6 +73,10 @@ public class AntExecutor {
         cmd.add("-Djava.endorsed.dirs=" + endorsedDir.getAbsolutePath());
         cmd.add("-Dbin.folder=" + System.getProperty("bin.folder"));
 //        cmd.add("-Djaxp.debug=true");
+        //dump coverage data:
+        if (System.getProperty("net.sourceforge.cobertura.datafile") != null) {
+            cmd.add("-Dnet.sourceforge.cobertura.datafile=" + System.getProperty("net.sourceforge.cobertura.datafile"));
+        }
         cmd.add("-cp");
         cmd.add(getAntCP(new File(System.getProperty("bin.folder"), "lib/ant")));
         cmd.add("org.apache.tools.ant.Main");

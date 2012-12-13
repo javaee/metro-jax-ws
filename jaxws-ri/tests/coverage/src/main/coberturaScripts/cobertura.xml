@@ -1,0 +1,122 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+<project>
+
+    <property name="antjars.dir" value="${basedir}/antjars/" />
+
+    <path id="antjars.classpath">
+        <fileset dir="${antjars.dir}">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+
+    <taskdef classpathref="antjars.classpath" resource="tasks.properties" />
+
+    <target name="init">
+        <property file="cobertura.properties"/>
+        <property name="src.dir" location="${basedir}/sources"/>
+        <property name="cobertura.dir" location="${basedir}/cobertura"/>
+        <property name="merge.dir" location="${basedir}/merges"/>
+        <property name="merged.ser" location="${merge.dir}/cobertura.ser"/>
+        <property name="coveragereport.dir" location="${basedir}/report"/>
+
+        <echoproperties>
+            <propertyset>
+                <propertyref prefix="coveragereport"/>
+                <propertyref prefix="cobertura"/>
+                <propertyref prefix="merge"/>
+                <propertyref prefix="src.dir"/>
+            </propertyset>
+        </echoproperties>
+    </target>
+
+    <target name="create-merged-sers"
+          depends="init">
+
+        <cobertura-merge datafile="${merged.ser}">
+            <fileset dir="${cobertura.dir}">
+                <include name="*-cobertura.ser" />
+            </fileset>
+            <fileset file="${cobertura.ser.file}"/>
+        </cobertura-merge>
+    </target>
+
+    <target name="create-report"
+          description="Generate an html coverage report using the contents of the cobertura.ser file.  Performs clean first."
+          depends="init, clean, create-merged-sers">
+
+
+        <cobertura-report
+            format="html"
+            destdir="${coveragereport.dir}"
+            datafile="${merged.ser}">
+            <fileset dir="${src.dir}/jaxws-rt">
+                <include name="**/*.java" />
+            </fileset>
+            <fileset dir="${src.dir}/jaxws-tools">
+                <include name="**/*.java" />
+            </fileset>
+        </cobertura-report>
+    </target>
+
+    <target name="clean-tomcat-data"
+          description="Delete the cobertura.ser file created by tomcat"
+          depends="init">
+        <delete file="${cobertura.ser.file}"/>
+    </target>
+
+    <target name="clean"
+          description="clean local build artifacts.  Leaves tomcat cobertura.ser file alone."
+          depends="clean-report, clean-merges"/>
+
+    <target name="clean-report"
+          description="Delete the html reports"
+          depends="init">
+        <delete dir="${coveragereport.dir}"/>
+    </target>
+
+    <target name="clean-merges"
+          description="Delete the merged cobertura.ser file"
+          depends="init">
+        <delete dir="${merge.dir}"/>
+    </target>
+</project>
