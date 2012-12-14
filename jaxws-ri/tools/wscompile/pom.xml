@@ -148,6 +148,11 @@
                                     <artifactId>jaxws-api</artifactId>
                                     <type>jar</type>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.xml.soap</groupId>
+                                    <artifactId>saaj-api</artifactId>
+                                    <type>jar</type>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -159,7 +164,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <excludeArtifactIds>jaxb-api,jaxws-api,ant,ant-launcher,ant-nodeps,istack-commons-runtime,cobertura-runtime</excludeArtifactIds>
+                            <excludeArtifactIds>jaxb-api,saaj-api,jaxws-api,ant,ant-launcher,ant-nodeps,istack-commons-runtime</excludeArtifactIds>
                             <excludeScope>system</excludeScope>
                         </configuration>
                     </execution>
