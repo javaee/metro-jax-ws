@@ -568,7 +568,7 @@
                 </property>
             </activation>
             <modules>
-                <!--<module>tests/unit</module>-->
+                <module>tests/unit</module>
                 <module>tests/coverage</module>
             </modules>
             <properties>
@@ -652,21 +652,6 @@
                             </execution>
                         </executions>
                         <inherited>true</inherited>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>create-test-jar</id>
-                                <goals>
-                                    <goal>test-jar</goal>
-                                </goals>
-                                <configuration>
-                                    <skipIfEmpty>true</skipIfEmpty>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>

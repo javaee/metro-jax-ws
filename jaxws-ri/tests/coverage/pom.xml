@@ -59,45 +59,6 @@
 
     <name>JAX-WS RI Unit Tests Coverage</name>
     <description>JAX-WS RI Unit Tests Coverage</description>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>jaxws-eclipselink-plugin</artifactId>
-                <type>test-jar</type>
-                <scope>test</scope>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sdo-eclipselink-plugin</artifactId>
-                <type>test-jar</type>
-                <scope>test</scope>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>rt</artifactId>
-                <type>test-jar</type>
-                <scope>test</scope>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>rt-ha</artifactId>
-                <type>test-jar</type>
-                <scope>test</scope>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>wscompile</artifactId>
-                <type>test-jar</type>
-                <scope>test</scope>
-                <version>${project.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
 <!--        <dependency>
@@ -110,22 +71,6 @@
             <artifactId>sdo-eclipselink-plugin</artifactId>
             <type>test-jar</type>
         </dependency>-->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>rt</artifactId>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>rt-ha</artifactId>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wscompile</artifactId>
-            <type>test-jar</type>
-        </dependency>
-
 
         <dependency>
             <groupId>net.sourceforge.cobertura</groupId>
