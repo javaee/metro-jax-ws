@@ -314,27 +314,44 @@
                     <name>cobertura-build</name>
                 </property>
             </activation>
+            <properties>
+                <ws.jvmOpts>-Dnet.sourceforge.cobertura.datafile=${basedir}/target/cobertura.ser</ws.jvmOpts>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.glassfish.metro</groupId>
-                        <artifactId>harness-maven-plugin</artifactId>
-                        <version>0.1-SNAPSHOT</version>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>jaxws-unit</id>
+                                <id>copy-ser-file</id>
+                                <phase>package</phase>
                                 <goals>
-                                    <goal>ws-test</goal>
+                                    <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <vmArgs>
-                                        <vmArg>-Dnet.sourceforge.cobertura.datafile=${basedir}/target/cobertura.ser</vmArg>
-                                    </vmArgs>
-                                    <!--                                    <args>
-                                        <arg>-cp:jaxws-image ${project.basedir}/../../bundles/jaxws-ri/target/stage/jaxws-ri</arg>
-                                        <arg>-transport /space/sources/jws/clean-jaxws22/jaxws-ri/transports/local/target/jaxws-local-transport.jar</arg>
-                                    </args>-->
-                                    <!--<debug>true</debug>-->
+                                    <target>
+                                        <copy todir="target/cobertura" file="${basedir}/target/cobertura.ser" verbose="true" failonerror="true"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>cobertura-maven-plugin</artifactId>
+                        <configuration>
+                            <forceMojoExecution>true</forceMojoExecution>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>instrument-code</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>instrument</goal>
+                                </goals>
+                                <configuration>
+                                    <attach>true</attach>
                                 </configuration>
                             </execution>
                         </executions>

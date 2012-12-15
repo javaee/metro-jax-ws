@@ -61,7 +61,7 @@
     <description>JAX-WS RI Unit Tests Coverage</description>
 
     <dependencies>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>jaxws-eclipselink-plugin</artifactId>
             <type>test-jar</type>
@@ -146,8 +146,20 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jaxws-unit</artifactId>
+            <version>${project.version}</version>
+            <classifier>cobertura</classifier>
+            <type>ser</type>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
+
+    <properties>
+        <cobertura.report.format>xml</cobertura.report.format>
+    </properties>
 
     <build>
         <plugins>
@@ -167,6 +179,27 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-cobertura-report</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <unzip src="${project.build.directory}/${project.artifactId}-${project.version}-coberturaReporting.zip" dest="target"/>
+                                <ant antfile="${project.build.directory}/cobertura.xml" dir="${project.build.directory}" target="create-report">
+                                    <property name="coveragereport.format" value="${cobertura.report.format}"/>
+                                </ant>
+                            </target>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

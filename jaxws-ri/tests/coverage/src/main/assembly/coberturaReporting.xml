@@ -134,5 +134,13 @@
                 <include>com.sun.xml.ws:wscompile:ser:cobertura</include>
             </includes>
         </dependencySet>
+        <dependencySet>
+            <unpack>false</unpack>
+            <outputDirectory>/cobertura</outputDirectory>
+            <scope>compile</scope>
+            <includes>
+                <include>com.sun.xml.ws:jaxws-unit:ser:cobertura</include>
+            </includes>
+        </dependencySet>
     </dependencySets>
 </assembly>

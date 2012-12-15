@@ -58,6 +58,7 @@
         <property name="merge.dir" location="${basedir}/merges"/>
         <property name="merged.ser" location="${merge.dir}/cobertura.ser"/>
         <property name="coveragereport.dir" location="${basedir}/report"/>
+        <property name="coveragereport.format" value="html"/>
 
         <echoproperties>
             <propertyset>
@@ -76,7 +77,7 @@
             <fileset dir="${cobertura.dir}">
                 <include name="*-cobertura.ser" />
             </fileset>
-            <fileset file="${cobertura.ser.file}"/>
+            <!--<fileset file="${cobertura.ser.file}"/>-->
         </cobertura-merge>
     </target>
 
@@ -86,7 +87,7 @@
 
 
         <cobertura-report
-            format="html"
+            format="${coveragereport.format}"
             destdir="${coveragereport.dir}"
             datafile="${merged.ser}">
             <fileset dir="${src.dir}/jaxws-rt">
