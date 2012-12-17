@@ -87,7 +87,7 @@ public abstract class BindingImpl implements WSBinding {
     protected HandlerConfiguration handlerConfig;
     private final BindingID bindingId;
     // Features that are set(enabled/disabled) on the binding
-    protected final WebServiceFeatureList features = new WebServiceFeatureList();
+    protected final WebServiceFeatureList features;
     // Features that are set(enabled/disabled) on the binding or an operation
     protected final Map<QName, WebServiceFeatureList> operationFeatures = new HashMap<QName, WebServiceFeatureList>();
     // Features that are set(enabled/disabled) on the binding, an operation or an input message
@@ -104,7 +104,8 @@ public abstract class BindingImpl implements WSBinding {
     protected BindingImpl(BindingID bindingId, WebServiceFeature ... features) {
         this.bindingId = bindingId;
         handlerConfig = new HandlerConfiguration(Collections.<String>emptySet(), Collections.<Handler>emptyList());
-        setFeatures(features);
+        this.features = new WebServiceFeatureList(features);
+        this.features.validate();
     }
 
     public
@@ -238,14 +239,6 @@ public abstract class BindingImpl implements WSBinding {
         return FeatureListUtil.mergeList(operationFeatureList, messageFeatureList, features);
     }
 
-    public void setFeatures(WebServiceFeature... newFeatures) {
-        if (newFeatures != null) {
-            for (WebServiceFeature f : newFeatures) {
-                features.add(f);
-            }
-        }
-    }
-
     public void setOperationFeatures(@NotNull final QName operationName, WebServiceFeature... newFeatures) {
         if (newFeatures != null) {
             WebServiceFeatureList featureList = operationFeatures.get(operationName);
@@ -297,10 +290,6 @@ public abstract class BindingImpl implements WSBinding {
             }
             faultMessageFeatures.put(key, featureList);
         }
-    }
-
-    public void addFeature(@NotNull WebServiceFeature newFeature) {
-        features.add(newFeature);
     }
 
     public synchronized @NotNull org.jvnet.ws.message.MessageContextFactory getMessageContextFactory () {

@@ -43,6 +43,8 @@ package com.sun.xml.ws.binding;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.FeatureListValidator;
+import com.sun.xml.ws.api.FeatureListValidatorAnnotation;
 import com.sun.xml.ws.api.ImpliesWebServiceFeature;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
@@ -91,6 +93,7 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
     }
 
     private Map<Class<? extends WebServiceFeature>, WebServiceFeature> wsfeatures = new HashMap<Class<? extends WebServiceFeature>, WebServiceFeature>();
+    private boolean isValidating = false;
 
     public WebServiceFeatureList() {
     }
@@ -104,7 +107,34 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
     public WebServiceFeatureList(@NotNull WebServiceFeature... features) {
         if (features != null) {
             for (WebServiceFeature f : features) {
-                add(f);
+                addNoValidate(f);
+            }
+        }
+    }
+    
+    public void validate() {
+        if (!isValidating) {
+            isValidating = true;
+            
+            // validation
+            for (WebServiceFeature ff : this) {
+                validate(ff);
+            }
+        }
+    }
+    
+    private void validate(WebServiceFeature feature) {
+        // run validation
+        FeatureListValidatorAnnotation fva = feature.getClass().getAnnotation(FeatureListValidatorAnnotation.class);
+        if (fva != null) {
+            Class<? extends FeatureListValidator> beanClass = fva.bean();
+            try {
+                FeatureListValidator validator = beanClass.newInstance();
+                validator.validate(this);
+            } catch (InstantiationException e) {
+                throw new WebServiceException(e);
+            } catch (IllegalAccessException e) {
+                throw new WebServiceException(e);
             }
         }
     }
@@ -113,6 +143,7 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
         if (features != null) {
             wsfeatures.putAll(features.wsfeatures);
             parent = features.parent;
+            isValidating = features.isValidating;
         }
     }
 
@@ -348,12 +379,21 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
      * Adds a feature to the list if it's not already added.
      */
     public void add(@NotNull WebServiceFeature f) {
+        if(addNoValidate(f) && isValidating)
+            validate(f);
+    }
+    
+    private boolean addNoValidate(@NotNull WebServiceFeature f) {
         if (!wsfeatures.containsKey(f.getClass())) {
             wsfeatures.put(f.getClass(), f);
 
             if (f instanceof ImpliesWebServiceFeature)
                 ((ImpliesWebServiceFeature) f).implyFeatures(this);
+            
+            return true;
         }
+        
+        return false;
     }
 
     /**

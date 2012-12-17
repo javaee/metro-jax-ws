@@ -40,25 +40,51 @@
 
 package com.sun.xml.ws.api;
 
-/**
- * Features, Providers, and JWS implementations can implement this interface to
- * receive a callback allowing them to modify the features enabled for a client
- * or endpoint binding.
- * 
- * Implementations of this interface can make any changes they like to the set of 
- * features; however, general best practice is that implementations should not 
- * override features specified by the developer.  For instance, a Feature object
- * for WS-ReliableMessaging might use this interface to automatically enable
- * WS-Addressing (by adding the AddressingFeature), but not modify addressing if the 
- * user had already specified a different addressing version.
- * 
- * @since 2.2.6
- * @deprecated use {@link FeatureListValidatorAnnotation}
- */
-public interface ImpliesWebServiceFeature {
-	/**
-	 * Callback that may inspect the current feature list and add additional features
-	 * @param list Feature list
-	 */
-	public void implyFeatures(WSFeatureList list);
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.soap.AddressingFeature;
+
+import com.sun.xml.ws.binding.BindingImpl;
+
+import junit.framework.TestCase;
+
+public class FeatureListValidatorTest extends TestCase {
+
+    public void testValidateNoFeatures() {
+        BindingImpl.create(BindingID.SOAP11_HTTP);
+        // must not throw; otherwise ok
+    }
+    
+    public void testInvalid() {
+        try {
+            BindingImpl.create(BindingID.SOAP11_HTTP, 
+                    new WebServiceFeature[] {new InvalidFeature()});
+            fail("InvalidFeature was passed, but no exception thrown");
+        } catch (WebServiceException e) {
+            // good, exception was thrown
+        }
+    }
+
+    public void testAddsAddressing() {
+        BindingImpl binding = BindingImpl.create(BindingID.SOAP11_HTTP, 
+                new WebServiceFeature[] {new AddsAddressingFeature()});
+        assertTrue("AddressingFeature must be enabled because AddsAddressingFeature was passed", 
+                binding.isFeatureEnabled(AddressingFeature.class));
+    }
+
+    public void testAddsAddressingAlreadyPresent() {
+        BindingImpl binding = BindingImpl.create(BindingID.SOAP11_HTTP, 
+                new WebServiceFeature[] {new AddsAddressingFeature(), new AddressingFeature()});
+        assertTrue("AddressingFeature must be enabled because AddsAddressingFeature was passed", 
+                binding.isFeatureEnabled(AddressingFeature.class));
+    }
+
+    public void testAddsAddressingDisabledAddressing() {
+        try {
+            BindingImpl.create(BindingID.SOAP11_HTTP, 
+                new WebServiceFeature[] {new AddsAddressingFeature(), new AddressingFeature(false)});
+        } catch (WebServiceException e) {
+            // good, exception was thrown
+        }
+    }
 }

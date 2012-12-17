@@ -40,25 +40,27 @@
 
 package com.sun.xml.ws.api;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import javax.xml.ws.WebServiceFeature;
+
 /**
- * Features, Providers, and JWS implementations can implement this interface to
- * receive a callback allowing them to modify the features enabled for a client
- * or endpoint binding.
+ * This annotation should be used on classes that extend {@link WebServiceFeature} in
+ * order to specify the type of {@link FeatureListValidator} bean that will be invoked when 
+ * instances of the {@link WebServiceFeature} class are included in the list of features
+ * that are added to a client or service binding.
  * 
- * Implementations of this interface can make any changes they like to the set of 
- * features; however, general best practice is that implementations should not 
- * override features specified by the developer.  For instance, a Feature object
- * for WS-ReliableMessaging might use this interface to automatically enable
- * WS-Addressing (by adding the AddressingFeature), but not modify addressing if the 
- * user had already specified a different addressing version.
- * 
- * @since 2.2.6
- * @deprecated use {@link FeatureListValidatorAnnotation}
+ * @since 2.2.8
  */
-public interface ImpliesWebServiceFeature {
-	/**
-	 * Callback that may inspect the current feature list and add additional features
-	 * @param list Feature list
-	 */
-	public void implyFeatures(WSFeatureList list);
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface FeatureListValidatorAnnotation {
+    /**
+     * The <code>FeatureListValidator</code> bean that is associated
+     * with the <code>FeatureListValidator</code> annotation
+     */
+    Class<? extends FeatureListValidator> bean();
 }

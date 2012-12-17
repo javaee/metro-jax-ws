@@ -40,25 +40,30 @@
 
 package com.sun.xml.ws.api;
 
+import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.WebServiceException;
+
 /**
- * Features, Providers, and JWS implementations can implement this interface to
- * receive a callback allowing them to modify the features enabled for a client
- * or endpoint binding.
+ * Validates a list of {@link WebServiceFeature} instances when they are added to
+ * the client or service binding.
+ * <p>
+ * {@link WebServiceFeature} classes may specify validator beans using {@link FeatureListValidatorAnnotation}.
+ * <p>
+ * Current behavior will allow runtime components to add features to the binding after initial validation; however,
+ * this behavior is discouraged and will not be supported in later releases of the reference
+ * implementation.  
  * 
- * Implementations of this interface can make any changes they like to the set of 
- * features; however, general best practice is that implementations should not 
- * override features specified by the developer.  For instance, a Feature object
- * for WS-ReliableMessaging might use this interface to automatically enable
- * WS-Addressing (by adding the AddressingFeature), but not modify addressing if the 
- * user had already specified a different addressing version.
- * 
- * @since 2.2.6
- * @deprecated use {@link FeatureListValidatorAnnotation}
+ * @since 2.2.8
+ * @see FeatureListValidatorAnnotation
  */
-public interface ImpliesWebServiceFeature {
-	/**
-	 * Callback that may inspect the current feature list and add additional features
-	 * @param list Feature list
-	 */
-	public void implyFeatures(WSFeatureList list);
+public interface FeatureListValidator {
+    /**
+     * Validates feature list.  Implementations should throw {@link WebServiceException} if the 
+     * list of features is invalid.  Implementations may add features to the list or make other 
+     * changes; however, only validators belonging to features on the original list will be
+     * invoked.
+     * 
+     * @param list feature list
+     */
+    public void validate(WSFeatureList list);
 }
