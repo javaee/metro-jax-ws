@@ -61,17 +61,6 @@
     <description>JAX-WS RI Unit Tests Coverage</description>
 
     <dependencies>
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>jaxws-eclipselink-plugin</artifactId>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>sdo-eclipselink-plugin</artifactId>
-            <type>test-jar</type>
-        </dependency>-->
-
         <dependency>
             <groupId>net.sourceforge.cobertura</groupId>
             <artifactId>cobertura</artifactId>
@@ -140,6 +129,40 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wscompile</artifactId>
+            <version>${project.version}</version>
+            <classifier>cobertura</classifier>
+            <type>ser</type>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jaxws-eclipselink-plugin</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jaxws-eclipselink-plugin</artifactId>
+            <version>${project.version}</version>
+            <classifier>cobertura</classifier>
+            <type>ser</type>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdo-eclipselink-plugin</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sdo-eclipselink-plugin</artifactId>
             <version>${project.version}</version>
             <classifier>cobertura</classifier>
             <type>ser</type>

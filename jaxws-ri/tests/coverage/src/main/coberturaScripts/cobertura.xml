@@ -96,6 +96,12 @@
             <fileset dir="${src.dir}/jaxws-tools">
                 <include name="**/*.java" />
             </fileset>
+            <fileset dir="${src.dir}/eclipselink_jaxb">
+                <include name="**/*.java" />
+            </fileset>
+            <fileset dir="${src.dir}/eclipselink_sdo">
+                <include name="**/*.java" />
+            </fileset>
         </cobertura-report>
     </target>
 

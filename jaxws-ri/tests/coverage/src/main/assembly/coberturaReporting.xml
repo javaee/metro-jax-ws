@@ -89,6 +89,22 @@
             </includes>
         </dependencySet>
         <dependencySet>
+            <unpack>true</unpack>
+            <outputDirectory>/sources/eclipselink_jaxb</outputDirectory>
+            <scope>compile</scope>
+            <includes>
+                <include>com.sun.xml.ws:jaxws-eclipselink-plugin:jar:sources</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <unpack>true</unpack>
+            <outputDirectory>/sources/eclipselink_sdo</outputDirectory>
+            <scope>compile</scope>
+            <includes>
+                <include>com.sun.xml.ws:sdo-eclipselink-plugin:jar:sources</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
             <unpack>false</unpack>
             <outputDirectory>/cobertura</outputDirectory>
             <scope>compile</scope>
