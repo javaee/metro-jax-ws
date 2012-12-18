@@ -59,6 +59,11 @@
         <property name="merged.ser" location="${merge.dir}/cobertura.ser"/>
         <property name="coveragereport.dir" location="${basedir}/report"/>
         <property name="coveragereport.format" value="html"/>
+        <condition property="cobertura.extra.dir" value="${coverage.extra.dir}">
+            <resourceexists>
+                <file file="${coverage.extra.dir}"/>
+            </resourceexists>
+        </condition>
 
         <echoproperties>
             <propertyset>
@@ -70,7 +75,7 @@
         </echoproperties>
     </target>
 
-    <target name="create-merged-sers"
+    <target name="create-merged-sers-basic" unless="cobertura.extra.dir"
           depends="init">
 
         <cobertura-merge datafile="${merged.ser}">
@@ -81,9 +86,23 @@
         </cobertura-merge>
     </target>
 
+    <target name="create-merged-sers-extra" if="cobertura.extra.dir"
+          depends="init">
+
+        <cobertura-merge datafile="${merged.ser}">
+            <fileset dir="${cobertura.dir}">
+                <include name="*-cobertura.ser" />
+            </fileset>
+            <fileset dir="${cobertura.extra.dir}">
+                <include name="*.ser" />
+            </fileset>
+            <!--<fileset file="${cobertura.ser.file}"/>-->
+        </cobertura-merge>
+    </target>
+
     <target name="create-report"
           description="Generate an html coverage report using the contents of the cobertura.ser file.  Performs clean first."
-          depends="init, clean, create-merged-sers">
+          depends="init, clean, create-merged-sers-basic, create-merged-sers-extra">
 
 
         <cobertura-report
