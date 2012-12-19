@@ -50,10 +50,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 /**
  * @author Jitendra Kotamraju
-*/
+ */
 public final class EndpointAdapterFactory implements DeploymentDescriptorParser.AdapterFactory<EndpointAdapter> {
     private static final Logger LOGGER = Logger.getLogger(EndpointAdapterFactory.class.getName());
 
@@ -63,6 +65,7 @@ public final class EndpointAdapterFactory implements DeploymentDescriptorParser.
         this.appContext = new EndpointContextImpl();
     }
 
+    @Override
     public EndpointAdapter createAdapter(String name, String urlPattern, Class implType,
         QName serviceName, QName portName, String bindingId,
         List<Source> metadata, WebServiceFeature... features) {
@@ -82,7 +85,9 @@ public final class EndpointAdapterFactory implements DeploymentDescriptorParser.
             if (serviceName != null) {
                 props.put(Endpoint.WSDL_SERVICE, serviceName);
             }
-            LOGGER.info("Setting Endpoint Properties="+props);
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "Setting Endpoint Properties={0}", props);
+            }
             endpoint.setProperties(props);
         }
 
@@ -93,7 +98,9 @@ public final class EndpointAdapterFactory implements DeploymentDescriptorParser.
             for(Source source : metadata) {
                 docId.add(source.getSystemId());
             }
-            LOGGER.info("Setting metadata="+docId);
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "Setting metadata={0}", docId);
+            }
         }
 
         // Set DD's handlers
