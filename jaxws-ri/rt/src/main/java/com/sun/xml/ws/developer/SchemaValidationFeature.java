@@ -97,6 +97,7 @@ public class SchemaValidationFeature extends WebServiceFeature {
     }
 
     @ManagedAttribute
+    @Override
     public String getID() {
         return ID;
     }

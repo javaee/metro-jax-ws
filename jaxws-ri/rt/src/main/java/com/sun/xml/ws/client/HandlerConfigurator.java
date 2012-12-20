@@ -96,12 +96,15 @@ abstract class HandlerConfigurator {
             this.resolver = resolver;
         }
 
+        @Override
         void configureHandlers(@NotNull WSPortInfo port, @NotNull BindingImpl binding) {
-            if(resolver!=null)
+            if (resolver!=null) {
                 binding.setHandlerChain(resolver.getHandlerChain(port));
+            }
         }
 
 
+        @Override
         HandlerResolver getResolver() {
             return resolver;
         }

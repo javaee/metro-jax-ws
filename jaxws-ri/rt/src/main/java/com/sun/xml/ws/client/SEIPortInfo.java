@@ -48,9 +48,6 @@ import com.sun.xml.ws.binding.SOAPBindingImpl;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.model.SOAPSEIModel;
 
-import javax.xml.ws.WebServiceFeature;
-
-
 /**
  * {@link PortInfo} that has {@link SEIModel}.
  *

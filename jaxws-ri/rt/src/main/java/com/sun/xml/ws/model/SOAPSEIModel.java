@@ -45,7 +45,6 @@ import com.sun.xml.ws.binding.WebServiceFeatureList;
 
 import javax.jws.WebParam.Mode;
 import javax.xml.namespace.QName;
-import javax.xml.ws.WebServiceFeature;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;

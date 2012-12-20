@@ -214,8 +214,9 @@ public class DeploymentDescriptorParser<A> {
         if (paths != null) {
             for (String path : paths) {
                 if (path.endsWith("/")) {
-                    if (path.endsWith("/CVS/") || path.endsWith("/.svn/"))
+                    if (path.endsWith("/CVS/") || path.endsWith("/.svn/")) {
                         continue;
+                    }
                     collectDocs(path);
                 } else {
                     URL res = loader.getResource(path);
@@ -292,10 +293,12 @@ public class DeploymentDescriptorParser<A> {
                             org.jvnet.ws.databinding.ExternalMetadataFeature.builder();
                     List<File> files = externalMetadataFeature.getFiles();
                     List<String> res = externalMetadataFeature.getResourceNames();
-                    if (files != null)
+                    if (files != null) {
                         builder = builder.addFiles(files.toArray(new File[files.size()]));
-                    if (res != null)
+                    }
+                    if (res != null) {
                         builder = builder.addResources(res.toArray(new String[res.size()]));
+                    }
                     binding.getFeatures().mergeFeatures(new WebServiceFeature[]{externalMetadataFeature, 
                             builder.build()}, 
                             true);
@@ -336,11 +339,12 @@ public class DeploymentDescriptorParser<A> {
 
         MTOMFeature mtomfeature = null;
         if (mtomEnabled != null) {
-            if (mtomThreshold != null)
+            if (mtomThreshold != null) {
                 mtomfeature = new MTOMFeature(Boolean.valueOf(mtomEnabled),
                         Integer.valueOf(mtomThreshold));
-            else
+            } else {
                 mtomfeature = new MTOMFeature(Boolean.valueOf(mtomEnabled));
+            }
         }
 
         BindingID bindingID;
@@ -357,8 +361,9 @@ public class DeploymentDescriptorParser<A> {
             // mtom through Feature annotation or DD takes precendece
 
             features = new WebServiceFeatureList();
-            if (mtomfeature != null)
-                features.add(mtomfeature); // this wins over MTOM setting in bindingID
+            if (mtomfeature != null) {  // this wins over MTOM setting in bindingID
+                features.add(mtomfeature);
+            }
             features.addAll(bindingID.createBuiltinFeatureList());
         }
 
@@ -373,7 +378,9 @@ public class DeploymentDescriptorParser<A> {
     }
 
     private static boolean checkMtomConflict(MTOMFeature lhs, MTOMFeature rhs) {
-        if (lhs == null || rhs == null) return false;
+        if (lhs == null || rhs == null) {
+            return false;
+        }
         return lhs.isEnabled() ^ rhs.isEnabled();
     }
 

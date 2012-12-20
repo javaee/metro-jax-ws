@@ -43,8 +43,6 @@ package com.sun.xml.ws.developer;
 import com.sun.xml.ws.server.DraconianValidationErrorHandler;
 
 import javax.jws.WebService;
-import javax.xml.transform.Source;
-import javax.xml.validation.Schema;
 import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.TYPE;

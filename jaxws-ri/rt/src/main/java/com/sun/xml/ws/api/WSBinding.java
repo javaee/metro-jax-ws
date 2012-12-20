@@ -40,7 +40,6 @@
 
 package com.sun.xml.ws.api;
 
-import com.oracle.webservices.api.message.MessageContextFactory;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
@@ -114,7 +113,8 @@ public interface WSBinding extends Binding {
      */
     @NotNull BindingID getBindingId();
 
-    @NotNull List<Handler> getHandlerChain();
+    @NotNull@Override
+    List<Handler> getHandlerChain();
 
     /**
      * Checks if a particular {@link WebServiceFeature} is enabled.
