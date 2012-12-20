@@ -191,6 +191,15 @@
         </Or>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
+    <Match>
+    <!--
+    Low priority, findbugs does not recognize the instanceof check in ternary expression
+    -->
+        <Or>
+		    <Class name="com.sun.xml.ws.api.message.saaj.SAAJFactory"/>
+		</Or>
+        <Bug pattern=" BC_UNCONFIRMED_CAST_OF_RETURN_VALUE"/>
+    </Match>
 
     <!--
     Low priority, low rank - usually unfixable to keep compatibility

@@ -323,6 +323,7 @@ public class SaajStaxWriter implements XMLStreamWriter {
                         return (prefix != null);
                     }
                     public Object next() {
+                        if (!hasNext()) throw new java.util.NoSuchElementException();
                         String next = prefix;
                         prefix = null;
                         return next;
