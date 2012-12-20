@@ -48,6 +48,7 @@ import javax.xml.soap.SAAJMetaFactory;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.stream.XMLStreamException;
 
 import org.xml.sax.SAXException;
 
@@ -271,24 +272,36 @@ public class SAAJFactory {
 	 * @return Created SOAPMessage
 	 * @throws SOAPException if SAAJ processing fails
 	 */
-	public SOAPMessage readAsSOAPMessage(SOAPVersion soapVersion, Message message) throws SOAPException {
+	public SOAPMessage readAsSOAPMessage(final SOAPVersion soapVersion, final Message message) throws SOAPException {
         SOAPMessage msg = soapVersion.getMessageFactory().createMessage();
-
+        SaajStaxWriter writer = new SaajStaxWriter(msg);
+        try {
+            message.writeTo(writer);
+        } catch (XMLStreamException e) {
+            throw (e.getCause() instanceof SOAPException) ? (SOAPException) e.getCause() : new SOAPException(e);
+        }
+        msg = writer.getSOAPMessage();
+        addAttachmentsToSOAPMessage(msg, message);        
+        if (msg.saveRequired())
+        	msg.saveChanges();
+        return msg;
+	}
+	
+    public SOAPMessage readAsSOAPMessageSax2Dom(final SOAPVersion soapVersion, final Message message) throws SOAPException {
+        SOAPMessage msg = soapVersion.getMessageFactory().createMessage();
         SAX2DOMEx s2d = new SAX2DOMEx(msg.getSOAPPart());
         try {
             message.writeTo(s2d, XmlUtil.DRACONIAN_ERROR_HANDLER);
         } catch (SAXException e) {
             throw new SOAPException(e);
         }
-
-        addAttachmentsToSOAPMessage(msg, message);
-        
+        addAttachmentsToSOAPMessage(msg, message);        
         if (msg.saveRequired())
-        	msg.saveChanges();
+            msg.saveChanges();
         return msg;
-	}
+    }
 	
-	protected void addAttachmentsToSOAPMessage(SOAPMessage msg, Message message) {
+	static protected void addAttachmentsToSOAPMessage(SOAPMessage msg, Message message) {
         for(Attachment att : message.getAttachments()) {
             AttachmentPart part = msg.createAttachmentPart();
             part.setDataHandler(att.asDataHandler());

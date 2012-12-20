@@ -149,7 +149,7 @@ public class SAAJMessage extends Message {
         }
     }
     
-    private void access() {
+    protected void access() {
         if (!accessedMessage) {
             try {
                 envelopeAttrs = sm.getSOAPPart().getEnvelope().getAttributes();
