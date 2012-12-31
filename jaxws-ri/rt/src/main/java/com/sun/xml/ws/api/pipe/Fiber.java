@@ -258,6 +258,12 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
     private
     @Nullable
     CompletionCallback completionCallback;
+    
+    private boolean isDeliverThrowableInPacket = false;
+    
+    public void setDeliverThrowableInPacket(boolean isDeliverThrowableInPacket) {
+        this.isDeliverThrowableInPacket = isDeliverThrowableInPacket;
+    }
 
     /**
      * The thread on which this Fiber is currently executing, if applicable.
@@ -870,14 +876,18 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
                 next = tubeline;
                 doRun();
                 if (throwable != null) {
-                    if (throwable instanceof RuntimeException) {
-                        throw (RuntimeException) throwable;
+                    if (isDeliverThrowableInPacket) {
+                        packet.addSatellite(new ThrowableContainerPropertySet(throwable));
+                    } else {
+                        if (throwable instanceof RuntimeException) {
+                            throw (RuntimeException) throwable;
+                        }
+                        if (throwable instanceof Error) {
+                            throw (Error) throwable;
+                        }
+                        // our system is supposed to only accept Error or RuntimeException
+                        throw new AssertionError(throwable);
                     }
-                    if (throwable instanceof Error) {
-                        throw (Error) throwable;
-                    }
-                    // our system is supposed to only accept Error or RuntimeException
-                    throw new AssertionError(throwable);
                 }
                 return this.packet;
             } finally {
@@ -907,9 +917,13 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
                 clearListeners();
                 condition.signalAll();
                 if (completionCallback != null) {
-                    if (throwable != null)
-                        completionCallback.onCompletion(throwable);
-                    else
+                    if (throwable != null) {
+                        if (isDeliverThrowableInPacket) {
+                            packet.addSatellite(new ThrowableContainerPropertySet(throwable));
+                            completionCallback.onCompletion(packet);
+                        } else
+                            completionCallback.onCompletion(throwable);
+                    } else
                         completionCallback.onCompletion(packet);
                 }
             }

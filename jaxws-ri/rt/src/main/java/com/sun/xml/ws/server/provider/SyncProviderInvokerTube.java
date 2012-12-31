@@ -45,6 +45,7 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.NextAction;
+import com.sun.xml.ws.api.pipe.ThrowableContainerPropertySet;
 import com.sun.xml.ws.api.server.Invoker;
 
 import javax.xml.ws.Provider;
@@ -95,7 +96,13 @@ class SyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
             }
         }
         Packet response = argsBuilder.getResponse(request,returnValue,port,binding);
-        return doReturnWith(response);
+        
+        // Only used by Provider<Packet>
+        // Implementation may pass Packet containing throwable; use both
+        ThrowableContainerPropertySet tc = response.getSatellite(ThrowableContainerPropertySet.class);
+        Throwable t = (tc != null) ? tc.getThrowable() : null;
+        
+        return t != null ? doThrow(response, t) : doReturnWith(response);
     }
 
     public @NotNull NextAction processResponse(@NotNull Packet response) {

@@ -90,6 +90,12 @@ public abstract class AbstractTubeImpl implements Tube, Pipe {
         return na;
     }
 
+    protected final NextAction doThrow(Packet response, Throwable t) {
+        NextAction na = new NextAction();
+        na.throwException(response, t);
+        return na;
+    }
+
     @Deprecated
     protected final NextAction doSuspend() {
         NextAction na = new NextAction();

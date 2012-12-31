@@ -455,6 +455,8 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         } 
 
         Fiber fiber = engine.createFiber();
+        configureFiber(fiber);
+        
         // then send it away!
         Tube tube = pool.take();
 
@@ -535,6 +537,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         } 
 
         final Fiber fiber = engine.createFiber();
+        configureFiber(fiber);
         
         receiver.setCancelable(fiber);
         
@@ -571,6 +574,11 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         fiber.start(tube, request, fiberCallback, 
                         getBinding().isFeatureEnabled(SyncStartForAsyncFeature.class) &&
                         !requestContext.containsKey(PREVENT_SYNC_START_FOR_ASYNC_INVOKE));
+    }
+    
+    protected void configureFiber(Fiber fiber) {
+        // no-op in the base class, but can be used by derirved clases to configure the Fiber prior
+        // to invocation
     }
     
     private static final Logger monitoringLogger = Logger.getLogger(com.sun.xml.ws.util.Constants.LoggingDomain + ".monitoring");

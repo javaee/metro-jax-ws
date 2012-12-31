@@ -352,12 +352,15 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
                     // transport doesn't
                     // have to worry about converting to wire message
                     // TODO XML/HTTP binding
-                    Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
-                            soapVersion, null, error);
-                    Packet response = request.createServerResponse(faultMsg,
-                            request.endpoint.getPort(), null,
-                            request.endpoint.getBinding());
                     if (callback != null) {
+                        Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
+                                soapVersion, null, error);
+                        Packet response = request.createServerResponse(faultMsg,
+                                request.endpoint.getPort(), null,
+                                request.endpoint.getBinding());
+                        
+                        // Pass throwable in property set for interested containers
+                        response.addSatellite(new ThrowableContainerPropertySet(error));
                         callback.onCompletion(response);
                     }
                 }

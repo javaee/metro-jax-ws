@@ -114,6 +114,20 @@ public final class NextAction {
 
     /**
      * Indicates that the next action is to flip the processing direction
+     * and starts exception processing, but with the indicated context.
+     *
+     * @param t
+     *      Either {@link RuntimeException} or {@link Error}, but defined to
+     *      take {@link Throwable} because {@link Tube#processException(Throwable)}
+     *      takes {@link Throwable}.
+     */
+    public void throwException( Packet response, Throwable t ) {
+        // Use of RETURN is correct -- Fiber processing does not set packet for type of THROW
+        set(RETURN, null, response, t);
+    }
+
+    /**
+     * Indicates that the next action is to flip the processing direction
      * and starts exception processing.
      *
      * @param t

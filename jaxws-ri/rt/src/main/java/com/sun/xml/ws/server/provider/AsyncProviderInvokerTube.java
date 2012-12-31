@@ -45,6 +45,7 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Fiber;
 import com.sun.xml.ws.api.pipe.NextAction;
+import com.sun.xml.ws.api.pipe.ThrowableContainerPropertySet;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.server.AsyncProvider;
 import com.sun.xml.ws.api.server.AsyncProviderCallback;
@@ -92,8 +93,14 @@ class AsyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
         }
         
         synchronized(callback) {
-        	if (resumer.response != null)
-        		return doReturnWith(resumer.response);
+        	if (resumer.response != null) {
+                // Only used by AsyncProvider<Packet>
+                // Implementation may pass Packet containing throwable; use both
+        	    ThrowableContainerPropertySet tc = resumer.response.getSatellite(ThrowableContainerPropertySet.class);
+        	    Throwable t = (tc != null) ? tc.getThrowable() : null;
+        	    
+        		return t != null ? doThrow(resumer.response, t) : doReturnWith(resumer.response);
+        	}
         
 	        // Suspend the Fiber. AsyncProviderCallback will resume the Fiber after
 	        // it receives response.
@@ -114,7 +121,11 @@ class AsyncProviderInvokerTube<T> extends ProviderInvokerTube<T> {
     	}
     	
     	public void onResume(Packet response) {
-    		fiber.resume(response);
+            // Only used by AsyncProvider<Packet>
+            // Implementation may pass Packet containing throwable; use both
+    	    ThrowableContainerPropertySet tc = response.getSatellite(ThrowableContainerPropertySet.class);
+    	    Throwable t = (tc != null) ? tc.getThrowable() : null;
+    		fiber.resume(t, response);
     	}
     }
     
