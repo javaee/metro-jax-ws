@@ -80,6 +80,6 @@ public class HTTPBindingImpl extends BindingImpl implements HTTPBinding {
                 throw new WebServiceException(ClientMessages.NON_LOGICAL_HANDLER_SET(handler.getClass()));
             }
         }
-        handlerConfig = new HandlerConfiguration(Collections.<String>emptySet(), chain);
+        setHandlerConfig(new HandlerConfiguration(Collections.<String>emptySet(), chain));
     }
 }

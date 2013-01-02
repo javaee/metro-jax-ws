@@ -40,11 +40,9 @@
 
 package com.sun.xml.ws.protocol.soap;
 
-import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.client.HandlerConfiguration;
-import com.sun.xml.ws.binding.BindingImpl;
 import javax.xml.namespace.QName;
 import java.util.Set;
 
@@ -66,7 +64,7 @@ public class ServerMUTube extends MUTube {
         //On Server, HandlerConfiguration does n't change after publish, so store locally
         HandlerConfiguration handlerConfig = binding.getHandlerConfig();
         roles = handlerConfig.getRoles();
-        handlerKnownHeaders = handlerConfig.getHandlerKnownHeaders();
+        handlerKnownHeaders = binding.getKnownHeaders();
     }
 
     protected ServerMUTube(ServerMUTube that, TubeCloner cloner) {

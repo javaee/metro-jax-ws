@@ -43,7 +43,6 @@ package com.sun.xml.ws.binding;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.client.HandlerConfiguration;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.resources.ClientMessages;
@@ -58,7 +57,6 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
 import java.util.*;
-
 
 /**
  * @author WS Development Team
@@ -133,7 +131,7 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
      * Protocol Handlers and sets the HandlerConfiguration.
      */
     public void setHandlerChain(List<Handler> chain) {
-        handlerConfig = new HandlerConfiguration(handlerConfig.getRoles(), chain);
+        setHandlerConfig(new HandlerConfiguration(getHandlerConfig().getRoles(), chain));
     }
 
     protected void addRequiredRoles(Set<String> roles) {
@@ -141,7 +139,7 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     }
 
     public Set<String> getRoles() {
-        return handlerConfig.getRoles();
+        return getHandlerConfig().getRoles();
     }
 
     /**
@@ -157,7 +155,7 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
             throw new WebServiceException(ClientMessages.INVALID_SOAP_ROLE_NONE());
         }
         addRequiredRoles(roles);
-        handlerConfig = new HandlerConfiguration(roles, getHandlerConfig());
+        setHandlerConfig(new HandlerConfiguration(roles, getHandlerConfig()));
     }
 
 

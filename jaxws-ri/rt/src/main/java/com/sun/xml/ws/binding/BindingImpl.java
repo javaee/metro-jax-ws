@@ -84,7 +84,7 @@ public abstract class BindingImpl implements WSBinding {
     protected static final WebServiceFeature[] EMPTY_FEATURES = new WebServiceFeature[0];
 
     //This is reset when ever Binding.setHandlerChain() or SOAPBinding.setRoles() is called.
-    protected HandlerConfiguration handlerConfig;
+    private HandlerConfiguration handlerConfig;
     private final BindingID bindingId;
     // Features that are set(enabled/disabled) on the binding
     protected final WebServiceFeatureList features;
@@ -118,13 +118,22 @@ public abstract class BindingImpl implements WSBinding {
         return handlerConfig;
     }
 
+    protected void setHandlerConfig(HandlerConfiguration handlerConfig) {
+        this.handlerConfig = handlerConfig;
+    }
 
     public void setMode(@NotNull Service.Mode mode) {
         this.serviceMode = mode;
     }
 
+    // This method will soon change to return unmodifiable set
+    // Downstream uses to add headers should move to using addKnownHeader()
     public Set<QName> getKnownHeaders() {
     	return handlerConfig.getHandlerKnownHeaders();
+    }
+    
+    public boolean addKnownHeader(QName headerQName) {
+        return getKnownHeaders().add(headerQName);
     }
     
     public

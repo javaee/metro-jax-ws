@@ -104,6 +104,11 @@ public class FeatureSupressingWSBinding implements WSBinding {
     public Set<QName> getKnownHeaders() {
     	return original.getKnownHeaders();
     }
+    
+    @Override
+    public boolean addKnownHeader(QName knownHeader) {
+        return original.addKnownHeader(knownHeader);
+    }
 
     @Override
     public String getBindingID() {

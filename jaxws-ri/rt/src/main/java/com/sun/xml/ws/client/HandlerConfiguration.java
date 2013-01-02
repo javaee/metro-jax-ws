@@ -69,7 +69,8 @@ public class HandlerConfiguration {
     private final List<LogicalHandler> logicalHandlers;
     private final List<SOAPHandler> soapHandlers;
     private final List<MessageHandler> messageHandlers;
-    private Set<QName> handlerKnownHeaders;
+    // In round 2 of this change, this becomes unmodifiable
+    private final Set<QName> handlerKnownHeaders;
 
     /**
      * @param roles               This contains the roles assumed by the Binding implementation.

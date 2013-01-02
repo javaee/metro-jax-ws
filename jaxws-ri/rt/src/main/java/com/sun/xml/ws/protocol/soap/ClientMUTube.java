@@ -50,7 +50,6 @@ import com.sun.xml.ws.client.HandlerConfiguration;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPFaultException;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -89,7 +88,7 @@ public class ClientMUTube extends MUTube {
             //may have been changed from the time of invocation, it ok as its only fallback case.
             handlerConfig = binding.getHandlerConfig();
         }
-        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(response.getMessage().getMessageHeaders(), handlerConfig.getRoles(),handlerConfig.getHandlerKnownHeaders());
+        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(response.getMessage().getMessageHeaders(), handlerConfig.getRoles(),binding.getKnownHeaders());
         if((misUnderstoodHeaders == null) || misUnderstoodHeaders.isEmpty()) {
             return super.processResponse(response);
         }
