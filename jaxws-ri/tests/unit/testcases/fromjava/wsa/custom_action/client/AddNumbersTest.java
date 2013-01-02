@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,34 +38,9 @@
  * holder.
  */
 
-/*
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the License).  You may not use this file except in
- * compliance with the License.
- * 
- * You can obtain a copy of the license at
- * https://glassfish.dev.java.net/public/CDDLv1.0.html.
- * See the License for the specific language governing
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL
- * Header Notice in each file and include the License file
- * at https://glassfish.dev.java.net/public/CDDLv1.0.html.
- * If applicable, add the following below the CDDL Header,
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information:
- * "Portions Copyrighted [year] [name of copyright owner]"
- * 
- * Copyright 2006 Sun Microsystems Inc. All Rights Reserved
- */
-
 package fromjava.wsa.custom_action.client;
 
-import java.util.Map;
-
 import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Binding;
 import javax.xml.ws.soap.AddressingFeature;
 
 import junit.framework.TestCase;
