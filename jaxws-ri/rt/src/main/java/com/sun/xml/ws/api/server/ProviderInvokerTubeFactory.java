@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,12 +43,12 @@ package com.sun.xml.ws.api.server;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.server.Invoker;
 import com.sun.xml.ws.server.provider.AsyncProviderInvokerTube;
 import com.sun.xml.ws.server.provider.ProviderArgumentsBuilder;
 import com.sun.xml.ws.server.provider.ProviderInvokerTube;
 import com.sun.xml.ws.server.provider.SyncProviderInvokerTube;
 import com.sun.xml.ws.util.ServiceFinder;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -101,7 +101,9 @@ public abstract class ProviderInvokerTubeFactory<T> {
         {
             ProviderInvokerTube<T> tube = factory.doCreate(implType, invoker, argsBuilder, isAsync);
             if (tube != null) {
-                ProviderInvokerTubeFactory.logger.fine(factory.getClass() + " successfully created " + tube);
+                if (logger.isLoggable(Level.FINE)) {
+                    ProviderInvokerTubeFactory.logger.log(Level.FINE, "{0} successfully created {1}", new Object[]{factory.getClass(), tube});
+                }
                 return tube;
             }
         }
