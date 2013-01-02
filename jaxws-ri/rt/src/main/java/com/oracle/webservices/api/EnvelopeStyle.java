@@ -85,7 +85,7 @@ public @interface EnvelopeStyle {
          * SOAP1.2. For JAX-WS, this is mapped from: 
          * javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING
          */
-        SOAP12(SOAPBinding.SOAP11HTTP_BINDING),
+        SOAP12(SOAPBinding.SOAP12HTTP_BINDING),
 
         /**
          * The raw XML. For JAX-WS, this is mapped from:
