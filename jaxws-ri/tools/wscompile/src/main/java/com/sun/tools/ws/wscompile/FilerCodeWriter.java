@@ -66,7 +66,11 @@ public class FilerCodeWriter extends WSCodeWriter {
 
     public Writer openSource(JPackage pkg, String fileName) throws IOException {
         String tmp = fileName.substring(0, fileName.length()-5);
-        w = filer.createSourceFile(pkg.name() + "." + tmp).openWriter();
+        if (pkg.name() != null && ! "".equals(pkg.name())) {
+        	w = filer.createSourceFile(pkg.name() + "." + tmp).openWriter();
+        } else {
+        	w = filer.createSourceFile(tmp).openWriter();
+        }
         return w;
     }
 
