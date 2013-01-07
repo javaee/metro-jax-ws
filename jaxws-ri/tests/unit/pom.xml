@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,20 +47,18 @@
 
     <parent>
         <groupId>com.sun.xml.ws</groupId>
-        <artifactId>project</artifactId>
+        <artifactId>jaxws-ri-tests</artifactId>
         <version>2.2.8-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-unit</artifactId>
 
     <name>JAX-WS RI Unit Tests</name>
     <description>JAX-WS RI Unit Tests</description>
 
     <properties>
-        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <!-- DEFAULT = JAXB, TOPLINK = MOXy -->
         <ws.databinding>DEFAULT</ws.databinding>
         <!-- IN_VM, LWHS, TOMCAT (requires tomcat.home to be set) -->
@@ -70,121 +68,6 @@
         <ws.jvmOpts></ws.jvmOpts>
         <!--<ws.jvmOpts>-Dhttp.proxyHost=www-proxy.us.oracle.com -Dhttp.proxyPort=80 -Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80</ws.jvmOpts>-->
     </properties>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <!-- temporary definition for harness plugin to be found-->
-            <id>temp</id>
-            <url>https://maven.java.net/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-            <layout>default</layout>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-xjc</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.messaging.saaj</groupId>
-            <artifactId>saaj-impl</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.stream.buffer</groupId>
-            <artifactId>streambuffer</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet.mimepull</groupId>
-            <artifactId>mimepull</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>policy</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet.staxex</groupId>
-            <artifactId>stax-ex</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.ha</groupId>
-            <artifactId>ha-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.gmbal</groupId>
-            <artifactId>gmbal-api-only</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>management-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.fastinfoset</groupId>
-            <artifactId>FastInfoset</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Parsers -->
-        <dependency>
-            <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>woodstox-core-asl</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>stax2-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!--
-        If you want to use SJSXP StAX parser, uncomment this
-        and comment woodstox one -->
-        <!--
-        <dependency>
-            <groupId>com.sun.xml.stream</groupId>
-            <artifactId>sjsxp</artifactId>
-            <version>1.0.1</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>stax-api</artifactId>
-                    <groupId>javax.xml.stream</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
-        
-        <!-- TODO: needed on mac? -->
-        <dependency>
-            <groupId>com.sun.org.apache.xml.internal</groupId>
-            <artifactId>resolver</artifactId>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -215,67 +98,14 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>prepare-endorsed</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${endorsed.dir}</outputDirectory>
-                            <silent>false</silent>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>javax.xml.bind</groupId>
-                                    <artifactId>jaxb-api</artifactId>
-                                    <version>${jaxb-api.version}</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>javax.xml.soap</groupId>
-                                    <artifactId>saaj-api</artifactId>
-                                    <version>${saaj-api.version}</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>javax.xml.ws</groupId>
-                                    <artifactId>jaxws-api</artifactId>
-                                    <version>${jaxws-api.version}</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.glassfish.metro</groupId>
                 <artifactId>harness-maven-plugin</artifactId>
-                <version>0.1-SNAPSHOT</version>
-                <configuration>
-                    <endorsedDir>${endorsed.dir}</endorsedDir>
-                    <tests>${ws.test}</tests>
-                    <version>${project.osgi.version}</version>
-                    <databinding>${ws.databinding}</databinding>
-                    <transport>${ws.transport}</transport>
-                    <extraVmArgs>${ws.jvmOpts}</extraVmArgs>
-                    <!--<debug>true</debug>-->
-                </configuration>
                 <executions>
                     <execution>
                         <id>jaxws-unit</id>
                         <goals>
                             <goal>ws-test</goal>
                         </goals>
-                        <configuration>
-                            <args>
-                                <arg>-cp:jaxws ${project.basedir}/../..</arg>
-                            </args>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -290,7 +120,6 @@
                     <plugin>
                         <groupId>org.glassfish.metro</groupId>
                         <artifactId>harness-maven-plugin</artifactId>
-                        <version>0.1-SNAPSHOT</version>
                         <executions>
                             <execution>
                                 <id>jaxws-unit</id>
@@ -298,7 +127,7 @@
                                     <goal>ws-test</goal>
                                 </goals>
                                 <configuration>
-                                    <imageUrl>${hudson.build.id}/artifact/jaxws-ri/bundles/jaxws-ri/target/jaxws-ri.zip</imageUrl>
+                                    <imageUrl>${jaxwsri.hudson.url}</imageUrl>
                                     <transportUrl>${hudson.build.id}/artifact/jaxws-ri/transports/local/target/jaxws-local-transport.jar</transportUrl>
                                 </configuration>
                             </execution>
@@ -307,6 +136,147 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>dev-impl</id>
+            <activation>
+                <property>
+                    <name>dev</name>
+                </property>
+            </activation>
+
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-xjc</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.messaging.saaj</groupId>
+                    <artifactId>saaj-impl</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.stream.buffer</groupId>
+                    <artifactId>streambuffer</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jvnet.mimepull</groupId>
+                    <artifactId>mimepull</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>policy</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jvnet.staxex</groupId>
+                    <artifactId>stax-ex</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.ha</groupId>
+                    <artifactId>ha-api</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.gmbal</groupId>
+                    <artifactId>gmbal-api-only</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.external</groupId>
+                    <artifactId>management-api</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.fastinfoset</groupId>
+                    <artifactId>FastInfoset</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+
+                <!-- Parsers -->
+                <dependency>
+                    <groupId>org.codehaus.woodstox</groupId>
+                    <artifactId>woodstox-core-asl</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.codehaus.woodstox</groupId>
+                    <artifactId>stax2-api</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <!--
+                If you want to use SJSXP StAX parser, uncomment this
+                and comment woodstox one -->
+                <!--
+                <dependency>
+                    <groupId>com.sun.xml.stream</groupId>
+                    <artifactId>sjsxp</artifactId>
+                    <version>1.0.1</version>
+                    <scope>provided</scope>
+                    <exclusions>
+                        <exclusion>
+                            <artifactId>stax-api</artifactId>
+                            <groupId>javax.xml.stream</groupId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                -->
+
+                <!-- TODO: needed on mac? -->
+                <dependency>
+                    <groupId>com.sun.org.apache.xml.internal</groupId>
+                    <artifactId>resolver</artifactId>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>prepare-endorsed</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${endorsed.dir}</outputDirectory>
+                                    <silent>false</silent>
+                                    <includeArtifactIds>jaxb-api,saaj-api,jaxws-api</includeArtifactIds>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.glassfish.metro</groupId>
+                        <artifactId>harness-maven-plugin</artifactId>
+                        <configuration>
+                            <endorsedDir>${endorsed.dir}</endorsedDir>
+                            <args>
+                                <arg>-cp:jaxws ${project.basedir}/../..</arg>
+                            </args>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <id>coverage</id>
             <activation>

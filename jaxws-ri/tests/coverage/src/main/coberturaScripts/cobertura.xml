@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -39,7 +40,7 @@
     holder.
 
 -->
-<project>
+<project name="JAX-WS_RI_Coverage_Report" default="create-report">
 
     <property name="antjars.dir" value="${basedir}/antjars/" />
 
@@ -82,7 +83,6 @@
             <fileset dir="${cobertura.dir}">
                 <include name="*-cobertura.ser" />
             </fileset>
-            <!--<fileset file="${cobertura.ser.file}"/>-->
         </cobertura-merge>
     </target>
 
@@ -96,14 +96,12 @@
             <fileset dir="${cobertura.extra.dir}">
                 <include name="*.ser" />
             </fileset>
-            <!--<fileset file="${cobertura.ser.file}"/>-->
         </cobertura-merge>
     </target>
 
     <target name="create-report"
           description="Generate an html coverage report using the contents of the cobertura.ser file.  Performs clean first."
           depends="init, clean, create-merged-sers-basic, create-merged-sers-extra">
-
 
         <cobertura-report
             format="${coveragereport.format}"

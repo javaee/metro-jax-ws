@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -465,6 +465,7 @@
         <module>bundles/jaxws-rt</module>
         <module>bundles/jaxws-tools</module>
         <module>extras</module>
+        <module>tests</module>
     </modules>
 
     <profiles>
@@ -487,10 +488,6 @@
                     <name>dev</name>
                 </property>
             </activation>
-            <modules>
-                <!-- TODO: Fix me on JDK 7 -->
-                <module>tests/unit</module>
-            </modules>
         </profile>
         <profile>
             <id>re-build</id>
@@ -567,15 +564,14 @@
                     <name>cobertura-build</name>
                 </property>
             </activation>
-            <modules>
-                <module>tests/unit</module>
-                <module>tests/coverage</module>
-            </modules>
             <properties>
+                <cobertura.report.format>xml</cobertura.report.format>
                 <cobertura.version>1.9.4.1</cobertura.version>
+                <cobertura.skip>false</cobertura.skip>
                 <net.sourceforge.cobertura.datafile>${basedir}/target/cobertura/cobertura.ser</net.sourceforge.cobertura.datafile>
             </properties>
             <dependencies>
+                <!-- cobertura library -->
                 <dependency>
                     <groupId>net.sourceforge.cobertura</groupId>
                     <artifactId>cobertura</artifactId>
@@ -599,6 +595,32 @@
                         </exclusion>
                     </exclusions>
                 </dependency>
+                <!-- needed for cobertura-instrument ant task to work (in *-rt, *-tools)
+                     and to not be included in assemblies/shaded jars -->
+                <dependency>
+                    <groupId>oro</groupId>
+                    <artifactId>oro</artifactId>
+                    <version>2.0.8</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                    <version>3.0</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>asm</groupId>
+                    <artifactId>asm-tree</artifactId>
+                    <version>3.0</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                    <version>1.2.9</version>
+                    <scope>test</scope>
+                </dependency>
             </dependencies>
             <build>
                 <pluginManagement>
@@ -614,6 +636,11 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>cobertura-maven-plugin</artifactId>
+                        <inherited>true</inherited>
+                        <configuration>
+                            <attach>true</attach>
+                            <skip>${cobertura.skip}</skip>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>instrument-code</id>
@@ -621,15 +648,13 @@
                                 <goals>
                                     <goal>instrument</goal>
                                 </goals>
-                                <configuration>
-                                    <attach>true</attach>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
+                        <inherited>true</inherited>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -638,7 +663,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <inherited>true</inherited>
                     </plugin>
                 </plugins>
             </build>

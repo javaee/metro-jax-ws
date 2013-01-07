@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -42,10 +42,8 @@
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-    <!--id is used for classifier in attached artifact-->
     <id>coberturaReporting</id>
     <formats>
-        <format>dir</format>
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
@@ -55,19 +53,17 @@
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>
-        <file>
-            <source>${basedir}/src/main/coberturaScripts/cobertura.properties</source>
-            <outputDirectory>/</outputDirectory>
-            <filtered>true</filtered>
-        </file>
     </files>
     <dependencySets>
         <dependencySet>
             <unpack>false</unpack>
             <outputDirectory>/antjars</outputDirectory>
-            <scope>compile</scope>
+            <scope>test</scope>
             <includes>
                 <include>net.sourceforge.cobertura:cobertura</include>
+                <include>oro:oro</include>
+                <include>asm:asm*</include>
+                <include>log4j:log4j</include>
             </includes>
             <useTransitiveDependencies>true</useTransitiveDependencies>
             <useTransitiveFiltering>true</useTransitiveFiltering>
