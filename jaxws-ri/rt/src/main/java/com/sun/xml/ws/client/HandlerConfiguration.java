@@ -69,7 +69,6 @@ public class HandlerConfiguration {
     private final List<LogicalHandler> logicalHandlers;
     private final List<SOAPHandler> soapHandlers;
     private final List<MessageHandler> messageHandlers;
-    // In round 2 of this change, this becomes unmodifiable
     private final Set<QName> handlerKnownHeaders;
 
     /**
@@ -82,7 +81,7 @@ public class HandlerConfiguration {
         logicalHandlers = new ArrayList<LogicalHandler>();
         soapHandlers = new ArrayList<SOAPHandler>();
         messageHandlers = new ArrayList<MessageHandler>();
-        handlerKnownHeaders = new HashSet<QName>();
+        Set<QName> modHandlerKnownHeaders = new HashSet<QName>();
 
         for (Handler handler : handlerChain) {
             if (handler instanceof LogicalHandler) {
@@ -91,19 +90,21 @@ public class HandlerConfiguration {
                 soapHandlers.add((SOAPHandler) handler);
                 Set<QName> headers = ((SOAPHandler<?>) handler).getHeaders();
                 if (headers != null) {
-                    handlerKnownHeaders.addAll(headers);
+                    modHandlerKnownHeaders.addAll(headers);
                 }
             } else if (handler instanceof MessageHandler) {
                 messageHandlers.add((MessageHandler) handler);
                 Set<QName> headers = ((MessageHandler<?>) handler).getHeaders();
                 if (headers != null) {
-                    handlerKnownHeaders.addAll(headers);
+                    modHandlerKnownHeaders.addAll(headers);
                 }
             }else {
                 throw new HandlerException("handler.not.valid.type",
                     handler.getClass());
             }
         }
+        
+        handlerKnownHeaders = Collections.unmodifiableSet(modHandlerKnownHeaders);
     }
 
     /**

@@ -59,6 +59,7 @@ import javax.xml.ws.soap.AddressingFeature;
 import javax.xml.ws.handler.Handler;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
@@ -85,6 +86,9 @@ public abstract class BindingImpl implements WSBinding {
 
     //This is reset when ever Binding.setHandlerChain() or SOAPBinding.setRoles() is called.
     private HandlerConfiguration handlerConfig;
+    private final Set<QName> addedHeaders = new HashSet<QName>();
+    private final Set<QName> knownHeaders = new HashSet<QName>();
+    private final Set<QName> unmodKnownHeaders = Collections.unmodifiableSet(knownHeaders);
     private final BindingID bindingId;
     // Features that are set(enabled/disabled) on the binding
     protected final WebServiceFeatureList features;
@@ -104,6 +108,8 @@ public abstract class BindingImpl implements WSBinding {
     protected BindingImpl(BindingID bindingId, WebServiceFeature ... features) {
         this.bindingId = bindingId;
         handlerConfig = new HandlerConfiguration(Collections.<String>emptySet(), Collections.<Handler>emptyList());
+        if (handlerConfig.getHandlerKnownHeaders() != null)
+            knownHeaders.addAll(handlerConfig.getHandlerKnownHeaders());
         this.features = new WebServiceFeatureList(features);
         this.features.validate();
     }
@@ -120,20 +126,23 @@ public abstract class BindingImpl implements WSBinding {
 
     protected void setHandlerConfig(HandlerConfiguration handlerConfig) {
         this.handlerConfig = handlerConfig;
+        knownHeaders.clear();
+        knownHeaders.addAll(addedHeaders);
+        if (handlerConfig != null && handlerConfig.getHandlerKnownHeaders() != null)
+            knownHeaders.addAll(handlerConfig.getHandlerKnownHeaders());
     }
 
     public void setMode(@NotNull Service.Mode mode) {
         this.serviceMode = mode;
     }
 
-    // This method will soon change to return unmodifiable set
-    // Downstream uses to add headers should move to using addKnownHeader()
     public Set<QName> getKnownHeaders() {
-    	return handlerConfig.getHandlerKnownHeaders();
+    	return unmodKnownHeaders;
     }
     
     public boolean addKnownHeader(QName headerQName) {
-        return getKnownHeaders().add(headerQName);
+        addedHeaders.add(headerQName);
+        return knownHeaders.add(headerQName);
     }
     
     public
