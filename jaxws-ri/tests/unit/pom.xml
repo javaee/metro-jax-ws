@@ -98,24 +98,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>prepare-endorsed</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${endorsed.dir}</outputDirectory>
-                            <silent>false</silent>
-                            <includeArtifactIds>jaxb-api,saaj-api,jaxws-api</includeArtifactIds>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.glassfish.metro</groupId>
                 <artifactId>harness-maven-plugin</artifactId>
                 <executions>
@@ -264,8 +246,67 @@
                 <dependency>
                     <groupId>com.sun.org.apache.xml.internal</groupId>
                     <artifactId>resolver</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>javax.mail</groupId>
+                    <artifactId>mail</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>eclipselink</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>commonj.sdo</groupId>
+                    <artifactId>commonj.sdo</artifactId>
+                    <scope>provided</scope>
                 </dependency>
             </dependencies>
+
+            <properties>
+                <libraries.dir>target/dependencies</libraries.dir>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>prepare-dependencies</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${libraries.dir}</outputDirectory>
+                                    <excludeArtifactIds>jaxb-api,saaj-api,jaxws-api</excludeArtifactIds>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.glassfish.metro</groupId>
+                        <artifactId>harness-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>jaxws-unit</id>
+                                <configuration>
+                                    <vmArgs>
+                                        <vmArg>-Dlibraries.dir=${libraries.dir}</vmArg>
+                                    </vmArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
         </profile>
 
         <profile>
