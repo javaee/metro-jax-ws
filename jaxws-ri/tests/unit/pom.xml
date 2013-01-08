@@ -98,6 +98,24 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prepare-endorsed</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${endorsed.dir}</outputDirectory>
+                            <silent>false</silent>
+                            <includeArtifactIds>jaxb-api,saaj-api,jaxws-api</includeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.glassfish.metro</groupId>
                 <artifactId>harness-maven-plugin</artifactId>
                 <executions>
@@ -106,6 +124,12 @@
                         <goals>
                             <goal>ws-test</goal>
                         </goals>
+                        <configuration>
+                            <endorsedDir>${endorsed.dir}</endorsedDir>
+                            <args>
+                                <arg>-cp:jaxws ${project.basedir}/../..</arg>
+                            </args>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -242,39 +266,6 @@
                     <artifactId>resolver</artifactId>
                 </dependency>
             </dependencies>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>prepare-endorsed</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${endorsed.dir}</outputDirectory>
-                                    <silent>false</silent>
-                                    <includeArtifactIds>jaxb-api,saaj-api,jaxws-api</includeArtifactIds>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.glassfish.metro</groupId>
-                        <artifactId>harness-maven-plugin</artifactId>
-                        <configuration>
-                            <endorsedDir>${endorsed.dir}</endorsedDir>
-                            <args>
-                                <arg>-cp:jaxws ${project.basedir}/../..</arg>
-                            </args>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
 
         <profile>
