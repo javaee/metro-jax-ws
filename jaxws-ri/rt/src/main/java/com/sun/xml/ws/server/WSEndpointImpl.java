@@ -332,37 +332,34 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
             request.addSatellite(wsdlProperties);
 
             Fiber fiber = engine.createFiber();
+            fiber.setDeliverThrowableInPacket(true);
             if (interceptor != null) {
                 fiber.addInterceptor(interceptor);
             }
             final Tube tube = tubePool.take();
             Fiber.CompletionCallback cbak = new Fiber.CompletionCallback() {
                 public void onCompletion(@NotNull Packet response) {
-                    tubePool.recycle(tube);
+                    ThrowableContainerPropertySet tc = response.getSatellite(ThrowableContainerPropertySet.class);
+                    if (tc == null) {
+                        // Only recycle tubes in non-exception path as some Tubes may be
+                        // in invalid state following exception
+                        tubePool.recycle(tube);
+                    }
+                    
                     if (callback != null) {
+                        if (tc != null) {
+                            Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
+                                    soapVersion, null, tc.getThrowable());
+                            response.setMessage(faultMsg);
+                        }
                         callback.onCompletion(response);
                     }
                 }
 
                 public void onCompletion(@NotNull Throwable error) {
-                    // let's not reuse tubes as they might be in a wrong state,
-                    // so not
-                    // calling tubePool.recycle()
-                    // Convert all runtime exceptions to Packet so that
-                    // transport doesn't
-                    // have to worry about converting to wire message
-                    // TODO XML/HTTP binding
-                    if (callback != null) {
-                        Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
-                                soapVersion, null, error);
-                        Packet response = request.createServerResponse(faultMsg,
-                                request.endpoint.getPort(), null,
-                                request.endpoint.getBinding());
-                        
-                        // Pass throwable in property set for interested containers
-                        response.addSatellite(new ThrowableContainerPropertySet(error));
-                        callback.onCompletion(response);
-                    }
+                    // will never be called now that we are using
+                    // fiber.setDeliverThrowableInPacket(true);
+                    throw new IllegalStateException();
                 }
             };
 
