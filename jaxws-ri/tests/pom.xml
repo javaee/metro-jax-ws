@@ -129,6 +129,17 @@
             </modules>
         </profile>
         <profile>
+            <id>all-tests</id>
+            <activation>
+                <property>
+                    <name>alltests</name>
+                </property>
+            </activation>
+            <modules>
+                <module>unit</module>
+            </modules>
+        </profile>
+        <profile>
             <id>coverage</id>
             <activation>
                 <!--<activeByDefault>true</activeByDefault>-->

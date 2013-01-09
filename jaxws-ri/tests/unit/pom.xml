@@ -136,18 +136,10 @@
                     <plugin>
                         <groupId>org.glassfish.metro</groupId>
                         <artifactId>harness-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>jaxws-unit</id>
-                                <goals>
-                                    <goal>ws-test</goal>
-                                </goals>
-                                <configuration>
-                                    <imageUrl>${jaxwsri.hudson.url}</imageUrl>
-                                    <transportUrl>${hudson.build.id}/artifact/jaxws-ri/transports/local/target/jaxws-local-transport.jar</transportUrl>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <configuration>
+                            <imageUrl>${jaxwsri.hudson.url}</imageUrl>
+                            <transportUrl>${hudson.build.id}/artifact/jaxws-ri/transports/local/target/jaxws-local-transport.jar</transportUrl>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -303,20 +295,14 @@
                     <plugin>
                         <groupId>org.glassfish.metro</groupId>
                         <artifactId>harness-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>jaxws-unit</id>
-                                <configuration>
-                                    <vmArgs>
-                                        <vmArg>-Dlibraries.dir=${libraries.dir}</vmArg>
-                                    </vmArgs>
-                                </configuration>
-                            </execution>
-                        </executions>
+                        <configuration>
+                            <vmArgs>
+                                <vmArg>-Dlibraries.dir=${libraries.dir}</vmArg>
+                            </vmArgs>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
-
         </profile>
 
         <profile>
