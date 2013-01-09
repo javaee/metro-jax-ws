@@ -168,14 +168,14 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>jaxws-unit</artifactId>
             <version>${project.version}</version>
             <classifier>cobertura</classifier>
             <type>ser</type>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 
