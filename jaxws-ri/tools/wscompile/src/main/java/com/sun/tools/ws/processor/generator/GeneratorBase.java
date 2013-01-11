@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -78,8 +78,6 @@ import java.util.List;
 import javax.annotation.processing.Filer;
 import javax.tools.FileObject;
 
-import javax.tools.JavaFileManager;
-import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
 public abstract class GeneratorBase implements ModelVisitor {
@@ -113,28 +111,33 @@ public abstract class GeneratorBase implements ModelVisitor {
         }
     }
 
+    @Override
     public void visit(Model model) throws Exception {
         for (Service service : model.getServices()) {
             service.accept(this);
         }
     }
 
+    @Override
     public void visit(Service service) throws Exception {
         for (Port port : service.getPorts()) {
             port.accept(this);
         }
     }
 
+    @Override
     public void visit(Port port) throws Exception {
         for (Operation operation : port.getOperations()) {
             operation.accept(this);
         }
     }
 
+    @Override
     public void visit(Operation operation) throws Exception {
         operation.getRequest().accept(this);
-        if (operation.getResponse() != null)
+        if (operation.getResponse() != null) {
             operation.getResponse().accept(this);
+        }
         Iterator faults = operation.getFaultsSet().iterator();
         if (faults != null) {
             Fault fault;
@@ -145,21 +148,20 @@ public abstract class GeneratorBase implements ModelVisitor {
         }
     }
 
-    public void visit(Parameter param) throws Exception {
-    }
+    @Override
+    public void visit(Parameter param) throws Exception {}
 
-    public void visit(Block block) throws Exception {
-    }
+    @Override
+    public void visit(Block block) throws Exception {}
 
-    public void visit(Response response) throws Exception {
-    }
+    @Override
+    public void visit(Response response) throws Exception {}
 
+    @Override
+    public void visit(Request request) throws Exception {}
 
-    public void visit(Request request) throws Exception {
-    }
-
-    public void visit(Fault fault) throws Exception {
-    }
+    @Override
+    public void visit(Fault fault) throws Exception {}
 
     public List<String> getJAXWSClassComment(){
         return getJAXWSClassComment(targetVersion);
@@ -179,8 +181,9 @@ public abstract class GeneratorBase implements ModelVisitor {
             cls = cm._class(className, type);
         } catch (JClassAlreadyExistsException e){
             cls = cm._getClass(className);
-            if(cls == null)
+            if (cls == null) {
                 throw e;
+            }
         }
         return cls;
     }
@@ -198,8 +201,9 @@ public abstract class GeneratorBase implements ModelVisitor {
 
     protected void writeHandlerConfig(String className, JDefinedClass cls, WsimportOptions options) {
         Element e = options.getHandlerChainConfiguration();
-        if(e == null)
+        if (e == null) {
             return;
+        }
         JAnnotationUse handlerChainAnn = cls.annotate(cm.ref(HandlerChain.class));
         NodeList nl = e.getElementsByTagNameNS(
             "http://java.sun.com/xml/ns/javaee", "handler-chain");

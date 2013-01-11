@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -76,7 +76,6 @@ import com.sun.xml.ws.util.ServiceFinder;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -115,8 +114,9 @@ public class WSDLParser {
         if (forest == null) {
             forest = new MetadataFinder(new WSDLInternalizationLogic(), options, errReceiver);
             forest.parseWSDL();
-            if (forest.isMexMetadata)
+            if (forest.isMexMetadata) {
                 errReceiver.reset();
+            }
         }
         this.forest = forest;
         // register handlers for default extensions
@@ -161,7 +161,7 @@ public class WSDLParser {
             Document root = forest.parse(value, false);
             if(root==null)       continue;   // error must have been reported
             Element binding = root.getDocumentElement();
-            if (!fixNull(binding.getNamespaceURI()).equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS)
+            if (!Internalizer.fixNull(binding.getNamespaceURI()).equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS)
                     || !binding.getLocalName().equals("bindings")){
                     errReceiver.error(forest.locatorTable.getStartLocation(binding), WsdlMessages.PARSER_NOT_A_BINDING_FILE(
                         binding.getNamespaceURI(),
@@ -177,11 +177,6 @@ public class WSDLParser {
 
         }
         return buildWSDLDocument();
-    }
-
-    private String fixNull(String s) {
-        if(s==null) return "";
-        else        return s;
     }
 
     public MetadataFinder getDOMForest() {
@@ -220,13 +215,6 @@ public class WSDLParser {
 
         new Internalizer(forest, options, errReceiver).transform();
 
-        //print the wsdl
-//        try{
-//            forest.dump(System.out);
-//        }catch(IOException e){
-//            e.printStackTrace();
-//        }
-
         Definitions definitions = parseDefinitionsNoImport(context, root);
         if(definitions == null){
             Locator locator = forest.locatorTable.getStartLocation(root.getDocumentElement());
@@ -238,20 +226,6 @@ public class WSDLParser {
         return definitions;
     }
 
-    private void processMexDocs(TWSDLParserContextImpl context){
-        for(String location : forest.listSystemIDs()){
-            if (!context.getDocument().isImportedDocument(location)){
-                Document doc = forest.get(location);
-                if(doc == null)
-                    continue;
-                Definitions importedDefinitions = parseDefinitionsNoImport(context, doc);
-                if(importedDefinitions == null)
-                    continue;
-                context.getDocument().addImportedEntity(importedDefinitions);
-                context.getDocument().addImportedDocument(location);
-            }
-        }
-    }
     private void processImports(TWSDLParserContextImpl context) {
         for(String location : forest.getExternalReferences()){
             if (!context.getDocument().isImportedDocument(location)){
@@ -537,10 +511,10 @@ public class WSDLParser {
 
                     // possible extensibility element -- must live outside the WSDL namespace
                     checkNotWsdlAttribute(e3);
-                    if (!handleExtension(context, input, e3, e2)) {
-                        // ignore the extensiblity attribute
-                        // TODO throw a WARNING
-                    }
+//                    if (!handleExtension(context, input, e3, e2)) {
+//                        // ignore the extensiblity attribute
+//                        // TODO throw a WARNING
+//                    }
                 }
 
                 // verify that there is at most one child element and it is a documentation element
@@ -599,10 +573,10 @@ public class WSDLParser {
 
                     // possible extensibility element -- must live outside the WSDL namespace
                     checkNotWsdlAttribute(e3);
-                    if (!handleExtension(context, output, e3, e2)) {
-                        // ignore the extensiblity attribute
-                        // TODO throw a WARNING
-                    }
+//                    if (!handleExtension(context, output, e3, e2)) {
+//                        // ignore the extensiblity attribute
+//                        // TODO throw a WARNING
+//                    }
                 }
 
                 // verify that there is at most one child element and it is a documentation element
@@ -652,10 +626,10 @@ public class WSDLParser {
 
                     // possible extensibility element -- must live outside the WSDL namespace
                     checkNotWsdlAttribute(e3);
-                    if (!handleExtension(context, fault, e3, e2)) {
-                        // ignore the extensiblity attribute
-                        // TODO throw a WARNING
-                    }
+//                    if (!handleExtension(context, fault, e3, e2)) {
+//                        // ignore the extensiblity attribute
+//                        // TODO throw a WARNING
+//                    }
                 }
 
                 // verify that there is at most one child element and it is a documentation element
@@ -797,7 +771,6 @@ public class WSDLParser {
                 }
 
                 /* Here we check for the use scenario */
-                Iterator itere2 = XmlUtil.getAllChildren(e2);
                 context.push();
                 context.registerNamespaces(e2);
                 BindingInput input = new BindingInput(forest.locatorTable.getStartLocation(e2));
@@ -1001,8 +974,9 @@ public class WSDLParser {
                     errReceiver.error(forest.locatorTable.getStartLocation(e), WsdlMessages.PARSING_ONLY_ONE_DOCUMENTATION_ALLOWED(e.getLocalName()));
                 }
                 gotDocumentation = true;
-                if(service.getDocumentation() == null)
+                if (service.getDocumentation() == null) {
                     service.setDocumentation(getDocumentationFor(e2));
+                }
             } else if (XmlUtil.matchesTagNS(e2, WSDLConstants.QNAME_PORT)) {
                 Port port = parsePort(context, definitions, e2);
                 service.add(port);
@@ -1039,16 +1013,18 @@ public class WSDLParser {
 
         for (Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();) {
             Element e2 = Util.nextElement(iter);
-            if (e2 == null)
+            if (e2 == null) {
                 break;
+            }
 
             if (XmlUtil.matchesTagNS(e2, WSDLConstants.QNAME_DOCUMENTATION)) {
                 if (gotDocumentation) {
                     errReceiver.error(forest.locatorTable.getStartLocation(e), WsdlMessages.PARSING_ONLY_ONE_DOCUMENTATION_ALLOWED(e.getLocalName()));
                 }
                 gotDocumentation = true;
-                if(port.getDocumentation() == null)
+                if (port.getDocumentation() == null) {
                     port.setDocumentation(getDocumentationFor(e2));
+                }
             } else {
                 // possible extensibility element -- must live outside the WSDL namespace
                 checkNotWsdlElement(e2);
@@ -1066,8 +1042,9 @@ public class WSDLParser {
     private void validateSchemaImports(Element typesElement){
         for (Iterator iter = XmlUtil.getAllChildren(typesElement); iter.hasNext();) {
             Element e = Util.nextElement(iter);
-            if (e == null)
+            if (e == null) {
                 break;
+            }
             if (XmlUtil.matchesTagNS(e, SchemaConstants.QNAME_IMPORT)) {
                 errReceiver.warning(forest.locatorTable.getStartLocation(e), WsdlMessages.WARNING_WSI_R_2003());
             }else{
@@ -1096,32 +1073,34 @@ public class WSDLParser {
         }
     }
 
-    private boolean handleExtension(
-        TWSDLParserContextImpl context,
-        TWSDLExtensible entity,
-        Node n,
-        Element e) {
-        TWSDLExtensionHandler h =
-            (TWSDLExtensionHandler) extensionHandlers.get(n.getNamespaceURI());
-        if (h == null) {
-            context.fireIgnoringExtension(e, (Entity) entity);
-            errReceiver.warning(forest.locatorTable.getStartLocation(e), WsdlMessages.PARSING_UNKNOWN_EXTENSIBILITY_ELEMENT_OR_ATTRIBUTE(n.getLocalName(), n.getNamespaceURI()));
-            return false;
-        } else {
-            return h.doHandleExtension(context, entity, e);
-        }
-    }
+//    private boolean handleExtension(
+//        TWSDLParserContextImpl context,
+//        TWSDLExtensible entity,
+//        Node n,
+//        Element e) {
+//        TWSDLExtensionHandler h =
+//            (TWSDLExtensionHandler) extensionHandlers.get(n.getNamespaceURI());
+//        if (h == null) {
+//            context.fireIgnoringExtension(e, (Entity) entity);
+//            errReceiver.warning(forest.locatorTable.getStartLocation(e), WsdlMessages.PARSING_UNKNOWN_EXTENSIBILITY_ELEMENT_OR_ATTRIBUTE(n.getLocalName(), n.getNamespaceURI()));
+//            return false;
+//        } else {
+//            return h.doHandleExtension(context, entity, e);
+//        }
+//    }
 
     private void checkNotWsdlElement(Element e) {
         // possible extensibility element -- must live outside the WSDL namespace
-        if (e.getNamespaceURI() != null && e.getNamespaceURI().equals(Constants.NS_WSDL))
+        if (e.getNamespaceURI() != null && e.getNamespaceURI().equals(Constants.NS_WSDL)) {
             errReceiver.error(forest.locatorTable.getStartLocation(e), WsdlMessages.PARSING_INVALID_WSDL_ELEMENT(e.getTagName()));
+        }
     }
 
     private void checkNotWsdlAttribute(Attr a) {
         // possible extensibility element -- must live outside the WSDL namespace
-        if (a.getNamespaceURI().equals(Constants.NS_WSDL))
+        if (a.getNamespaceURI().equals(Constants.NS_WSDL)) {
             errReceiver.error(forest.locatorTable.getStartLocation(a.getOwnerElement()), WsdlMessages.PARSING_INVALID_WSDL_ELEMENT(a.getLocalName()));
+        }
     }
 
     private void checkNotWsdlRequired(Element e) {

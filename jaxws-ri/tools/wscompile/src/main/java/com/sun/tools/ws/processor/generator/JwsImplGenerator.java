@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -101,7 +101,7 @@ public final class JwsImplGenerator extends GeneratorBase {
 		jwsImplGenerator.doGeneration();
 		// print a warning message while implFiles.size() is zero
 		if (jwsImplGenerator.implFiles.isEmpty()) {
-			StringBuffer msg = new StringBuffer();
+			StringBuilder msg = new StringBuilder();
 			if (options.implServiceName != null)
 				msg.append("serviceName=[").append(options.implServiceName).append("] ");
 			if (options.implPortName != null)
@@ -351,25 +351,30 @@ public final class JwsImplGenerator extends GeneratorBase {
 		webServiceAnn.param("wsdlLocation", wsdlLocation);
 		webServiceAnn.param("endpointInterface", port.getJavaInterface().getName());
 	}
-	//CR373098 To transform the java class name as validate.
-  private String transToValidJavaIdentifier(String s) {
-    if (s == null) return null;
-    final int len = s.length();
-    StringBuffer retSB = new StringBuffer();
-    if (len == 0 || !Character.isJavaIdentifierStart(s.charAt(0)))
-      retSB.append("J"); //update to a default start char
-    else
-    	retSB.append(s.charAt(0));
-    
-    for (int i = 1; i < len; i++) {
-      if (!Character.isJavaIdentifierPart(s.charAt(i)))
-        ;  //delete it if it is illegal //TODO: It might conflict "a-b" vs. "ab" 
-      else
-      	retSB.append(s.charAt(i));
-    }
-    return retSB.toString();
-  }
-  
+        
+        //CR373098 To transform the java class name as validate.
+        private String transToValidJavaIdentifier(String s) {
+            if (s == null) {
+                return null;
+            }
+            final int len = s.length();
+            StringBuilder retSB = new StringBuilder();
+            if (len == 0 || !Character.isJavaIdentifierStart(s.charAt(0))) {
+                retSB.append("J"); //update to a default start char
+            } else {
+                retSB.append(s.charAt(0));
+            }
+
+            for (int i = 1; i < len; i++) {
+                if (!Character.isJavaIdentifierPart(s.charAt(i)))
+                  ; //delete it if it is illegal //TODO: It might conflict "a-b" vs. "ab" 
+                else {
+                    retSB.append(s.charAt(i));
+                }
+            }
+            return retSB.toString();
+        }
+
 	private String makePackageQualified(String s) {
 		s = transToValidJavaIdentifier(s);
 		if (options.defaultPackage != null && !options.defaultPackage.equals("")) {
@@ -493,14 +498,14 @@ public final class JwsImplGenerator extends GeneratorBase {
    *          retrieved from WSDL
    * @return Standard BindingType URI defined by JAX-WS 2.0 specification.
    */
-  private String translate(String transportURI)
-  {
-    String translatedBindingId = TRANSLATION_MAP.get(transportURI);
-    if (translatedBindingId == null)
-      translatedBindingId = transportURI;
-
-    return translatedBindingId;
-  }
+//  private String translate(String transportURI)
+//  {
+//    String translatedBindingId = TRANSLATION_MAP.get(transportURI);
+//    if (translatedBindingId == null)
+//      translatedBindingId = transportURI;
+//
+//    return translatedBindingId;
+//  }
 
 	/*****************************************************************************
 	 * Inner classes definition

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -155,6 +155,7 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
                 serviceImplName = null;
                 postProcessWebService(webService, e);
                 serviceImplName = null;
+                break;
             }
             default:
                 break;
@@ -386,6 +387,7 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
                 }
                 for (TypeMirror superType : element.getInterfaces())
                     processMethods((TypeElement) ((DeclaredType) superType).asElement());
+                break;
             }
             case CLASS: {
                 builder.log("ProcessedMethods Class: " + element);
@@ -402,6 +404,7 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
                 if (!superclass.getKind().equals(TypeKind.NONE)) {
                     processMethods((TypeElement) ((DeclaredType) superclass).asElement());
                 }
+                break;
             }
             default:
                 break;

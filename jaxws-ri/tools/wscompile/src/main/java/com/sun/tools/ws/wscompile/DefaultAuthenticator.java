@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,6 +54,8 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Vivek Pandey
@@ -153,50 +155,68 @@ public class DefaultAuthenticator extends Authenticator {
     private void parseAuth() {
         errReceiver.info(new SAXParseException(WscompileMessages.WSIMPORT_READING_AUTH_FILE(authFile), null));
 
-        BufferedReader in;
+        BufferedReader in = null;
+        FileInputStream fi = null;
+        InputStreamReader is = null;
         try {
-            in = new BufferedReader(new InputStreamReader(new FileInputStream(authFile), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            error(new SAXParseException(e.getMessage(), null));
-            return;
-        } catch (FileNotFoundException e) {
-            error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_FILE_NOT_FOUND(authFile, defaultAuthfile), null, e));
-            return;
-        }
-        String text;
-        LocatorImpl locator = new LocatorImpl();
-        try {
-            int lineno = 1;
+            try {
+                fi = new FileInputStream(authFile);
+                is = new InputStreamReader(fi, "UTF-8");
+                in = new BufferedReader(is);
+            } catch (UnsupportedEncodingException e) {
+                error(new SAXParseException(e.getMessage(), null));
+                return;
+            } catch (FileNotFoundException e) {
+                error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_FILE_NOT_FOUND(authFile, defaultAuthfile), null, e));
+                return;
+            }
+            String text;
+            LocatorImpl locator = new LocatorImpl();
+            try {
+                int lineno = 1;
+                locator.setSystemId(authFile.getCanonicalPath());
+                while ((text = in.readLine()) != null) {
+                    locator.setLineNumber(lineno++);
+                    try {
+                        URL url = new URL(text);
+                        String authinfo = url.getUserInfo();
 
-            locator.setSystemId(authFile.getCanonicalPath());
+                        if (authinfo != null) {
+                            int i = authinfo.indexOf(':');
 
-            while ((text = in.readLine()) != null) {
-                locator.setLineNumber(lineno++);
-                try {
-                    URL url = new URL(text);
-                    String authinfo = url.getUserInfo();
-
-                    if (authinfo != null) {
-                        int i = authinfo.indexOf(':');
-
-                        if (i >= 0) {
-                            String user = authinfo.substring(0, i);
-                            String password = authinfo.substring(i + 1);
-                            authInfo.add(new AuthInfo(new URL(text), user, password));
+                            if (i >= 0) {
+                                String user = authinfo.substring(0, i);
+                                String password = authinfo.substring(i + 1);
+                                authInfo.add(new AuthInfo(new URL(text), user, password));
+                            } else {
+                                error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(url), locator));
+                            }
                         } else {
                             error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(url), locator));
                         }
-                    } else {
-                        error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(url), locator));
-                    }
 
-                } catch (NumberFormatException e) {
-                    error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(text), locator));
+                    } catch (NumberFormatException e) {
+                        error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(text), locator));
+                    }
                 }
+                in.close();
+            } catch (IOException e) {
+                error(new SAXParseException(WscompileMessages.WSIMPORT_FAILED_TO_PARSE(authFile,e.getMessage()), locator));
             }
-            in.close();
-        } catch (IOException e) {
-            error(new SAXParseException(WscompileMessages.WSIMPORT_FAILED_TO_PARSE(authFile,e.getMessage()), locator));
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+                if (is != null) {
+                    is.close();
+                }
+                if (fi != null) {
+                    fi.close();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(DefaultAuthenticator.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 

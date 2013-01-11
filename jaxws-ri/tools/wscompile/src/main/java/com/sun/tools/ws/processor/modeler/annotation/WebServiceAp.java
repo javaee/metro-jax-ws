@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -171,18 +171,18 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
             Class javacProcessingEnvironmentClass = Class.forName("com.sun.tools.javac.processing.JavacProcessingEnvironment", false, cl);
             if (javacProcessingEnvironmentClass.isInstance(processingEnv)) {
                 Method getContextMethod = javacProcessingEnvironmentClass.getDeclaredMethod("getContext");
-                Object context = getContextMethod.invoke(processingEnv);
+                Object tmpContext = getContextMethod.invoke(processingEnv);
                 Class optionsClass = Class.forName("com.sun.tools.javac.util.Options", false, cl);
                 Class contextClass = Class.forName("com.sun.tools.javac.util.Context", false, cl);
                 Method instanceMethod = optionsClass.getDeclaredMethod("instance", new Class[]{contextClass});
-                Object options = instanceMethod.invoke(null, context);
-                if (options != null) {
+                Object tmpOptions = instanceMethod.invoke(null, tmpContext);
+                if (tmpOptions != null) {
                     Method getMethod = optionsClass.getDeclaredMethod("get", new Class[]{String.class});
-                    Object result = getMethod.invoke(options, "-s"); // todo: we have to check for -d also
+                    Object result = getMethod.invoke(tmpOptions, "-s"); // todo: we have to check for -d also
                     if (result != null) {
                         classDir = (String) result;
                     }
-                    this.options.verbose = getMethod.invoke(options, "-verbose") != null;
+                    this.options.verbose = getMethod.invoke(tmpOptions, "-verbose") != null;
                 }
             }
         } catch (Exception e) {
@@ -209,7 +209,9 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
                 }
             }
         }
-        sourceDir = new File(classDir);
+        if (classDir != null) {
+            sourceDir = new File(classDir);
+        }
         return classDir;
     }
 
@@ -252,8 +254,9 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
         }
         if (!processedEndpoint) {
             if (isCommandLineInvocation) {
-                if (!ignoreNoWebServiceFoundWarning)
+                if (!ignoreNoWebServiceFoundWarning) {
                     processWarning(WebserviceapMessages.WEBSERVICEAP_NO_WEBSERVICE_ENDPOINT_FOUND());
+                }
             } else {
                 processError(WebserviceapMessages.WEBSERVICEAP_NO_WEBSERVICE_ENDPOINT_FOUND());
             }
@@ -370,10 +373,11 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
-        if (SourceVersion.latest().compareTo(SourceVersion.RELEASE_6) > 0)
+        if (SourceVersion.latest().compareTo(SourceVersion.RELEASE_6) > 0) {
             return SourceVersion.valueOf("RELEASE_7");
-        else
+        } else {
             return SourceVersion.RELEASE_6;
+        }
     }
 }
 

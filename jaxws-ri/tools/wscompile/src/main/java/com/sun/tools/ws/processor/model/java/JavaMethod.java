@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -101,14 +101,14 @@ public class JavaMethod {
     public void addParameter(JavaParameter param) {
         // verify that this member does not already exist
         if (hasParameter(param.getName())) {
-            if(options.isExtensionMode()){
+            if (options.isExtensionMode()) {
                 param.setName(getUniqueName(param.getName()));
-            }else{
+            } else {
                 Parameter duplicParam = getParameter(param.getName());
                 if(param.getParameter().isEmbedded()){
                     errorReceiver.error(param.getParameter().getLocator(), ModelMessages.MODEL_PARAMETER_NOTUNIQUE_WRAPPER(param.getName(), param.getParameter().getEntityName()));
                     errorReceiver.error(duplicParam.getLocator(), ModelMessages.MODEL_PARAMETER_NOTUNIQUE_WRAPPER(param.getName(), duplicParam.getEntityName()));                    
-                }else{
+                } else {
                     errorReceiver.error(param.getParameter().getLocator(), ModelMessages.MODEL_PARAMETER_NOTUNIQUE(param.getName(), param.getParameter().getEntityName()));
                     errorReceiver.error(duplicParam.getLocator(), ModelMessages.MODEL_PARAMETER_NOTUNIQUE(param.getName(), duplicParam.getEntityName()));
                 }
@@ -136,7 +136,7 @@ public class JavaMethod {
 
     private String getUniqueName(String param){
         int parmNum = 0;
-        while(hasParameter(param)){
+        while (hasParameter(param)) {
             param = param + Integer.toString(parmNum++);
         }
         return param;

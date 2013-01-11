@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -133,13 +133,13 @@ public class WsgenTool {
                 return false;
             }
         } catch (Options.WeAreDone done) {
-            usage((WsgenOptions) done.getOptions());
+            usage(done.getOptions());
         } catch (BadCommandLineException e) {
             if (e.getMessage() != null) {
                 System.out.println(e.getMessage());
                 System.out.println();
             }
-            usage((WsgenOptions) e.getOptions());
+            usage(e.getOptions());
             return false;
         } catch (AbortException e) {
             //error might have been reported
@@ -165,7 +165,13 @@ public class WsgenTool {
         }
     }
 
-
+    /**
+     *
+     * @param endpoint
+     * @param listener
+     * @return
+     * @throws BadCommandLineException
+     */
     public boolean buildModel(String endpoint, Listener listener) throws BadCommandLineException {
         final ErrorReceiverFilter errReceiver = new ErrorReceiverFilter(listener);
 
@@ -269,6 +275,7 @@ public class WsgenTool {
                             return result;
                         }
 
+                        @Override
                         public Result getWSDL(String suggestedFilename) {
                             File f = toFile(suggestedFilename);
                             wsdlFileName[0] = f;
@@ -283,10 +290,12 @@ public class WsgenTool {
                             return toResult(f);
                         }
 
+                        @Override
                         public Result getAbstractWSDL(Holder<String> filename) {
                             return toResult(toFile(filename.value));
                         }
 
+                        @Override
                         public Result getSchemaOutput(String namespace, Holder<String> filename) {
                             return getSchemaOutput(namespace, filename.value);
                         }
@@ -398,13 +407,17 @@ public class WsgenTool {
         }
     }
 
-    protected void usage(WsgenOptions options) {
+    protected void usage(Options options) {
         // Just don't see any point in passing WsgenOptions
         // BadCommandLineException also shouldn't have options
         if (options == null)
             options = this.options;
-        System.out.println(WscompileMessages.WSGEN_HELP("WSGEN", options.protocols, options.nonstdProtocols.keySet()));
-        System.out.println(WscompileMessages.WSGEN_USAGE_EXAMPLES());
+        if (options instanceof WsgenOptions) {
+            System.out.println(WscompileMessages.WSGEN_HELP("WSGEN", 
+                    ((WsgenOptions)options).protocols, 
+                    ((WsgenOptions)options).nonstdProtocols.keySet()));
+            System.out.println(WscompileMessages.WSGEN_USAGE_EXAMPLES());
+        }
     }
 
     class Listener extends WsimportListener {

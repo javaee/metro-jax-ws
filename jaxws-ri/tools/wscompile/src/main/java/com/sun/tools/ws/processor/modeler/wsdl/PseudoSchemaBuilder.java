@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -143,13 +143,15 @@ public class PseudoSchemaBuilder {
     }
 
     private void build() {
-        for(Iterator<Service> itr=wsdlDocument.getDefinitions().services(); itr.hasNext(); )
+        for(Iterator<Service> itr=wsdlDocument.getDefinitions().services(); itr.hasNext(); ) {
             build(itr.next());
+        }
     }
 
     private void build(Service service) {
-        for( Iterator<Port> itr=service.ports(); itr.hasNext(); )
+        for( Iterator<Port> itr=service.ports(); itr.hasNext(); ) {
             build(itr.next() );
+        }
     }
 
     private void build(Port port) {
@@ -208,7 +210,7 @@ public class PseudoSchemaBuilder {
             outputMessage = operation.getOutput().resolveMessage(wsdlDocument);
         if(outputMessage != null){
             List<MessagePart> allParts = new ArrayList<MessagePart>(outputMessage.getParts());
-            if(options.additionalHeaders) {
+            if(options != null && options.additionalHeaders) {
                 List<MessagePart> addtionalHeaderParts = wsdlModeler.getAdditionHeaderParts(bindingOperation, outputMessage, false);
                 allParts.addAll(addtionalHeaderParts);
             }

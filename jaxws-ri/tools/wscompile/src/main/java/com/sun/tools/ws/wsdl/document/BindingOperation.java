@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,7 +74,7 @@ public class BindingOperation extends Entity implements TWSDLExtensible {
 
     public String getUniqueKey() {
         if (_uniqueKey == null) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append(_name);
             sb.append(' ');
             if (_input != null) {
@@ -136,6 +136,7 @@ public class BindingOperation extends Entity implements TWSDLExtensible {
         return _faults;
     }
 
+    @Override
     public QName getElementName() {
         return WSDLConstants.QNAME_OPERATION;
     }
@@ -148,30 +149,37 @@ public class BindingOperation extends Entity implements TWSDLExtensible {
         _documentation = d;
     }
 
+    @Override
     public String getNameValue() {
         return getName();
     }
 
+    @Override
     public String getNamespaceURI() {
-        return parent.getNamespaceURI();
+        return (parent == null) ? null : parent.getNamespaceURI();
     }
 
+    @Override
     public QName getWSDLElementName() {
         return getElementName();
     }
 
+    @Override
     public void addExtension(TWSDLExtension e) {
         _helper.addExtension(e);
     }
 
+    @Override
     public Iterable<TWSDLExtension> extensions() {
         return _helper.extensions();
     }
 
+    @Override
     public TWSDLExtensible getParent() {
         return parent;
     }
 
+    @Override
     public void withAllSubEntitiesDo(EntityAction action) {
         if (_input != null) {
             action.perform(_input);
@@ -201,6 +209,7 @@ public class BindingOperation extends Entity implements TWSDLExtensible {
         visitor.postVisit(this);
     }
 
+    @Override
     public void validateThis() {
         if (_name == null) {
             failValidation("validation.missingRequiredAttribute", "name");
@@ -217,7 +226,7 @@ public class BindingOperation extends Entity implements TWSDLExtensible {
             if (_output != null) {
                 failValidation("validation.invalidSubEntity", "output");
             }
-            if (_faults != null && _faults.size() != 0) {
+            if (_faults != null && !_faults.isEmpty()) {
                 failValidation("validation.invalidSubEntity", "fault");
             }
         }

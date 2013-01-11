@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -85,6 +85,7 @@ public abstract class AbstractReferenceFinderImpl extends XMLFilterImpl {
      */
     protected abstract String findExternalResource( String nsURI, String localName, Attributes atts);
 
+    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts)
         throws SAXException {
         super.startElement(namespaceURI, localName, qName, atts);
@@ -94,16 +95,17 @@ public abstract class AbstractReferenceFinderImpl extends XMLFilterImpl {
 
         try {
             // absolutize URL.
-        	String lsi = locator.getSystemId();
-        	String ref;
-        	if (lsi.startsWith("jar:")) {
-        		int bangIdx = lsi.indexOf('!');
-        		if (bangIdx > 0) {
-        			ref = new URL(new URL(lsi), relativeRef).toString();
-        		} else
-        			ref = relativeRef;
-        	} else
-        		ref = new URI(lsi).resolve(new URI(relativeRef)).toString();
+            assert locator != null;
+            String lsi = locator.getSystemId();
+            String ref;
+            if (lsi.startsWith("jar:")) {
+                    int bangIdx = lsi.indexOf('!');
+                    if (bangIdx > 0) {
+                            ref = new URL(new URL(lsi), relativeRef).toString();
+                    } else
+                            ref = relativeRef;
+            } else
+                    ref = new URI(lsi).resolve(new URI(relativeRef)).toString();
 
             // then parse this schema as well,
             // but don't mark this document as a root.
@@ -127,6 +129,7 @@ public abstract class AbstractReferenceFinderImpl extends XMLFilterImpl {
 
     private Locator locator;
 
+    @Override
     public void setDocumentLocator(Locator locator) {
         super.setDocumentLocator(locator);
         this.locator = locator;

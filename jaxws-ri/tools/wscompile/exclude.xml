@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -85,6 +85,14 @@
     </Match>
 
     <!--
+    It is actually faster and more simple the way it is
+    -->
+    <Match>
+        <Class name="com.sun.tools.ws.processor.model.java.JavaMethod"/>
+        <Bug pattern="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
+    </Match>
+
+    <!--
      There is probably no use case those methods need to be invoked under security manager from untrusted code
      (hypothetically somewhere in GF?) - if it was, we would probably know. Fixing this warning can mean opening gate
      for attacker ...
@@ -97,6 +105,37 @@
             <Class name="com.sun.tools.ws.Invoker" />
         </Or>
         <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED" />
+    </Match>
+    
+    <!--
+     Not gonna change wrt backwards compatibility
+    -->
+    <Match>
+        <Or>
+            <Class name="com.sun.tools.ws.processor.model.java.JavaException"/>
+            <Class name="com.sun.tools.ws.wsdl.document.jaxws.Exception"/>
+        </Or>
+        <Bug pattern="NM_CLASS_NOT_EXCEPTION"/>
+    </Match>
+
+    <!-- Invalid -->
+    <Match>
+        <Or>
+            <Class name="com.sun.tools.ws.processor.modeler.wsdl.WSDLModelerBase$ProcessSOAPOperationInfo"/>
+            <Class name="com.sun.tools.ws.wsdl.framework.AbstractDocument"/>
+        </Or>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+    </Match>
+
+    <!-- As designed - hard to change wrt backwards compatibility-->
+    <Match>
+        <Or>
+            <Package name="com.sun.tools.ws.processor.modeler.annotation"/>
+            <Class name="com.sun.tools.ws.wsdl.parser.MemberSubmissionAddressingExtensionHandler"/>
+            <Class name="com.sun.tools.ws.wsdl.parser.W3CAddressingMetadataExtensionHandler"/>
+            <Class name="com.sun.tools.ws.wsdl.parser.JAXWSBindingExtensionHandler"/>
+        </Or>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
 
 </FindBugsFilter>

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -115,26 +115,34 @@ public class WSDLFetcher {
             }
         }, docLocator);
 
-        //XMLInputFactory readerFactory = XMLInputFactory.newInstance();
-        //XMLStreamReader xsr = readerFactory.createXMLStreamReader(new DOMSource(forest.get(rootWsdl)));
-
-        XMLStreamReader xsr = SourceReaderFactory.createSourceReader(new DOMSource(forest.get(doc)), false);
-        XMLOutputFactory writerfactory = XMLOutputFactory.newInstance();
-        String resolvedRootWsdl = docLocator.getLocationFor(null, doc);
-        File outFile = new File(destDir, resolvedRootWsdl);
-        OutputStream os = new FileOutputStream(outFile);
-        if(options.verbose) {
-            listener.message(WscompileMessages.WSIMPORT_DOCUMENT_DOWNLOAD(doc,outFile));
+        XMLStreamReader xsr = null;
+        XMLStreamWriter xsw = null;
+        OutputStream os = null;
+        String resolvedRootWsdl = null;
+        try {
+            XMLOutputFactory writerfactory;
+            xsr = SourceReaderFactory.createSourceReader(new DOMSource(forest.get(doc)), false);
+            writerfactory = XMLOutputFactory.newInstance();
+            resolvedRootWsdl = docLocator.getLocationFor(null, doc);
+            File outFile = new File(destDir, resolvedRootWsdl);
+            os = new FileOutputStream(outFile);
+            if(options.verbose) {
+                listener.message(WscompileMessages.WSIMPORT_DOCUMENT_DOWNLOAD(doc,outFile));
+            }
+            xsw = writerfactory.createXMLStreamWriter(os);
+            //DOMForest eats away the whitespace loosing all the indentation, so write it through
+            // indenting writer for better readability of fetched documents 
+            IndentingXMLStreamWriter indentingWriter = new IndentingXMLStreamWriter(xsw);
+            wsdlPatcher.bridge(xsr, indentingWriter);
+            options.addGeneratedFile(outFile);
+        } finally {
+            try {
+                if (xsr != null) {xsr.close();}
+                if (xsw != null) {xsw.close();}
+            } finally {
+                if (os != null) {os.close();}
+            }
         }
-        XMLStreamWriter xsw = writerfactory.createXMLStreamWriter(os);
-        //DOMForest eats away the whitespace loosing all the indentation, so write it through
-        // indenting writer for better readability of fetched documents 
-        IndentingXMLStreamWriter indentingWriter = new IndentingXMLStreamWriter(xsw);
-        wsdlPatcher.bridge(xsr, indentingWriter);
-        xsr.close();
-        xsw.close();
-        os.close();
-        options.addGeneratedFile(outFile);
         return resolvedRootWsdl;
 
 
@@ -151,9 +159,9 @@ public class WSDLFetcher {
         if(!rootWsdlFileName.endsWith(WSDL_FILE_EXTENSION)) {
             Document rootWsdlDoc =  forest.get(rootWsdl);
             NodeList serviceNodes = rootWsdlDoc.getElementsByTagNameNS(WSDLConstants.QNAME_SERVICE.getNamespaceURI(),WSDLConstants.QNAME_SERVICE.getLocalPart());
-            if(serviceNodes.getLength() == 0)
+            if (serviceNodes.getLength() == 0) {
                 rootWsdlName = "Service";
-            else {
+            } else {
                 Node serviceNode = serviceNodes.item(0);
                 String serviceName = ((Element)serviceNode).getAttribute( WSDLConstants.ATTR_NAME);
                 rootWsdlName = serviceName;
@@ -192,8 +200,8 @@ public class WSDLFetcher {
     }
 
     private DocumentLocationResolver createDocResolver(final String baseWsdl, final DOMForest forest, final Map<String,String> documentMap) {
-
         return new DocumentLocationResolver() {
+            @Override
             public String getLocationFor(String namespaceURI, String systemId) {
                 try {
                     URL reference = new URL(new URL(baseWsdl),systemId);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,10 +51,8 @@ import com.sun.tools.ws.processor.model.jaxb.JAXBTypeAndAnnotation;
 import com.sun.tools.ws.wscompile.ErrorReceiver;
 import com.sun.tools.ws.wscompile.Options;
 import com.sun.tools.ws.wscompile.WsimportOptions;
-import com.sun.tools.ws.wscompile.AbortException;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.tools.ws.wsdl.document.PortType;
-import com.sun.tools.ws.wsdl.document.Kinds;
 import com.sun.tools.ws.resources.GeneratorMessages;
 
 import javax.jws.WebMethod;
@@ -70,7 +68,6 @@ import java.util.List;
 import org.xml.sax.Locator;
 
 public class SeiGenerator extends GeneratorBase {
-    private String serviceNS;
     private TJavaGeneratorExtension extension;
     private List<TJavaGeneratorExtension> extensionHandlers;
 
@@ -91,10 +88,11 @@ public class SeiGenerator extends GeneratorBase {
            register(new W3CAddressingJavaGeneratorExtension());
         }
         
-        for (TJavaGeneratorExtension j : extensions)
+        for (TJavaGeneratorExtension j : extensions) {
             register(j);
+        }
 
-        this.extension = new JavaGeneratorExtensionFacade(extensionHandlers.toArray(new TJavaGeneratorExtension[0]));
+        this.extension = new JavaGeneratorExtensionFacade(extensionHandlers.toArray(new TJavaGeneratorExtension[extensionHandlers.size()]));
     }
 
     private void write(Port port) {
@@ -107,7 +105,7 @@ public class SeiGenerator extends GeneratorBase {
         }
 
 
-        JDefinedClass cls = null;
+        JDefinedClass cls;
         try {
             cls = getClass(className, ClassType.INTERFACE);
         } catch (JClassAlreadyExistsException e) {
@@ -117,16 +115,18 @@ public class SeiGenerator extends GeneratorBase {
             Locator loc = null;
             if(portTypeName != null){
                 PortType pt = port.portTypes.get(portTypeName);
-                if(pt!=null)
+                if (pt!=null) {
                     loc = pt.getLocator();
+                }
             }
             receiver.error(loc, GeneratorMessages.GENERATOR_SEI_CLASS_ALREADY_EXIST(intf.getName(), portTypeName));
             return;            
         }
         // If the class has methods it has already been defined
         // so skip it.
-        if (!cls.methods().isEmpty())
+        if (!cls.methods().isEmpty()) {
             return;
+        }
 
         //write class comment - JAXWS warning
         JDocComment comment = cls.javadoc();
@@ -153,8 +153,9 @@ public class SeiGenerator extends GeneratorBase {
         writeSOAPBinding(port, cls);
 
         //@XmlSeeAlso
-        if(options.target.isLaterThan(Options.Target.V2_1))
+        if (options.target.isLaterThan(Options.Target.V2_1)) {
             writeXmlSeeAlso(cls);
+        }
 
         for (Operation operation: port.getOperations()) {
             JavaMethod method = operation.getJavaMethod();
@@ -174,8 +175,9 @@ public class SeiGenerator extends GeneratorBase {
                 JCommentPart ret = methodDoc.addReturn();
                 ret.add("returns "+retType.getName());
             }
-            if(methodJavaDoc != null)
+            if (methodJavaDoc != null) {
                 methodDoc.add(methodJavaDoc);
+            }
 
             writeWebMethod(operation, m);
             JClass holder = cm.ref(Holder.class);
@@ -211,8 +213,9 @@ public class SeiGenerator extends GeneratorBase {
             List<JClass> objectFactories = model.getJAXBModel().getS2JJAXBModel().getAllObjectFactories();
             
             //if there are no object facotires, dont generate @XmlSeeAlso
-            if(objectFactories.size() == 0)
+            if (objectFactories.isEmpty()) {
                 return;
+            }
             
             JAnnotationUse xmlSeeAlso = cls.annotate(cm.ref(XmlSeeAlso.class));
             JAnnotationArrayMember paramArray = xmlSeeAlso.paramArray("value");
@@ -276,21 +279,24 @@ public class SeiGenerator extends GeneratorBase {
                             wr = m.annotate(javax.jws.WebResult.class);
                             wr.param("name", resultName);
                         }
-                        if((nsURI != null) && (!nsURI.equals(serviceNS) || (isDocStyle && operation.isWrapped()))){
-                            if(wr == null)
+                        if (nsURI != null || (isDocStyle && operation.isWrapped())) {
+                            if(wr == null) {
                                 wr = m.annotate(javax.jws.WebResult.class);
+                            }
                             wr.param("targetNamespace", nsURI);
                         }
                         //doclit wrapped could have additional headers
                         if(!(isDocStyle && operation.isWrapped()) ||
                                 (parameter.getBlock().getLocation() == Block.HEADER)){
-                            if(wr == null)
+                            if (wr == null) {
                                 wr = m.annotate(javax.jws.WebResult.class);
+                            }
                             wr.param("partName", parameter.getName());
                         }
                         if(parameter.getBlock().getLocation() == Block.HEADER){
-                            if(wr == null)
+                            if (wr == null) {
                                 wr = m.annotate(javax.jws.WebResult.class);
+                            }
                             wr.param("header",true);
                         }
                     }
@@ -333,34 +339,43 @@ public class SeiGenerator extends GeneratorBase {
     }
 
     private boolean isHeaderParam(Parameter param, Message message) {
-        if (message.getHeaderBlockCount() == 0)
+        if (message.getHeaderBlockCount() == 0) {
             return false;
+        }
 
-        for (Block headerBlock : message.getHeaderBlocksMap().values())
-            if (param.getBlock().equals(headerBlock))
+        for (Block headerBlock : message.getHeaderBlocksMap().values()) {
+            if (param.getBlock().equals(headerBlock)) {
                 return true;
+            }
+        }
 
         return false;
     }
 
     private boolean isAttachmentParam(Parameter param, Message message){
-        if (message.getAttachmentBlockCount() == 0)
+        if (message.getAttachmentBlockCount() == 0) {
             return false;
+        }
 
-        for (Block attBlock : message.getAttachmentBlocksMap().values())
-            if (param.getBlock().equals(attBlock))
+        for (Block attBlock : message.getAttachmentBlocksMap().values()) {
+            if (param.getBlock().equals(attBlock)) {
                 return true;
+            }
+        }
 
         return false;
     }
 
     private boolean isUnboundParam(Parameter param, Message message){
-        if (message.getUnboundBlocksCount() == 0)
+        if (message.getUnboundBlocksCount() == 0) {
             return false;
+        }
 
-        for (Block unboundBlock : message.getUnboundBlocksMap().values())
-            if (param.getBlock().equals(unboundBlock))
+        for (Block unboundBlock : message.getUnboundBlocksMap().values()) {
+            if (param.getBlock().equals(unboundBlock)) {
                 return true;
+            }
+        }
 
         return false;
     }
@@ -376,10 +391,11 @@ public class SeiGenerator extends GeneratorBase {
         String name;
         boolean isWrapped = operation.isWrapped();
 
-        if((param.getBlock().getLocation() == Block.HEADER) || (isDocStyle && !isWrapped))
+        if ((param.getBlock().getLocation() == Block.HEADER) || (isDocStyle && !isWrapped)) {
             name = param.getBlock().getName().getLocalPart();
-        else
+        } else {
             name = param.getName();
+        }
 
         paramAnno.param("name", name);
 
@@ -394,8 +410,9 @@ public class SeiGenerator extends GeneratorBase {
             ns = param.getBlock().getName().getNamespaceURI();
         }
 
-        if((ns != null) && (!ns.equals(serviceNS) || (isDocStyle && isWrapped)))
+        if (ns != null || (isDocStyle && isWrapped)) {
             paramAnno.param("targetNamespace", ns);
+        }
 
         if (header) {
             paramAnno.param("header", true);
@@ -409,8 +426,9 @@ public class SeiGenerator extends GeneratorBase {
         }
 
         //doclit wrapped could have additional headers
-        if(!(isDocStyle && isWrapped) || header)
+        if (!(isDocStyle && isWrapped) || header) {
             paramAnno.param("partName", javaParameter.getParameter().getName());
+        }
     }
 
     private boolean isDocStyle = true;
@@ -433,15 +451,18 @@ public class SeiGenerator extends GeneratorBase {
                     continue;
                 }
                 sameParamStyle = (isWrapper == operation.isWrapped());
-                if(!sameParamStyle)
+                if (!sameParamStyle) {
                     break;
+                }
             }
-            if(sameParamStyle)
+            if (sameParamStyle) {
                 port.setWrapped(isWrapper);
+            }
         }
         if(sameParamStyle && !port.isWrapped()){
-            if(soapBindingAnn == null)
+            if (soapBindingAnn == null) {
                 soapBindingAnn = cls.annotate(SOAPBinding.class);
+            }
             soapBindingAnn.param("parameterStyle", SOAPBinding.ParameterStyle.BARE);
         }
     }
@@ -452,15 +473,14 @@ public class SeiGenerator extends GeneratorBase {
         wsa.param("targetNamespace", name.getNamespaceURI());
     }
 
-
-
-
+    @Override
     public void visit(Model model) throws Exception {
         for(Service s:model.getServices()){
             s.accept(this);
         }
     }
 
+    @Override
     public void visit(Service service) throws Exception {
         String jd = model.getJavaDoc();
         if(jd != null){
