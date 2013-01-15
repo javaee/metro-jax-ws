@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,14 +40,9 @@
 
 package com.sun.xml.ws.developer;
 
-import org.jvnet.mimepull.MIMEPart;
+import java.net.URL;
 
 import javax.activation.DataSource;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.File;
-import java.net.URL;
 
 /**
  * Implementation of {@link org.jvnet.staxex.StreamingDataHandler} to access MIME
@@ -69,7 +64,9 @@ import java.net.URL;
  * @author Jitendra Kotamraju
  */
 public abstract class StreamingDataHandler extends org.jvnet.staxex.StreamingDataHandler {
-
+    
+    private String hrefCid;
+    
     public StreamingDataHandler(Object o, String s) {
         super(o, s);
     }
@@ -80,6 +77,14 @@ public abstract class StreamingDataHandler extends org.jvnet.staxex.StreamingDat
 
     public StreamingDataHandler(DataSource dataSource) {
         super(dataSource);
+    }
+
+    public String getHrefCid() {
+        return hrefCid;
+    }
+
+    public void setHrefCid(final String cid) {
+        this.hrefCid = cid;
     }
 
 }

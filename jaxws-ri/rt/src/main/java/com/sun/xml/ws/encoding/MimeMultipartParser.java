@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,7 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentEx;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
+import com.sun.xml.ws.developer.StreamingDataHandler;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.ByteArrayDataSource;
 
@@ -166,6 +167,7 @@ public final class MimeMultipartParser {
 
         final MIMEPart part;
         byte[] buf;
+        private StreamingDataHandler streamingDataHandler;
 
         PartAttachment(MIMEPart part) {
             this.part = part;
@@ -200,12 +202,15 @@ public final class MimeMultipartParser {
             }
             return buf;
         }
-
+        
         @Override
         public DataHandler asDataHandler() {
-            return (buf != null)
-                ? new DataSourceStreamingDataHandler(new ByteArrayDataSource(buf,getContentType()))
-                : new MIMEPartStreamingDataHandler(part);
+            if (streamingDataHandler == null) {
+                streamingDataHandler = (buf != null)
+                    ? new DataSourceStreamingDataHandler(new ByteArrayDataSource(buf,getContentType()))
+                    : new MIMEPartStreamingDataHandler(part);
+            }
+            return streamingDataHandler;                
         }
 
         @Override
