@@ -48,8 +48,11 @@ import org.xml.sax.helpers.LocatorImpl;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.Authenticator;
+import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -170,15 +173,37 @@ public class DefaultAuthenticator extends Authenticator {
                 error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_FILE_NOT_FOUND(authFile, defaultAuthfile), null, e));
                 return;
             }
-            String text;
+            String text = "";
             LocatorImpl locator = new LocatorImpl();
             try {
                 int lineno = 1;
                 locator.setSystemId(authFile.getCanonicalPath());
                 while ((text = in.readLine()) != null) {
                     locator.setLineNumber(lineno++);
+                    //ignore empty lines and treat those starting with '#' as comments
+                    if ("".equals(text.trim()) || text.startsWith("#")) {
+                        continue;
+                    }
                     try {
-                        URL url = new URL(text);
+                        URL url;
+                        try {
+                            url = new URL(text);
+                        } catch (MalformedURLException mue) {
+                            //possible cause of this can be that password contains
+                            //character which has to be encoded in URL,
+                            //such as '@', ')', '#' and few others
+                            //so try to recreate the URL with encoded string
+                            //between 2nd ':' and last '@'
+                            int i = text.indexOf(':', text.indexOf(':') + 1) + 1;
+                            int j = text.lastIndexOf('@');
+                            String encodedUrl =
+                                    text.substring(0, i) +
+                                    URLEncoder.encode(text.substring(i, j), "UTF-8") +
+                                    text.substring(j);
+                            url = new URL(encodedUrl);
+                            text = encodedUrl;
+                        }
+
                         String authinfo = url.getUserInfo();
 
                         if (authinfo != null) {
@@ -187,7 +212,9 @@ public class DefaultAuthenticator extends Authenticator {
                             if (i >= 0) {
                                 String user = authinfo.substring(0, i);
                                 String password = authinfo.substring(i + 1);
-                                authInfo.add(new AuthInfo(new URL(text), user, password));
+                                authInfo.add(new AuthInfo(
+                                        new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile()),
+                                        user, URLDecoder.decode(password, "UTF-8")));
                             } else {
                                 error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(url), locator));
                             }
@@ -195,13 +222,16 @@ public class DefaultAuthenticator extends Authenticator {
                             error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(url), locator));
                         }
 
-                    } catch (NumberFormatException e) {
+                    } catch (MalformedURLException e) {
+                        //either URL with un-encoded characters or advanced regexp
                         error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(text), locator));
                     }
                 }
-                in.close();
             } catch (IOException e) {
                 error(new SAXParseException(WscompileMessages.WSIMPORT_FAILED_TO_PARSE(authFile,e.getMessage()), locator));
+            } catch (Throwable t) {
+                Logger.getLogger(DefaultAuthenticator.class.getName()).log(Level.SEVERE, t.getMessage(), t);
+                error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(text), locator));
             }
         } finally {
             try {

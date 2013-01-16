@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,7 @@ package com.sun.tools.ws.wscompile;
 import com.sun.istack.NotNull;
 
 import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * Represents authorization information needed by {@link com.sun.tools.ws.wscompile.DefaultAuthenticator} to
@@ -54,10 +55,11 @@ import java.net.URL;
 public final class AuthInfo {
     private final String user;
     private final String password;
-    private final URL url;
+    private final Pattern urlPattern;
 
-    public AuthInfo(@NotNull URL url, @NotNull String user, @NotNull String password){
-        this.url = url;
+    public AuthInfo(@NotNull URL url, @NotNull String user, @NotNull String password) {
+        String u = url.toExternalForm().replaceFirst("\\?", "\\\\?");
+        this.urlPattern = Pattern.compile(u.replace("*", ".*"), Pattern.CASE_INSENSITIVE);
         this.user = user;
         this.password = password;
     }
@@ -74,7 +76,7 @@ public final class AuthInfo {
      * Returns if the requesting host and port are associated with this {@link AuthInfo}
      */
     public boolean matchingHost(@NotNull URL requestingURL) {
-        return requestingURL.equals(url);
+        return urlPattern.matcher(requestingURL.toExternalForm()).matches();
     }
 
 }

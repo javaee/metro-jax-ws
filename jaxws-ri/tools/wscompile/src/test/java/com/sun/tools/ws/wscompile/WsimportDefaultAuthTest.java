@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2005-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,17 +57,29 @@ public class WsimportDefaultAuthTest extends TestCase {
 
     private static class MyAuthenticator extends DefaultAuthenticator {
 
+        private String requestingURL;
+
         public MyAuthenticator(@NotNull ErrorReceiver receiver, @NotNull File authfile) throws BadCommandLineException {
-            super(receiver, authfile);
+            this(receiver, authfile, "http://foo.com/myservice?wsdl");
         }
 
+        MyAuthenticator(@NotNull ErrorReceiver receiver, @NotNull File authfile, String reqUrl) throws BadCommandLineException {
+            super(receiver, authfile);
+            requestingURL = reqUrl;
+        }
+
+        @Override
         protected URL getRequestingURL() {
             try {
-                return new URL("http://foo.com/myservice?wsdl");
+                return new URL(requestingURL);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        void setRequestingURL(String url) {
+            requestingURL = url;
         }
     }
 
@@ -91,7 +103,34 @@ public class WsimportDefaultAuthTest extends TestCase {
         Authenticator.setDefault(orig);
         assertEquals(orig, DefaultAuthenticator.getCurrentAuthenticator());
     }
-    
+
+    public void testJaxWs_1101() throws Exception{
+        URL url = getResourceAsUrl("com/sun/tools/ws/wscompile/jaxws-1101.txt");
+        MyAuthenticator da = new MyAuthenticator(new ConsoleErrorReporter(System.out), new File(url.toURI()));
+        PasswordAuthentication pa = da.getPasswordAuthentication();
+        assertNull(pa);
+
+        da.setRequestingURL("http://server1.myserver.com/MyService/Service.svc?wsdl");
+        pa = da.getPasswordAuthentication();
+        assertEquals("user", pa.getUserName());
+        assertEquals(")/_@B8M)gDw", new String(pa.getPassword()));
+
+        da.setRequestingURL("http://server1.myserver.com/MyService/Service.svc?xsd=xsd0");
+        pa = da.getPasswordAuthentication();
+        assertEquals("user", pa.getUserName());
+        assertEquals(")/_@B8M)gDw", new String(pa.getPassword()));
+
+        da.setRequestingURL("http://server1.myserver.com/MyService/Service.svc");
+        pa = da.getPasswordAuthentication();
+        assertEquals("user", pa.getUserName());
+        assertEquals(")/_@B8M)gDw", new String(pa.getPassword()));
+
+        da.setRequestingURL("http://server1.myserver.com/encoded/MyService/Service.svc?wsdl");
+        pa = da.getPasswordAuthentication();
+        assertEquals("user2", pa.getUserName());
+        assertEquals(")/_@B8M)gDw", new String(pa.getPassword()));
+    }
+
     private static URL getResourceAsUrl(String resourceName) throws RuntimeException {
         URL input = Thread.currentThread().getContextClassLoader().getResource(resourceName);
         if (input == null) {
