@@ -3,7 +3,7 @@
 
 DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
 
 The contents of this file are subject to the terms of either the GNU
 General Public License Version 2 only ("GPL") or the Common Development
@@ -362,7 +362,9 @@ holder.
 
                             <entry>File to carry authorization information in
                             the format
-                            <uri>http://username:password@example.org/stock?wsdl</uri>.</entry>
+                            <uri>http://username:password@example.org/stock?wsdl</uri>.
+                            The asterisk character ("*") can be used to match
+                            multiple URL patterns.</entry>
 
                             <entry>No. Defaults to
                             <filename>$HOME/.metro/auth</filename>.</entry>
