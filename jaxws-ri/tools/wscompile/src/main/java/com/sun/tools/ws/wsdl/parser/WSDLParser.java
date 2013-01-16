@@ -1098,7 +1098,7 @@ public class WSDLParser {
 
     private void checkNotWsdlAttribute(Attr a) {
         // possible extensibility element -- must live outside the WSDL namespace
-        if (a.getNamespaceURI().equals(Constants.NS_WSDL)) {
+        if (Constants.NS_WSDL.equals(a.getNamespaceURI())) {
             errReceiver.error(forest.locatorTable.getStartLocation(a.getOwnerElement()), WsdlMessages.PARSING_INVALID_WSDL_ELEMENT(a.getLocalName()));
         }
     }

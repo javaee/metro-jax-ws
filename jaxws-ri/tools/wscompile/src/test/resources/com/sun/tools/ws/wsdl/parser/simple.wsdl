@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -70,7 +70,7 @@
     </wsdl:message>
     <wsdl:portType name="DictPortType">
         <wsdl:operation name="TranslateOperation">
-            <wsdl:input name="Input" message="tns:DictRequest"/>
+            <wsdl:input name="Input" message="tns:DictRequest" undefinedattribute="undefined"/>
             <wsdl:output name="Output" message="tns:DictResponse"/>
             <wsdl:fault name="Fault" message="tns:DictFault"/>
         </wsdl:operation>
