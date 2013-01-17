@@ -76,4 +76,19 @@ final class MemberInfo implements Comparable<MemberInfo> {
     public int compareTo(MemberInfo member) {
         return paramName.compareTo(member.paramName);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 47 * hash + (this.paramType != null ? this.paramType.hashCode() : 0);
+        hash = 47 * hash + (this.paramName != null ? this.paramName.hashCode() : 0);
+        hash = 47 * hash + (this.jaxbAnnotations != null ? this.jaxbAnnotations.hashCode() : 0);
+        return hash;
+    }
+
 }

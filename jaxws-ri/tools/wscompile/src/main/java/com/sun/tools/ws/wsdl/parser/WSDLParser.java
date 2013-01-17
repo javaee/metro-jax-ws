@@ -86,6 +86,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import org.w3c.dom.Node;
 
 /**
  * A parser for WSDL documents. This parser is used only at the tool time.
@@ -116,7 +117,7 @@ public class WSDLParser {
             forest.parseWSDL();
             if (forest.isMexMetadata) {
                 errReceiver.reset();
-            }
+        }
         }
         this.forest = forest;
         // register handlers for default extensions
@@ -511,10 +512,7 @@ public class WSDLParser {
 
                     // possible extensibility element -- must live outside the WSDL namespace
                     checkNotWsdlAttribute(e3);
-//                    if (!handleExtension(context, input, e3, e2)) {
-//                        // ignore the extensiblity attribute
-//                        // TODO throw a WARNING
-//                    }
+                    handleExtension(context, input, e3, e2);
                 }
 
                 // verify that there is at most one child element and it is a documentation element
@@ -573,10 +571,7 @@ public class WSDLParser {
 
                     // possible extensibility element -- must live outside the WSDL namespace
                     checkNotWsdlAttribute(e3);
-//                    if (!handleExtension(context, output, e3, e2)) {
-//                        // ignore the extensiblity attribute
-//                        // TODO throw a WARNING
-//                    }
+                    handleExtension(context, output, e3, e2);
                 }
 
                 // verify that there is at most one child element and it is a documentation element
@@ -626,10 +621,7 @@ public class WSDLParser {
 
                     // possible extensibility element -- must live outside the WSDL namespace
                     checkNotWsdlAttribute(e3);
-//                    if (!handleExtension(context, fault, e3, e2)) {
-//                        // ignore the extensiblity attribute
-//                        // TODO throw a WARNING
-//                    }
+                    handleExtension(context, fault, e3, e2);
                 }
 
                 // verify that there is at most one child element and it is a documentation element
@@ -1073,34 +1065,34 @@ public class WSDLParser {
         }
     }
 
-//    private boolean handleExtension(
-//        TWSDLParserContextImpl context,
-//        TWSDLExtensible entity,
-//        Node n,
-//        Element e) {
-//        TWSDLExtensionHandler h =
-//            (TWSDLExtensionHandler) extensionHandlers.get(n.getNamespaceURI());
-//        if (h == null) {
-//            context.fireIgnoringExtension(e, (Entity) entity);
-//            errReceiver.warning(forest.locatorTable.getStartLocation(e), WsdlMessages.PARSING_UNKNOWN_EXTENSIBILITY_ELEMENT_OR_ATTRIBUTE(n.getLocalName(), n.getNamespaceURI()));
-//            return false;
-//        } else {
-//            return h.doHandleExtension(context, entity, e);
-//        }
-//    }
+    private boolean handleExtension(
+        TWSDLParserContextImpl context,
+        TWSDLExtensible entity,
+        Node n,
+        Element e) {
+        TWSDLExtensionHandler h =
+            (TWSDLExtensionHandler) extensionHandlers.get(n.getNamespaceURI());
+        if (h == null) {
+            context.fireIgnoringExtension(e, (Entity) entity);
+            errReceiver.warning(forest.locatorTable.getStartLocation(e), WsdlMessages.PARSING_UNKNOWN_EXTENSIBILITY_ELEMENT_OR_ATTRIBUTE(n.getLocalName(), n.getNamespaceURI()));
+            return false;
+        } else {
+            return h.doHandleExtension(context, entity, e);
+        }
+    }
 
     private void checkNotWsdlElement(Element e) {
         // possible extensibility element -- must live outside the WSDL namespace
         if (e.getNamespaceURI() != null && e.getNamespaceURI().equals(Constants.NS_WSDL)) {
             errReceiver.error(forest.locatorTable.getStartLocation(e), WsdlMessages.PARSING_INVALID_WSDL_ELEMENT(e.getTagName()));
-        }
+    }
     }
 
     private void checkNotWsdlAttribute(Attr a) {
         // possible extensibility element -- must live outside the WSDL namespace
         if (Constants.NS_WSDL.equals(a.getNamespaceURI())) {
             errReceiver.error(forest.locatorTable.getStartLocation(a.getOwnerElement()), WsdlMessages.PARSING_INVALID_WSDL_ELEMENT(a.getLocalName()));
-        }
+    }
     }
 
     private void checkNotWsdlRequired(Element e) {

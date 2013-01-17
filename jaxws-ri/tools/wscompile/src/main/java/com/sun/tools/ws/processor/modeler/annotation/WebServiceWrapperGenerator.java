@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -139,14 +139,17 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             super(annReader, nav, beanMemberFactory);
         }
 
+        @Override
         protected TypeMirror getSafeType(TypeMirror type) {
             return WebServiceWrapperGenerator.this.getSafeType(type);
         }
 
+        @Override
         protected TypeMirror getHolderValueType(TypeMirror paramType) {
             return builder.getHolderValueType(paramType);
         }
 
+        @Override
         protected boolean isVoidType(TypeMirror type) {
             return type != null && type.getKind().equals(TypeKind.VOID);
         }
@@ -155,6 +158,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
 
     private static final class FieldFactory implements AbstractWrapperBeanGenerator.BeanMemberFactory<TypeMirror, MemberInfo> {
 
+        @Override
         public MemberInfo createWrapperBeanMember(TypeMirror paramType,
                                                   String paramName, List<Annotation> jaxb) {
             return new MemberInfo(paramType, paramName, jaxb);
@@ -166,17 +170,20 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         makeSafeVisitor = new MakeSafeTypeVisitor(builder.getProcessingEnvironment());
     }
 
+    @Override
     protected void processWebService(WebService webService, TypeElement d) {
         cm = new JCodeModel();
         wrapperNames = new HashSet<String>();
         processedExceptions = new HashSet<String>();
     }
 
+    @Override
     protected void postProcessWebService(WebService webService, TypeElement d) {
         super.postProcessWebService(webService, d);
         doPostProcessWebService(webService, d);
     }
 
+    @SuppressWarnings("CallToThreadDumpStack")
     protected void doPostProcessWebService(WebService webService, TypeElement d) {
         if (cm != null) {
             File sourceDir = builder.getSourceDir();
@@ -193,6 +200,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         }
     }
 
+    @Override
     protected void processMethod(ExecutableElement method, WebMethod webMethod) {
         builder.log("WrapperGen - method: "+method);
         builder.log("method.getDeclaringType(): " + method.asType());
