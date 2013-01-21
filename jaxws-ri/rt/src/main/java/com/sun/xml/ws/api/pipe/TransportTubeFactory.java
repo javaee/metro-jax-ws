@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import com.sun.xml.ws.api.pipe.helper.PipeAdapter;
 import com.sun.xml.ws.transport.http.client.HttpTransportPipe;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.pipe.StandaloneTubeAssembler;
+import java.util.logging.Level;
 
 import javax.xml.ws.WebServiceException;
 import java.util.logging.Logger;
@@ -130,8 +131,10 @@ public abstract class TransportTubeFactory {
     public static Tube create(@Nullable ClassLoader classLoader, @NotNull ClientTubeAssemblerContext context) {
         for (TransportTubeFactory factory : ServiceFinder.find(TransportTubeFactory.class,classLoader, context.getContainer())) {
             Tube tube = factory.doCreate(context);
-            if(tube !=null) {
-                TransportTubeFactory.logger.fine(factory.getClass()+" successfully created "+tube);
+            if (tube !=null) {
+                if (logger.isLoggable(Level.FINE)) {
+                    TransportTubeFactory.logger.log(Level.FINE, "{0} successfully created {1}", new Object[]{factory.getClass(), tube});
+                }
                 return tube;
             }
         }
@@ -144,7 +147,9 @@ public abstract class TransportTubeFactory {
         for (TransportPipeFactory factory : ServiceFinder.find(TransportPipeFactory.class,classLoader)) {
             Pipe pipe = factory.doCreate(ctxt);
             if (pipe!=null) {
-                logger.fine(factory.getClass()+" successfully created "+pipe);
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, "{0} successfully created {1}", new Object[]{factory.getClass(), pipe});
+                }
                 return PipeAdapter.adapt(pipe);
             }
         }
