@@ -92,7 +92,7 @@
     <target name="install-api" description="Installs 'javax.*' API files into $JAVA_HOME/lib/endorsed" if="jdk6">
         <mkdir dir="\${java.home}/lib/endorsed"/>
         <copy toDir="\${java.home}/lib/endorsed" overwrite="true">
-            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
+            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation.jar, jsr181-api.jar"/>
         </copy>
         <antcall target="install-api-on-tomcat5"/>
         <antcall target="install-api-on-tomcat6"/>        
@@ -103,7 +103,7 @@
 
         <mkdir dir="\${catalina.home}/endorsed"/>
         <copy toDir="\${catalina.home}/endorsed" overwrite="true">
-            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
+            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation.jar, jsr181-api.jar"/>
         </copy>
     </target>
 
@@ -111,7 +111,7 @@
         <echo message="Install endorsed apis - 'javax.*' on tomcat5"/>
 
         <copy toDir="\${catalina.endorsed}" overwrite="true">
-            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
+            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation.jar, jsr181-api.jar"/>
         </copy>
     </target>
 
@@ -132,13 +132,13 @@
             <fileset dir="\${catalina.lib.home}" includes="*.jar"/>
         </delete>
         <delete quiet="true">
-            <fileset dir="\${catalina.endorsed}" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
+            <fileset dir="\${catalina.endorsed}" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation.jar, jsr181-api.jar"/>
         </delete>
         <delete quiet="true">
-            <fileset dir="\${catalina.home}/endorsed" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
+            <fileset dir="\${catalina.home}/endorsed" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation.jar, jsr181-api.jar"/>
         </delete>
         <delete quiet="true">
-            <fileset dir="\${java.home}/lib/endorsed" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
+            <fileset dir="\${java.home}/lib/endorsed" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation.jar, jsr181-api.jar"/>
         </delete>
     </target>
 

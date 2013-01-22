@@ -137,8 +137,8 @@
                                 <silent>false</silent>
                                 <artifactItems>
                                     <artifactItem>
-                                        <groupId>javax.annotation</groupId>
-                                        <artifactId>javax.annotation-api</artifactId>
+                                        <groupId>org.glassfish</groupId>
+                                        <artifactId>javax.annotation</artifactId>
                                         <version>${javax.annotation-api.version}</version>
                                         <type>jar</type>
                                     </artifactItem>

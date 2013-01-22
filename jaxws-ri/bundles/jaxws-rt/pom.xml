@@ -70,8 +70,8 @@
             <artifactId>saaj-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.annotation</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.jws</groupId>
@@ -170,7 +170,7 @@
                             <archive>
                                 <manifestEntries>
                                     <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
-                                    <Class-Path>javax.annotation-api.jar jsr181-api.jar jaxb-api.jar jaxws-api.jar saaj-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
+                                    <Class-Path>javax.annotation.jar jsr181-api.jar jaxb-api.jar jaxws-api.jar saaj-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
                                     <Extension-Name>com.sun.xml.ws</Extension-Name>
                                 </manifestEntries>
                             </archive>
@@ -190,7 +190,7 @@
                             <archive>
                                 <manifestEntries>
                                     <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
-                                    <Class-Path>javax.annotation-api.jar jsr181-api.jar jaxb-api.jar jaxws-api.jar saaj-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
+                                    <Class-Path>javax.annotation.jar jsr181-api.jar jaxb-api.jar jaxws-api.jar saaj-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
                                     <Extension-Name>com.sun.xml.ws</Extension-Name>
                                 </manifestEntries>
                             </archive>
@@ -259,7 +259,7 @@
                                         <mkdir dir="${api.dest.dir}" />
                                         <javadoc packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*" sourcepath="${project.build.directory}/bundlesources" destdir="${api.dest.dir}" author="false" version="false" use="true" windowtitle="JAX-WS RI Runtime Documentation" doctitle="JAX-WS RI" bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
                                             <bootclasspath>
-                                                <pathelement path="${maven.dependency.javax.annotation.javax.annotation-api.jar.path}" />
+                                                <pathelement path="${maven.dependency.org.glassfish.javax.annotation.jar.path}" />
                                                 <pathelement path="${maven.dependency.javax.xml.bind.jaxb-api.jar.path}" />
                                                 <pathelement path="${maven.dependency.javax.xml.soap.saaj-api.jar.path}" />
                                                 <pathelement path="${maven.dependency.javax.xml.ws.jaxws-api.jar.path}" />

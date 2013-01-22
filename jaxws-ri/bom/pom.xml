@@ -177,13 +177,6 @@
                 <groupId>javax.xml.ws</groupId>
                 <artifactId>jaxws-api</artifactId>
                 <version>${jaxws-api.version}</version>
-                <exclusions>
-                    <!-- part of JDK 6+ -->
-                    <exclusion>
-                        <groupId>org.glassfish</groupId>
-                        <artifactId>javax.annotation</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.messaging.saaj</groupId>
@@ -271,8 +264,8 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
+                <groupId>org.glassfish</groupId>
+                <artifactId>javax.annotation</artifactId>
                 <version>${javax.annotation-api.version}</version>
             </dependency>
             <dependency>
@@ -466,8 +459,8 @@
             <artifactId>jaxws-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.annotation</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.jws</groupId>
@@ -488,7 +481,7 @@
         <jaxb-api.version>2.2.7</jaxb-api.version>
         <jaxb-impl.version>2.2.7-b52</jaxb-impl.version>
         <jaxws-api.version>2.2.8</jaxws-api.version>
-        <javax.annotation-api.version>1.2-b01</javax.annotation-api.version>
+        <javax.annotation-api.version>3.2-b06</javax.annotation-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <junit.version>3.8.1</junit.version>
         <mail.version>1.4.5</mail.version>
@@ -556,7 +549,7 @@
                             <includeProperties>
                                 jaxws-api.version,
                                 jsr181-api.version,
-                                javax.annotation-api.version,
+                                javax.annotation.version,
                                 streambuffer.version, 
                                 stax-ex.version, 
                                 saaj-impl.version, 

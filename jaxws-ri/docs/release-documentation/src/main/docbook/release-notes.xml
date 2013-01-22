@@ -173,7 +173,7 @@ holder.
                         <filename>jaxb-api.jar</filename>,
                         <filename>jaxb-impl.jar</filename>,
                         <filename>jaxws-api.jar</filename>,
-                        <filename>javax.annotation-api.jar</filename>,
+                        <filename>javax.annotation.jar</filename>,
                         <filename>jaxws-rt.jar</filename>,
                         <filename>jsr181-api.jar</filename>,
                         <filename>mimepull.jar</filename>,

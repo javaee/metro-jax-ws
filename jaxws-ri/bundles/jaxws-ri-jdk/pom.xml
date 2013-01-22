@@ -72,8 +72,8 @@
             <classifier>sources</classifier>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.annotation</artifactId>
             <version>${javax.annotation-api.version}</version>
             <classifier>sources</classifier>
         </dependency>

@@ -153,7 +153,7 @@ holder.
         <itemizedlist>
             <listitem>
                 <para>Copy
-                <filename>&jax-ws.home;/lib/javax.annotation-api.jar</filename>
+                <filename>&jax-ws.home;/lib/javax.annotation.jar</filename>
                 <filename>&jax-ws.home;/lib/jsr181-api.jar</filename>
                 <filename>&jax-ws.home;/lib/jaxws-api.jar</filename> 
                 <filename>&jax-ws.home;/lib/jaxb-api.jar</filename> to
