@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -63,7 +63,7 @@
     <target name="jdk6-message" if="jdk6">
         <echo message="NOTE: JAX-WS RI ${project.version} is being installed using JDK6."/>
         <echo/>
-        <echo message="  The file 'jaxws-api.jar and jaxb-api.jar' must be installed"/>
+        <echo message="  The 'javax.*' API files must be installed"/>
         <echo message="  into \${java.home}/lib/endorsed for JAX-WS RI ${project.version} to prevent"/>
         <echo message="  conflicts between the JAX-WS 2.1 classes"/>
         <echo message="  bundled with JDK6 and JAX-WS 2.2 bundled with JAX-WS RI ${project.version}."/>
@@ -73,7 +73,7 @@
         <echo message="  This is a concern when using a system-wide JDK installation."/>
         <echo/>
         <echo message="  Invoke 'ant install-api' to install only"/>
-        <echo message="  jaxws-api.jar and jaxb-api.jar into the 'endorsed' directory."/>
+        <echo message="  'javax.*' API files into the 'endorsed' directory."/>
         <echo/>
     </target>
 
@@ -89,29 +89,29 @@
 
     </target>
 
-    <target name="install-api" description="Installs 'jaxws-api.jar and jaxb-api.jar' into $JAVA_HOME/lib/endorsed" if="jdk6">
+    <target name="install-api" description="Installs 'javax.*' API files into $JAVA_HOME/lib/endorsed" if="jdk6">
         <mkdir dir="\${java.home}/lib/endorsed"/>
         <copy toDir="\${java.home}/lib/endorsed" overwrite="true">
-            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar"/>
+            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
         </copy>
         <antcall target="install-api-on-tomcat5"/>
         <antcall target="install-api-on-tomcat6"/>        
     </target>
 
     <target name="install-api-on-tomcat6" unless="tomcat5">
-        <echo message="Install endorsed apis - jaxws-api.jar and jaxb-api.jar on tomcat6"/>
+        <echo message="Install endorsed apis - 'javax.*' on tomcat6"/>
 
         <mkdir dir="\${catalina.home}/endorsed"/>
         <copy toDir="\${catalina.home}/endorsed" overwrite="true">
-            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar"/>
+            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
         </copy>
     </target>
 
     <target name="install-api-on-tomcat5" if="tomcat5">
-        <echo message="Install endorsed apis - jaxws-api.jar and jaxb-api.jar on tomcat5"/>
+        <echo message="Install endorsed apis - 'javax.*' on tomcat5"/>
 
         <copy toDir="\${catalina.endorsed}" overwrite="true">
-            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar"/>
+            <fileset dir="\${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
         </copy>
     </target>
 
@@ -132,13 +132,13 @@
             <fileset dir="\${catalina.lib.home}" includes="*.jar"/>
         </delete>
         <delete quiet="true">
-            <fileset dir="\${catalina.endorsed}" includes="jaxws-api.jar, jaxb-api.jar"/>
+            <fileset dir="\${catalina.endorsed}" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
         </delete>
         <delete quiet="true">
-            <fileset dir="\${catalina.home}/endorsed" includes="jaxws-api.jar, jaxb-api.jar"/>
+            <fileset dir="\${catalina.home}/endorsed" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
         </delete>
         <delete quiet="true">
-            <fileset dir="\${java.home}/lib/endorsed" includes="jaxws-api.jar, jaxb-api.jar"/>
+            <fileset dir="\${java.home}/lib/endorsed" includes="jaxws-api.jar, jaxb-api.jar, javax.annotation-api.jar, jsr181-api.jar"/>
         </delete>
     </target>
 

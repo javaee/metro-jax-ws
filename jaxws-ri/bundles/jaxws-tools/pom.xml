@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -185,6 +185,8 @@
                                         <mkdir dir="${api.dest.dir}" />
                                         <javadoc packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*" sourcepath="${project.build.directory}/bundlesources" destdir="${api.dest.dir}" author="false" version="false" use="true" access="package" windowtitle="JAX-WS RI Tools Documentation" doctitle="JAX-WS RI" bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
                                             <bootclasspath>
+                                                <pathelement path="${maven.dependency.javax.annotation.javax.annotation-api.jar.path}" />
+                                                <pathelement path="${maven.dependency.javax.jws.jsr181-api.jar.path}" />
                                                 <pathelement path="${maven.dependency.javax.xml.bind.jaxb-api.jar.path}" />
                                                 <pathelement path="${maven.dependency.javax.xml.soap.saaj-api.jar.path}" />
                                                 <pathelement path="${maven.dependency.javax.xml.ws.jaxws-api.jar.path}" />

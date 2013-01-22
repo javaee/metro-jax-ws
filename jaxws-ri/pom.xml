@@ -137,6 +137,18 @@
                                 <silent>false</silent>
                                 <artifactItems>
                                     <artifactItem>
+                                        <groupId>javax.annotation</groupId>
+                                        <artifactId>javax.annotation-api</artifactId>
+                                        <version>${javax.annotation-api.version}</version>
+                                        <type>jar</type>
+                                    </artifactItem>
+                                    <artifactItem>
+                                        <groupId>javax.jws</groupId>
+                                        <artifactId>jsr181-api</artifactId>
+                                        <version>${jsr181-api.version}</version>
+                                        <type>jar</type>
+                                    </artifactItem>
+                                    <artifactItem>
                                         <groupId>javax.xml.bind</groupId>
                                         <artifactId>jaxb-api</artifactId>
                                         <version>${jaxb-api.version}</version>

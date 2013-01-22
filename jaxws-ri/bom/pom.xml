@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -133,7 +133,6 @@
     <dependencyManagement>
         <dependencies>
             <!-- TODO: revisit this and:
-                  - remove JDK dependencies where possible
                   - move to JAXB's poms what belongs there
                     basically every artifact repackaged in JAXB should
                     be defined there in provided scope -->
@@ -171,21 +170,6 @@
                 <artifactId>jaxb-osgi</artifactId>
                 <version>${jaxb-impl.version}</version>
             </dependency>
-
-            <!-- JDK 6+ dependencies -->
-            <dependency>
-                <groupId>javax.jws</groupId>
-                <artifactId>jsr181-api</artifactId>
-                <version>1.0-MR1</version>
-                <!-- TODO: revisit me - required by metro -->
-                <!--<scope>provided</scope>-->
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>javax.annotation</artifactId>
-                <version>3.2-b06</version>
-                <scope>provided</scope>
-            </dependency>
             <!-- end TODO -->
 
             <!-- required dependencies -->
@@ -198,10 +182,6 @@
                     <exclusion>
                         <groupId>org.glassfish</groupId>
                         <artifactId>javax.annotation</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.jws</groupId>
-                        <artifactId>jsr181-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -289,6 +269,16 @@
                         <artifactId>activation</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.jws</groupId>
+                <artifactId>jsr181-api</artifactId>
+                <version>${jsr181-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.ha</groupId>
@@ -475,6 +465,14 @@
             <groupId>javax.xml.ws</groupId>
             <artifactId>jaxws-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.jws</groupId>
+            <artifactId>jsr181-api</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -490,6 +488,8 @@
         <jaxb-api.version>2.2.7</jaxb-api.version>
         <jaxb-impl.version>2.2.7-b52</jaxb-impl.version>
         <jaxws-api.version>2.2.8</jaxws-api.version>
+        <javax.annotation-api.version>1.2-b01</javax.annotation-api.version>
+        <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <junit.version>3.8.1</junit.version>
         <mail.version>1.4.5</mail.version>
         <management-api.version>3.1.0-b001</management-api.version>
@@ -555,6 +555,8 @@
                         <configuration>
                             <includeProperties>
                                 jaxws-api.version,
+                                jsr181-api.version,
+                                javax.annotation-api.version,
                                 streambuffer.version, 
                                 stax-ex.version, 
                                 saaj-impl.version, 
