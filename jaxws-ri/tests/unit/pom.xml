@@ -67,6 +67,7 @@
         <!-- extra JVM options for JVM forked by test harness, ie proxy, tests' debugging-->
         <ws.jvmOpts></ws.jvmOpts>
         <!--<ws.jvmOpts>-Dhttp.proxyHost=www-proxy.us.oracle.com -Dhttp.proxyPort=80 -Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80</ws.jvmOpts>-->
+        <ws.args>-cp:jaxws ${project.basedir}/../.. -dump</ws.args>
     </properties>
 
     <build>
@@ -119,7 +120,7 @@
                         <configuration>
                             <endorsedDir>${endorsed.dir}</endorsedDir>
                             <args>
-                                <arg>-cp:jaxws ${project.basedir}/../..</arg>
+                            <arg>${ws.args}</arg>
                             </args>
                         </configuration>
                     </execution>
