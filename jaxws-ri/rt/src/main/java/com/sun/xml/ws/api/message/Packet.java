@@ -1004,7 +1004,7 @@ public final class Packet
         Message msg = getMessage();
         // wsa:To
         WSEndpointReference replyTo = null;
-        Header replyToFromRequestMsg = getFirstHeader(msg.getMessageHeaders(), av.replyToTag, true, sv);
+        Header replyToFromRequestMsg = AddressingUtils.getFirstHeader(msg.getMessageHeaders(), av.replyToTag, true, sv);
         Header replyToFromResponseMsg = hl.get(av.toTag, false);
         boolean replaceToTag = true;
         try{
@@ -1071,20 +1071,6 @@ public final class Packet
             hl.addOrReplace(new StringHeader(av.toTag, refpEPR.getAddress()));
             refpEPR.addReferenceParametersToList(hl);
         }
-    }
-
-    private static Header getFirstHeader(MessageHeaders headers, QName name, boolean markUnderstood, SOAPVersion sv) {
-        if (sv == null) {
-            throw new IllegalArgumentException(AddressingMessages.NULL_SOAP_VERSION());
-        }
-        Iterator<Header> iter = headers.getHeaders(name.getNamespaceURI(), name.getLocalPart(), markUnderstood);
-        while (iter.hasNext()) {
-            Header h = iter.next();
-            if (h.getRole(sv).equals(sv.implicitRole)) {
-                return h;
-            }
-        }
-        return null;
     }
 
     private void populateAddressingHeaders(WSBinding binding, Packet responsePacket, WSDLPort wsdlPort, SEIModel seiModel) {
