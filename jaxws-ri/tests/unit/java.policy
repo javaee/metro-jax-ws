@@ -46,7 +46,7 @@ grant {
 	permission java.util.PropertyPermission "java.vm.name", "read";
 
 // tools: grant codeBase "file:/home/mkos/dev/jdk-forrests/_test_/2013-01-22-091550.huizwang.cr6618782/lib/tools.jar" {
-//  permission java.security.AllPermission;
+  permission java.security.AllPermission;
  
   permission java.net.SocketPermission "*", "connect,resolve,accept,listen";
 
