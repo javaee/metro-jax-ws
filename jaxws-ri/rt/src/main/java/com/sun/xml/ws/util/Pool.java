@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -129,6 +129,7 @@ public abstract class Pool<T> {
             this.context = context;
         }
 
+        @Override
         protected javax.xml.bind.Marshaller create() {
             try {
                 return context.createMarshaller();
@@ -149,6 +150,7 @@ public abstract class Pool<T> {
             this.context = context;
         }
 
+        @Override
         protected javax.xml.bind.Unmarshaller create() {
             try {
                 return context.createUnmarshaller();
@@ -170,8 +172,21 @@ public abstract class Pool<T> {
             recycle(master);    // we'll use master as a part of the pool, too.
         }
 
+        @Override
         protected Tube create() {
             return TubeCloner.clone(master);
         }
+        
+        /**
+         *
+         * @return master tubeline from pool
+         * @deprecated Expected to be used in rare cases where access to master 
+         * tubeline is required and safe, such as Stub.close()."
+         */
+        @Deprecated()
+        public final Tube takeMaster() {
+            return master;
+        }
+        
     }
 }

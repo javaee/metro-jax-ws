@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -294,7 +294,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             } else {
                 this.requestContext.setEndpointAddress(defaultEndPointAddress);
             }
-            this.engine = new Engine(toString(), owner.getContainer(), owner.getExecutor());
+            this.engine = new Engine(getStringId(), owner.getContainer(), owner.getExecutor());
             this.endpointReference = epr;
             wsdlProperties = (wsdlPort == null) ? new WSDLDirectProperties(owner.getServiceName(), portname) : new WSDLPortProperties(wsdlPort);
             
@@ -577,7 +577,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     }
     
     protected void configureFiber(Fiber fiber) {
-        // no-op in the base class, but can be used by derirved clases to configure the Fiber prior
+        // no-op in the base class, but can be used by derived classes to configure the Fiber prior
         // to invocation
     }
     
@@ -585,13 +585,14 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 
     @Override
     public void close() {
-        if (tubes != null) {
+        TubePool tp = (TubePool) tubes;
+        if (tp != null) {
             // multi-thread safety of 'close' needs to be considered more carefully.
             // some calls might be pending while this method is invoked. Should we
             // block until they are complete, or should we abort them (but how?)
-            Tube p = tubes.take();
-            tubes = null;
+            Tube p = tp.takeMaster();
             p.preDestroy();
+            tubes = null;
         }
         if (!managedObjectManagerClosed) {
             try {
@@ -632,9 +633,13 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         this.responseContext = rc;
     }
 
+    private String getStringId() {
+        return RuntimeVersion.VERSION + ": Stub for " + getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+    }
+    
     @Override
     public String toString() {
-        return RuntimeVersion.VERSION + ": Stub for " + getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+        return getStringId();
     }
 
     @Override
