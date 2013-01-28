@@ -41,6 +41,7 @@
 package com.sun.xml.ws.server;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
@@ -48,6 +49,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
 import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
+import com.sun.xml.ws.api.pipe.ThrowableContainerPropertySet;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ServiceDefinition;
 import com.sun.xml.ws.api.server.WSEndpoint;
@@ -376,5 +378,16 @@ public class WSEndpointMOMProxy extends WSEndpoint implements ManagedObjectManag
     public OperationDispatcher getOperationDispatcher() {
         return wsEndpoint.getOperationDispatcher();
     }
-    
+
+    @Override
+    public Packet createServiceResponseForException(final ThrowableContainerPropertySet tc,
+                                                    final Packet      responsePacket,
+                                                    final SOAPVersion soapVersion,
+                                                    final WSDLPort    wsdlPort,
+                                                    final SEIModel    seiModel,
+                                                    final WSBinding   binding)
+    {
+        return wsEndpoint.createServiceResponseForException(tc, responsePacket, soapVersion,
+                                                            wsdlPort, seiModel, binding);
+    }
 }

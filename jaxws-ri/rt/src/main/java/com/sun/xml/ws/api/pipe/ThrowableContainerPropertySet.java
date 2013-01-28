@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package com.sun.xml.ws.api.pipe;
 
 import javax.xml.ws.Dispatch;
 
+import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.oracle.webservices.api.message.BasePropertySet;
 import com.oracle.webservices.api.message.PropertySet;
@@ -51,25 +52,77 @@ import com.oracle.webservices.api.message.PropertySet;
  * useful to be able to inspect the Packet in addition to the Throwable as the Packet contains 
  * meta-data about the request and/or response.  However, the default behavior is that the caller
  * only receives the Throwable.
- * 
+ *
  * This {@link PropertySet} is part of the implementation that allows a completing Fiber to return
  * the Throwable to the caller as part of the Packet.
- * 
+ *
  */
 public class ThrowableContainerPropertySet extends BasePropertySet {
-    public static final String FIBER_COMPLETION_THROWABLE = "com.sun.xml.ws.api.pipe.fiber-completion-throwable";
 
-    private final Throwable throwable;
-    
-    public ThrowableContainerPropertySet(Throwable throwable) {
+    public ThrowableContainerPropertySet(final Throwable throwable) {
         this.throwable = throwable;
     }
-    
+
+    ////////////////////////////////////////////////////
+    //
+    // The original throwable
+    //
+    public static final String FIBER_COMPLETION_THROWABLE = "com.sun.xml.ws.api.pipe.fiber-completion-throwable";
+    private Throwable throwable;
     @Property(FIBER_COMPLETION_THROWABLE)
     public Throwable getThrowable() {
         return throwable;
     }
-    
+    public void setThrowable(final Throwable throwable) {
+        this.throwable = throwable;
+    }
+
+    ////////////////////////////////////////////////////
+    //
+    // The FAULT message created in WsaServerTube or WSEndpointImpl
+    //
+    public static final String FAULT_MESSAGE = "com.sun.xml.ws.api.pipe.fiber-completion-fault-message";
+    private Message faultMessage;
+    @Property(FAULT_MESSAGE)
+    public Message getFaultMessage() {
+        return faultMessage;
+    }
+    public void setFaultMessage(final Message faultMessage) {
+        this.faultMessage = faultMessage;
+    }
+
+    ////////////////////////////////////////////////////
+    //
+    // The response Packet seen in WsaServerTube.processException or WSEndpointImpl
+    //
+    public static final String RESPONSE_PACKET = "com.sun.xml.ws.api.pipe.fiber-completion-response-packet";
+    private Packet responsePacket;
+    @Property(RESPONSE_PACKET)
+    public Packet getResponsePacket() {
+        return responsePacket;
+    }
+    public void setResponsePacket(final Packet responsePacket) {
+        this.responsePacket = responsePacket;
+    }
+
+    ////////////////////////////////////////////////////
+    //
+    // If the fault representation of the exception has already been created
+    //
+    public static final String IS_FAULT_CREATED = "com.sun.xml.ws.api.pipe.fiber-completion-is-fault-created";
+    private boolean isFaultCreated = false;
+    @Property(IS_FAULT_CREATED)
+    public boolean isFaultCreated() {
+        return isFaultCreated;
+    }
+    public void setFaultCreated(final boolean isFaultCreated) {
+        this.isFaultCreated = isFaultCreated;
+    }
+
+    //
+    // boilerplate
+    //
+
     @Override
     protected PropertyMap getPropertyMap() {
         return model;

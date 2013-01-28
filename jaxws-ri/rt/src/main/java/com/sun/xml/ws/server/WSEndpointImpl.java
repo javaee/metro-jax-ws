@@ -345,12 +345,15 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
                         // in invalid state following exception
                         tubePool.recycle(tube);
                     }
-                    
+
                     if (callback != null) {
                         if (tc != null) {
-                            Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
-                                    soapVersion, null, tc.getThrowable());
-                            response.setMessage(faultMsg);
+                            response = createServiceResponseForException(tc,
+                                                                         response,
+                                                                         soapVersion,
+                                                                         request.endpoint.getPort(),
+                                                                         null,
+                                                                         request.endpoint.getBinding());
                         }
                         callback.onCompletion(response);
                     }
@@ -369,6 +372,26 @@ public /*final*/ class WSEndpointImpl<T> extends WSEndpoint<T> implements LazyMO
         } finally {
             ContainerResolver.getDefault().exitContainer(old);
         }
+    }
+
+    @Override
+    public Packet createServiceResponseForException(final ThrowableContainerPropertySet tc,
+                                                    final Packet      responsePacket,
+                                                    final SOAPVersion soapVersion,
+                                                    final WSDLPort    wsdlPort,
+                                                    final SEIModel    seiModel,
+                                                    final WSBinding   binding)
+    {
+        // This will happen in addressing if it is enabled.
+        if (tc.isFaultCreated()) return responsePacket;
+
+        final Message faultMessage = SOAPFaultBuilder.createSOAPFaultMessage(soapVersion, null, tc.getThrowable());
+        final Packet result = responsePacket.createServerResponse(faultMessage, wsdlPort, seiModel, binding);
+        // Pass info to upper layers
+        tc.setFaultMessage(faultMessage);
+        tc.setResponsePacket(responsePacket);
+        tc.setFaultCreated(true);
+        return result;
     }
 
     @Override

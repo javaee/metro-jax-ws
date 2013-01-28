@@ -45,6 +45,7 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.ComponentRegistry;
+import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.config.management.EndpointCreationAttributes;
 import com.sun.xml.ws.api.config.management.ManagedEndpointFactory;
@@ -57,6 +58,7 @@ import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Engine;
 import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
 import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
+import com.sun.xml.ws.api.pipe.ThrowableContainerPropertySet;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.server.EndpointAwareTube;
@@ -713,5 +715,15 @@ public abstract class WSEndpoint<T> implements ComponentRegistry {
      * @return
      */
     public abstract @Nullable OperationDispatcher getOperationDispatcher();
-    
+
+
+    /**
+     * This is used by WsaServerTube and WSEndpointImpl to create a Packet with SOAPFault message from a Java exception.
+     */
+    public abstract Packet createServiceResponseForException(final ThrowableContainerPropertySet tc,
+                                                             final Packet      responsePacket,
+                                                             final SOAPVersion soapVersion,
+                                                             final WSDLPort    wsdlPort,
+                                                             final SEIModel    seiModel,
+                                                             final WSBinding   binding);
 }

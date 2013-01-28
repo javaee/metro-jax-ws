@@ -212,12 +212,21 @@ public class WsaServerTube extends WsaTube {
 
     @Override
     public @NotNull NextAction processException(Throwable t) {
-    	Packet response = Fiber.current().getPacket();
-        return processResponse(response.createServerResponse(
-        		SOAPFaultBuilder.createSOAPFaultMessage(soapVersion, null, t), 
-        		wsdlPort, response.endpoint.getSEIModel(), binding));
+    	final Packet response = Fiber.current().getPacket();
+        ThrowableContainerPropertySet tc = response.getSatellite(ThrowableContainerPropertySet.class);
+        if (tc == null) {
+            tc = new ThrowableContainerPropertySet(t);
+            response.addSatellite(tc);
+        } else if (t != tc.getThrowable()) {
+            // This is a pathological case where an exception happens after a previous exception.
+            // Make sure you report the latest one.
+            tc.setThrowable(t);
+        }
+        return processResponse(response.endpoint.createServiceResponseForException(tc, response, soapVersion, wsdlPort,
+                                                                                   response.endpoint.getSEIModel(),
+                                                                                   binding));
     }
-    
+
     @Override
     public @NotNull NextAction processResponse(Packet response) {
         Message msg = response.getMessage();
