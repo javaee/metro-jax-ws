@@ -25,7 +25,7 @@
 .txt
 .bat
 .sh
-jck*.policy
+.policy
 /CDDL+GPLv2.xml
 /copyright-exclude
 /LICENSE.txt
