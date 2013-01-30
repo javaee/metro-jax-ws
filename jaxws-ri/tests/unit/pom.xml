@@ -147,6 +147,30 @@
         </profile>
 
         <profile>
+            <id>jaxwsInJDK7</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <ws.args>-jaxwsInJDK -version 2.2.4 -lwhs</ws.args>
+                <!--return to default not to use any endorsed-->
+                <endorsed.dir>${java.home}/jre/lib/endorsed</endorsed.dir>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>jaxwsInJDK8</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <ws.args>-jaxwsInJDK -version 2.2.8 -lwhs</ws.args>
+                <!--return to default not to use any endorsed-->
+                <endorsed.dir>${java.home}/jre/lib/endorsed</endorsed.dir>
+            </properties>
+        </profile>
+
+        <profile>
             <id>dev-impl</id>
             <activation>
                 <property>
