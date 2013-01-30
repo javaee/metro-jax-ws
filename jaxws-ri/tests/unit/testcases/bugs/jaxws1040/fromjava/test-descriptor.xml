@@ -41,7 +41,7 @@
 
 -->
 
-<descriptor since="2.2.7" bugs="jaxws-1040">
+<descriptor since="2.2.7" bugs="jaxws-1040" uses="ri">
     <description>JAX_WS-1040 EndpointInterface annotation generated based on wsdl for old addressing space are wrong</description>
     <service basedir="./server" />
 </descriptor>

@@ -41,7 +41,7 @@
 
 -->
 
-<descriptor>
+<descriptor uses="ri">
     <description>
         legacy test migrated from rearch2005 branch
     </description>
