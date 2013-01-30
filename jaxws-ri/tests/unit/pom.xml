@@ -120,7 +120,7 @@
                         <configuration>
                             <endorsedDir>${endorsed.dir}</endorsedDir>
                             <args>
-                            <arg>${ws.args}</arg>
+                                <arg>${ws.args}</arg>
                             </args>
                         </configuration>
                     </execution>
@@ -128,7 +128,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
         <profile>
             <id>hudson</id>
@@ -139,7 +139,9 @@
                         <artifactId>harness-maven-plugin</artifactId>
                         <configuration>
                             <imageUrl>${jaxwsri.hudson.url}</imageUrl>
-                            <transportUrl>${hudson.build.id}/artifact/jaxws-ri/transports/local/target/jaxws-local-transport.jar</transportUrl>
+                            <transportUrl>
+                                ${hudson.build.id}/artifact/jaxws-ri/transports/local/target/jaxws-local-transport.jar
+                            </transportUrl>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -153,8 +155,7 @@
             </activation>
             <properties>
                 <ws.args>-jaxwsInJDK -version 2.2.4 -lwhs</ws.args>
-                <!--return to default not to use any endorsed-->
-                <endorsed.dir>${java.home}/jre/lib/endorsed</endorsed.dir>
+                <maven.endorsed.skip>true</maven.endorsed.skip>
             </properties>
         </profile>
 
@@ -165,8 +166,7 @@
             </activation>
             <properties>
                 <ws.args>-jaxwsInJDK -version 2.2.8 -lwhs</ws.args>
-                <!--return to default not to use any endorsed-->
-                <endorsed.dir>${java.home}/jre/lib/endorsed</endorsed.dir>
+                <maven.endorsed.skip>true</maven.endorsed.skip>
             </properties>
         </profile>
 
@@ -354,7 +354,8 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <copy todir="target/cobertura" file="${basedir}/target/cobertura.ser" verbose="true" failonerror="true"/>
+                                        <copy todir="target/cobertura" file="${basedir}/target/cobertura.ser"
+                                              verbose="true" failonerror="true"/>
                                     </target>
                                 </configuration>
                             </execution>

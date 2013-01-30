@@ -133,6 +133,7 @@
                                 <goal>copy</goal>
                             </goals>
                             <configuration>
+                                <skip>${maven.endorsed.skip}</skip>
                                 <outputDirectory>${endorsed.dir}</outputDirectory>
                                 <silent>false</silent>
                                 <artifactItems>
