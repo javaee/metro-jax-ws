@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,8 +40,6 @@
 
 package mime.client;
 
-import com.sun.xml.ws.util.ASCIIUtility;
-
 import javax.xml.transform.stream.StreamSource;
 import javax.imageio.ImageWriter;
 import javax.imageio.ImageIO;
@@ -54,7 +52,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
 public class AttachmentHelper {
@@ -71,8 +68,6 @@ public class AttachmentHelper {
         }
         
         return true;
-        // No easy way to compare source objects
-        //return Arrays.equals (ASCIIUtility.getBytes (is1), ASCIIUtility.getBytes (is2));
     }
 
     public static byte[] getImageBytes(Image image, String type) throws IOException {
@@ -85,8 +80,7 @@ public class AttachmentHelper {
             writer = (ImageWriter)i.next();
         }
         if (writer != null) {
-            ImageOutputStream stream = null;
-            stream = ImageIO.createImageOutputStream(baos);
+            ImageOutputStream stream = ImageIO.createImageOutputStream(baos);
             writer.setOutput(stream);
             writer.write(bufImage);
             stream.close();
