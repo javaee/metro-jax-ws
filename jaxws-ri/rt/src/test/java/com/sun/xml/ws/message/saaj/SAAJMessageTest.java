@@ -211,6 +211,42 @@ public class SAAJMessageTest extends TestCase {
         assertEquals(cid1, sdh.getHrefCid());
         assertEquals(cid2, sdh.getHrefCid());
     }
+
+
+    public void testMtomAttachmentCid() throws Exception {
+        String testMtomMessageReload_01 = "multipart/related;type=\"application/xop+xml\";boundary=\"----=_Part_0_1145105632.1353005695468\";start=\"<cbe648b3-2055-413e-b8ed-877cdf0f2477>\";start-info=\"text/xml\"";
+        
+        MessageContext m1 = mcf.createContext(getResource("testMtomMessageReload_01.msg"), testMtomMessageReload_01);
+        Packet packet = (Packet) m1;
+        Message riMsg = packet.getInternalMessage();
+        //This will cause all the attachments to be created ...
+//        Iterator<Attachment> as = packet.getInternalMessage().getAttachments().iterator();
+        
+        //SAAJFactory:
+        SOAPVersion soapVersion = packet.getMessage().getSOAPVersion();
+        SOAPMessage saajMsg = soapVersion.getMessageFactory().createMessage();
+        SaajStaxWriterEx writer = new SaajStaxWriterEx(saajMsg);
+        try {
+            riMsg.writeTo(writer);
+        } catch (XMLStreamException e) {
+            throw (e.getCause() instanceof SOAPException) ? (SOAPException) e.getCause() : new SOAPException(e);
+        }
+        saajMsg = writer.getSOAPMessage();
+
+        int counter = 0;
+        String hredCid = null;
+        for(Attachment a : riMsg.getAttachments()) {
+            hredCid = ((StreamingDataHandler)a.asDataHandler()).getHrefCid();
+            counter++;
+        }
+        assertTrue(writer.ma.size() == counter);  
+        AttachmentPart ap = null;
+//        for (Iterator<AttachmentPart> itr = saajMsg.getAttachments(); itr.hasNext(); ) {
+//            System.out.println("\r\n itr.next().getContentId()  " + itr.next().getContentId() );            
+//        }
+        StreamingDataHandler sdh = (StreamingDataHandler)writer.ma.get(0);
+        assertEquals(hredCid, sdh.getHrefCid());
+    }
     
     
     private InputStream getResource(String str) throws Exception {

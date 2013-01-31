@@ -136,8 +136,11 @@ public final class MimeMultipartParser {
             List<MIMEPart> parts = message.getAttachments();
             for(MIMEPart part : parts) {
                 if (part != rootPart) {
-                    PartAttachment attach = new PartAttachment(part);
-                    attachments.put(attach.getContentId(), attach);
+                    String cid = part.getContentId();
+                    if (!attachments.containsKey(cid)) {
+                        PartAttachment attach = new PartAttachment(part);
+                        attachments.put(attach.getContentId(), attach);
+                    }
                 }
             }
             gotAll = true;
