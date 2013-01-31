@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,6 +77,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Vivek Pandey
@@ -255,6 +257,16 @@ public class WsimportOptions extends Options {
                 }
             }
         }
+
+        if (encoding != null && schemaCompiler.getOptions().encoding == null) {
+            try {
+                schemaCompiler.getOptions().parseArgument(
+                        new String[] {"-encoding", encoding}, 0);
+            } catch (com.sun.tools.xjc.BadCommandLineException ex) {
+                Logger.getLogger(WsimportOptions.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         if(destDir == null)
             destDir = new File(".");
         if(sourceDir == null)
