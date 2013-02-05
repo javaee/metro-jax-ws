@@ -76,8 +76,9 @@ public class BaseSOAPHandler implements SOAPHandler<SOAPMessageContext>,
     
     public boolean handleMessage(SOAPMessageContext messageContext) {
         if (HandlerTracker.VERBOSE_HANDLERS) {
-            System.out.println("handler " + name + " (action: " +
-                tracker.getHandlerAction(name) + ")");
+            HandlerTracker.getClientInstance().info("Client");
+            HandlerTracker.getServerInstance().info("Server");
+            System.out.println("handler " + name + " (action: " + tracker.getHandlerAction(name) + ")");
         }
         switch (tracker.getHandlerAction(name)) {
             case HA_RETURN_TRUE :

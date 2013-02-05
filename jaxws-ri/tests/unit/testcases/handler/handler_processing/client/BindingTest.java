@@ -53,6 +53,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import handler.handler_processing.common.HandlerTracker;
 import junit.framework.*;
 
 import handler.handler_processing.common.HasName;
@@ -202,7 +203,11 @@ public class BindingTest extends TestCaseBase {
         SOAPBinding binding =
             (SOAPBinding) ((BindingProvider) stub).getBinding();
         Set<String> roles = binding.getRoles();
-        System.out.println("roles: " + roles);
+
+        if (HandlerTracker.VERBOSE_HANDLERS) {
+            System.out.println("roles: " + roles);
+        }
+
         String uri1 = "http://sun.com/client/role1";
         String uri2 =  "http://sun.com/client/role2";
         assertTrue("test \"role1\" is not included in roles",

@@ -55,7 +55,8 @@ import java.util.Map;
  * to keep the messages simple over the wire.
  */
 public class HandlerTracker implements TestConstants {
-    
+
+    // change if logging necessary
     public static final boolean VERBOSE_HANDLERS = false;
     
     private static HandlerTracker clientHandlerTracker;
@@ -232,4 +233,14 @@ public class HandlerTracker implements TestConstants {
         return "noname";
     }
 
+    public void info(String prefix) {
+        System.out.print(prefix);
+        System.out.print(": registeredH = " + registeredHandlers.size());
+        System.out.print(", closedH = " + closedHandlers.size());
+        System.out.print(", destroyedH = " + destroyedHandlers.size());
+        System.out.print(", handlerA = " + handlerActions.size());
+        System.out.print(", handleFA = " + handleFaultActions.size());
+        System.out.print(", calledH = " + calledHandlers.size());
+        System.out.println(", handlerActions = " + handlerActions);
+    }
 }
