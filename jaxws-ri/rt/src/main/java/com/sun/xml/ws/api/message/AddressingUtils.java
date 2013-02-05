@@ -91,7 +91,7 @@ public class AddressingUtils {
             }
         }
     }
-//  private void fillRequestAddressingHeaders(Packet packet, AddressingVersion av, SOAPVersion sv, OneWayFeature of, boolean oneway, String action);
+//  private void fillRequestAddressingHeaders(Packet packet, AddressingVersion av, SOAPVersion sv, OneWayFeature oneWayFeature, boolean oneway, String action);
     public static void fillRequestAddressingHeaders(MessageHeaders headers, WSDLPort wsdlPort, WSBinding binding, Packet packet) {
         if (binding == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_BINDING());
@@ -248,17 +248,17 @@ public class AddressingUtils {
         return null;
     }
     
-    private static void fillRequestAddressingHeaders(@NotNull MessageHeaders headers, @NotNull Packet packet, @NotNull AddressingVersion av, @NotNull SOAPVersion sv, @NotNull OneWayFeature of, boolean oneway, @NotNull String action) {
-        if (!oneway&&!of.isUseAsyncWithSyncInvoke() && Boolean.TRUE.equals(packet.isSynchronousMEP)) {
+    private static void fillRequestAddressingHeaders(@NotNull MessageHeaders headers, @NotNull Packet packet, @NotNull AddressingVersion av, @NotNull SOAPVersion sv, @NotNull OneWayFeature oneWayFeature, boolean oneway, @NotNull String action) {
+        if (!oneway&&!oneWayFeature.isUseAsyncWithSyncInvoke() && Boolean.TRUE.equals(packet.isSynchronousMEP)) {
             fillRequestAddressingHeaders(headers, packet, av, sv, oneway, action);
         } else {
             fillCommonAddressingHeaders(headers, packet, av, sv, action, false);
     
             // wsa:ReplyTo
-            // wsa:ReplyTo (add it if it doesn't already exist and OnewayFeature
+            // wsa:ReplyTo (add it if it doesn't already exist and OneWayFeature
             //              requests a specific ReplyTo)
             if (headers.get(av.replyToTag, false) == null) {
-                WSEndpointReference replyToEpr = of.getReplyTo();
+                WSEndpointReference replyToEpr = oneWayFeature.getReplyTo();
                 if (replyToEpr != null) {
                     headers.add(replyToEpr.createHeader(av.replyToTag));
                     // add wsa:MessageID only for non-null ReplyTo
@@ -271,10 +271,10 @@ public class AddressingUtils {
             }
 
           // wsa:FaultTo
-            // wsa:FaultTo (add it if it doesn't already exist and OnewayFeature
+            // wsa:FaultTo (add it if it doesn't already exist and OneWayFeature
             //              requests a specific FaultTo)
             if (headers.get(av.faultToTag, false) == null) {
-                WSEndpointReference faultToEpr = of.getFaultTo();
+                WSEndpointReference faultToEpr = oneWayFeature.getFaultTo();
                 if (faultToEpr != null) {
                     headers.add(faultToEpr.createHeader(av.faultToTag));
                     // add wsa:MessageID only for non-null FaultTo
@@ -285,13 +285,13 @@ public class AddressingUtils {
             }
 
           // wsa:From
-            if (of.getFrom() != null) {
-                headers.addOrReplace(of.getFrom().createHeader(av.fromTag));
+            if (oneWayFeature.getFrom() != null) {
+                headers.addOrReplace(oneWayFeature.getFrom().createHeader(av.fromTag));
             }
     
             // wsa:RelatesTo
-            if (of.getRelatesToID() != null) {
-                headers.addOrReplace(new RelatesToHeader(av.relatesToTag, of.getRelatesToID()));
+            if (oneWayFeature.getRelatesToID() != null) {
+                headers.addOrReplace(new RelatesToHeader(av.relatesToTag, oneWayFeature.getRelatesToID()));
             }
         }
     }
