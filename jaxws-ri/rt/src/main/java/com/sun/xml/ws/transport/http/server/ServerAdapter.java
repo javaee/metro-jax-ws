@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,7 @@ import com.sun.xml.ws.transport.http.HttpAdapter;
 import javax.xml.ws.WebServiceException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -75,7 +76,8 @@ public final class ServerAdapter extends HttpAdapter implements BoundEndpoint {
         // registers itself with the container
         Module module = endpoint.getContainer().getSPI(Module.class);
         if(module==null)
-            LOGGER.warning("Container "+endpoint.getContainer()+" doesn't support "+Module.class);
+            LOGGER.log(Level.WARNING, "Container {0} doesn''t support {1}",
+                    new Object[]{endpoint.getContainer(), Module.class});
         else {
             module.getBoundEndpoints().add(this);
         }
@@ -90,8 +92,8 @@ public final class ServerAdapter extends HttpAdapter implements BoundEndpoint {
     }
 
 
-    @NotNull
-    public URI getAddress() {
+    @Override
+    public @NotNull URI getAddress() {
         WebModule webModule = endpoint.getContainer().getSPI(WebModule.class);
         if(webModule==null)
             // this is really a bug in the container implementation
@@ -100,6 +102,7 @@ public final class ServerAdapter extends HttpAdapter implements BoundEndpoint {
         return getAddress(webModule.getContextPath());
     }
 
+    @Override
     public @NotNull URI getAddress(String baseAddress) {
         String adrs = baseAddress+getValidPath();
         try {
@@ -118,6 +121,7 @@ public final class ServerAdapter extends HttpAdapter implements BoundEndpoint {
         return urlPattern;
     }
 
+    @Override
     public String toString() {
         return super.toString()+"[name="+name+']';
     }
