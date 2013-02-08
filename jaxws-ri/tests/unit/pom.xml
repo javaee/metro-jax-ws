@@ -149,6 +149,17 @@
         </profile>
 
         <profile>
+            <id>jaxwsInJDK6</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <ws.args>-jaxwsInJDK -version 2.1.6 -lwhs</ws.args>
+                <maven.endorsed.skip>true</maven.endorsed.skip>
+            </properties>
+        </profile>
+
+        <profile>
             <id>jaxwsInJDK7</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
