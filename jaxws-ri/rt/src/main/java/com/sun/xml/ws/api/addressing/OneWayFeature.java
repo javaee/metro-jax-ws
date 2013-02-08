@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,7 +45,6 @@ import java.net.URL;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.FeatureConstructor;
-import com.sun.xml.ws.api.message.HeaderList;
 
 import javax.xml.ws.WebServiceFeature;
 
@@ -78,6 +77,7 @@ public class OneWayFeature extends WebServiceFeature {
      */
     public static final String ID = "http://java.sun.com/xml/ns/jaxws/addressing/oneway";
 
+    private String messageId;
     private WSEndpointReference replyTo;
     private WSEndpointReference sslReplyTo;
     private WSEndpointReference from;
@@ -128,6 +128,23 @@ public class OneWayFeature extends WebServiceFeature {
         this.replyTo = replyTo;
         this.from = from;
         this.relatesToID = relatesTo;
+    }
+
+    public OneWayFeature(final AddressingPropertySet a, AddressingVersion v) {
+        this.enabled     = true;
+        this.messageId   = a.getMessageId();
+        this.relatesToID = a.getRelatesTo();
+        this.replyTo     = makeEPR(a.getReplyTo(), v);
+        this.faultTo     = makeEPR(a.getFaultTo(), v);
+    }
+
+    private WSEndpointReference makeEPR(final String x, final AddressingVersion v) {
+        if (x == null) { return null; }
+        return new WSEndpointReference(x, v);
+    }
+
+    public String getMessageId() {
+        return messageId;
     }
 
     /**

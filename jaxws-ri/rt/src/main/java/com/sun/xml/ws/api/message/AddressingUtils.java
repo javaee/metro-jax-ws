@@ -51,6 +51,7 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.addressing.WsaTubeHelper;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.addressing.AddressingPropertySet;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.OneWayFeature;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
@@ -130,12 +131,17 @@ public class AddressingUtils {
                 }
             }
         }
-        if (!binding.isFeatureEnabled(OneWayFeature.class)) {
+
+        OneWayFeature oneWayFeature = binding.getFeature(OneWayFeature.class);
+        final AddressingPropertySet addressingPropertySet = packet.getSatellite(AddressingPropertySet.class);
+        oneWayFeature = addressingPropertySet == null ? oneWayFeature : new OneWayFeature(addressingPropertySet, addressingVersion);
+
+        if (oneWayFeature == null || !oneWayFeature.isEnabled()) {
             // standard oneway
             fillRequestAddressingHeaders(headers, packet, addressingVersion, binding.getSOAPVersion(), oneway, effectiveInputAction, AddressingVersion.isRequired(binding));
         } else {
             // custom oneway
-            fillRequestAddressingHeaders(headers, packet, addressingVersion, binding.getSOAPVersion(), binding.getFeature(OneWayFeature.class), oneway, effectiveInputAction);
+            fillRequestAddressingHeaders(headers, packet, addressingVersion, binding.getSOAPVersion(), oneWayFeature, oneway, effectiveInputAction);
         }
     }
     
@@ -253,10 +259,11 @@ public class AddressingUtils {
             fillRequestAddressingHeaders(headers, packet, av, sv, oneway, action);
         } else {
             fillCommonAddressingHeaders(headers, packet, av, sv, action, false);
-    
+
+            boolean isMessageIdAdded = false;
+
             // wsa:ReplyTo
-            // wsa:ReplyTo (add it if it doesn't already exist and OneWayFeature
-            //              requests a specific ReplyTo)
+            // add if it doesn't already exist and OneWayFeature requests a specific ReplyTo
             if (headers.get(av.replyToTag, false) == null) {
                 WSEndpointReference replyToEpr = oneWayFeature.getReplyTo();
                 if (replyToEpr != null) {
@@ -264,15 +271,21 @@ public class AddressingUtils {
                     // add wsa:MessageID only for non-null ReplyTo
                     if (packet.getMessage().getMessageHeaders().get(av.messageIDTag, false) == null) {
                         // if header doesn't exist, method getID creates a new random id
-                        String newID = Message.generateMessageID();
+                        String newID = oneWayFeature.getMessageId() == null ? Message.generateMessageID() : oneWayFeature.getMessageId();
                         headers.add(new StringHeader(av.messageIDTag, newID));
+                        isMessageIdAdded = true;
                     }
                 }
             }
 
-          // wsa:FaultTo
-            // wsa:FaultTo (add it if it doesn't already exist and OneWayFeature
-            //              requests a specific FaultTo)
+            // If the user sets a messageId, use it.
+            final String messageId = oneWayFeature.getMessageId();
+            if (!isMessageIdAdded && messageId != null) {
+                headers.add(new StringHeader(av.messageIDTag, messageId));
+            }
+
+            // wsa:FaultTo
+            // add if it doesn't already exist and OneWayFeature requests a specific FaultTo
             if (headers.get(av.faultToTag, false) == null) {
                 WSEndpointReference faultToEpr = oneWayFeature.getFaultTo();
                 if (faultToEpr != null) {
@@ -284,7 +297,7 @@ public class AddressingUtils {
                 }
             }
 
-          // wsa:From
+            // wsa:From
             if (oneWayFeature.getFrom() != null) {
                 headers.addOrReplace(oneWayFeature.getFrom().createHeader(av.fromTag));
             }
