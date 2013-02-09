@@ -132,38 +132,12 @@
                         <id>copy-api</id>
                         <phase>process-test-sources</phase>
                         <goals>
-                            <goal>copy</goal>
+                            <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib/api</outputDirectory>
                             <excludeTransitive>true</excludeTransitive>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.glassfish</groupId>
-                                    <artifactId>javax.annotation</artifactId>
-                                    <type>jar</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>javax.jws</groupId>
-                                    <artifactId>jsr181-api</artifactId>
-                                    <type>jar</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>javax.xml.bind</groupId>
-                                    <artifactId>jaxb-api</artifactId>
-                                    <type>jar</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>javax.xml.ws</groupId>
-                                    <artifactId>jaxws-api</artifactId>
-                                    <type>jar</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>javax.xml.soap</groupId>
-                                    <artifactId>saaj-api</artifactId>
-                                    <type>jar</type>
-                                </artifactItem>
-                            </artifactItems>
+                            <includeArtifactIds>javax.annotation,jsr181-api,jaxb-api,saaj-api,jaxws-api</includeArtifactIds>
                         </configuration>
                     </execution>
                     <execution>
