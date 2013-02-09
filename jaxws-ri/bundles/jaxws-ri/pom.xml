@@ -149,12 +149,18 @@
                         <id>stage</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>unpack-dependencies</goal>
+                            <goal>unpack</goal>
                         </goals>
                         <configuration>
-                            <includeArtifactIds>${project.artifactId}</includeArtifactIds>
-                            <outputDirectory>${project.build.directory}/stage</outputDirectory>
-                            <type>zip</type>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}/stage</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
