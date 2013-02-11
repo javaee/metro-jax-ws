@@ -373,11 +373,7 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
-        if (SourceVersion.latest().compareTo(SourceVersion.RELEASE_6) > 0) {
-            return SourceVersion.valueOf("RELEASE_7");
-        } else {
-            return SourceVersion.RELEASE_6;
-        }
+        return SourceVersion.latest();
     }
 }
 
