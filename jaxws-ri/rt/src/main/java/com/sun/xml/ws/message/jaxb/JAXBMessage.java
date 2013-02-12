@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,6 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
-import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.encoding.SOAPBindingCodec;
 import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.AttachmentSetImpl;
@@ -251,28 +250,33 @@ public final class JAXBMessage extends AbstractMessageImpl {
         this.rawContext = that.rawContext;
     }
     
+    @Override
     public boolean hasHeaders() {
         return headers!=null && !headers.isEmpty();
     }
 
+    @Override
     public HeaderList getHeaders() {
         if(headers==null)
             headers = new HeaderList(getSOAPVersion());
         return headers;
     }
 
+    @Override
     public String getPayloadLocalPart() {
         if(localName==null)
             sniff();
         return localName;
     }
 
+    @Override
     public String getPayloadNamespaceURI() {
         if(nsUri==null)
             sniff();
         return nsUri;
     }
 
+    @Override
     public boolean hasPayload() {
         return true;
     }
@@ -301,10 +305,12 @@ public final class JAXBMessage extends AbstractMessageImpl {
         }
     }
 
+    @Override
     public Source readPayloadAsSource() {
         return new JAXBBridgeSource(bridge,jaxbObject);
     }
 
+    @Override
     public <T> T readPayloadAsJAXB(Unmarshaller unmarshaller) throws JAXBException {
         JAXBResult out = new JAXBResult(unmarshaller);
         // since the bridge only produces fragments, we need to fire start/end document.
@@ -323,6 +329,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
         return (T)out.getResult();
     }
 
+    @Override
     public XMLStreamReader readPayload() throws XMLStreamException {
        try {
             if(infoset==null) {
@@ -348,6 +355,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
     /**
      * Writes the payload as SAX events.
      */
+    @Override
     protected void writePayloadTo(ContentHandler contentHandler, ErrorHandler errorHandler, boolean fragment) throws SAXException {
         try {
             if(fragment)
@@ -369,6 +377,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
         }
     }
 
+    @Override
     public void writePayloadTo(XMLStreamWriter sw) throws XMLStreamException {
         try {
             // MtomCodec sets its own AttachmentMarshaller
@@ -404,6 +413,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
         }
     }
 
+    @Override
     public Message copy() {
         return new JAXBMessage(this);
     }

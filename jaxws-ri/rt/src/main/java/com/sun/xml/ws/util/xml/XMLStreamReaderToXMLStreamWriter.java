@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -178,7 +178,7 @@ public class XMLStreamReaderToXMLStreamWriter {
         if ((c != null) && (c instanceof Base64Data)) {
             if (mtomAttachmentMarshaller != null) {
                 Base64Data b64d = (Base64Data) c;
-                mtomAttachmentMarshaller.addMtomAttachment(b64d.getDataHandler(), null, null);
+                ((XMLStreamWriterEx)out).writeBinary(b64d.getDataHandler());
             } else {
                 try {
                     ((Base64Data)c).writeTo(out);
