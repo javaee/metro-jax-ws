@@ -40,9 +40,9 @@
 
 package xop.hello.client;
 
+import com.sun.xml.ws.Closeable;
 import junit.framework.TestCase;
 import testutil.AttachmentHelper;
-import testutil.ClientServerTestUtil;
 
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
@@ -54,14 +54,18 @@ import java.util.Arrays;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
 public class AppTest extends TestCase {
+    
     private static Hello port;
+    
     public AppTest(String name) throws Exception{
         super(name);
+    }
 
+    @Override
+    public void setUp() throws Exception {
         HelloService helloService = new HelloService();
         Object obj = helloService.getHelloPort();
         assertTrue(obj != null);
-        ClientServerTestUtil.setTransport(obj);
 
         //set Mtom optimization.
         SOAPBinding binding = (SOAPBinding)((BindingProvider)obj).getBinding();
@@ -69,7 +73,7 @@ public class AppTest extends TestCase {
         port = (Hello)obj;
     }
 
-    public void testMtom() throws Exception{
+    public void testMtom() throws Exception {
         String name="Duke";
         Holder<byte[]> photo = new Holder<byte[]>(name.getBytes());
         Holder<Image> image = new Holder<Image>(getImage("java.jpg"));
@@ -79,7 +83,7 @@ public class AppTest extends TestCase {
         assertTrue(AttachmentHelper.compareImages(getImage("java.jpg"), image.value));
     }
 
-    public void testEcho() throws Exception{
+    public void testEcho() throws Exception {
         ((BindingProvider)port).getRequestContext().put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, 10);
         byte[] bytes = AttachmentHelper.getImageBytes(getImage("java.jpg"), "image/jpeg");
         Holder<byte[]> image = new Holder<byte[]>(bytes);
@@ -96,4 +100,11 @@ public class AppTest extends TestCase {
         return getClass().getClassLoader().getResourceAsStream(file);
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        if (port != null) {
+            ((Closeable)port).close();
+        }
+    }
 }
