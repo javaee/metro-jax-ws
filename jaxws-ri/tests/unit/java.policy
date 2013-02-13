@@ -84,8 +84,10 @@ grant {
     permission java.lang.RuntimePermission "accessDeclaredMembers";
 
     // package access -----------------------------------------------------------------
-    permission java.lang.RuntimePermission "accessClassInPackage.sun.reflect";
-    permission java.lang.RuntimePermission "accessClassInPackage.sun.util.logging.*";
+    // necessary for WS Harness under jdk6
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.*";
+    //permission java.lang.RuntimePermission "accessClassInPackage.sun.reflect";
+    //permission java.lang.RuntimePermission "accessClassInPackage.sun.util.logging.*";
 
     // JAXWS - "accessClassInPackage.com.sun.xml.internal.*":
     permission java.lang.RuntimePermission "accessClassInPackage.com.sun.xml.internal.*";
