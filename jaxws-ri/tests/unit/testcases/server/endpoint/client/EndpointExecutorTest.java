@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,10 +40,7 @@
 
 package server.endpoint.client;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import testutil.ClientServerTestUtil;
 
 import javax.xml.ws.Endpoint;
 import javax.xml.ws.http.HTTPBinding;
@@ -60,7 +57,7 @@ public class EndpointExecutorTest extends TestCase {
 
     public void testExecutor() throws Exception {
         int port = PortAllocator.getFreePort();
-        String address = "http://127.0.0.1:"+port+"/exe";
+        String address = "http://localhost:"+port+"/exe";
         Endpoint e = Endpoint.create(HTTPBinding.HTTP_BINDING, new MyProvider());
         MyExecutor executor = new MyExecutor();
         e.setExecutor(executor);

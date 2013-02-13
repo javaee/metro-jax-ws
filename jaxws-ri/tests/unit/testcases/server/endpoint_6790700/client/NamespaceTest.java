@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,30 +40,9 @@
 
 package server.endpoint_6790700.client;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import javax.xml.ws.Endpoint;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import java.net.URL;
-import java.io.*;
-import javax.xml.ws.Provider;
-import javax.xml.transform.Source;
-import javax.xml.ws.WebServiceProvider;
-import java.io.StringReader;
-import javax.annotation.Resource;
-import javax.xml.ws.WebServiceContext;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.http.HTTPBinding;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.Iterator;
-import javax.xml.ws.WebServiceException;
-
-import com.sun.net.httpserver.HttpExchange;
 import testutil.*;
 
 /**
@@ -73,7 +52,7 @@ public class NamespaceTest extends TestCase {
 
     public void testNamespace() throws Exception {
         int port = PortAllocator.getFreePort();
-        String address = "http://127.0.0.1:"+port+"/hello";
+        String address = "http://localhost:"+port+"/hello";
         Endpoint e = Endpoint.create(new MyProvider());
         e.publish(address);
 
