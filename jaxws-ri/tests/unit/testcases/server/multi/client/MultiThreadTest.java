@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,17 +38,9 @@
  * holder.
  */
 
-/*
- * $Id: MultiThreadTest.java,v 1.1 2008-07-17 00:55:49 jitu Exp $
- */
-
-/*
- * Copyright 2004 Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
-
 package server.multi.client;
 
+import com.sun.xml.ws.Closeable;
 import junit.framework.TestCase;
 
 import javax.xml.ws.BindingProvider;
@@ -60,21 +52,25 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-
 /**
  *
  * @author Jitendra Kotamraju
  */
+@SuppressWarnings("empty-statement")
 public class MultiThreadTest extends TestCase {
     
     private static final int NO_THREADS = 20;
     private static final int NO_REQS = 50000;
     private int noReqs = 0;
     private int noResps = 0;
-    private final HelloPortType stub;
+    private HelloPortType stub;
 
     public MultiThreadTest(String name) throws Exception {
         super(name);
+    }
+
+    @Override
+    public void setUp() throws Exception {
         HelloService service = new HelloService();
         stub = service.getHelloPort();
 
@@ -86,7 +82,13 @@ public class MultiThreadTest extends TestCase {
         // this turns RequestContext to fallback mode
         ctx.keySet();
     }
-
+    
+    @Override
+    public void tearDown() throws Exception {
+        ((Closeable)stub).close();
+        
+    }
+    
     public void testMultiThread() throws Exception {
         synchronized(this) {
             noReqs = NO_REQS; noResps = 0;
@@ -94,12 +96,13 @@ public class MultiThreadTest extends TestCase {
         Thread[] threads = new Thread[NO_THREADS];
         for(int i=0; i < NO_THREADS; i++) {
             threads[i] = new Thread(new Runnable() {
+                @Override
                 public void run() {
                     for(int i=0; i < noReqs/NO_THREADS; i++) {
                         try {
                             invoke();
                         } catch(Exception e) {
-                            e.printStackTrace();
+                            fail(e.getMessage());
                         }
                     }
                 }
@@ -118,7 +121,6 @@ public class MultiThreadTest extends TestCase {
 
 
     public void invoke() throws Exception {
-        //Thread.sleep(new Random(System.currentTimeMillis()).nextInt(50));
 	int rand = new Random(System.currentTimeMillis()).nextInt(1000);
 	String var1 = "foo"+rand;
 	String var2 = "bar"+rand;
@@ -178,11 +180,12 @@ public class MultiThreadTest extends TestCase {
     private void doTestWithThreadPool(ExecutorService service, int noReqs) throws Exception {
         for(int i=0; i < noReqs; i++) {
             service.execute(new Runnable() {
+                @Override
                 public void run() {
                     try {
                         invoke();
                     } catch(Exception e) {
-                        e.printStackTrace();
+                        fail(e.getMessage());
                     }
                 }
             });
