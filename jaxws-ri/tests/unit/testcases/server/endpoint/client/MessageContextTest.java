@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -173,7 +173,7 @@ public class MessageContextTest extends TestCase {
 
     public void testMessageContext() throws Exception {
         int port = PortAllocator.getFreePort();
-        String address = "http://127.0.0.1:"+port+"/";
+        String address = "http://localhost:"+port+"/";
         Endpoint e = Endpoint.create(HTTPBinding.HTTP_BINDING, new MyProvider());
         e.publish(address);
 
@@ -212,7 +212,7 @@ public class MessageContextTest extends TestCase {
 
     public void testHttpProperties() throws Exception {
         int port = PortAllocator.getFreePort();
-        String address = "http://127.0.0.1:"+port+"/hello";
+        String address = "http://localhost:"+port+"/hello";
         Endpoint e = Endpoint.create(HTTPBinding.HTTP_BINDING, new MessageContextProvider());
         e.publish(address);
 
