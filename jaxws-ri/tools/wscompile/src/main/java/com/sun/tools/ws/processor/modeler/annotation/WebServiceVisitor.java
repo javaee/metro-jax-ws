@@ -572,7 +572,7 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
             if (((DeclaredType) interfaceType).asElement().equals(interfaceElement))
                 return true;
         }
-        List<ExecutableElement> classMethods = ElementFilter.methodsIn(classElement.getEnclosedElements());
+        List<ExecutableElement> classMethods = getClassMethods(classElement);
         boolean implementsMethod;
         for (ExecutableElement interfaceMethod : ElementFilter.methodsIn(interfaceElement.getEnclosedElements())) {
             implementsMethod = false;
@@ -589,6 +589,19 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
             }
         }
         return true;
+    }
+
+    private static List<ExecutableElement> getClassMethods(TypeElement classElement) {
+        if (classElement.getQualifiedName().toString().equals(Object.class.getName())) // we don't need Object's methods
+            return null;
+        TypeElement superclassElement = (TypeElement) ((DeclaredType) classElement.getSuperclass()).asElement();
+        List<ExecutableElement> superclassesMethods = getClassMethods(superclassElement);
+        List<ExecutableElement> classMethods = ElementFilter.methodsIn(classElement.getEnclosedElements());
+        if (superclassesMethods == null)
+            return classMethods;
+        else
+            superclassesMethods.addAll(classMethods);
+        return superclassesMethods;
     }
 
     protected boolean sameMethod(ExecutableElement method1, ExecutableElement method2) {
