@@ -53,6 +53,10 @@ import com.sun.tools.ws.processor.ProcessorException;
 */
 public class ModelerException extends ProcessorException {
 
+    public ModelerException(String key) {
+        super(key);
+    }
+
     public ModelerException(String key, Object... args) {
         super(key, args);
     }
