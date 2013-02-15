@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,7 @@ import junit.framework.TestCase;
 
 public class ClientTest extends TestCase {
 
-    private static List<Integer> values = new ArrayList<Integer>(Arrays.asList(new Integer[]{1142, 2242}));
+    private static final List<Integer> values = new ArrayList<Integer>(Arrays.asList(new Integer[]{1142, 2242}));
 
     public ClientTest(String name) {
         super(name);
@@ -54,13 +54,12 @@ public class ClientTest extends TestCase {
 
     public void testWs1Client() throws Exception {
         AddNumbersPortType port = new AddNumbersService().getAddNumbersPort();
-        assertTrue(values.remove(Integer.valueOf(port.addNumbers(1, 2))));
+        assertTrue("WS1 invocation failed." , values.remove(Integer.valueOf(port.addNumbers(1, 2))));
     }
 
     public void testWs2Client() throws Exception {
         fromwsdl.twoServicesFromWSDL.client2.AddNumbersPortType port
                 = new fromwsdl.twoServicesFromWSDL.client2.AddNumbersService().getAddNumbersPort();
-        assertTrue(values.remove(Integer.valueOf(port.addNumbers(1, 2))));
-        assertTrue(values.isEmpty());
+        assertTrue("WS2 invocation failed.", values.remove(Integer.valueOf(port.addNumbers(1, 2))));
     }
 }
