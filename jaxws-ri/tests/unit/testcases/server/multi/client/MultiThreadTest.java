@@ -90,6 +90,7 @@ public class MultiThreadTest extends TestCase {
     }
     
     public void testMultiThread() throws Exception {
+        System.out.println("MultiThreadTest: testMultiThread");
         synchronized(this) {
             noReqs = NO_REQS; noResps = 0;
         }
@@ -138,6 +139,7 @@ public class MultiThreadTest extends TestCase {
     }
 
     public void testThreadPool() throws Exception {
+        System.out.println("MultiThreadTest: testThreadPool");
         ExecutorService service = new ThreadPoolExecutor(NO_THREADS/2, NO_THREADS,
             30L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>()); 
         synchronized(this) {
@@ -152,6 +154,7 @@ public class MultiThreadTest extends TestCase {
     }
 
     public void testFixedThreadPool() throws Exception {
+        System.out.println("MultiThreadTest: testFixedThreadPool");
         ExecutorService service = Executors.newFixedThreadPool(NO_THREADS);
         synchronized(this) {
             noReqs = NO_REQS; noResps = 0;
@@ -165,6 +168,7 @@ public class MultiThreadTest extends TestCase {
     }
 
     public void testCachedThreadPool() throws Exception {
+        System.out.println("MultiThreadTest: testCachedThreadPool");
         ExecutorService service = Executors.newCachedThreadPool();
         synchronized(this) {
             noReqs = 50; noResps = 0;

@@ -41,7 +41,7 @@
 
 -->
 
-<descriptor since="2.0" transport="local" uses="skip-lwhs">
+<descriptor since="2.0" uses="skip-lwhs">
   <description>Multi threaded test</description>
     
   <service basedir="./server">
