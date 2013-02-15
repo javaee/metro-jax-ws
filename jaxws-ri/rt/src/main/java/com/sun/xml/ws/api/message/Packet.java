@@ -1137,6 +1137,85 @@ public final class Packet
         return model;
     }
     
+    public Map<String, Object> asMapIncludingInvocationProperties() {
+        final Map<String, Object> asMap = asMap();
+        return new AbstractMap<String, Object>() {
+            @Override
+            public Object get(Object key) {
+                Object o = asMap.get(key);
+                if (o != null)
+                    return o;
+                
+                return invocationProperties.get(key);
+            }
+            
+            @Override
+            public int size() {
+                return asMap.size() + invocationProperties.size();
+            }
+
+            @Override
+            public Set<Entry<String, Object>> entrySet() {
+                final Set<Entry<String, Object>> asMapEntries = asMap.entrySet();
+                final Set<Entry<String, Object>> ipEntries = invocationProperties.entrySet();
+                
+                return new AbstractSet<Entry<String, Object>>() {
+                    @Override
+                    public Iterator<Entry<String, Object>> iterator() {
+                        final Iterator<Entry<String, Object>> asMapIt = asMapEntries.iterator();
+                        final Iterator<Entry<String, Object>> ipIt = ipEntries.iterator();
+                        
+                        return new Iterator<Entry<String, Object>>() {
+                            @Override
+                            public boolean hasNext() {
+                                return asMapIt.hasNext() || ipIt.hasNext();
+                            }
+
+                            @Override
+                            public java.util.Map.Entry<String, Object> next() {
+                                if (asMapIt.hasNext())
+                                    return asMapIt.next();
+                                return ipIt.next();
+                            }
+
+                            @Override
+                            public void remove() {
+                                throw new UnsupportedOperationException();
+                            }
+                        };
+                    }
+
+                    @Override
+                    public int size() {
+                        return asMap.size() + invocationProperties.size();
+                    }
+                };
+            }
+
+            @Override
+            public Object put(String key, Object value) {
+                if (supports(key))
+                    return asMap.put(key, value);
+                
+                return invocationProperties.put(key, value);
+            }
+
+            @Override
+            public void clear() {
+                asMap.clear();
+                invocationProperties.clear();
+            }
+
+            @Override
+            public Object remove(Object key) {
+                if (supports(key))
+                    return asMap.remove(key);
+                
+                return invocationProperties.remove(key);
+            }
+        };
+    }
+    
     private static final Logger LOGGER = Logger.getLogger(Packet.class.getName());
 
     @Override
