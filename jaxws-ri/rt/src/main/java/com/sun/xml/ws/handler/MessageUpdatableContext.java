@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,12 +63,6 @@ public abstract class MessageUpdatableContext implements MessageContext {
     }
     
     /**
-     * Fill a {@link Packet} with values of this {@link MessageContext}.
-     */
-    private void fill(Packet packet) {
-        ctxt.fill(packet);
-    }
-    /**
      * Updates Message in the packet with user modifications
      */
     abstract void updateMessage(); 
@@ -94,7 +88,6 @@ public abstract class MessageUpdatableContext implements MessageContext {
      */
     public final void updatePacket() {
         updateMessage();
-        fill(packet);
     }
     
     MessageContextImpl getMessageContext() {

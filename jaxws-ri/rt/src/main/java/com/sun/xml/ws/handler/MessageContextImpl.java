@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,6 @@
 
 package com.sun.xml.ws.handler;
 
-import com.oracle.webservices.api.message.ReadOnlyPropertyException;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.Packet;
@@ -59,23 +58,17 @@ import java.util.Set;
  */
 
 class MessageContextImpl implements MessageContext {
-    private Map<String,Object> fallbackMap = null;
-    private Set<String> handlerScopeProps;
-    Packet packet;
+    private final Set<String> handlerScopeProps;
+    private final Packet packet;
+    private final Map<String, Object> asMapIncludingInvocationProperties;
 
-
-    void fallback() {
-        if(fallbackMap == null) {
-            fallbackMap = new HashMap<String,Object>();
-            fallbackMap.putAll(packet.createMapView());
-            fallbackMap.putAll(packet.invocationProperties);
-        }
-    }
     /** Creates a new instance of MessageContextImpl */
     public MessageContextImpl(Packet packet) {
         this.packet = packet;
-        handlerScopeProps =  packet.getHandlerScopePropertyNames(false);
+        this.asMapIncludingInvocationProperties = packet.asMapIncludingInvocationProperties();
+        this.handlerScopeProps =  packet.getHandlerScopePropertyNames(false);
     }
+    
     protected void updatePacket() {
         throw new UnsupportedOperationException("wrong call");
     }
@@ -102,65 +95,32 @@ class MessageContextImpl implements MessageContext {
     }
 
     public int size() {
-        fallback();
-        return fallbackMap.size();
+        return asMapIncludingInvocationProperties.size();
     }
 
     public boolean isEmpty() {
-        fallback();
-        return fallbackMap.isEmpty();
+        return asMapIncludingInvocationProperties.isEmpty();
     }
 
     public boolean containsKey(Object key) {
-        if(fallbackMap == null) {
-            if(packet.supports(key))
-                return true;
-            return packet.invocationProperties.containsKey(key);
-        } else {
-            fallback();
-            return fallbackMap.containsKey(key);
-        }
+        return asMapIncludingInvocationProperties.containsKey(key);
     }
 
     public boolean containsValue(Object value) {
-        fallback();
-        return fallbackMap.containsValue(value);
+        return asMapIncludingInvocationProperties.containsValue(value);
     }
 
     public Object put(String key, Object value) {
-        if (fallbackMap == null) {
-            if (packet.supports(key)) {
-                return packet.put(key, value);     // strongly typed
-            }
-            if (!packet.invocationProperties.containsKey(key)) {
-                //New property, default to Scope.HANDLER
-                handlerScopeProps.add(key);
-            }
-            return packet.invocationProperties.put(key, value);
-
-        } else {
-            fallback();
-            if (!fallbackMap.containsKey(key)) {
-                //new property, default to Scope.HANDLER
-                handlerScopeProps.add(key);
-            }
-            return fallbackMap.put(key, value);
+        if (!asMapIncludingInvocationProperties.containsKey(key)) {
+            //new property, default to Scope.HANDLER
+            handlerScopeProps.add(key);
         }
+        return asMapIncludingInvocationProperties.put(key, value);
     }
     public Object get(Object key) {
         if(key == null)
             return null;
-        Object value;
-        if(fallbackMap == null) {
-            if (packet.supports(key)) {
-                value =  packet.get(key);    // strongly typed
-            } else {
-                value = packet.invocationProperties.get(key);
-            }
-        } else {
-            fallback();
-            value = fallbackMap.get(key);
-        }
+        Object value = asMapIncludingInvocationProperties.get(key);
         //add the attachments from the Message to the corresponding attachment property
         if(key.equals(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS) ||
             key.equals(MessageContext.INBOUND_MESSAGE_ATTACHMENTS)){
@@ -186,61 +146,29 @@ class MessageContextImpl implements MessageContext {
     }
 
     public void putAll(Map<? extends String, ? extends Object> t) {
-        fallback();
         for(String key: t.keySet()) {
-            if(!fallbackMap.containsKey(key)) {
+            if(!asMapIncludingInvocationProperties.containsKey(key)) {
                 //new property, default to Scope.HANDLER
                 handlerScopeProps.add(key);
             }
         }
-        fallbackMap.putAll(t);
+        asMapIncludingInvocationProperties.putAll(t);
     }
 
     public void clear() {
-        fallback();
-        fallbackMap.clear();
+        asMapIncludingInvocationProperties.clear();
     }
     public Object remove(Object key){
-        fallback();
         handlerScopeProps.remove(key);
-        return fallbackMap.remove(key);
+        return asMapIncludingInvocationProperties.remove(key);
     }
     public Set<String> keySet() {
-        fallback();
-        return fallbackMap.keySet();
+        return asMapIncludingInvocationProperties.keySet();
     }
     public Set<Map.Entry<String, Object>> entrySet(){
-        fallback();
-        return fallbackMap.entrySet();
+        return asMapIncludingInvocationProperties.entrySet();
     }
     public Collection<Object> values() {
-        fallback();
-        return fallbackMap.values();
+        return asMapIncludingInvocationProperties.values();
     }
-
-
-    /**
-     * Fill a {@link Packet} with values of this {@link MessageContext}.
-     */
-    void fill(Packet packet) {
-        if(fallbackMap != null) {
-            for (Entry<String, Object> entry : fallbackMap.entrySet()) {
-                String key = entry.getKey();
-                if (packet.supports(key)) {
-                    try {
-                        packet.put(key, entry.getValue());
-                    } catch (ReadOnlyPropertyException e) {
-                        // Nothing to do
-                    }
-                } else {
-                    packet.invocationProperties.put(key, entry.getValue());
-                }
-            }
-
-            //Remove properties which are removed by user.
-            packet.createMapView().keySet().retainAll(fallbackMap.keySet());
-            packet.invocationProperties.keySet().retainAll(fallbackMap.keySet());
-        }
-    }
-
 }
