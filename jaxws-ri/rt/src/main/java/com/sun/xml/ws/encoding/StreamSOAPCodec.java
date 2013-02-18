@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,8 @@ package com.sun.xml.ws.encoding;
 
 import static com.sun.xml.ws.binding.WebServiceFeatureList.getSoapVersion;
 
+import com.oracle.webservices.impl.encoding.StreamDecoderImpl;
+import com.oracle.webservices.impl.internalspi.encoding.StreamDecoder;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.MutableXMLStreamBuffer;
@@ -52,20 +54,19 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.message.AttachmentSet;
+import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.ContentType;
-import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.developer.SerializationFeature;
 import com.sun.xml.ws.message.AttachmentSetImpl;
-import com.sun.xml.ws.message.stream.StreamHeader;
 import com.sun.xml.ws.message.stream.StreamMessage;
 import com.sun.xml.ws.protocol.soap.VersionMismatchException;
 import com.sun.xml.ws.server.UnsupportedMediaException;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.streaming.TidyXMLStreamReader;
+import com.sun.xml.ws.util.ServiceFinder;
 
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -94,9 +95,10 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
     private static final String SOAP_HEADER = "Header";
     private static final String SOAP_BODY = "Body";
 
-    private final String SOAP_NAMESPACE_URI;
     private final SOAPVersion soapVersion;
     protected final SerializationFeature serializationFeature;
+    
+    private final StreamDecoder streamDecoder;
 
     // charset of last decoded message. Will be used for encoding server's
     // response messages with the request message's encoding
@@ -117,8 +119,16 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
     private StreamSOAPCodec(SOAPVersion soapVersion, @Nullable SerializationFeature sf) {
         this.soapVersion = soapVersion;
-        SOAP_NAMESPACE_URI = soapVersion.nsUri;
         this.serializationFeature = sf;
+        this.streamDecoder = selectStreamDecoder();
+    }
+    
+    private StreamDecoder selectStreamDecoder() {
+        for (StreamDecoder sd : ServiceFinder.find(StreamDecoder.class)) {
+            return sd;
+        }
+        
+        return new StreamDecoderImpl();
     }
 
     public ContentType getStaticContentType(Packet packet) {
@@ -153,7 +163,11 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
     protected abstract List<String> getExpectedContentTypes();
 
     public void decode(InputStream in, String contentType, Packet packet) throws IOException {
-        decode(in, contentType, packet, new AttachmentSetImpl());
+        decode(in, -1, contentType, packet);
+    }
+    
+    public void decode(InputStream in, int contentLength, String contentType, Packet packet) throws IOException {
+        decode(in, contentLength, contentType, packet, new AttachmentSetImpl());
     }
 
     /*
@@ -196,15 +210,20 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
      *      (like MIME multipart codec.)
      */
     public final Message decode(XMLStreamReader reader, @NotNull AttachmentSet attachmentSet) {
+        return decode(soapVersion, reader, attachmentSet);
+    }
+    
+    public static final Message decode(SOAPVersion soapVersion, XMLStreamReader reader, 
+            @NotNull AttachmentSet attachmentSet) {
 
         // Move to soap:Envelope and verify
         if(reader.getEventType()!=XMLStreamConstants.START_ELEMENT)
             XMLStreamReaderUtil.nextElementContent(reader);
         XMLStreamReaderUtil.verifyReaderState(reader,XMLStreamConstants.START_ELEMENT);
-        if (SOAP_ENVELOPE.equals(reader.getLocalName()) && !SOAP_NAMESPACE_URI.equals(reader.getNamespaceURI())) {
-            throw new VersionMismatchException(soapVersion, SOAP_NAMESPACE_URI, reader.getNamespaceURI());
+        if (SOAP_ENVELOPE.equals(reader.getLocalName()) && !soapVersion.nsUri.equals(reader.getNamespaceURI())) {
+            throw new VersionMismatchException(soapVersion, soapVersion.nsUri, reader.getNamespaceURI());
         }
-        XMLStreamReaderUtil.verifyTag(reader, SOAP_NAMESPACE_URI, SOAP_ENVELOPE);
+        XMLStreamReaderUtil.verifyTag(reader, soapVersion.nsUri, SOAP_ENVELOPE);
 
         TagInfoset envelopeTag = new TagInfoset(reader);
 
@@ -223,7 +242,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         TagInfoset headerTag = null;
 
         if (reader.getLocalName().equals(SOAP_HEADER)
-                && reader.getNamespaceURI().equals(SOAP_NAMESPACE_URI)) {
+                && reader.getNamespaceURI().equals(soapVersion.nsUri)) {
             headerTag = new TagInfoset(reader);
 
             // Collect namespaces on soap:Header
@@ -239,7 +258,8 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
                 try {
                     // Cache SOAP header blocks
-                    cacheHeaders(reader, namespaces, headers);
+                    StreamHeaderDecoder headerDecoder = SOAPVersion.SOAP_11.equals(soapVersion) ? StreamSOAP11Codec.SOAP11StreamHeaderDecoder : StreamSOAP12Codec.SOAP12StreamHeaderDecoder;
+                    cacheHeaders(reader, namespaces, headers, headerDecoder);
                 } catch (XMLStreamException e) {
                     // TODO need to throw more meaningful exception
                     throw new WebServiceException(e);
@@ -251,7 +271,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         }
 
         // Verify that <soap:Body> is present
-        XMLStreamReaderUtil.verifyTag(reader, SOAP_NAMESPACE_URI, SOAP_BODY);
+        XMLStreamReaderUtil.verifyTag(reader, soapVersion.nsUri, SOAP_BODY);
         TagInfoset bodyTag = new TagInfoset(reader);
 
         String bodyPrologue = XMLStreamReaderUtil.nextWhiteSpaceContent(reader);
@@ -269,8 +289,9 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         return this;
     }
 
-    private XMLStreamBuffer cacheHeaders(XMLStreamReader reader,
-            Map<String, String> namespaces, HeaderList headers) throws XMLStreamException {
+    private static XMLStreamBuffer cacheHeaders(XMLStreamReader reader,
+            Map<String, String> namespaces, HeaderList headers, 
+            StreamHeaderDecoder headerDecoder) throws XMLStreamException {
         MutableXMLStreamBuffer buffer = createXMLStreamBuffer();
         StreamReaderBufferCreator creator = new StreamReaderBufferCreator();
         creator.setXMLStreamBuffer(buffer);
@@ -290,7 +311,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
             // Mark
             XMLStreamBuffer mark = new XMLStreamBufferMark(headerBlockNamespaces, creator);
             // Create Header
-            headers.add(createHeader(reader, mark));
+            headers.add(headerDecoder.decodeHeader(reader, mark));
 
 
             // Cache the header block
@@ -305,10 +326,12 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
         return buffer;
     }
+    
+    protected interface StreamHeaderDecoder {
+        public Header decodeHeader(XMLStreamReader reader, XMLStreamBuffer mark);
+    }
 
-    protected abstract StreamHeader createHeader(XMLStreamReader reader, XMLStreamBuffer mark);
-
-    private MutableXMLStreamBuffer createXMLStreamBuffer() {
+    private static MutableXMLStreamBuffer createXMLStreamBuffer() {
         // TODO: Decode should own one MutableXMLStreamBuffer for reuse
         // since it is more efficient. ISSUE: possible issue with
         // lifetime of information in the buffer if accessed beyond
@@ -317,6 +340,10 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
     }
 
     public void decode(InputStream in, String contentType, Packet packet, AttachmentSet att ) throws IOException {
+        decode(in, -1, contentType, packet, att);
+    }
+    
+    public void decode(InputStream in, int contentLength, String contentType, Packet packet, AttachmentSet att ) throws IOException {
         List<String> expectedContentTypes = getExpectedContentTypes();
         if (contentType != null && !isContentTypeSupported(contentType,expectedContentTypes)) {
             throw new UnsupportedMediaException(contentType, expectedContentTypes);
@@ -333,9 +360,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         } else {
             packet.invocationProperties.remove(DECODED_MESSAGE_CHARSET);
         }
-        XMLStreamReader reader = XMLStreamReaderFactory.create(null, in, charset, true);
-        reader =  new TidyXMLStreamReader(reader, in);
-        packet.setMessage(decode(reader, att));
+        packet.setMessage(streamDecoder.decode(in, contentLength, charset, att, soapVersion));
     }
 
     public void decode(ReadableByteChannel in, String contentType, Packet response, AttachmentSet att ) {

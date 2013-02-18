@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -217,9 +217,13 @@ abstract class MimeCodec implements Codec {
         this.features = that.features;
     }
 
-    public void decode(InputStream in, String contentType, Packet packet) throws IOException {
+    public void decode(InputStream in, int contentLength, String contentType, Packet packet) throws IOException {
         MimeMultipartParser parser = new MimeMultipartParser(in, contentType, features.get(StreamingAttachmentFeature.class));
         decode(parser,packet);
+    }
+    
+    public void decode(InputStream in, String contentType, Packet packet) throws IOException {
+        decode(in, -1, contentType, packet);
     }
 
     public void decode(ReadableByteChannel in, String contentType, Packet packet) {
