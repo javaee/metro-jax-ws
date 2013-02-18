@@ -1153,6 +1153,13 @@ public final class Packet
             public int size() {
                 return asMap.size() + invocationProperties.size();
             }
+            
+            @Override
+            public boolean containsKey(Object key) {
+                if (asMap.containsKey(key))
+                    return true;
+                return invocationProperties.containsKey(key);
+            }
 
             @Override
             public Set<Entry<String, Object>> entrySet() {
