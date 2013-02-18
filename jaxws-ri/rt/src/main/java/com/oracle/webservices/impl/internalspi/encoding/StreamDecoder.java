@@ -38,69 +38,23 @@
  * holder.
  */
 
-package com.sun.xml.ws.encoding;
+package com.oracle.webservices.impl.internalspi.encoding;
 
-import com.sun.xml.stream.buffer.XMLStreamBuffer;
+import java.io.IOException;
+import java.io.InputStream;
+
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.WSFeatureList;
-import com.sun.xml.ws.api.message.Header;
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.pipe.ContentType;
-import com.sun.xml.ws.message.stream.StreamHeader11;
-
-import javax.xml.stream.XMLStreamReader;
-import java.util.Collections;
-import java.util.List;
+import com.sun.xml.ws.api.message.AttachmentSet;
+import com.sun.xml.ws.api.message.Message;
 
 /**
- * {@link StreamSOAPCodec} for SOAP 1.1.
- *
- * @author Paul.Sandoz@Sun.Com
+ * Decodes SOAPEnvelope read from an <code>InputStream</code> into a <code>Message</code> instance.
+ * This SPI allows for other implementations instead of the default, which is based on XMLStreamReader.
+ * 
+ * @since 2.2.9
  */
-final class StreamSOAP11Codec extends StreamSOAPCodec {
-    static final StreamHeaderDecoder SOAP11StreamHeaderDecoder = new StreamHeaderDecoder() {
-        @Override
-        public Header decodeHeader(XMLStreamReader reader, XMLStreamBuffer mark) {
-            return new StreamHeader11(reader, mark);
-        }
-    };
-    
-    public static final String SOAP11_MIME_TYPE = "text/xml";
-    public static final String DEFAULT_SOAP11_CONTENT_TYPE =
-            SOAP11_MIME_TYPE+"; charset="+SOAPBindingCodec.DEFAULT_ENCODING;
-
-    private static final List<String> EXPECTED_CONTENT_TYPES = Collections.singletonList(SOAP11_MIME_TYPE);
-
-    /*package*/  StreamSOAP11Codec() {
-        super(SOAPVersion.SOAP_11);
-    }
-
-    /*package*/  StreamSOAP11Codec(WSBinding binding) {
-        super(binding);
-    }
-
-    /*package*/  StreamSOAP11Codec(WSFeatureList features) {
-        super(features);
-    }
-
-    public String getMimeType() {
-        return SOAP11_MIME_TYPE;
-    }
-    
-    @Override
-    protected ContentType getContentType(Packet packet) {
-        ContentTypeImpl.Builder b = getContenTypeBuilder(packet);
-        b.soapAction = packet.soapAction;
-        return b.build();
-    }
-
-    @Override
-    protected String getDefaultContentType() {
-        return DEFAULT_SOAP11_CONTENT_TYPE;
-    }
-
-    protected List<String> getExpectedContentTypes() {
-        return EXPECTED_CONTENT_TYPES;
-    }
+public interface StreamDecoder {
+    Message decode(
+            InputStream in, int contentLength, String charset, 
+            AttachmentSet att, SOAPVersion soapVersion) throws IOException;
 }

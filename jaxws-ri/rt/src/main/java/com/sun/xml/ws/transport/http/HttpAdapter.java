@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -325,6 +325,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      */
     private Packet decodePacket(@NotNull WSHTTPConnection con, @NotNull Codec codec) throws IOException {
         String ct = con.getRequestHeader("Content-Type");
+        String cl = con.getRequestHeader("Content-Length");
         InputStream in = con.getInput();
         Packet packet = new Packet();
         packet.soapAction = fixQuotesAroundSoapAction(con.getRequestHeader("SOAPAction"));
@@ -344,7 +345,11 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             dump(buf, "HTTP request", con.getRequestHeaders());
             in = buf.newInputStream();
         }
-        codec.decode(in, ct, packet);
+        int length = -1;
+        if (cl != null) {
+            length = Integer.valueOf(cl);
+        }
+        codec.decode(in, length, ct, packet);
         return packet;
     }
     

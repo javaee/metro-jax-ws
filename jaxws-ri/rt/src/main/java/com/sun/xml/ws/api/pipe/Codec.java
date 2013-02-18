@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -234,9 +234,54 @@ public interface Codec {
      *
      * @throws IOException
      *      if {@link InputStream} throws an exception.
+     * @deprecated
      */
     void decode( InputStream in, String contentType, Packet response ) throws IOException;
 
+    /**
+     * Reads bytes from {@link InputStream} and constructs a {@link Message}.
+     *
+     * <p>
+     * The design encourages lazy decoding of a {@link Message}, where
+     * a {@link Message} is returned even before the whole message is parsed,
+     * and additional parsing is done as the {@link Message} body is read along.
+     * A {@link Codec} is most likely have its own implementation of {@link Message}
+     * for this purpose.
+     *
+     * @param in
+     *      the data to be read into a {@link Message}. The transport would have
+     *      read any transport-specific header before it passes an {@link InputStream},
+     *      and {@link InputStream} is expected to be read until EOS. Never null.
+     *
+     *      <p>
+     *      Some transports, such as SMTP, may 'encode' data into another format
+     *      (such as uuencode, base64, etc.) It is the caller's responsibility to
+     *      'decode' these transport-level encoding before it passes data into
+     *      {@link Codec}.
+     *
+     * @param contentLength
+     *      Total length of content available from the {@link InputStream}.  Use -1 if
+     *      the length is unspecified or unknown.  This value may not be the same as the 
+     *      value of {@link InputStream#available()}, but instead should represent knowledge
+     *      of the total length from the transport.
+     * @param contentType
+     *      The MIME content type (like "application/xml") of this byte stream.
+     *      Thie text includes all the sub-headers of the content-type header. Therefore,
+     *      in more complex case, this could be something like
+     *      <tt>multipart/related; boundary="--=_outer_boundary"; type="multipart/alternative"</tt>.
+     *      This parameter must not be null.
+     *
+     * @param response
+     *      The parsed {@link Message} will be set to this {@link Packet}.
+     *      {@link Codec} may add additional properties to this {@link Packet}.
+     *      On a successful method completion, a {@link Packet} must contain a
+     *      {@link Message}.
+     *
+     * @throws IOException
+     *      if {@link InputStream} throws an exception.
+     */
+    void decode( InputStream in, int contentLength, String contentType, Packet response ) throws IOException;
+    
     /**
      *
      * @see #decode(InputStream, String, Packet)
