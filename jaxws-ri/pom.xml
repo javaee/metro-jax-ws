@@ -750,5 +750,34 @@
             
         </dependencies>
     </dependencyManagement>
+    
+    <dependencies>
+            <!-- Make sure new apis are used across the project -->
+            <dependency>
+                <groupId>javax.xml.ws</groupId>
+                <artifactId>jaxws-api</artifactId>
+            </dependency>
 
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.xml.soap</groupId>
+                <artifactId>saaj-api</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.jws</groupId>
+                <artifactId>jsr181-api</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>javax.annotation</artifactId>
+                <scope>provided</scope>
+            </dependency>
+    </dependencies>
+            
 </project>
