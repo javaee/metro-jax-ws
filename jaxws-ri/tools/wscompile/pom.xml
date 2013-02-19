@@ -84,6 +84,7 @@
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
+            <version>${ant.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun</groupId>
@@ -132,12 +133,38 @@
                         <id>copy-api</id>
                         <phase>process-test-sources</phase>
                         <goals>
-                            <goal>copy-dependencies</goal>
+                            <goal>copy</goal>
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib/api</outputDirectory>
                             <excludeTransitive>true</excludeTransitive>
-                            <includeArtifactIds>javax.annotation,jsr181-api,jaxb-api,saaj-api,jaxws-api</includeArtifactIds>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>javax.xml.bind</groupId>
+                                    <artifactId>jaxb-api</artifactId>
+                                    <type>jar</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.xml.ws</groupId>
+                                    <artifactId>jaxws-api</artifactId>
+                                    <type>jar</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.xml.soap</groupId>
+                                    <artifactId>saaj-api</artifactId>
+                                    <type>jar</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.glassfish</groupId>
+                                    <artifactId>javax.annotation</artifactId>
+                                    <type>jar</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.jws</groupId>
+                                    <artifactId>jsr181-api</artifactId>
+                                    <type>jar</type>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                     <execution>
