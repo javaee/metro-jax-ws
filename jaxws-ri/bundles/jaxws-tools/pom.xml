@@ -64,6 +64,10 @@
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-jxc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
         </dependency>
     </dependencies>
@@ -94,7 +98,7 @@
                                     <mainClass>com.sun.tools.ws.WsImport</mainClass>
                                 </manifest>
                                 <manifestEntries>
-                                    <Class-Path>jaxws-rt.jar jaxb-xjc.jar</Class-Path>
+                                    <Class-Path>jaxws-rt.jar jaxb-jxc.jar jaxb-xjc.jar</Class-Path>
                                     <Extension-Name>com.sun.tools.ws</Extension-Name>
                                 </manifestEntries>
                             </archive>
@@ -116,7 +120,7 @@
                                     <mainClass>com.sun.tools.ws.WsImport</mainClass>
                                 </manifest>
                                 <manifestEntries>
-                                    <Class-Path>jaxws-rt.jar jaxb-xjc.jar</Class-Path>
+                                    <Class-Path>jaxws-rt.jar jaxb-jxc.jar jaxb-xjc.jar</Class-Path>
                                     <Extension-Name>com.sun.tools.ws</Extension-Name>
                                 </manifestEntries>
                             </archive>
