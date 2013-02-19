@@ -229,6 +229,11 @@
                     <scope>provided</scope>
                 </dependency>
                 <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-jxc</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
                     <groupId>com.sun.xml.messaging.saaj</groupId>
                     <artifactId>saaj-impl</artifactId>
                     <scope>provided</scope>
