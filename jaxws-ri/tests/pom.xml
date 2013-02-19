@@ -55,6 +55,7 @@
 
     <artifactId>jaxws-ri-tests</artifactId>
     <packaging>pom</packaging>
+    <version>2.2.9-SNAPSHOT</version>
     <name>JAX-WS RI Tests</name>
 
     <properties>

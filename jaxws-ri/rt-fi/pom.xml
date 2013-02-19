@@ -53,6 +53,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>rt-fi</artifactId>
+    <version>2.2.9-SNAPSHOT</version>
 
     <name>JAX-WS RI Fast Infoset Support (rt-fi)</name>
     <description>Fast Infoset Support for JAX-WS RI</description>

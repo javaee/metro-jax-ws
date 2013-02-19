@@ -53,6 +53,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-local-transport</artifactId>
+    <version>2.2.9-SNAPSHOT</version>
 
     <name>JAX-WS RI Local-Transport Implementation</name>
     <description>Implementation of Local-Transport for JAX-WS RI, used mainly in tests</description>

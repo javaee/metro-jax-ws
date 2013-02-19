@@ -54,6 +54,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jaxws-unit</artifactId>
+    <version>2.2.9-SNAPSHOT</version>
 
     <name>JAX-WS RI Unit Tests</name>
     <description>JAX-WS RI Unit Tests</description>

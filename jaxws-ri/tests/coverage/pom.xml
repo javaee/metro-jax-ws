@@ -55,6 +55,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-coverage</artifactId>
+    <version>2.2.9-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>JAX-WS RI Unit Tests Coverage</name>

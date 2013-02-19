@@ -53,6 +53,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>wscompile</artifactId>
+    <version>2.2.9-SNAPSHOT</version>
 
     <name>JAX-WS RI Tools (wscompile)</name>
     <description>JAX-WS RI Tools</description>

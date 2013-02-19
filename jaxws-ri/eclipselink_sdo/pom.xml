@@ -53,6 +53,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>sdo-eclipselink-plugin</artifactId>
+    <version>2.2.9-SNAPSHOT</version>
 
     <name>JAX-WS RI Eclipselink SDO Plugin</name>
     <description>Pluggable databinding module employing Eclipselink SDO</description>

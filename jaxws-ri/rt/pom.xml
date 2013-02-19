@@ -53,6 +53,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>rt</artifactId>
+    <version>2.2.9-SNAPSHOT</version>
 
     <name>JAX-WS RI Runtime (rt)</name>
     <description>JAX-WS Reference Implementation Runtime</description>

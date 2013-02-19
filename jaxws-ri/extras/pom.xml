@@ -51,6 +51,8 @@
 
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>extras</artifactId>
+    <version>2.2.9-SNAPSHOT</version>
+    
     <packaging>pom</packaging>
     <name>JAX-WS RI Extras</name>
 
