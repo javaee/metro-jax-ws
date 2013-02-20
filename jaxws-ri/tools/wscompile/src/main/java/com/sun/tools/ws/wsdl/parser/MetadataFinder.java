@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -84,7 +84,7 @@ public final class MetadataFinder extends DOMForest{
 
     public boolean isMexMetadata;
     private String rootWSDL;
-    private Set<String> rootWsdls = new HashSet<String>();
+    private final Set<String> rootWsdls = new HashSet<String>();
 
     public MetadataFinder(InternalizationLogic logic, WsimportOptions options, ErrorReceiver errReceiver) {
         super(logic, new WSEntityResolver(options,errReceiver), options, errReceiver);
@@ -102,11 +102,13 @@ public final class MetadataFinder extends DOMForest{
             Element doc;
 
             try {
-            //if there is entity resolver use it
-            if (options.entityResolver != null)
-                value = options.entityResolver.resolveEntity(null, systemID);
-            if (value == null)
-                value = new InputSource(systemID);
+                //if there is entity resolver use it
+                if (options.entityResolver != null) {
+                    value = options.entityResolver.resolveEntity(null, systemID);
+                }
+                if (value == null) {
+                    value = new InputSource(systemID);
+                }
                 dom = parse(value, true);
 
                 doc = dom.getDocumentElement();
@@ -116,9 +118,9 @@ public final class MetadataFinder extends DOMForest{
                 //if its not a WSDL document, retry with MEX
                 if (doc.getNamespaceURI() == null || !doc.getNamespaceURI().equals(WSDLConstants.NS_WSDL) || !doc.getLocalName().equals("definitions")) {
                     throw new SAXParseException(WsdlMessages.INVALID_WSDL(systemID,
-                        com.sun.xml.ws.wsdl.parser.WSDLConstants.QNAME_DEFINITIONS, doc.getNodeName(), locatorTable.getStartLocation(doc).getLineNumber()), locatorTable.getStartLocation(doc));
+                            com.sun.xml.ws.wsdl.parser.WSDLConstants.QNAME_DEFINITIONS, doc.getNodeName(), locatorTable.getStartLocation(doc).getLineNumber()), locatorTable.getStartLocation(doc));
                 }
-            } catch(FileNotFoundException e){
+            } catch (FileNotFoundException e) {
                 errorReceiver.error(WsdlMessages.FILE_NOT_FOUND(systemID), e);
                 return;
             } catch (IOException e) {
@@ -135,8 +137,9 @@ public final class MetadataFinder extends DOMForest{
 
             NodeList schemas = doc.getElementsByTagNameNS(SchemaConstants.NS_XSD, "schema");
             for (int i = 0; i < schemas.getLength(); i++) {
-                if(!inlinedSchemaElements.contains(schemas.item(i)))
+                if (!inlinedSchemaElements.contains(schemas.item(i))) {
                     inlinedSchemaElements.add((Element) schemas.item(i));
+                }
             }
         }
         identifyRootWsdls();
@@ -145,6 +148,9 @@ public final class MetadataFinder extends DOMForest{
     public static class WSEntityResolver implements EntityResolver {
         WsimportOptions options;
         ErrorReceiver errorReceiver;
+        
+        private URLConnection c = null;
+        private boolean doReset = false;
 
         public WSEntityResolver(WsimportOptions options, ErrorReceiver errReceiver) {
             this.options = options;
@@ -165,83 +171,84 @@ public final class MetadataFinder extends DOMForest{
                 boolean redirect;
                 URL url = JAXWSUtils.getFileOrURL(inputSource.getSystemId());
                 URLConnection conn = url.openConnection();
-                boolean jarConnUseCache = true;
-                try {
-                    do {
-                        if (conn instanceof HttpsURLConnection) {
-                            if (options.disableSSLHostnameVerification) {
-                                ((HttpsURLConnection) conn).setHostnameVerifier(new HttpClientVerifier());
-                            }
+                do {
+                    if (conn instanceof HttpsURLConnection) {
+                        if (options.disableSSLHostnameVerification) {
+                            ((HttpsURLConnection) conn).setHostnameVerifier(new HttpClientVerifier());
                         }
-                        redirect = false;
-                        if (conn instanceof HttpURLConnection) {
-                            ((HttpURLConnection) conn).setInstanceFollowRedirects(false);
-                        }
+                    }
+                    redirect = false;
+                    if (conn instanceof HttpURLConnection) {
+                        ((HttpURLConnection) conn).setInstanceFollowRedirects(false);
+                    }
 
-                        //see http://java.net/jira/browse/JAX_WS-1087
-                        if (conn instanceof JarURLConnection) {
-                            if (conn.getUseCaches()) {
-                                conn.setUseCaches(jarConnUseCache = false);
-                            }
+                    if (conn instanceof JarURLConnection) {
+                        if (conn.getUseCaches()) {
+                            doReset = true;
+                            conn.setDefaultUseCaches(false);
+                            c = conn;
                         }
+                    }
 
-                        try {
-                            is = conn.getInputStream();
-                            //is = sun.net.www.protocol.http.HttpURLConnection.openConnectionCheckRedirects(conn);
-                        } catch (IOException e) {
-                            if (conn instanceof HttpURLConnection) {
-                                HttpURLConnection httpConn = ((HttpURLConnection) conn);
-                                int code = httpConn.getResponseCode();
-                                if (code == 401) {
-                                    errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_INFO_NEEDED(e.getMessage(),
-                                            systemId, DefaultAuthenticator.defaultAuthfile), null, e));
-                                    throw new AbortException();
-                                }
-                                //FOR other code we will retry with MEX
-                            }
-                            throw e;
-                        }
-
-                        //handle 302 or 303, JDK does not seem to handle 302 very well.
-                        //Need to redesign this a bit as we need to throw better error message for IOException in this case
+                    try {
+                        is = conn.getInputStream();
+                        //is = sun.net.www.protocol.http.HttpURLConnection.openConnectionCheckRedirects(conn);
+                    } catch (IOException e) {
                         if (conn instanceof HttpURLConnection) {
                             HttpURLConnection httpConn = ((HttpURLConnection) conn);
                             int code = httpConn.getResponseCode();
-                            if (code == 302 || code == 303) {
-                                //retry with the value in Location header
-                                List<String> seeOther = httpConn.getHeaderFields().get("Location");
-                                if (seeOther != null && seeOther.size() > 0) {
-                                    URL newurl = new URL(url, seeOther.get(0));
-                                    if (!newurl.equals(url)) {
-                                        errorReceiver.info(new SAXParseException(WscompileMessages.WSIMPORT_HTTP_REDIRECT(code, seeOther.get(0)), null));
-                                        url = newurl;
-                                        httpConn.disconnect();
-                                        if (redirects >= 5) {
-                                            errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_MAX_REDIRECT_ATTEMPT(), null));
-                                            throw new AbortException();
-                                        }
-                                        conn = url.openConnection();
-                                        inputSource.setSystemId(url.toExternalForm());
-                                        redirects++;
-                                        redirect = true;
+                            if (code == 401) {
+                                errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_INFO_NEEDED(e.getMessage(),
+                                        systemId, DefaultAuthenticator.defaultAuthfile), null, e));
+                                throw new AbortException();
+                            }
+                            //FOR other code we will retry with MEX
+                        }
+                        throw e;
+                    }
+
+                    //handle 302 or 303, JDK does not seem to handle 302 very well.
+                    //Need to redesign this a bit as we need to throw better error message for IOException in this case
+                    if (conn instanceof HttpURLConnection) {
+                        HttpURLConnection httpConn = ((HttpURLConnection) conn);
+                        int code = httpConn.getResponseCode();
+                        if (code == 302 || code == 303) {
+                            //retry with the value in Location header
+                            List<String> seeOther = httpConn.getHeaderFields().get("Location");
+                            if (seeOther != null && seeOther.size() > 0) {
+                                URL newurl = new URL(url, seeOther.get(0));
+                                if (!newurl.equals(url)) {
+                                    errorReceiver.info(new SAXParseException(WscompileMessages.WSIMPORT_HTTP_REDIRECT(code, seeOther.get(0)), null));
+                                    url = newurl;
+                                    httpConn.disconnect();
+                                    if (redirects >= 5) {
+                                        errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_MAX_REDIRECT_ATTEMPT(), null));
+                                        throw new AbortException();
                                     }
+                                    conn = url.openConnection();
+                                    inputSource.setSystemId(url.toExternalForm());
+                                    redirects++;
+                                    redirect = true;
                                 }
                             }
                         }
-                    } while (redirect);
-                } finally {
-                    if (!jarConnUseCache) {
-                        conn.setUseCaches(true);
                     }
-                }
+                } while (redirect);
                 inputSource.setByteStream(is);
             }
 
             return inputSource;
         }
 
+        @Override
+        protected void finalize() throws Throwable {
+            //see http://java.net/jira/browse/JAX_WS-1087
+            if (doReset) {
+                c.setDefaultUseCaches(true);
+            }
+        }        
     }
-
+    
     // overide default SSL HttpClientVerifier to always return true
     // effectively overiding Hostname client verification when using SSL
     private static class HttpClientVerifier implements HostnameVerifier {
