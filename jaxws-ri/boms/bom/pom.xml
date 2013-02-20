@@ -100,9 +100,9 @@
     </developers>
 
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22_bom/jaxws-ri/boms/bom</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22_bom/jaxws-ri/boms/bom</developerConnection>
-        <url>http://java.net/projects/jax-ws/sources/sources/show/branches/jaxws22_bom/jaxws-ri/boms/bom</url>
+        <connection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri/boms/bom</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri/boms/bom</developerConnection>
+        <url>http://java.net/projects/jax-ws/sources/sources/show/branches/jaxws22/jaxws-ri/boms/bom</url>
     </scm>
 
     <properties>
