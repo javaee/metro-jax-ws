@@ -611,6 +611,14 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <inherited>true</inherited>
+                        <configuration>
+                            <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
