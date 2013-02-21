@@ -403,7 +403,7 @@ public abstract class BasePropertySet implements PropertySet {
 
     @Override
     public final boolean containsKey(Object key) {
-        return getPropertyMap().containsKey(key);
+        return get(key) != null;
     }
 
     /**
