@@ -3,7 +3,7 @@
 REM
 REM DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 REM 
-REM Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+REM Copyright 1997-2013 Sun Microsystems, Inc. All rights reserved.
 REM 
 REM The contents of this file are subject to the terms of either the GNU
 REM General Public License Version 2 only ("GPL") or the Common Development
@@ -64,7 +64,7 @@ set JAVA="%JAVA_HOME%\bin\java"
 goto LAUNCH
 
 :LAUNCH
-%JAVA% %WSGEN_OPTS% -cp "%JAXWS_HOME%\lib\jaxws-tools.jar" com.sun.tools.ws.WsGen %*
+%JAVA% %WSGEN_OPTS% -jar "%JAXWS_HOME%\lib\jaxws-tools.jar:%JAXWS_HOME%\lib\jaxws-rt.jar:%JAXWS_HOME%\lib\jaxb-xjc.jar:%JAXWS_HOME%\lib\jaxws-jxc.jar:%JAXWS_HOME%\lib\jaxb-api.jar:%JAXWS_HOME%\lib\jaxws-core.jar:%JAXWS_HOME%\lib\jaxb-impl.jar" com.sun.tools.ws.WsGen %*
 
 :END
 %COMSPEC% /C exit %ERRORLEVEL%
