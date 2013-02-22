@@ -51,7 +51,7 @@
     <!-- compile -->
     <mkdir dir="build"/>
     <javac srcdir="src" destdir="build">
-      <compilerarg value="-Xbootclasspath/p:lib/jaxb-api.jar:lib/saaj-api.jar:lib/jaxws-api.jar:lib/javax.annotation.jar:lib/jsr181-api.jar"/>
+      <compilerarg value="-Xbootclasspath/p:lib/jaxb-api.jar:lib/saaj-api.jar:lib/jaxws-api.jar:lib/javax.annotation-api.jar:lib/jsr181-api.jar"/>
       <classpath>
         <fileset dir="lib" includes="**/*.jar"/>
       </classpath>

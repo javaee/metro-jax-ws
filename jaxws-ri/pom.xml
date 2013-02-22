@@ -150,7 +150,7 @@
                                 <skip>${maven.endorsed.skip}</skip>
                                 <outputDirectory>${endorsed.dir}</outputDirectory>
                                 <silent>false</silent>
-                                <includeArtifactIds>javax.annotation,jsr181-api,jaxb-api,saaj-api,jaxws-api</includeArtifactIds>
+                                <includeArtifactIds>javax.annotation-api,jsr181-api,jaxb-api,saaj-api,jaxws-api</includeArtifactIds>
                             </configuration>
                         </execution>
                     </executions>
@@ -780,8 +780,8 @@
             </dependency>
 
             <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>javax.annotation</artifactId>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
                 <scope>provided</scope>
             </dependency>
     </dependencies>

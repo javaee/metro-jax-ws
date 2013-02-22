@@ -268,6 +268,12 @@
                 <artifactId>jaxb-osgi</artifactId>
                 <version>${jaxb-impl.version}</version>
             </dependency>
+            <dependency>
+                <groupId>javax.jws</groupId>
+                <artifactId>jsr181-api</artifactId>
+                <version>${jsr181-api.version}</version>
+                <classifier>sources</classifier>
+            </dependency>
 
             <!-- Parsers -->
             <dependency>
@@ -398,8 +404,8 @@
                 <exclusions>
                     <!-- part of JDK 6+ -->
                     <exclusion>
-                        <groupId>org.glassfish</groupId>
-                        <artifactId>javax.annotation</artifactId>
+                        <groupId>javax.annotation</groupId>
+                        <artifactId>javax.annotation-api</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>javax.jws</groupId>

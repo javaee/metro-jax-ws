@@ -89,7 +89,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/javax.annotation.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/javax.annotation-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -93,7 +93,7 @@
             <directoryMode>0755</directoryMode>
             <fileMode>0644</fileMode>
             <includes>
-                <include>org.glassfish:javax.annotation</include>
+                <include>javax.annotation:javax.annotation-api</include>
                 <include>javax.jws:jsr181-api</include>
                 <include>javax.xml.bind:jaxb-api</include>
                 <include>javax.xml.ws:jaxws-api</include>

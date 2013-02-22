@@ -31,11 +31,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/javax.annotation.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/javax.annotation-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/javax.annotation-source.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/javax.annotation-api-source.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

@@ -73,10 +73,15 @@
         <dependencies>
 
             <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>javax.annotation</artifactId>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
                 <version>${javax.annotation-api.version}</version>
-                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation-api.version}</version>
+                <classifier>sources</classifier>
             </dependency>
 
             <!-- Should be really reexported? -->
