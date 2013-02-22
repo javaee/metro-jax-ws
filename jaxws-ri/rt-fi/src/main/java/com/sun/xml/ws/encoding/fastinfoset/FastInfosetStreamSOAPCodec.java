@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -120,10 +120,6 @@ public abstract class FastInfosetStreamSOAPCodec implements Codec {
     public ContentType encode(Packet packet, WritableByteChannel buffer) {
         //TODO: not yet implemented
         throw new UnsupportedOperationException();
-    }
-    
-    public void decode(InputStream in, int contentLength, String contentType, Packet packet) throws IOException {
-        decode(in, contentType, packet);
     }
     
     public void decode(InputStream in, String contentType, Packet response) throws IOException {

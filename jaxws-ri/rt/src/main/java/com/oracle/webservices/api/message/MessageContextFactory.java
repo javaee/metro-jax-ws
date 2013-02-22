@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,8 +73,6 @@ public abstract class MessageContextFactory
     public abstract MessageContext createContext(Source m, com.oracle.webservices.api.EnvelopeStyle.Style envelopeStyle);
     
     public abstract MessageContext createContext(InputStream in, String contentType) throws IOException;
-
-    public abstract MessageContext createContext(InputStream in, int length, String contentType) throws IOException;
 
     /**
      * @deprecated http://java.net/jira/browse/JAX_WS-1077

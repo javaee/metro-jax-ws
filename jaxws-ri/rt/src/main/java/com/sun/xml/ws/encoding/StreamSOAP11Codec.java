@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,9 +44,9 @@ import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSFeatureList;
-import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.ContentType;
+import com.sun.xml.ws.message.stream.StreamHeader;
 import com.sun.xml.ws.message.stream.StreamHeader11;
 
 import javax.xml.stream.XMLStreamReader;
@@ -59,13 +59,6 @@ import java.util.List;
  * @author Paul.Sandoz@Sun.Com
  */
 final class StreamSOAP11Codec extends StreamSOAPCodec {
-    static final StreamHeaderDecoder SOAP11StreamHeaderDecoder = new StreamHeaderDecoder() {
-        @Override
-        public Header decodeHeader(XMLStreamReader reader, XMLStreamBuffer mark) {
-            return new StreamHeader11(reader, mark);
-        }
-    };
-    
     public static final String SOAP11_MIME_TYPE = "text/xml";
     public static final String DEFAULT_SOAP11_CONTENT_TYPE =
             SOAP11_MIME_TYPE+"; charset="+SOAPBindingCodec.DEFAULT_ENCODING;
@@ -88,6 +81,11 @@ final class StreamSOAP11Codec extends StreamSOAPCodec {
         return SOAP11_MIME_TYPE;
     }
     
+    @Override
+    protected final StreamHeader createHeader(XMLStreamReader reader, XMLStreamBuffer mark) {
+        return new StreamHeader11(reader, mark);
+    }
+
     @Override
     protected ContentType getContentType(Packet packet) {
         ContentTypeImpl.Builder b = getContenTypeBuilder(packet);

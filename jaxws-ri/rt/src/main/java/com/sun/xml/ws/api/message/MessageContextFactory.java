@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -137,14 +137,6 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         //TODO when do we use xmlCodec?
         Packet p = packet(null);
         soapCodec.decode(in, contentType, p);
-        return p;
-    }
-
-    public org.jvnet.ws.message.MessageContext createContext(InputStream in, int length, String contentType) throws IOException {
-        throwIfIllegalMessageArgument(in);
-        //TODO when do we use xmlCodec?
-        Packet p = packet(null);
-        soapCodec.decode(in, length, contentType, p);
         return p;
     }
 
