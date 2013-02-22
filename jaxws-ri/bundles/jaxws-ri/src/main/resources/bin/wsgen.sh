@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+# Copyright 1997-2013 Sun Microsystems, Inc. All rights reserved.
 # 
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -84,4 +84,4 @@ else
 fi
 
 
-exec $JAVA $WSGEN_OPTS -cp "$JAXWS_HOME/lib/jaxws-tools.jar" com.sun.tools.ws.WsGen "$@"
+exec $JAVA $WSGEN_OPTS -cp "$JAXWS_HOME/lib/jaxws-tools.jar:$JAXWS_HOME/lib/jaxws-rt.jar:$JAXWS_HOME/lib/jaxb-xjc.jar:$JAXWS_HOME/lib/jaxb-jxc.jar:$JAXWS_HOME/lib/jaxb-api.jar:$JAXWS_HOME/lib/jaxb-core.jar:$JAXWS_HOME/lib/jaxb-impl.jar" com.sun.tools.ws.WsGen "$@"
