@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -295,10 +295,6 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
     }
 
     public void decode(InputStream in, String contentType, Packet packet) throws IOException {
-        decode(in, -1, contentType, packet);
-    }
-    
-    public void decode(InputStream in, int contentLength, String contentType, Packet packet) throws IOException {
         if (contentType == null) {
             contentType = xmlMimeType;
         }
@@ -307,16 +303,15 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
         try {
             if(isMultipartRelated(contentType))
                 // parse the multipart portion and then decide whether it's MTOM or SwA
-                super.decode(in, contentLength, contentType, packet);
+                super.decode(in, contentType, packet);
             else if(isFastInfoset(contentType)) {
                 if (!ignoreContentNegotiationProperty && packet.contentNegotiation == ContentNegotiation.none)
                     throw noFastInfosetForDecoding();
 
                 useFastInfosetForEncoding = true;
-                fiSoapCodec.decode(in, contentLength, contentType, packet);
+                fiSoapCodec.decode(in, contentType, packet);
             } else
-                // HERE
-                xmlSoapCodec.decode(in, contentLength, contentType, packet);
+                xmlSoapCodec.decode(in, contentType, packet);
         } catch(RuntimeException we) {
             if (we instanceof ExceptionHasMessage || we instanceof UnsupportedMediaException) {
                 throw we;
