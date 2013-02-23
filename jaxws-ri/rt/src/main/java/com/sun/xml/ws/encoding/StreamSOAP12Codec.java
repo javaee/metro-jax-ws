@@ -44,10 +44,10 @@ import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSFeatureList;
+import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.pipe.ContentType;
-import com.sun.xml.ws.message.stream.StreamHeader;
 import com.sun.xml.ws.message.stream.StreamHeader12;
 
 import javax.xml.stream.XMLStreamReader;
@@ -62,6 +62,13 @@ import java.io.IOException;
  * @author Paul.Sandoz@Sun.Com
  */
 final class StreamSOAP12Codec extends StreamSOAPCodec {
+    static final StreamHeaderDecoder SOAP12StreamHeaderDecoder = new StreamHeaderDecoder() {
+        @Override
+        public Header decodeHeader(XMLStreamReader reader, XMLStreamBuffer mark) {
+            return new StreamHeader12(reader, mark);
+        }
+    };
+    
     public static final String SOAP12_MIME_TYPE = "application/soap+xml";
     public static final String DEFAULT_SOAP12_CONTENT_TYPE =
             SOAP12_MIME_TYPE+"; charset="+SOAPBindingCodec.DEFAULT_ENCODING;
@@ -83,11 +90,6 @@ final class StreamSOAP12Codec extends StreamSOAPCodec {
         return SOAP12_MIME_TYPE;
     }
     
-    @Override
-    protected final StreamHeader createHeader(XMLStreamReader reader, XMLStreamBuffer mark) {
-        return new StreamHeader12(reader, mark);
-    }
-
     @Override
     protected ContentType getContentType(Packet packet) {
         ContentTypeImpl.Builder b = getContenTypeBuilder(packet);
