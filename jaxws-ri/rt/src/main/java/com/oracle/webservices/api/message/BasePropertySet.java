@@ -402,8 +402,12 @@ public abstract class BasePropertySet implements PropertySet {
     }
 
     @Override
-    public final boolean containsKey(Object key) {
-        return get(key)!=null;
+    public boolean containsKey(Object key) {
+        Accessor sp = getPropertyMap().get(key);
+        if (sp != null) {
+            return sp.get(this) != null;
+        }
+        return false;
     }
 
     /**

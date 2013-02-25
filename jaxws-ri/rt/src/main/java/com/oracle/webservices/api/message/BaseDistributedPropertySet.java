@@ -185,6 +185,18 @@ public abstract class BaseDistributedPropertySet extends BasePropertySet impleme
     }
 
     @Override
+    public boolean containsKey(Object key) {
+        if (viewthis.containsKey(key))
+            return true;
+        for (PropertySet child : satellites.values()) {
+            if (child.containsKey(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
     public boolean supports(Object key) {
         // check satellites
         for (PropertySet child : satellites.values()) {

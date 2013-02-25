@@ -1155,6 +1155,13 @@ public final class Packet
             }
 
             @Override
+            public boolean containsKey(Object key) {
+                if (asMap.containsKey(key))
+                    return true;
+                return invocationProperties.containsKey(key);
+            }
+            
+            @Override
             public Set<Entry<String, Object>> entrySet() {
                 final Set<Entry<String, Object>> asMapEntries = asMap.entrySet();
                 final Set<Entry<String, Object>> ipEntries = invocationProperties.entrySet();
