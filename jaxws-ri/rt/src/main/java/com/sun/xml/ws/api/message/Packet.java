@@ -1234,7 +1234,11 @@ public final class Packet
     @Override
     public SOAPMessage getAsSOAPMessage() throws SOAPException {
         Message msg = this.getMessage();
-        return (msg != null) ? msg.readAsSOAPMessage(this, this.getState().isInbound()) : null;
+        if (msg == null)
+            return null;
+        if (msg instanceof MessageWritable)
+            ((MessageWritable) msg).setMTOMConfiguration(mtomFeature);
+        return msg.readAsSOAPMessage(this, this.getState().isInbound());
     }
 
     public // TODO remove after org.jvnet.ws goes away.
@@ -1263,6 +1267,7 @@ public final class Packet
     public org.jvnet.ws.message.ContentType writeTo( OutputStream out ) throws IOException {
         Message msg = getInternalMessage();
         if (msg instanceof MessageWritable) {
+            ((MessageWritable) msg).setMTOMConfiguration(mtomFeature);
             return wrap(((MessageWritable)msg).writeTo(out));
         }
         return wrap(getCodec().encode(this, out));

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,8 @@ package com.sun.xml.ws.api.message;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.xml.ws.soap.MTOMFeature;
+
 import com.oracle.webservices.api.message.ContentType;
 
 /**
@@ -76,4 +78,15 @@ public interface MessageWritable {
      *      if a {@link OutputStream} throws {@link IOException}.
      */
     ContentType writeTo( OutputStream out ) throws IOException;
+
+    /**
+     * Passes configuration information to this message to ensure the proper
+     * wire format is created. (from &lt;soap:Envelope> to &lt;/soap:Envelope>).
+     * 
+     * @param mtomFeature
+     *            The standard <code>WebServicesFeature</code> for specifying
+     *            the MTOM enablement and possibly threshold for the endpoint.
+     *            This value may be <code>null</code>.
+     */
+    void setMTOMConfiguration(final MTOMFeature mtomFeature);
 }
