@@ -106,7 +106,7 @@
     </scm>
 
     <properties>
-        <fi.version>1.2.12-130123.2301.2</fi.version>
+        <fi.version>1.2.12</fi.version>
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
         <ha-api.version>3.1.9</ha-api.version>
         <istack.version>2.14</istack.version>
@@ -116,11 +116,11 @@
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <management-api.version>3.1.0-b001</management-api.version>
         <mimepull.version>1.9.1</mimepull.version>
-        <policy.version>2.3.1-130213.2301</policy.version>
+        <policy.version>2.3.1</policy.version>
         <saaj-api.version>1.3.4</saaj-api.version>
         <saaj-impl.version>1.3.20</saaj-impl.version>
-        <stax-ex.version>1.7.1-130213.2301</stax-ex.version>
-        <streambuffer.version>2.2-130213.2301</streambuffer.version>
+        <stax-ex.version>1.7.1</stax-ex.version>
+        <streambuffer.version>1.5.1</streambuffer.version>
         <stax2-api.version>3.1.1</stax2-api.version>
         <woodstox-core-asl.version>4.1.2</woodstox-core-asl.version>
     </properties>
