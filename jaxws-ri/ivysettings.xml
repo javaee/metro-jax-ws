@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,8 @@
         <chain name="jaxws-chain" returnFirst="true">
             <ibiblio name="javanet" m2compatible="true" root="https://maven.java.net/content/repositories/releases/"/>
             <ibiblio name="central" m2compatible="true"/>
+            <ibiblio name="javanet_staging" m2compatible="true" root="https://maven.java.net/content/repositories/staging/"/>
+            <ibiblio name="eclipse" m2compatible="true" root="http://download.eclipse.org/rt/eclipselink/maven.repo/"/>
         </chain>
     </resolvers>
 </ivysettings>
