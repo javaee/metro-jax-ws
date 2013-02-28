@@ -172,7 +172,7 @@
   </target>
     
   <target name="doc-src-zip" depends="docs">
-        <copy file="${docs.home}/release-documentation/target/release-documentation-${release.impl.version}-docbook.zip" tofile="${build.home}/release-notes-src.zip" />
+        <copy file="${docs.home}/release-documentation/target/release-documentation-${release.impl.version}-SNAPSHOT-docbook.zip" tofile="${build.home}/release-notes-src.zip" />
   </target>
 
     <target name="clean" depends="jax-ws.clean, docs.clean">
