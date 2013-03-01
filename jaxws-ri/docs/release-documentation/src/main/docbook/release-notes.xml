@@ -177,7 +177,7 @@ holder.
                         <filename>jaxws-rt.jar</filename>,
                         <filename>jsr181-api.jar</filename>,
                         <filename>mimepull.jar</filename>,
-                        <filename>saaj-api.jar</filename>,
+                        <filename>javax.xml.soap-api.jar</filename>,
                         <filename>saaj-impl.jar *</filename>,
                         <filename>stax2-api.jar</filename>,
                         <filename>woodstox-core-asl.jar</filename>,

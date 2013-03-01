@@ -193,7 +193,7 @@
                                                 <pathelement path="${maven.dependency.javax.annotation.javax.annotation-api.jar.path}" />
                                                 <pathelement path="${maven.dependency.javax.jws.jsr181-api.jar.path}" />
                                                 <pathelement path="${maven.dependency.javax.xml.bind.jaxb-api.jar.path}" />
-                                                <pathelement path="${maven.dependency.javax.xml.soap.saaj-api.jar.path}" />
+                                                <pathelement path="${maven.dependency.javax.xml.soap.javax.xml.soap-api.jar.path}" />
                                                 <pathelement path="${maven.dependency.javax.xml.ws.jaxws-api.jar.path}" />
                                                 <pathelement path="${sun.boot.class.path}" />
                                             </bootclasspath>

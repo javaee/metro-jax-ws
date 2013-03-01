@@ -95,6 +95,19 @@
         </repository>
     </repositories>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>releases.java.net</id>
+            <url>https://maven.java.net/content/repositories/releases/</url>
+            <layout>default</layout>
+        </pluginRepository>
+        <pluginRepository>
+            <id>jvnet-nexus-staging</id>
+            <url>https://maven.java.net/content/repositories/staging/</url>
+            <layout>default</layout>
+        </pluginRepository>
+    </pluginRepositories>
+
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -150,7 +163,7 @@
                                 <skip>${maven.endorsed.skip}</skip>
                                 <outputDirectory>${endorsed.dir}</outputDirectory>
                                 <silent>false</silent>
-                                <includeArtifactIds>javax.annotation-api,jsr181-api,jaxb-api,saaj-api,jaxws-api</includeArtifactIds>
+                                <includeArtifactIds>javax.annotation-api,jsr181-api,jaxb-api,javax.xml.soap-api,jaxws-api</includeArtifactIds>
                             </configuration>
                         </execution>
                     </executions>
@@ -771,7 +784,7 @@
 
             <dependency>
                 <groupId>javax.xml.soap</groupId>
-                <artifactId>saaj-api</artifactId>
+                <artifactId>javax.xml.soap-api</artifactId>
             </dependency>
 
             <dependency>

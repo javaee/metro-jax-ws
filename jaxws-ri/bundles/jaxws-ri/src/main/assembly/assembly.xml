@@ -93,14 +93,17 @@
             <directoryMode>0755</directoryMode>
             <fileMode>0644</fileMode>
             <includes>
+                <include>com.sun.org.apache.xml.internal:resolver</include>
                 <include>javax.annotation:javax.annotation-api</include>
                 <include>javax.jws:jsr181-api</include>
                 <include>javax.xml.bind:jaxb-api</include>
                 <include>javax.xml.ws:jaxws-api</include>
-                <include>javax.xml.soap:saaj-api</include>
                 <include>${project.groupId}:jaxws-rt</include>
                 <include>${project.groupId}:jaxws-tools</include>
             </includes>
+            <excludes>
+                <exclude>javax.activation:activation</exclude>
+            </excludes>
         </dependencySet>
         <dependencySet>
             <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>

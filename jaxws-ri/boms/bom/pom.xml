@@ -109,15 +109,16 @@
         <fi.version>1.2.12</fi.version>
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
         <ha-api.version>3.1.9</ha-api.version>
-        <istack.version>2.14</istack.version>
+        <istack.version>2.15</istack.version>
         <jaxb-api.version>2.2.7</jaxb-api.version>
         <jaxb-impl.version>2.2.7-b59</jaxb-impl.version>
-        <jaxws-api.version>2.2.8</jaxws-api.version>
+        <jaxws-api.version>2.2.9</jaxws-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <management-api.version>3.1.0-b001</management-api.version>
         <mimepull.version>1.9.1</mimepull.version>
         <policy.version>2.3.1</policy.version>
-        <saaj-api.version>1.3.4</saaj-api.version>
+        <resolver.version>20050927</resolver.version>
+        <saaj-api.version>1.3.5</saaj-api.version>
         <saaj-impl.version>1.3.20</saaj-impl.version>
         <stax-ex.version>1.7.1</stax-ex.version>
         <streambuffer.version>1.5.1</streambuffer.version>
@@ -129,7 +130,6 @@
         <dependencies>
             
             <!-- TODO: revisit this and:
-                  - remove JDK dependencies where possible
                   - move to JAXB's poms what belongs there
                     basically every artifact repackaged in JAXB should
                     be defined there in provided scope -->
@@ -198,7 +198,7 @@
             </dependency>
             <dependency>
                 <groupId>javax.xml.soap</groupId>
-                <artifactId>saaj-api</artifactId>
+                <artifactId>javax.xml.soap-api</artifactId>
                 <version>${saaj-api.version}</version>
                 <classifier>sources</classifier>
             </dependency>
@@ -381,7 +381,7 @@
 
             <dependency>
                 <groupId>javax.xml.soap</groupId>
-                <artifactId>saaj-api</artifactId>
+                <artifactId>javax.xml.soap-api</artifactId>
                 <version>${saaj-api.version}</version>
                 <exclusions>
                     <!-- part of JDK 6+ -->
@@ -398,28 +398,23 @@
             </dependency>
 
             <dependency>
-                <groupId>javax.xml.ws</groupId>
-                <artifactId>jaxws-api</artifactId>
-                <version>${jaxws-api.version}</version>
-                <exclusions>
-                    <!-- part of JDK 6+ -->
-                    <exclusion>
-                        <groupId>javax.annotation</groupId>
-                        <artifactId>javax.annotation-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.jws</groupId>
-                        <artifactId>jsr181-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
                 <groupId>javax.jws</groupId>
                 <artifactId>jsr181-api</artifactId>
                 <version>${jsr181-api.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>javax.xml.ws</groupId>
+                <artifactId>jaxws-api</artifactId>
+                <version>${jaxws-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.org.apache.xml.internal</groupId>
+                <artifactId>resolver</artifactId>
+                <version>${resolver.version}</version>
+            </dependency>
+            
             <!-- To be removed (make optional) in the future -->
             <dependency>
                 <groupId>org.glassfish.ha</groupId>
