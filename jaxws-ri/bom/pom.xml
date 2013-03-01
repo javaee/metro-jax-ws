@@ -473,7 +473,7 @@
         <ha-api.version>3.1.9</ha-api.version>
         <istack-commons.version>2.13</istack-commons.version>
         <jaxb-api.version>2.2.7</jaxb-api.version>
-        <jaxb-impl.version>2.2.7-b59</jaxb-impl.version>
+        <jaxb-impl.version>2.2.7-b60</jaxb-impl.version>
         <jaxws-api.version>2.2.9</jaxws-api.version>
         <javax.annotation-api.version>1.2-b03</javax.annotation-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
