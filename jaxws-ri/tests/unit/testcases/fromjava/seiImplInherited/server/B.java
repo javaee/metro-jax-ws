@@ -44,5 +44,7 @@ import javax.jws.WebService;
 
 @WebService(endpointInterface="fromjava.seiImplInherited.server.In")
 public class B extends A {
-    public void boo() {}
+    public B boo() {
+        return new B();
+    }
 }

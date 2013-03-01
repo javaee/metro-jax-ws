@@ -45,5 +45,5 @@ import javax.jws.WebService;
 @WebService
 public interface In {
     void foo();
-    void boo();
+    A boo();
 }

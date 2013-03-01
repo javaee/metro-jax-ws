@@ -69,6 +69,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
+import javax.lang.model.util.Types;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashSet;
@@ -607,16 +608,16 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
     protected boolean sameMethod(ExecutableElement method1, ExecutableElement method2) {
         if (!method1.getSimpleName().equals(method2.getSimpleName()))
             return false;
-        ProcessingEnvironment processingEnv = builder.getProcessingEnvironment();
-        if( processingEnv == null ||
-            (!processingEnv.getTypeUtils().isSameType(method1.getReturnType(), method2.getReturnType())))
+        Types typeUtils = builder.getProcessingEnvironment().getTypeUtils();
+        if(!typeUtils.isSameType(method1.getReturnType(), method2.getReturnType())
+                && !typeUtils.isSubtype(method2.getReturnType(), method1.getReturnType()))
             return false;
         List<? extends VariableElement> parameters1 = method1.getParameters();
         List<? extends VariableElement> parameters2 = method2.getParameters();
         if (parameters1.size() != parameters2.size())
             return false;
         for (int i = 0; i < parameters1.size(); i++) {
-            if (!builder.getProcessingEnvironment().getTypeUtils().isSameType(parameters1.get(i).asType(), parameters2.get(i).asType()))
+            if (!typeUtils.isSameType(parameters1.get(i).asType(), parameters2.get(i).asType()))
                 return false;
         }
         return true;
