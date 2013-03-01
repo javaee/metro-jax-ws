@@ -124,6 +124,7 @@
         <streambuffer.version>1.5.1</streambuffer.version>
         <stax2-api.version>3.1.1</stax2-api.version>
         <woodstox-core-asl.version>4.1.2</woodstox-core-asl.version>
+        <javax.annotation-api.version>1.2-b03</javax.annotation-api.version>
     </properties>
     
     <dependencyManagement>
@@ -414,7 +415,19 @@
                 <artifactId>resolver</artifactId>
                 <version>${resolver.version}</version>
             </dependency>
-            
+
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation-api.version}</version>
+                <classifier>sources</classifier>
+            </dependency>
+                        
             <!-- To be removed (make optional) in the future -->
             <dependency>
                 <groupId>org.glassfish.ha</groupId>
