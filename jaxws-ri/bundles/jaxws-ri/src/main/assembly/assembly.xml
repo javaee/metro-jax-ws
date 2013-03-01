@@ -95,6 +95,7 @@
             <includes>
                 <include>com.sun.org.apache.xml.internal:resolver</include>
                 <include>javax.annotation:javax.annotation-api</include>
+                <include>javax.xml.soap:javax.xml.soap-api</include>
                 <include>javax.jws:jsr181-api</include>
                 <include>javax.xml.bind:jaxb-api</include>
                 <include>javax.xml.ws:jaxws-api</include>
@@ -103,6 +104,7 @@
             </includes>
             <excludes>
                 <exclude>javax.activation:activation</exclude>
+                <exclude>javax.xml.soap:saaj-api</exclude>
             </excludes>
         </dependencySet>
         <dependencySet>
