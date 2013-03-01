@@ -93,6 +93,7 @@
             <directoryMode>0755</directoryMode>
             <fileMode>0644</fileMode>
             <includes>
+                <include>com.sun.org.apache.xml.internal:resolver</include>
                 <include>javax.annotation:javax.annotation-api</include>
                 <include>javax.xml.soap:javax.xml.soap-api</include>
                 <include>javax.jws:jsr181-api</include>
