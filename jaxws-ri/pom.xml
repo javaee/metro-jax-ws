@@ -136,7 +136,7 @@
                                 <skip>${maven.endorsed.skip}</skip>
                                 <outputDirectory>${endorsed.dir}</outputDirectory>
                                 <silent>false</silent>
-                                <includeArtifactIds>javax.annotation,jsr181-api,jaxb-api,saaj-api,jaxws-api</includeArtifactIds>
+                                <includeArtifactIds>javax.annotation-api,jsr181-api,jaxb-api,javax.xml.soap-api,jaxws-api</includeArtifactIds>
                             </configuration>
                         </execution>
                     </executions>

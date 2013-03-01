@@ -285,11 +285,9 @@
                 </dependency>
                 -->
 
-                <!-- TODO: needed on mac? -->
                 <dependency>
                     <groupId>com.sun.org.apache.xml.internal</groupId>
                     <artifactId>resolver</artifactId>
-                    <scope>provided</scope>
                 </dependency>
 
                 <dependency>
@@ -328,7 +326,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${libraries.dir}</outputDirectory>
-                                    <excludeArtifactIds>jaxb-api,javax.annotation,jsr181-api,saaj-api,jaxws-api</excludeArtifactIds>
+                                    <excludeArtifactIds>jaxb-api,javax.annotation-api,jsr181-api,javax.xml.soap-api,jaxws-api</excludeArtifactIds>
                                 </configuration>
                             </execution>
                         </executions>

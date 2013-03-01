@@ -141,7 +141,7 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib/api</outputDirectory>
                             <excludeTransitive>true</excludeTransitive>
-                            <includeArtifactIds>javax.annotation,jsr181-api,jaxb-api,saaj-api,jaxws-api</includeArtifactIds>
+                            <includeArtifactIds>javax.annotation-api,jsr181-api,jaxb-api,javax.xml.soap-api,jaxws-api</includeArtifactIds>
                         </configuration>
                     </execution>
                     <execution>
@@ -152,7 +152,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <excludeArtifactIds>javax.annotation,jsr181-api,jaxb-api,saaj-api,jaxws-api,ant,ant-launcher,ant-nodeps,istack-commons-runtime,cobertura,cobertura-runtime</excludeArtifactIds>
+                            <excludeArtifactIds>javax.annotation-api,jsr181-api,jaxb-api,javax.xml.soap-api,jaxws-api,ant,ant-launcher,ant-nodeps,istack-commons-runtime,cobertura,cobertura-runtime</excludeArtifactIds>
                             <excludeScope>system</excludeScope>
                         </configuration>
                     </execution>
@@ -180,6 +180,7 @@
                         <jsr181-api.version>${jsr181-api.version}</jsr181-api.version>
                         <javax.annotation-api.version>${javax.annotation-api.version}</javax.annotation-api.version>
                         <jaxws-api.version>${jaxws-api.version}</jaxws-api.version>
+                        <saaj-api.version>${saaj-api.version}</saaj-api.version>
                         <net.sourceforge.cobertura.datafile>${net.sourceforge.cobertura.datafile}</net.sourceforge.cobertura.datafile>
                     </systemPropertyVariables>
                     <forkMode>always</forkMode>
