@@ -48,6 +48,7 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.encoding.SOAPBindingCodec;
 import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.AttachmentSetImpl;
@@ -86,7 +87,7 @@ import java.io.OutputStream;
  * @author Kohsuke Kawaguchi
  */
 public final class JAXBMessage extends AbstractMessageImpl {
-    private HeaderList headers;
+    private MessageHeaders headers;
 
     /**
      * The JAXB object that represents the payload.
@@ -114,7 +115,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
      */
     private XMLStreamBuffer infoset;
 
-    public static Message create(BindingContext context, Object jaxbObject, SOAPVersion soapVersion, HeaderList headers, AttachmentSet attachments) {
+    public static Message create(BindingContext context, Object jaxbObject, SOAPVersion soapVersion, MessageHeaders headers, AttachmentSet attachments) {
         if(!context.hasSwaRef()) {
             return new JAXBMessage(context,jaxbObject,soapVersion,headers,attachments);
         }
@@ -170,7 +171,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
         return new JAXBMessage(context,jaxbObject,soapVersion,null,null);
     }
 
-    private JAXBMessage( BindingContext context, Object jaxbObject, SOAPVersion soapVer, HeaderList headers, AttachmentSet attachments ) {
+    private JAXBMessage( BindingContext context, Object jaxbObject, SOAPVersion soapVer, MessageHeaders headers, AttachmentSet attachments ) {
         super(soapVer);
 //        this.bridge = new MarshallerBridge(context);
         this.bridge = context.createFragmentBridge();
@@ -180,7 +181,7 @@ public final class JAXBMessage extends AbstractMessageImpl {
         this.attachmentSet = attachments;
     }
     
-    private JAXBMessage( JAXBContext rawContext, Object jaxbObject, SOAPVersion soapVer, HeaderList headers, AttachmentSet attachments ) {
+    private JAXBMessage( JAXBContext rawContext, Object jaxbObject, SOAPVersion soapVer, MessageHeaders headers, AttachmentSet attachments ) {
         super(soapVer);
 //        this.bridge = new MarshallerBridge(context);
         this.rawContext = rawContext;
@@ -252,11 +253,11 @@ public final class JAXBMessage extends AbstractMessageImpl {
     
     @Override
     public boolean hasHeaders() {
-        return headers!=null && !headers.isEmpty();
+        return headers!=null && headers.hasHeaders();
     }
 
     @Override
-    public HeaderList getHeaders() {
+    public MessageHeaders getHeaders() {
         if(headers==null)
             headers = new HeaderList(getSOAPVersion());
         return headers;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -95,7 +95,7 @@ public class SAAJMessage extends Message {
     private boolean accessedMessage;
     private final SOAPMessage sm;
 
-    private HeaderList headers;
+    private MessageHeaders headers;
     private List<Element> bodyParts;
     private Element payload;
 
@@ -117,7 +117,7 @@ public class SAAJMessage extends Message {
      * @param headers
      * @param sm
      */
-    private SAAJMessage(HeaderList headers, AttachmentSet as, SOAPMessage sm, SOAPVersion version) {
+    private SAAJMessage(MessageHeaders headers, AttachmentSet as, SOAPMessage sm, SOAPVersion version) {
         this.sm = sm;
         this.parse();
         if(headers == null)
@@ -176,13 +176,14 @@ public class SAAJMessage extends Message {
 
     public boolean hasHeaders() {
         parse();
-        return headers.size() > 0;
+        return headers.hasHeaders();
     }
 
-    public @NotNull HeaderList getHeaders() {
+    public @NotNull MessageHeaders getHeaders() {
         parse();
         return headers;
     }
+
     /**
      * Gets the attachments of this message
      * (attachments live outside a message.)
@@ -257,7 +258,7 @@ public class SAAJMessage extends Message {
                     newBody.appendChild(n);
                 }
                 addAttributes(msg.getSOAPHeader(),headerAttrs);
-                for (Header header : headers) {
+                for (Header header : headers.asList()) {
                     header.writeTo(msg);
                 }
                 SOAPEnvelope se = msg.getSOAPPart().getEnvelope();
@@ -281,7 +282,7 @@ public class SAAJMessage extends Message {
                 newBody.appendChild(n);
             }
             addAttributes(msg.getSOAPHeader(),headerAttrs);
-            for (Header header : headers) {
+            for (Header header : headers.asList()) {
               header.writeTo(msg);
             }
             for (Attachment att : getAttachments()) {
@@ -376,9 +377,8 @@ public class SAAJMessage extends Message {
                     } else {
                         writer.writeStartElement(env.getPrefix(), "Header", env.getNamespaceURI());
                     }
-                    int len = headers.size();
-                    for (int i = 0; i < len; i++) {
-                        headers.get(i).writeTo(writer);
+                    for (Header h : headers.asList()) {
+                        h.writeTo(writer);
                     }
                     writer.writeEndElement();
                 }
@@ -409,11 +409,9 @@ public class SAAJMessage extends Message {
             if (hasHeaders()) {
                 startPrefixMapping(contentHandler, headerAttrs,"S");
                 contentHandler.startElement(soapNsUri, "Header", "S:Header", getAttributes(headerAttrs));
-                HeaderList headers = getHeaders();
-                int len = headers.size();
-                for (int i = 0; i < len; i++) {
-                    // shouldn't JDK be smart enough to use array-style indexing for this foreach!?
-                    headers.get(i).writeTo(contentHandler, errorHandler);
+                MessageHeaders headers = getHeaders();
+                for (Header h : headers.asList()) {
+                    h.writeTo(contentHandler, errorHandler);
                 }
                 endPrefixMapping(contentHandler, headerAttrs,"S");
                 contentHandler.endElement(soapNsUri, "Header", "S:Header");
@@ -732,10 +730,4 @@ public class SAAJMessage extends Message {
     public SOAPVersion getSOAPVersion() {
         return soapVersion;
     }
-
-    @Override
-    public MessageHeaders getMessageHeaders() {
-        return getHeaders();
-    }
-
 }

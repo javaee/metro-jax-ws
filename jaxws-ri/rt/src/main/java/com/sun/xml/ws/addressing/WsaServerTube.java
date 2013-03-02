@@ -124,7 +124,7 @@ public class WsaServerTube extends WsaTube {
         // so that they can be used after responsePacket is received.
         // These properties are used if a fault is thrown from the subsequent Pipe/Tubes.
 
-        MessageHeaders hl = request.getMessage().getMessageHeaders();
+        MessageHeaders hl = request.getMessage().getHeaders();
         String msgId;
         try {
             replyTo = AddressingUtils.getReplyTo(hl, addressingVersion, soapVersion);
@@ -147,7 +147,7 @@ public class WsaServerTube extends WsaTube {
             Message m = Messages.create(soapFault);
             if (soapVersion == SOAPVersion.SOAP_11) {
                 FaultDetailHeader s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getProblemHeader());
-                m.getMessageHeaders().add(s11FaultDetailHeader);
+                m.getHeaders().add(s11FaultDetailHeader);
             }
 
             Packet response = request.createServerResponse(m, wsdlPort, null, binding);
@@ -234,7 +234,7 @@ public class WsaServerTube extends WsaTube {
             return doReturnWith(response);
         }  // one way message. Nothing to see here. Move on.
 
-        String to = AddressingUtils.getTo(msg.getMessageHeaders(), 
+        String to = AddressingUtils.getTo(msg.getHeaders(), 
                 addressingVersion, soapVersion);
         if (to != null) {
         	replyTo = faultTo = new WSEndpointReference(to, addressingVersion);
@@ -325,7 +325,7 @@ public class WsaServerTube extends WsaTube {
         }
 
         String gotA = AddressingUtils.getAction(
-                packet.getMessage().getMessageHeaders(),
+                packet.getMessage().getHeaders(),
                 addressingVersion, soapVersion);
 
         if (gotA == null) {

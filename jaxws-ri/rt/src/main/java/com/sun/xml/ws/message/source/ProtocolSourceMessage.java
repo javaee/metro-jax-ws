@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,6 @@ import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.pipe.Codecs;
 import com.sun.xml.ws.api.pipe.StreamSOAPCodec;
-import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.message.Packet;
@@ -83,13 +82,6 @@ public class ProtocolSourceMessage extends Message {
 
     public boolean hasHeaders() {
         return sm.hasHeaders();
-    }
-
-    /**
-     * @deprecated - use getMessageHeaders() instead
-     */
-    public HeaderList getHeaders() {
-        return sm.getHeaders();
     }
 
     public String getPayloadLocalPart() {
@@ -156,7 +148,7 @@ public class ProtocolSourceMessage extends Message {
     }
 
     @Override
-    public MessageHeaders getMessageHeaders() {
-        return sm.getMessageHeaders();
+    public MessageHeaders getHeaders() {
+        return sm.getHeaders();
     }
 }

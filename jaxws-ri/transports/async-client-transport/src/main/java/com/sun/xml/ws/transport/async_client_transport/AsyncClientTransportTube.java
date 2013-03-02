@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,8 @@ import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.api.message.AddressingUtils;
+import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.HeaderList;
@@ -168,11 +170,11 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
     }
 
     String getMessageId(Message m) {
-        return m.getHeaders().getMessageID(binding.getAddressingVersion(), binding.getSOAPVersion());
+        return AddressingUtils.getMessageID(m.getHeaders(), binding.getAddressingVersion(), binding.getSOAPVersion());
     }
 
     String getRelatesTo(Message m) {
-        return m.getHeaders().getRelatesTo(binding.getAddressingVersion(), binding.getSOAPVersion());
+        return AddressingUtils.getRelatesTo(m.getHeaders(), binding.getAddressingVersion(), binding.getSOAPVersion());
     }
 
     public class ClientResponseHandler implements NonAnonymousResponseHandler<Message> {
@@ -301,7 +303,7 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
     }
 
     void setNonAnnonymousReplyTo(Message m, AddressingVersion av, Header nonAnonymousHeader) {
-        HeaderList headers = m.getHeaders();
+        MessageHeaders headers = m.getHeaders();
         headers.remove(av.replyToTag);
         headers.add(nonAnonymousHeader);
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,6 @@ package com.sun.xml.ws.message;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.AttachmentSet;
-import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.MessageHeaders;
@@ -52,8 +51,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -70,7 +67,7 @@ public class EmptyMessageImpl extends AbstractMessageImpl {
      * If a message has no payload, it's more likely to have
      * some header, so we create it eagerly here.
      */
-    private final HeaderList headers;
+    private final MessageHeaders headers;
     private final AttachmentSet attachmentSet;
 
     public EmptyMessageImpl(SOAPVersion version) {
@@ -79,7 +76,7 @@ public class EmptyMessageImpl extends AbstractMessageImpl {
         this.attachmentSet = new AttachmentSetImpl();
     }
 
-    public EmptyMessageImpl(HeaderList headers, @NotNull AttachmentSet attachmentSet, SOAPVersion version){
+    public EmptyMessageImpl(MessageHeaders headers, @NotNull AttachmentSet attachmentSet, SOAPVersion version){
         super(version);
         if(headers==null)
             headers = new HeaderList(version);
@@ -97,10 +94,10 @@ public class EmptyMessageImpl extends AbstractMessageImpl {
     }
 
     public boolean hasHeaders() {
-        return !headers.isEmpty();
+        return headers.hasHeaders();
     }
     
-    public HeaderList getHeaders() {
+    public MessageHeaders getHeaders() {
         return headers;
     }
 

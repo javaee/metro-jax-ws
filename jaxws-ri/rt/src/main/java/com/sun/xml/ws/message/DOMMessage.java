@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -70,18 +70,18 @@ import javax.xml.ws.WebServiceException;
  * @author Kohsuke Kawaguchi
  */
 public final class DOMMessage extends AbstractMessageImpl {
-    private HeaderList headers;
+    private MessageHeaders headers;
     private final Element payload;
 
     public DOMMessage(SOAPVersion ver, Element payload) {
         this(ver,null,payload);
     }
 
-    public DOMMessage(SOAPVersion ver, HeaderList headers, Element payload) {
+    public DOMMessage(SOAPVersion ver, MessageHeaders headers, Element payload) {
         this(ver,headers,payload,null);        
     }
 
-    public DOMMessage(SOAPVersion ver, HeaderList headers, Element payload, AttachmentSet attachments) {
+    public DOMMessage(SOAPVersion ver, MessageHeaders headers, Element payload, AttachmentSet attachments) {
         super(ver);
         this.headers = headers;
         this.payload = payload;
@@ -98,10 +98,10 @@ public final class DOMMessage extends AbstractMessageImpl {
     }
 
     public boolean hasHeaders() {
-        return getHeaders().size() > 0;
+        return getHeaders().hasHeaders();
     }
 
-    public HeaderList getHeaders() {
+    public MessageHeaders getHeaders() {
         if (headers == null)
             headers = new HeaderList(getSOAPVersion());
 

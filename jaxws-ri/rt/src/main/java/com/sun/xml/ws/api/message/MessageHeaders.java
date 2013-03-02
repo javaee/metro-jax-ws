@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.api.message;
 
+import java.util.List;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -65,11 +66,13 @@ public interface MessageHeaders {
      */
     public Iterator<Header> getHeaders(String nsUri, final boolean markAsUnderstood);
     public Iterator<Header> getHeaders(QName headerName, final boolean markAsUnderstood);
-    public Iterator<Header> getHeaders();
+    public Iterator<Header> getHeaders();    
+    public boolean hasHeaders();    
     public boolean add(Header header);
     public Header remove(QName name);
     public Header remove(String nsUri, String localName);
     //DONT public Header remove(Header header);
+    public void replace(Header old, Header header);
     
     /**
      * Replaces an existing {@link Header} or adds a new {@link Header}.
@@ -126,4 +129,10 @@ public interface MessageHeaders {
      * @return
      */
     public boolean isUnderstood(String nsUri, String header);
+    
+    /**
+     * Returns <code>Header</code> instances in a <code>List</code>.
+     * @return <code>List</code> containing <code>Header</code> instances
+     */
+    public List<Header> asList();
 }

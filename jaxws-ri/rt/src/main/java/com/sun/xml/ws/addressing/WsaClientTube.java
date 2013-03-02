@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -90,7 +90,7 @@ public class WsaClientTube extends WsaTube {
             response = validateInboundHeaders(response);
             response.addSatellite(new WsaPropertyBag(addressingVersion,soapVersion,response));
             String msgId = AddressingUtils.
-              getMessageID(response.getMessage().getMessageHeaders(),
+              getMessageID(response.getMessage().getHeaders(),
                       addressingVersion, soapVersion);
             response.put(WsaPropertyBag.WSA_MSGID_FROM_REQUEST, msgId);
         }
@@ -108,7 +108,7 @@ public class WsaClientTube extends WsaTube {
         if (wbo == null)    return;
 
         String gotA = AddressingUtils.getAction(
-                packet.getMessage().getMessageHeaders(),
+                packet.getMessage().getHeaders(),
                 addressingVersion, soapVersion);
         if (gotA == null)
             throw new WebServiceException(AddressingMessages.VALIDATION_CLIENT_NULL_ACTION());

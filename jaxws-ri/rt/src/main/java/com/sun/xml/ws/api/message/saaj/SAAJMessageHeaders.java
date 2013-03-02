@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@
 package com.sun.xml.ws.api.message.saaj;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -362,6 +363,13 @@ public class SAAJMessageHeaders implements MessageHeaders {
     }
 
     @Override
+    public void replace(Header old, Header header) {
+        if (remove(old.getNamespaceURI(), old.getLocalPart()) == null)
+            throw new IllegalArgumentException();
+        add(header);
+    }
+
+    @Override
     public Set<QName> getUnderstoodHeaders() {
         return understoodHeaders;
     }
@@ -474,5 +482,32 @@ public class SAAJMessageHeaders implements MessageHeaders {
             current = null;
         }
         
-    };
+    }
+
+    @Override
+    public boolean hasHeaders() {
+        SOAPHeader soapHeader = ensureSOAPHeader();
+        if (soapHeader == null) {
+            return false;
+        }
+
+        Iterator allHeaders = soapHeader.examineAllHeaderElements();
+        return allHeaders.hasNext();
+    }
+
+    @Override
+    public List<Header> asList() {
+        SOAPHeader soapHeader = ensureSOAPHeader();
+        if (soapHeader == null) {
+            return Collections.emptyList();
+        }
+
+        Iterator allHeaders = soapHeader.examineAllHeaderElements();
+        List<Header> headers = new ArrayList<Header>();
+        while (allHeaders.hasNext()) {
+            SOAPHeaderElement nextHdr = (SOAPHeaderElement) allHeaders.next();
+            headers.add(new SAAJHeader(nextHdr));
+        }
+        return headers;
+    }
 }

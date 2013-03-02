@@ -41,9 +41,7 @@
 package com.sun.xml.ws.api.message;
 
 import java.io.ByteArrayInputStream;
-import java.util.Set;
 
-import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPMessage;
@@ -53,7 +51,6 @@ import javax.xml.transform.stream.StreamSource;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
-import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 
 import junit.framework.TestCase;
@@ -114,7 +111,7 @@ public class GenerateToElementTest extends TestCase {
 
       SAAJMessage reqMsg = new SAAJMessage(makeSOAPMessage(reqMsgStr));
       SAAJMessage respMsg = new SAAJMessage(makeSOAPMessage(respMsgStr));
-      HeaderList requestHdrs = (HeaderList) reqMsg.getMessageHeaders();
+      HeaderList requestHdrs = (HeaderList) reqMsg.getHeaders();
       originalReplyToFromRequestMsg = requestHdrs.getReplyTo(av, sv);
 
       Packet responsePacket=null;
@@ -125,7 +122,7 @@ public class GenerateToElementTest extends TestCase {
       }
 
       //check toHeader
-      finalToFromResponseMsg = responsePacket.getHeaderList().getTo(av, sv);
+      finalToFromResponseMsg = AddressingUtils.getTo(responsePacket.getHeaderList(), av, sv);
       assertEquals(finalToFromResponseMsg, originalReplyToFromRequestMsg.getAddress());
   }
   private SOAPMessage makeSOAPMessage(String msg) throws Exception {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
 import com.sun.xml.ws.api.ha.HighAvailabilityProvider.StoreType;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
+import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.InstanceResolver;
 import com.sun.xml.ws.api.server.WSEndpoint;
@@ -324,7 +325,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     @Override
     public @NotNull T resolve(Packet request) {
 
-        HeaderList headers = request.getMessage().getHeaders();
+        MessageHeaders headers = request.getMessage().getHeaders();
         Header header = headers.get(COOKIE_TAG, true);
         String id = null;
         if (header != null) {

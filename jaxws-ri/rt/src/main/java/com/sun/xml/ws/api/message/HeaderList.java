@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -172,6 +173,24 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
             this.moreUnderstoodBits = (BitSet) that.moreUnderstoodBits.clone();
         }
     }
+    
+    public HeaderList(MessageHeaders that) {
+        super(that.asList());
+        if (that instanceof HeaderList) {
+            HeaderList hThat = (HeaderList) that;
+            this.understoodBits = hThat.understoodBits;
+            if (hThat.moreUnderstoodBits != null) {
+                this.moreUnderstoodBits = (BitSet) hThat.moreUnderstoodBits.clone();
+            }
+        } else {
+            Set<QName> understood = that.getUnderstoodHeaders();
+            if (understood != null) {
+                for (QName qname : understood) {
+                    understood(qname);
+                }
+            }
+        }
+    }
 
     /**
      * The total number of headers.
@@ -179,6 +198,11 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
     @Override
     public int size() {
         return super.size();
+    }
+    
+    @Override 
+    public boolean hasHeaders() {
+        return !isEmpty();
     }
 
     /**
@@ -680,6 +704,23 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
         }
         return add(header);
     }
+    
+    @Override
+    public void replace(Header old, Header header) {
+        for (int i=0; i < size(); i++) {
+            Header hdr = get(i);
+            if (hdr.getNamespaceURI().equals(header.getNamespaceURI()) &&
+                hdr.getLocalPart().equals(header.getLocalPart())) {
+              // Put the new header in the old position. Call super versions
+              // internally to avoid UnsupportedOperationException
+              removeInternal(i);
+              addInternal(i, header);
+              return;
+            }
+          }
+        
+          throw new IllegalArgumentException();
+    }
 
     protected void addInternal(int index, Header header) {
     	super.add(index, header);
@@ -817,7 +858,7 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
      * @param original
      *      Can be null, in which case null will be returned.
      */
-    public static HeaderList copy(HeaderList original) {
+    public static HeaderList copy(MessageHeaders original) {
         if (original == null) {
             return null;
         } else {
@@ -825,6 +866,18 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
         }
     }
 
+    /**
+     * Creates a copy.
+     *
+     * This handles null {@link HeaderList} correctly.
+     *
+     * @param original
+     *      Can be null, in which case null will be returned.
+     */
+    public static HeaderList copy(HeaderList original) {
+        return copy((MessageHeaders) original);
+    }
+    
     public void readResponseAddressingHeaders(WSDLPort wsdlPort, WSBinding binding) {
         // read Action
 //        String wsaAction = getAction(binding.getAddressingVersion(), binding.getSOAPVersion());
@@ -929,5 +982,10 @@ public class HeaderList extends ArrayList<Header> implements MessageHeaders {
     @Override
     public Iterator<Header> getHeaders() {
         return iterator();
+    }
+
+    @Override
+    public List<Header> asList() {
+        return this;
     }
 }

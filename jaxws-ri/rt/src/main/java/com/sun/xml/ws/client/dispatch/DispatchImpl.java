@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -216,10 +216,10 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
           SOAPVersion sv = DispatchImpl.this.getBinding().getSOAPVersion();
           action =
             av != null && message.getMessage() != null ?
-              AddressingUtils.getAction(message.getMessage().getMessageHeaders(), av, sv) : null;
+              AddressingUtils.getAction(message.getMessage().getHeaders(), av, sv) : null;
           msgId =
             av != null && message.getMessage() != null ?
-              AddressingUtils.getMessageID(message.getMessage().getMessageHeaders(), av, sv) : null;
+              AddressingUtils.getMessageID(message.getMessage().getHeaders(), av, sv) : null;
           LOGGER.fine("In DispatchImpl." + method + " for message with action: " + action + " and msg ID: " + msgId + " msg: " + message.getMessage());
 
           if (message.getMessage() == null) {
@@ -583,10 +583,10 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
               SOAPVersion sv = DispatchImpl.this.getBinding().getSOAPVersion();
               action =
                 av != null && message.getMessage() != null ?
-                  message.getMessage().getHeaders().getAction(av, sv) : null;
+                  AddressingUtils.getAction(message.getMessage().getHeaders(), av, sv) : null;
               msgId =
                 av != null&& message.getMessage() != null ?
-                  message.getMessage().getHeaders().getMessageID(av, sv) : null;
+                  AddressingUtils.getMessageID(message.getMessage().getHeaders(), av, sv) : null;
               LOGGER.fine("In DispatchAsyncInvoker.do_run for async message with action: " + action + " and msg ID: " + msgId);
             }
 

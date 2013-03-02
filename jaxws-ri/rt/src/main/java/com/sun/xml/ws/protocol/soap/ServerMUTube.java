@@ -84,7 +84,7 @@ public class ServerMUTube extends MUTube {
      */
     @Override
     public NextAction processRequest(Packet request) {
-        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(request.getMessage().getMessageHeaders(),roles, handlerKnownHeaders);
+        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(request.getMessage().getHeaders(),roles, handlerKnownHeaders);
         if((misUnderstoodHeaders == null)  || misUnderstoodHeaders.isEmpty()) {
             return doInvoke(super.next, request);
         }

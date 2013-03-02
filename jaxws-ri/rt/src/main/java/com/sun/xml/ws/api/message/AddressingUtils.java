@@ -84,7 +84,7 @@ public class AddressingUtils {
             }
 
             // wsa:MessageID
-            if (packet.getMessage().getMessageHeaders().get(av.messageIDTag, false) == null) {
+            if (packet.getMessage().getHeaders().get(av.messageIDTag, false) == null) {
                 if (headers.get(av.messageIDTag, false) == null) {
                     Header h = new StringHeader(av.messageIDTag, Message.generateMessageID());
                     headers.add(h);
@@ -103,7 +103,7 @@ public class AddressingUtils {
         }
         
         //See if WSA headers are already set by the user.
-        MessageHeaders hl = packet.getMessage().getMessageHeaders();
+        MessageHeaders hl = packet.getMessage().getHeaders();
         String action = AddressingUtils.getAction(hl, binding.getAddressingVersion(), binding.getSOAPVersion());
         if (action != null) {
             //assume that all the WSA headers are set by the user
@@ -269,7 +269,7 @@ public class AddressingUtils {
                 if (replyToEpr != null) {
                     headers.add(replyToEpr.createHeader(av.replyToTag));
                     // add wsa:MessageID only for non-null ReplyTo
-                    if (packet.getMessage().getMessageHeaders().get(av.messageIDTag, false) == null) {
+                    if (packet.getMessage().getHeaders().get(av.messageIDTag, false) == null) {
                         // if header doesn't exist, method getID creates a new random id
                         String newID = oneWayFeature.getMessageId() == null ? Message.generateMessageID() : oneWayFeature.getMessageId();
                         headers.add(new StringHeader(av.messageIDTag, newID));

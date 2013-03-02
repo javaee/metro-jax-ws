@@ -88,7 +88,7 @@ public class ClientMUTube extends MUTube {
             //may have been changed from the time of invocation, it ok as its only fallback case.
             handlerConfig = binding.getHandlerConfig();
         }
-        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(response.getMessage().getMessageHeaders(), handlerConfig.getRoles(),binding.getKnownHeaders());
+        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(response.getMessage().getHeaders(), handlerConfig.getRoles(),binding.getKnownHeaders());
         if((misUnderstoodHeaders == null) || misUnderstoodHeaders.isEmpty()) {
             return super.processResponse(response);
         }

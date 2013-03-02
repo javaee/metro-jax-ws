@@ -177,7 +177,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
 
             Message m = Messages.create(soapFault);
             if (soapVersion == SOAPVersion.SOAP_11) {
-                m.getMessageHeaders().add(s11FaultDetailHeader);
+                m.getHeaders().add(s11FaultDetailHeader);
             }
 
             return packet.createServerResponse(m, wsdlPort, null,  binding);
@@ -212,11 +212,11 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         if (packet.getMessage() == null)
             return false;
 
-        if (packet.getMessage().getMessageHeaders() != null)
+        if (packet.getMessage().getHeaders() != null)
             return false;
 
         String action = AddressingUtils.getAction(
-                packet.getMessage().getMessageHeaders(), 
+                packet.getMessage().getHeaders(), 
                 addressingVersion, soapVersion);
         if (action == null)
             return true;
@@ -247,7 +247,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
                 return;
         }
 
-        Iterator<Header> hIter = message.getMessageHeaders().getHeaders(addressingVersion.nsUri, true);
+        Iterator<Header> hIter = message.getHeaders().getHeaders(addressingVersion.nsUri, true);
 
         if (!hIter.hasNext()) {
             // no WS-A headers are found
@@ -382,7 +382,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
 
     protected void validateSOAPAction(Packet packet) {
         String gotA = AddressingUtils.getAction(
-                packet.getMessage().getMessageHeaders(),
+                packet.getMessage().getHeaders(),
                 addressingVersion, soapVersion);
         if (gotA == null)
             throw new WebServiceException(AddressingMessages.VALIDATION_SERVER_NULL_ACTION());

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -164,7 +164,7 @@ abstract class MUTube extends AbstractFilterTubeImpl {
             soapEl.addNamespaceDeclaration("abc", qname.getNamespaceURI());
             soapEl.setAttribute("qname", "abc:" + qname.getLocalPart());
             Header header = new DOMHeader<Element>(soapEl);
-            m.getMessageHeaders().add(header);
+            m.getHeaders().add(header);
         }
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,11 +88,7 @@ public class FilterMessageImpl extends Message {
         return delegate.hasHeaders();
     }
 
-    /**
-     * Deprecated - use getMessageHeaders() instead
-     */
-    @Deprecated
-    public @NotNull HeaderList getHeaders() {
+    public @NotNull MessageHeaders getHeaders() {
         return delegate.getHeaders();
     }
 
@@ -190,10 +186,5 @@ public class FilterMessageImpl extends Message {
 
     public SOAPVersion getSOAPVersion() {
         return delegate.getSOAPVersion();
-    }
-
-    @Override
-    public @NotNull MessageHeaders getMessageHeaders() {
-        return delegate.getMessageHeaders();
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,6 +46,7 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.message.AttachmentSetImpl;
 import com.sun.xml.ws.message.stream.PayloadStreamReaderMessage;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
@@ -59,7 +60,7 @@ import javax.xml.transform.Source;
  */
 public class PayloadSourceMessage extends PayloadStreamReaderMessage {
 
-    public PayloadSourceMessage(@Nullable HeaderList headers,
+    public PayloadSourceMessage(@Nullable MessageHeaders headers,
         @NotNull Source payload, @NotNull AttachmentSet attSet,
         @NotNull SOAPVersion soapVersion) {
         

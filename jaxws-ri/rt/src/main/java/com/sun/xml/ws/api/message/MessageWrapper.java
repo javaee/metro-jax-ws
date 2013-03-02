@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -111,15 +111,6 @@ class MessageWrapper extends StreamMessage {
     @Override
     public boolean hasHeaders() {
         return delegate.hasHeaders();
-    }
-
-    /**
-     * Deprecated - use getMessageHeaders() instead
-     */
-    @Deprecated
-    @Override
-    public HeaderList getHeaders() {
-        return delegate.getHeaders();
     }
 
     @Override
@@ -257,8 +248,8 @@ class MessageWrapper extends StreamMessage {
     }
     
     @Override
-    public @NotNull MessageHeaders getMessageHeaders() {
-        return delegate.getMessageHeaders();
+    public @NotNull MessageHeaders getHeaders() {
+        return delegate.getHeaders();
     }
 
     @Override

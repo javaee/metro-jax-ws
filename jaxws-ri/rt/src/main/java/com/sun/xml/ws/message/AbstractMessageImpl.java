@@ -42,7 +42,7 @@ package com.sun.xml.ws.message;
 
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.message.HeaderList;
+import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.message.MessageWritable;
@@ -64,6 +64,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
+
 import java.util.List;
 import java.util.Map;
 
@@ -142,10 +143,9 @@ public abstract class AbstractMessageImpl extends Message {
         w.writeNamespace("S",soapNsUri);
         if(hasHeaders()) {
             w.writeStartElement("S","Header",soapNsUri);
-            HeaderList headers = getHeaders();
-            int len = headers.size();
-            for( int i=0; i<len; i++ ) {
-                headers.get(i).writeTo(w);
+            MessageHeaders headers = getHeaders();
+            for (Header h : headers.asList()) {
+                h.writeTo(w);
             }
             w.writeEndElement();
         }
@@ -171,11 +171,9 @@ public abstract class AbstractMessageImpl extends Message {
         contentHandler.startElement(soapNsUri,"Envelope","S:Envelope",EMPTY_ATTS);
         if(hasHeaders()) {
             contentHandler.startElement(soapNsUri,"Header","S:Header",EMPTY_ATTS);
-            HeaderList headers = getHeaders();
-            int len = headers.size();
-            for( int i=0; i<len; i++ ) {
-                // shouldn't JDK be smart enough to use array-style indexing for this foreach!?
-                headers.get(i).writeTo(contentHandler,errorHandler);
+            MessageHeaders headers = getHeaders();
+            for (Header h : headers.asList()) {
+                h.writeTo(contentHandler,errorHandler);
             }
             contentHandler.endElement(soapNsUri,"Header","S:Header");
         }
@@ -229,13 +227,6 @@ public abstract class AbstractMessageImpl extends Message {
         if (msg.saveRequired()) msg.saveChanges();
     }
 
-    /**
-     * Default implementation of getMessageHeaders just calls getHeaders()
-     * for now. Subclasses may override if they choose
-     */
-    public MessageHeaders getMessageHeaders() {
-        return getHeaders();
-    }
     protected static final AttributesImpl EMPTY_ATTS = new AttributesImpl();
     protected static final LocatorImpl NULL_LOCATOR = new LocatorImpl();
 }

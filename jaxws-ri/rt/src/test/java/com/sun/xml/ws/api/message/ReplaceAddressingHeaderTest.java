@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,9 +41,7 @@
 package com.sun.xml.ws.api.message;
 
 import java.io.ByteArrayInputStream;
-import java.util.Set;
 
-import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPMessage;
@@ -53,7 +51,6 @@ import javax.xml.transform.stream.StreamSource;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
-import com.sun.xml.ws.api.SOAPVersion;
 
 import junit.framework.TestCase;
 
@@ -127,7 +124,7 @@ public class ReplaceAddressingHeaderTest extends TestCase {
 
       SAAJMessage reqMsg = new SAAJMessage(makeSOAPMessage(reqMsgStr));
       SAAJMessage respMsg = new SAAJMessage(makeSOAPMessage(respMsgStr));
-      HeaderList hdrs = (HeaderList) respMsg.getMessageHeaders();
+      HeaderList hdrs = (HeaderList) respMsg.getHeaders();
       String originToHeader = hdrs.getTo(av, sv);
 
       Packet responsePacket=null;
@@ -138,7 +135,7 @@ public class ReplaceAddressingHeaderTest extends TestCase {
       }
 
       //check toHeader
-      String toHeaderAfterProcessed = responsePacket.getHeaderList().getTo(av, sv);
+      String toHeaderAfterProcessed = AddressingUtils.getTo(responsePacket.getHeaderList(), av, sv);
       assertTrue(toHeaderAfterProcessed.equals(originToHeader));
   }
   private SOAPMessage makeSOAPMessage(String msg) throws Exception {

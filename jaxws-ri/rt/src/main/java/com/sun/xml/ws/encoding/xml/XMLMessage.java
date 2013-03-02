@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,6 @@ package com.sun.xml.ws.encoding.xml;
 import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.message.*;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
@@ -59,7 +58,6 @@ import com.sun.xml.ws.message.MimeAttachmentSet;
 import com.sun.xml.ws.message.source.PayloadSourceMessage;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.StreamUtils;
-import static com.sun.xml.ws.binding.WebServiceFeatureList.getFeature;  
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -75,7 +73,6 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,7 +87,6 @@ public final class XMLMessage {
     private static final int PLAIN_XML_FLAG      = 1;       // 00001
     private static final int MIME_MULTIPART_FLAG = 2;       // 00010
     private static final int FI_ENCODED_FLAG     = 16;      // 10000
-    private WebServiceFeature[] features;
 
     /*
      * Construct a message given a content type and an input stream.
@@ -283,7 +279,7 @@ public final class XMLMessage {
             return false;
         }
 
-        public @NotNull HeaderList getHeaders() {
+        public @NotNull MessageHeaders getHeaders() {
             return headerList;
         }
 
@@ -407,7 +403,7 @@ public final class XMLMessage {
             return false;
         }
 
-        public @NotNull HeaderList getHeaders() {
+        public @NotNull MessageHeaders getHeaders() {
             return headerList;
         }
 
@@ -550,7 +546,7 @@ public final class XMLMessage {
             return false;
         }
 
-        public HeaderList getHeaders() {
+        public MessageHeaders getHeaders() {
             return headerList;
         }
 

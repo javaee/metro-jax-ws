@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,7 +88,7 @@ public class MemberSubmissionWsaClientTube extends WsaClientTube {
             // RelatesTo required as per
             // Table 5-3 of http://www.w3.org/TR/2006/WD-ws-addr-wsdl-20060216/#wsdl11requestresponse
             if (expectReply && (packet.getMessage() != null) && !foundRelatesTo) {
-                String action = AddressingUtils.getAction(packet.getMessage().getMessageHeaders(), addressingVersion, soapVersion);
+                String action = AddressingUtils.getAction(packet.getMessage().getHeaders(), addressingVersion, soapVersion);
                 // Don't check for AddressingFaults as
                 // Faults for requests with duplicate MessageId will have no wsa:RelatesTo
                 if (!packet.getMessage().isFault() || !action.equals(addressingVersion.getDefaultFaultAction())) {

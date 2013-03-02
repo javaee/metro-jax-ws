@@ -350,8 +350,8 @@ public final class Fiber implements Runnable, Cancelable, ComponentRegistry {
             if (packet != null) {
                 for (SOAPVersion sv: SOAPVersion.values()) {
                     for (AddressingVersion av: AddressingVersion.values()) {
-                        action = packet.getMessage() != null ? AddressingUtils.getAction(packet.getMessage().getMessageHeaders(), av, sv) : null;
-                        msgId = packet.getMessage() != null ? AddressingUtils.getMessageID(packet.getMessage().getMessageHeaders(), av, sv) : null;
+                        action = packet.getMessage() != null ? AddressingUtils.getAction(packet.getMessage().getHeaders(), av, sv) : null;
+                        msgId = packet.getMessage() != null ? AddressingUtils.getMessageID(packet.getMessage().getHeaders(), av, sv) : null;
                         if (action != null || msgId != null) {
                            break;
                         }

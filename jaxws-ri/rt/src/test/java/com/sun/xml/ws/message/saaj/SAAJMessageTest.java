@@ -117,19 +117,19 @@ public class SAAJMessageTest extends TestCase {
 
         SAAJMessage saajMsg = new SAAJMessage(message);
         assertEquals("addNumbers",saajMsg.getPayloadLocalPart());
-        assertEquals("http://example.com/addNumbers",AddressingUtils.getAction(saajMsg.getMessageHeaders(), AddressingVersion.W3C, SOAPVersion.SOAP_11));
+        assertEquals("http://example.com/addNumbers",AddressingUtils.getAction(saajMsg.getHeaders(), AddressingVersion.W3C, SOAPVersion.SOAP_11));
         Header header = new StringHeader(new QName("urn:foo","header1"),"test header  ");
         saajMsg.getHeaders().add(header);
         
         SOAPMessage newMsg = saajMsg.readAsSOAPMessage();
         newMsg.writeTo(System.out);
         SAAJMessage saajMsg2 = new SAAJMessage(newMsg);
-        assertEquals(2,saajMsg2.getHeaders().size());
+        assertEquals(2,saajMsg2.getHeaders().asList().size());
 
         Message saajMsg3 = saajMsg2.copy();
         assertEquals("addNumbers",saajMsg3.getPayloadLocalPart());
-        assertEquals("http://example.com/addNumbers",saajMsg3.getHeaders().getAction(AddressingVersion.W3C, SOAPVersion.SOAP_11));
-        assertEquals(2,saajMsg2.getHeaders().size());
+        assertEquals("http://example.com/addNumbers",AddressingUtils.getAction(saajMsg3.getHeaders(), AddressingVersion.W3C, SOAPVersion.SOAP_11));
+        assertEquals(2,saajMsg2.getHeaders().asList().size());
         XMLStreamWriter writer = XMLStreamWriterFactory.create(System.out);
         saajMsg3.writeTo(writer);
         writer.close();

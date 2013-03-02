@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -100,7 +100,7 @@ public class Test extends TestCase {
                     "</addNumbers>" +
                     "</S:Body></S:Envelope>";
             Message message = useStream12Codec(requestStr);
-            WSEndpointReference wsepr = message.getHeaders().getFaultTo(AddressingVersion.MEMBER, SOAPVersion.SOAP_12);
+            WSEndpointReference wsepr = AddressingUtils.getFaultTo(message.getHeaders(), AddressingVersion.MEMBER, SOAPVersion.SOAP_12);
             Message m2 = Messages.create("Test Unsupported", AddressingVersion.MEMBER, SOAPVersion.SOAP_12);
             wsepr.addReferenceParametersToList(m2.getHeaders());
             ByteArrayBuffer baos = new ByteArrayBuffer();
@@ -112,7 +112,7 @@ public class Test extends TestCase {
             XMLStreamReader reader = readerFactory.createXMLStreamReader(baos.newInputStream());
             Message sm = Messages.create(reader);
             Packet sm_packet = new Packet(sm);
-            HeaderList headers = sm_packet.getMessage().getHeaders();
+            MessageHeaders headers = sm_packet.getMessage().getHeaders();
             Header h1 = headers.get("http://foo.bar", "foo", true);
             assertEquals("bar", h1.getStringContent());
             Header h2 = headers.get("http://foo.bar1", "bar", true);
@@ -157,7 +157,7 @@ public class Test extends TestCase {
                     "</addNumbers>" +
                     "</S:Body></S:Envelope>";
             Message message = useStream12Codec(requestStr);
-            WSEndpointReference wsepr = message.getHeaders().getFaultTo(AddressingVersion.W3C, SOAPVersion.SOAP_12);
+            WSEndpointReference wsepr = AddressingUtils.getFaultTo(message.getHeaders(), AddressingVersion.W3C, SOAPVersion.SOAP_12);
             Message m2 = Messages.create("Test Unsupported", AddressingVersion.W3C, SOAPVersion.SOAP_12);
             wsepr.addReferenceParametersToList(m2.getHeaders());
             ByteArrayBuffer baos = new ByteArrayBuffer();

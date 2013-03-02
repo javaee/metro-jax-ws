@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,21 +40,13 @@
 
 package com.sun.xml.ws.handler;
 
-import com.sun.xml.ws.api.message.AttachmentSet;
-import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.message.EmptyMessageImpl;
-import com.sun.xml.ws.message.source.PayloadSourceMessage;
 import com.sun.xml.ws.spi.db.BindingContext;
-
-import javax.xml.transform.Source;
 
 import javax.xml.ws.LogicalMessage;
 import javax.xml.ws.handler.LogicalMessageContext;
-import javax.xml.bind.JAXBContext;
 
 /**
  * Implementation of LogicalMessageContext. This class is used at runtime

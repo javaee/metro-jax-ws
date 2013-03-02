@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -220,32 +220,20 @@ public abstract class Message {
     public abstract boolean hasHeaders();
 
     /**
-     * This method is deprecated - use getMessageHeaders() instead
      * Gets all the headers of this message.
      *
      * <h3>Implementation Note</h3>
      * <p>
      * {@link Message} implementation is allowed to defer
-     * the construction of {@link HeaderList} object. So
+     * the construction of {@link MessageHeaders} object. So
      * if you only want to check for the existence of any header
      * element, use {@link #hasHeaders()}.
      *
      * @return
      *      always return the same non-null object.
      */
-    @Deprecated
-    public abstract @NotNull HeaderList getHeaders();
+    public abstract @NotNull MessageHeaders getHeaders();
 
-   /* Gets all the headers of this message. This
-    * method must be used rather than getHeaders()
-    *
-    * @return
-    *      always return the same non-null object.
-    */
-    public @NotNull MessageHeaders getMessageHeaders() {
-        return getHeaders();
-    }
-    
     /**
      * Gets the attachments of this message
      * (attachments live outside a message.)
@@ -793,11 +781,11 @@ public abstract class Message {
     public @NotNull String getID(AddressingVersion av, SOAPVersion sv) {
     	String uuid = null;
         if (av != null) {
-            uuid = AddressingUtils.getMessageID(getMessageHeaders(), av, sv);
+            uuid = AddressingUtils.getMessageID(getHeaders(), av, sv);
         }
         if (uuid == null) {
             uuid = generateMessageID();
-            getMessageHeaders().add(new StringHeader(av.messageIDTag, uuid));
+            getHeaders().add(new StringHeader(av.messageIDTag, uuid));
         }
         return uuid;
     }

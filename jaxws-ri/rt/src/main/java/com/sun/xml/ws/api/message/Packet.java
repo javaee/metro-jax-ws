@@ -466,8 +466,8 @@ public final class Packet
         if (msg == null) {
             return refParams;
         }
-        HeaderList hl = msg.getHeaders();
-        for (Header h : hl) {
+        MessageHeaders hl = msg.getHeaders();
+        for (Header h : hl.asList()) {
             String attr = h.getAttribute(AddressingVersion.W3C.nsUri, "IsReferenceParameter");
             if (attr != null && (attr.equals("true") || attr.equals("1"))) {
                 Document d = DOMUtil.createDom();
@@ -494,12 +494,11 @@ public final class Packet
     }
 
     /**
-     * @deprecated
      *      This method is for exposing header list through {@link PropertySet#get(Object)},
      *      for user applications, and should never be invoked directly from within the JAX-WS RI.
      */
     @Property(JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY)
-    /*package*/ HeaderList getHeaderList() {
+    /*package*/ MessageHeaders getHeaderList() {
         Message msg = getMessage();
         if (msg == null) {
             return null;
@@ -928,7 +927,7 @@ public final class Packet
         }
         
         //populate WS-A headers only if the request has addressing headers
-        String inputAction = AddressingUtils.getAction(getMessage().getMessageHeaders(), av, binding.getSOAPVersion());
+        String inputAction = AddressingUtils.getAction(getMessage().getHeaders(), av, binding.getSOAPVersion());
         if (inputAction == null) {
             return r;
         }
@@ -966,7 +965,7 @@ public final class Packet
             return responsePacket;
         }
         //populate WS-A headers only if the request has addressing headers
-        String inputAction = AddressingUtils.getAction(this.getMessage().getMessageHeaders(), addressingVersion, soapVersion);
+        String inputAction = AddressingUtils.getAction(this.getMessage().getHeaders(), addressingVersion, soapVersion);
         if (inputAction == null) {
             return responsePacket;
         }
@@ -998,13 +997,13 @@ public final class Packet
         if (responsePacket.getMessage() == null)
             return;
 
-        MessageHeaders hl = responsePacket.getMessage().getMessageHeaders();
+        MessageHeaders hl = responsePacket.getMessage().getHeaders();
 
         WsaPropertyBag wpb = getSatellite(WsaPropertyBag.class);
         Message msg = getMessage();
         // wsa:To
         WSEndpointReference replyTo = null;
-        Header replyToFromRequestMsg = AddressingUtils.getFirstHeader(msg.getMessageHeaders(), av.replyToTag, true, sv);
+        Header replyToFromRequestMsg = AddressingUtils.getFirstHeader(msg.getHeaders(), av.replyToTag, true, sv);
         Header replyToFromResponseMsg = hl.get(av.toTag, false);
         boolean replaceToTag = true;
         try{
@@ -1018,19 +1017,19 @@ public final class Packet
             throw new WebServiceException(AddressingMessages.REPLY_TO_CANNOT_PARSE(), e);
         }
         if (replyTo == null) {
-    	      replyTo = AddressingUtils.getReplyTo(msg.getMessageHeaders(), av, sv);
+    	      replyTo = AddressingUtils.getReplyTo(msg.getHeaders(), av, sv);
         }
 
         // wsa:Action, add if the message doesn't already contain it,
         // generally true for SEI case where there is SEIModel or WSDLModel
         //           false for Provider with no wsdl, Expects User to set the coresponding header on the Message.
-        if (AddressingUtils.getAction(responsePacket.getMessage().getMessageHeaders(), av, sv) == null) {
+        if (AddressingUtils.getAction(responsePacket.getMessage().getHeaders(), av, sv) == null) {
             //wsa:Action header is not set in the message, so use the wsa:Action  passed as the parameter.
             hl.add(new StringHeader(av.actionTag, action, sv, mustUnderstand));
         }
 
         // wsa:MessageID
-        if (responsePacket.getMessage().getMessageHeaders().get(av.messageIDTag, false) == null) {
+        if (responsePacket.getMessage().getHeaders().get(av.messageIDTag, false) == null) {
             // if header doesn't exist, method getID creates a new random id
             String newID = Message.generateMessageID();
             hl.add(new StringHeader(av.messageIDTag, newID));
@@ -1042,7 +1041,7 @@ public final class Packet
             mid = wpb.getMessageID();
         }
         if (mid == null) {
-            mid = AddressingUtils.getMessageID(msg.getMessageHeaders(), av, sv);
+            mid = AddressingUtils.getMessageID(msg.getHeaders(), av, sv);
         }
         if (mid != null) {
             hl.addOrReplace(new RelatesToHeader(av.relatesToTag, mid));
@@ -1057,7 +1056,7 @@ public final class Packet
                 refpEPR = wpb.getFaultToFromRequest();
             }
             if (refpEPR == null) {
-                refpEPR = AddressingUtils.getFaultTo(msg.getMessageHeaders(), av, sv);
+                refpEPR = AddressingUtils.getFaultTo(msg.getHeaders(), av, sv);
             }
             // if FaultTo is null, then use ReplyTo
             if (refpEPR == null) {

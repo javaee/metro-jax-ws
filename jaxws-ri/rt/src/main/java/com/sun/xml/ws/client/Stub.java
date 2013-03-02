@@ -484,7 +484,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         // to make it multi-thread safe we need to first get a stable snapshot
         Header[] hl = userOutboundHeaders;
         if (hl != null) {
-            MessageHeaders mh = packet.getMessage().getMessageHeaders();
+            MessageHeaders mh = packet.getMessage().getHeaders();
             for (Header h : hl) {
                 mh.add(h);
             }
@@ -495,7 +495,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 
         if (addrVersion != null) {
             // populate request WS-Addressing headers
-            MessageHeaders headerList = packet.getMessage().getMessageHeaders();
+            MessageHeaders headerList = packet.getMessage().getHeaders();
             AddressingUtils.fillRequestAddressingHeaders(headerList, wsdlPort, binding, packet);
 
 
@@ -742,8 +742,8 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 
     @Override
     public final List<Header> getInboundHeaders() {
-        return Collections.unmodifiableList((HeaderList)
-                responseContext.get(JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY));
+        return Collections.unmodifiableList(((MessageHeaders)
+                responseContext.get(JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY)).asList());
     }
 
     @Override
