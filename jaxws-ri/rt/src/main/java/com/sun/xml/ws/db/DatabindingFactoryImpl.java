@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -157,14 +157,8 @@ public class DatabindingFactoryImpl extends DatabindingFactory {
 		     config.getMappingInfo().getDatabindingMode() != null)
 			return config.getMappingInfo().getDatabindingMode();
         if ( config.getFeatures() != null) for (WebServiceFeature f : config.getFeatures()) {
-            // new
             if (f instanceof com.oracle.webservices.api.databinding.DatabindingModeFeature) {
                 com.oracle.webservices.api.databinding.DatabindingModeFeature dmf = (com.oracle.webservices.api.databinding.DatabindingModeFeature) f;
-                return dmf.getMode();
-            }
-            // old
-            if (f instanceof org.jvnet.ws.databinding.DatabindingModeFeature) {
-                org.jvnet.ws.databinding.DatabindingModeFeature dmf = (org.jvnet.ws.databinding.DatabindingModeFeature) f;
                 return dmf.getMode();
             }
         }

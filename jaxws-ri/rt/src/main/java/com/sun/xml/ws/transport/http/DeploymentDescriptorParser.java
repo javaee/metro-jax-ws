@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -288,21 +288,10 @@ public class DeploymentDescriptorParser<A> {
                 }
                 WSBinding binding = createBinding(bindingId, implementorClass, enable_mtom, mtomThreshold, dbMode);
                 if (externalMetadataFeature != null) {
-                    // temporary -- build org.jvnet.ws.databinding.ExternalMetadataFeature
-                    org.jvnet.ws.databinding.ExternalMetadataFeature.Builder builder = 
-                            org.jvnet.ws.databinding.ExternalMetadataFeature.builder();
-                    List<File> files = externalMetadataFeature.getFiles();
-                    List<String> res = externalMetadataFeature.getResourceNames();
-                    if (files != null) {
-                        builder = builder.addFiles(files.toArray(new File[files.size()]));
-                    }
-                    if (res != null) {
-                        builder = builder.addResources(res.toArray(new String[res.size()]));
-                    }
-                    binding.getFeatures().mergeFeatures(new WebServiceFeature[]{externalMetadataFeature, 
-                            builder.build()}, 
-                            true);
+                	binding.getFeatures().mergeFeatures(new WebServiceFeature[]{externalMetadataFeature}, 
+                        true);
                 }
+
                 String urlPattern = getMandatoryNonEmptyAttribute(reader, attrs, ATTR_URL_PATTERN);
 
                 // TODO use 'docs' as the metadata. If wsdl is non-null it's the primary.
@@ -368,10 +357,7 @@ public class DeploymentDescriptorParser<A> {
         }
 
         if (dataBindingMode != null) {
-            // new
             features.add(new DatabindingModeFeature(dataBindingMode));
-            // old
-            features.add(new org.jvnet.ws.databinding.DatabindingModeFeature(dataBindingMode));
         }
 
         return bindingID.createBinding(features.toArray());

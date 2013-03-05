@@ -40,7 +40,7 @@
 package externalmetadata.fromjava.client;
 
 import junit.framework.TestCase;
-import org.jvnet.ws.databinding.ExternalMetadataFeature;
+import com.oracle.webservices.api.databinding.ExternalMetadataFeature;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;

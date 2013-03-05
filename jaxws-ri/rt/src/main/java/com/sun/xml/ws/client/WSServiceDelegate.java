@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -867,14 +867,11 @@ public class WSServiceDelegate extends WSService {
 
     private MetadataReader getMetadadaReader(WebServiceFeatureList features, ClassLoader classLoader) {
         if (features == null) return null;
-        // new
         com.oracle.webservices.api.databinding.ExternalMetadataFeature ef =
                 features.get(com.oracle.webservices.api.databinding.ExternalMetadataFeature.class);
         if (ef != null)
             return ef.getMetadataReader(classLoader);
-        // old
-        org.jvnet.ws.databinding.ExternalMetadataFeature f = features.get(org.jvnet.ws.databinding.ExternalMetadataFeature.class);
-        return f != null ? f.getMetadataReader(classLoader) : null;
+        return null;
     }
 
     private SEIPortInfo createSEIPortInfo(QName portName, Class portInterface, WebServiceFeatureList features) {

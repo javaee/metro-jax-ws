@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -115,11 +115,6 @@ public abstract class DatabindingFactory {
     
     @SuppressWarnings("deprecation")
     private static DatabindingFactory convertIfNecessary(Class<?> cls) throws InstantiationException, IllegalAccessException {
-        Object obj = cls.newInstance();
-        
-        if (obj instanceof org.jvnet.ws.databinding.DatabindingFactory)
-            return new org.jvnet.ws.databinding.impl.converter.NewDatabindingFactory((org.jvnet.ws.databinding.DatabindingFactory) obj);
-        
-        return (DatabindingFactory) obj;
+        return (DatabindingFactory) cls.newInstance();
     }
 }

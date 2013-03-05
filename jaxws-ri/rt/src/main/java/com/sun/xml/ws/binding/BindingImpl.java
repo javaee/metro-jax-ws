@@ -224,7 +224,7 @@ public abstract class BindingImpl implements WSBinding {
     @NotNull
     public WebServiceFeatureList getFeatures() {
         //TODO scchen convert BindingID  to WebServiceFeature[]
-        if(!isFeatureEnabled(org.jvnet.ws.EnvelopeStyleFeature.class)) {
+        if(!isFeatureEnabled(com.oracle.webservices.api.EnvelopeStyleFeature.class)) {
             WebServiceFeature[] f = { getSOAPVersion().toFeature() };
             features.mergeFeatures(f, false);
         }
@@ -310,11 +310,11 @@ public abstract class BindingImpl implements WSBinding {
         }
     }
 
-    public synchronized @NotNull org.jvnet.ws.message.MessageContextFactory getMessageContextFactory () {
+    public synchronized @NotNull com.oracle.webservices.api.message.MessageContextFactory getMessageContextFactory () {
         if (messageContextFactory == null) {
             messageContextFactory = MessageContextFactory.createFactory(getFeatures().toArray());
         }
-        return org.jvnet.ws.message.MessageContextFactory.wrap(messageContextFactory);
+        return messageContextFactory;
     }
 
     /**

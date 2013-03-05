@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -113,7 +113,6 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceException;
 
-import org.jvnet.ws.databinding.impl.converter.NewWSDLResolver;
 import org.w3c.dom.Document;
 
 import java.io.IOException;
@@ -225,15 +224,6 @@ public class WSDLGenerator {
 
     private boolean inlineSchemas;      // TODO
 
-    // Temporary
-    /**
-     * @deprecated
-     */
-    public WSDLGenerator(AbstractSEIModelImpl model, com.sun.xml.ws.wsdl.writer.WSDLResolver wsdlResolver, WSBinding binding, Container container,
-            Class implType, boolean inlineSchemas, WSDLGeneratorExtension... extensions) {
-        this(model, new NewWSDLResolver(wsdlResolver), binding, container, implType, inlineSchemas, extensions);
-    }
-    
     /**
      * Creates the WSDLGenerator
      * @param model The {@link AbstractSEIModelImpl} used to generate the WSDL

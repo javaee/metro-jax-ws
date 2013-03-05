@@ -116,8 +116,7 @@
                                     javax.xml.ws;version=${jaxws-api.version},
                                     javax.xml.ws.http;version=${jaxws-api.version},
                                     javax.xml.ws.spi;version=${jaxws-api.version},
-                                    org.glassfish.external.probe.provider.annotations,
-                                    org.jvnet.ws.message;version=${jaxws-rt.version}
+                                    org.glassfish.external.probe.provider.annotations
                                 </Import-Package>
                             </instructions>
                         </configuration>

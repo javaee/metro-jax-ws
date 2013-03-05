@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -489,16 +489,10 @@ public class EndpointFactory {
     }
 
     public static MetadataReader getExternalMetadatReader(Class<?> implType, WSBinding binding) {
-        // new
         com.oracle.webservices.api.databinding.ExternalMetadataFeature ef = binding.getFeature(
                 com.oracle.webservices.api.databinding.ExternalMetadataFeature.class);
         if (ef != null)
             return ef.getMetadataReader(implType.getClassLoader());
-        //old
-        org.jvnet.ws.databinding.ExternalMetadataFeature f = binding.getFeature(
-                org.jvnet.ws.databinding.ExternalMetadataFeature.class);
-        if (f != null)
-            return f.getMetadataReader(implType.getClassLoader());
         return null;
     }
 

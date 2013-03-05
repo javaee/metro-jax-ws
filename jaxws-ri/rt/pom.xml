@@ -243,9 +243,7 @@
                                     com.sun.xml.ws.wsdl.writer.document.http;version=${project.version},
                                     com.sun.xml.ws.wsdl.writer.document.soap;version=${project.version},
                                     com.sun.xml.ws.wsdl.writer.document.soap12;version=${project.version},
-                                    com.sun.xml.ws.wsdl.writer.document.xsd;version=${project.version},
-                                    org.jvnet.ws.databinding;version=${project.version},
-                                    org.jvnet.ws.message;version=${project.version}
+                                    com.sun.xml.ws.wsdl.writer.document.xsd;version=${project.version}
                                 </Export-Package>
                                 <Import-Package>
                                     com.sun.istack;version=${jaxb-impl.version},

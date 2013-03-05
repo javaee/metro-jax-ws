@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@ import java.util.Map.Entry;
 /**
  * Placeholder for backwards compatibility.
  * 
- * @deprecated Use org.jvnet.ws.message.PropertySet instead.
+ * @deprecated Use com.oracle.webservices.api.message.PropertySet instead.
  * @author snajper
  */
 public abstract class PropertySet extends com.oracle.webservices.api.message.BasePropertySet {
