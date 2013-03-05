@@ -109,7 +109,7 @@
         <fi.version>1.2.12</fi.version>
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
         <ha-api.version>3.1.9</ha-api.version>
-        <istack.version>2.15</istack.version>
+        <istack.version>2.16</istack.version>
         <jaxb-api.version>2.2.7</jaxb-api.version>
         <jaxb-impl.version>2.2.7-b60</jaxb-impl.version>
         <jaxws-api.version>2.2.9</jaxws-api.version>
