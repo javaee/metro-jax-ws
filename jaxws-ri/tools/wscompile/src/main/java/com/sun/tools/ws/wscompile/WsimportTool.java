@@ -42,6 +42,7 @@ package com.sun.tools.ws.wscompile;
 
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.writer.ProgressCodeWriter;
+import com.sun.istack.tools.DefaultAuthenticator;
 import com.sun.tools.ws.ToolVersion;
 import com.sun.tools.ws.api.TJavaGeneratorExtension;
 import com.sun.tools.ws.processor.generator.CustomExceptionGenerator;
@@ -70,10 +71,10 @@ import javax.xml.stream.*;
 import javax.xml.ws.EndpointContext;
 import java.io.*;
 import java.util.*;
-import java.net.Authenticator;
 import java.text.MessageFormat;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 /**
@@ -197,13 +198,10 @@ public class WsimportTool {
             }
         }
         
-        Authenticator orig = null;
         try {
             parseArguments(args, listener, receiver);
 
             try {
-                orig = DefaultAuthenticator.getCurrentAuthenticator();
-
                 Model wsdlModel = buildWsdlModel(listener, receiver);
                 if (wsdlModel == null)
                    return false;
@@ -253,7 +251,7 @@ public class WsimportTool {
         } finally{
             deleteGeneratedFiles();
             if (!options.disableAuthenticator) {
-                Authenticator.setDefault(orig);
+                DefaultAuthenticator.reset();
             }
         }
         if(receiver.hadError()) {
@@ -385,15 +383,56 @@ public class WsimportTool {
         options.parseBindings(receiver);
     }
 
-    protected Model buildWsdlModel(Listener listener,
-                                   Receiver receiver) throws BadCommandLineException, XMLStreamException, IOException {
-        if( !options.quiet )
-            listener.message(WscompileMessages.WSIMPORT_PARSING_WSDL());
-
+    protected Model buildWsdlModel(Listener listener, final Receiver receiver)
+            throws BadCommandLineException, XMLStreamException, IOException {
         //set auth info
         //if(options.authFile != null)
         if (!options.disableAuthenticator) {
-            Authenticator.setDefault(new DefaultAuthenticator(receiver, options.authFile));
+            class AuthListener implements DefaultAuthenticator.Receiver {
+
+                private final boolean isFatal;
+
+                AuthListener(boolean isFatal) {
+                    this.isFatal = isFatal;
+                }
+
+                @Override
+                public void onParsingError(String text, Locator loc) {
+                    error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(text), loc));
+                }
+
+                @Override
+                public void onError(Exception e, Locator loc) {
+                    if (e instanceof FileNotFoundException) {
+                        error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_FILE_NOT_FOUND(
+                                loc.getSystemId(), WsimportOptions.defaultAuthfile), null));
+                    } else {
+                        error(new SAXParseException(WscompileMessages.WSIMPORT_FAILED_TO_PARSE(loc.getSystemId(),e.getMessage()), loc));
+                    }
+                }
+
+                private void error(SAXParseException e) {
+                    if (isFatal) {
+                        receiver.error(e);
+                    } else {
+                        receiver.debug(e);
+                    }
+                }
+            }
+
+            DefaultAuthenticator da = DefaultAuthenticator.getAuthenticator();
+            if (options.proxyAuth != null) {
+                da.setProxyAuth(options.proxyAuth);
+            }
+            if (options.authFile != null) {
+                da.setAuth(options.authFile, new AuthListener(true));
+            } else {
+                da.setAuth(new File(WsimportOptions.defaultAuthfile), new AuthListener(false));
+            }
+        }
+
+        if (!options.quiet) {
+            listener.message(WscompileMessages.WSIMPORT_PARSING_WSDL());
         }
 
         MetadataFinder forest = new MetadataFinder(new WSDLInternalizationLogic(), options, receiver);

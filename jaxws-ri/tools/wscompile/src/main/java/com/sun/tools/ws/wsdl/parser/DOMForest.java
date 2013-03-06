@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,15 +41,11 @@
 package com.sun.tools.ws.wsdl.parser;
 
 import com.sun.istack.NotNull;
-import com.sun.tools.ws.resources.WscompileMessages;
-import com.sun.tools.ws.wscompile.AbortException;
-import com.sun.tools.ws.wscompile.DefaultAuthenticator;
 import com.sun.tools.ws.wscompile.ErrorReceiver;
 import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.document.schema.SchemaConstants;
 import com.sun.tools.xjc.reader.internalizer.LocatorTable;
 import com.sun.xml.bind.marshaller.DataWriter;
-import com.sun.xml.ws.util.JAXWSUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -66,9 +62,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

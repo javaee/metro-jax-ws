@@ -45,7 +45,6 @@ import com.sun.istack.Nullable;
 import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.resources.WsdlMessages;
 import com.sun.tools.ws.wscompile.AbortException;
-import com.sun.tools.ws.wscompile.DefaultAuthenticator;
 import com.sun.tools.ws.wscompile.ErrorReceiver;
 import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.document.WSDLConstants;
@@ -199,7 +198,7 @@ public final class MetadataFinder extends DOMForest{
                             int code = httpConn.getResponseCode();
                             if (code == 401) {
                                 errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_INFO_NEEDED(e.getMessage(),
-                                        systemId, DefaultAuthenticator.defaultAuthfile), null, e));
+                                        systemId, WsimportOptions.defaultAuthfile), null, e));
                                 throw new AbortException();
                             }
                             //FOR other code we will retry with MEX
