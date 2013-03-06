@@ -3,7 +3,7 @@
 
 DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
 
 The contents of this file are subject to the terms of either the GNU
 General Public License Version 2 only ("GPL") or the Common Development
@@ -106,13 +106,13 @@ holder.
 
         <itemizedlist>
             <listitem>
-                Set the <code>org.jvnet.ws.databinding.DatabindingModeFeature</code> 
+                Set the <code>com.oracle.webservices.api.databinding.DatabindingModeFeature</code> 
                 feature during <code>WebServiceFeature</code> list initialization
                 or using the <code>add</code> method. Allowed values are as follows:
 
                 <itemizedlist>
                     <listitem>
-                        <emphasis role="bold"><code>org.jvnet.ws.databinding.DatabindingModeFeature.GLASSFISH_JAXB</code></emphasis>
+                        <emphasis role="bold"><code>com.oracle.webservices.api.databinding.DatabindingModeFeature.GLASSFISH_JAXB</code></emphasis>
                         Specifies the JAXB reference implementation. This is the default.
                     </listitem>
                     <listitem>
@@ -124,20 +124,20 @@ holder.
                 For example:
                 <programlisting language="java" linenumbering="unnumbered">
 import javax.xml.ws.WebServiceFeature;
-import org.jvnet.ws.databinding.DatabindingModeFeature;
+import com.oracle.webservices.api.databinding.DatabindingModeFeature;
 import com.sun.xml.ws.db.toplink.JAXBContextFactory;
 ...
 WebServiceFeature[] features = { new DatabindingModeFeature(JAXBContextFactory.ECLIPSELINK_JAXB)};
                 </programlisting>                    
             </listitem>
             <listitem>
-                Set the <code>org.jvnet.ws.databinding.DatabindingModeFeature</code> 
+                Set the <code>com.oracle.webservices.api.databinding.DatabindingModeFeature</code> 
                 feature using the <code>@DatabindingMode</code> annotation.
 
                 For example:
                 <programlisting language="java" linenumbering="unnumbered">
 import javax.jws.WebService;
-import org.jvnet.ws.databinding.DatabindingMode;
+import com.oracle.webservices.api.databinding.DatabindingMode;
 import com.sun.xml.ws.db.toplink.JAXBContextFactory;
 ...
 @WebService
