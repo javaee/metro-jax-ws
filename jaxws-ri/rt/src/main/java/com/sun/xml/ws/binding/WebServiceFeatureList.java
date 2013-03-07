@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,7 +67,7 @@ import javax.xml.ws.soap.MTOM;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 
-import org.jvnet.ws.EnvelopeStyleFeature;
+import com.oracle.webservices.api.EnvelopeStyleFeature;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -290,8 +290,6 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
             for (Method builderMethod : builder.getClass().getDeclaredMethods()) {
                 if (!builderMethod.equals(buildMethod)) {
                     final String methodName = builderMethod.getName();
-                    // TODO this line is temporary until org.jvnet.ws to com.oracle.webservice package move is complete
-                    if ("build".equals(methodName)) { continue; }
                     final Method annotationMethod = annotation.annotationType().getDeclaredMethod(methodName);
                     final Object annotationFieldValue = annotationMethod.invoke(annotation);
                     final Object[] arg = { annotationFieldValue };
@@ -334,11 +332,6 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
         if (! builderParameterTypeName.startsWith("com.oracle.webservices.test.features_annotations_enums.apinew") &&
             ! builderParameterTypeName.startsWith("com.oracle.webservices.api")) {
             return false;
-        }
-        final String annotationFieldValueTypeName = annotationFieldValueClass.getName();
-        if (annotationFieldValueTypeName.startsWith("com.oracle.webservices.test.features_annotations_enums.apiold") ||
-            annotationFieldValueTypeName.startsWith("org.jvnet.ws")) {
-            return true;
         }
         return false;
     }

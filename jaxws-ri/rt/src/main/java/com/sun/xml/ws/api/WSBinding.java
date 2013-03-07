@@ -220,5 +220,5 @@ public interface WSBinding extends Binding {
     /**
      * @return A MessageContextFactory configured according to the binding's features.
      */
-    @NotNull org.jvnet.ws.message.MessageContextFactory getMessageContextFactory();
+    @NotNull com.oracle.webservices.api.message.MessageContextFactory getMessageContextFactory();
 }

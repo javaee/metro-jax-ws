@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.transport.async_client_transport;
 
+import com.oracle.webservices.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.BindingID;
@@ -54,7 +55,6 @@ import javax.xml.ws.WebServiceFeature;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
-import org.jvnet.ws.message.MessageContextFactory;
 
 /**
  * Supresses a feature from WSBinding 

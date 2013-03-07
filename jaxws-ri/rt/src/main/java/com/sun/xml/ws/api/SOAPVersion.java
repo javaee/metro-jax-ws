@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,8 +51,8 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.ws.soap.SOAPBinding;
 
-import org.jvnet.ws.EnvelopeStyle;
-import org.jvnet.ws.EnvelopeStyleFeature;
+import com.oracle.webservices.api.EnvelopeStyle;
+import com.oracle.webservices.api.EnvelopeStyleFeature;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -277,22 +277,7 @@ public enum SOAPVersion {
         return from(style[0]);
     }
 
-    public static SOAPVersion from(com.oracle.webservices.api.EnvelopeStyleFeature f) {
-        com.oracle.webservices.api.EnvelopeStyle.Style[] style = f.getStyles();
-        if (style.length != 1) throw new IllegalArgumentException ("The EnvelopingFeature must has exactly one Enveloping.Style");
-        return from(style[0]);
-    }
-
     public static SOAPVersion from(EnvelopeStyle.Style style) {
-        switch (style) {
-        case SOAP11: return SOAP_11;
-        case SOAP12: return SOAP_12;
-        case XML: //ERROR??
-        default: return SOAP_11;
-        }
-    }
-
-    public static SOAPVersion from(com.oracle.webservices.api.EnvelopeStyle.Style style) {
         switch (style) {
         case SOAP11: return SOAP_11;
         case SOAP12: return SOAP_12;

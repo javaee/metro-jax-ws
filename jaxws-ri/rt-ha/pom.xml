@@ -165,8 +165,6 @@
                                     org.glassfish.ha.store.spi;version=${ha-api.version},
                                     org.jvnet.mimepull;version=${mimepull.version},
                                     org.jvnet.staxex;version=${stax-ex.version},
-                                    org.jvnet.ws.databinding;version=${jaxws-rt.version},
-                                    org.jvnet.ws.message;version=${jaxws-rt.version},
                                     org.w3c.dom.ls,
                                     org.w3c.dom,
                                     org.xml.sax,

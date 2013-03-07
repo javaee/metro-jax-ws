@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -186,10 +186,6 @@ public class RuntimeModeler {
                 MTOM mtomAn = getAnnotation(portClass, MTOM.class);
                 if (mtomAn != null) features.add(WebServiceFeatureList.getFeature(mtomAn));
             }
-            if (!features.contains(org.jvnet.ws.EnvelopeStyleFeature.class)) {
-                org.jvnet.ws.EnvelopeStyle es = getAnnotation(portClass, org.jvnet.ws.EnvelopeStyle.class);
-                if (es != null) features.add(WebServiceFeatureList.getFeature(es));
-            }
             if (!features.contains(com.oracle.webservices.api.EnvelopeStyleFeature.class)) {
                 com.oracle.webservices.api.EnvelopeStyle es = getAnnotation(portClass, com.oracle.webservices.api.EnvelopeStyle.class);
                 if (es != null) features.add(WebServiceFeatureList.getFeature(es));
@@ -333,12 +329,8 @@ public class RuntimeModeler {
         model.setPortName(portName);
 
         // Check if databinding is overridden in annotation.
-        // old
-        org.jvnet.ws.databinding.DatabindingMode dbm = getAnnotation(portClass, org.jvnet.ws.databinding.DatabindingMode.class);
-        if (dbm != null) model.databindingInfo.setDatabindingMode(dbm.value());
-        // new
         com.oracle.webservices.api.databinding.DatabindingMode dbm2 = getAnnotation(portClass, com.oracle.webservices.api.databinding.DatabindingMode.class);
-        if (dbm != null) model.databindingInfo.setDatabindingMode(dbm2.value());
+        if (dbm2 != null) model.databindingInfo.setDatabindingMode(dbm2.value());
 
         processClass(seiClass);
         if (model.getJavaMethods().size() == 0)

@@ -324,7 +324,6 @@
                                     org.apache.tools.ant;optional=true,
                                     org.apache.tools.ant.taskdefs;optional=true,
                                     org.apache.tools.ant.types;optional=true,
-                                    org.jvnet.ws.databinding;version=${project.version},
                                     org.w3c.dom,
                                     org.xml.sax,
                                     org.xml.sax.ext,

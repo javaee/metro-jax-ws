@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,11 +47,6 @@
     -->
     <Match>
         <Or>
-            <Class name="org.jvnet.ws.message.BaseDistributedPropertySet"/>
-            <Class name="org.jvnet.ws.message.BasePropertySet"/>
-            <Class name="org.jvnet.ws.message.BasePropertySet$PropertyMap"/>
-            <Class name="org.jvnet.ws.message.MessageContextFactory"/>
-            <Class name="org.jvnet.ws.message.ReadOnlyPropertyException"/>
             <Class name="com.sun.xml.ws.api.message.MessageContextFactory"/>
             <Class name="com.sun.xml.ws.api.server.Invoker"/>
             <Class name="com.sun.xml.ws.server.InvokerTube"/>
@@ -77,10 +72,6 @@
             <Class name="com.sun.xml.ws.wsdl.writer.WSDLResolver"/>
             <Class name="com.sun.xml.ws.encoding.SOAPBindingCodec"/>
             <Class name="com.sun.xml.ws.encoding.StreamSOAPCodec"/>
-            <Class name="org.jvnet.ws.message.ContentType"/>
-            <Class name="org.jvnet.ws.message.PropertySet"/>
-            <Class name="org.jvnet.ws.message.DistributedPropertySet"/>
-            <Class name="org.jvnet.ws.message.MessageContext"/>
         </Or>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_INTERFACE"/>
     </Match>
@@ -132,12 +123,6 @@
             <Class name="com.sun.xml.ws.encoding.ContentTypeImpl$Builder"/>
         </Or>
         <Bug pattern="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"/>
-    </Match>
-    <Match>
-        <Or>
-            <Class name="org.jvnet.ws.message.BasePropertySet$MapView"/>
-        </Or>
-        <Bug pattern="WMI_WRONG_MAP_ITERATOR"/>
     </Match>
     <!--
     Usually the field is read elsewhere in metro/wls code, or it's a JAXB field read by reflection or asm generated class accessor.

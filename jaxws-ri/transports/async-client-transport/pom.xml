@@ -111,8 +111,7 @@
                                             javax.xml.namespace,
                                             javax.xml.stream,
                                             javax.xml.ws;version=${jaxws-api.version},
-                                            javax.xml.ws.handler;version=${jaxws-api.version},
-                                            org.jvnet.ws.message;version=${project.osgi.version}
+                                            javax.xml.ws.handler;version=${jaxws-api.version}
                                         </Import-Package>
                                     </instructions>
                                 </configuration>

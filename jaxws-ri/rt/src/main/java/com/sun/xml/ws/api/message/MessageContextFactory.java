@@ -55,9 +55,8 @@ import javax.xml.transform.Source;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.MTOMFeature;
 
-import org.jvnet.ws.EnvelopeStyle;
-import org.jvnet.ws.EnvelopeStyleFeature;
-
+import com.oracle.webservices.api.EnvelopeStyle;
+import com.oracle.webservices.api.EnvelopeStyleFeature;
 import com.oracle.webservices.api.message.MessageContext;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSFeatureList;
@@ -66,12 +65,12 @@ import com.sun.xml.ws.api.pipe.Codecs;
 import static com.sun.xml.ws.transport.http.HttpAdapter.fixQuotesAroundSoapAction;
 
 /**
- * The MessageContextFactory implements org.jvnet.ws.message.MessageContextFactory as
+ * The MessageContextFactory implements com.oracle.webservices.api.message.MessageContextFactory as
  * a factory of Packet and public facade of Codec(s).
  * 
  * @author shih-chang.chen@oracle.com
  */
-public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFactory {
+public class MessageContextFactory extends com.oracle.webservices.api.message.MessageContextFactory {
     
     private WSFeatureList features;
     private Codec soapCodec;
@@ -100,26 +99,18 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         }
     }
 
-    protected org.jvnet.ws.message.MessageContextFactory newFactory(WebServiceFeature... f) {
+    protected com.oracle.webservices.api.message.MessageContextFactory newFactory(WebServiceFeature... f) {
         return new com.sun.xml.ws.api.message.MessageContextFactory(f);
     }
 
 
-    public org.jvnet.ws.message.MessageContext createContext() {
+    public com.oracle.webservices.api.message.MessageContext createContext() {
         return packet(null);
     }
 
-    public org.jvnet.ws.message.MessageContext createContext(SOAPMessage soap) {
+    public com.oracle.webservices.api.message.MessageContext createContext(SOAPMessage soap) {
         throwIfIllegalMessageArgument(soap);
         return packet(Messages.create(soap));
-    }
-
-    /**
-     * @deprecated use createContext(Source m, com.oracle.webservices.api.EnvelopeStyle.Style envelopeStyle)
-     */
-    public org.jvnet.ws.message.MessageContext createContext(Source m, EnvelopeStyle.Style envelopeStyle) {
-        throwIfIllegalMessageArgument(m);
-        return packet(Messages.create(m, SOAPVersion.from(envelopeStyle)));
     }
 
     public MessageContext createContext(Source m, com.oracle.webservices.api.EnvelopeStyle.Style envelopeStyle) {
@@ -127,12 +118,12 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
         return packet(Messages.create(m, SOAPVersion.from(envelopeStyle)));
     }
 
-    public org.jvnet.ws.message.MessageContext createContext(Source m) {
+    public com.oracle.webservices.api.message.MessageContext createContext(Source m) {
         throwIfIllegalMessageArgument(m);
         return packet(Messages.create(m, SOAPVersion.from(singleSoapStyle)));
     }
     
-    public org.jvnet.ws.message.MessageContext createContext(InputStream in, String contentType) throws IOException {
+    public com.oracle.webservices.api.message.MessageContext createContext(InputStream in, String contentType) throws IOException {
         throwIfIllegalMessageArgument(in);
         //TODO when do we use xmlCodec?
         Packet p = packet(null);
@@ -144,7 +135,7 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
      * @deprecated http://java.net/jira/browse/JAX_WS-1077
      */
     @Deprecated 
-    public org.jvnet.ws.message.MessageContext createContext(InputStream in, MimeHeaders headers) throws IOException {
+    public com.oracle.webservices.api.message.MessageContext createContext(InputStream in, MimeHeaders headers) throws IOException {
         String contentType = getHeader(headers, "Content-Type");
         Packet packet = (Packet) createContext(in, contentType);
         packet.acceptableMimeTypes = getHeader(headers, "Accept");
@@ -198,15 +189,15 @@ public class MessageContextFactory extends org.jvnet.ws.message.MessageContextFa
     }
 
     @Deprecated
-    public org.jvnet.ws.message.MessageContext doCreate() {
+    public com.oracle.webservices.api.message.MessageContext doCreate() {
         return packet(null);
     }
     @Deprecated
-    public org.jvnet.ws.message.MessageContext doCreate(SOAPMessage m) {
+    public com.oracle.webservices.api.message.MessageContext doCreate(SOAPMessage m) {
         return createContext(m);
     }
     @Deprecated
-    public org.jvnet.ws.message.MessageContext doCreate(Source x, SOAPVersion soapVersion) {
+    public com.oracle.webservices.api.message.MessageContext doCreate(Source x, SOAPVersion soapVersion) {
         return packet(Messages.create(x, soapVersion));
     }
 }

@@ -173,8 +173,8 @@ import java.nio.channels.WritableByteChannel;
 public final class Packet 
 	// Packet must continue to extend/implement deprecated interfaces until downstream
 	// usage is updated.
-    extends org.jvnet.ws.message.BaseDistributedPropertySet 
-    implements org.jvnet.ws.message.MessageContext, MessageMetadata {
+    extends com.oracle.webservices.api.message.BaseDistributedPropertySet 
+    implements com.oracle.webservices.api.message.MessageContext, MessageMetadata {
 
     /**
      * Creates a {@link Packet} that wraps a given {@link Message}.
@@ -1240,7 +1240,6 @@ public final class Packet
         return msg.readAsSOAPMessage(this, this.getState().isInbound());
     }
 
-    public // TODO remove after org.jvnet.ws goes away.
     Codec codec = null;
     public Codec getCodec() {
         if (codec != null) {
@@ -1256,24 +1255,18 @@ public final class Packet
         return codec;
     } 
 
-    private org.jvnet.ws.message.ContentType wrap(
-    		com.oracle.webservices.api.message.ContentType contentType) {
-    	return new org.jvnet.ws.message.ContentType.DepContentTypeImpl(contentType);
-    }
-    
-
     @Override
-    public org.jvnet.ws.message.ContentType writeTo( OutputStream out ) throws IOException {
+    public com.oracle.webservices.api.message.ContentType writeTo( OutputStream out ) throws IOException {
         Message msg = getInternalMessage();
         if (msg instanceof MessageWritable) {
             ((MessageWritable) msg).setMTOMConfiguration(mtomFeature);
-            return wrap(((MessageWritable)msg).writeTo(out));
+            return ((MessageWritable)msg).writeTo(out);
         }
-        return wrap(getCodec().encode(this, out));
+        return getCodec().encode(this, out);
     }
     
-    public org.jvnet.ws.message.ContentType writeTo( WritableByteChannel buffer ) {
-        return wrap(getCodec().encode(this, buffer));
+    public com.oracle.webservices.api.message.ContentType writeTo( WritableByteChannel buffer ) {
+        return getCodec().encode(this, buffer);
     }
     
     private ContentType contentType;
@@ -1366,7 +1359,7 @@ public final class Packet
     }
 
     @Override
-    public org.jvnet.ws.message.ContentType getContentType() {
+    public com.oracle.webservices.api.message.ContentType getContentType() {
         if (contentType == null) {
             contentType = getInternalContentType();
         }
@@ -1376,7 +1369,7 @@ public final class Packet
         if (contentType == null) {
             //TODO write to buffer
         }
-        return wrap(contentType);
+        return contentType;
     }
     
     public ContentType getInternalContentType() {

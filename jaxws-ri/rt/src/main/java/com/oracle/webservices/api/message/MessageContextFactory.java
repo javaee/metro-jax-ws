@@ -43,6 +43,7 @@ package com.oracle.webservices.api.message;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.oracle.webservices.api.EnvelopeStyle;
 import com.sun.xml.ws.api.SOAPVersion; // TODO leaking RI APIs
 import com.sun.xml.ws.util.ServiceFinder;
 
@@ -50,8 +51,6 @@ import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.ws.WebServiceFeature;
-
-import org.jvnet.ws.EnvelopeStyle;
 
 public abstract class MessageContextFactory
 {   
@@ -65,12 +64,7 @@ public abstract class MessageContextFactory
     
     public abstract MessageContext createContext(Source m);
 
-    /**
-     * @deprecated
-     */
     public abstract MessageContext createContext(Source m, EnvelopeStyle.Style envelopeStyle);
-    
-    public abstract MessageContext createContext(Source m, com.oracle.webservices.api.EnvelopeStyle.Style envelopeStyle);
     
     public abstract MessageContext createContext(InputStream in, String contentType) throws IOException;
 
