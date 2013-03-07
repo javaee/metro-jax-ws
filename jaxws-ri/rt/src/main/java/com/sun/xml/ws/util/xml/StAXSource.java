@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,7 +56,7 @@ import javax.xml.transform.sax.SAXSource;
  * A JAXP {@link javax.xml.transform.Source} implementation that wraps
  * the specified {@link javax.xml.stream.XMLStreamReader} or
  * {@link javax.xml.stream.XMLEventReader} for use by applications that
- * expext a {@link javax.xml.transform.Source}.
+ * expect a {@link javax.xml.transform.Source}.
  *
  * <p>
  * The fact that StAXSource derives from SAXSource is an implementation
@@ -81,7 +81,7 @@ import javax.xml.transform.sax.SAXSource;
     XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new FileReader(args[0]));
     Source staxSource = new StAXSource(reader);
 
-    // createa StreamResult
+    // create a StreamResult
     Result streamResult = new StreamResult(System.out);
 
     // run the transform
@@ -102,16 +102,19 @@ public class StAXSource extends SAXSource {
     // SAX allows ContentHandler to be changed during the parsing,
     // but JAXB doesn't. So this repeater will sit between those
     // two components.
-    private XMLFilterImpl repeater = new XMLFilterImpl();
+    private final XMLFilterImpl repeater = new XMLFilterImpl();
 
     // this object will pretend as an XMLReader.
     // no matter what parameter is specified to the parse method,
     // it will just read from the StAX reader.
     private final XMLReader pseudoParser = new XMLReader() {
+
+        @Override
         public boolean getFeature(String name) throws SAXNotRecognizedException {
             throw new SAXNotRecognizedException(name);
         }
 
+        @Override
         public void setFeature(String name, boolean value) throws SAXNotRecognizedException {
             // Should support these two features according to XMLReader javadoc.
             if (name.equals("http://xml.org/sax/features/namespaces") && value) {
@@ -123,6 +126,7 @@ public class StAXSource extends SAXSource {
             }
         }
 
+        @Override
         public Object getProperty(String name) throws SAXNotRecognizedException {
             if( "http://xml.org/sax/properties/lexical-handler".equals(name) ) {
                 return lexicalHandler;
@@ -130,6 +134,7 @@ public class StAXSource extends SAXSource {
             throw new SAXNotRecognizedException(name);
         }
 
+        @Override
         public void setProperty(String name, Object value) throws SAXNotRecognizedException {
             if( "http://xml.org/sax/properties/lexical-handler".equals(name) ) {
                 this.lexicalHandler = (LexicalHandler)value;
@@ -142,40 +147,55 @@ public class StAXSource extends SAXSource {
 
         // we will store this value but never use it by ourselves.
         private EntityResolver entityResolver;
+
+        @Override
         public void setEntityResolver(EntityResolver resolver) {
             this.entityResolver = resolver;
         }
+
+        @Override
         public EntityResolver getEntityResolver() {
             return entityResolver;
         }
 
         private DTDHandler dtdHandler;
+
+        @Override
         public void setDTDHandler(DTDHandler handler) {
             this.dtdHandler = handler;
         }
+        @Override
         public DTDHandler getDTDHandler() {
             return dtdHandler;
         }
 
+        @Override
         public void setContentHandler(ContentHandler handler) {
             repeater.setContentHandler(handler);
         }
+
+        @Override
         public ContentHandler getContentHandler() {
             return repeater.getContentHandler();
         }
 
         private ErrorHandler errorHandler;
+        
+        @Override
         public void setErrorHandler(ErrorHandler handler) {
             this.errorHandler = handler;
         }
+        @Override
         public ErrorHandler getErrorHandler() {
             return errorHandler;
         }
 
+        @Override
         public void parse(InputSource input) throws SAXException {
             parse();
         }
 
+        @Override
         public void parse(String systemId) throws SAXException {
             parse();
         }
