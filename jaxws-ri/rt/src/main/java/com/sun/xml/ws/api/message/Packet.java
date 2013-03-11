@@ -1240,6 +1240,7 @@ public final class Packet
         return msg.readAsSOAPMessage(this, this.getState().isInbound());
     }
 
+    public
     Codec codec = null;
     public Codec getCodec() {
         if (codec != null) {
@@ -1254,7 +1255,7 @@ public final class Packet
         }        
         return codec;
     } 
-
+    
     @Override
     public com.oracle.webservices.api.message.ContentType writeTo( OutputStream out ) throws IOException {
         Message msg = getInternalMessage();
