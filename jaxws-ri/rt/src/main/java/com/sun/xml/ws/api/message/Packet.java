@@ -1241,6 +1241,7 @@ public final class Packet
         return msg.readAsSOAPMessage(this, this.getState().isInbound());
     }
 
+    public
     Codec codec = null;
     public Codec getCodec() {
         if (codec != null) {
