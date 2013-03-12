@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -188,7 +188,13 @@ public class SaajStaxWriter implements XMLStreamWriter {
     }
 
     @Override
-    public void writeNamespace(final String prefix, final String uri) throws XMLStreamException {
+    public void writeNamespace(String prefix, final String uri) throws XMLStreamException {
+
+        // make prefix default if null or "xmlns" (according to javadoc)
+        if (prefix == null || "xmlns".equals(prefix)) {
+            prefix = "";
+        }
+
         try {
             currentElement.addNamespaceDeclaration(prefix, uri);
         } catch (SOAPException e) {
