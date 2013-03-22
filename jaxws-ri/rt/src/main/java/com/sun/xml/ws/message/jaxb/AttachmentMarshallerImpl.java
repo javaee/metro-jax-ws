@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,9 +40,9 @@
 
 package com.sun.xml.ws.message.jaxb;
 
+import com.sun.istack.logging.Logger;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentSet;
-import com.sun.xml.ws.message.AttachmentSetImpl;
 import com.sun.xml.ws.message.DataHandlerAttachment;
 
 import javax.activation.DataHandler;
@@ -54,6 +54,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.UUID;
+import java.util.logging.Level;
 
 /**
  * Implementation of {@link AttachmentMarshaller}, its used from JAXBMessage to marshall swaref type
@@ -62,6 +63,9 @@ import java.util.UUID;
  * @see JAXBMessage
  */
 final class AttachmentMarshallerImpl extends AttachmentMarshaller {
+
+    private static final Logger LOGGER = Logger.getLogger(AttachmentMarshallerImpl.class);    
+    
     private AttachmentSet attachments;
 
     public AttachmentMarshallerImpl(AttachmentSet attachemnts) {
@@ -75,16 +79,19 @@ final class AttachmentMarshallerImpl extends AttachmentMarshaller {
         attachments = null;
     }
 
+    @Override
     public String addMtomAttachment(DataHandler data, String elementNamespace, String elementLocalName) {
         // We don't use JAXB for handling XOP
         throw new IllegalStateException();
     }
 
+    @Override
     public String addMtomAttachment(byte[] data, int offset, int length, String mimeType, String elementNamespace, String elementLocalName) {
         // We don't use JAXB for handling XOP
         throw new IllegalStateException();
     }
 
+    @Override
     public String addSwaRefAttachment(DataHandler data) {
         String cid = encodeCid(null);
         Attachment att = new DataHandlerAttachment(cid, data);
@@ -101,7 +108,9 @@ final class AttachmentMarshallerImpl extends AttachmentMarshaller {
                 URI uri = new URI(ns);
                 cid = uri.toURL().getHost();
             } catch (URISyntaxException e) {
-                e.printStackTrace();
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.log(Level.INFO, null, e);
+                }
                 return null;
             } catch (MalformedURLException e) {
                 try {

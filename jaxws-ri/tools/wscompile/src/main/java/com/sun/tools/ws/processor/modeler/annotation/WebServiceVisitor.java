@@ -530,7 +530,7 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
         boolean hasDefaultConstructor = false;
         for (ExecutableElement constructor : ElementFilter.constructorsIn(classElement.getEnclosedElements())) {
             if (constructor.getModifiers().contains(Modifier.PUBLIC) &&
-                    constructor.getParameters().size() == 0) {
+                    constructor.getParameters().isEmpty()) {
                 hasDefaultConstructor = true;
                 break;
             }
@@ -657,9 +657,9 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
                 }
                 DeclaredType superClass = (DeclaredType) element.getSuperclass();
 
-                TypeElement typeElement = (TypeElement) superClass.asElement();
-                return typeElement.getQualifiedName().toString().equals(Object.class.getName())
-                        || methodsAreLegal(typeElement);
+                TypeElement tE = (TypeElement) superClass.asElement();
+                return tE.getQualifiedName().toString().equals(Object.class.getName())
+                        || methodsAreLegal(tE);
             }
             default: {
                 throw new IllegalArgumentException("Class or interface was expecting. But element: " + element);
@@ -841,12 +841,12 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
     protected boolean isLegalType(TypeMirror type) {
         if (!(type != null && type.getKind().equals(TypeKind.DECLARED)))
             return true;
-        TypeElement typeElement = (TypeElement) ((DeclaredType) type).asElement();
-        if (typeElement == null) {
+        TypeElement tE = (TypeElement) ((DeclaredType) type).asElement();
+        if (tE == null) {
             // can be null, if this type's declaration is unknown. This may be the result of a processing error, such as a missing class file.
             builder.processError(WebserviceapMessages.WEBSERVICEAP_COULD_NOT_FIND_TYPEDECL(type.toString(), context.getRound()));
         }
-        return !builder.isRemote(typeElement);
+        return !builder.isRemote(tE);
     }
 
     protected VariableElement getOutParameter(ExecutableElement method) {
@@ -862,18 +862,22 @@ public abstract class WebServiceVisitor extends SimpleElementVisitor6<Void, Obje
 
     protected static class MySoapBinding implements SOAPBinding {
 
+        @Override
         public Style style() {
             return SOAPBinding.Style.DOCUMENT;
         }
 
+        @Override
         public Use use() {
             return SOAPBinding.Use.LITERAL;
         }
 
+        @Override
         public ParameterStyle parameterStyle() {
             return SOAPBinding.ParameterStyle.WRAPPED;
         }
 
+        @Override
         public Class<? extends java.lang.annotation.Annotation> annotationType() {
             return SOAPBinding.class;
         }

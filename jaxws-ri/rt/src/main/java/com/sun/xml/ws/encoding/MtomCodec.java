@@ -214,8 +214,8 @@ public class MtomCodec extends MimeCodec {
     public static class ByteArrayBuffer{
         final String contentId;
 
-        private DataHandler dh;
-        private String boundary;
+        private final DataHandler dh;
+        private final String boundary;
         
         ByteArrayBuffer(@NotNull DataHandler dh, String b) {
             this.dh = dh;
@@ -443,7 +443,7 @@ public class MtomCodec extends MimeCodec {
         }
 
         private static class MtomNamespaceContextEx implements NamespaceContextEx {
-            private NamespaceContext nsContext;
+            private final NamespaceContext nsContext;
 
             public MtomNamespaceContextEx(NamespaceContext nsContext) {
                 this.nsContext = nsContext;
@@ -516,7 +516,7 @@ public class MtomCodec extends MimeCodec {
         }
 
         private static class MtomNamespaceContextEx implements NamespaceContextEx {
-            private NamespaceContext nsContext;
+            private final NamespaceContext nsContext;
 
             public MtomNamespaceContextEx(NamespaceContext nsContext) {
                 this.nsContext = nsContext;
