@@ -40,24 +40,34 @@
 
 package com.sun.xml.ws.api.addressing;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Writer;
+
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.message.AbstractHeaderImpl;
 import com.sun.xml.ws.util.xml.XmlUtil;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPHeader;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamResult;
 
 /**
  * Used to represent outbound endpoint reference header,
@@ -113,11 +123,24 @@ final class EPRHeader extends AbstractHeaderImpl {
             // TODO what about in-scope namespaces
             // Not very efficient consider implementing a stream buffer
             // processor that produces a DOM node from the buffer.
-            Transformer t = XmlUtil.newTransformer();
+            Transformer t = XmlUtil.newTransformer();                                   
             SOAPHeader header = saaj.getSOAPHeader();
             if (header == null)
                 header = saaj.getSOAPPart().getEnvelope().addHeader();
-            t.transform(epr.asSource(localName), new DOMResult(header));
+// TODO workaround for oracle xdk bug 16555545, when this bug is fixed the line below can be 
+// uncommented and all lines below, except the catch block, can be removed.            
+//            t.transform(epr.asSource(localName), new DOMResult(header));
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            StreamResult streamResult = new StreamResult(baos);
+            XMLStreamWriter w = XMLOutputFactory.newFactory().createXMLStreamWriter(baos);
+            epr.writeTo(localName, w);
+            w.flush();
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+            fac.setNamespaceAware(true);
+            Node eprNode = fac.newDocumentBuilder().parse(bais).getDocumentElement();
+            Node eprNodeToAdd = header.getOwnerDocument().importNode(eprNode, true);
+            header.appendChild(eprNodeToAdd);             
         } catch (Exception e) {
             throw new SOAPException(e);
         }
