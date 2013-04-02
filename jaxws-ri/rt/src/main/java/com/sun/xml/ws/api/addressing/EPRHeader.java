@@ -65,7 +65,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamResult;
 
 /**
  * Used to represent outbound endpoint reference header,
@@ -129,7 +128,6 @@ final class EPRHeader extends AbstractHeaderImpl {
 // uncommented and all lines below, except the catch block, can be removed.            
 //            t.transform(epr.asSource(localName), new DOMResult(header));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            StreamResult streamResult = new StreamResult(baos);
             XMLStreamWriter w = XMLOutputFactory.newFactory().createXMLStreamWriter(baos);
             epr.writeTo(localName, w);
             w.flush();
