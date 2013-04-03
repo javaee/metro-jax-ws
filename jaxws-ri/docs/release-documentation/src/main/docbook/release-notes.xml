@@ -75,8 +75,7 @@ holder.
 
         <itemizedlist>
             <listitem>
-                <para>Requires <link
-                xlink:href="http://java.sun.com/products/archive/j2se/5.0_02/jax-ws-ri-overview">JDK 6</link> or later</para>
+                <para>Requires JDK 6 or later</para>
             </listitem>
 
             <listitem>
