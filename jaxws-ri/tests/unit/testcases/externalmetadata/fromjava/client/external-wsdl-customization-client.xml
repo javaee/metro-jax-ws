@@ -43,7 +43,7 @@
 <java-wsdl-mapping xmlns="http://xmlns.oracle.com/webservices/jaxws-databinding"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://xmlns.oracle.com/webservices/jaxws-databinding jaxws-ri-external-metadata.xsd"
-                   java-type-name="fromjava.jaxws_databinding.client.EchoImpl"
+                   java-type-name="externalmetadata.fromjava.client.FAKENAME"
                    existing-annotations="ignore"
                    databinding="glassfish.jaxb">
 
