@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.db.sdo;
 
+import com.sun.xml.ws.util.xml.XmlUtil;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
@@ -117,7 +118,7 @@ public class SDOUtils {
         if (transformerFactory == null) {
             synchronized(SDOUtils.class) {
                 if (transformerFactory == null) {
-                    transformerFactory = TransformerFactory.newInstance();
+                    transformerFactory = XmlUtil.newTransformerFactory();
                 }
             }
         }
@@ -132,7 +133,7 @@ public class SDOUtils {
         if (dbf == null) {
             synchronized(SDOUtils.class) {
                 if (dbf == null) {
-                    DocumentBuilderFactory tmpDBF = DocumentBuilderFactory.newInstance();
+                    DocumentBuilderFactory tmpDBF = XmlUtil.newDocumentBuilderFactory();
                     tmpDBF.setValidating(false);
                     tmpDBF.setNamespaceAware(true);
                     tmpDBF.setIgnoringElementContentWhitespace(true);
@@ -385,7 +386,7 @@ public class SDOUtils {
             return obj;
         }
         if (!(obj instanceof DataObject)) {
-            return obj;  
+            return obj;
         }
         DataObject dataObject = (DataObject) obj;
         if (dataObject.getClass().getName().endsWith("WrapperImpl")) {
@@ -404,7 +405,8 @@ public class SDOUtils {
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             StreamResult sr = new StreamResult(bos);
-            Transformer trans = TransformerFactory.newInstance().newTransformer();
+            TransformerFactory tf = XmlUtil.newTransformerFactory();
+            Transformer trans = tf.newTransformer();
             trans.transform(src, sr);
             System.out.println("**********\n" + bos.toString());
             bos.close();
@@ -416,7 +418,8 @@ public class SDOUtils {
     public static String dom2String(DOMSource domSrc) throws TransformerConfigurationException, TransformerException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         StreamResult sr = new StreamResult(bos);
-        Transformer trans = TransformerFactory.newInstance().newTransformer();
+        TransformerFactory tf = XmlUtil.newTransformerFactory();
+        Transformer trans = tf.newTransformer();
         trans.transform(domSrc, sr);
         return sr.toString();
     }
@@ -435,7 +438,7 @@ public class SDOUtils {
           }
     }
 
-    
+
 
     /**
      * get the element name represented by this property
@@ -443,7 +446,7 @@ public class SDOUtils {
      * @param p
      * @return
      */
-    public static QName getPropertyElementName(HelperContext context, Property p) {        
+    public static QName getPropertyElementName(HelperContext context, Property p) {
         XSDHelper helper = context.getXSDHelper();
         String localName = p.getName();
         String ns = helper.getNamespaceURI(p);
@@ -477,7 +480,7 @@ public class SDOUtils {
 
     /**
      * Check whether a java class is supported
-     * The builtin type includes all the default type mappings specified in the SDO Spec   
+     * The builtin type includes all the default type mappings specified in the SDO Spec
      * @param javaType
      * @param qname
      * @return
@@ -509,7 +512,7 @@ public class SDOUtils {
             }
         }
     }
-    
+
     // all primitives listed here is supported
     private static boolean isPrimitive(String type) {
         if (type.equals("int") ||
@@ -550,10 +553,10 @@ public class SDOUtils {
         }
     }
 
-    
+
     public static Set<SchemaInfo> getSchemas(String filePath) throws Exception {
         Set<SchemaInfo> schemas = new HashSet<SchemaInfo>();
-        
+
         Document document = newDocumentBuilder().parse(new File(filePath));
         Element rootEl = document.getDocumentElement();
         if (QNAME_SCHEMA.equals(new QName(rootEl.getNamespaceURI(), rootEl.getLocalName()))) {

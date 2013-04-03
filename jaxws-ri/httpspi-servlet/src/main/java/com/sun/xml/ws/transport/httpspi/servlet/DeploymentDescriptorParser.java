@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.transport.httpspi.servlet;
 
+import com.sun.xml.ws.util.xml.XmlUtil;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -74,7 +76,9 @@ public class DeploymentDescriptorParser<A> {
     private final ClassLoader classLoader;
     private final ResourceLoader loader;
     private final AdapterFactory<A> adapterFactory;
-    private static final XMLInputFactory xif = XMLInputFactory.newInstance();
+
+    // securite xml processing always enabled - parsing deployment descriptor ...
+    private static final XMLInputFactory xif = XmlUtil.newXMLInputFactory(true);
 
     /**
      * Endpoint names that are declared.
@@ -208,11 +212,11 @@ public class DeploymentDescriptorParser<A> {
                 QName portName = getQNameAttribute(reader, ATTR_PORT);
 
                 ArrayList<WebServiceFeature> features = new ArrayList<WebServiceFeature>();
-                
+
                 //get enable-mtom attribute value
                 String enable_mtom = getAttribute(reader, ATTR_ENABLE_MTOM);
                 String mtomThreshold = getAttribute(reader, ATTR_MTOM_THRESHOLD_VALUE);
-                
+
                 if (Boolean.valueOf(enable_mtom)) {
                     if (mtomThreshold != null) {
                         features.add(new MTOMFeature(true, Integer.valueOf(mtomThreshold)));
@@ -220,7 +224,7 @@ public class DeploymentDescriptorParser<A> {
                         features.add(new MTOMFeature(true));
                     }
                 }
-                
+
                 String bindingId = getAttribute(reader, ATTR_BINDING);
                 if (bindingId != null) {
                     // Convert short-form tokens to API's binding ids

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,6 +60,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
+import com.sun.xml.ws.util.xml.XmlUtil;
 import org.eclipse.persistence.Version;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 
@@ -74,13 +75,6 @@ import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.TypeHelper;
 import commonj.sdo.helper.XSDHelper;
 
-/**
- * Created by IntelliJ IDEA.
- * User: giglee
- * Date: May 13, 2009
- * Time: 9:48:11 AM
- * To change this template use File | Settings | File Templates.
- */
 public final class SDOContextWrapper implements BindingContext {
     
     public static final String SDO_SCHEMA_INFO = "com.sun.xml.ws.db.sdo.SCHEMA_INFO";
@@ -245,7 +239,7 @@ public final class SDOContextWrapper implements BindingContext {
     public void generateSchema(SchemaOutputResolver outputResolver)
             throws IOException {
         try {
-            TransformerFactory tf = TransformerFactory.newInstance();
+            TransformerFactory tf = XmlUtil.newTransformerFactory();
             Transformer tx = tf.newTransformer();
             for (SchemaInfo si : suppliedSchemas) {
                 Result res = outputResolver.createOutput(si.getTargetNamespace(),

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,6 +49,7 @@ import com.sun.xml.ws.runtime.config.MetroConfig;
 import com.sun.xml.ws.runtime.config.TubeFactoryList;
 import com.sun.xml.ws.runtime.config.TubelineDefinition;
 import com.sun.xml.ws.runtime.config.TubelineMapping;
+import com.sun.xml.ws.util.xml.XmlUtil;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -251,7 +252,8 @@ class MetroConfigLoader {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(MetroConfig.class.getPackage().getName());
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            final JAXBElement<MetroConfig> configElement = unmarshaller.unmarshal(XMLInputFactory.newInstance().createXMLStreamReader(resourceUrl.openStream()), MetroConfig.class);
+            XMLInputFactory factory = XmlUtil.newXMLInputFactory(true);
+            final JAXBElement<MetroConfig> configElement = unmarshaller.unmarshal(factory.createXMLStreamReader(resourceUrl.openStream()), MetroConfig.class);
             result = configElement.getValue();
         } catch (Exception e) {
             LOGGER.warning(TubelineassemblyMessages.MASM_0010_ERROR_READING_CFG_FILE_FROM_LOCATION(resourceUrl.toString()), e);

@@ -108,6 +108,12 @@ public class Options {
      */
     public boolean nocompile;
 
+    /**
+     * Disable secure xml processing.
+     * -XdisableSecureXmlProcessing
+     */
+    public boolean disableSecureXmlProcessing = false;
+
     public enum Target {
         V2_0, V2_1, V2_2;
 
@@ -363,6 +369,9 @@ public class Options {
                 throw new BadCommandLineException(WscompileMessages.WSCOMPILE_UNSUPPORTED_ENCODING(encoding));
             }
             return 2;
+        } else if (args[i].equals("-XdisableSecureXmlProcessing")) {
+            disableSecureXmlProcessing= true;
+            return 1;
         }
         return 0;
     }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,8 +45,10 @@ import com.sun.istack.logging.Logger;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Messages;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.util.xml.XmlUtil;
 
 import javax.xml.stream.*;
+import javax.xml.xpath.XPathFactoryConfigurationException;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -169,7 +171,7 @@ public final class Converter {
      * @return {@link com.sun.xml.ws.api.message.Message} object created from the data stream
      */
     public static Message toMessage(@NotNull InputStream dataStream, String encoding) throws XMLStreamException {
-        XMLStreamReader xsr = XMLInputFactory.newInstance().createXMLStreamReader(dataStream, encoding);
+        XMLStreamReader xsr = XmlUtil.newXMLInputFactory(true).createXMLStreamReader(dataStream, encoding);
         return Messages.create(xsr);
     }
 

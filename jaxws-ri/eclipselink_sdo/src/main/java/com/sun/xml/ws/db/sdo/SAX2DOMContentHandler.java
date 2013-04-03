@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.db.sdo;
 
+import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -58,13 +59,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- * Created by IntelliJ IDEA.
- * User: giglee
- * Date: Jun 5, 2009
- * Time: 4:20:01 PM
- * To change this template use File | Settings | File Templates.
- */
 public class SAX2DOMContentHandler implements ContentHandler {
 
     private Document doc;
@@ -72,7 +66,7 @@ public class SAX2DOMContentHandler implements ContentHandler {
     private Map<String, String> prefixMappings;
 
     public SAX2DOMContentHandler() {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory();
         dbf.setValidating(false);
         dbf.setNamespaceAware(true);
         dbf.setIgnoringElementContentWhitespace(true);

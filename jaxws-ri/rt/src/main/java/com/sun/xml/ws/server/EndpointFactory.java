@@ -45,6 +45,7 @@ import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.MutableXMLStreamBuffer;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.WSFeatureList;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;
 import com.sun.xml.ws.api.databinding.MetadataReader;
@@ -85,6 +86,7 @@ import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.util.ServiceConfigurationError;
 import com.sun.xml.ws.util.ServiceFinder;
+import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -92,7 +94,6 @@ import org.xml.sax.SAXException;
 
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.Provider;
@@ -101,7 +102,6 @@ import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.soap.SOAPBinding;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -364,7 +364,7 @@ public class EndpointFactory {
             			InputSource source = resolver.resolveEntity(null, url);
             			if (source != null) {            				
             				MutableXMLStreamBuffer xsb = new MutableXMLStreamBuffer();
-            				XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(source.getByteStream()); 
+            				XMLStreamReader reader = XmlUtil.newXMLInputFactory(true).createXMLStreamReader(source.getByteStream());
             				xsb.createFromXMLStreamReader(reader);
 
             				SDDocumentSource sdocSource = SDDocumentImpl.create(new URL(url), xsb);
@@ -491,8 +491,9 @@ public class EndpointFactory {
     public static MetadataReader getExternalMetadatReader(Class<?> implType, WSBinding binding) {
         com.oracle.webservices.api.databinding.ExternalMetadataFeature ef = binding.getFeature(
                 com.oracle.webservices.api.databinding.ExternalMetadataFeature.class);
+        // TODO-Miran: would it be necessary to disable secure xml processing?
         if (ef != null)
-            return ef.getMetadataReader(implType.getClassLoader());
+            return ef.getMetadataReader(implType.getClassLoader(), false);
         return null;
     }
 
@@ -651,11 +652,17 @@ public class EndpointFactory {
         wsdlGenInfo.setContainer(container);
         wsdlGenInfo.setExtensions(ServiceFinder.find(WSDLGeneratorExtension.class).toArray());
         wsdlGenInfo.setInlineSchemas(false);
+        wsdlGenInfo.setSecureXmlProcessingDisabled(isSecureXmlProcessingDisabled(binding.getFeatures()));
         seiModel.getDatabinding().generateWSDL(wsdlGenInfo);
 //        WSDLGenerator wsdlGen = new WSDLGenerator(seiModel, wsdlResolver, binding, container, implType, false,
 //                ServiceFinder.find(WSDLGeneratorExtension.class).toArray());
 //        wsdlGen.doGeneration();
         return wsdlResolver.updateDocs();
+    }
+
+    private static boolean isSecureXmlProcessingDisabled(WSFeatureList featureList) {
+        // TODO-Miran: would it be necessary to disable secure xml processing?
+        return false;
     }
 
     /**

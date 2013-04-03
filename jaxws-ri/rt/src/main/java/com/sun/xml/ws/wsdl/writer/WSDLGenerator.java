@@ -65,6 +65,7 @@ import com.sun.xml.ws.model.CheckedExceptionImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.model.WrapperParameter;
+import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.SOAPConstants;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import com.sun.xml.ws.wsdl.writer.document.Binding;
@@ -223,6 +224,7 @@ public class WSDLGenerator {
     private final Class implType;
 
     private boolean inlineSchemas;      // TODO
+    private final boolean disableSecureXmlProcessing;
 
     /**
      * Creates the WSDLGenerator
@@ -234,6 +236,22 @@ public class WSDLGenerator {
      */
     public WSDLGenerator(AbstractSEIModelImpl model, WSDLResolver wsdlResolver, WSBinding binding, Container container,
                          Class implType, boolean inlineSchemas, WSDLGeneratorExtension... extensions) {
+        this(model, wsdlResolver, binding, container, implType, inlineSchemas, false, extensions);
+    }
+
+    /**
+     * Creates the WSDLGenerator
+     * @param model The {@link AbstractSEIModelImpl} used to generate the WSDL
+     * @param wsdlResolver The {@link WSDLResolver} to use resovle names while generating the WSDL
+     * @param binding specifies which {@link javax.xml.ws.BindingType} to generate
+     * @param disableSecureXmlProcessing specifies whether to disable the secure xml processing feature
+     * @param extensions an array {@link WSDLGeneratorExtension} that will
+     * be invoked to generate WSDL extensions
+     */
+    public WSDLGenerator(AbstractSEIModelImpl model, WSDLResolver wsdlResolver, WSBinding binding, Container container,
+                         Class implType, boolean inlineSchemas, boolean disableSecureXmlProcessing,
+                         WSDLGeneratorExtension... extensions) {
+
         this.model = model;
         resolver = new JAXWSOutputSchemaResolver();
         this.wsdlResolver = wsdlResolver;
@@ -242,6 +260,7 @@ public class WSDLGenerator {
         this.implType = implType;
         extensionHandlers = new ArrayList<WSDLGeneratorExtension>();
         this.inlineSchemas = inlineSchemas;
+        this.disableSecureXmlProcessing = disableSecureXmlProcessing;
 
         // register handlers for default extensions
         register(new W3CAddressingWSDLGeneratorExtension());
@@ -455,12 +474,11 @@ public class WSDLGenerator {
                 model.getBindingContext().generateSchema(resolver);
             } catch (IOException e) {
                 // TODO locallize and wrap this
-//                e.printStackTrace();
                 throw new WebServiceException(e.getMessage());
             }
         }
         if (resolver.nonGlassfishSchemas != null) {
-            TransformerFactory tf = TransformerFactory.newInstance();
+            TransformerFactory tf = XmlUtil.newTransformerFactory(!disableSecureXmlProcessing);
             try {
                 Transformer t = tf.newTransformer();
                 for (DOMResult xsd : resolver.nonGlassfishSchemas) {
@@ -469,10 +487,8 @@ public class WSDLGenerator {
                     t.transform(new DOMSource(doc.getDocumentElement()), sax);
                 }
             } catch (TransformerConfigurationException e) {
-//                e.printStackTrace();
                 throw new WebServiceException(e.getMessage(), e);
             } catch (TransformerException e) {
-//                e.printStackTrace();
                 throw new WebServiceException(e.getMessage(), e);
             }
         }

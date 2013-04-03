@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,9 @@ import com.oracle.xmlns.webservices.jaxws_databinding.JavaMethod;
 import com.oracle.xmlns.webservices.jaxws_databinding.JavaParam;
 import com.oracle.xmlns.webservices.jaxws_databinding.JavaWsdlMappingType;
 import com.oracle.xmlns.webservices.jaxws_databinding.ObjectFactory;
+import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -63,20 +65,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.oracle.xmlns.webservices.jaxws_databinding.ExistingAnnotationsType.MERGE;
 
@@ -96,13 +89,14 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
      */
     private Map<String, JavaWsdlMappingType> readers = new HashMap<String, JavaWsdlMappingType>();
 
-    public ExternalMetadataReader(Collection<File> files, Collection<String> resourcePaths, ClassLoader classLoader, boolean xsdValidation) {
+    public ExternalMetadataReader(Collection<File> files, Collection<String> resourcePaths, ClassLoader classLoader,
+                                  boolean xsdValidation, boolean disableSecureXmlProcessing) {
 
         if (files != null) {
             for (File file : files) {
                 try {
-                    String namespace = Util.documentRootNamespace(newSource(file));
-                    JavaWsdlMappingType externalMapping = parseMetadata(xsdValidation, newSource(file), namespace);
+                    String namespace = Util.documentRootNamespace(newSource(file), disableSecureXmlProcessing);
+                    JavaWsdlMappingType externalMapping = parseMetadata(xsdValidation, newSource(file), namespace, disableSecureXmlProcessing);
                     readers.put(externalMapping.getJavaTypeName(), externalMapping);
                 } catch (Exception e) {
                     throw new RuntimeModelerException("runtime.modeler.external.metadata.unable.to.read", file.getAbsolutePath());
@@ -113,8 +107,8 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
         if (resourcePaths != null) {
             for (String resourcePath : resourcePaths) {
                 try {
-                    String namespace = Util.documentRootNamespace(newSource(resourcePath, classLoader));
-                    JavaWsdlMappingType externalMapping = parseMetadata(xsdValidation, newSource(resourcePath, classLoader), namespace);
+                    String namespace = Util.documentRootNamespace(newSource(resourcePath, classLoader), disableSecureXmlProcessing);
+                    JavaWsdlMappingType externalMapping = parseMetadata(xsdValidation, newSource(resourcePath, classLoader), namespace, disableSecureXmlProcessing);
                     readers.put(externalMapping.getJavaTypeName(), externalMapping);
                 } catch (Exception e) {
                     throw new RuntimeModelerException("runtime.modeler.external.metadata.unable.to.read", resourcePath);
@@ -128,11 +122,11 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
         return new StreamSource(is);
     }
 
-    private JavaWsdlMappingType parseMetadata(boolean xsdValidation, StreamSource source, String namespace) throws JAXBException, IOException, TransformerException {
+    private JavaWsdlMappingType parseMetadata(boolean xsdValidation, StreamSource source, String namespace, boolean disableSecureXmlProcessing) throws JAXBException, IOException, TransformerException {
         if (NAMESPACE_WEBLOGIC_WSEE_DATABINDING.equals(namespace)) {
-            return Util.transform(source);
+            return Util.transformAndRead(source, disableSecureXmlProcessing);
         } if (NAMESPACE_JAXWS_RI_EXTERNAL_METADATA.equals(namespace)) {
-            return Util.read(source, xsdValidation);
+            return Util.read(source, xsdValidation, disableSecureXmlProcessing);
         } else {
             throw new RuntimeModelerException("runtime.modeler.external.metadata.unsupported.schema", namespace, Arrays.asList(NAMESPACE_WEBLOGIC_WSEE_DATABINDING, NAMESPACE_JAXWS_RI_EXTERNAL_METADATA).toString());
         }
@@ -237,7 +231,6 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
             super.getProperties(prop, cls);
         }
 
-        // TODO-Miran: handle eclipselink-oxm-xml here ...
     }
 
     public void getProperties(final Map<String, Object> prop, final Method m) {
@@ -403,14 +396,18 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
 
     static class Util {
 
-        static final String SchemaFileName = "jaxws-databinding.xsd";
+        //private static final String DATABINDING_XSD = "com/sun/xml/ws/model/jaxws-databinding.xsd";
+        private static final String DATABINDING_XSD = "jaxws-databinding.xsd";
+        //private static final String TRANSLATE_NAMESPACES_XSL = "/com/sun/xml/ws/model/jaxws-databinding-translate-namespaces.xml";
+        private static final String TRANSLATE_NAMESPACES_XSL = "jaxws-databinding-translate-namespaces.xml";
+
         static Schema schema;
         static JAXBContext jaxbContext;
 
         static {
             SchemaFactory sf = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
             try {
-                URL xsdUrl = Util.class.getClassLoader().getResource(SchemaFileName);
+                URL xsdUrl = getResource();
                 if (xsdUrl != null) {
                     schema = sf.newSchema(xsdUrl);
                 }
@@ -418,19 +415,35 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
                 //      e1.printStackTrace();
             }
 
-            @SuppressWarnings("unchecked")
+            jaxbContext = createJaxbContext(false);
+        }
+
+        private static URL getResource() {
+            ClassLoader classLoader = Util.class.getClassLoader();
+            return classLoader != null ? classLoader.getResource(DATABINDING_XSD) : ClassLoader.getSystemResource(DATABINDING_XSD);
+        }
+
+        private static JAXBContext createJaxbContext(boolean disableXmlSecurity) {
             Class[] cls = {ObjectFactory.class};
             try {
-                jaxbContext = JAXBContext.newInstance(cls);
+                if (disableXmlSecurity) {
+                    Map<String, Object> properties = new HashMap<String, Object>();
+                    properties.put(JAXBRIContext.DISABLE_XML_SECURITY, disableXmlSecurity);
+                    return JAXBContext.newInstance(cls, properties);
+                } else {
+                    return JAXBContext.newInstance(cls);
+                }
             } catch (JAXBException e) {
                 e.printStackTrace();
+                return null;
             }
         }
 
         @SuppressWarnings("unchecked")
-        public static JavaWsdlMappingType read(Source src, boolean xsdValidation) throws IOException, JAXBException {
+        public static JavaWsdlMappingType read(Source src, boolean xsdValidation, boolean disableSecureXmlProcessing) throws IOException, JAXBException {
+            JAXBContext ctx = jaxbContext(disableSecureXmlProcessing);
             try {
-                Unmarshaller um = jaxbContext.createUnmarshaller();
+                Unmarshaller um = ctx.createUnmarshaller();
                 if (xsdValidation) {
                     if (schema == null) {
                         //TODO 0 warning for schema == null
@@ -445,7 +458,7 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
                 // (src.getSystemId()), e);
                 URL url = new URL(src.getSystemId());
                 Source s = new StreamSource(url.openStream());
-                Unmarshaller um = jaxbContext.createUnmarshaller();
+                Unmarshaller um = ctx.createUnmarshaller();
                 if (xsdValidation) {
                     if (schema == null) {
                         //TODO 0 warning for schema == null
@@ -457,11 +470,17 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
             }
         }
 
-        public static JavaWsdlMappingType transform(Source src) throws TransformerException, JAXBException {
-            Source xsl = new StreamSource(Util.class.getResourceAsStream("/jaxws-databinding-translate-namespaces.xml"));
-            JAXBResult result = new JAXBResult(jaxbContext);
-            Transformer transformer = TransformerFactory.newInstance().newTemplates(xsl).newTransformer();
+        private static JAXBContext jaxbContext(boolean disableSecureXmlProcessing) {
+            // as it is supposed to have security enabled in most cases, we create and don't cache
+            // "insecure" JAXBContext - these should be corner cases
+            return disableSecureXmlProcessing ? createJaxbContext(true) : jaxbContext;
+        }
 
+        public static JavaWsdlMappingType transformAndRead(Source src, boolean disableSecureXmlProcessing) throws TransformerException, JAXBException {
+            Source xsl = new StreamSource(Util.class.getResourceAsStream(TRANSLATE_NAMESPACES_XSL));
+            JAXBResult result = new JAXBResult(jaxbContext(disableSecureXmlProcessing));
+            TransformerFactory tf = XmlUtil.newTransformerFactory(!disableSecureXmlProcessing);
+            Transformer transformer = tf.newTemplates(xsl).newTransformer();
             transformer.transform(src, result);
             return getJavaWsdlMapping(result.getResult());
         }
@@ -470,9 +489,9 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
         static JavaWsdlMappingType getJavaWsdlMapping(Object o) {
             Object val = (o instanceof JAXBElement) ? ((JAXBElement) o).getValue() : o;
             if (val instanceof JavaWsdlMappingType) return (JavaWsdlMappingType) val;
-    //    else if (val instanceof JavaWsdlMappings)
-    //      for (JavaWsdlMappingType m: ((JavaWsdlMappings) val).getJavaWsdlMapping())
-    //        if (seiName.equals(m.javaTypeName)) return m;
+            //    else if (val instanceof JavaWsdlMappings)
+            //      for (JavaWsdlMappingType m: ((JavaWsdlMappings) val).getJavaWsdlMapping())
+            //        if (seiName.equals(m.javaTypeName)) return m;
             return null;
         }
 
@@ -530,8 +549,9 @@ public class ExternalMetadataReader extends ReflectAnnotationReader {
             return elems.toArray(new Element[elems.size()]);
         }
 
-        static String documentRootNamespace(Source src) throws XMLStreamException {
-            XMLInputFactory factory = XMLInputFactory.newInstance();
+        static String documentRootNamespace(Source src, boolean disableSecureXmlProcessing) throws XMLStreamException {
+            XMLInputFactory factory;
+            factory = XmlUtil.newXMLInputFactory(!disableSecureXmlProcessing);
             XMLStreamReader streamReader = factory.createXMLStreamReader(src);
             XMLStreamReaderUtil.nextElementContent(streamReader);
             String namespaceURI = streamReader.getName().getNamespaceURI();

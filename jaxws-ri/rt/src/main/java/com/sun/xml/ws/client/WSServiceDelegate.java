@@ -869,8 +869,9 @@ public class WSServiceDelegate extends WSService {
         if (features == null) return null;
         com.oracle.webservices.api.databinding.ExternalMetadataFeature ef =
                 features.get(com.oracle.webservices.api.databinding.ExternalMetadataFeature.class);
+        // TODO-Miran: would it be necessary to disable secure xml processing?
         if (ef != null)
-            return ef.getMetadataReader(classLoader);
+            return ef.getMetadataReader(classLoader, false);
         return null;
     }
 

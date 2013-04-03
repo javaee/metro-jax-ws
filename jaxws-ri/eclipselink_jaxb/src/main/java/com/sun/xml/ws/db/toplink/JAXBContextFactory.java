@@ -55,6 +55,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -80,6 +81,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.ParameterImpl;
 import com.sun.xml.ws.spi.db.BindingContext;
@@ -205,9 +207,8 @@ public class JAXBContextFactory extends BindingContextFactory {
     static DocumentBuilderFactory docBuilderFactory;
     static String OXMTNS = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm";
 
-    // TODO - fix with new secure factory util class
     static {
-        docBuilderFactory = DocumentBuilderFactory.newInstance();
+        docBuilderFactory = XmlUtil.newDocumentBuilderFactory(true);
         docBuilderFactory.setNamespaceAware(true);
     }
 
@@ -271,7 +272,7 @@ public class JAXBContextFactory extends BindingContextFactory {
             if (src instanceof DOMSource) {
                 xmlbindings = (Element) ((DOMSource) src).getNode();
             } else {
-                TransformerFactory tf = TransformerFactory.newInstance();
+                TransformerFactory tf = XmlUtil.newTransformerFactory();
                 try {
                     Transformer t = tf.newTransformer();
                     DOMResult dr = new DOMResult();

@@ -41,6 +41,7 @@
 package com.sun.tools.ws.wsdl.parser;
 
 import com.sun.istack.NotNull;
+import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.tools.ws.wscompile.ErrorReceiver;
 import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.document.schema.SchemaConstants;
@@ -127,11 +128,13 @@ public class DOMForest {
         this.errorReceiver = errReceiver;
         this.logic = logic;
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            // secure xml processing can be switched off if input requires it
+            boolean secureProcessingEnabled = options == null || !options.disableSecureXmlProcessing;
+            DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory(secureProcessingEnabled);
             dbf.setNamespaceAware(true);
             this.documentBuilder = dbf.newDocumentBuilder();
 
-            this.parserFactory = SAXParserFactory.newInstance();
+            this.parserFactory = XmlUtil.newSAXParserFactory(secureProcessingEnabled);
             this.parserFactory.setNamespaceAware(true);
         } catch (ParserConfigurationException e) {
             throw new AssertionError(e);
@@ -376,7 +379,10 @@ public class DOMForest {
     public void dump(OutputStream out) throws IOException {
         try {
             // create identity transformer
-            Transformer it = TransformerFactory.newInstance().newTransformer();
+            // secure xml processing can be switched off if input requires it
+            boolean secureProcessingEnabled = options == null || !options.disableSecureXmlProcessing;
+            TransformerFactory tf = XmlUtil.newTransformerFactory(secureProcessingEnabled);
+            Transformer it = tf.newTransformer();
 
             for (Map.Entry<String, Document> e : core.entrySet()) {
                 out.write(("---<< " + e.getKey() + '\n').getBytes());

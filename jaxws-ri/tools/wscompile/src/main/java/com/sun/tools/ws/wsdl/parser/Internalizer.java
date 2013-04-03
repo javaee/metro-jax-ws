@@ -51,12 +51,8 @@ import com.sun.tools.xjc.util.DOMUtils;
 import com.sun.xml.bind.v2.util.EditDistance;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.JAXWSUtils;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import com.sun.xml.ws.util.xml.XmlUtil;
+import org.w3c.dom.*;
 import org.xml.sax.SAXParseException;
 
 import javax.xml.namespace.NamespaceContext;
@@ -78,7 +74,8 @@ import java.util.Set;
  * @author Vivek Pandey
  */
 public class Internalizer {
-    private static final XPathFactory xpf = XPathFactory.newInstance();
+
+    private static final XPathFactory xpf = XmlUtil.newXPathFactory(true);
     private final XPath xpath = xpf.newXPath();
     private final DOMForest forest;
     private final ErrorReceiver errorReceiver;

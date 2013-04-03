@@ -263,7 +263,7 @@ public class DeploymentDescriptorParser<A> {
                 if (reader.getEventType() != XMLStreamConstants.END_ELEMENT) {
                     externalMetadataFeature = configureExternalMetadataReader(reader);
                     if (externalMetadataFeature != null) {
-                        metadataReader = externalMetadataFeature.getMetadataReader(implementorClass.getClassLoader());
+                        metadataReader = externalMetadataFeature.getMetadataReader(implementorClass.getClassLoader(), false);
                     }
                 }
 

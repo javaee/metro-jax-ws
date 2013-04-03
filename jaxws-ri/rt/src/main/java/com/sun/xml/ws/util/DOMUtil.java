@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,29 +40,22 @@
 
 package com.sun.xml.ws.util;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
+import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
+import com.sun.xml.ws.util.xml.XmlUtil;
+import org.w3c.dom.*;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-
-import com.sun.istack.NotNull;
-import com.sun.istack.Nullable;
 
 /**
  * @author JAXWS Development Team
@@ -78,7 +71,7 @@ public class DOMUtil {
         synchronized (DOMUtil.class) {
             if (db == null) {
                 try {
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory();
                     dbf.setNamespaceAware(true);
                     db = dbf.newDocumentBuilder();
                 } catch (ParserConfigurationException e) {
@@ -87,26 +80,6 @@ public class DOMUtil {
             }
             return db.newDocument();
         }
-    }
-
-    public static Node createDOMNode(InputStream inputStream) {
-
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        dbf.setValidating(false);
-        try {
-            DocumentBuilder builder = dbf.newDocumentBuilder();
-            try {
-                return builder.parse(inputStream);
-            } catch (SAXException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        } catch (ParserConfigurationException pce) {
-            throw new IllegalArgumentException(pce);
-        }
-        return null;
     }
 
     /**

@@ -155,6 +155,7 @@
                                             com.sun.xml.ws.db.toplink;version=${project.osgi.version}
                                         </Export-Package>
                                         <Import-Package>
+                                            com.sun.xml.ws.util.xml;version=${project.osgi.version},
                                             com.sun.xml.ws.model;version=${project.osgi.version},
                                             com.sun.xml.ws.spi.db;version=${project.osgi.version},
                                             javax.activation,

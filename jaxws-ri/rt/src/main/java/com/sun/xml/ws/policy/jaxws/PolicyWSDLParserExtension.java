@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,6 +55,7 @@ import com.sun.xml.ws.policy.sourcemodel.wspolicy.XmlToken;
 import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.util.xml.XmlUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,6 +74,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.ws.WebServiceException;
+import javax.xml.xpath.XPathFactoryConfigurationException;
 
 /**
  * This class parses the Policy Attachments in the WSDL and creates a PolicyMap thaty captures the policies configured on
@@ -637,7 +639,7 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
         try {
             final URL xmlURL = new URL(fileUrl);
             ios = xmlURL.openStream();
-            reader = XMLInputFactory.newInstance().createXMLStreamReader(ios);
+            reader = XmlUtil.newXMLInputFactory(true).createXMLStreamReader(ios);
             while (reader.hasNext()) {
                 if (reader.isStartElement() && NamespaceVersion.resolveAsToken(reader.getName()) == XmlToken.Policy) {
                     readSinglePolicy(policyReader.readPolicyElement(reader, fileUrl), false);

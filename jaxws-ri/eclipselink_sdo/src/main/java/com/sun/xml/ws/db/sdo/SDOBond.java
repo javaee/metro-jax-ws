@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,6 +53,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
+import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.TypeInfo;
 import com.sun.xml.ws.spi.db.XMLBridge;
@@ -64,13 +65,11 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
@@ -83,36 +82,29 @@ import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Created by IntelliJ IDEA.
- * User: giglee
- * Date: May 15, 2009
- * Time: 3:44:12 PM
- * To change this template use File | Settings | File Templates.
- */
-public class SDOBond<T>  implements XMLBridge<T> {
+public class SDOBond<T> implements XMLBridge<T> {
 
     private static final String CLASSNAME = SDOBond.class.getName();
 
-    private static final Logger logger = Logger.getLogger( CLASSNAME );
+    private static final Logger logger = Logger.getLogger(CLASSNAME);
 
     private TypeInfo ti;
     private QName xmlTag = null;
     private Class<T> javaType = null;
     private Type theType = null;
     private SDOContextWrapper parent;
-    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    TransformerFactory tf = TransformerFactory.newInstance();
-    
+    TransformerFactory tf = XmlUtil.newTransformerFactory();
+    DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory();
+
     public SDOBond(SDOContextWrapper parent, TypeInfo ti) {
         this.parent = parent;
         this.ti = ti;
         this.javaType = (Class<T>) ti.type;
         this.xmlTag = ti.tagName;
         HelperContext context = parent.getHelperContext();
-        this.theType = context.getTypeHelper().getType(javaType);      
+        this.theType = context.getTypeHelper().getType(javaType);
     }
-    
+
 //    public SDOBond(Class<T> type, QName xml) {
 //        logger.entering("SDOBond", "constructor");
 //        javaType = type;
@@ -133,7 +125,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
         try {
             if (!commonj.sdo.DataObject.class.isAssignableFrom(javaType) && !javaType.isInterface()) {
                 return (T) deserializePrimitives(src);
-            }            
+            }
             HelperContext context = parent.getHelperContext();
             SDOAttachmentUnmarshaller unmarshaller = null;
             if (au != null) {
@@ -168,7 +160,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
             if(xr.isStartElement()) {
                 xr.next();
             }
-            StringBuilder sb = new StringBuilder(); 
+            StringBuilder sb = new StringBuilder();
             while(xr.isCharacters()) {
                 sb.append(xr.getText());
                 xr.next();
@@ -177,8 +169,8 @@ public class SDOBond<T>  implements XMLBridge<T> {
         } else {
             DOMResult result = new DOMResult();
             Transformer t = tf.newTransformer();
-            t.transform(src, result); 
-            value = ((Document)result.getNode()).getDocumentElement().getTextContent().trim(); //xmlElement.getTextContent().trim();             
+            t.transform(src, result);
+            value = ((Document)result.getNode()).getDocumentElement().getTextContent().trim(); //xmlElement.getTextContent().trim();
         }
         if (value == null) {
             return null;
@@ -194,9 +186,9 @@ public class SDOBond<T>  implements XMLBridge<T> {
                     logger.finest("Deserialized primitive part has 0 length text, result is null");
                 }
                 return null;
-            }            
+            }
         }
-        
+
         if (logger.isLoggable(Level.FINEST)) {
             logger.log(Level.FINEST, "Deserialized primitive part {0}", o);
         }
@@ -206,20 +198,20 @@ public class SDOBond<T>  implements XMLBridge<T> {
     private String serializePrimitive(Object obj, Class<?> contentClass) {
         if (logger.isLoggable(Level.FINEST)) {
             logger.log(Level.FINEST, "Primitive class to be serialized ==> {0}", contentClass);
-        }    
+        }
         HelperContext context = parent.getHelperContext();
         Type type = context.getTypeHelper().getType(contentClass);
         if (type != null) {
             return ((SDODataHelper) context.getDataHelper()).convertToStringValue(obj, type);
         }
-        
+
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "Invalid SDO primitive type: {0}", contentClass.getClass().getName());
         }
         throw new SDODatabindingException("Invalid SDO primitive type: "
                 + contentClass.getClass().getName());
     }
-    
+
     private void serializeToResult(String value, Result result) {
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -240,7 +232,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
     public BindingContext context() {
         return parent;
     }
-    
+
     private void serializeDataObject(DataObject java, Result result,
             javax.xml.bind.attachment.AttachmentMarshaller am) {
         logger.entering(CLASSNAME, "serializeDataObject");
@@ -253,7 +245,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
 
             // check Primitives for T
             SDOXMLHelper sdoXMLHelper = (SDOXMLHelper) context.getXMLHelper();
-            
+
             // Bug 8909750 - Toplink already sets this to "GMT".  ADF
             // resets it before we get here, so don't change it again.
             //sdoXMLHelper.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -326,7 +318,7 @@ public class SDOBond<T>  implements XMLBridge<T> {
                     am);
             return;
         }
-        
+
         try {
             String value = serializePrimitive(object, javaType);
             String prefix = nsContext.getPrefix(xmlTag.getNamespaceURI());
@@ -421,5 +413,5 @@ public class SDOBond<T>  implements XMLBridge<T> {
     public boolean supportOutputStream() {
         return true;
     }
-    
+
 }

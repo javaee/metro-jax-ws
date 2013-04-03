@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,16 +52,14 @@ import org.w3c.dom.EntityReference;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.InputSource;
+import org.xml.sax.*;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -72,6 +70,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFactoryConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -82,6 +82,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author WS Development Team
@@ -89,6 +91,15 @@ import java.util.StringTokenizer;
 public class XmlUtil {
     private final static String LEXICAL_HANDLER_PROPERTY =
 	"http://xml.org/sax/properties/lexical-handler";
+
+    private static final Logger LOGGER = Logger.getLogger(XmlUtil.class.getName());
+
+    private static boolean globalSecureXmlProcessingEnabled;
+
+    static {
+        String disableSecureXmlProcessing = System.getProperty("disableSecureXmlProcessing");
+        globalSecureXmlProcessingEnabled = disableSecureXmlProcessing == null || !Boolean.valueOf(disableSecureXmlProcessing);
+    }
 
     public static String getPrefix(String s) {
         int i = s.indexOf(':');
@@ -214,9 +225,9 @@ public class XmlUtil {
         }
     }
 
-    static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    static final TransformerFactory transformerFactory = newTransformerFactory();
 
-    static final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+    static final SAXParserFactory saxParserFactory = newSAXParserFactory(true);
 
     static {
         saxParserFactory.setNamespaceAware(true);
@@ -355,5 +366,67 @@ public class XmlUtil {
             throw exception;
         }
     };
-    
+
+    public static DocumentBuilderFactory newDocumentBuilderFactory() {
+        return newDocumentBuilderFactory(true);
+    }
+
+    public static DocumentBuilderFactory newDocumentBuilderFactory(boolean secureXmlProcessing) {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, checkGlobalOverride(secureXmlProcessing));
+        } catch (ParserConfigurationException e) {
+            LOGGER.log(Level.WARNING, "Factory [{}] doesn't support secure xml processing!", new Object[] { factory.getClass().getName() } );
+        }
+        return factory;
+    }
+
+    public static TransformerFactory newTransformerFactory(boolean secureXmlProcessingEnabled) {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, checkGlobalOverride(secureXmlProcessingEnabled));
+        } catch (TransformerConfigurationException e) {
+            LOGGER.log(Level.WARNING, "Factory [{}] doesn't support secure xml processing!", new Object[]{factory.getClass().getName()});
+        }
+        return factory;
+    }
+
+    public static TransformerFactory newTransformerFactory() {
+        return newTransformerFactory(true);
+    }
+
+    public static SAXParserFactory newSAXParserFactory(boolean secureXmlProcessingEnabled) {
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, checkGlobalOverride(secureXmlProcessingEnabled));
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Factory [{}] doesn't support secure xml processing!", new Object[]{factory.getClass().getName()});
+        }
+        return factory;
+    }
+
+    public static XPathFactory newXPathFactory(boolean secureXmlProcessingEnabled) {
+        XPathFactory factory = XPathFactory.newInstance();
+        try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, checkGlobalOverride(secureXmlProcessingEnabled));
+        } catch (XPathFactoryConfigurationException e) {
+            LOGGER.log(Level.WARNING, "Factory [{}] doesn't support secure xml processing!", new Object[] { factory.getClass().getName() } );
+        }
+        return factory;
+    }
+
+    public static XMLInputFactory newXMLInputFactory(boolean secureXmlProcessingEnabled)  {
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        if (checkGlobalOverride(secureXmlProcessingEnabled)) {
+            // TODO-Miran: are those apppropriate defaults?
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        }
+        return factory;
+    }
+
+    private static boolean checkGlobalOverride(boolean localSecureXmlProcessingEnabled) {
+        return globalSecureXmlProcessingEnabled && localSecureXmlProcessingEnabled;
+    }
+
 }

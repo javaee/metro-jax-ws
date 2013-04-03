@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,10 +55,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.*;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -71,7 +68,8 @@ import java.util.Map;
  */
 public class JAXWSBindingExtensionHandler extends AbstractExtensionHandler {
 
-    private static final XPathFactory xpf = XPathFactory.newInstance();
+    // xml security enabled always, xpath used for parsing "part" attribute
+    private static final XPathFactory xpf = XmlUtil.newXPathFactory(true);
     private final XPath xpath = xpf.newXPath();
 
     public JAXWSBindingExtensionHandler(Map<String, AbstractExtensionHandler> extensionHandlerMap) {

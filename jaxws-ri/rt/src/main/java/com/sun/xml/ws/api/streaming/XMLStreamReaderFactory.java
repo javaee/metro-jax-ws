@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,23 +43,19 @@ package com.sun.xml.ws.api.streaming;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.streaming.XMLReaderException;
+import com.sun.xml.ws.util.xml.XmlUtil;
 import org.xml.sax.InputSource;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.logging.Logger;
 import java.security.AccessController;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Factory for {@link XMLStreamReader}.
@@ -115,7 +111,7 @@ public abstract class XMLStreamReaderFactory {
             }
         }
         if (xif == null) {
-            xif = XMLInputFactory.newInstance();
+             xif = XmlUtil.newXMLInputFactory(true);
         }
         xif.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);
         xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);

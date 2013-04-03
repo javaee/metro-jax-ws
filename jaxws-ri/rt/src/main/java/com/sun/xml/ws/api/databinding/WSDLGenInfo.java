@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,8 +53,9 @@ public class WSDLGenInfo {
 	WSDLResolver wsdlResolver;
 	Container container;
     boolean inlineSchemas;
+    boolean secureXmlProcessingDisabled;
     WSDLGeneratorExtension[] extensions;
-    
+
 	public WSDLResolver getWsdlResolver() {
 		return wsdlResolver;
 	}
@@ -80,4 +81,12 @@ public class WSDLGenInfo {
 	public void setExtensions(WSDLGeneratorExtension[] extensions) {
 		this.extensions = extensions;
 	}
+
+    public void setSecureXmlProcessingDisabled(boolean secureXmlProcessingDisabled) {
+        this.secureXmlProcessingDisabled = secureXmlProcessingDisabled;
+    }
+
+    public boolean isSecureXmlProcessingDisabled() {
+        return secureXmlProcessingDisabled;
+    }
 }
