@@ -303,7 +303,7 @@ public class TubelineAssemblerFactoryImplTest extends TestCase {
         final WSDLPort port = null;
         final WSPortInfo portInfo = serviceDelegate.safeGetPort(portName);
         final WSBinding binding = bindingId.createBinding(new AddressingFeature(true));
-        final Container container = MockupMetroConfigLoader.createMockupContainer("tubes-config/jaxws-tubes-default.xml");
+        final Container container = MockupMetroConfigLoader.createMockupContainer("tubes-config/" + configFileName);
 
         WSBindingProvider wsbp = new WSBindingProvider() {
 
