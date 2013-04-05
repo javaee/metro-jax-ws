@@ -41,7 +41,7 @@
 
 -->
 
-<descriptor since="2.2.6">
+<descriptor since="2.2.6" uses="ri">
     <description>This is legacy inheritance WebMethod test</description>
 
     <system-properties>com.sun.xml.ws.legacyWebMethod=true</system-properties>

@@ -41,7 +41,7 @@
 
 -->
 
-<descriptor since="2.2.6">
+<descriptor since="2.2.6" uses="ri">
   <description>Service.setExecutor() tests</description>
   <service basedir="./server">
     <wsdl href="hello_literal.wsdl" />
