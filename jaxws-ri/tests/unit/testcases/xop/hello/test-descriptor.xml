@@ -41,7 +41,7 @@
 
 -->
 
-<descriptor since="2.2.8" requires="ri">
+<descriptor since="2.2.8" uses="ri">
     <description>XOP test from TCK</description>
 
     <service basedir="./server">
