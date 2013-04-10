@@ -40,14 +40,34 @@
 
 package com.sun.xml.ws.transport.http;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.xml.ws.Binding;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.http.HTTPBinding;
+
 import com.oracle.webservices.api.message.PropertySet;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.addressing.NonAnonymousResponseProcessor;
-import com.sun.xml.ws.api.addressing.AddressingVersion;
-import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.Component;
+import com.sun.xml.ws.api.EndpointAddress;
+import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.addressing.AddressingVersion;
+import com.sun.xml.ws.api.addressing.NonAnonymousResponseProcessor;
 import com.sun.xml.ws.api.ha.HaInfo;
 import com.sun.xml.ws.api.message.ExceptionHasMessage;
 import com.sun.xml.ws.api.message.Message;
@@ -71,29 +91,13 @@ import com.sun.xml.ws.server.UnsupportedMediaException;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.Pool;
 
-import javax.xml.ws.Binding;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.http.HTTPBinding;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 /**
- * {@link Adapter} that receives messages in HTTP.
+ * {@link com.sun.xml.ws.api.server.Adapter} that receives messages in HTTP.
  *
  * <p>
  * This object also assigns unique query string (such as "xsd=1") to
- * each {@link SDDocument} so that they can be served by HTTP GET requests.
+ * each {@link com.sun.xml.ws.api.server.SDDocument} so that they can be served by HTTP GET requests.
  *
  * @author Kohsuke Kawaguchi
  * @author Jitendra Kotamraju
@@ -101,10 +105,10 @@ import java.util.logging.Logger;
 public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     /**
-     * {@link SDDocument}s keyed by the query string like "?abc".
+     * {@link com.sun.xml.ws.api.server.SDDocument}s keyed by the query string like "?abc".
      * Used for serving documents via HTTP GET.
      *
-     * Empty if the endpoint doesn't have {@link ServiceDefinition}.
+     * Empty if the endpoint doesn't have {@link com.sun.xml.ws.api.server.ServiceDefinition}.
      * Read-only.
      */
     protected Map<String,SDDocument> wsdls;
@@ -124,19 +128,19 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     public final HttpAdapterList<? extends HttpAdapter> owner;
 
     /**
-     * Servlet URL pattern with which this {@link HttpAdapter} is associated.
+     * Servlet URL pattern with which this {@link com.sun.xml.ws.transport.http.HttpAdapter} is associated.
      */
     public final String urlPattern;
 
     protected boolean stickyCookie;
-    
+
     protected boolean disableJreplicaCookie = false;
 
     /**
-     * Creates a lone {@link HttpAdapter} that does not know of any other
-     * {@link HttpAdapter}s.
+     * Creates a lone {@link com.sun.xml.ws.transport.http.HttpAdapter} that does not know of any other
+     * {@link com.sun.xml.ws.transport.http.HttpAdapter}s.
      *
-     * This is convenient for creating an {@link HttpAdapter} for an environment
+     * This is convenient for creating an {@link com.sun.xml.ws.transport.http.HttpAdapter} for an environment
      * where they don't know each other (such as JavaSE deployment.)
      *
      * @param endpoint web service endpoint
@@ -152,11 +156,14 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * @param endpoint web service endpoint
      * @param owner list of related adapters
      */
-    protected HttpAdapter(WSEndpoint endpoint, HttpAdapterList<? extends HttpAdapter> owner) {
+    protected HttpAdapter(WSEndpoint endpoint,
+                          HttpAdapterList<? extends HttpAdapter> owner) {
         this(endpoint,owner,null);
     }
 
-    protected HttpAdapter(WSEndpoint endpoint, HttpAdapterList<? extends HttpAdapter> owner, String urlPattern) {
+    protected HttpAdapter(WSEndpoint endpoint,
+                          HttpAdapterList<? extends HttpAdapter> owner,
+                          String urlPattern) {
         super(endpoint);
         this.owner = owner;
         this.urlPattern = urlPattern;
@@ -172,7 +179,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     public ServiceDefinition getServiceDefinition() {
         return this.serviceDefinition;
     }
-    
+
     /**
      * Fill in WSDL map.
      *
@@ -190,16 +197,16 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             Map<String, SDDocument> systemIds = new TreeMap<String, SDDocument>();
             for (SDDocument sdd : sdef) {
                 if (sdd == sdef.getPrimary()) { // No sorting for Primary WSDL
-                    wsdls.put("wsdl", sdd);     
+                    wsdls.put("wsdl", sdd);
                     wsdls.put("WSDL", sdd);
                 } else {
                     systemIds.put(sdd.getURL().toString(), sdd);
                 }
             }
-            
+
             int wsdlnum = 1;
             int xsdnum = 1;
-            for (Map.Entry<String, SDDocument> e : systemIds.entrySet()) {
+            for (Entry<String, SDDocument> e : systemIds.entrySet()) {
                 SDDocument sdd = e.getValue();
                 if (sdd.isWSDL()) {
                     wsdls.put("wsdl="+(wsdlnum++),sdd);
@@ -229,7 +236,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             return urlPattern;
         }
     }
-    
+
     @Override
     protected HttpToolkit createToolkit() {
         return new HttpToolkit();
@@ -246,18 +253,18 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * and "connection" here is an HTTP connection.
      *
      * <p>
-     * To populate a request {@link Packet} with more info,
+     * To populate a request {@link com.sun.xml.ws.api.message.Packet} with more info,
      * define {@link com.oracle.webservices.api.message.PropertySet.Property properties} on
      * {@link WSHTTPConnection}.
      *
      * @param connection to receive/send HTTP messages for web service endpoints
-     * @throws IOException when I/O errors happen
+     * @throws java.io.IOException when I/O errors happen
      */
     public void handle(@NotNull WSHTTPConnection connection) throws IOException {
         if (handleGet(connection)) {
             return;
         }
-        
+
         // Make sure the Toolkit is recycled by the same pool instance from which it was taken
         final Pool<HttpToolkit> currentPool = getPool();
         // normal request handling
@@ -347,14 +354,14 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         codec.decode(in, ct, packet);
         return packet;
     }
-    
+
     protected void addSatellites(Packet packet) {
     }
 
     /**
      * Some stacks may send non WS-I BP 1.2 conforming SoapAction.
-     * Make sure SOAPAction is quoted as {@link Packet#soapAction} expects quoted soapAction value.
-     *  
+     * Make sure SOAPAction is quoted as {@link com.sun.xml.ws.api.message.Packet#soapAction} expects quoted soapAction value.
+     *
      * @param soapAction SoapAction HTTP Header
      * @return quoted SOAPAction value
      */
@@ -378,21 +385,21 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     protected NonAnonymousResponseProcessor getNonAnonymousResponseProcessor() {
     	return NonAnonymousResponseProcessor.getDefault();
     }
-    
+
     /**
-     * This method is added for the case of the sub-class wants to override the method to 
+     * This method is added for the case of the sub-class wants to override the method to
      * print details. E.g. convert soapfault as HTML msg for 403 error connstatus.
      * @param os
      */
     protected void writeClientError(int connStatus, @NotNull OutputStream os, @NotNull Packet packet) throws IOException {
     	//do nothing
     }
-    
+
     private boolean isClientErrorStatus(int connStatus)
     {
     	return (connStatus == HttpURLConnection.HTTP_FORBIDDEN); // add more for future.
     }
-    
+
     private boolean isNonAnonymousUri(EndpointAddress addr){
     	return (addr != null) && !addr.toString().equals(AddressingVersion.W3C.anonymousUri) &&
     			!addr.toString().equals(AddressingVersion.MEMBER.anonymousUri);
@@ -400,7 +407,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     private void encodePacket(@NotNull Packet packet, @NotNull WSHTTPConnection con, @NotNull Codec codec) throws IOException {
     	if (isNonAnonymousUri(packet.endpointAddress) && packet.getMessage() != null) {
-            try {
+           try {
                 // Message is targeted to non-anonymous response endpoint.
                 // After call to non-anonymous processor, typically, packet.getMessage() will be null
                 // however, processors could use this pattern to modify the response sent on the back-channel,
@@ -414,7 +421,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 packet = packet.createServerResponse(faultMsg, packet.endpoint.getPort(), null, packet.endpoint.getBinding());
             }
     	}
-    	
+
         if (con.isClosed()) {
             return;                 // Connection is already closed
         }
@@ -428,9 +435,18 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 if (con.getStatus() == 0) {
                     con.setStatus(WSHTTPConnection.ONEWAY);
                 }
+                OutputStream os = con.getProtocol().contains("1.1") ? con.getOutput() : new Http10OutputStream(con);
+                if (dump || LOGGER.isLoggable(Level.FINER)) {
+                    ByteArrayBuffer buf = new ByteArrayBuffer();
+                    codec.encode(packet, buf);
+                    dump(buf, "HTTP response " + con.getStatus(), con.getResponseHeaders());
+                    buf.writeTo(os);
+                } else {
+                    codec.encode(packet, os);
+                }
                 // close the response channel now
                 try {
-                    con.getOutput().close(); // no payload
+                    os.close(); // no payload
                 } catch (IOException e) {
                     throw new WebServiceException(e);
                 }
@@ -442,13 +458,20 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 con.setStatus(responseMessage.isFault()
                         ? HttpURLConnection.HTTP_INTERNAL_ERROR
                         : HttpURLConnection.HTTP_OK);
-            } 
+            }
 
-            if (isClientErrorStatus(con.getStatus())) { 
-            	 OutputStream os = con.getOutput();
-            	 writeClientError(con.getStatus(), os, packet);
-            	 os.close();
-            	 return;
+            if (isClientErrorStatus(con.getStatus())) {
+                OutputStream os = con.getOutput();
+                if (dump || LOGGER.isLoggable(Level.FINER)) {
+                    ByteArrayBuffer buf = new ByteArrayBuffer();
+                    writeClientError(con.getStatus(), buf, packet);
+                    dump(buf, "HTTP response " + con.getStatus(), con.getResponseHeaders());
+                    buf.writeTo(os);
+                } else {
+                    writeClientError(con.getStatus(), os, packet);
+                }
+                os.close();
+            	  return;
             }
 
             ContentType contentType = codec.getStaticContentType(packet);
@@ -527,7 +550,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     }
 
     public void invokeAsync(final WSHTTPConnection con, final CompletionCallback callback) throws IOException {
-        
+
             if (handleGet(con)) {
                 callback.onCompletion();
                 return;
@@ -564,7 +587,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 public void onCompletion(@NotNull Packet response) {
                     try {
                         try {
-                            encodePacket(response, con, tk.codec);                            
+                            encodePacket(response, con, tk.codec);
                         } catch (IOException ioe) {
                             LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
                         }
@@ -648,7 +671,16 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 } catch (IOException e) {
                     // no-op
                 }
-                
+
+                if (dump || LOGGER.isLoggable(Level.FINER)) {
+                    try {
+                        ByteArrayBuffer buf = new ByteArrayBuffer();
+                        dump(buf, "HTTP response " + con.getStatus(), con.getResponseHeaders());
+                    } catch (Exception e) {
+                        throw new WebServiceException(e.toString(), e);
+                    }
+                }
+
                 if (output != null) {
                 	try {
                 		output.close(); // no payload
@@ -697,6 +729,9 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 encodePacket(packet, con, codec);
             } finally {
                 if (!con.isClosed()) {
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.log(Level.FINE, "Closing HTTP Connection with status: {0}", con.getStatus());
+                    }
                     con.close();
                 }
             }
@@ -725,7 +760,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * @param con
      *      The connection to which the data will be sent.
      *
-     * @throws IOException when I/O errors happen
+     * @throws java.io.IOException when I/O errors happen
      */
     public void publishWSDL(@NotNull WSHTTPConnection con) throws IOException {
         con.getInput().close();
@@ -815,7 +850,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         }
     }
 
-    private void dump(ByteArrayBuffer buf, String caption, Map<String, List<String>> headers) throws IOException {
+    private static void dump(ByteArrayBuffer buf, String caption, Map<String, List<String>> headers) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintWriter pw = new PrintWriter(baos, true);
         pw.println("---["+caption +"]---");
@@ -950,3 +985,4 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     }
     private static final Logger LOGGER = Logger.getLogger(HttpAdapter.class.getName());
 }
+
