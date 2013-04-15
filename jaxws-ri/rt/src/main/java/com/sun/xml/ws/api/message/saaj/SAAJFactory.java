@@ -188,7 +188,13 @@ public class SAAJFactory {
      * @throws SOAPException if SAAJ processing fails
      */
     public static SAAJMessage read(Packet packet) throws SOAPException {
-        for (SAAJFactory s : ServiceFinder.find(SAAJFactory.class)) {
+        // Use the Component from the Packet if it exists.  Note the logic
+        // in the ServiceFinder is such that find(Class) is not equivalent
+        // to find (Class, null), so the ternary operator is needed.
+        ServiceFinder<SAAJFactory> factories = (packet.component != null ?
+                ServiceFinder.find(SAAJFactory.class, packet.component) :
+                ServiceFinder.find(SAAJFactory.class));
+        for (SAAJFactory s : factories) {
             SAAJMessage msg = s.readAsSAAJ(packet);
             if (msg != null) return msg;
         }        
