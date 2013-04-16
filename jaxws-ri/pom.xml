@@ -114,7 +114,7 @@
         <javadoc.links.dir>${project.parent.basedir}/src/main/javadoc-link</javadoc.links.dir>
         <javadoc.links.offline>false</javadoc.links.offline>
         <findbugs.skip>false</findbugs.skip>
-        <findbugs.threshold>High</findbugs.threshold>
+        <findbugs.threshold>Normal</findbugs.threshold>
         <findbugs.exclude />
         <netbeans.hint.jdkPlatform>JDK_1.6</netbeans.hint.jdkPlatform>
     </properties>

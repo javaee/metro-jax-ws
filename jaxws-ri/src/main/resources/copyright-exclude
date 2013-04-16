@@ -50,3 +50,10 @@ rt/src/test/resources/etc/testMtomMessageReload_02.msg
 gpsXml.xml
 boms/bom/pom.xml
 boms/bom-ext/pom.xml
+tests/unit/testcases/fromwsdl/mime/simple_doclit/server/Catalog.wsdl
+tests/unit/testcases/fromwsdl/mime/simple_doclit/server/WS-ISwA.xsd
+tests/unit/testcases/fromwsdl/mime/simple_rpclit/server/Catalog.wsdl
+tests/unit/testcases/fromwsdl/mime/text_plain_754/server/Catalog.wsdl
+tests/unit/testcases/xop/hello/server/wsi-swa.xsd
+tests/unit/testcases/xop/hellodirect/server/wsi-swa.xsd
+

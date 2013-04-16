@@ -58,6 +58,10 @@
     <name>JAX-WS RI Eclipselink SDO Plugin</name>
     <description>Pluggable databinding module employing Eclipselink SDO</description>
 
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>

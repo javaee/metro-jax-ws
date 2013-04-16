@@ -42,6 +42,24 @@
 
 <FindBugsFilter>
     <!--
+    Documented in the code.
+    -->
+    <Match>
+        <Or>
+            <Class name="com.sun.xml.ws.model.WrapperBeanGenerator$Field"/>
+        </Or>
+        <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS"/>
+    </Match>
+    <!--
+    Not an error - propertyset design uses this feature.
+    -->
+    <Match>
+        <Or>
+            <Class name="com.oracle.webservices.api.message.BasePropertySet$MapView"/>
+        </Or>
+        <Bug pattern="WMI_WRONG_MAP_ITERATOR"/>
+    </Match>
+    <!--
     Can't do much about these, but we should not ignore the warning for any new clases
     so that we don't find ourselves in the same hell with new classes 
     -->

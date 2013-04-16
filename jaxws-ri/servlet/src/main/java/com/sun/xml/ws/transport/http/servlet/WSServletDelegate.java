@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -103,7 +103,7 @@ public class WSServletDelegate {
         String publishStatusPageParam =
             context.getInitParameter(WSServlet.JAXWS_RI_PROPERTY_PUBLISH_STATUS_PAGE);
         if (publishStatusPageParam != null) {
-            HttpAdapter.publishStatusPage = Boolean.parseBoolean(publishStatusPageParam);
+            HttpAdapter.setPublishStatus(Boolean.parseBoolean(publishStatusPageParam));
         }
     }
 
@@ -289,15 +289,6 @@ public class WSServletDelegate {
      * Determines which {@link ServletAdapter} serves the given request.
      */
     protected ServletAdapter getTarget(HttpServletRequest request) {
-
-        /*System.err.println("----");
-        System.err.println("CONTEXT PATH   : " + request.getContextPath());
-        System.err.println("PATH INFO      : " + request.getPathInfo());
-        System.err.println("PATH TRANSLATED: " + request.getPathTranslated());
-        System.err.println("QUERY STRING   : " + request.getQueryString());
-        System.err.println("REQUEST URI    : " + request.getRequestURI());
-        System.err.println();
-         */
 
         String path =
             request.getRequestURI().substring(

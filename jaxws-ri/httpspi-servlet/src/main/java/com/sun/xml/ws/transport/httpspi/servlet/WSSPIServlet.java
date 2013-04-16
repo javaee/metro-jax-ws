@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.transport.httpspi.servlet;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -55,8 +57,11 @@ import javax.servlet.http.HttpServletResponse;
  * @author Jitendra Kotamraju
  */
 public class WSSPIServlet extends HttpServlet {
-    private WSServletDelegate delegate = null;
+    private transient WSServletDelegate delegate = null;
 
+    private static final Logger LOGGER = Logger.getLogger(WSSPIServlet.class.getName());
+    
+    @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
         delegate = getDelegate(servletConfig);
@@ -72,30 +77,50 @@ public class WSSPIServlet extends HttpServlet {
         return (WSServletDelegate) servletConfig.getServletContext().getAttribute(JAXWS_RI_RUNTIME_INFO);
     }
 
+    @Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response) throws ServletException {
         if (delegate != null) {
             delegate.doPost(request,response,getServletContext());
+        } else {
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "No delegate for {0} to invoke post method.", this);
+            }
         }
     }
 
+    @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response)
         throws ServletException {
         if (delegate != null) {
             delegate.doGet(request,response,getServletContext());
+        } else {
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "No delegate for {0} to invoke get method.", this);
+            }
         }
     }
 
+    @Override
     protected void doPut( HttpServletRequest request, HttpServletResponse response)
         throws ServletException {
         if (delegate != null) {
             delegate.doPut(request,response,getServletContext());
+        } else {
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "No delegate for {0} to invoke put method.", this);
+            }
         }
     }
 
+    @Override
     protected void doDelete( HttpServletRequest request, HttpServletResponse response)
         throws ServletException {
         if (delegate != null) {
             delegate.doDelete(request,response,getServletContext());
+        } else {
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "No delegate for {0} to invoke delete method.", this);
+            }
         }
     }
 
