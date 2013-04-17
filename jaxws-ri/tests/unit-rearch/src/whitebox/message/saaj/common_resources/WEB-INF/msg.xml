@@ -1,0 +1,75 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"><S:Header><wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-01.xsd" S:mustUnderstand="1">
+<wsse:BinarySecurityToken EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" wsu:Id="s9eb941e110bc1bf8f860515bdeac0e3a193b4320">
+MIICXDCCAcUCBETJJlkwDQYJKoZIhvcNAQEEBQAwdTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFDASBgNVBAcTC1NhbnRhIENsYXJhMQwwCgYDVQQKEwNTdW4xFzAVBgNVBAsTDkFjY2VzcyBNYW5hZ2VyMRQwEgYDVQQDEwtTSlNBTUNsaWVudDAeFw0wNjA3MjcyMDQ3MjFaFw0xMjAxMTcyMDQ3MjFaMHUxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRQwEgYDVQQHEwtTYW50YSBDbGFyYTEMMAoGA1UEChMDU3VuMRcwFQYDVQQLEw5BY2Nlc3MgTWFuYWdlcjEUMBIGA1UEAxMLU0pTQU1DbGllbnQwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAIdRB5QsxfZDoRKoArK8U7G59IGpI1sfn1CT084J1Xv4BVIVXwlcPdI2xBtLmktlH9tFk2ezdRPA1XZMZEYcsv+I59jZSBpeHFI2HKviaMTLkmqvO6m244W83UpnjJcn+Vt5pN8RtWb2hSJ/cmhjZvsqzEl1BscD+y20gkULwqJ3AgMBAAEwDQYJKoZIhvcNAQEEBQADgYEAWdLjXsU0sRzdpzkE301A/LEReg2Tg4IGkD/Y51MbJiDLl99rrKiscAnsMbgdhkrYXx7o49cNguJ2dVjukWO9N7KpKQmJVPAHF5l39wukFFiir9WwSro4J2Mlno9bRymTN+tLaBdaUsNhsHmnkGA8X/U2KVXjCNQ8wyH1yummOeo=
+</wsse:BinarySecurityToken><wsu:TimeStamp><wsu:Created>2007-01-30T22:46:15Z</wsu:Created><wsu:Expires>2007-01-30T22:51:15Z</wsu:Expires></wsu:TimeStamp><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:SignedInfo>
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+<ds:Reference URI="#s3337530b84a83f7dfdbe26d732e5cafe158ba5b5">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>qEvPaUmenbBGHOqT8Ae7ygWSs8M=</ds:DigestValue>
+</ds:Reference>
+<ds:Reference URI="#s1f786ff954b0ace579f8a111f4d836096643453f">
+<ds:Transforms>
+<ds:Transform Algorithm="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#STR-Transform">
+<wsse:TransformationParameters xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-01.xsd"><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></wsse:TransformationParameters>
+</ds:Transform>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>8WSXVMGYfo1p6mlid6dEPCxhQYU=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue>
+PrEikg9c2rbzxAV5KYfa1qxKJ4ANYyqho3zjrM2CiVHedVy03kV+MiC62dqA1/LqAySKJG24+P8J
+FhcDL56O7lCa+aZ8Uaga9Q27FbTpGhpXt7NlPeJNHpeOIK2b4oYl6FAaiYVKHSaN1kXHdkMrK9ZA
+wT8BG52kPn0R3QOnylg=
+</ds:SignatureValue>
+<ds:KeyInfo>
+<SecurityTokenReference xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-01.xsd" wsu:Id="s1f786ff954b0ace579f8a111f4d836096643453f"><Reference URI="#s9eb941e110bc1bf8f860515bdeac0e3a193b4320"/></SecurityTokenReference>
+</ds:KeyInfo>
+</ds:Signature></wsse:Security></S:Header><S:Body wsu:Id="s3337530b84a83f7dfdbe26d732e5cafe158ba5b5"><ns2:sayHelloResponse xmlns:ns2="http://x/"><return>Hello World!!!</return></ns2:sayHelloResponse></S:Body></S:Envelope>

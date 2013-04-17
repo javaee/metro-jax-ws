@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2003,-2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<wsdl:definitions
+    targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.wsdl" xmlns:wsi="http://ws-i.org/schemas/conformanceClaim/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:cat="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.wsdl"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    This WSDL document describes the Catalog service for the WS-I Basic Sample Application 1.1.
+  </wsdl:documentation>
+
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:import namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd"
+schemaLocation="Catalog.xsd"/>
+    </xs:schema>
+  </wsdl:types>
+
+  <wsdl:message name="getCatalogWithImagesResponse">
+    <wsdl:part name="response" element="cat:ProductCatalog">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">the product catalog</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="getProductDetailsRequest">
+    <wsdl:part name="request" element="cat:GetProductDetails"/>
+  </wsdl:message>
+
+  <wsdl:message name="getCatalogWithImagesRequest">
+    <wsdl:part name="request" element="cat:GetCatalogWithImages"/>
+  </wsdl:message>
+
+  <wsdl:message name="getProductDetailsResponse">
+    <wsdl:part name="Body" element="cat:ProductDetails"/>
+    <wsdl:part name="Pic" type="xs:base64Binary">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Attached picture of the product</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="Specs" type="xs:string">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Attached spec sheet for the product, in XML or PDF</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="voidTestRequest">
+        <wsdl:part name="attach1" type="xs:base64Binary"/>
+  </wsdl:message>
+
+  <wsdl:message name="voidTestResponse">
+        <wsdl:part name="attach2" type="xs:base64Binary"/>
+  </wsdl:message>
+
+  <wsdl:message name="echoStringRequest">
+        <wsdl:part name="input" element="cat:SpecSheet"/>
+  </wsdl:message>
+
+  <wsdl:message name = "defaultTypeTestRequest">
+      <wsdl:part name="order" element="cat:order"/>
+      <wsdl:part name="prodDetails" element="cat:ProductDetails"/>
+  </wsdl:message>
+
+    <wsdl:message name = "defaultTypeTestResponse">
+      <wsdl:part name="prodNum" element="cat:ProductNumber"/>
+      <wsdl:part name="status" element="cat:status"/>
+    </wsdl:message>
+
+    <wsdl:message name="echoStringResponse">
+        <wsdl:part name="output" element="cat:SpecSheet"/>
+    </wsdl:message>
+    <wsdl:message name="testDataHandlerRequest">
+        <wsdl:part name="body" element="cat:testDataHandlerBody"/>
+        <wsdl:part name="attachIn" type="xs:string"/>
+    </wsdl:message>
+
+    <wsdl:message name="testDataHandlerResponse">
+        <wsdl:part name="attachOut" type="xs:string"/>
+    </wsdl:message>
+
+    <message name="testNormalReq">
+        <part name="in_body" element="cat:picName"/>
+        <part name="header" element="cat:int"/>
+    </message>
+
+    <message name="testNormalResp">
+        <part name="out_body" element="cat:picName"/>
+        <part name="header" element="cat:int"/>
+    </message>
+
+    <message name="getFooWithMimeDisabled">
+        <part name="param" element="cat:disabledInfo"/>
+        <part name="foo" element="cat:foo"/>
+    </message>
+    <message name="getFooWithMimeDisabledResp">
+        <part name="fooAsAttach" element="cat:fooAsAttach"/>
+    </message>
+    <message name="echoImageWithInfoReq">
+        <part name="in_imageType" element="cat:picType"/>
+        <part name="image" type="xs:hexBinary"/>
+    </message>
+    <message name="echoImageWithInfoResp">
+        <part name="out_imageType" element="cat:picType"/>
+        <part name="image" type="xs:base64Binary"/>
+    </message>
+  <wsdl:portType name="CatalogPortType">
+    <operation name="echoImageWithInfo">
+        <input message="tns:echoImageWithInfoReq"/>
+        <output message="tns:echoImageWithInfoResp"/>
+    </operation>
+    <operation name="getFooWithMimeDisabled">
+        <input message="tns:getFooWithMimeDisabled"/>
+        <output message="tns:getFooWithMimeDisabledResp"/>
+    </operation>
+    <operation name="testNormalWithMimeBinding">
+        <input message="tns:testNormalReq"/>
+        <output message="tns:testNormalResp"/>
+    </operation>
+    <wsdl:operation name="defaultTypeTest">
+          <wsdl:input name="defaultTypeTestRequest" message="tns:defaultTypeTestRequest"/>
+          <wsdl:output name="defaultTypeTestResponse" message="tns:defaultTypeTestResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="echoString">
+          <wsdl:input name="echoStringRequest" message="tns:echoStringRequest"/>
+          <wsdl:output name="echoStringResponse" message="tns:echoStringResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="voidTest">
+      <wsdl:input name="voidTestRequest" message="tns:voidTestRequest"/>
+      <wsdl:output name="voidTestResponse" message="tns:voidTestResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getCatalogWithImages">
+      <wsdl:input name="getCatalogWithImagesRequest" message="tns:getCatalogWithImagesRequest"/>
+      <wsdl:output name="getCatalogWithImagesResponse" message="tns:getCatalogWithImagesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getProductDetails">
+      <wsdl:input name="getDetailsRequest" message="tns:getProductDetailsRequest"/>
+      <wsdl:output name="getDetailsResponse" message="tns:getProductDetailsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="testDataHandler">
+      <wsdl:input name="testDataHandlerRequest" message="tns:testDataHandlerRequest"/>
+      <wsdl:output name="testDataHandlerResponse" message="tns:testDataHandlerResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:binding name="CatalogSoapBinding" type="tns:CatalogPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+      <operation name="echoImageWithInfo">
+        <soap:operation soapAction=""/>
+        <input>
+            <mime:multipartRelated>
+                <mime:part>
+                    <soap:body parts="in_imageType" use="literal"/>
+                </mime:part>
+                <mime:part>
+                    <mime:content part="image" type="image/jpeg"/>
+                </mime:part>
+            </mime:multipartRelated>
+        </input>
+        <output>
+            <mime:multipartRelated>
+                <mime:part>
+                    <mime:content part="image" type="image/jpeg"/>
+                </mime:part>
+                <mime:part>
+                    <soap:body parts="out_imageType" use="literal"/>
+                </mime:part>
+            </mime:multipartRelated>
+        </output>
+      </operation>
+
+      <operation name="getFooWithMimeDisabled">
+            <soap:operation soapAction=""/>
+            <input>
+                <mime:multipartRelated>
+                    <mime:part>
+                        <soap:body parts="param" use="literal"/>
+                    </mime:part>
+                    <mime:part>
+                        <mime:content part="foo" type="text/xml"/>
+                    </mime:part>
+                </mime:multipartRelated>
+            </input>
+            <output>
+                <mime:multipartRelated>
+                    <mime:part>
+                        <soap:body parts="" use="literal"/>
+                    </mime:part>
+                    <mime:part>
+                        <mime:content part="fooAsAttach" type="text/xml"/>
+                    </mime:part>
+                </mime:multipartRelated>
+            </output>
+        </operation>
+
+      <operation name="testNormalWithMimeBinding">
+            <soap:operation/>
+            <input>
+                <mime:multipartRelated>
+                    <mime:part>
+                        <soap:body parts="in_body" use="literal"/>
+                        <soap:header message="tns:testNormalReq" part="header" use="literal"/>
+                    </mime:part>
+                </mime:multipartRelated>
+            </input>
+            <output>
+                <mime:multipartRelated>
+                    <mime:part>
+                        <soap:body parts="out_body" use="literal"/>
+                        <soap:header message="tns:testNormalResp" part="header" use="literal"/>
+                    </mime:part>
+                </mime:multipartRelated>
+            </output>
+        </operation>
+
+      <wsdl:operation name="defaultTypeTest">
+        <soap:operation/>
+        <wsdl:input>
+            <mime:multipartRelated>
+                <mime:part>
+                      <mime:content part="prodDetails" type="application/xml"/>
+                </mime:part>
+                 <mime:part>
+                  <soap:body parts="order" use="literal"/>
+                </mime:part>
+            </mime:multipartRelated>
+        </wsdl:input>
+
+        <wsdl:output>
+          <mime:multipartRelated>
+            <mime:part>
+              <soap:body parts="status" use="literal"/>
+            </mime:part>
+            <mime:part>
+              <mime:content part="prodNum" type="text/xml"/>
+            </mime:part>
+          </mime:multipartRelated>
+        </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="testDataHandler">
+        <soap:operation/>
+        <wsdl:input>
+            <mime:multipartRelated>
+                <mime:part>
+                      <mime:content part="attachIn" type="application/xml"/>
+                      <mime:content part="attachIn" type="text/xml"/>
+                </mime:part>
+                 <mime:part>
+                  <soap:body parts="body" use="literal"/>
+                </mime:part>
+            </mime:multipartRelated>
+        </wsdl:input>
+
+        <wsdl:output>
+          <mime:multipartRelated>
+            <mime:part>
+              <soap:body parts="" use="literal"/>
+            </mime:part>
+            <mime:part>
+              <mime:content part="attachOut" type="text/xml"/>
+              <mime:content part="attachOut" type="application/xml"/>
+            </mime:part>
+          </mime:multipartRelated>
+        </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="echoString">
+        <soap:operation/>
+        <wsdl:input>
+          <soap:body parts="input" use="literal"/>
+        </wsdl:input>
+        <wsdl:output>
+              <soap:body parts="output" use="literal"/>
+        </wsdl:output>
+      </wsdl:operation>
+
+    <wsdl:operation name="voidTest">
+        <soap:operation/>
+        <wsdl:input>
+        <mime:multipartRelated>
+        <mime:part>
+              <mime:content part="attach1" type="image/jpeg"/>
+        </mime:part>
+         <mime:part>
+          <soap:body parts="" use="literal"/>
+        </mime:part>
+
+          </mime:multipartRelated>
+        </wsdl:input>
+
+        <wsdl:output>
+          <mime:multipartRelated>
+            <mime:part>
+              <soap:body parts="" use="literal"/>
+            </mime:part>
+            <mime:part>
+              <mime:content part="attach2" type="image/jpeg"/>
+            </mime:part>
+          </mime:multipartRelated>
+        </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="getCatalogWithImages">
+        <soap:operation/>
+        <wsdl:input>
+            <mime:multipartRelated>
+                <mime:part>
+                  <soap:body use="literal"/>
+                </mime:part>
+            </mime:multipartRelated>
+        </wsdl:input>
+        <wsdl:output>
+          <mime:multipartRelated>
+            <mime:part>
+              <soap:body use="literal"/>
+            </mime:part>
+          </mime:multipartRelated>
+        </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="getProductDetails">
+        <soap:operation/>
+        <wsdl:input>
+          <soap:body use="literal"/>
+        </wsdl:input>
+        <wsdl:output>
+          <mime:multipartRelated>
+            <mime:part>
+              <soap:body parts="Body" use="literal"/>
+            </mime:part>
+            <mime:part>
+              <mime:content part="Pic" type="image/jpeg"/>
+            </mime:part>
+            <mime:part>
+              <mime:content part="Specs" type="text/xml"/>
+            </mime:part>
+          </mime:multipartRelated>
+        </wsdl:output>
+      </wsdl:operation>
+
+  </wsdl:binding>
+  <service name="CatalogService">
+    <port name="CatalogPort" binding="tns:CatalogSoapBinding">
+      <soap:address location="http://localhost/rpcendpoint/TestService"/>
+    </port>
+  </service>
+</wsdl:definitions>
+<!-- The following is an example of a getCatalog SOAP request message compliant with the above WSDL:
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<GetCatalogWithImages xmlns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd">
+</GetCatalogWithImages>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+The following is an example of a getCatalogWithImages SOAP response message compliant with the above WSDL:
+
+MIME-Version 1.0
+Content-Type: Multipart/Related; boundary=MIME_boundary; type=text/xml; start="<soapbody.scm11@ws-i.org>"
+
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: text/xml; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Content-ID: <soapbody.scm11@ws-i.org>
+
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<ProductCatalog xmlns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd">
+  <Product>
+    <Name>TV,Brand1</Name>
+    <Description>24", Color, Advanced Velocit Scan Modular</Description>
+    <ProductNumber>605001</ProductNumber>
+    <Category>TV</Category>
+    <Brand>Brand1</Brand>
+    <Price>299.95</Price>
+    <Thumbnail>cid:605001_small.jpeg</Thumbnail>
+  </Product>
+  <Product>
+    <Name>TV, Brand2</Name>
+    <Description>32", Super Slim Flat Panel Plasma</Description>
+    <ProductNumber>605002</ProductNumber>
+    <Category>TV</Category>
+    <Brand>Brand2</Brand>
+    <Price>1499.99</Price>
+    <Thumbnail>cid:605002_small.jpeg</Thumbnail>
+  </Product>
+</ProductCatalog>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: image/jpeg
+Content-Transfer-Encoding: binary
+Content-ID: <605001_small.jpeg>
+
+... binary GIF image ...
+
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: image/jpeg
+Content-Transfer-Encoding: binary
+Content-ID: <605002_small.jpeg>
+
+... binary JPEG image ...
+
+
+The following is an example of a getProductDetails SOAP request message compliant with the above WSDL:
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<GetProductDetails xmlns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd">
+  <ProductNumber>605001</ProductNumber>
+</GetProductDetails>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+The following is an example of a Product Details SOAP response message that is compliant with the WSDL:
+
+MIME-Version 1.0
+Content-Type: Multipart/Related; boundary=MIME_boundary; type=text/xml; start="<soapbody.scm11@ws-i.org>"
+
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: text/xml; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Content-ID: <soapbody.scm11@ws-i.org>
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<ProductDetails xmlns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd">
+  <Weight>24.6</Weight>
+  <WeightUnit>pounds</WeightUnit>
+  <Dimensions>
+    <Height>26</Height>
+    <Width>24</Width>
+    <Depth>21</Depth>
+  </Dimensions>
+  <DimensionUnit>inches</DimensionUnit>
+  <Picture>cid:605001_big.jpeg@ws-i.org</Picture>
+  <SpecSheet>cid:605001_specs.xml@ws-i.org</SpecSheet>
+</ProductDetails>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: image/jpeg
+Content-Transfer-Encoding: binary
+Content-ID: <605001_big.jpeg@ws-i.org>
+
+... binary JPEG image ...
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: text/xml
+Content-Transfer-Encoding: binary
+Content-ID: <605001_specs.xml@ws-i.org>
+
+... XML version of spec sheet ...
+-MIME_boundary         <== suposed to have a double dash
+-->
+

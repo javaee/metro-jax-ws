@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<xs:schema version="1.0" targetNamespace="http://foobar.org/" xmlns:tns="http://foobar.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="AddNumbersException" type="tns:AddNumbersException"/>
+
+  <xs:element name="TooBigNumbersException" type="tns:TooBigNumbersException"/>
+
+  <xs:element name="addNumbers" type="tns:addNumbers"/>
+
+  <xs:element name="addNumbers2" type="tns:addNumbers2"/>
+
+  <xs:element name="addNumbers2Response" type="tns:addNumbers2Response"/>
+
+  <xs:element name="addNumbers3" type="tns:addNumbers3"/>
+
+  <xs:element name="addNumbers3Response" type="tns:addNumbers3Response"/>
+
+  <xs:element name="addNumbersEmptyAction" type="tns:addNumbersEmptyAction"/>
+
+  <xs:element name="addNumbersEmptyActionResponse" type="tns:addNumbersEmptyActionResponse"/>
+
+  <xs:element name="addNumbersFault1" type="tns:addNumbersFault1"/>
+
+  <xs:element name="addNumbersFault1Response" type="tns:addNumbersFault1Response"/>
+
+  <xs:element name="addNumbersFault2" type="tns:addNumbersFault2"/>
+
+  <xs:element name="addNumbersFault2Response" type="tns:addNumbersFault2Response"/>
+
+  <xs:element name="addNumbersFault3" type="tns:addNumbersFault3"/>
+
+  <xs:element name="addNumbersFault3Response" type="tns:addNumbersFault3Response"/>
+
+  <xs:element name="addNumbersFault4" type="tns:addNumbersFault4"/>
+
+  <xs:element name="addNumbersFault4Response" type="tns:addNumbersFault4Response"/>
+
+  <xs:element name="addNumbersFault5" type="tns:addNumbersFault5"/>
+
+  <xs:element name="addNumbersFault5Response" type="tns:addNumbersFault5Response"/>
+
+  <xs:element name="addNumbersFault6" type="tns:addNumbersFault6"/>
+
+  <xs:element name="addNumbersFault6Response" type="tns:addNumbersFault6Response"/>
+
+  <xs:element name="addNumbersFault7" type="tns:addNumbersFault7"/>
+
+  <xs:element name="addNumbersFault7Response" type="tns:addNumbersFault7Response"/>
+
+  <xs:element name="addNumbersNoAction" type="tns:addNumbersNoAction"/>
+
+  <xs:element name="addNumbersNoActionResponse" type="tns:addNumbersNoActionResponse"/>
+
+  <xs:element name="addNumbersResponse" type="tns:addNumbersResponse"/>
+
+  <xs:complexType name="addNumbersFault1">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault1Response">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AddNumbersException">
+    <xs:sequence>
+      <xs:element name="detail" type="xs:string" minOccurs="0"/>
+      <xs:element name="message" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault3">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault3Response">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TooBigNumbersException">
+    <xs:sequence>
+      <xs:element name="detail" type="xs:string" minOccurs="0"/>
+      <xs:element name="message" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault7">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault7Response">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault5">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault5Response">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault2">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault2Response">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbers3">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbers3Response">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault6">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault6Response">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbers2">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbers2Response">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersNoAction">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersNoActionResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbers">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersEmptyAction">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersEmptyActionResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault4">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+      <xs:element name="arg1" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addNumbersFault4Response">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

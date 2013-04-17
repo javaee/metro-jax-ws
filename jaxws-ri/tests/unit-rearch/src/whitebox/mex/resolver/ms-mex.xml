@@ -1,0 +1,2169 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://www.w3.org/2005/08/addressing">
+    <s:Header>
+        <a:Action s:mustUnderstand="1">http://schemas.xmlsoap.org/ws/2004/09/transfer/GetResponse</a:Action>
+        <ActivityId CorrelationId="0ac7d82f-a8b0-400c-8723-e345fd5a5929"
+                    xmlns="http://schemas.microsoft.com/2004/09/ServiceModel/Diagnostics">
+            1073067d-8fe9-485c-8aa0-0ae4a11dca7e</ActivityId>
+        <a:RelatesTo>urn:uuid:ca574ca1-ca92-416d-bbb8-784d9a5b2521</a:RelatesTo>
+    </s:Header>
+    <s:Body>
+        <Metadata xmlns="http://schemas.xmlsoap.org/ws/2004/09/mex"
+                  xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex">
+            <wsx:MetadataSection Dialect="http://schemas.xmlsoap.org/wsdl/"
+                                 Identifier="http://InteropBaseAddress/interop" xmlns="">
+                <wsdl:definitions name="PingService10" targetNamespace="http://InteropBaseAddress/interop"
+                                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                                  xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                                  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+                                  xmlns:tns="http://InteropBaseAddress/interop"
+                                  xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+                                  xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
+                                  xmlns:i0="http://tempuri.org/"
+                                  xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy"
+                                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                                  xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract"
+                                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                                  xmlns:wsa10="http://www.w3.org/2005/08/addressing">
+                    <wsdl:import namespace="http://tempuri.org/" location=""/>
+                    <wsdl:types>
+                        <xsd:schema targetNamespace="http://InteropBaseAddress/interop/Imports">
+                            <xsd:import schemaLocation="" namespace="http://InteropBaseAddress/interop"/>
+                            <xsd:import schemaLocation="" namespace="http://xmlsoap.org/Ping"/>
+                            <xsd:import schemaLocation=""
+                                        namespace="http://schemas.microsoft.com/2003/10/Serialization/"/>
+                            <xsd:import schemaLocation=""/>
+                        </xsd:schema>
+                    </wsdl:types>
+                    <wsdl:message name="PingRequest">
+                        <wsdl:part name="parameters" element="tns:PingRequest"/>
+                    </wsdl:message>
+                    <wsdl:message name="PingResponse">
+                        <wsdl:part name="parameters" element="tns:PingResponse"/>
+                    </wsdl:message>
+                    <wsdl:message name="IPingService_echo_InputMessage">
+                        <wsdl:part name="parameters" element="tns:echo"/>
+                    </wsdl:message>
+                    <wsdl:message name="IPingService_echo_OutputMessage">
+                        <wsdl:part name="parameters" element="tns:echoResponse"/>
+                    </wsdl:message>
+                    <wsdl:message name="IPingService_echoXml_InputMessage">
+                        <wsdl:part name="parameters" element="tns:echoXml"/>
+                    </wsdl:message>
+                    <wsdl:message name="IPingService_echoXml_OutputMessage">
+                        <wsdl:part name="parameters" element="tns:echoXmlResponse"/>
+                    </wsdl:message>
+                    <wsdl:message name="IPingService_echoDataSet_InputMessage">
+                        <wsdl:part name="parameters" element="tns:echoDataSet"/>
+                    </wsdl:message>
+                    <wsdl:message name="IPingService_echoDataSet_OutputMessage">
+                        <wsdl:part name="parameters" element="tns:echoDataSetResponse"/>
+                    </wsdl:message>
+                    <wsdl:message name="headerRequest">
+                        <wsdl:part name="parameters" element="tns:header"/>
+                    </wsdl:message>
+                    <wsdl:message name="headerRequest_Headers">
+                        <wsdl:part name="CustomHeader" element="tns:CustomHeader"/>
+                    </wsdl:message>
+                    <wsdl:message name="headerResponse">
+                        <wsdl:part name="parameters" element="tns:headerResponse"/>
+                    </wsdl:message>
+                    <wsdl:message name="headerResponse_Headers">
+                        <wsdl:part name="CustomHeader" element="tns:CustomHeader"/>
+                    </wsdl:message>
+                    <wsdl:message name="IPingService_fault_InputMessage">
+                        <wsdl:part name="parameters" element="tns:fault"/>
+                    </wsdl:message>
+                    <wsdl:message name="IPingService_fault_OutputMessage">
+                        <wsdl:part name="parameters" element="tns:faultResponse"/>
+                    </wsdl:message>
+                    <wsdl:portType name="IPingService">
+                        <wsdl:operation name="Ping">
+                            <wsdl:input wsaw:Action="http://xmlsoap.org/Ping" name="PingRequest"
+                                        message="tns:PingRequest"/>
+                            <wsdl:output wsaw:Action="http://xmlsoap.org/Ping" name="PingResponse"
+                                         message="tns:PingResponse"/>
+                        </wsdl:operation>
+                        <wsdl:operation name="echo">
+                            <wsdl:input wsaw:Action="http://InteropBaseAddress/interop/echo"
+                                        message="tns:IPingService_echo_InputMessage"/>
+                            <wsdl:output wsaw:Action="http://InteropBaseAddress/interop/echo"
+                                         message="tns:IPingService_echo_OutputMessage"/>
+                        </wsdl:operation>
+                        <wsdl:operation name="echoXml">
+                            <wsdl:input wsaw:Action="http://InteropBaseAddress/interop/echoXml"
+                                        message="tns:IPingService_echoXml_InputMessage"/>
+                            <wsdl:output wsaw:Action="http://InteropBaseAddress/interop/echoXml"
+                                         message="tns:IPingService_echoXml_OutputMessage"/>
+                        </wsdl:operation>
+                        <wsdl:operation name="echoDataSet">
+                            <wsdl:input wsaw:Action="http://InteropBaseAddress/interop/echoDataSet"
+                                        message="tns:IPingService_echoDataSet_InputMessage"/>
+                            <wsdl:output wsaw:Action="http://InteropBaseAddress/interop/echoDataSet"
+                                         message="tns:IPingService_echoDataSet_OutputMessage"/>
+                        </wsdl:operation>
+                        <wsdl:operation name="header">
+                            <wsdl:input wsaw:Action="http://InteropBaseAddress/interop/header" name="headerRequest"
+                                        message="tns:headerRequest"/>
+                            <wsdl:output wsaw:Action="http://InteropBaseAddress/interop/headerResponse"
+                                         name="headerResponse" message="tns:headerResponse"/>
+                        </wsdl:operation>
+                        <wsdl:operation name="fault">
+                            <wsdl:input wsaw:Action="http://InteropBaseAddress/interop/fault"
+                                        message="tns:IPingService_fault_InputMessage"/>
+                            <wsdl:output wsaw:Action="http://InteropBaseAddress/interop/faultResponse"
+                                         message="tns:IPingService_fault_OutputMessage"/>
+                        </wsdl:operation>
+                    </wsdl:portType>
+                    <wsdl:service name="PingService10">
+                        <wsdl:port name="X10_IPingService" binding="i0:X10_IPingService">
+                            <soap12:address
+                                    location="http://131.107.72.15/Security_WsSecurity_Service_Indigo/WsSecurity10.svc/X10"/>
+                            <wsa:EndpointReference>
+                                <wsa:Address>
+                                    http://131.107.72.15/Security_WsSecurity_Service_Indigo/WsSecurity10.svc/X10</wsa:Address>
+                                <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+                                    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                                        <X509Data>
+                                            <X509Certificate>
+                                                MIIDCjCCAfKgAwIBAgIQYDju2/6sm77InYfTq65x+DANBgkqhkiG9w0BAQUFADAwMQ4wDAYDVQQKDAVPQVNJUzEeMBwGA1UEAwwVT0FTSVMgSW50ZXJvcCBUZXN0IENBMB4XDTA1MDMxOTAwMDAwMFoXDTE4MDMxOTIzNTk1OVowQDEOMAwGA1UECgwFT0FTSVMxIDAeBgNVBAsMF09BU0lTIEludGVyb3AgVGVzdCBDZXJ0MQwwCgYDVQQDDANCb2IwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMCquMva4lFDrv3fXQnKK8CkSU7HvVZ0USyJtlL/yhmHH/FQXHyYY+fTcSyWYItWJYiTZ99PAbD+6EKBGbdfuJNUJCGaTWc5ZDUISqM/SGtacYe/PD/4+g3swNPzTUQAIBLRY1pkr2cm3s5Ch/f+mYVNBR41HnBeIxybw25kkoM7AgMBAAGjgZMwgZAwCQYDVR0TBAIwADAzBgNVHR8ELDAqMCiiJoYkaHR0cDovL2ludGVyb3AuYmJ0ZXN0Lm5ldC9jcmwvY2EuY3JsMA4GA1UdDwEB/wQEAwIEsDAdBgNVHQ4EFgQUXeg55vRyK3ZhAEhEf+YT0z986L0wHwYDVR0jBBgwFoAUwJ0o/MHrNaEd1qqqoBwaTcJJDw8wDQYJKoZIhvcNAQEFBQADggEBAIiVGv2lGLhRvmMAHSlY7rKLVkv+zEUtSyg08FBT8z/RepUbtUQShcIqwWsemDU8JVtsucQLc+g6GCQXgkCkMiC8qhcLAt3BXzFmLxuCEAQeeFe8IATr4wACmEQE37TEqAuWEIanPYIplbxYgwP0OBWBSjcRpKRAxjEzuwObYjbll6vKdFHYIweWhhWPrefquFp7TefTkF4D3rcctTfWJ76I5NrEVld+7PBnnJNpdDEuGsoaiJrwTW3Ixm40RXvG3fYS4hIAPeTCUk3RkYfUkqlaaLQnUrF2hZSgiBNLPe8gGkYORccRIlZCGQDEpcWl1Uf9OHw6fC+3hkqolFd5CVI=</X509Certificate>
+                                        </X509Data>
+                                    </KeyInfo>
+                                </Identity>
+                            </wsa:EndpointReference>
+                        </wsdl:port>
+                        <wsdl:port name="X10-NoTimestamp_IPingService" binding="i0:X10-NoTimestamp_IPingService">
+                            <soap12:address
+                                    location="http://131.107.72.15/Security_WsSecurity_Service_Indigo/WsSecurity10.svc/X10-NoTimestamp"/>
+                            <wsa:EndpointReference>
+                                <wsa:Address>
+                                    http://131.107.72.15/Security_WsSecurity_Service_Indigo/WsSecurity10.svc/X10-NoTimestamp</wsa:Address>
+                                <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+                                    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                                        <X509Data>
+                                            <X509Certificate>
+                                                MIIDCjCCAfKgAwIBAgIQYDju2/6sm77InYfTq65x+DANBgkqhkiG9w0BAQUFADAwMQ4wDAYDVQQKDAVPQVNJUzEeMBwGA1UEAwwVT0FTSVMgSW50ZXJvcCBUZXN0IENBMB4XDTA1MDMxOTAwMDAwMFoXDTE4MDMxOTIzNTk1OVowQDEOMAwGA1UECgwFT0FTSVMxIDAeBgNVBAsMF09BU0lTIEludGVyb3AgVGVzdCBDZXJ0MQwwCgYDVQQDDANCb2IwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMCquMva4lFDrv3fXQnKK8CkSU7HvVZ0USyJtlL/yhmHH/FQXHyYY+fTcSyWYItWJYiTZ99PAbD+6EKBGbdfuJNUJCGaTWc5ZDUISqM/SGtacYe/PD/4+g3swNPzTUQAIBLRY1pkr2cm3s5Ch/f+mYVNBR41HnBeIxybw25kkoM7AgMBAAGjgZMwgZAwCQYDVR0TBAIwADAzBgNVHR8ELDAqMCiiJoYkaHR0cDovL2ludGVyb3AuYmJ0ZXN0Lm5ldC9jcmwvY2EuY3JsMA4GA1UdDwEB/wQEAwIEsDAdBgNVHQ4EFgQUXeg55vRyK3ZhAEhEf+YT0z986L0wHwYDVR0jBBgwFoAUwJ0o/MHrNaEd1qqqoBwaTcJJDw8wDQYJKoZIhvcNAQEFBQADggEBAIiVGv2lGLhRvmMAHSlY7rKLVkv+zEUtSyg08FBT8z/RepUbtUQShcIqwWsemDU8JVtsucQLc+g6GCQXgkCkMiC8qhcLAt3BXzFmLxuCEAQeeFe8IATr4wACmEQE37TEqAuWEIanPYIplbxYgwP0OBWBSjcRpKRAxjEzuwObYjbll6vKdFHYIweWhhWPrefquFp7TefTkF4D3rcctTfWJ76I5NrEVld+7PBnnJNpdDEuGsoaiJrwTW3Ixm40RXvG3fYS4hIAPeTCUk3RkYfUkqlaaLQnUrF2hZSgiBNLPe8gGkYORccRIlZCGQDEpcWl1Uf9OHw6fC+3hkqolFd5CVI=</X509Certificate>
+                                        </X509Data>
+                                    </KeyInfo>
+                                </Identity>
+                            </wsa:EndpointReference>
+                        </wsdl:port>
+                        <wsdl:port name="K10_IPingService" binding="i0:K10_IPingService">
+                            <soap12:address
+                                    location="http://131.107.72.15/Security_WsSecurity_Service_Indigo/WsSecurity10.svc/K10"/>
+                            <wsa:EndpointReference>
+                                <wsa:Address>
+                                    http://131.107.72.15/Security_WsSecurity_Service_Indigo/WsSecurity10.svc/K10</wsa:Address>
+                                <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+                                    <Spn>host/kirillgdev04</Spn>
+                                </Identity>
+                            </wsa:EndpointReference>
+                        </wsdl:port>
+                        <wsdl:port name="KD10_IPingService" binding="i0:KD10_IPingService">
+                            <soap12:address
+                                    location="http://131.107.72.15/Security_WsSecurity_Service_Indigo/WsSecurity10.svc/KD10"/>
+                            <wsa:EndpointReference>
+                                <wsa:Address>
+                                    http://131.107.72.15/Security_WsSecurity_Service_Indigo/WsSecurity10.svc/KD10</wsa:Address>
+                                <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+                                    <Spn>host/kirillgdev04</Spn>
+                                </Identity>
+                            </wsa:EndpointReference>
+                        </wsdl:port>
+                    </wsdl:service>
+                </wsdl:definitions>
+            </wsx:MetadataSection>
+            <wsx:MetadataSection Dialect="http://schemas.xmlsoap.org/wsdl/" Identifier="http://tempuri.org/" xmlns="">
+                <wsdl:definitions targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                                  xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                                  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+                                  xmlns:tns="http://tempuri.org/"
+                                  xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+                                  xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
+                                  xmlns:i0="http://InteropBaseAddress/interop"
+                                  xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy"
+                                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                                  xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract"
+                                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                                  xmlns:wsa10="http://www.w3.org/2005/08/addressing">
+                    <wsp:Policy wsu:Id="X10_IPingService_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:AsymmetricBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:InitiatorToken>
+                                            <wsp:Policy>
+                                                <sp:X509Token
+                                                        sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+                                                    <wsp:Policy>
+                                                        <sp:WssX509V3Token10/>
+                                                    </wsp:Policy>
+                                                </sp:X509Token>
+                                            </wsp:Policy>
+                                        </sp:InitiatorToken>
+                                        <sp:RecipientToken>
+                                            <wsp:Policy>
+                                                <sp:X509Token
+                                                        sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/Never">
+                                                    <wsp:Policy>
+                                                        <sp:WssX509V3Token10/>
+                                                    </wsp:Policy>
+                                                </sp:X509Token>
+                                            </wsp:Policy>
+                                        </sp:RecipientToken>
+                                        <sp:AlgorithmSuite>
+                                            <wsp:Policy>
+                                                <sp:Basic256/>
+                                            </wsp:Policy>
+                                        </sp:AlgorithmSuite>
+                                        <sp:Layout>
+                                            <wsp:Policy>
+                                                <sp:Lax/>
+                                            </wsp:Policy>
+                                        </sp:Layout>
+                                        <sp:IncludeTimestamp/>
+                                        <sp:OnlySignEntireHeadersAndBody/>
+                                    </wsp:Policy>
+                                </sp:AsymmetricBinding>
+                                <sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportRefKeyIdentifier/>
+                                        <sp:MustSupportRefIssuerSerial/>
+                                    </wsp:Policy>
+                                </sp:Wss10>
+                                <sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportIssuedTokens/>
+                                        <sp:RequireClientEntropy/>
+                                        <sp:RequireServerEntropy/>
+                                    </wsp:Policy>
+                                </sp:Trust10>
+                                <wsap:UsingAddressing/>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_Ping_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_Ping_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_echo_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_echo_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_echoXml_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_echoXml_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_echoDataSet_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_echoDataSet_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_header_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="CustomHeader" Namespace="http://InteropBaseAddress/interop"/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_header_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="CustomHeader" Namespace="http://InteropBaseAddress/interop"/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_fault_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10_IPingService_fault_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:AsymmetricBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:InitiatorToken>
+                                            <wsp:Policy>
+                                                <sp:X509Token
+                                                        sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+                                                    <wsp:Policy>
+                                                        <sp:WssX509V3Token10/>
+                                                    </wsp:Policy>
+                                                </sp:X509Token>
+                                            </wsp:Policy>
+                                        </sp:InitiatorToken>
+                                        <sp:RecipientToken>
+                                            <wsp:Policy>
+                                                <sp:X509Token
+                                                        sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/Never">
+                                                    <wsp:Policy>
+                                                        <sp:WssX509V3Token10/>
+                                                    </wsp:Policy>
+                                                </sp:X509Token>
+                                            </wsp:Policy>
+                                        </sp:RecipientToken>
+                                        <sp:AlgorithmSuite>
+                                            <wsp:Policy>
+                                                <sp:Basic256/>
+                                            </wsp:Policy>
+                                        </sp:AlgorithmSuite>
+                                        <sp:Layout>
+                                            <wsp:Policy>
+                                                <sp:Lax/>
+                                            </wsp:Policy>
+                                        </sp:Layout>
+                                        <sp:OnlySignEntireHeadersAndBody/>
+                                    </wsp:Policy>
+                                </sp:AsymmetricBinding>
+                                <sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportRefKeyIdentifier/>
+                                        <sp:MustSupportRefIssuerSerial/>
+                                    </wsp:Policy>
+                                </sp:Wss10>
+                                <sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportIssuedTokens/>
+                                        <sp:RequireClientEntropy/>
+                                        <sp:RequireServerEntropy/>
+                                    </wsp:Policy>
+                                </sp:Trust10>
+                                <wsap:UsingAddressing/>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_Ping_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_Ping_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_echo_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_echo_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_echoXml_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_echoXml_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_echoDataSet_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_echoDataSet_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_header_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="CustomHeader" Namespace="http://InteropBaseAddress/interop"/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_header_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="CustomHeader" Namespace="http://InteropBaseAddress/interop"/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_fault_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="X10-NoTimestamp_IPingService_fault_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SymmetricBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:ProtectionToken>
+                                            <wsp:Policy>
+                                                <sp:KerberosToken
+                                                        sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/Once">
+                                                    <wsp:Policy>
+                                                        <sp:WssGssKerberosV5ApReqToken11/>
+                                                    </wsp:Policy>
+                                                </sp:KerberosToken>
+                                            </wsp:Policy>
+                                        </sp:ProtectionToken>
+                                        <sp:AlgorithmSuite>
+                                            <wsp:Policy>
+                                                <sp:Basic128/>
+                                            </wsp:Policy>
+                                        </sp:AlgorithmSuite>
+                                        <sp:Layout>
+                                            <wsp:Policy>
+                                                <sp:Lax/>
+                                            </wsp:Policy>
+                                        </sp:Layout>
+                                        <sp:IncludeTimestamp/>
+                                        <sp:OnlySignEntireHeadersAndBody/>
+                                    </wsp:Policy>
+                                </sp:SymmetricBinding>
+                                <sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportRefKeyIdentifier/>
+                                        <sp:MustSupportRefIssuerSerial/>
+                                    </wsp:Policy>
+                                </sp:Wss10>
+                                <sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportIssuedTokens/>
+                                        <sp:RequireClientEntropy/>
+                                        <sp:RequireServerEntropy/>
+                                    </wsp:Policy>
+                                </sp:Trust10>
+                                <wsap:UsingAddressing/>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_Ping_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_Ping_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_echo_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_echo_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_echoXml_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_echoXml_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_echoDataSet_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_echoDataSet_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_header_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="CustomHeader" Namespace="http://InteropBaseAddress/interop"/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_header_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="CustomHeader" Namespace="http://InteropBaseAddress/interop"/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_fault_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="K10_IPingService_fault_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SymmetricBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:ProtectionToken>
+                                            <wsp:Policy>
+                                                <sp:KerberosToken
+                                                        sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/Once">
+                                                    <wsp:Policy>
+                                                        <sp:RequireDerivedKeys/>
+                                                        <sp:WssGssKerberosV5ApReqToken11/>
+                                                    </wsp:Policy>
+                                                </sp:KerberosToken>
+                                            </wsp:Policy>
+                                        </sp:ProtectionToken>
+                                        <sp:AlgorithmSuite>
+                                            <wsp:Policy>
+                                                <sp:Basic128/>
+                                            </wsp:Policy>
+                                        </sp:AlgorithmSuite>
+                                        <sp:Layout>
+                                            <wsp:Policy>
+                                                <sp:Lax/>
+                                            </wsp:Policy>
+                                        </sp:Layout>
+                                        <sp:IncludeTimestamp/>
+                                        <sp:OnlySignEntireHeadersAndBody/>
+                                    </wsp:Policy>
+                                </sp:SymmetricBinding>
+                                <sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportRefKeyIdentifier/>
+                                        <sp:MustSupportRefIssuerSerial/>
+                                    </wsp:Policy>
+                                </sp:Wss10>
+                                <sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportIssuedTokens/>
+                                        <sp:RequireClientEntropy/>
+                                        <sp:RequireServerEntropy/>
+                                    </wsp:Policy>
+                                </sp:Trust10>
+                                <wsap:UsingAddressing/>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_Ping_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_Ping_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_echo_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_echo_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_echoXml_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_echoXml_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_echoDataSet_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_echoDataSet_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_header_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="CustomHeader" Namespace="http://InteropBaseAddress/interop"/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_header_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="CustomHeader" Namespace="http://InteropBaseAddress/interop"/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_fault_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="KD10_IPingService_fault_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="From"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="FaultTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="ReplyTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="MessageID"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="RelatesTo"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                    <sp:Header Name="Action"
+                                               Namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsdl:import namespace="http://InteropBaseAddress/interop" location=""/>
+                    <wsdl:types/>
+                    <wsdl:binding name="X10_IPingService" type="i0:IPingService">
+                        <wsp:PolicyReference URI="#X10_IPingService_policy"/>
+                        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+                        <wsdl:operation name="Ping">
+                            <soap12:operation soapAction="http://xmlsoap.org/Ping" style="document"/>
+                            <wsdl:input name="PingRequest">
+                                <wsp:PolicyReference URI="#X10_IPingService_Ping_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output name="PingResponse">
+                                <wsp:PolicyReference URI="#X10_IPingService_Ping_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echo">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echo" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#X10_IPingService_echo_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#X10_IPingService_echo_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echoXml">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echoXml" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#X10_IPingService_echoXml_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#X10_IPingService_echoXml_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echoDataSet">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echoDataSet"
+                                              style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#X10_IPingService_echoDataSet_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#X10_IPingService_echoDataSet_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="header">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/header" style="document"/>
+                            <wsdl:input name="headerRequest">
+                                <wsp:PolicyReference URI="#X10_IPingService_header_Input_policy"/>
+                                <soap12:header message="i0:headerRequest_Headers" part="CustomHeader" use="literal"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output name="headerResponse">
+                                <wsp:PolicyReference URI="#X10_IPingService_header_output_policy"/>
+                                <soap12:header message="i0:headerResponse_Headers" part="CustomHeader" use="literal"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="fault">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/fault" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#X10_IPingService_fault_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#X10_IPingService_fault_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                    </wsdl:binding>
+                    <wsdl:binding name="X10-NoTimestamp_IPingService" type="i0:IPingService">
+                        <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_policy"/>
+                        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+                        <wsdl:operation name="Ping">
+                            <soap12:operation soapAction="http://xmlsoap.org/Ping" style="document"/>
+                            <wsdl:input name="PingRequest">
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_Ping_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output name="PingResponse">
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_Ping_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echo">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echo" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_echo_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_echo_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echoXml">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echoXml" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_echoXml_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_echoXml_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echoDataSet">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echoDataSet"
+                                              style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_echoDataSet_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_echoDataSet_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="header">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/header" style="document"/>
+                            <wsdl:input name="headerRequest">
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_header_Input_policy"/>
+                                <soap12:header message="i0:headerRequest_Headers" part="CustomHeader" use="literal"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output name="headerResponse">
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_header_output_policy"/>
+                                <soap12:header message="i0:headerResponse_Headers" part="CustomHeader" use="literal"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="fault">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/fault" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_fault_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#X10-NoTimestamp_IPingService_fault_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                    </wsdl:binding>
+                    <wsdl:binding name="K10_IPingService" type="i0:IPingService">
+                        <wsp:PolicyReference URI="#K10_IPingService_policy"/>
+                        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+                        <wsdl:operation name="Ping">
+                            <soap12:operation soapAction="http://xmlsoap.org/Ping" style="document"/>
+                            <wsdl:input name="PingRequest">
+                                <wsp:PolicyReference URI="#K10_IPingService_Ping_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output name="PingResponse">
+                                <wsp:PolicyReference URI="#K10_IPingService_Ping_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echo">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echo" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#K10_IPingService_echo_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#K10_IPingService_echo_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echoXml">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echoXml" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#K10_IPingService_echoXml_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#K10_IPingService_echoXml_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echoDataSet">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echoDataSet"
+                                              style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#K10_IPingService_echoDataSet_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#K10_IPingService_echoDataSet_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="header">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/header" style="document"/>
+                            <wsdl:input name="headerRequest">
+                                <wsp:PolicyReference URI="#K10_IPingService_header_Input_policy"/>
+                                <soap12:header message="i0:headerRequest_Headers" part="CustomHeader" use="literal"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output name="headerResponse">
+                                <wsp:PolicyReference URI="#K10_IPingService_header_output_policy"/>
+                                <soap12:header message="i0:headerResponse_Headers" part="CustomHeader" use="literal"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="fault">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/fault" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#K10_IPingService_fault_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#K10_IPingService_fault_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                    </wsdl:binding>
+                    <wsdl:binding name="KD10_IPingService" type="i0:IPingService">
+                        <wsp:PolicyReference URI="#KD10_IPingService_policy"/>
+                        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+                        <wsdl:operation name="Ping">
+                            <soap12:operation soapAction="http://xmlsoap.org/Ping" style="document"/>
+                            <wsdl:input name="PingRequest">
+                                <wsp:PolicyReference URI="#KD10_IPingService_Ping_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output name="PingResponse">
+                                <wsp:PolicyReference URI="#KD10_IPingService_Ping_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echo">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echo" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#KD10_IPingService_echo_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#KD10_IPingService_echo_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echoXml">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echoXml" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#KD10_IPingService_echoXml_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#KD10_IPingService_echoXml_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="echoDataSet">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/echoDataSet"
+                                              style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#KD10_IPingService_echoDataSet_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#KD10_IPingService_echoDataSet_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="header">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/header" style="document"/>
+                            <wsdl:input name="headerRequest">
+                                <wsp:PolicyReference URI="#KD10_IPingService_header_Input_policy"/>
+                                <soap12:header message="i0:headerRequest_Headers" part="CustomHeader" use="literal"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output name="headerResponse">
+                                <wsp:PolicyReference URI="#KD10_IPingService_header_output_policy"/>
+                                <soap12:header message="i0:headerResponse_Headers" part="CustomHeader" use="literal"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                        <wsdl:operation name="fault">
+                            <soap12:operation soapAction="http://InteropBaseAddress/interop/fault" style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference URI="#KD10_IPingService_fault_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference URI="#KD10_IPingService_fault_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                    </wsdl:binding>
+                </wsdl:definitions>
+            </wsx:MetadataSection>
+            <wsx:MetadataSection Dialect="http://www.w3.org/2001/XMLSchema"
+                                 Identifier="http://InteropBaseAddress/interop" xmlns="">
+                <xs:schema elementFormDefault="qualified" targetNamespace="http://InteropBaseAddress/interop"
+                           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://InteropBaseAddress/interop">
+                    <xs:import schemaLocation="" namespace="http://xmlsoap.org/Ping"/>
+                    <xs:element name="PingRequest">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" maxOccurs="1" ref="q1:Ping"
+                                            xmlns:q1="http://xmlsoap.org/Ping"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="PingResponse">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" maxOccurs="1" ref="q2:PingResponse"
+                                            xmlns:q2="http://xmlsoap.org/Ping"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="echo">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" name="request" nillable="true" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="echoResponse">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" name="echoResult" nillable="true" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="echoXml">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" name="request" nillable="true">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:any minOccurs="0" processContents="lax"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="echoXmlResponse">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" name="echoXmlResult" nillable="true">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:any minOccurs="0" processContents="lax"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="echoDataSet">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" name="request" nillable="true">
+                                    <xs:complexType>
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <ActualType Name="DataSet"
+                                                            Namespace="http://schemas.datacontract.org/2004/07/System.Data"
+                                                            xmlns="http://schemas.microsoft.com/2003/10/Serialization/"/>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                        <xs:sequence>
+                                            <xs:element ref="xs:schema"/>
+                                            <xs:any/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="echoDataSetResponse">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" name="echoDataSetResult" nillable="true">
+                                    <xs:complexType>
+                                        <xs:annotation>
+                                            <xs:appinfo>
+                                                <ActualType Name="DataSet"
+                                                            Namespace="http://schemas.datacontract.org/2004/07/System.Data"
+                                                            xmlns="http://schemas.microsoft.com/2003/10/Serialization/"/>
+                                            </xs:appinfo>
+                                        </xs:annotation>
+                                        <xs:sequence>
+                                            <xs:element ref="xs:schema"/>
+                                            <xs:any/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="header">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" maxOccurs="1" name="request" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="CustomHeader" type="tns:CustomHeader"/>
+                    <xs:complexType name="CustomHeader">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" maxOccurs="1" name="data" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:element name="headerResponse">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" maxOccurs="1" name="headerResult" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="fault">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" name="request" nillable="true" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="faultResponse">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element minOccurs="0" name="faultResult" nillable="true" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:schema>
+            </wsx:MetadataSection>
+            <wsx:MetadataSection Dialect="http://www.w3.org/2001/XMLSchema" Identifier="http://xmlsoap.org/Ping"
+                                 xmlns="">
+                <xs:schema elementFormDefault="qualified" targetNamespace="http://xmlsoap.org/Ping"
+                           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://xmlsoap.org/Ping">
+                    <xs:element name="Ping" type="tns:ping"/>
+                    <xs:complexType name="ping">
+                        <xs:sequence>
+                            <xs:element minOccurs="1" maxOccurs="1" name="scenario" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="1" maxOccurs="1" name="origin" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="1" maxOccurs="1" name="text" nillable="true" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:element name="PingResponse" type="tns:PingResponseBody"/>
+                    <xs:complexType name="PingResponseBody">
+                        <xs:sequence>
+                            <xs:element minOccurs="1" maxOccurs="1" name="scenario" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="1" maxOccurs="1" name="origin" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="1" maxOccurs="1" name="text" nillable="true" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:schema>
+            </wsx:MetadataSection>
+            <wsx:MetadataSection Dialect="http://www.w3.org/2001/XMLSchema"
+                                 Identifier="http://schemas.microsoft.com/2003/10/Serialization/" xmlns="">
+                <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                           targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/"
+                           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                           xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/">
+                    <xs:element name="anyType" nillable="true" type="xs:anyType"/>
+                    <xs:element name="anyURI" nillable="true" type="xs:anyURI"/>
+                    <xs:element name="base64Binary" nillable="true" type="xs:base64Binary"/>
+                    <xs:element name="boolean" nillable="true" type="xs:boolean"/>
+                    <xs:element name="byte" nillable="true" type="xs:byte"/>
+                    <xs:element name="dateTime" nillable="true" type="xs:dateTime"/>
+                    <xs:element name="decimal" nillable="true" type="xs:decimal"/>
+                    <xs:element name="double" nillable="true" type="xs:double"/>
+                    <xs:element name="float" nillable="true" type="xs:float"/>
+                    <xs:element name="int" nillable="true" type="xs:int"/>
+                    <xs:element name="long" nillable="true" type="xs:long"/>
+                    <xs:element name="QName" nillable="true" type="xs:QName"/>
+                    <xs:element name="short" nillable="true" type="xs:short"/>
+                    <xs:element name="string" nillable="true" type="xs:string"/>
+                    <xs:element name="unsignedByte" nillable="true" type="xs:unsignedByte"/>
+                    <xs:element name="unsignedInt" nillable="true" type="xs:unsignedInt"/>
+                    <xs:element name="unsignedLong" nillable="true" type="xs:unsignedLong"/>
+                    <xs:element name="unsignedShort" nillable="true" type="xs:unsignedShort"/>
+                    <xs:element name="char" nillable="true" type="tns:char"/>
+                    <xs:simpleType name="char">
+                        <xs:restriction base="xs:int"/>
+                    </xs:simpleType>
+                    <xs:element name="duration" nillable="true" type="tns:duration"/>
+                    <xs:simpleType name="duration">
+                        <xs:restriction base="xs:duration">
+                            <xs:pattern value="\-?P(\d*D)?(T(\d*H)?(\d*M)?(\d*(\.\d*)?S)?)?"/>
+                            <xs:minInclusive value="-P10675199DT2H48M5.4775808S"/>
+                            <xs:maxInclusive value="P10675199DT2H48M5.4775807S"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                    <xs:element name="guid" nillable="true" type="tns:guid"/>
+                    <xs:simpleType name="guid">
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                    <xs:attribute name="FactoryType" type="xs:QName"/>
+                </xs:schema>
+            </wsx:MetadataSection>
+            <wsx:MetadataSection Dialect="http://www.w3.org/2001/XMLSchema" xmlns="">
+                <xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:element name="DataSet" nillable="true">
+                        <xs:complexType>
+                            <xs:annotation>
+                                <xs:appinfo>
+                                    <ActualType Name="DataSet"
+                                                Namespace="http://schemas.datacontract.org/2004/07/System.Data"
+                                                xmlns="http://schemas.microsoft.com/2003/10/Serialization/"/>
+                                </xs:appinfo>
+                            </xs:annotation>
+                            <xs:sequence>
+                                <xs:element ref="xs:schema"/>
+                                <xs:any/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:schema>
+            </wsx:MetadataSection>
+        </Metadata>
+    </s:Body>
+</s:Envelope>

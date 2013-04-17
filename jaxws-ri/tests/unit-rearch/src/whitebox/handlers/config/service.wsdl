@@ -1,0 +1,154 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<definitions
+  name="HandlerTestService"
+  targetNamespace="urn:test"
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:types="urn:test"
+  xmlns:tns="urn:test">
+  
+  <types>
+  <!-- If any other elements are added here, remember to add them
+       to the comments in HandlerUtil.addHeaderToMessage and also
+       HandlerUtil.createJAXBContext. -->
+    <xsd:schema
+        targetNamespace="urn:test"
+        attributeFormDefault="qualified"
+        elementFormDefault="qualified">
+
+      <xsd:element name="TestInt">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="intin" type="xsd:int"/>
+            </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="TestIntResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="intout" type="xsd:int"/>
+            </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="GetReport">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="reportType" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      
+      <xsd:element name="GetReportResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="name" type="xsd:string"
+                    minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      
+    </xsd:schema>
+  </types>
+
+  <message name="TestIntRequest">
+    <part name="parameters" element="types:TestInt"/>
+  </message>
+  
+  <message name="TestIntResponse">
+    <part name="parameters" element="types:TestIntResponse"/>
+  </message>  
+
+  <message name="GetReportRequest">
+    <part name="parameters" element="types:GetReport"/>
+  </message>
+
+  <message name="GetReportResponse">
+    <part name="parameters" element="types:GetReportResponse"/>
+  </message>  
+  
+  <portType name="TestService">
+    <operation name="TestInt">
+      <input message="tns:TestIntRequest"/>
+      <output message="tns:TestIntResponse"/>      
+    </operation>
+  </portType>
+  
+  <portType name="ReportService">
+    <operation name="GetReport">
+      <input message="tns:GetReportRequest"/>
+      <output message="tns:GetReportResponse"/>
+    </operation>
+  </portType>
+  
+  <binding name="TestServiceBinding" type="tns:TestService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="TestInt">
+      <soap:operation/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>      
+  </binding>
+    
+  <binding name="ReportServiceBinding" type="tns:ReportService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="GetReport">
+      <soap:operation/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+  </binding>
+  
+  <service name="TestService">
+    <port name="TestServicePort" binding="tns:TestServiceBinding">
+      <soap:address location="http://test.org/foo"/>
+    </port>
+    <port name="ReportServicePort" binding="tns:ReportServiceBinding">
+      <soap:address location="http://test.org/foo"/>
+    </port>
+  </service>
+  
+</definitions>

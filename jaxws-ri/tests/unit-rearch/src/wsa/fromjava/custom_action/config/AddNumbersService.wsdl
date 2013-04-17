@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<definitions targetNamespace="http://foobar.org/" name="AddNumbersService" xmlns:tns="http://foobar.org/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xsd:schema>
+      <xsd:import namespace="http://foobar.org/" schemaLocation="AddNumbersService_schema1.xsd"/>
+    </xsd:schema>
+  </types>
+  <message name="addNumbersNoAction">
+    <part name="parameters" element="tns:addNumbersNoAction"/>
+  </message>
+  <message name="addNumbersNoActionResponse">
+    <part name="parameters" element="tns:addNumbersNoActionResponse"/>
+  </message>
+  <message name="AddNumbersException">
+    <part name="fault" element="tns:AddNumbersException"/>
+  </message>
+  <message name="addNumbersEmptyAction">
+    <part name="parameters" element="tns:addNumbersEmptyAction"/>
+  </message>
+  <message name="addNumbersEmptyActionResponse">
+    <part name="parameters" element="tns:addNumbersEmptyActionResponse"/>
+  </message>
+  <message name="addNumbers">
+    <part name="parameters" element="tns:addNumbers"/>
+  </message>
+  <message name="addNumbersResponse">
+    <part name="parameters" element="tns:addNumbersResponse"/>
+  </message>
+  <message name="addNumbers2">
+    <part name="parameters" element="tns:addNumbers2"/>
+  </message>
+  <message name="addNumbers2Response">
+    <part name="parameters" element="tns:addNumbers2Response"/>
+  </message>
+  <message name="addNumbers3">
+    <part name="parameters" element="tns:addNumbers3"/>
+  </message>
+  <message name="addNumbers3Response">
+    <part name="parameters" element="tns:addNumbers3Response"/>
+  </message>
+  <message name="addNumbersFault1">
+    <part name="parameters" element="tns:addNumbersFault1"/>
+  </message>
+  <message name="addNumbersFault1Response">
+    <part name="parameters" element="tns:addNumbersFault1Response"/>
+  </message>
+  <message name="addNumbersFault2">
+    <part name="parameters" element="tns:addNumbersFault2"/>
+  </message>
+  <message name="addNumbersFault2Response">
+    <part name="parameters" element="tns:addNumbersFault2Response"/>
+  </message>
+  <message name="TooBigNumbersException">
+    <part name="fault" element="tns:TooBigNumbersException"/>
+  </message>
+  <message name="addNumbersFault3">
+    <part name="parameters" element="tns:addNumbersFault3"/>
+  </message>
+  <message name="addNumbersFault3Response">
+    <part name="parameters" element="tns:addNumbersFault3Response"/>
+  </message>
+  <message name="addNumbersFault4">
+    <part name="parameters" element="tns:addNumbersFault4"/>
+  </message>
+  <message name="addNumbersFault4Response">
+    <part name="parameters" element="tns:addNumbersFault4Response"/>
+  </message>
+  <message name="addNumbersFault5">
+    <part name="parameters" element="tns:addNumbersFault5"/>
+  </message>
+  <message name="addNumbersFault5Response">
+    <part name="parameters" element="tns:addNumbersFault5Response"/>
+  </message>
+  <message name="addNumbersFault6">
+    <part name="parameters" element="tns:addNumbersFault6"/>
+  </message>
+  <message name="addNumbersFault6Response">
+    <part name="parameters" element="tns:addNumbersFault6Response"/>
+  </message>
+  <message name="addNumbersFault7">
+    <part name="parameters" element="tns:addNumbersFault7"/>
+  </message>
+  <message name="addNumbersFault7Response">
+    <part name="parameters" element="tns:addNumbersFault7Response"/>
+  </message>
+  <portType name="AddNumbers" ns1:portTypeAttr="myPortType" xmlns:ns1="jaxws_test">
+    <operation name="addNumbersNoAction">
+      <input message="tns:addNumbersNoAction"/>
+      <output message="tns:addNumbersNoActionResponse"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+    </operation>
+    <operation name="addNumbersEmptyAction">
+      <input message="tns:addNumbersEmptyAction"/>
+      <output message="tns:addNumbersEmptyActionResponse"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+    </operation>
+<!--
+    <operation name="addNumbers">
+      <input wsaw:Action="http://example.com/input" message="tns:addNumbers"/>
+      <output wsaw:Action="http://example.com/output" message="tns:addNumbersResponse"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+    </operation>
+    -->
+    <operation name="addNumbers">
+      <input message="tns:addNumbers"/>
+      <output message="tns:addNumbersResponse"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+    </operation>
+    <!--
+      <operation name="addNumbers2">
+      <input wsaw:Action="http://example.com/input2" message="tns:addNumbers2"/>
+      <output wsaw:Action="http://example.com/output2" message="tns:addNumbers2Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+    </operation>
+    -->
+    <operation name="addNumbers2">
+      <input message="tns:addNumbers2"/>
+      <output message="tns:addNumbers2Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+    </operation>
+    <!--
+    <operation name="addNumbers3">
+      <input wsaw:Action="http://example.com/input3" message="tns:addNumbers3"/>
+      <output message="tns:addNumbers3Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+    </operation>
+      -->
+    <operation name="addNumbers3">
+      <input message="tns:addNumbers3"/>
+      <output message="tns:addNumbers3Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+    </operation>
+    <!--
+    <operation name="addNumbersFault1">
+      <input wsaw:Action="finput1" message="tns:addNumbersFault1"/>
+      <output wsaw:Action="foutput1" message="tns:addNumbersFault1Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException" wsaw:Action="http://fault1"/>
+    </operation> -->
+    <operation name="addNumbersFault1">
+      <input message="tns:addNumbersFault1"/>
+      <output message="tns:addNumbersFault1Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+    </operation>
+    <!--<operation name="addNumbersFault2">
+      <input wsaw:Action="finput2" message="tns:addNumbersFault2"/>
+      <output wsaw:Action="foutput2" message="tns:addNumbersFault2Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException" wsaw:Action="http://fault2/addnumbers"/>
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException" wsaw:Action="http://fault2/toobignumbers"/>
+    </operation> -->
+    <operation name="addNumbersFault2">
+      <input message="tns:addNumbersFault2"/>
+      <output message="tns:addNumbersFault2Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException"/>
+    </operation>
+    <!-- <operation name="addNumbersFault3">
+      <input wsaw:Action="finput3" message="tns:addNumbersFault3"/>
+      <output wsaw:Action="foutput3" message="tns:addNumbersFault3Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException" wsaw:Action="http://fault3/addnumbers"/>
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException"/>
+    </operation> -->
+    <operation name="addNumbersFault3">
+      <input message="tns:addNumbersFault3"/>
+      <output message="tns:addNumbersFault3Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException"/>
+    </operation>
+    <!-- <operation name="addNumbersFault4">
+      <input message="tns:addNumbersFault4"/>
+      <output message="tns:addNumbersFault4Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException" wsaw:Action="http://fault4/addnumbers"/>
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException"/>
+    </operation> -->
+      <operation name="addNumbersFault4">
+      <input message="tns:addNumbersFault4"/>
+      <output message="tns:addNumbersFault4Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException"/>
+    </operation>
+    <!-- <operation name="addNumbersFault5">
+      <input message="tns:addNumbersFault5"/>
+      <output message="tns:addNumbersFault5Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException" wsaw:Action="http://fault5/toobignumbers"/>
+    </operation> -->
+     <operation name="addNumbersFault5">
+      <input message="tns:addNumbersFault5"/>
+      <output message="tns:addNumbersFault5Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException"/>
+    </operation>
+    <!--<operation name="addNumbersFault6">
+      <input message="tns:addNumbersFault6"/>
+      <output message="tns:addNumbersFault6Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException" wsaw:Action="http://fault6/addnumbers"/>
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException" wsaw:Action="http://fault6/toobignumbers"/>
+    </operation> -->
+    <operation name="addNumbersFault6">
+      <input message="tns:addNumbersFault6"/>
+      <output message="tns:addNumbersFault6Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException" />
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException"/>
+    </operation>
+    <!--<operation name="addNumbersFault7">
+      <input message="tns:addNumbersFault7"/>
+      <output message="tns:addNumbersFault7Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException"/>
+    </operation> -->
+    <operation name="addNumbersFault7">
+      <input message="tns:addNumbersFault7"/>
+      <output message="tns:addNumbersFault7Response"/>
+      <fault message="tns:AddNumbersException" name="AddNumbersException"/>
+      <fault message="tns:TooBigNumbersException" name="TooBigNumbersException"/>
+    </operation>
+  </portType>
+  <binding name="AddNumbersPortBinding" ns2:bindingAttr="myBinding" type="tns:AddNumbers" xmlns:ns2="jaxws_test">
+    <!-- <wsaw:UsingAddressing/> -->
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="addNumbersNoAction">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addNumbersEmptyAction">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addNumbers">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addNumbers2">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addNumbers3">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addNumbersFault1">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addNumbersFault2">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+      <fault name="TooBigNumbersException">
+        <soap:fault name="TooBigNumbersException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addNumbersFault3">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+      <fault name="TooBigNumbersException">
+        <soap:fault name="TooBigNumbersException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addNumbersFault4">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+      <fault name="TooBigNumbersException">
+        <soap:fault name="TooBigNumbersException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addNumbersFault5">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+      <fault name="TooBigNumbersException">
+        <soap:fault name="TooBigNumbersException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addNumbersFault6">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+      <fault name="TooBigNumbersException">
+        <soap:fault name="TooBigNumbersException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addNumbersFault7">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="AddNumbersException">
+        <soap:fault name="AddNumbersException" use="literal"/>
+      </fault>
+      <fault name="TooBigNumbersException">
+        <soap:fault name="TooBigNumbersException" use="literal"/>
+      </fault>
+    </operation>
+  </binding>
+  <service name="AddNumbersService" ns3:serviceAttr="myService" xmlns:ns3="jaxws_test">
+    <port name="AddNumbersPort" binding="tns:AddNumbersPortBinding" ns3:portAttr="myPort">
+      <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
+    </port>
+  </service>
+</definitions>
+

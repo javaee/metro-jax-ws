@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'>
+  <endpoint
+    name='Hello'
+    implementation='server.provider.wsdl_hello_lit_oneway.server.HelloImpl'
+    wsdl='WEB-INF/wsdl/hello_literal_oneway.wsdl'
+    service='{urn:test}Hello'
+    port='{urn:test}HelloPort'
+    url-pattern='/hello'/>
+</endpoints>

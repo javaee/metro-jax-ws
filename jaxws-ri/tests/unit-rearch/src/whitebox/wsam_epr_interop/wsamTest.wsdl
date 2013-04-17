@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tns="http://www.example.org/wsamTest/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="wsamTest"
+	targetNamespace="http://www.example.org/wsamTest/">
+	<wsdl:types>
+		<xsd:schema targetNamespace="http://www.example.org/wsamTest/"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:element name="testOperationResponse" type="xsd:string" />
+			<xsd:element name="testOperationRequest" type="xsd:string" />
+			<xsd:element name="test2OperationRequest"
+				type="xsd:string">
+			</xsd:element>
+			<xsd:element name="test2OperationResponse"
+				type="xsd:string">
+			</xsd:element>
+			<xsd:element name="test3OperationRequest"
+				type="xsd:string">
+			</xsd:element>
+			<xsd:element name="test3OperationResponse"
+				type="xsd:string">
+			</xsd:element>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="testOperationResponse">
+		<wsdl:part element="tns:testOperationResponse"
+			name="testOperationResponse" />
+	</wsdl:message>
+	<wsdl:message name="testOperationRequest">
+		<wsdl:part element="tns:testOperationRequest"
+			name="testOperationRequest" />
+	</wsdl:message>
+	<wsdl:message name="test2OperationRequest1">
+		<wsdl:part name="test2OperationRequest"
+			element="tns:test2OperationRequest">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="test2OperationResponse1">
+		<wsdl:part name="test2OperationResponse"
+			element="tns:test2OperationResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="test3OperationRequest2">
+		<wsdl:part name="test3OperationRequest"
+			element="tns:test3OperationRequest">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="test3OperationResponse2">
+		<wsdl:part name="test3OperationResponse"
+			element="tns:test3OperationResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:portType name="wsamTest">
+		<wsdl:operation name="testOperation">
+			<wsdl:input message="tns:testOperationRequest" />
+			<wsdl:output message="tns:testOperationResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="wsamTest2">
+		<wsdl:operation name="test2Operation">
+			<wsdl:input message="tns:test2OperationRequest1"></wsdl:input>
+			<wsdl:output message="tns:test2OperationResponse1"></wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="wsamTest3">
+		<wsdl:operation name="test3Operation">
+			<wsdl:input message="tns:test3OperationRequest2"></wsdl:input>
+			<wsdl:output message="tns:test3OperationResponse2"></wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="wsamTestSOAP" type="tns:wsamTest">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="testOperation">
+			<soap:operation
+				soapAction="" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="wsamTest2SOAP" type="tns:wsamTest2">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="test2Operation">
+			<soap:operation
+				soapAction="" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="wsamTest3SOAP" type="tns:wsamTest3">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="test3Operation">
+			<soap:operation
+				soapAction="" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="wsamTest">
+		<wsdl:port binding="tns:wsamTestSOAP" name="wsamTestSOAP">
+			<soap:address location="http://www.example.org/" />
+		</wsdl:port>
+	</wsdl:service>
+	<wsdl:service name="wsamTest2SOAP">
+		<wsdl:port name="wsamTest2SOAP" binding="tns:wsamTest2SOAP">
+			<soap:address location="http://www.example.org/" />
+		</wsdl:port>
+		<wsdl:port name="wsamTest3SOAP" binding="tns:wsamTest3SOAP">
+			<soap:address location="http://www.example.org/" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

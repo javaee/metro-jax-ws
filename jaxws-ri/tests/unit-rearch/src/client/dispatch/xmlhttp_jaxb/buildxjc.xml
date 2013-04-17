@@ -1,0 +1,109 @@
+<?xml version="1.0" standalone="yes"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2004-2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<project basedir="." default="run">
+  <description>
+        This sample application demonstrates how to use the ObjectFactory 
+        class to create a Java content tree from scratch and marshal it to 
+        XML data. It also demonstrates how to add content to a JAXB List 
+        property.
+    </description>
+  <!--
+    if you are not running from $JWSDP_HOME/jaxb/samples AND you
+    are using your own version of Ant, then you need to specify
+    "ant -Djwsdp.home=..."
+  -->
+  <property name="jwsdp.home" value="../../.." />
+  <path id="classpath">
+    <pathelement path="src" />
+    <pathelement path="classes" />
+    <pathelement path="schemas" />
+    <!--for use with bundled ant-->
+    <fileset dir="${jwsdp.home}" includes="jaxb/lib/*.jar" />
+    <fileset dir="${jwsdp.home}" includes="sjsxp/lib/*.jar" />
+    <fileset dir="${jwsdp.home}" includes="jwsdp-shared/lib/activation.jar" />
+    <fileset dir="${jwsdp.home}" includes="jwsdp-shared/lib/resolver.jar" />
+  </path>
+  <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+    <classpath refid="classpath" />
+  </taskdef>
+
+  <!--compile Java source files-->
+  <target name="compile" description="Compile all Java source files">
+    <echo message="Compiling the schema..." />
+    <mkdir dir="gen-src" />
+    <xjc schema="NewsSearchResponse.xsd" package="client.dispatch.xmlhttp_jaxb.client" destdir="client">
+      <produces dir="client/client.dispatch.xmlhttp_jaxb.client" includes="**/*.java" />
+    </xjc>
+    <echo message="Compiling the java source files..." />
+    <mkdir dir="classes" />
+    <javac destdir="classes" debug="on">
+      <src path="src" />
+      <src path="client" />
+      <classpath refid="classpath" />
+    </javac>
+  </target>
+
+  <target name="run" depends="compile" description="Run the sample app">
+    <echo message="Running the sample application..." />
+    <java classname="Main" fork="true">
+      <classpath refid="classpath" />
+    </java>
+  </target>
+
+  <target name="javadoc" description="Generates javadoc" depends="compile">
+    <echo message="Generating javadoc..." />
+    <mkdir dir="docs/api" />
+    <javadoc sourcepath="gen-src" destdir="docs/api" windowtitle="create-marshal (formerly SampleApp3)" useexternalfile="yes">
+      <fileset dir="." includes="gen-src/**/*.java" excludes="**/impl/**/*.java" />
+    </javadoc>
+  </target>
+
+  <target name="clean" description="Deletes all the generated artifacts.">
+    <delete dir="docs/api" />
+    <delete dir="gen-src" />
+    <delete dir="schemas" />
+    <delete dir="classes" />
+  </target>
+</project>
+

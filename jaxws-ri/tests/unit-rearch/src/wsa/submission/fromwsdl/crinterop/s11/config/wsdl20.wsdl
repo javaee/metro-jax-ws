@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!-- $Id: wsdl20.wsdl,v 1.1.2.1 2006/09/29 21:17:43 arung Exp $ -->
+<description xmlns="http://www.w3.org/2006/01/wsdl" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+             xmlns:whttp="http://www.w3.org/2005/08/wsdl/http" xmlns:wsoap="http://www.w3.org/2005/08/wsdl/soap"
+             xmlns:wsdlx="http://www.w3.org/2005/08/wsdl-extensions" xmlns:notify="http://example.org/notify"
+             xmlns:echo="http://example.org/echo" xmlns:service="http://example.org/wsaTestService"
+             targetNamespace="http://example.org/wsaTestService">
+    <types>
+        <xs:schema targetNamespace="http://example.org/notify" elementFormDefault="qualified"
+                   attributeFormDefault="unqualified">
+            <xs:element name='notify' type='xs:string'/>
+        </xs:schema>
+
+        <xs:schema targetNamespace="http://example.org/echo" elementFormDefault="qualified"
+                   attributeFormDefault="unqualified">
+            <xs:element name='echoIn' type='xs:string'/>
+
+            <xs:element name='echoOut' type='xs:string'/>
+        </xs:schema>
+    </types>
+
+    <interface name="wsaTestService">
+        <fault name="service:EmptyEchoString"/>
+
+        <operation name="notify" pattern="http://www.w3.org/2005/08/wsdl/in-only">
+            <input messageLabel="In" element="notify:notify"/>
+        </operation>
+
+        <operation name="echoIn" pattern="http://www.w3.org/2005/08/wsdl/robust-in-only">
+            <input messageLabel="In" element="s1:echoIn"/>
+
+            <outfault ref="service:EmptyEchoString" messageLabel="Out"/>
+        </operation>
+
+        <operation name="echoOut" pattern="http://www.w3.org/2005/08/wsdl/robust-in-only">
+            <input messageLabel="In" element="s1:echoOut"/>
+
+            <outfault ref="service:EmptyEchoString" messageLabel="Out"/>
+        </operation>
+
+        <operation name="echo" pattern="http://www.w3.org/2005/08/wsdl/in-out">
+            <input messageLabel="In" element="s1:echoIn"/>
+
+            <output messageLabel="Out" element="s1:echoOut"/>
+
+            <outfault ref="service:EmptyEchoString" messageLabel="Out"/>
+        </operation>
+    </interface>
+
+    <binding name="wsaTestSoap11Binding" interface="wsaTestService" type="http://www.w3.org/2005/08/wsdl/soap"
+             wsoap:version="1.1">wsoap:protocol="http://www.w3.org/2003/05/soap/bindings/HTTP"&gt;
+        <operation ref="notify"/>
+
+        <operation ref="echoIn"/>
+
+        <operation ref="echoOut"/>
+
+        <operation ref="echo"/>
+
+        <fault ref="service:EmptyEchoString" wsoap:code="echo:EmptyEchoString"/>
+    </binding>
+
+    <binding name="wsaTestSoap12Binding" interface="wsaTestService" type="http://www.w3.org/2005/08/wsdl/soap"
+             wsoap:version="1.2">wsoap:protocol="http://www.w3.org/2003/05/soap/bindings/HTTP"&gt;
+        <!-- Note: the request only SOAP MEP doesn't actually exist! -->
+        <operation ref="notify" wsoap:mep="http://www.w3.org/2003/05/soap/mep/request"/>
+
+        <operation ref="echoIn" wsoap:mep="http://www.w3.org/2003/05/soap/mep/request"/>
+
+        <operation ref="echoOut" wsoap:mep="http://www.w3.org/2003/05/soap/mep/request"/>
+
+        <operation ref="echo" wsoap:mep="http://www.w3.org/2003/05/soap/mep/request-response"/>
+
+        <fault ref="service:EmptyEchoString" wsoap:code="echo:EmptyEchoString"/>
+    </binding>
+
+    <service name="wsaTestService" interface="service:wsaTestService">
+        <endpoint name="wsaTestSoap11Endpoint" binding="service:wsaTestSoap11Binding"
+                  address="http://example.org/node/B"/>
+
+        <endpoint name="wsaTestSoap12Endpoint" binding="service:wsaTestSoap12Binding"
+                  address="http://example.org/node/B"/>
+    </service>
+</description>
+

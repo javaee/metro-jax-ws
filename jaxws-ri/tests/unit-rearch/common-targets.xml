@@ -1,0 +1,669 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<property environment="env"/>
+<property name="jaxws.home" value="${env.JAXWS_HOME}"/>
+<property name="jaxws.test.home" value="${env.JAXWS_TEST_HOME}"/>
+<property name="tomcat.home" value="${env.TOMCAT_HOME}"/>
+
+<property file="${env.JAXWS_TEST_HOME}/build.properties"/>
+
+<property name="lib.home" value="${jaxws.home}/lib"/>
+
+<property name="j2se.server.home" value="${jaxws.test.home}/j2seserver"/>
+<property name="protocol" value=""/>
+<property name="use.dump.pipe" value="com.sun.xml.ws.util.pipe.StandalonePipeAssembler.dump"/>
+<property name="use.dump.tube" value="com.sun.xml.ws.util.pipe.StandaloneTubeAssembler.dump"/>
+<property name="reports.home" value="${jaxws.test.home}/reports"/>
+
+<!-- get "bat" or "sh" for tools <exec> call -->
+<property name="file.extension" value="${file.extension}"/>
+
+<!-- Content negotiation property -->
+<property name="contentNegotiation" value="${env.CONTENT_NEGOTIATION}"/>
+
+<!-- runtime classpath does not include jaxws-tools.jar -->
+<path id="run.classpath">
+    <pathelement location="${jaxws.home}/../rt/build/classes" /><!-- if running for workspace, pick up from build directory directly, so that one doesn't have to build the whole RI from ant -->
+    <fileset dir="${lib.home}" includes="*.jar" excludes="jaxws-tools.jar" />
+    <fileset file="${jaxws.home}/../../../../../transports/local/target/jaxws-local-transport.jar" />
+    <pathelement location="${jaxws.test.home}/src"/>
+    <pathelement location="${jaxws.test.home}/build/classes"/>
+    <pathelement location="${build.temp.classes}"/>
+    <fileset dir="${jaxws.test.home}" includes="build/temp/classes/*.jar"/>
+    <pathelement location="${build.classes}"/>
+    <pathelement location="${build.test.classes}"/>
+    <pathelement location="${basedir}/common_resources/WEB-INF" /> <!-- test resources -->
+</path>
+
+<property name="rt.classpath" refid="run.classpath"/>
+
+<!-- same as runtime but with tools jar added -->
+<path id="compile.classpath">
+    <path refid="run.classpath"/>
+    <pathelement location="${lib.home}/jaxws-tools.jar"/>
+    <pathelement location="${java.home}/../lib/tools.jar"/>
+</path>
+        
+<path id="apt.compile.classpath">
+    <pathelement location="${jaxws.home}/../tools/wscompile/build/classes" /><!-- if running for workspace, pick up from build directory directly, so that one doesn't have to build the whole RI from ant -->
+    <path refid="compile.classpath"/>
+    <pathelement location="${jaxws.test.home}/src"/>
+</path>
+
+<property name="apt.classpath" refid="apt.compile.classpath"/>
+
+<taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+    <classpath refid="compile.classpath"/>
+</taskdef>
+
+<taskdef name="wsgen" classname="com.sun.tools.ws.ant.WsGen">
+    <classpath refid="compile.classpath"/>
+</taskdef>
+
+<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+    <classpath refid="compile.classpath" />
+</taskdef>
+
+
+<!-- Properties -->
+<property name="Tomcat.unix" value="${tomcat.home}/bin/catalina.sh" />
+<property name="Tomcat.win" value="${tomcat.home}/bin/catalina.bat" />
+
+<!-- Configure properties to access the Manager application -->
+<property name="url"      value="${url}"/>
+<property name="username" value="${username}"/>
+<property name="password" value="${password}"/>
+
+<!-- targets -->
+
+<target name="clean">
+    <delete dir="${build.dir}"/>
+</target>
+
+<!-- see build.properties for description of these directories -->
+<target name="setup">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.war}"/>
+    <mkdir dir="${build.temp}"/>
+    <mkdir dir="${build.temp.classes}"/>
+    <mkdir dir="${build.classes}"/>
+    <mkdir dir="${reports.home}"/>
+    <taskdef name="patchWsdlAddress" classname="testutil.WSDLAddressPatcher">
+        <classpath>
+            <pathelement location="${build.test.classes}"/>
+        </classpath>
+    </taskdef>
+</target>
+
+<target name="compile_test_util">
+    <mkdir dir="${build.test.classes}"/>
+    <javac srcdir="${jaxws.test.home}/src" debug="${compile.debug}" destdir="${build.test.classes}" includes="testutil/**">
+        <classpath refid="compile.classpath"/>
+    </javac>
+</target>
+
+<target name="create-war">
+    <!-- create if not exist, to make the next war task happy -->
+    <mkdir dir="${basedir}/common_resources" />
+    <property name="user.libs" value="/tmp"/>
+    <property name="user.libs.jars" value="*.nojar"/>
+    <war warfile="${build.temp}/../war/jaxrpc-${warfilename}.war"
+       webxml="config/web.xml">
+
+        <lib dir="${user.libs}" includes="${user.libs.jars}"/>
+        <fileset dir="${basedir}/common_resources" />
+        <zipfileset dir="${basedir}/config" includes="**/*.wsdl, **/*.xsd" prefix="WEB-INF/wsdl" />
+        <zipfileset dir="${build.temp}" includes="*.wsdl, *.xsd" prefix="WEB-INF/wsdl" />
+        <webinf dir="${basedir}/config/" includes="sun-jaxws.xml"/>
+
+        <!-- moved *.xml from web-inf to classes -->
+        <webinf dir="${basedir}/server/" includes="*.jpg, *.html"/>
+        <classes dir="${build.temp.classes}"/>
+    </war>
+</target>
+
+
+<target name="generate-wsdl-server">
+    <echo message="ANT_OPTS=${env.ANT_OPTS}" />
+    <echo message="-Djava.endorsed.dirs=${endorsed.dir}" />
+    <wsimport
+        fork="false"
+        debug="${debug}"
+        extension="${extension}"
+        keep="${keep}"
+        destdir="${build.temp.classes}"
+        verbose="${verbose}"
+        wsdl="${wsdlname}">
+        <jvmarg line="${jvmargs}"/>
+        <binding dir="${basedir}/config/" includes="${server.binding}"/>
+    </wsimport>
+</target>
+
+<target name="generate-java-server" depends="compile-server">
+    <copy todir="${build.temp.classes}">
+        <fileset dir="${basedir}/server">
+            <include name="*.xml"/>
+        </fileset>
+    </copy>
+    <wsgen
+        extension="${extension}"
+        keep="${keep}"
+        destdir="${build.temp.classes}"
+        resourcedestdir="${build.temp}"
+        verbose="true"
+        sei="${endpointimplementationclass}"
+        genwsdl="${genWsdl}"
+        servicename="${serviceName}"
+        portname="${portName}"
+        protocol="${protocol}">
+        <!--xendorsed="true"-->
+        <!--fork="true">-->
+        <!--<jvmarg line="${jvmargs}"/>-->
+        <!--set ANT_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005-->
+        <classpath refid="compile.classpath"/>
+    </wsgen>
+</target>
+
+<target name="compile-server-apt" depends="setup">
+    <javac
+        fork="true"
+        verbose="${verbose}"
+        classpath="${apt.classpath}"
+        destdir="${build.temp.classes}"
+        srcdir="${basedir}/server"
+        sourcepath="${jaxws.test.home}/src">
+    </javac>
+</target>
+
+<target name="generate-java-server-apt" depends="compile-server-apt">
+    <copy todir="${build.classes}">
+        <fileset dir="${basedir}/server">
+            <include name="*.xml"/>
+        </fileset>
+    </copy>
+</target>
+
+<!-- creates jaxb classes and compile class files in "server" and "common" directories -->
+<target name="compile-server-provider">
+    <java classname="com.sun.tools.xjc.Driver" fork="true" >
+        <arg value="-d"/>
+        <arg value="${build.temp.classes}"/>
+        <arg value="-p"/>
+        <arg value="${provider.pkg}"/>
+        <arg value="${basedir}/config/${provider.xsd}"/>
+        <classpath refid="compile.classpath" />
+    </java>
+    <javac srcdir="${build.temp.classes}"
+               debug="${compile.debug}"
+               destdir="${build.temp.classes}" >
+        <classpath refid="compile.classpath" />
+    </javac>
+
+    <antcall target="compile-server"/>
+</target>
+
+<!-- compile class files in "server" and "common" directories -->
+<target name="compile-server">
+    <property name="user.libs" value="/tmp"/>
+    <property name="user.libs.jars" value="*.nojar"/>
+    <javac srcdir="${basedir}"
+       debug="${compile.debug}"
+       destdir="${build.temp.classes}"
+       includes="server/**,common/**">
+        <classpath>
+            <path refid="compile.classpath"/>
+            <fileset dir="${user.libs}">
+                <include name="${user.libs.jars}"/>
+            </fileset>
+        </classpath>
+    </javac>
+</target>
+
+<target name="copy-local-server-files">
+    <copy todir="${build.classes}">
+        <fileset dir="${build.temp}/WEB-INF/classes"/>
+    </copy>
+</target>
+
+<!-- Before running wsimport with/without tomcat, must compile
+client side handlers first if there are any. Will also
+compile common files at this time. -->
+<target name="generate-multiple-clients">
+    <antcall target="gen-client"/>
+</target>
+
+<!-- Before running wsimport with/without tomcat, must compile
+client side handlers first if there are any. Will also
+compile common files at this time. -->
+<target name="generate-client" depends="setup">
+    <antcall target="gen-client"/>
+</target>
+
+<target name="gen-client">
+    <javac srcdir="${basedir}"
+               debug="${compile.debug}"
+               destdir="${build.temp.classes}"
+               includes="client/handlers/**,common/**, client/common/**">
+        <classpath refid="compile.classpath"/>
+    </javac>
+    <condition property="no.tomcat">
+        <istrue value="${uselocal}"/>
+    </condition>
+    <antcall target="generate-client-with-tomcat"/>
+    <antcall target="generate-client-no-tomcat"/>
+</target>
+
+<target name="generate-wsdl">
+    <mkdir dir="${build.temp}/WEB-INF/wsdl"/>
+    <echo message="-Djava.endorsed.dirs=${endorsed.dir}" />
+    <java classname="testutil.WSDLGen" failonerror="true" fork="true">
+        <jvmarg value="-Djava.endorsed.dirs=${endorsed.dir}"/>
+        <!--
+        <jvmarg value="-Xdebug"/>
+        <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,address=8000"/>
+        -->
+
+        <sysproperty key="tempdir" value="${build.temp}"/>
+        <sysproperty key="uselocal" value="${uselocal}"/>
+        <classpath refid="run.classpath"/>
+    </java>
+</target>
+
+<target name="generate-client-with-tomcat" unless="no.tomcat">
+    <java classname="testutil.LocalCustomizationFileTransformer" outputproperty="wsdlOnTomcat" errorproperty="errlog" fork="true">
+        <arg value="tomcat"/>
+        <arg value="${basedir}/config/${client.binding}"/>
+        <arg value="${build.temp}/"/>
+        <arg value="${port}"/>
+        <classpath refid="run.classpath"/>
+    </java>
+    <wsimport
+        fork="false"
+        debug="${debug}"
+        extension="${extension}"
+        keep="${keep}"
+        destdir="${build.temp.classes}/"
+        verbose="${verbose}"
+        wsdl="${wsdlOnTomcat}">
+        <jvmarg line="${jvmargs}"/>
+        <binding dir="${build.temp}/" includes="*.xml"/>
+    </wsimport>
+</target>
+
+<setproxy proxyhost="www-proxy.us.oracle.com" proxyport="80"/>
+
+<target name="generate-client-no-tomcat" if="no.tomcat">
+    <unwar src="${build.war}/jaxrpc-${warfilename}.war"
+               dest="${build.temp}"/>
+    <property name="temp.config.name" value="temp-config.xml"/>
+    <antcall target="copy-local-server-files"/>
+    <antcall target="generate-wsdl"/>
+    <copy todir="${build.temp}" failonerror="false">
+        <fileset dir="${build.temp}/WEB-INF">
+            <include name="*.wsdl"/>
+            <include name="*.xsd"/>
+        </fileset>
+    </copy>
+    <!--
+            patch binding customization files so that they point to local files
+    -->
+    <java classname="testutil.LocalCustomizationFileTransformer" outputproperty="localWsdl" errorproperty="errlog" fork="true">
+        <arg value="local"/>
+        <arg value="${basedir}/config/${client.binding}"/>
+        <arg value="${build.temp}/"/>
+        <arg value="${wsdlname}"/>
+        <!--
+<jvmarg value="-Xdebug"/>
+        <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,address=8000"/>
+        -->
+        <classpath refid="compile.classpath"/>
+    </java>
+    <condition property="wsdl.address" else="local://${build.temp}?${port}" value="local-async://${build.temp}?${port}" >
+        <and>
+            <istrue value="${uselocal}"/>
+            <istrue value="${async}"/>
+        </and>
+    </condition>
+    <!-- patch the WSDL file -->
+    <patchWsdlAddress wsdl="${localWsdl}" address="${wsdl.address}" />
+    <wsimport
+        fork="false"
+        debug="${debug}"
+        extension="${extension}"
+        keep="${keep}"
+        destdir="${build.temp.classes}/"
+        verbose="${verbose}"
+        wsdl="${localWsdl}">
+        <jvmarg line="${jvmargs}"/>
+        <binding dir="${build.temp}/" includes="*.xml"/>
+    </wsimport>
+</target>
+
+<target name="client-common" depends="setup">
+    <javac srcdir="${client.common}"
+           destdir="${build.temp.classes}"
+           debug="${compile.debug}"
+           optimize="${compile.optimize}"
+           includes="client/**">
+        <classpath refid="compile.classpath"/>
+    </javac>
+</target>
+
+
+<target name="compile-client" depends="generate-client, client-common, recompile-client"/>
+
+<target name="recompile-client">
+    <!-- compile class files in "client" directory -->
+    <javac srcdir="${basedir}"
+           destdir="${build.temp.classes}"
+           debug="${compile.debug}"
+           optimize="${compile.optimize}"
+           includes="client/**">
+        <classpath refid="compile.classpath"/>
+    </javac>
+</target>
+
+<macrodef name="run-junit-tests"
+          description="invoke unit test">
+    <element name="options" optional="yes"/>
+    <sequential>
+        <echo message="ANT_OPTS=${env.ANT_OPTS}" />
+        <echo message="-Djava.endorsed.dirs=${endorsed.dir}" />
+        <junit printsummary="no" haltonfailure="no" fork="true">
+            <jvmarg value="-DproxyHost=www-proxy.us.oracle.com"/>
+            <jvmarg value="-DproxyPort=80"/>
+            <jvmarg value="-Duselocal=${uselocal}"/>
+            <jvmarg value="-Dtempdir=${build.temp}"/>
+            <jvmarg value="-Dbasedir=${basedir}"/>
+            <jvmarg value="-D${use.dump.pipe}=${log}"/>
+            <jvmarg value="-D${use.dump.tube}=${log}"/>
+            <jvmarg value="-Djava.endorsed.dirs=${endorsed.dir}"/>
+
+            <!--BEWARE!!! DEBUGGING-->
+
+            <!--
+                        <jvmarg value="-Xdebug"/>
+                        <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
+            -->
+
+            <!-- LOGGING
+            <jvmarg value="-Djava.util.logging.config.file=c:/projects/jaxws-unit/logging.properties"/>
+            <jvmarg value="-Dcom.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=true"/>
+            -->
+            <jvmarg value="-ea" /><!-- enable all assertions -->
+            <jvmarg value="-Dcom.sun.xml.ws.client.ContentNegotiation=${contentNegotiation}"/>
+            <options />
+            <classpath refid="run.classpath"/>
+            <formatter type="plain" usefile="false" unless="xmlformatter"/>
+            <formatter type="xml" if="xmlformatter"/>
+            <batchtest todir="${reports.home}">
+                <fileset dir="${build.temp.classes}">
+                    <include name="**/AllTests.class" />
+                </fileset>
+            </batchtest>
+        </junit>
+    </sequential>
+</macrodef>
+
+<target name="rerun-client"
+        description="just run the unit test again without any code regeneration.">
+    <run-junit-tests />
+</target>
+
+<target name="rerun-client-debug"
+        description="re-run-cient in debug mode to be attached at port 8000">
+    <run-junit-tests>
+        <options>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,address=7777"/>
+        </options>
+    </run-junit-tests>
+</target>
+
+<target name="run-client"       depends="compile-client, rerun-client" />
+<target name="run-client-debug" depends="compile-client, rerun-client-debug"
+        description="run-cient in debug mode to be attached at port 8000" />
+
+<target name="run-benchmark-client" depends="compile-client">
+    <java fork="true"
+              classname="testutil.benchmark.BenchmarkTests">
+        <classpath refid="run.classpath"/>
+        <sysproperty key="package.prefix" value="${package.prefix}"/>
+        <sysproperty key="uselocal" value="${uselocal}"/>
+        <sysproperty key="tempdir" value="${build.temp}"/>
+        <sysproperty key="warmup" value="100"/>
+        <sysproperty key="iterations" value="200"/>
+        <sysproperty key="benchmark.stylesheet" value="${build.dir}/../config/benchmark.xsl"/>
+        <sysproperty key="state" value="${state}"/>
+        <sysproperty key="com.sun.xml.ws.client.ContentNegotiation" value="${contentNegotiation}"/>
+		
+        <jvmarg line="-agentlib:yjpagent5=onexit=cpu,cpu=full,dir=." />
+        <!--
+        -->
+		
+        <!-- benchmarks to run -->
+        <arg value="Void"/>
+        <!--
+        <arg value='""'/>
+        <arg value="Void"/>
+        <arg value="Boolean"/>
+        <arg value="String"/>
+        <arg value="Integer"/>
+        <arg value="Float"/>
+        <arg value="ComplexType"/>
+        <arg value="Base64"/>
+        <arg value="Date"/>
+        <arg value="Decimal"/>
+        <arg value="Enum"/>
+        <arg value="NestedComplexType"/>
+        <arg value="StringArray"/>
+        <arg value="IntegerArray"/>
+        <arg value="FloatArray"/>
+        <arg value="ComplexTypeArray"/>
+        -->
+        <!-- arg value="Header"/ -->
+    </java>
+</target>
+
+<!-- the following 2 targets are being added so we could
+deploy a war with multiple services in it. Or potentially
+have multiple clients for one test case -->
+
+<target name="compile-multiple-clients">
+    <!-- compile class files in "client" directory -->
+    <javac srcdir="${basedir}"
+               destdir="${build.temp.classes}"
+               debug="${compile.debug}"
+               optimize="${compile.optimize}"
+               includes="client/**">
+        <classpath refid="compile.classpath"/>
+    </javac>
+</target>
+
+<target name="run-multiple-clients" depends="compile-multiple-clients">
+    <junit printsummary="no" haltonfailure="yes" fork="true">
+        <jvmarg value="-Duselocal=${uselocal}"/>
+        <classpath refid="run.classpath"/>
+        <formatter type="plain" usefile="false" unless="xmlformatter"/>
+        <formatter type="xml" if="xmlformatter"/>
+        <batchtest todir="${reports.home}">
+            <fileset dir="${build.temp.classes}">
+                <include name="**/AllTests.class" />
+            </fileset>
+        </batchtest>
+    </junit>
+</target>
+
+<target name="deploy-war">
+    <echo message="-------- Deploying war for ${ant.project.name} to jwsdp --------"/>
+    <copy file="${build.temp}/../war/jaxrpc-${warfilename}.war"
+              todir="${tomcat.home}/webapps"/>
+</target>
+
+<target name="start-tomcat">
+    <condition property="no.tomcat.start">
+        <istrue value="${uselocal}"/>
+    </condition>
+    <antcall target="internal-check-tomcatup"/>
+</target>
+
+<target name="internal-check-tomcatup" unless="no.tomcat.start">
+
+    <!-- Check if Tomcat is already up -->
+    <condition property="catalina.already.up">
+        <http url="${url}"/>
+    </condition>
+
+    <!-- JWSDP environment settings -->
+    <condition property="catalina.startup.script"
+                   value="${Tomcat.win}">
+        <os family="Windows"/>
+    </condition>
+
+    <condition property="catalina.startup.script"
+                   value="${Tomcat.unix}">
+        <os family="Unix"/>
+    </condition>
+
+    <!-- If Tomcat is not up, start it -->
+    <antcall target="internal-start-tomcat" />
+
+</target>
+
+<target name="internal-start-tomcat" unless="catalina.already.up">
+
+    <echo message="Starting JWSDP"/>
+    <echo message="JWSDP_HOME : ${env.JWSDP_HOME}"/>
+    <echo message="Checking URL : ${url}"/>
+
+    <!-- Wait upto 5 minutes for Tomcat to startup -->
+    <waitfor maxwait="5" maxwaitunit="minute" checkevery="5" checkeveryunit="second"
+                 timeoutproperty="catalina.unavailable">
+        <http url="${url}"/>
+    </waitfor>
+    <fail message="Unable to start JWSDP. Please start it manually." if="catalina.unavailable"/>
+    <echo message="Tomcat successfully started on ${host} at port ${port} ..."/>
+</target>
+
+<target name="stop-tomcat">
+    <condition property="no.tomcat.stop">
+        <istrue value="${uselocal}"/>
+    </condition>
+    <antcall target="internal-check-tomcatstop"/>
+</target>
+
+<target name="internal-check-tomcatstop" unless="no.tomcat.stop">
+
+    <!-- Check if Tomcat is already stopped -->
+    <condition property="catalina.already.stop">
+        <http url="${url}"/>
+    </condition>
+
+    <!-- JWSDP environment settings -->
+    <condition property="catalina.stop.script"
+                   value="${Tomcat.win}">
+        <os family="Windows"/>
+    </condition>
+
+    <condition property="catalina.stop.script"
+                   value="${Tomcat.unix}">
+        <os family="Unix"/>
+    </condition>
+
+    <!-- If Tomcat is not stopped, stop it -->
+    <antcall target="internal-stop-tomcat" />
+
+</target>
+
+<target name="internal-stop-tomcat" unless="catalina.already.stop">
+
+    <echo message="Stopping JWSDP"/>
+    <echo message="JWSDP_HOME : ${env.JWSDP_HOME}"/>
+    <exec executable="${catalina.stop.script}">
+        <arg line="stop"/>
+    </exec>
+</target>
+
+<target name="compile-server-sei" if="configuration.service.interface(name)">
+    <!-- compile-server-sei is executed for SEI based tests only -->
+    <antcall target="compile-server"/>
+</target>
+
+<target name="compile-server-wsdl" if="configuration.wsdl(location)">
+    <!-- compile-server-wsdl is executed for WSDL based tests only -->
+    <antcall target="compile-server"/>
+</target>
+
+
+<target name="j2se-server-start">
+    <mkdir  dir="${j2se.server.home}/webapps/classes"/>
+    <mkdir  dir="${j2se.server.home}/logs"/>
+    <java classname="testutil.JaxwsHttpServer" fork="true" >
+        <arg value="9999"/>
+        <jvmarg value="-Dj2se.server.home=${j2se.server.home}"/>
+        <!--
+                <jvmarg value="-Xdebug"/>
+                        <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,address=8000"/>
+        -->
+        <classpath>
+            <path refid="run.classpath"/>
+            <pathelement location="${j2se.server.home}/webapps/classes"/>
+            <fileset dir="${lib.home}/../../lib" includes="ant*.jar"/>
+        </classpath>
+    </java>
+</target>
+
+<target name="j2se-server-stop">
+    <get src="http://localhost:9999/admin/?stop" dest="${j2se.server.home}/logs/j2se-server-status"/>
+</target>
+
+<target name="j2se-deploy">
+    <echo message="-------- Deploying war for ${ant.project.name} to j2se server --------"/>
+    <copy file="${build.temp}/../war/jaxrpc-${warfilename}.war"
+              todir="${j2se.server.home}/webapps"/>
+    <unwar src="${j2se.server.home}/webapps/jaxrpc-${warfilename}.war"
+               dest="${j2se.server.home}/webapps/jaxrpc-${warfilename}"/>
+    <copy todir="${j2se.server.home}/webapps/classes">
+        <fileset dir="${j2se.server.home}/webapps/jaxrpc-${warfilename}/WEB-INF/classes"/>
+    </copy>
+</target>

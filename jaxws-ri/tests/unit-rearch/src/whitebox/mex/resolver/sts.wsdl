@@ -1,0 +1,476 @@
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://www.w3.org/2005/08/addressing">
+    <s:Header>
+        <a:Action s:mustUnderstand="1">http://schemas.xmlsoap.org/ws/2004/09/transfer/GetResponse</a:Action>
+        <ActivityId CorrelationId="0ac7d82f-a8b0-400c-8723-e345fd5a5929"
+                    xmlns="http://schemas.microsoft.com/2004/09/ServiceModel/Diagnostics">
+            1073067d-8fe9-485c-8aa0-0ae4a11dca7e
+        </ActivityId>
+        <a:RelatesTo>urn:uuid:ca574ca1-ca92-416d-bbb8-784d9a5b2521</a:RelatesTo>
+    </s:Header>
+    <s:Body>
+        <Metadata xmlns="http://schemas.xmlsoap.org/ws/2004/09/mex"
+                  xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex">
+            <wsx:MetadataSection Dialect="http://schemas.xmlsoap.org/wsdl/"
+                                 Identifier="urn:test" xmlns="">
+
+                <wsdl:definitions name="SecurityTokenService" targetNamespace="http://tempuri.org/"
+                                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                                  xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                                  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+                                  xmlns:tns="http://tempuri.org/"
+                                  xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+                                  xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
+                                  xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy"
+                                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                                  xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract"
+                                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                                  xmlns:wsa10="http://www.w3.org/2005/08/addressing"
+                                  xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex">
+                    <wsp:Policy wsu:Id="CustomBinding_ISecurityTokenService_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:AsymmetricBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:InitiatorToken>
+                                            <wsp:Policy>
+                                                <sp:X509Token
+                                                        sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+                                                    <wsp:Policy>
+                                                        <sp:WssX509V3Token10/>
+                                                    </wsp:Policy>
+                                                </sp:X509Token>
+                                            </wsp:Policy>
+                                        </sp:InitiatorToken>
+                                        <sp:RecipientToken>
+                                            <wsp:Policy>
+                                                <sp:X509Token
+                                                        sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/Never">
+                                                    <wsp:Policy>
+                                                        <sp:WssX509V3Token10/>
+                                                    </wsp:Policy>
+                                                </sp:X509Token>
+                                            </wsp:Policy>
+                                        </sp:RecipientToken>
+                                        <sp:AlgorithmSuite>
+                                            <wsp:Policy>
+                                                <sp:Basic256/>
+                                            </wsp:Policy>
+                                        </sp:AlgorithmSuite>
+                                        <sp:Layout>
+                                            <wsp:Policy>
+                                                <sp:Lax/>
+                                            </wsp:Policy>
+                                        </sp:Layout>
+                                        <sp:IncludeTimestamp/>
+                                        <sp:OnlySignEntireHeadersAndBody/>
+                                    </wsp:Policy>
+                                </sp:AsymmetricBinding>
+                                <sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportRefKeyIdentifier/>
+                                        <sp:MustSupportRefIssuerSerial/>
+                                    </wsp:Policy>
+                                </sp:Wss10>
+                                <sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportIssuedTokens/>
+                                        <sp:RequireClientEntropy/>
+                                        <sp:RequireServerEntropy/>
+                                    </wsp:Policy>
+                                </sp:Trust10>
+                                <wsaw:UsingAddressing/>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="CustomBinding_ISecurityTokenService_IssueToken_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="From" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="FaultTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="ReplyTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="MessageID" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="RelatesTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="Action" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="CustomBinding_ISecurityTokenService_IssueToken_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="From" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="FaultTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="ReplyTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="MessageID" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="RelatesTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="Action" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="CustomBinding_ISecurityTokenService1_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:TransportToken>
+                                            <wsp:Policy>
+                                                <sp:HttpsToken RequireClientCertificate="false"/>
+                                            </wsp:Policy>
+                                        </sp:TransportToken>
+                                        <sp:AlgorithmSuite>
+                                            <wsp:Policy>
+                                                <sp:Basic256/>
+                                            </wsp:Policy>
+                                        </sp:AlgorithmSuite>
+                                        <sp:Layout>
+                                            <wsp:Policy>
+                                                <sp:Lax/>
+                                            </wsp:Policy>
+                                        </sp:Layout>
+                                        <sp:IncludeTimestamp/>
+                                    </wsp:Policy>
+                                </sp:TransportBinding>
+                                <sp:SignedSupportingTokens
+                                        xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:UsernameToken
+                                                sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+                                            <wsp:Policy>
+                                                <sp:WssUsernameToken10/>
+                                            </wsp:Policy>
+                                        </sp:UsernameToken>
+                                    </wsp:Policy>
+                                </sp:SignedSupportingTokens>
+                                <sp:Wss11 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportRefKeyIdentifier/>
+                                        <sp:MustSupportRefIssuerSerial/>
+                                        <sp:MustSupportRefThumbprint/>
+                                        <sp:MustSupportRefEncryptedKey/>
+                                    </wsp:Policy>
+                                </sp:Wss11>
+                                <sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportIssuedTokens/>
+                                        <sp:RequireClientEntropy/>
+                                        <sp:RequireServerEntropy/>
+                                    </wsp:Policy>
+                                </sp:Trust10>
+                                <wsaw:UsingAddressing/>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="WSHttpBinding_ISecurityTokenService_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SymmetricBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:ProtectionToken>
+                                            <wsp:Policy>
+                                                <sp:X509Token
+                                                        sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/Never">
+                                                    <wsp:Policy>
+                                                        <sp:RequireDerivedKeys/>
+                                                        <sp:RequireThumbprintReference/>
+                                                        <sp:WssX509V3Token10/>
+                                                    </wsp:Policy>
+                                                </sp:X509Token>
+                                            </wsp:Policy>
+                                        </sp:ProtectionToken>
+                                        <sp:AlgorithmSuite>
+                                            <wsp:Policy>
+                                                <sp:Basic256/>
+                                            </wsp:Policy>
+                                        </sp:AlgorithmSuite>
+                                        <sp:Layout>
+                                            <wsp:Policy>
+                                                <sp:Strict/>
+                                            </wsp:Policy>
+                                        </sp:Layout>
+                                        <sp:IncludeTimestamp/>
+                                        <sp:EncryptSignature/>
+                                        <sp:OnlySignEntireHeadersAndBody/>
+                                    </wsp:Policy>
+                                </sp:SymmetricBinding>
+                                <sp:EndorsingSupportingTokens
+                                        xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:X509Token
+                                                sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+                                            <wsp:Policy>
+                                                <sp:RequireThumbprintReference/>
+                                                <sp:WssX509V3Token10/>
+                                            </wsp:Policy>
+                                        </sp:X509Token>
+                                    </wsp:Policy>
+                                </sp:EndorsingSupportingTokens>
+                                <sp:Wss11 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportRefKeyIdentifier/>
+                                        <sp:MustSupportRefIssuerSerial/>
+                                        <sp:MustSupportRefThumbprint/>
+                                        <sp:MustSupportRefEncryptedKey/>
+                                        <sp:RequireSignatureConfirmation/>
+                                    </wsp:Policy>
+                                </sp:Wss11>
+                                <sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <wsp:Policy>
+                                        <sp:MustSupportIssuedTokens/>
+                                        <sp:RequireClientEntropy/>
+                                        <sp:RequireServerEntropy/>
+                                    </wsp:Policy>
+                                </sp:Trust10>
+                                <wsaw:UsingAddressing/>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="WSHttpBinding_ISecurityTokenService_IssueToken_Input_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="From" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="FaultTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="ReplyTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="MessageID" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="RelatesTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="Action" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsp:Policy wsu:Id="WSHttpBinding_ISecurityTokenService_IssueToken_output_policy">
+                        <wsp:ExactlyOne>
+                            <wsp:All>
+                                <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                    <sp:Header Name="To" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="From" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="FaultTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="ReplyTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="MessageID" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="RelatesTo" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                    <sp:Header Name="Action" Namespace="http://www.w3.org/2005/08/addressing"/>
+                                </sp:SignedParts>
+                                <sp:EncryptedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                                    <sp:Body/>
+                                </sp:EncryptedParts>
+                            </wsp:All>
+                        </wsp:ExactlyOne>
+                    </wsp:Policy>
+                    <wsdl:types>
+                        <xsd:schema targetNamespace="http://tempuri.org/Imports">
+                            <xsd:import
+                                    schemaLocation="http://wts02.india.sun.com/Security_Federation_SecurityTokenService_Indigo/Symmetric.svc?xsd=xsd0"
+                                    namespace="http://schemas.microsoft.com/Message"/>
+                        </xsd:schema>
+                    </wsdl:types>
+                    <wsdl:message name="ISecurityTokenService_IssueToken_InputMessage">
+                        <wsdl:part name="rstMessage" type="q1:MessageBody"
+                                   xmlns:q1="http://schemas.microsoft.com/Message"/>
+                    </wsdl:message>
+                    <wsdl:message name="ISecurityTokenService_IssueToken_OutputMessage">
+                        <wsdl:part name="IssueTokenResult" type="q2:MessageBody"
+                                   xmlns:q2="http://schemas.microsoft.com/Message"/>
+                    </wsdl:message>
+                    <wsdl:portType name="ISecurityTokenService">
+                        <wsdl:operation name="IssueToken">
+                            <wsdl:input wsaw:Action="http://schemas.xmlsoap.org/ws/2005/02/trust/RST/Issue"
+                                        message="tns:ISecurityTokenService_IssueToken_InputMessage"/>
+                            <wsdl:output wsaw:Action="http://schemas.xmlsoap.org/ws/2005/02/trust/RSTR/Issue"
+                                         message="tns:ISecurityTokenService_IssueToken_OutputMessage"/>
+                        </wsdl:operation>
+                    </wsdl:portType>
+                    <wsdl:binding name="CustomBinding_ISecurityTokenService" type="tns:ISecurityTokenService">
+                        <wsp:PolicyReference URI="#CustomBinding_ISecurityTokenService_policy"/>
+                        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+                        <wsdl:operation name="IssueToken">
+                            <soap12:operation soapAction="http://schemas.xmlsoap.org/ws/2005/02/trust/RST/Issue"
+                                              style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference
+                                        URI="#CustomBinding_ISecurityTokenService_IssueToken_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference
+                                        URI="#CustomBinding_ISecurityTokenService_IssueToken_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                    </wsdl:binding>
+                    <wsdl:binding name="CustomBinding_ISecurityTokenService1" type="tns:ISecurityTokenService">
+                        <wsp:PolicyReference URI="#CustomBinding_ISecurityTokenService1_policy"/>
+                        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+                        <wsdl:operation name="IssueToken">
+                            <soap12:operation soapAction="http://schemas.xmlsoap.org/ws/2005/02/trust/RST/Issue"
+                                              style="document"/>
+                            <wsdl:input>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                    </wsdl:binding>
+                    <wsdl:binding name="WSHttpBinding_ISecurityTokenService" type="tns:ISecurityTokenService">
+                        <wsp:PolicyReference URI="#WSHttpBinding_ISecurityTokenService_policy"/>
+                        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+                        <wsdl:operation name="IssueToken">
+                            <soap12:operation soapAction="http://schemas.xmlsoap.org/ws/2005/02/trust/RST/Issue"
+                                              style="document"/>
+                            <wsdl:input>
+                                <wsp:PolicyReference
+                                        URI="#WSHttpBinding_ISecurityTokenService_IssueToken_Input_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:input>
+                            <wsdl:output>
+                                <wsp:PolicyReference
+                                        URI="#WSHttpBinding_ISecurityTokenService_IssueToken_output_policy"/>
+                                <soap12:body use="literal"/>
+                            </wsdl:output>
+                        </wsdl:operation>
+                    </wsdl:binding>
+                    <wsdl:service name="SecurityTokenService">
+                        <wsdl:port name="CustomBinding_ISecurityTokenService"
+                                   binding="tns:CustomBinding_ISecurityTokenService">
+                            <soap12:address
+                                    location="http://wts02.india.sun.com/Security_Federation_SecurityTokenService_Indigo/Symmetric.svc/Scenario_2_IssuedToken_MutualCertificate10"/>
+                            <wsa10:EndpointReference>
+                                <wsa10:Address>
+                                    http://wts02.india.sun.com/Security_Federation_SecurityTokenService_Indigo/Symmetric.svc/Scenario_2_IssuedToken_MutualCertificate10
+                                </wsa10:Address>
+                                <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+                                    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                                        <X509Data>
+                                            <X509Certificate>
+                                                MIIDDDCCAfSgAwIBAgIQb6U6bec4ZHW96T5N2A/NdTANBgkqhkiG9w0BAQUFADAwMQ4wDAYDVQQKDAVPQVNJUzEeMBwGA1UEAwwVT0FTSVMgSW50ZXJvcCBUZXN0IENBMB4XDTA1MTAyNzAwMDAwMFoXDTE4MTAyNzIzNTk1OVowQjEOMAwGA1UECgwFT0FTSVMxIDAeBgNVBAsTF09BU0lTIEludGVyb3AgVGVzdCBDZXJ0MQ4wDAYDVQQDDAVXc3NJUDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA2X9ZWiek/59vvg+l/lmzWjBYiqoOuSI+ms3ief7RyhPNh/IrGE3VwU67HsygNeavE06S6xNfcNWUNLqEdRmd/29WnubNH7hWJsqp7rn8g/mxNVkynCkJ1saKuD8ILiKfNg0e8UUE9QzwEz1fxw81OR0SbDitfTrDj8Q/ouCgEaUCAwEAAaOBkzCBkDAJBgNVHRMEAjAAMDMGA1UdHwQsMCowKKImhiRodHRwOi8vaW50ZXJvcC5iYnRlc3QubmV0L2NybC9jYS5jcmwwDgYDVR0PAQH/BAQDAgSwMB0GA1UdDgQWBBQb1AYE+P8ue/8qbgUJOKoyDXFqaTAfBgNVHSMEGDAWgBTAnSj8wes1oR3WqqqgHBpNwkkPDzANBgkqhkiG9w0BAQUFAAOCAQEAeltzyUHj+/0i3Hsj5XvWrJ7mF+zBFwp7E6CPLP/urfMdl1VFaBttOCcdWRrm8GI3KsGQMV6dpzAykl1JDO7T6IMSMYA1/YTsSH9S8xoubL/7IGYj3izKZ9LrV7fJJOHOerKLgIk/0X8DzH15jwel271s6Nh6DiXqU2Hf0YUmauLAH+rbiuNLlUKM5UkP4BtGqPw+6tvyaUOa3fzJs92WB+j5x91/xmvNg+ZTp+TEfyINM3wZAHwoIzXtEViopCRsXkmLr+IBGszmUpZnPd2QuqDSSkQhlZmUAuNVPCTBoNuWBX/tvvAw3a3jl+DXB+Fn2JbRpoUdvkgAWCAJ6hrKgA==
+                                            </X509Certificate>
+                                        </X509Data>
+                                    </KeyInfo>
+                                </Identity>
+                            </wsa10:EndpointReference></wsdl:port>
+                        <wsdl:port name="CustomBinding_ISecurityTokenService1"
+                                   binding="tns:CustomBinding_ISecurityTokenService1">
+                            <soap12:address
+                                    location="https://wts02.india.sun.com/Security_Federation_SecurityTokenService_Indigo/Symmetric.svc/Scenario_1_IssuedTokenOverTransport_UsernameOverTransport"/>
+                            <wsa10:EndpointReference>
+                                <wsa10:Address>
+                                    https://wts02.india.sun.com/Security_Federation_SecurityTokenService_Indigo/Symmetric.svc/Scenario_1_IssuedTokenOverTransport_UsernameOverTransport
+                                </wsa10:Address>
+                                <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+                                    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                                        <X509Data>
+                                            <X509Certificate>
+                                                MIIDDDCCAfSgAwIBAgIQb6U6bec4ZHW96T5N2A/NdTANBgkqhkiG9w0BAQUFADAwMQ4wDAYDVQQKDAVPQVNJUzEeMBwGA1UEAwwVT0FTSVMgSW50ZXJvcCBUZXN0IENBMB4XDTA1MTAyNzAwMDAwMFoXDTE4MTAyNzIzNTk1OVowQjEOMAwGA1UECgwFT0FTSVMxIDAeBgNVBAsTF09BU0lTIEludGVyb3AgVGVzdCBDZXJ0MQ4wDAYDVQQDDAVXc3NJUDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA2X9ZWiek/59vvg+l/lmzWjBYiqoOuSI+ms3ief7RyhPNh/IrGE3VwU67HsygNeavE06S6xNfcNWUNLqEdRmd/29WnubNH7hWJsqp7rn8g/mxNVkynCkJ1saKuD8ILiKfNg0e8UUE9QzwEz1fxw81OR0SbDitfTrDj8Q/ouCgEaUCAwEAAaOBkzCBkDAJBgNVHRMEAjAAMDMGA1UdHwQsMCowKKImhiRodHRwOi8vaW50ZXJvcC5iYnRlc3QubmV0L2NybC9jYS5jcmwwDgYDVR0PAQH/BAQDAgSwMB0GA1UdDgQWBBQb1AYE+P8ue/8qbgUJOKoyDXFqaTAfBgNVHSMEGDAWgBTAnSj8wes1oR3WqqqgHBpNwkkPDzANBgkqhkiG9w0BAQUFAAOCAQEAeltzyUHj+/0i3Hsj5XvWrJ7mF+zBFwp7E6CPLP/urfMdl1VFaBttOCcdWRrm8GI3KsGQMV6dpzAykl1JDO7T6IMSMYA1/YTsSH9S8xoubL/7IGYj3izKZ9LrV7fJJOHOerKLgIk/0X8DzH15jwel271s6Nh6DiXqU2Hf0YUmauLAH+rbiuNLlUKM5UkP4BtGqPw+6tvyaUOa3fzJs92WB+j5x91/xmvNg+ZTp+TEfyINM3wZAHwoIzXtEViopCRsXkmLr+IBGszmUpZnPd2QuqDSSkQhlZmUAuNVPCTBoNuWBX/tvvAw3a3jl+DXB+Fn2JbRpoUdvkgAWCAJ6hrKgA==
+                                            </X509Certificate>
+                                        </X509Data>
+                                    </KeyInfo>
+                                </Identity>
+                            </wsa10:EndpointReference>
+                        </wsdl:port>
+                        <wsdl:port name="WSHttpBinding_ISecurityTokenService"
+                                   binding="tns:WSHttpBinding_ISecurityTokenService">
+                            <soap12:address
+                                    location="http://wts02.india.sun.com/Security_Federation_SecurityTokenService_Indigo/Symmetric.svc/Scenario_5_IssuedTokenForCertificate_MutualCertificate11"/>
+                            <wsa10:EndpointReference>
+                                <wsa10:Address>
+                                    http://wts02.india.sun.com/Security_Federation_SecurityTokenService_Indigo/Symmetric.svc/Scenario_5_IssuedTokenForCertificate_MutualCertificate11
+                                </wsa10:Address>
+                                <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+                                    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                                        <X509Data>
+                                            <X509Certificate>
+                                                MIIDDDCCAfSgAwIBAgIQb6U6bec4ZHW96T5N2A/NdTANBgkqhkiG9w0BAQUFADAwMQ4wDAYDVQQKDAVPQVNJUzEeMBwGA1UEAwwVT0FTSVMgSW50ZXJvcCBUZXN0IENBMB4XDTA1MTAyNzAwMDAwMFoXDTE4MTAyNzIzNTk1OVowQjEOMAwGA1UECgwFT0FTSVMxIDAeBgNVBAsTF09BU0lTIEludGVyb3AgVGVzdCBDZXJ0MQ4wDAYDVQQDDAVXc3NJUDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA2X9ZWiek/59vvg+l/lmzWjBYiqoOuSI+ms3ief7RyhPNh/IrGE3VwU67HsygNeavE06S6xNfcNWUNLqEdRmd/29WnubNH7hWJsqp7rn8g/mxNVkynCkJ1saKuD8ILiKfNg0e8UUE9QzwEz1fxw81OR0SbDitfTrDj8Q/ouCgEaUCAwEAAaOBkzCBkDAJBgNVHRMEAjAAMDMGA1UdHwQsMCowKKImhiRodHRwOi8vaW50ZXJvcC5iYnRlc3QubmV0L2NybC9jYS5jcmwwDgYDVR0PAQH/BAQDAgSwMB0GA1UdDgQWBBQb1AYE+P8ue/8qbgUJOKoyDXFqaTAfBgNVHSMEGDAWgBTAnSj8wes1oR3WqqqgHBpNwkkPDzANBgkqhkiG9w0BAQUFAAOCAQEAeltzyUHj+/0i3Hsj5XvWrJ7mF+zBFwp7E6CPLP/urfMdl1VFaBttOCcdWRrm8GI3KsGQMV6dpzAykl1JDO7T6IMSMYA1/YTsSH9S8xoubL/7IGYj3izKZ9LrV7fJJOHOerKLgIk/0X8DzH15jwel271s6Nh6DiXqU2Hf0YUmauLAH+rbiuNLlUKM5UkP4BtGqPw+6tvyaUOa3fzJs92WB+j5x91/xmvNg+ZTp+TEfyINM3wZAHwoIzXtEViopCRsXkmLr+IBGszmUpZnPd2QuqDSSkQhlZmUAuNVPCTBoNuWBX/tvvAw3a3jl+DXB+Fn2JbRpoUdvkgAWCAJ6hrKgA==
+                                            </X509Certificate>
+                                        </X509Data>
+                                    </KeyInfo>
+                                </Identity>
+                            </wsa10:EndpointReference>
+                        </wsdl:port>
+                        <wsdl:port name="WSHttpBinding_ISecurityTokenService1"
+                                   binding="tns:WSHttpBinding_ISecurityTokenService">
+                            <soap12:address
+                                    location="http://wts02.india.sun.com/Security_Federation_SecurityTokenService_Indigo/Symmetric.svc/Scenario_6_IssuedTokenForCertificateSecureConversation_MutualCertificate11"/>
+                            <wsa10:EndpointReference>
+                                <wsa10:Address>
+                                    http://wts02.india.sun.com/Security_Federation_SecurityTokenService_Indigo/Symmetric.svc/Scenario_6_IssuedTokenForCertificateSecureConversation_MutualCertificate11
+                                </wsa10:Address>
+                                <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+                                    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+                                        <X509Data>
+                                            <X509Certificate>
+                                                MIIDDDCCAfSgAwIBAgIQb6U6bec4ZHW96T5N2A/NdTANBgkqhkiG9w0BAQUFADAwMQ4wDAYDVQQKDAVPQVNJUzEeMBwGA1UEAwwVT0FTSVMgSW50ZXJvcCBUZXN0IENBMB4XDTA1MTAyNzAwMDAwMFoXDTE4MTAyNzIzNTk1OVowQjEOMAwGA1UECgwFT0FTSVMxIDAeBgNVBAsTF09BU0lTIEludGVyb3AgVGVzdCBDZXJ0MQ4wDAYDVQQDDAVXc3NJUDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA2X9ZWiek/59vvg+l/lmzWjBYiqoOuSI+ms3ief7RyhPNh/IrGE3VwU67HsygNeavE06S6xNfcNWUNLqEdRmd/29WnubNH7hWJsqp7rn8g/mxNVkynCkJ1saKuD8ILiKfNg0e8UUE9QzwEz1fxw81OR0SbDitfTrDj8Q/ouCgEaUCAwEAAaOBkzCBkDAJBgNVHRMEAjAAMDMGA1UdHwQsMCowKKImhiRodHRwOi8vaW50ZXJvcC5iYnRlc3QubmV0L2NybC9jYS5jcmwwDgYDVR0PAQH/BAQDAgSwMB0GA1UdDgQWBBQb1AYE+P8ue/8qbgUJOKoyDXFqaTAfBgNVHSMEGDAWgBTAnSj8wes1oR3WqqqgHBpNwkkPDzANBgkqhkiG9w0BAQUFAAOCAQEAeltzyUHj+/0i3Hsj5XvWrJ7mF+zBFwp7E6CPLP/urfMdl1VFaBttOCcdWRrm8GI3KsGQMV6dpzAykl1JDO7T6IMSMYA1/YTsSH9S8xoubL/7IGYj3izKZ9LrV7fJJOHOerKLgIk/0X8DzH15jwel271s6Nh6DiXqU2Hf0YUmauLAH+rbiuNLlUKM5UkP4BtGqPw+6tvyaUOa3fzJs92WB+j5x91/xmvNg+ZTp+TEfyINM3wZAHwoIzXtEViopCRsXkmLr+IBGszmUpZnPd2QuqDSSkQhlZmUAuNVPCTBoNuWBX/tvvAw3a3jl+DXB+Fn2JbRpoUdvkgAWCAJ6hrKgA==
+                                            </X509Certificate>
+                                        </X509Data>
+                                    </KeyInfo>
+                                </Identity>
+                            </wsa10:EndpointReference>
+                        </wsdl:port>
+                    </wsdl:service>
+                </wsdl:definitions>
+            </wsx:MetadataSection>
+        </Metadata>
+    </s:Body>
+</s:Envelope>

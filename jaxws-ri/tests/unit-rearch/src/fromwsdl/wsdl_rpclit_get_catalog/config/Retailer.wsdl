@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<wsdl:definitions
+     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+       xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      xmlns:cat="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/RetailCatalog.xsd"
+    xmlns:order="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/RetailOrder.xsd"
+      xmlns:tns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"
+targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+          xmlns="http://schemas.xmlsoap.org/wsdl/"
+      xmlns:wsi="http://ws-i.org/schemas/conformanceClaim/"
+     >
+
+<wsdl:documentation>
+    This WSDL document describes the Retailer service for the WS-I Basic Sample Application. This
+    service is part of a supply chain management system. It is used to demonstrate a web service that is conformant
+    with the Basic Profile and to show how different web service platforms can interoperate.
+</wsdl:documentation>
+
+    <wsdl:types>
+
+      <xs:schema>
+
+        <xs:import namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/RetailCatalog.xsd"
+                schemaLocation="RetailCatalog.xsd"/>
+        <xs:import namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/RetailOrder.xsd"
+                schemaLocation="RetailOrder.xsd"/>
+      </xs:schema>
+
+    </wsdl:types>
+
+    <wsdl:message name="getCatalogRequest" />
+    <wsdl:message name="getCatalogResponse">
+        <wsdl:part name="return" type="cat:CatalogType">
+            <wsdl:documentation>the product catalog</wsdl:documentation>
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="echoCatalogRequest" >
+        <wsdl:part name="input" type="cat:CatalogType"/>
+    </wsdl:message>
+    <wsdl:message name="echoCatalogResponse">
+        <wsdl:part name="return" type="cat:CatalogType">
+            <wsdl:documentation>the product catalog</wsdl:documentation>
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="testCatalogRequest">
+        <wsdl:part name="name" type="xs:string"/>
+        <wsdl:part name="index" type="cat:productNumber"/>
+    </wsdl:message>
+
+    <wsdl:message name="testCatalogResponse">
+        <wsdl:part name="output" type="cat:CatalogType"/>
+        <wsdl:part name="name" type="xs:string"/>
+    </wsdl:message>
+
+     <wsdl:message name="testHoldersRequest">
+        <wsdl:part name="name" type="xs:string"/>
+        <wsdl:part name="inout" type="xs:int"/>
+    </wsdl:message>
+
+    <wsdl:message name="testHoldersResponse">
+        <wsdl:part name="out" type="xs:double"/>
+        <wsdl:part name="inout" type="xs:int"/>
+    </wsdl:message>
+
+    <message name="Hello_helloOneWay">
+        <part name="parameters" type="xs:string"/>
+    </message>
+
+    <message name="testShortArrayTest">
+        <part name="parameters" type="order:ShortArrayTest"/>
+    </message>
+    <message name="testShortArrayTestResponse">
+        <part name="result" type="order:ShortArrayTestResponse"/>
+    </message>
+
+    <message name="testIntArray">
+        <part name="parameters" type="cat:intArray"/>
+    </message>
+    <message name="testIntArrayResponse">
+        <part name="result" type="cat:intArray"/>
+    </message>
+
+    <message name="testParameterOrderRequest">
+        <part name="foo" type="xs:string"/>
+    	<part name="bar" type="xs:int"/>
+    </message>
+
+    <message name="testParameterOrderResponse">
+        <part name="foo1" type="xs:string"/>
+    	<part name="bar1" type="xs:int"/>
+    </message>
+
+    <message name="testUnboundedPartsRequest">
+        <part name="foo" type="xs:string"/>
+        <part name="foo1" type="xs:string"/>
+    </message>
+
+    <message name="UnboundedPartsException">
+        <part name="comment" element="cat:comment"/>
+    </message>
+    
+
+    <message name="testUnboundedPartsResponse">
+        <part name="bar" type="xs:int"/>
+    	<part name="bar1" type="xs:int"/>
+        <part name="bar2" type="xs:int"/>
+    </message>
+	
+	<message name="GetGCBugInput1">
+       <part name="FirstName" type="xs:string"/>
+       <part name="LastName" type="xs:string"/>
+       <part name="MiddleName" type="xs:string"/>
+       <part name="age" type="xs:int"/>
+   </message>
+   <message name="GetGCBugOutput1">
+       <part name="Name" type="cat:NameType"/>
+       <part name="PersonalDetails" type="cat:PersonalDetailsType"/>
+       <part name="Address" type="cat:AddressType"/>
+   </message>
+
+	
+    <wsdl:portType name="RetailerPortType">
+        <wsdl:operation name="echoCatalog">
+            <wsdl:input message="tns:echoCatalogRequest" name="echoCatalogRequest"/>
+            <wsdl:output message="tns:echoCatalogResponse" name="echoCatalogResponse"/>
+        </wsdl:operation>
+		
+		<wsdl:operation name="GetGCBug">
+            <wsdl:input message="tns:GetGCBugInput1"/>
+            <wsdl:output message="tns:GetGCBugOutput1"/>
+        </wsdl:operation>
+		
+		
+        <wsdl:operation name="getCatalog">
+            <wsdl:documentation>returns a product catalog</wsdl:documentation>
+            <wsdl:input message="tns:getCatalogRequest" name="getCatalogRequest"/>
+            <wsdl:output message="tns:getCatalogResponse" name="getCatalogResponse"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="testCatalog">
+            <wsdl:documentation>returns a product catalog</wsdl:documentation>
+            <wsdl:input message="tns:testCatalogRequest" name="testCatalogRequest"/>
+            <wsdl:output message="tns:testCatalogResponse" name="testCatalogResponse"/>
+        </wsdl:operation>
+
+        <operation name="helloOneWay">
+          <input message="tns:Hello_helloOneWay"/>
+        </operation>
+
+        <wsdl:operation name="testHolders">
+            <wsdl:input message="tns:testHoldersRequest" name="testHoldersRequest"/>
+            <wsdl:output message="tns:testHoldersResponse" name="testHoldersResponse"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="shortArrayTest">
+            <wsdl:input message="tns:testShortArrayTest" name="testShortArrayTest"/>
+            <wsdl:output message="tns:testShortArrayTestResponse" name="testShortArrayTestResponse"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="testParameterOrder" parameterOrder="bar foo foo1">
+            <wsdl:input message="tns:testParameterOrderRequest" name="testParameterOrderRequest"/>
+            <wsdl:output message="tns:testParameterOrderResponse" name="testParameterOrderResponse"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="testUnboundedParts" parameterOrder="foo foo1 bar bar1">
+            <wsdl:input message="tns:testUnboundedPartsRequest" name="testUnboundedPartsRequest"/>
+            <wsdl:output message="tns:testUnboundedPartsResponse" name="testUnboundedPartsResponse"/>
+            <wsdl:fault message="tns:UnboundedPartsException" name="exception"/>
+        </wsdl:operation>
+
+
+<!--
+        <wsdl:operation name="intArrayTest">
+            <wsdl:input message="tns:testIntArray" name="testIntArrayTest"/>
+            <wsdl:output message="tns:testIntArrayResponse" name="testIntArrayResponse"/>
+        </wsdl:operation>
+-->
+
+    </wsdl:portType>
+
+    <wsdl:binding name="RetailerSoapBinding" type="tns:RetailerPortType">
+        <wsdl:documentation>
+            <wsi:Claim conformsTo="http://ws-i.org/profiles/basic1.0/" />
+            </wsdl:documentation>
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="getCatalog">
+            <soap:operation soapAction="" style="rpc"/>
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="echoCatalog">
+            <soap:operation soapAction="" style="rpc"/>
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="testCatalog">
+            <soap:operation soapAction="" style="rpc"/>
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="helloOneWay">
+            <soap:operation soapAction="" style="rpc"/>
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:input>
+        </wsdl:operation>
+
+        <wsdl:operation name="testHolders">
+            <soap:operation soapAction="" style="rpc"/>
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="shortArrayTest">
+            <soap:operation soapAction="" style="rpc"/>
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="testParameterOrder">
+            <soap:operation soapAction="" style="rpc"/>
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+    <wsdl:operation name="testUnboundedParts">
+            <soap:operation soapAction="" style="rpc"/>
+            <wsdl:input>
+                <soap:body parts="foo" use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body parts="bar" use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:output>
+            <wsdl:fault name="exception">
+                <soap:fault name="exception" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		
+	<operation name="GetGCBug">
+           <input>
+               <soap:body use="literal" parts="LastName FirstName" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+           </input>
+           <output>
+               <soap:body use="literal" parts="Address Name" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+           </output>
+       </operation> 
+	   
+<!--
+        <wsdl:operation name="intArrayTest">
+            <soap:operation soapAction="" style="rpc"/>
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl"/>
+            </wsdl:output>
+        </wsdl:operation>
+-->
+
+    </wsdl:binding>
+</wsdl:definitions>
+
+
+<!-- The following is an example of a getCatalog SOAP request message compliant with the above WSDL:
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<ns1:getCatalog xmlns:ns1="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl">
+</ns1:getCatalog>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+The following is an example of a getCatalog SOAP response message compliant with the above WSDL:
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<ns1:getCatalogResponse xmlns:ns1="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl">
+<return>
+  <Item xmlns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/RetailCatalog.xsd">
+    <name>TV,Brand1</name>
+    <description>24", Color, Advanced Velocit Scan Modular</description>
+    <productNumber>605001</productNumber>
+    <category>TV</category>
+    <brand>Brand1</brand>
+    <price>299.95</price>
+  </Item>
+  <Item xmlns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/RetailCatalog.xsd">
+    <name>TV, Brand2</name>
+    <description>32", Super Slim Flat Panel Plasma</description>
+    <productNumber>605002</productNumber>
+    <category>TV</category>
+    <brand>Brand2</brand>
+    <price>1499.99</price>
+  </Item>
+</return>
+</ns1:getCatalogResponse>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+
+
+The following is an example of a submitOrder SOAP request message compliant with the above WSDL:
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Header>
+<h:Configuration
+    xmlns:h="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Configuration.xsd">
+  <h:UserId>griddell@bowstreet.com</h:UserId>
+  <h:ServiceUrl Role="LoggingFacility">http://example1/SampleApp/SCM/LoggingFacility</h:ServiceUrl>
+  <h:ServiceUrl Role="Retailer">http://example2/wsi/soaprpc/wsi/RetailerImpl</h:ServiceUrl>
+  <h:ServiceUrl Role="WarehouseA">http://example3/wsi/soaprpc/wsi/WarehouseAImpl</h:ServiceUrl>
+  <h:ServiceUrl Role="WarehouseB">http://example4/wsi/soaprpc/wsi/WarehouseBImpl</h:ServiceUrl>
+  <h:ServiceUrl Role="WarehouseC">http://example5/wsi/soaprpc/wsi/WarehouseCImpl</h:ServiceUrl>
+  <h:ServiceUrl Role="ManufacturerA">http://example6/ws-i_sample/ManufacturerA</h:ServiceUrl>
+  <h:ServiceUrl Role="ManufacturerB">http://example7/ws-i_sample/ManufacturerB</h:ServiceUrl>
+  <h:ServiceUrl Role="ManufacturerC">http://example8/ws-i_sample/ManufacturerC</h:ServiceUrl>
+</h:Configuration>
+</SOAP-ENV:Header>
+<SOAP-ENV:Body>
+<ns1:submitOrder xmlns:ns1="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl">
+<PartsOrder xmlns:p="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/RetailOrder.xsd">
+  <p:Item>
+    <p:productNumber>605006</p:productNumber>
+    <p:quantity>182</p:quantity>
+    <p:price>3.99</p:price>
+  </p:Item>
+  <p:Item><p:productNumber>605002</p:productNumber>
+    <p:quantity>4</p:quantity>
+    <p:price>3.99</p:price>
+    </p:Item>
+  <p:Item>
+    <p:productNumber>605003</p:productNumber>
+    <p:quantity>82</p:quantity>
+    <p:price>7.99</p:price>
+  </p:Item>
+</PartsOrder>
+<CustomerDetails xmlns:c="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/RetailOrder.xsd">
+  <c:custnbr>ABCD999999999EFG</c:custnbr>
+  <c:name>Joe Bloggs</c:name>
+  <c:street1 />
+  <c:city />
+  <c:state>NH</c:state>
+  <c:zip>03870</c:zip>
+  <c:country>USA</c:country>
+</CustomerDetails>
+</ns1:submitOrder>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+The following is an example of a submitOrder SOAP response message that is compliant with the WSDL:
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<ns1:submitOrderResponse xmlns:ns1="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Retailer.wsdl">
+<return xmlns:ns2="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/RetailOrder.xsd">
+  <ns2:Item>
+    <ns2:productNumber>605002</ns2:productNumber>
+    <ns2:quantity>4</ns2:quantity>
+    <ns2:price>3.99</ns2:price>
+    <ns2:comment>in stock from WarehouseA</ns2:comment>
+  </ns2:Item>
+  <ns2:Item>
+    <ns2:productNumber>605006</ns2:productNumber>
+    <ns2:quantity>0</ns2:quantity>
+    <ns2:price>0</ns2:price>
+    <ns2:comment>insufficient stock</ns2:comment>
+  </ns2:Item>
+  <ns2:Item>
+    <ns2:productNumber>605003</ns2:productNumber>
+    <ns2:quantity>0</ns2:quantity>
+    <ns2:price>0</ns2:price>
+    <ns2:comment>insufficient stock</ns2:comment>
+  </ns2:Item>
+</return>
+</ns1:submitOrderResponse>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+
+-->

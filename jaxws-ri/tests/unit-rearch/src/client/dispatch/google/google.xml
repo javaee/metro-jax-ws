@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom" xmlns:cse="http://schemas.google.com/cseapi/2010" xmlns:gd="http://schemas.google.com/g/2005" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" gd:kind="customsearch#search">
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+ <title>Google Custom Search - SAAJ</title>
+ <id>tag:www.googleapis.com,2010-09-29:/customsearch/v1?q=SAAJ&amp;cx=007386487642334705425:rffb5lj8r98&amp;num=10&amp;start=1&amp;safe=off</id>
+ <author>
+  <name>JAVA.NET Search - Google Custom Search</name>
+ </author>
+ <updated>1970-01-16T18:39:30.452Z</updated>
+ <opensearch:Url type="application/atom+xml" template="https://www.googleapis.com/customsearch/v1?q={searchTerms}&amp;num={count?}&amp;start={startIndex?}&amp;lr={language?}&amp;safe={cse:safe?}&amp;cx={cse:cx?}&amp;cref={cse:cref?}&amp;sort={cse:sort?}&amp;filter={cse:filter?}&amp;gl={cse:gl?}&amp;cr={cse:cr?}}&amp;googlehost={cse:googleHost?}&amp;c2coff={?cse:disableCnTwTranslation}&amp;hq={cse:hq?}&amp;hl={cse:hl?}&amp;siteSearch={cse:siteSearch?}&amp;siteSearchFilter={cse:siteSearchFilter?}&amp;exactTerms={cse:exactTerms?}&amp;excludeTerms={cse:excludeTerms?}&amp;linkSite={cse:linkSite?}&amp;orTerms={cse:orTerms?}&amp;relatedSite={cse:relatedSite?}&amp;dateRestrict={cse:dateRestrict?}&amp;lowRange={cse:lowRange?}&amp;highRange={cse:highRange?}&amp;searchType={cse:searchType?}&amp;fileType={cse:fileType?}&amp;rights={cse:rights?}&amp;imgsz={cse:imgsz?}&amp;imgtype={cse:imgtype?}&amp;imgc={cse:imgc?}&amp;imgcolor={cse:imgcolor?}&amp;alt=atom"/>
+ <opensearch:Query role="request" title="Google Custom Search - SAAJ" totalResults="8210" searchTerms="SAAJ" count="10" startIndex="1" inputEncoding="utf8" outputEncoding="utf8" cse:safe="off" cse:cx="007386487642334705425:rffb5lj8r98"/>
+ <opensearch:Query role="cse:nextPage" title="Google Custom Search - SAAJ" totalResults="8210" searchTerms="SAAJ" count="10" startIndex="11" inputEncoding="utf8" outputEncoding="utf8" cse:safe="off" cse:cx="007386487642334705425:rffb5lj8r98"/>
+ <opensearch:totalResults>8210</opensearch:totalResults>
+ <opensearch:startIndex>1</opensearch:startIndex>
+ <cse:context title="JAVA.NET Search"/>
+ <cse:searchInformation>
+  <cse:searchTime>0.221615</cse:searchTime>
+  <cse:formattedSearchTime>0.22</cse:formattedSearchTime>
+  <cse:totalResults>8210</cse:totalResults>
+  <cse:formattedTotalResults>8,210</cse:formattedTotalResults>
+ </cse:searchInformation>
+ <cse:spelling>
+  <cse:correctedQuery type="html"/>
+ </cse:spelling>
+ <entry gd:kind="customsearch#result">
+  <id>http://java.net/projects/saaj/</id>
+  <updated>1970-01-16T18:39:30.452Z</updated>
+  <title type="html">The Standard Implementation for &lt;b&gt;SAAJ&lt;/b&gt; — Java.net</title>
+  <link href="http://java.net/projects/saaj/" title="java.net"/>
+  <summary type="html">GlassFish » Metro » &lt;b&gt;SAAJ&lt;/b&gt;. Metro. JAX-WS. WSIT. JAXB. JAX-WS Commons. &lt;br&gt;  Policy. Wiseman. Test Harness. Libraries. XWSS. &lt;b&gt;SAAJ&lt;/b&gt;. XSOM. WOM. &lt;br&gt;  CodeModel &lt;b&gt;...&lt;/b&gt;</summary>
+  <cse:cacheId>cZAKMghDSdoJ</cse:cacheId>
+  <cse:formattedUrl type="html">java.net/projects/&lt;b&gt;saaj&lt;/b&gt;/</cse:formattedUrl>
+ </entry>
+ <entry gd:kind="customsearch#result">
+  <id>http://saaj.java.net/</id>
+  <updated>1970-01-16T18:39:30.452Z</updated>
+  <title type="html">&lt;b&gt;SAAJ&lt;/b&gt; Reference Implementation Project — Java.net</title>
+  <link href="http://saaj.java.net/" title="saaj.java.net"/>
+  <summary type="html">Welcome to the &lt;b&gt;SAAJ&lt;/b&gt; Standard Implementation Project. This project is an &lt;br&gt;  independently reusable part of the Metro project. &lt;b&gt;SAAJ&lt;/b&gt; 1.3 supports both SOAP &lt;br&gt;  1.1 &lt;b&gt;...&lt;/b&gt;</summary>
+  <cse:cacheId>DwfE1kWXDYkJ</cse:cacheId>
+  <cse:formattedUrl type="html">&lt;b&gt;saaj&lt;/b&gt;.java.net/</cse:formattedUrl>
+  <cse:PageMap>
+   <cse:DataObject type="cse_image">
+    <cse:Attribute name="src" value="http://saaj.java.net/images/extend.gif"/>
+   </cse:DataObject>
+   <cse:DataObject type="cse_thumbnail">
+    <cse:Attribute name="width" value="79"/>
+    <cse:Attribute name="height" value="79"/>
+    <cse:Attribute name="src" value="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6NN8L63alYm23ltw710K8DiQaTvp5KdOR0zZYK1USijLOc6QC2BIaPA"/>
+   </cse:DataObject>
+  </cse:PageMap>
+ </entry>
+ <entry gd:kind="customsearch#result">
+  <id>http://java.net/projects/saaj/downloads</id>
+  <updated>1970-01-16T18:39:30.452Z</updated>
+  <title type="html">The Standard Implementation for &lt;b&gt;SAAJ&lt;/b&gt;: Downloads — Java.net</title>
+  <link href="http://java.net/projects/saaj/downloads" title="java.net"/>
+  <summary type="html">GlassFish Samples Grizzly Jersey OpenMQ SailFin Shoal HK2 Wiki &amp;middot; Webtier &amp;middot; &lt;br&gt;  JSP EL JSTL JSF JSFTemplating Woodstock Jersey Phobos WADL LRWPinJava &lt;b&gt;...&lt;/b&gt;</summary>
+  <cse:cacheId>VES6rgJpZiIJ</cse:cacheId>
+  <cse:formattedUrl type="html">java.net/projects/&lt;b&gt;saaj&lt;/b&gt;/downloads</cse:formattedUrl>
+ </entry>
+ <entry gd:kind="customsearch#result">
+  <id>http://java.net/projects/saaj/members</id>
+  <updated>1970-01-16T18:39:30.452Z</updated>
+  <title type="html">The Standard Implementation for &lt;b&gt;SAAJ&lt;/b&gt;: Members — Java.net</title>
+  <link href="http://java.net/projects/saaj/members" title="java.net"/>
+  <summary type="html">The Standard Implementation for &lt;b&gt;SAAJ&lt;/b&gt; Project Members. showing 1 - 30 of 143. &lt;br&gt;  « Previous 1 2 3 4 5 Next ». Name Tablescrolldownicon &amp;middot; Tablescrollupicon &lt;b&gt;...&lt;/b&gt;</summary>
+  <cse:cacheId>JX5R0Wc559cJ</cse:cacheId>
+  <cse:formattedUrl type="html">java.net/projects/&lt;b&gt;saaj&lt;/b&gt;/members</cse:formattedUrl>
+ </entry>
+ <entry gd:kind="customsearch#result">
+  <id>http://weblogs.java.net/blog/kumarjayanti/archive/2009/12/10/summary-proprietary-features-saaj-ri-134</id>
+  <updated>1970-01-16T18:39:30.452Z</updated>
+  <title type="html">Summary of Proprietary Features in &lt;b&gt;SAAJ&lt;/b&gt; RI 1.3.4 | Java.net</title>
+  <link href="http://weblogs.java.net/blog/kumarjayanti/archive/2009/12/10/summary-proprietary-features-saaj-ri-134" title="weblogs.java.net"/>
+  <summary type="html">Dec 10, 2009 &lt;b&gt;...&lt;/b&gt; In this post i would like to provide a brief summary of some of the Propietary &lt;br&gt;  Features and implementation details of &lt;b&gt;SAAJ&lt;/b&gt; 1.3.4 that are not &lt;b&gt;...&lt;/b&gt;</summary>
+  <cse:cacheId>aoRgew7SeaMJ</cse:cacheId>
+  <cse:formattedUrl type="html">weblogs.java.net/blog/.../summary-proprietary-features-&lt;b&gt;saaj&lt;/b&gt;-ri-134</cse:formattedUrl>
+  <cse:PageMap>
+   <cse:DataObject type="cse_image">
+    <cse:Attribute name="src" value="http://weblogs.java.net/images/people/kumar_jayanti.jpg"/>
+   </cse:DataObject>
+   <cse:DataObject type="cse_thumbnail">
+    <cse:Attribute name="width" value="90"/>
+    <cse:Attribute name="height" value="62"/>
+    <cse:Attribute name="src" value="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcReJNcyV6t1ZBBYuGBqY5ga7ly6NbJzYuHnIRIdj3JgYiuMxl0mSFhlrw"/>
+   </cse:DataObject>
+  </cse:PageMap>
+ </entry>
+ <entry gd:kind="customsearch#result">
+  <id>http://java.net/projects/saaj/lists</id>
+  <updated>1970-01-16T18:39:30.452Z</updated>
+  <title type="html">The Standard Implementation for &lt;b&gt;SAAJ&lt;/b&gt;: Mailing Lists — Java.net</title>
+  <link href="http://java.net/projects/saaj/lists" title="java.net"/>
+  <summary type="html">The Standard Implementation for &lt;b&gt;SAAJ&lt;/b&gt; Mailing Lists.</summary>
+  <cse:cacheId>dXVxgIBPf_MJ</cse:cacheId>
+  <cse:formattedUrl type="html">java.net/projects/&lt;b&gt;saaj&lt;/b&gt;/lists</cse:formattedUrl>
+ </entry>
+ <entry gd:kind="customsearch#result">
+  <id>http://java.net/projects/saaj/sources</id>
+  <updated>1970-01-16T18:39:30.452Z</updated>
+  <title type="html">The Standard Implementation for &lt;b&gt;SAAJ&lt;/b&gt;: Source Code — Java.net</title>
+  <link href="http://java.net/projects/saaj/sources" title="java.net"/>
+  <summary type="html">The Standard Implementation for &lt;b&gt;SAAJ&lt;/b&gt;source code. Repository Name, Checkout &lt;br&gt;  URI. Subversion, https://svn.java.net/svn/&lt;b&gt;saaj&lt;/b&gt;~svn (You must be logged in to &lt;b&gt;...&lt;/b&gt;</summary>
+  <cse:cacheId>8XZz93qJNR0J</cse:cacheId>
+  <cse:formattedUrl type="html">java.net/projects/&lt;b&gt;saaj&lt;/b&gt;/sources</cse:formattedUrl>
+ </entry>
+ <entry gd:kind="customsearch#result">
+  <id>http://download.java.net/maven/1/com.sun.xml.messaging.saaj/jars/</id>
+  <updated>1970-01-16T18:39:30.452Z</updated>
+  <title type="html">Index of /maven/1/com.sun.xml.messaging.&lt;b&gt;saaj&lt;/b&gt;/jars/</title>
+  <link href="http://download.java.net/maven/1/com.sun.xml.messaging.saaj/jars/" title="download.java.net"/>
+  <summary type="html">Index of /maven/1/com.sun.xml.messaging.&lt;b&gt;saaj&lt;/b&gt;/jars/. Name Last modified Size &lt;br&gt;  Description. [DIR] Parent Directory [ ] &lt;b&gt;saaj&lt;/b&gt;-impl-1.3-SNAPSHOT-sources.jar &lt;b&gt;...&lt;/b&gt;</summary>
+  <cse:cacheId>_a60i0ASsBEJ</cse:cacheId>
+  <cse:formattedUrl type="html">download.java.net/maven/1/com.sun.xml.messaging.&lt;b&gt;saaj&lt;/b&gt;/jars/</cse:formattedUrl>
+ </entry>
+ <entry gd:kind="customsearch#result">
+  <id>http://java.net/projects/istack-commons</id>
+  <updated>1970-01-16T18:39:30.452Z</updated>
+  <title type="html">Shared code between JAXP, JAXB, &lt;b&gt;SAAJ&lt;/b&gt; ... — Java.net</title>
+  <link href="http://java.net/projects/istack-commons" title="java.net"/>
+  <summary type="html">Shared code between JAXP, JAXB, &lt;b&gt;SAAJ&lt;/b&gt; ... Defaultprojectimage. Shared code &lt;br&gt;  between JAXP, JAXB, &lt;b&gt;SAAJ&lt;/b&gt;, and JAX-WS. Tags: none; Members: 42; Source &lt;b&gt;...&lt;/b&gt;</summary>
+  <cse:cacheId>YMjmWLCDg3gJ</cse:cacheId>
+  <cse:formattedUrl type="html">java.net/projects/istack-commons</cse:formattedUrl>
+ </entry>
+ <entry gd:kind="customsearch#result">
+  <id>http://java.net/projects/saaj/sources/svn/history?path=tags</id>
+  <updated>1970-01-16T18:39:30.452Z</updated>
+  <title type="html">The Standard Implementation for &lt;b&gt;SAAJ&lt;/b&gt;: Subversion: Source Code &lt;b&gt;...&lt;/b&gt;</title>
+  <link href="http://java.net/projects/saaj/sources/svn/history?path=tags" title="java.net"/>
+  <summary type="html">Revision: 406. Modified: 19 Mar 17:18 (11 months). Author: miroslav.kos. Log &lt;br&gt;  Entry: [maven-release-plugin] copy for tag &lt;b&gt;saaj&lt;/b&gt;-impl-1.3.19 &lt;b&gt;...&lt;/b&gt;</summary>
+  <cse:cacheId>xf6lrZeFh34J</cse:cacheId>
+  <cse:formattedUrl type="html">java.net/projects/&lt;b&gt;saaj&lt;/b&gt;/sources/svn/history?path=tags</cse:formattedUrl>
+ </entry>
+</feed>

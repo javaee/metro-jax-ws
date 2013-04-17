@@ -1,0 +1,10 @@
+<jaxb:bindings version="1.0"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb">
+    <jaxb:bindings schemaLocation="hello.xsd" node="/xs:schema">
+               <jaxb:schemaBindings xmlns:ns2="http://java.sun.com/xml/ns/jaxb">
+            <jaxb:package name="customization.jaxb_custom.doclit.server"/>
+        </jaxb:schemaBindings>
+	</jaxb:bindings>
+</jaxb:bindings>

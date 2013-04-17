@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<definitions
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:s="http://www.w3.org/2001/XMLSchema"
+    xmlns:ns0="http://soapinterop.org/"
+    xmlns:ns1="http://soapinterop.org/types"
+    targetNamespace="http://soapinterop.org/">
+    <types>
+        <s:schema
+            elementFormDefault="qualified"
+            targetNamespace="http://soapinterop.org/types">
+            <s:element name="echoVoid">
+                <s:complexType/>
+            </s:element>
+            <s:element name="echoVoidResponse">
+                <s:complexType/>
+            </s:element>
+            <s:element name="echoInteger">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="param" type="s:int"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoIntegerResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="return" type="s:int"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoFloat">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="param" type="s:float"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoFloatResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="return" type="s:float"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoString">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="param" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoStringResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="return" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoBase64">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="param" type="s:base64Binary"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoBase64Response">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="return" type="s:base64Binary"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoDate">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="param" type="s:dateTime"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoDateResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="return" type="s:dateTime"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoDecimal">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="param" type="s:decimal"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoDecimalResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="return" type="s:decimal"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoBoolean">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="param" type="s:boolean"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoBooleanResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="return" type="s:boolean"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoComplexType">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="param" type="ns1:ComplexType"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoComplexTypeResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="return" type="ns1:ComplexType"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoIntegerArray">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="unbounded" name="param" type="s:int"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoIntegerArrayResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="unbounded" name="return" type="s:int"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoFloatArray">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="unbounded" name="param" type="s:float"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoFloatArrayResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="unbounded" name="return" type="s:float"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoStringArray">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="unbounded" name="param" type="s:string" nillable="true"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoStringArrayResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="unbounded" name="return" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+          <s:element name="echoComplexTypeArray">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="0" maxOccurs="unbounded" name="param" type="ns1:ComplexType" nillable="true"/>
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element name="echoComplexTypeArrayResponse">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="0" maxOccurs="unbounded" name="return" type="ns1:ComplexType"/>
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+            <s:element name="ComplexType" nillable="true" type="ns1:ComplexType"/>
+            <s:element name="echoNestedComplexType">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="param" type="ns1:NestedComplexType"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoNestedComplexTypeResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="return" type="ns1:NestedComplexType"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoEnum">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="param" type="ns1:Enum"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="echoEnumResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="return" type="ns1:Enum"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ComplexType">
+                <s:sequence>
+                    <s:element minOccurs="1" maxOccurs="1" name="varInt" type="s:int"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="varString" type="s:string"/>
+                    <s:element minOccurs="1" maxOccurs="1" name="varFloat" type="s:float"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="NestedComplexType">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" name="varString" type="s:string"/>
+                    <s:element minOccurs="1" maxOccurs="1" name="varInt" type="s:int"/>
+                    <s:element minOccurs="1" maxOccurs="1" name="varFloat" type="s:float"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="varComplexType" type="ns1:ComplexType"/>
+                </s:sequence>
+            </s:complexType>
+            <s:simpleType name="Enum">
+                <s:restriction base="s:string">
+                    <s:enumeration value="BitOne"/>
+                    <s:enumeration value="BitTwo"/>
+                    <s:enumeration value="BitThree"/>
+                    <s:enumeration value="BitFour"/>
+                    <s:enumeration value="BitFive"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:schema>
+    </types>
+    <message name="echoVoid">
+        <part name="parameters" element="ns1:echoVoid"/>
+    </message>
+    <message name="echoVoidResponse">
+        <part name="return" element="ns1:echoVoidResponse"/>
+    </message>
+    <message name="echoInteger">
+        <part name="parameters" element="ns1:echoInteger"/>
+    </message>
+    <message name="echoIntegerResponse">
+        <part name="return" element="ns1:echoIntegerResponse"/>
+    </message>
+    <message name="echoFloat">
+        <part name="parameters" element="ns1:echoFloat"/>
+    </message>
+    <message name="echoFloatResponse">
+        <part name="return" element="ns1:echoFloatResponse"/>
+    </message>
+    <message name="echoString">
+        <part name="parameters" element="ns1:echoString"/>
+    </message>
+    <message name="echoStringResponse">
+        <part name="return" element="ns1:echoStringResponse"/>
+    </message>
+    <message name="echoBase64">
+        <part name="parameters" element="ns1:echoBase64"/>
+    </message>
+    <message name="echoBase64Response">
+        <part name="return" element="ns1:echoBase64Response"/>
+    </message>
+    <message name="echoDate">
+        <part name="parameters" element="ns1:echoDate"/>
+    </message>
+    <message name="echoDateResponse">
+        <part name="return" element="ns1:echoDateResponse"/>
+    </message>
+    <message name="echoComplexType">
+        <part name="parameters" element="ns1:echoComplexType"/>
+    </message>
+    <message name="echoComplexTypeResponse">
+        <part name="return" element="ns1:echoComplexTypeResponse"/>
+    </message>
+    <message name="echoIntegerArray">
+        <part name="parameters" element="ns1:echoIntegerArray"/>
+    </message>
+    <message name="echoIntegerArrayResponse">
+        <part name="return" element="ns1:echoIntegerArrayResponse"/>
+    </message>
+    <message name="echoFloatArray">
+        <part name="parameters" element="ns1:echoFloatArray"/>
+    </message>
+    <message name="echoFloatArrayResponse">
+        <part name="return" element="ns1:echoFloatArrayResponse"/>
+    </message>
+    <message name="echoStringArray">
+        <part name="parameters" element="ns1:echoStringArray"/>
+    </message>
+    <message name="echoStringArrayResponse">
+        <part name="return" element="ns1:echoStringArrayResponse"/>
+    </message>
+  <message name="echoComplexTypeArray">
+    <part name="parameters" element="ns1:echoComplexTypeArray"/>
+  </message>
+  <message name="echoComplexTypeArrayResponse">
+    <part name="return" element="ns1:echoComplexTypeArrayResponse"/>
+  </message>
+    <message name="echoDecimal">
+        <part name="parameters" element="ns1:echoDecimal"/>
+    </message>
+    <message name="echoDecimalResponse">
+        <part name="return" element="ns1:echoDecimalResponse"/>
+    </message>
+    <message name="echoBoolean">
+        <part name="parameters" element="ns1:echoBoolean"/>
+    </message>
+    <message name="echoBooleanResponse">
+        <part name="return" element="ns1:echoBooleanResponse"/>
+    </message>
+    <message name="echoNestedComplexType">
+        <part name="parameters" element="ns1:echoNestedComplexType"/>
+    </message>
+    <message name="echoNestedComplexTypeResponse">
+        <part name="return" element="ns1:echoNestedComplexTypeResponse"/>
+    </message>
+    <message name="echoEnum">
+        <part name="parameters" element="ns1:echoEnum"/>
+    </message>
+    <message name="echoEnumResponse">
+        <part name="return" element="ns1:echoEnumResponse"/>
+    </message>
+    <portType name="EchoPortType">
+        <operation name="echoVoid">
+            <input message="ns0:echoVoid"/>
+            <output message="ns0:echoVoidResponse"/>
+        </operation>
+        <operation name="echoInteger">
+            <input message="ns0:echoInteger"/>
+            <output message="ns0:echoIntegerResponse"/>
+        </operation>
+        <operation name="echoFloat">
+            <input message="ns0:echoFloat"/>
+            <output message="ns0:echoFloatResponse"/>
+        </operation>
+        <operation name="echoString">
+            <input message="ns0:echoString"/>
+            <output message="ns0:echoStringResponse"/>
+        </operation>
+        <operation name="echoBase64">
+            <input message="ns0:echoBase64"/>
+            <output message="ns0:echoBase64Response"/>
+        </operation>
+        <operation name="echoDate">
+            <input message="ns0:echoDate"/>
+            <output message="ns0:echoDateResponse"/>
+        </operation>
+        <operation name="echoDecimal">
+            <input message="ns0:echoDecimal"/>
+            <output message="ns0:echoDecimalResponse"/>
+        </operation>
+        <operation name="echoBoolean">
+            <input message="ns0:echoBoolean"/>
+            <output message="ns0:echoBooleanResponse"/>
+        </operation>
+        <operation name="echoComplexType">
+            <input message="ns0:echoComplexType"/>
+            <output message="ns0:echoComplexTypeResponse"/>
+        </operation>
+        <operation name="echoEnum">
+            <input message="ns0:echoEnum"/>
+            <output message="ns0:echoEnumResponse"/>
+        </operation>
+        <operation name="echoIntegerArray">
+            <input message="ns0:echoIntegerArray"/>
+            <output message="ns0:echoIntegerArrayResponse"/>
+        </operation>
+        <operation name="echoFloatArray">
+            <input message="ns0:echoFloatArray"/>
+            <output message="ns0:echoFloatArrayResponse"/>
+        </operation>
+        <operation name="echoStringArray">
+            <input message="ns0:echoStringArray"/>
+            <output message="ns0:echoStringArrayResponse"/>
+        </operation>
+      <operation name="echoComplexTypeArray">
+        <input message="ns0:echoComplexTypeArray"/>
+        <output message="ns0:echoComplexTypeArrayResponse"/>
+      </operation>
+        <operation name="echoNestedComplexType">
+            <input message="ns0:echoNestedComplexType"/>
+            <output message="ns0:echoNestedComplexTypeResponse"/>
+        </operation>
+    </portType>
+    <binding name="EchoBinding" type="ns0:EchoPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <operation name="echoVoid">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+              <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoInteger">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoFloat">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoString">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoBase64">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoDate">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoDecimal">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoBoolean">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoComplexType">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoEnum">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoIntegerArray">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoFloatArray">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="echoStringArray">
+            <soap:operation style="document"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+      <operation name="echoComplexTypeArray">
+        <soap:operation style="document"/>
+        <input>
+          <soap:body use="literal"/>
+        </input>
+        <output>
+          <soap:body use="literal"/>
+        </output>
+      </operation>
+      <operation name="echoNestedComplexType">
+          <soap:operation style="document"/>
+          <input>
+              <soap:body use="literal"/>
+          </input>
+          <output>
+              <soap:body use="literal"/>
+          </output>
+      </operation>
+    </binding>
+    <service name="EchoService">
+        <port name="EchoPort" binding="ns0:EchoBinding">
+            <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
+        </port>
+    </service>
+</definitions>
