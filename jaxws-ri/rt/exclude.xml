@@ -51,6 +51,15 @@
         <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS"/>
     </Match>
     <!--
+    GMBAL/Management API design
+    -->
+    <Match>
+        <Or>
+            <Class name="com.sun.xml.ws.client.MonitorRootClient"/>
+        </Or>
+        <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD"/>
+    </Match>
+    <!--
     Not an error - propertyset design uses this feature.
     -->
     <Match>

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -78,7 +78,6 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
 
     private final Map<String, WSDLPartImpl> inParts;
     private final Map<String, WSDLPartImpl> outParts;
-    private final Map<String, WSDLPartImpl> fltParts;
     private final List<WSDLBoundFaultImpl> wsdlBoundFaults;
     private WSDLOperationImpl operation;
     private String soapAction;
@@ -101,15 +100,16 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         faultMimeTypes = new HashMap<String, String>();
         inParts = new HashMap<String, WSDLPartImpl>();
         outParts = new HashMap<String, WSDLPartImpl>();
-        fltParts = new HashMap<String, WSDLPartImpl>();
         wsdlBoundFaults = new ArrayList<WSDLBoundFaultImpl>();
         this.owner = owner;
     }
 
+    @Override
     public QName getName(){
         return name;
     }
 
+    @Override
     public String getSOAPAction() {
         return soapAction;
     }
@@ -118,6 +118,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         this.soapAction = soapAction!=null?soapAction:"";
     }
 
+    @Override
     public WSDLPartImpl getPart(String partName, Mode mode) {
         if(mode==Mode.IN){
             return inParts.get(partName);
@@ -162,15 +163,18 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     }
 
     // TODO: what's the difference between this and inputParts/outputParts?
+    @Override
     public Map<String,WSDLPart> getInParts() {
         return Collections.<String,WSDLPart>unmodifiableMap(inParts);
     }
 
+    @Override
     public Map<String,WSDLPart> getOutParts() {
         return Collections.<String,WSDLPart>unmodifiableMap(outParts);
     }
 
     @NotNull
+    @Override
     public List<WSDLBoundFaultImpl> getFaults() {
         return wsdlBoundFaults;
     }
@@ -306,11 +310,13 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         return faultMimeTypes.get(part);
     }
 
+    @Override
     public WSDLOperationImpl getOperation() {
         return operation;
     }
 
 
+    @Override
     public WSDLBoundPortType getBoundPortType() {
         return owner;
     }
@@ -332,6 +338,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         this.style = style;
     }
 
+    @Override
     public @Nullable QName getReqPayloadName() {
         if (emptyRequestPayload)
             return null;
@@ -361,6 +368,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         return null;
     }
 
+    @Override
     public @Nullable QName getResPayloadName() {
         if (emptyResponsePayload)
             return null;
@@ -400,6 +408,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
      * @return   non-null for rpclit and null for doclit
      * @see RuntimeModeler#processRpcMethod(JavaMethodImpl, String, String, Method)
      */
+    @Override
     public String getRequestNamespace(){
         return (reqNamespace != null)?reqNamespace:name.getNamespaceURI();
     }
@@ -415,6 +424,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
      * @return   non-null for rpclit and null for doclit
      * @see RuntimeModeler#processRpcMethod(JavaMethodImpl, String, String, Method)
      */
+    @Override
     public String getResponseNamespace(){
         return (respNamespace!=null)?respNamespace:name.getNamespaceURI();
     }
@@ -448,6 +458,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     /**
      * @inheritDoc
      */
+    @Override
     public ANONYMOUS getAnonymous() {
         return anonymous;
     }

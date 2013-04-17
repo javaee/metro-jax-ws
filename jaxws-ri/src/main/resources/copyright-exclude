@@ -56,4 +56,8 @@ tests/unit/testcases/fromwsdl/mime/simple_rpclit/server/Catalog.wsdl
 tests/unit/testcases/fromwsdl/mime/text_plain_754/server/Catalog.wsdl
 tests/unit/testcases/xop/hello/server/wsi-swa.xsd
 tests/unit/testcases/xop/hellodirect/server/wsi-swa.xsd
-
+tests/unit-rearch/src/fromwsdl/mime/simple_rpclit/config/WS-ISwA.xsd
+tests/unit-rearch/src/fromwsdl/mime/simple_doclit/config/WS-ISwA.xsd
+tests/unit-rearch/src/fromjava/handler_simple/a
+tests/unit-rearch/src/fromwsdl/handler/config/handler_setup.sxd
+tests/unit-rearch/src/whitebox/mex/resolver/com.sun.xml.ws.api.wsdl.parser.MetadataResolverFactory

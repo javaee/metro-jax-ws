@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,20 +42,12 @@ package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
-import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
-import org.glassfish.gmbal.InheritedAttribute;
-import org.glassfish.gmbal.InheritedAttributes;
 import org.glassfish.gmbal.ManagedAttribute;
-import org.glassfish.gmbal.ManagedData;
 import org.glassfish.gmbal.ManagedObject;
-import org.glassfish.gmbal.ManagedObjectManager;
-import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import java.net.URL;
 
 /**
