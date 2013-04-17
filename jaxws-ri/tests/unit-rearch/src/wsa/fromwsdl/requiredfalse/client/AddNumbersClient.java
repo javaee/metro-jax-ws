@@ -38,13 +38,6 @@
  * holder.
  */
 
-/*
- $Id: AddNumbersClient.java,v 1.1.2.5 2006/08/29 19:59:00 arung Exp $
-
- Copyright (c) 2006 Sun Microsystems, Inc.
- All rights reserved.
-*/
-
 package wsa.fromwsdl.requiredfalse.client;
 
 import junit.framework.TestCase;

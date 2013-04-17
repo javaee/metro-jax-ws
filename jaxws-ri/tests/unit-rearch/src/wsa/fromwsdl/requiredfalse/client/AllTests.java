@@ -38,13 +38,6 @@
  * holder.
  */
 
-/*
- $Id: AllTests.java,v 1.1.2.1 2006/08/23 00:29:26 arung Exp $
-
- Copyright (c) 2006 Sun Microsystems, Inc.
- All rights reserved.
-*/
-
 package wsa.fromwsdl.requiredfalse.client;
 
 import junit.framework.Test;

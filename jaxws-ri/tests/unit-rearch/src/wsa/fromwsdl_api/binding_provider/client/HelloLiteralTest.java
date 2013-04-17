@@ -38,15 +38,6 @@
  * holder.
  */
 
-/*
- * $Id: HelloLiteralTest.java,v 1.1.2.7 2006/10/13 18:52:37 rp146011 Exp $
- */
-
-/*
- * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
-
 package wsa.fromwsdl_api.binding_provider.client;
 
 import client.common.client.DispatchTestCase;

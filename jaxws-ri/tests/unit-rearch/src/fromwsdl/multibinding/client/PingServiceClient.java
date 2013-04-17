@@ -55,10 +55,6 @@ import javax.xml.ws.soap.SOAPBinding;
 import testutil.ClientServerTestUtil;
 import javax.xml.ws.BindingProvider;
 
-/**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 public class PingServiceClient extends TestCase{
     PingPort stub;
     PingPort stub1;

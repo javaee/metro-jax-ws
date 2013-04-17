@@ -38,13 +38,6 @@
  * holder.
  */
 
-/*
- $Id: TestConstants.java,v 1.1.2.2 2006/08/25 23:46:18 arung Exp $
-
- Copyright (c) 2006 Sun Microsystems, Inc.
- All rights reserved.
-*/
-
 package wsa.fromwsdl.requiredfalse.common;
 
 /**

@@ -38,15 +38,6 @@
  * holder.
  */
 
-/*
- * $Id: AllTests.java,v 1.1.2.1 2006/10/05 15:29:25 kwalsh Exp $
- */
-
-/*
- * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
-
 package wsa.fromwsdl_api.service.client;
 
 import junit.framework.*;

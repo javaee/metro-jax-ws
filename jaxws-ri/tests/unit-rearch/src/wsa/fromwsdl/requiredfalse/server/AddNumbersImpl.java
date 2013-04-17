@@ -38,13 +38,6 @@
  * holder.
  */
 
-/*
- $Id: AddNumbersImpl.java,v 1.1.2.3 2006/08/25 23:46:18 arung Exp $
-
- Copyright (c) 2006 Sun Microsystems, Inc.
- All rights reserved.
-*/
-
 package wsa.fromwsdl.requiredfalse.server;
 
 import javax.jws.WebService;

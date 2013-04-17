@@ -57,10 +57,6 @@ import javax.xml.ws.soap.SOAPBinding;
 import com.sun.xml.ws.handler.PortInfoImpl;
 import com.sun.xml.ws.api.BindingID;
 
-/**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 public class HandlerChainTester extends TestCase{
     TestService_Service service;
     private final static URL WSDL_LOCATION;

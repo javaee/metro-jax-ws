@@ -42,10 +42,6 @@ package whitebox.wsimport_catalog.client;
 
 import junit.framework.TestCase;
 
-/**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 public class WsimportCatalogTester extends TestCase{
     public WsimportCatalogTester(String s) {
         super(s);
