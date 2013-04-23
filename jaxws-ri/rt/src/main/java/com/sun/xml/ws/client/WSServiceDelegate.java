@@ -809,7 +809,7 @@ public class WSServiceDelegate extends WSService {
                 ClientMessages.INVALID_PORT_NAME(portName,buildWsdlPortNames()));
         }
 
-        BindingImpl binding = eif.createBinding(webServiceFeatures.toArray(), portInterface);
+        BindingImpl binding = eif.createBinding(webServiceFeatures, portInterface);
         InvocationHandler pis = getStubHandler(binding, eif, epr);
 
         T proxy = createProxy(portInterface, pis);
