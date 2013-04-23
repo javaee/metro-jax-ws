@@ -43,8 +43,12 @@ package com.sun.xml.ws.client;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.Closeable;
-import com.sun.xml.ws.api.*;
+import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.ComponentFeature;
+import com.sun.xml.ws.api.ComponentsFeature;
 import com.sun.xml.ws.api.ComponentFeature.Target;
+import com.sun.xml.ws.api.EndpointAddress;
+import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.client.ServiceInterceptor;
 import com.sun.xml.ws.api.client.ServiceInterceptorFactory;
@@ -62,6 +66,7 @@ import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.client.HandlerConfigurator.AnnotationConfigurator;
 import com.sun.xml.ws.client.HandlerConfigurator.HandlerResolverImpl;
 import com.sun.xml.ws.client.sei.SEIStub;
+
 import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
 import com.sun.xml.ws.developer.UsesJAXBContextFeature;
 import com.sun.xml.ws.developer.WSBindingProvider;
@@ -87,7 +92,13 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.*;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Dispatch;
+import javax.xml.ws.EndpointReference;
+import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceClient;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.handler.HandlerResolver;
 import javax.xml.ws.soap.AddressingFeature;
 import java.io.IOException;
@@ -96,7 +107,12 @@ import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
@@ -699,6 +715,16 @@ public class WSServiceDelegate extends WSService {
 
     private <T> T createProxy(final Class<T> portInterface, final InvocationHandler pis) {
 
+        // When creating the proxy, use a ClassLoader that can load classes
+        // from both the interface class and also from this classes
+        // classloader. This is necessary when this code is used in systems
+        // such as OSGi where the class loader for the interface class may
+        // not be able to load internal JAX-WS classes like
+        // "WSBindingProvider", but the class loader for this class may not
+        // be able to load the interface class.
+        final ClassLoader loader = getDelegatingLoader(portInterface.getClassLoader(),
+                WSServiceDelegate.class.getClassLoader());
+
         // accessClassInPackage privilege needs to be granted ...
         RuntimePermission perm = new RuntimePermission("accessClassInPackage.com.sun." + "xml.internal.*");
         PermissionCollection perms = perm.newPermissionCollection();
@@ -708,7 +734,7 @@ public class WSServiceDelegate extends WSService {
                 new PrivilegedAction<T>() {
                     @Override
                     public T run() {
-                        Object proxy = Proxy.newProxyInstance(portInterface.getClassLoader(),
+                        Object proxy = Proxy.newProxyInstance(loader,
                                 new Class[]{portInterface, WSBindingProvider.class, Closeable.class}, pis);
                         return portInterface.cast(proxy);
                     }
@@ -719,7 +745,7 @@ public class WSServiceDelegate extends WSService {
                         })
         );
     }
-    
+
     private WSDLServiceImpl getWSDLModelfromSEI(final Class sei) {
         WebService ws = AccessController.doPrivileged(new PrivilegedAction<WebService>() {
             public WebService run() {
@@ -771,7 +797,7 @@ public class WSServiceDelegate extends WSService {
         }
     }
 
-    private <T> T createEndpointIFBaseProxy(@Nullable WSEndpointReference epr, QName portName, final Class<T> portInterface,
+    private <T> T createEndpointIFBaseProxy(@Nullable WSEndpointReference epr, QName portName, Class<T> portInterface,
                                             WebServiceFeatureList webServiceFeatures, SEIPortInfo eif) {
         //fail if service doesnt have WSDL
         if (wsdlService == null) {
@@ -786,17 +812,7 @@ public class WSServiceDelegate extends WSService {
         BindingImpl binding = eif.createBinding(webServiceFeatures.toArray(), portInterface);
         InvocationHandler pis = getStubHandler(binding, eif, epr);
 
-        // When creating the proxy, use a ClassLoader that can load classes
-        // from both the interface class and also from this classes
-        // classloader. This is necessary when this code is used in systems
-        // such as OSGi where the class loader for the interface class may
-        // not be able to load internal JAX-WS classes like 
-        // "WSBindingProvider", but the class loader for this class may not
-        // be able to load the interface class.
-        ClassLoader loader = 
-            getDelegatingLoader(portInterface.getClassLoader(),
-                               WSServiceDelegate.class.getClassLoader());
-        T proxy = portInterface.cast(createProxy(portInterface, pis));
+        T proxy = createProxy(portInterface, pis);
 
         if (serviceInterceptor != null) {
             serviceInterceptor.postCreateProxy((WSBindingProvider)proxy, portInterface);
