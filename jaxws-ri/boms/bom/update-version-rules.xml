@@ -51,6 +51,7 @@
         <rule groupId="com.sun.xml.stream.buffer" artifactId="streambuffer" comparisonMethod="maven">
             <ignoreVersions>
                 <ignoreVersion type="regex">1.5.1-.*</ignoreVersion>
+                <ignoreVersion type="regex">2.2-.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.jvnet.staxex" artifactId="stax-ex" comparisonMethod="maven">
