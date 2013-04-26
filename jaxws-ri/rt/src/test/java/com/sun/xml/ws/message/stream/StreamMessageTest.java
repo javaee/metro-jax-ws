@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.message.stream;
 
+import com.oracle.webservices.api.message.MessageContext;
+import com.oracle.webservices.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
@@ -57,6 +59,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -282,6 +285,26 @@ public class StreamMessageTest extends TestCase {
         trans.transform(source, result);
         return bab.newInputStream();
     }
-
     
+    public void testEmptySoapHeader() throws Exception {
+		String soap = 
+				"<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>" +
+		           "<soap:Header xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'></soap:Header>" +
+		  "<soapenv:Body>"+
+		  "  <tes:fooOwsmMsgProtection xmlns:tes='http://testOwsm'>"+
+		  "   <!--Optional:-->"+
+		  "    <arg0>string</arg0>"+
+		  "  </tes:fooOwsmMsgProtection>"+
+		  "</soapenv:Body>"+
+		"</soapenv:Envelope>";		
+		MessageContextFactory mcf = MessageContextFactory.createFactory();		
+		MessageContext mc = mcf.createContext(new ByteArrayInputStream(soap.getBytes()), "text/xml");
+		String string1 = mc.toString();
+		
+		ByteArrayOutputStream bo = new ByteArrayOutputStream();
+		mc.writeTo(bo);
+		String string2 = new String(bo.toByteArray());		
+		assertTrue(string1.indexOf("Header") != -1);
+		assertTrue(string2.indexOf("Header") != -1);    	
+    }    
 }
