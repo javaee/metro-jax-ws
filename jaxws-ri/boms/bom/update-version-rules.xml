@@ -45,17 +45,17 @@
     <rules>
         <rule groupId="com.sun.xml.ws" artifactId="policy" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">2.3.1-*</ignoreVersion>
+                <ignoreVersion type="regex">2.3.1-.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="com.sun.xml.stream.buffer" artifactId="streambuffer" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">1.5.1-*</ignoreVersion>
+                <ignoreVersion type="regex">1.5.1-.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.jvnet.staxex" artifactId="stax-ex" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">1.7.1-*</ignoreVersion>
+                <ignoreVersion type="regex">1.7.1-.*</ignoreVersion>
             </ignoreVersions>
         </rule>
     </rules>
