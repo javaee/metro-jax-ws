@@ -52,7 +52,7 @@
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>release-documentation</artifactId>
     <version>2.2.9-SNAPSHOT</version>
-    
+
     <packaging>pom</packaging>
     <name>JAX-WS RI Release Documentation</name>
 
@@ -230,4 +230,52 @@
         <src.dir>${basedir}/target/gen-src</src.dir>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>release-docs</id>
+            <properties>
+                <remote.directory>${www.repository.url}/docs</remote.directory>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>checkin-docbook</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <property name="www.upload.dir" location="${project.build.directory}/www-stage"/>
+                                        <mkdir dir="${www.upload.dir}"/>
+
+                                        <copy todir="${www.upload.dir}">
+                                            <fileset dir="${project.build.directory}/docbook">
+                                                <exclude name="*.fo" />
+                                            </fileset>
+                                        </copy>
+
+                                        <taskdef name="soimp" classname="com.sun.istack.soimp.Soimp" classpathref="maven.plugin.classpath" />
+
+                                        <!-- update the latest docbook-version -->
+                                        <soimp dir="${www.upload.dir}"
+                                                repository="${remote.directory}"
+                                                username="${userguide.scm.username}"
+                                                password="${userguide.scm.password}"
+                                                create="true"
+                                                additionalOptions="--no-auth-cache"
+                                                commitMessage="${project.artifactId}-${project.version}" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -48,7 +48,7 @@
         <version>2.2.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.sun.xml.ws</groupId>
@@ -58,10 +58,46 @@
     <packaging>pom</packaging>
     <name>JAX-WS RI Documentation</name>
 
+    <properties>
+        <www.upload.dir>${project.build.directory}/www-stage</www.upload.dir>
+    </properties>
+
     <modules>
         <module>release-documentation</module>
         <module>www</module>
         <module>../samples</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>release-docs</id>
+            <properties>
+                <www.repository.url>https://svn.java.net/svn/jax-ws~wcr/trunk/www/${project.version}</www.repository.url>
+                <userguide.scm.username></userguide.scm.username>
+                <userguide.scm.password></userguide.scm.password>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-antrun-plugin</artifactId>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>com.sun.istack</groupId>
+                                    <artifactId>istack-commons-soimp</artifactId>
+                                    <version>2.17</version>
+                                </dependency>
+                                <dependency>
+                                    <groupId>args4j</groupId>
+                                    <artifactId>args4j</artifactId>
+                                    <version>2.0.1</version>
+                                </dependency>
+                            </dependencies>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

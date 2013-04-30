@@ -56,11 +56,6 @@
     <packaging>pom</packaging>
     <name>JAX-WS RI WWW Help files</name>
 
-    <properties>
-        <jaxws.bin>JAXWS${project.version}-${dstamp}.zip</jaxws.bin>
-        <jaxws.src>JAXWS${project.version}-src-${dstamp}.zip</jaxws.src>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -102,7 +97,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <outputDirectory>${www.upload.dir}</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${project.basedir}/src/main/resources</directory>
@@ -115,5 +110,84 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release-docs</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>jaxws-rt</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>jaxws-tools</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-rt-javadoc</id>
+                                <goals>
+                                    <goal>unpack-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <classifier>javadoc</classifier>
+                                    <includeArtifactIds>jaxws-rt</includeArtifactIds>
+                                    <excludeTransitive>true</excludeTransitive>
+                                    <outputDirectory>${www.upload.dir}/javadocs/rt</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>unpack-tools-javadoc</id>
+                                <goals>
+                                    <goal>unpack-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <classifier>javadoc</classifier>
+                                    <includeArtifactIds>jaxws-tools</includeArtifactIds>
+                                    <excludeTransitive>true</excludeTransitive>
+                                    <outputDirectory>${www.upload.dir}/javadocs/tools</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>checkin-www</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <taskdef name="soimp" classname="com.sun.istack.soimp.Soimp" classpathref="maven.plugin.classpath" />
+
+                                        <!-- update the www -->
+                                        <soimp dir="${www.upload.dir}"
+                                                repository="${www.repository.url}"
+                                                username="${userguide.scm.username}"
+                                                password="${userguide.scm.password}"
+                                                create="true"
+                                                additionalOptions="--no-auth-cache"
+                                                commitMessage="${project.artifactId}-${project.version}" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
