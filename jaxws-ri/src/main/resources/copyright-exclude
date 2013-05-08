@@ -47,6 +47,7 @@ NamespaceContextImpl.java
 .svn
 rt/src/test/resources/etc/testMtomMessageReload_01.msg
 rt/src/test/resources/etc/testMtomMessageReload_02.msg
+rt/src/test/resources/etc/EchoService.wsdl
 gpsXml.xml
 boms/bom/pom.xml
 boms/bom-ext/pom.xml
