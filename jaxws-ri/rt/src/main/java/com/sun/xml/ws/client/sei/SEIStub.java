@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -103,7 +103,7 @@ public final class SEIStub extends Stub implements InvocationHandler {
         // first fill in sychronized versions
         for (JavaMethodImpl m : seiModel.getJavaMethods()) {
             if (!m.getMEP().isAsync) {
-            	SyncMethodHandler handler = new SyncMethodHandler(this, m.getMethod());
+                SyncMethodHandler handler = new SyncMethodHandler(this, m);
                 syncs.put(m.getOperation(), m);
                 methodHandlers.put(m.getMethod(), handler);
             }
