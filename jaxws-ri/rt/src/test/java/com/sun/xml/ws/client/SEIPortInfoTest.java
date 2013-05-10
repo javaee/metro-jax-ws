@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,60 +40,56 @@
 
 package com.sun.xml.ws.client;
 
-import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.SOAPBindingImpl;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
+import com.sun.xml.ws.client.seiportinfo.Hello;
 import com.sun.xml.ws.model.SOAPSEIModel;
+import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
+import junit.framework.TestCase;
 
+import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-/**
- * {@link PortInfo} that has {@link SEIModel}.
- *
- * This object is created statically when {@link WSServiceDelegate} is created
- * with an service interface.
- *
- * NOTE: Made this class public so that Dispatch instances derived from a
- *       'parent' SEI-based port instance (generally for sending protocol
- *       messages or request retries) can still know what the parent's SEI was.
- *
- * @author Kohsuke Kawaguchi
- */
-public final class SEIPortInfo extends PortInfo {
+public class SEIPortInfoTest extends TestCase {
 
-    public final Class sei;
+    static final URL WSDL_URL = SEIPortInfoTest.class.getResource("hello_literal.wsdl");
 
-    /**
-     * Model of {@link #sei}.
-     */
-    public final SOAPSEIModel model;
+    static final QName SERVICE_NAME = new QName("urn:test", "Hello");
+    static final QName PORT_NAME = new QName("urn:test", "HelloPort");
+    static final QName EXTRA_HEADER = new QName("urn:test:types", "Extra");
 
-    public SEIPortInfo(WSServiceDelegate owner, Class sei, SOAPSEIModel model, @NotNull WSDLPort portModel) {
-        super(owner, portModel);
-        this.sei = sei;
-        this.model = model;
-        assert sei != null && model != null;
+    static final Class PORT_INTERFACE = Hello.class;
+
+    public void testCreateBindingWSFList() throws MalformedURLException {
+        SEIPortInfo seiPortInfo = createSEIPortInfo();
+        BindingImpl b = seiPortInfo.createBinding(new WebServiceFeatureList(), PORT_INTERFACE);
+
+        boolean understands = ((SOAPBindingImpl) b).understandsHeader(EXTRA_HEADER);
+        assertTrue("header " + EXTRA_HEADER + " must be understood", understands);
     }
 
-    @Override
-    public BindingImpl createBinding(WebServiceFeature[] webServiceFeatures, Class<?> portInterface) {
-        BindingImpl binding = super.createBinding(webServiceFeatures, portInterface);
-        return setKnownHeaders(binding);
+    public void testCreateBindingWSFArray() throws MalformedURLException {
+        SEIPortInfo seiPortInfo = createSEIPortInfo();
+        BindingImpl b = seiPortInfo.createBinding(new WebServiceFeature[]{}, PORT_INTERFACE);
+
+        boolean understands = ((SOAPBindingImpl) b).understandsHeader(EXTRA_HEADER);
+        assertTrue("header " + EXTRA_HEADER + " must be understood", understands);
     }
 
-    public BindingImpl createBinding(WebServiceFeatureList webServiceFeatures, Class<?> portInterface) {
-        // not to pass in (BindingImpl) model.getWSBinding()
-        BindingImpl binding = super.createBinding(webServiceFeatures, portInterface, null);
-        return setKnownHeaders(binding);
+    private SEIPortInfo createSEIPortInfo() throws MalformedURLException {
+        WSServiceDelegate delegate = (WSServiceDelegate) WSService.create(WSDL_URL, SERVICE_NAME);
+
+        WSDLPortImpl wsdlPort = delegate.getPortModel(delegate.getWsdlService(), PORT_NAME);
+        SEIModel model = delegate.buildRuntimeModel(delegate.getServiceName(), PORT_NAME, PORT_INTERFACE, wsdlPort, new WebServiceFeatureList());
+
+        return new SEIPortInfo(delegate, PORT_INTERFACE, (SOAPSEIModel) model, wsdlPort);
     }
 
-    private BindingImpl setKnownHeaders(BindingImpl binding) {
-        if (binding instanceof SOAPBindingImpl) {
-            ((SOAPBindingImpl) binding).setPortKnownHeaders(model.getKnownHeaders());
-        }
-        return binding;
-    }
 }
+
