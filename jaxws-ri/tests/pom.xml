@@ -138,7 +138,7 @@
             </activation>
             <modules>
                 <module>unit</module>
-                <module>unit-rearch</module>
+                <!--<module>unit-rearch</module>-->
             </modules>
         </profile>
         <profile>
