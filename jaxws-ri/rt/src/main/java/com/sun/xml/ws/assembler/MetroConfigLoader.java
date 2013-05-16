@@ -57,10 +57,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.ws.WebServiceException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ReflectPermission;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.*;
 import java.util.logging.Level;
 
 /**
@@ -250,7 +252,15 @@ class MetroConfigLoader {
     private static MetroConfig loadMetroConfig(@NotNull URL resourceUrl) {
         MetroConfig result = null;
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(MetroConfig.class.getPackage().getName());
+            JAXBContext jaxbContext = AccessController.doPrivileged(
+                    new PrivilegedExceptionAction<JAXBContext>() {
+                        @Override
+                        public JAXBContext run() throws Exception {
+                            return JAXBContext.newInstance(MetroConfig.class.getPackage().getName());
+                        }
+                    }, createSecurityContext()
+            );
+
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             XMLInputFactory factory = XmlUtil.newXMLInputFactory(true);
             final JAXBElement<MetroConfig> configElement = unmarshaller.unmarshal(factory.createXMLStreamReader(resourceUrl.openStream()), MetroConfig.class);
@@ -259,6 +269,16 @@ class MetroConfigLoader {
             LOGGER.warning(TubelineassemblyMessages.MASM_0010_ERROR_READING_CFG_FILE_FROM_LOCATION(resourceUrl.toString()), e);
         }
         return result;
+    }
+
+    private static AccessControlContext createSecurityContext() {
+        PermissionCollection perms = new Permissions();
+        perms.add(new RuntimePermission("accessClassInPackage.com" + ".sun.xml.internal.ws.runtime.config")); // avoid repackaging
+        perms.add(new ReflectPermission("suppressAccessChecks"));
+        return new AccessControlContext(
+                new ProtectionDomain[]{
+                        new ProtectionDomain(null, perms),
+                });
     }
 
     private static class MetroConfigUrlLoader extends ResourceLoader {
