@@ -41,6 +41,7 @@
 package com.sun.xml.ws.db.sdo;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,6 +66,7 @@ import org.eclipse.persistence.Version;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 
 import com.sun.xml.ws.spi.db.BindingContext;
+import com.sun.xml.ws.spi.db.BindingInfo;
 import com.sun.xml.ws.spi.db.PropertyAccessor;
 import com.sun.xml.ws.spi.db.TypeInfo;
 import com.sun.xml.ws.spi.db.WrapperComposite;
@@ -103,8 +105,8 @@ public final class SDOContextWrapper implements BindingContext {
     
     private HelperContext defaultContext;
 
-    public SDOContextWrapper(Map<String, Object> props) {
-        this.properties = props;
+    public SDOContextWrapper(BindingInfo bi) {
+        this.properties = bi.properties();
         wrapperAccessors = new HashMap<Class<?>, SDOWrapperAccessor>();
         contextResolver = (HelperContextResolver) properties.get(SDO_HELPER_CONTEXT_RESOLVER);
         if (contextResolver == null) {
@@ -118,6 +120,16 @@ public final class SDOContextWrapper implements BindingContext {
             };
         }
         suppliedSchemas = (Set<SchemaInfo>) properties.get(SDO_SCHEMA_INFO);
+        if (suppliedSchemas == null) {
+            URL wsdlURL = bi.getWsdlURL();
+            if (wsdlURL != null) {
+                try {
+                    suppliedSchemas = SDOUtils.getSchemas(wsdlURL.getFile());
+                } catch (Exception e) {
+                    throw new SDODatabindingException("uninitialized helper context", e);
+                }
+            }
+        }
         config(suppliedSchemas);
         SDOUtils.registerSDOContext(getHelperContext(), schemas);
         serviceName = null;

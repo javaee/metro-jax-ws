@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,27 +40,51 @@
 
 package com.sun.xml.ws.sdo;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.jws.WebService;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
 
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
+import org.xml.sax.EntityResolver;
 import com.oracle.webservices.api.databinding.DatabindingModeFeature;
+import com.oracle.webservices.api.databinding.ExternalMetadataFeature;
 
 import com.sun.xml.ws.sdo.sample.service.*;
 import com.sun.xml.ws.sdo.sample.service.types.Dept;
 import com.sun.xml.ws.sdo.sample.service.types.Emp;
 import com.sun.xml.ws.sdo.sample.service.types.ProcessControl;
+import com.sun.xml.ws.util.xml.XmlUtil;
 
+import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.ComponentFeature;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
-import com.sun.xml.ws.db.sdo.HelperContextResolver;
+import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.pipe.ClientTubeAssemblerContext;
+import com.sun.xml.ws.api.pipe.Codec;
+import com.sun.xml.ws.api.pipe.ContentType;
+import com.sun.xml.ws.api.pipe.NextAction;
+import com.sun.xml.ws.api.pipe.TransportTubeFactory;
+import com.sun.xml.ws.api.pipe.Tube;
+import com.sun.xml.ws.api.pipe.TubeCloner;
+import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.SDDocumentSource;
+import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.db.sdo.SDOContextWrapper;
 import com.sun.xml.ws.db.sdo.SDOUtils;
 import com.sun.xml.ws.db.sdo.SchemaInfo;
@@ -75,23 +99,8 @@ public class SDOHRAppServiceTest extends SDODatabindingTestBase {
         DatabindingConfig srvConfig = new DatabindingConfig();
         Class<HRAppService> sei = HRAppService.class;
         Class<HRAppServiceImpl> seb = HRAppServiceImpl.class;
-
-        final HelperContext chc = SDOHelperContext.getHelperContext();//SDODatabindingContext.getLocalHelperContext();
-        HelperContextResolver chcr = new HelperContextResolver() {
-            public HelperContext getHelperContext(boolean isClient, QName serviceName, Map<String, Object> properties) {
-                return chc;
-            }
-            
-        };
-        for (SchemaInfo xi : schemas) ((SDOXSDHelper) chc.getXSDHelper()).define(xi.getSchemaSource(), null);
-        
-        final HelperContext shc = SDOHelperContext.getHelperContext("server");
-        HelperContextResolver shcr = new HelperContextResolver() {
-            public HelperContext getHelperContext(boolean isClient, QName serviceName, Map<String, Object> properties) {
-                return shc;
-            }            
-        };
-        for (SchemaInfo xi : schemas) ((SDOXSDHelper) shc.getXSDHelper()).define(xi.getSchemaSource(), null);
+        SDOConfig cSdo = sdoConfig(schemas, false);
+        SDOConfig sSdo = sdoConfig(schemas, true);
         srvConfig.setContractClass(sei);
         srvConfig.setEndpointClass(seb);
         DatabindingModeFeature dbm = new DatabindingModeFeature("eclipselink.sdo");
@@ -99,7 +108,7 @@ public class SDOHRAppServiceTest extends SDODatabindingTestBase {
         srvConfig.setFeatures(features); 
         srvConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_INFO, schemas);
         //srvConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_FILE, f);
-        srvConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, shcr);
+        srvConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, sSdo.resolver);
         srvConfig.properties().put("com.sun.xml.ws.api.model.SuppressDocLitWrapperGeneration", true);
 
         DatabindingConfig cliConfig = new DatabindingConfig();
@@ -107,12 +116,13 @@ public class SDOHRAppServiceTest extends SDODatabindingTestBase {
         cliConfig.setFeatures(features);
         cliConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_INFO, schemas);
         //cliConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_FILE, f);
-        cliConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, chcr);
+        cliConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, cSdo.resolver);
         cliConfig.properties().put("com.sun.xml.ws.api.model.SuppressDocLitWrapperGeneration", true);
         HRAppService proxy =  createProxy(sei, srvConfig, cliConfig, debug);
-        
+        doTest(proxy, cSdo.context);
+    }
 
-
+    public void doTest(HRAppService proxy, HelperContext chc) throws Exception {
         java.math.BigDecimal totalComp = proxy.getTotalComp(new BigInteger("222"));
         assertEquals("222", totalComp.toString());
         totalComp = proxy.getTotalComp(new BigInteger("333"));
@@ -194,23 +204,8 @@ public class SDOHRAppServiceTest extends SDODatabindingTestBase {
         DatabindingConfig srvConfig = new DatabindingConfig();
         Class<HRAppServiceNoWrapper> sei = HRAppServiceNoWrapper.class;
         Class<HRAppServiceImpl>      seb = HRAppServiceImpl.class;
-
-        final HelperContext chc = SDOHelperContext.getHelperContext();//SDODatabindingContext.getLocalHelperContext();
-        HelperContextResolver chcr = new HelperContextResolver() {
-            public HelperContext getHelperContext(boolean isClient, QName serviceName, Map<String, Object> properties) {
-                return chc;
-            }
-            
-        };
-        for (SchemaInfo xi : schemas) ((SDOXSDHelper) chc.getXSDHelper()).define(xi.getSchemaSource(), null);
-        
-        final HelperContext shc = SDOHelperContext.getHelperContext("server");
-        HelperContextResolver shcr = new HelperContextResolver() {
-            public HelperContext getHelperContext(boolean isClient, QName serviceName, Map<String, Object> properties) {
-                return shc;
-            }            
-        };
-        for (SchemaInfo xi : schemas) ((SDOXSDHelper) shc.getXSDHelper()).define(xi.getSchemaSource(), null);
+        SDOConfig cSdo = sdoConfig(schemas, false);
+        SDOConfig sSdo = sdoConfig(schemas, true);
         srvConfig.setContractClass(sei);
         srvConfig.setEndpointClass(seb);
         DatabindingModeFeature dbm = new DatabindingModeFeature("eclipselink.sdo");
@@ -218,7 +213,7 @@ public class SDOHRAppServiceTest extends SDODatabindingTestBase {
         srvConfig.setFeatures(features); 
         srvConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_INFO, schemas);
         //srvConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_FILE, f);
-        srvConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, shcr);
+        srvConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, sSdo.resolver);
         srvConfig.properties().put("com.sun.xml.ws.api.model.SuppressDocLitWrapperGeneration", true);
 
         DatabindingConfig cliConfig = new DatabindingConfig();
@@ -226,7 +221,7 @@ public class SDOHRAppServiceTest extends SDODatabindingTestBase {
         cliConfig.setFeatures(features);
         cliConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_INFO, schemas);
         //cliConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_FILE, f);
-        cliConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, chcr);
+        cliConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, cSdo.resolver);
         cliConfig.properties().put("com.sun.xml.ws.api.model.SuppressDocLitWrapperGeneration", true);
         HRAppServiceNoWrapper proxy =  createProxy(sei, srvConfig, cliConfig, debug);
         
@@ -247,7 +242,7 @@ public class SDOHRAppServiceTest extends SDODatabindingTestBase {
             assertEquals("name" + i, emps.get(i).getEname());
             assertEquals("job" + i, emps.get(i).getJob());
         }
-        HelperContext context = chc;
+        HelperContext context = cSdo.context;
         {
             Emp emp = (Emp) context.getDataFactory().create(Emp.class);
             ProcessControl processControl = (ProcessControl) context.getDataFactory().create(ProcessControl.class);
@@ -291,23 +286,8 @@ public class SDOHRAppServiceTest extends SDODatabindingTestBase {
         DatabindingConfig srvConfig = new DatabindingConfig();
         Class<HRAppServiceNoWrapperBug> sei = HRAppServiceNoWrapperBug.class;
         Class<HRAppServiceImpl>      seb = HRAppServiceImpl.class;
-
-        final HelperContext chc = SDOHelperContext.getHelperContext();//SDODatabindingContext.getLocalHelperContext();
-        HelperContextResolver chcr = new HelperContextResolver() {
-            public HelperContext getHelperContext(boolean isClient, QName serviceName, Map<String, Object> properties) {
-                return chc;
-            }
-            
-        };
-        for (SchemaInfo xi : schemas) ((SDOXSDHelper) chc.getXSDHelper()).define(xi.getSchemaSource(), null);
-        
-        final HelperContext shc = SDOHelperContext.getHelperContext("server");
-        HelperContextResolver shcr = new HelperContextResolver() {
-            public HelperContext getHelperContext(boolean isClient, QName serviceName, Map<String, Object> properties) {
-                return shc;
-            }            
-        };
-        for (SchemaInfo xi : schemas) ((SDOXSDHelper) shc.getXSDHelper()).define(xi.getSchemaSource(), null);
+        SDOConfig cSdo = sdoConfig(schemas, false);
+        SDOConfig sSdo = sdoConfig(schemas, true);
         srvConfig.setContractClass(sei);
         srvConfig.setEndpointClass(seb);
         DatabindingModeFeature dbm = new DatabindingModeFeature("eclipselink.sdo");
@@ -315,7 +295,7 @@ public class SDOHRAppServiceTest extends SDODatabindingTestBase {
         srvConfig.setFeatures(features); 
         srvConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_INFO, schemas);
         //srvConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_FILE, f);
-        srvConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, shcr);
+        srvConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, sSdo.resolver);
         srvConfig.properties().put("com.sun.xml.ws.api.model.SuppressDocLitWrapperGeneration", true);
 
         DatabindingConfig cliConfig = new DatabindingConfig();
@@ -323,14 +303,22 @@ public class SDOHRAppServiceTest extends SDODatabindingTestBase {
         cliConfig.setFeatures(features);
         cliConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_INFO, schemas);
         //cliConfig.properties().put(SDOContextWrapper.SDO_SCHEMA_FILE, f);
-        cliConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, chcr);
+        cliConfig.properties().put(SDOContextWrapper.SDO_HELPER_CONTEXT_RESOLVER, cSdo.resolver);
         cliConfig.properties().put("com.sun.xml.ws.api.model.SuppressDocLitWrapperGeneration", true);
-        HRAppServiceNoWrapperBug proxy = createProxy(sei, srvConfig, cliConfig, true);    
-
+        HRAppServiceNoWrapperBug proxy = createProxy(sei, srvConfig, cliConfig, true);
 
         java.math.BigDecimal totalComp = proxy.getTotalComp(new BigInteger("222"));
         assertEquals("222", totalComp.toString());
         totalComp = proxy.getTotalComp(new BigInteger("333"));
         assertEquals("333", totalComp.toString());
     }
+    
+    public void testSDO_HRAppServiceInVmTransport() throws Exception {
+        final URL wsdlURL = getResource("wsdl/HRAppService.wsdl");
+        Set<SchemaInfo> schemas = SDOUtils.getSchemas(wsdlURL.getFile());
+        String tns = "http://sdo.sample.service/";  
+        HRAppService_Service srv = new HRAppService_Service(wsdlURL, invmSetup(wsdlURL, HRAppService.class, HRAppServiceImpl.class, new QName(tns, "HRAppService"), new QName(tns, "HRAppServiceSoapHttpPort")));  
+        HRAppService proxy = srv.getHRAppServiceSoapHttpPort();
+        doTest(proxy, sdoConfig(schemas, false).context);
+    }    
 }

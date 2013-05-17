@@ -201,7 +201,7 @@ public class WSServiceDelegate extends WSService {
      * Multiple {@link ServiceInterceptor}s are aggregated into one.
      */
     /*package*/ final @NotNull ServiceInterceptor serviceInterceptor;
-
+    private URL wsdlURL;
 
     public WSServiceDelegate(URL wsdlDocumentLocation, QName serviceName, Class<? extends Service> serviceClass, WebServiceFeature... features) {
         this(wsdlDocumentLocation, serviceName, serviceClass, new WebServiceFeatureList(features));
@@ -211,6 +211,7 @@ public class WSServiceDelegate extends WSService {
         this(
             wsdlDocumentLocation==null ? null : new StreamSource(wsdlDocumentLocation.toExternalForm()),
             serviceName,serviceClass, features);
+        wsdlURL = wsdlDocumentLocation;
     }
 
     /**
@@ -878,7 +879,7 @@ public class WSServiceDelegate extends WSService {
 		config.setFeatures(features);
 		config.setClassLoader(portInterface.getClassLoader());
 		config.getMappingInfo().setPortName(portName);
-
+		config.setWsdlURL(wsdlURL);
         // if ExternalMetadataFeature present, ExternalMetadataReader will be created ...
         config.setMetadataReader(getMetadadaReader(features, portInterface.getClassLoader()));
 		

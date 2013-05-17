@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.spi.db;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
@@ -62,6 +63,7 @@ public class BindingInfo {
 	protected ClassLoader classLoader;
     
     private SEIModel seiModel;
+    private URL wsdlURL;
 
     public String getDatabindingMode() {
 		return databindingMode;
@@ -102,5 +104,10 @@ public class BindingInfo {
 	public void setClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
-	
+    public URL getWsdlURL() {
+        return wsdlURL;
+    }
+    public void setWsdlURL(URL wsdlURL) {
+        this.wsdlURL = wsdlURL;
+    }
 }
