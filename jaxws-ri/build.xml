@@ -418,7 +418,7 @@
 
   <target name="push-snapshot-to-maven" depends="src.zip"
       description="publish snapshot jars into the maven repository">
-      <property name="jar.suffix" value="${release.impl.version}" />
+      <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT" />
       <antcall target="push-to-maven-prepare"/>
       <echo>importing to CVS...</echo>
       <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
