@@ -718,7 +718,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                     try {
                         packet = head.process(packet, con.getWebServiceContextDelegate(),
                                 packet.transportBackChannel);
-                    } catch(Exception e) {
+                    } catch(Throwable e) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
                         if (!con.isClosed()) {
                             writeInternalServerError(con);
