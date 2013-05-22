@@ -63,7 +63,7 @@ public class SAAJMessageWrapperTest extends TestCase {
     
     private Databinding databinding;
     private MTOMFeature mtomf = new MTOMFeature(true);
-    private MessageContextFactory mcf;  
+    private MessageContextFactory mcf;
     private String reqStr = "jaxws-ri MTOM with orasaaj test";
     private JavaCallInfo clientCall;
     
@@ -77,13 +77,13 @@ public class SAAJMessageWrapperTest extends TestCase {
 //                , new DatabindingModeFeature(DatabindingModeFeature.ECLIPSELINK_JAXB)
         );
         databinding = builder.build();
-        mcf = MessageContextFactory.createFactory(mtomf);  
+        mcf = MessageContextFactory.createFactory(mtomf);
         
         
         Method method = findMethod(proxySEI, "echoByteArray");
         byte[] req = reqStr.getBytes();
-        Object[] args = { req };   
-        clientCall = databinding.createJavaCallInfo(method, args);            
+        Object[] args = { req };
+        clientCall = databinding.createJavaCallInfo(method, args);
     }
 
     public void testMTOM_riSaaj() throws Exception {
@@ -91,7 +91,7 @@ public class SAAJMessageWrapperTest extends TestCase {
         MessageContext clientRequest = databinding.serializeRequest(clientCall);
         
 //client writes request to OutputStream    
-        ByteArrayOutputStream clientOut = new ByteArrayOutputStream(); 
+        ByteArrayOutputStream clientOut = new ByteArrayOutputStream();
         ContentType cliCt = clientRequest.writeTo(clientOut);
 //        com.sun.xml.ws.api.pipe.ContentType cliCt = ((com.sun.xml.ws.api.databinding.Databinding)databinding).
 //            encode((Packet)clientRequest, clientOut);
@@ -100,7 +100,7 @@ public class SAAJMessageWrapperTest extends TestCase {
 //        System.out.println(new String(clientOut.toByteArray()) + "\r\n\r\n");
         
 //client sends request to server
-        ByteArrayInputStream serverIn = new ByteArrayInputStream(clientOut.toByteArray()); 
+        ByteArrayInputStream serverIn = new ByteArrayInputStream(clientOut.toByteArray());
 //server decodes request to Packet
         MessageContext serverRequest = mcf.createContext(serverIn, cliCt.getContentType());
 //deprecated way to create/decode MC/Packet from inputStream        
@@ -111,7 +111,8 @@ public class SAAJMessageWrapperTest extends TestCase {
 //        ContainerResolver.setInstance(new JRFContainerResolver());
         
 //server coverts request to saaj SOAPMessage
-        SOAPMessage saajReq1 = serverRequest.getSOAPMessage();
+        SOAPMessage saajReq1 = serverRequest.getAsSOAPMessage();
+        assertEquals("wrong attachment count", 1, saajReq1.countAttachments());
 //        System.out.println("==== serverRequest.getSOAPMessage() 1 " + saajReq1);
 //Write the SOAPMessage multiple times result in different message boundary -        
 //        {
@@ -160,7 +161,7 @@ public class SAAJMessageWrapperTest extends TestCase {
 //!! server coverts response to saaj SOAPMessage again but get another new saaj SOAPMessage 
 
         SOAPMessage saajRes2 = ((Packet)serverResponse).getMessage().readAsSOAPMessage();
-        SOAPMessage saajRes3 = serverResponse.getSOAPMessage();
+        SOAPMessage saajRes3 = serverResponse.getAsSOAPMessage();
         SOAPMessage saajRes4 = ((Packet)serverResponse).getMessage().readAsSOAPMessage();
 //        System.out.println("==== serverResponse.getSOAPMessage() 2 " + saajRes2);
 
@@ -175,24 +176,24 @@ public class SAAJMessageWrapperTest extends TestCase {
 //        System.out.println("==== serverResponse.getSOAPMessage() 3 " + saajRes3);
         
 //        {
-//            ByteArrayOutputStream serverOut = new ByteArrayOutputStream(); 
-//            //TODO serverResponse.writeTo(serverOut);        
+//            ByteArrayOutputStream serverOut = new ByteArrayOutputStream();
+//            //TODO serverResponse.writeTo(serverOut);
 //            com.sun.xml.ws.api.pipe.ContentType resCt = ((com.sun.xml.ws.api.databinding.Databinding)databinding).
 //                encode((com.sun.xml.ws.api.message.Packet)serverResponse, serverOut);
 //            System.out.println("==== Server Response 1 " + resCt.getContentType() + " " + resCt.getSOAPActionHeader() );
 //            System.out.println(new String(serverOut.toByteArray()) + "\r\n\r\n");
 //        }
 //        {
-//            ByteArrayOutputStream serverOut = new ByteArrayOutputStream(); 
-//            //TODO serverResponse.writeTo(serverOut);        
+//            ByteArrayOutputStream serverOut = new ByteArrayOutputStream();
+//            //TODO serverResponse.writeTo(serverOut);
 //            com.sun.xml.ws.api.pipe.ContentType resCt = ((com.sun.xml.ws.api.databinding.Databinding)databinding).
 //                encode((com.sun.xml.ws.api.message.Packet)serverResponse, serverOut);
 //            System.out.println("==== Server Response 2 " + resCt.getContentType() + " " + resCt.getSOAPActionHeader() );
 //            System.out.println(new String(serverOut.toByteArray()) + "\r\n\r\n");
 //        }        
 
-            ByteArrayOutputStream serverOut = new ByteArrayOutputStream(); 
-            ContentType resCt = serverResponse.writeTo(serverOut);        
+            ByteArrayOutputStream serverOut = new ByteArrayOutputStream();
+            ContentType resCt = serverResponse.writeTo(serverOut);
 //            com.sun.xml.ws.api.pipe.ContentType resCt = ((com.sun.xml.ws.api.databinding.Databinding)databinding).
 //                encode((com.sun.xml.ws.api.message.Packet)serverResponse, serverOut);
 //            System.out.println("==== Server Response x " + resCt.getContentType() + " " + resCt.getSOAPActionHeader() );
@@ -200,12 +201,12 @@ public class SAAJMessageWrapperTest extends TestCase {
         
         
 //server sends response to client
-        ByteArrayInputStream clientIn = new ByteArrayInputStream(serverOut.toByteArray()); 
-        MessageContext clientResponse = mcf.createContext(clientIn, resCt.getContentType());        
+        ByteArrayInputStream clientIn = new ByteArrayInputStream(serverOut.toByteArray());
+        MessageContext clientResponse = mcf.createContext(clientIn, resCt.getContentType());
 //        com.sun.xml.ws.api.message.Packet clientResponse = new com.sun.xml.ws.api.message.Packet();
 //        ((com.sun.xml.ws.api.databinding.Databinding)databinding).decode(clientIn, resCt.getContentType(), clientResponse);
         clientCall = databinding.deserializeResponse(clientResponse, clientCall);
-        String res = new String((byte[])clientCall.getReturnValue());        
+        String res = new String((byte[])clientCall.getReturnValue());
 //        System.out.println("response " + res);
         assertEquals(res, reqStr);
     }
@@ -218,7 +219,7 @@ public class SAAJMessageWrapperTest extends TestCase {
 //client writes request to OutputStream       
 //TODO databinding bug - fixed
 //clientRequest.writeTo(clientOut);
-        ByteArrayOutputStream clientOut = new ByteArrayOutputStream(); 
+        ByteArrayOutputStream clientOut = new ByteArrayOutputStream();
         com.sun.xml.ws.api.pipe.ContentType cliCt = ((com.sun.xml.ws.api.databinding.Databinding)databinding).
             encode((Packet)clientRequest, clientOut);
         
@@ -226,7 +227,7 @@ public class SAAJMessageWrapperTest extends TestCase {
         System.out.println(new String(clientOut.toByteArray()) + "\r\n\r\n");
         
 //client sends request to server
-        ByteArrayInputStream serverIn = new ByteArrayInputStream(clientOut.toByteArray()); 
+        ByteArrayInputStream serverIn = new ByteArrayInputStream(clientOut.toByteArray());
 //server decodes request to Packet
         MessageContext serverRequest = mcf.createContext(serverIn, cliCt.getContentType());
         
@@ -266,24 +267,24 @@ public class SAAJMessageWrapperTest extends TestCase {
         System.out.println("==== serverResponse.getSOAPMessage() 3 " + saajRes3);
         
 //        {
-//            ByteArrayOutputStream serverOut = new ByteArrayOutputStream(); 
-//            //TODO serverResponse.writeTo(serverOut);        
+//            ByteArrayOutputStream serverOut = new ByteArrayOutputStream();
+//            //TODO serverResponse.writeTo(serverOut);
 //            com.sun.xml.ws.api.pipe.ContentType resCt = ((com.sun.xml.ws.api.databinding.Databinding)databinding).
 //                encode((com.sun.xml.ws.api.message.Packet)serverResponse, serverOut);
 //            System.out.println("==== Server Response 1 " + resCt.getContentType() + " " + resCt.getSOAPActionHeader() );
 //            System.out.println(new String(serverOut.toByteArray()) + "\r\n\r\n");
 //        }
 //        {
-//            ByteArrayOutputStream serverOut = new ByteArrayOutputStream(); 
-//            //TODO serverResponse.writeTo(serverOut);        
+//            ByteArrayOutputStream serverOut = new ByteArrayOutputStream();
+//            //TODO serverResponse.writeTo(serverOut);
 //            com.sun.xml.ws.api.pipe.ContentType resCt = ((com.sun.xml.ws.api.databinding.Databinding)databinding).
 //                encode((com.sun.xml.ws.api.message.Packet)serverResponse, serverOut);
 //            System.out.println("==== Server Response 2 " + resCt.getContentType() + " " + resCt.getSOAPActionHeader() );
 //            System.out.println(new String(serverOut.toByteArray()) + "\r\n\r\n");
 //        }        
 
-            ByteArrayOutputStream serverOut = new ByteArrayOutputStream(); 
-            //TODO serverResponse.writeTo(serverOut);        
+            ByteArrayOutputStream serverOut = new ByteArrayOutputStream();
+            //TODO serverResponse.writeTo(serverOut);
             com.sun.xml.ws.api.pipe.ContentType resCt = ((com.sun.xml.ws.api.databinding.Databinding)databinding).
                 encode((com.sun.xml.ws.api.message.Packet)serverResponse, serverOut);
             System.out.println("==== Server Response x " + resCt.getContentType() + " " + resCt.getSOAPActionHeader() );
@@ -291,12 +292,12 @@ public class SAAJMessageWrapperTest extends TestCase {
         
         
 //server sends response to client
-        ByteArrayInputStream clientIn = new ByteArrayInputStream(serverOut.toByteArray()); 
-        MessageContext clientResponse = mcf.createContext(clientIn, resCt.getContentType());        
+        ByteArrayInputStream clientIn = new ByteArrayInputStream(serverOut.toByteArray());
+        MessageContext clientResponse = mcf.createContext(clientIn, resCt.getContentType());
 //        com.sun.xml.ws.api.message.Packet clientResponse = new com.sun.xml.ws.api.message.Packet();
 //        ((com.sun.xml.ws.api.databinding.Databinding)databinding).decode(clientIn, resCt.getContentType(), clientResponse);
         clientCall = databinding.deserializeResponse(clientResponse, clientCall);
-        String res = new String((byte[])clientCall.getReturnValue());        
+        String res = new String((byte[])clientCall.getReturnValue());
         System.out.println("response " + res);
         assertEquals(res, reqStr);
     }

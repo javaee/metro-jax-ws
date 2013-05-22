@@ -47,17 +47,27 @@ import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Codecs;
+import com.sun.xml.ws.encoding.MtomCodec;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import junit.framework.TestCase;
 
 import javax.xml.namespace.QName;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPMessage;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.ws.soap.MTOMFeature;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -306,5 +316,71 @@ public class StreamMessageTest extends TestCase {
 		String string2 = new String(bo.toByteArray());		
 		assertTrue(string1.indexOf("Header") != -1);
 		assertTrue(string2.indexOf("Header") != -1);    	
-    }    
+    }
+
+    public void testWriteMtomToStream() throws Exception {
+        // Ensure writing StreamMessage to OutputputStream preserves CID and
+        // does not create duplicate attachment.  We check this by re-parsing
+        // as a SOAP message and verifying the contents.
+
+        InputStream is = null;
+        ByteArrayOutputStream baos = null;
+        ByteArrayInputStream bais = null;
+        try {
+            String ctype = "multipart/related;type=\"application/xop+xml\";"
+                    + "boundary=\"----=_Part_0_1145105632.1353005695468\";"
+                    + "start=\"<cbe648b3-2055-413e-b8ed-877cdf0f2477>\";start-info=\"text/xml\"";
+
+            MessageContextFactory mcf = MessageContextFactory
+                    .createFactory(new MTOMFeature(true));
+            is = getClass().getClassLoader().getResourceAsStream(
+                    "etc/testMtomMessageReload_01.msg");
+            MessageContext mc = mcf.createContext(is, ctype);
+            Packet packet = (Packet) mc;
+            Message message = packet.getInternalMessage();
+            assertTrue("StreamMessage not found, got : " + message.getClass(),
+                    StreamMessage.class.isAssignableFrom(message.getClass()));
+            baos = new ByteArrayOutputStream();
+            mc.writeTo(baos);
+            bais = new ByteArrayInputStream(baos.toByteArray());
+            MessageFactory mf = MessageFactory.newInstance();
+            MimeHeaders mh = new MimeHeaders();
+            mh.addHeader("Content-Type", ctype);
+            SOAPMessage sm = mf.createMessage(mh, bais);
+            assertEquals("wrong attachment count", 1, sm.countAttachments());
+            AttachmentPart ap = (AttachmentPart) sm.getAttachments().next();
+            assertEquals("wrong attachemnt Content-Id",
+                    "<534475ae-bdab-4594-9f97-c09908bacfbd>", ap.getContentId());
+            NodeList nl = sm.getSOAPBody().getElementsByTagNameNS(
+                    MtomCodec.XOP_NAMESPACEURI, MtomCodec.XOP_LOCALNAME);
+            assertEquals(MtomCodec.XOP_NAMESPACEURI + ":"
+                    + MtomCodec.XOP_LOCALNAME + " not found", 1, nl.getLength());
+            Element elt = (Element) nl.item(0);
+            assertEquals("wrong href value",
+                    "cid:534475ae-bdab-4594-9f97-c09908bacfbd",
+                    elt.getAttribute("href"));
+        } finally {
+            Exception e = null;
+            try {
+                if (is != null)
+                    is.close();
+            } catch (IOException e1) {
+                e = e1;
+            }
+            try {
+                if (baos != null)
+                    baos.close();
+            } catch (IOException e2) {
+                e = e2;
+            }
+            try {
+                if (bais != null)
+                    bais.close();
+            } catch (Exception e3) {
+                e = e3;
+            }
+            if (e != null)
+                throw e;
+        }
+    }
 }
