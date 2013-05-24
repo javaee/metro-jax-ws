@@ -253,15 +253,7 @@ class MetroConfigLoader {
     private static MetroConfig loadMetroConfig(@NotNull URL resourceUrl) {
         MetroConfig result = null;
         try {
-            JAXBContext jaxbContext = AccessController.doPrivileged(
-                    new PrivilegedExceptionAction<JAXBContext>() {
-                        @Override
-                        public JAXBContext run() throws Exception {
-                            return JAXBContext.newInstance(MetroConfig.class.getPackage().getName());
-                        }
-                    }, createSecurityContext()
-            );
-
+            JAXBContext jaxbContext = createJAXBContext();
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             XMLInputFactory factory = XmlUtil.newXMLInputFactory(true);
             final JAXBElement<MetroConfig> configElement = unmarshaller.unmarshal(factory.createXMLStreamReader(resourceUrl.openStream()), MetroConfig.class);
@@ -272,16 +264,36 @@ class MetroConfigLoader {
         return result;
     }
 
+    private static JAXBContext createJAXBContext() throws Exception {
+        if (isJDKInternal()) {
+            // since jdk classes are repackaged, extra privilege is necessary to create JAXBContext
+            return AccessController.doPrivileged(
+                    new PrivilegedExceptionAction<JAXBContext>() {
+                        @Override
+                        public JAXBContext run() throws Exception {
+                            return JAXBContext.newInstance(MetroConfig.class.getPackage().getName());
+                        }
+                    }, createSecurityContext()
+            );
+        } else {
+            // usage from JAX-WS/Metro/Glassfish
+            return JAXBContext.newInstance(MetroConfig.class.getPackage().getName());
+        }
+    }
+
     private static AccessControlContext createSecurityContext() {
         PermissionCollection perms = new Permissions();
         perms.add(new RuntimePermission("accessClassInPackage.com" + ".sun.xml.internal.ws.runtime.config")); // avoid repackaging
         perms.add(new ReflectPermission("suppressAccessChecks"));
-        perms.add(new PropertyPermission("mapAnyUriToUri", "read"));
-        perms.add(new RuntimePermission("accessDeclaredMembers", "read"));
         return new AccessControlContext(
                 new ProtectionDomain[]{
                         new ProtectionDomain(null, perms),
                 });
+    }
+
+    private static boolean isJDKInternal() {
+        // avoid "string repackaging"
+        return MetroConfigLoader.class.getName().startsWith("com." + "sun.xml.internal.ws");
     }
 
     private static class MetroConfigUrlLoader extends ResourceLoader {
