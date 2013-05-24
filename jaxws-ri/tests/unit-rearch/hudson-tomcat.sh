@@ -72,17 +72,17 @@ echo ""
 echo "--------- Running http transport tests --------------"
 >$httpLogFile
 
-callant.sh clean compile_test_util patch_ports
+./callant.sh clean compile_test_util patch_ports
 
 for file in $XMLS
 do
     echo "Deploying server [$file] (http transport)"
-    callant.sh -f $file clean build deploy $PARAMS 2>&1 | tee -a $httpLogFile | egrep "(^Tests run:|ERROR|FAILED)"
+    ./callant.sh -f $file clean build deploy $PARAMS 2>&1 | tee -a $httpLogFile | egrep "(^Tests run:|ERROR|FAILED)"
 done
 sleep 50
 for file in $XMLS
 do
-    callant.sh -f $file clean build runclient $PARAMS 2>&1 | tee -a $httpLogFile | egrep "(^Tests run:|ERROR|FAILED)"
+    ./callant.sh -f $file clean build runclient $PARAMS 2>&1 | tee -a $httpLogFile | egrep "(^Tests run:|ERROR|FAILED)"
 done
 echo "-----------------------------------------------------"
 
