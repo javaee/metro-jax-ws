@@ -41,5 +41,5 @@
 -->
 
 <EndpointReference xmlns="http://www.w3.org/2005/08/addressing">
-    <Address>http://localhost:/jaxrpc-client_jaxws21_epr_get_port/hello</Address>    
+    <Address>http://localhost:8080/jaxrpc-client_jaxws21_epr_get_port/hello</Address>    
 </EndpointReference>

@@ -84,7 +84,7 @@
     </binding>
     <service name="TestServiceService">
         <port name="TestServicePort" binding="tns:TestServicePortBinding">
-            <soap:address location="http://localhost:/extern/TestServiceService">
+            <soap:address location="http://localhost:8080/extern/TestServiceService">
                       
 
             </soap:address>

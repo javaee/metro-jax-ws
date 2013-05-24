@@ -101,11 +101,11 @@
 
     <service name="PingService"> 
         <port name="Ping" binding="tns:PingBinding"> 
-            <soap:address location="http://localhost:/jaxws-simple/simple" />
+            <soap:address location="http://localhost:8080/jaxws-simple/simple" />
         </port>
         
         <port name="Ping1" binding="tns:PingBinding1">
-            <soap:address location="http://localhost:/jaxws-simple/simple1" />
+            <soap:address location="http://localhost:8080/jaxws-simple/simple1" />
         </port> 
         
     </service> 

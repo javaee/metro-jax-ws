@@ -45,7 +45,7 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-    wsdlLocation="http://localhost:/jaxrpc-fromwsdl_multiservice/simple?wsdl"
+    wsdlLocation="http://localhost:8080/jaxrpc-fromwsdl_multiservice/simple?wsdl"
     xmlns="http://java.sun.com/xml/ns/jaxws">    
     <bindings node="wsdl:definitions">
         <package name="fromwsdl.multiservice.client"/>

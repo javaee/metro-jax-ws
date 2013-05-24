@@ -1,0 +1,11 @@
+How to run:
+
+1. Set following properties:
+ 
+ CATALINA_HOME - path to Tomcat 5 instance
+ JAXWS_TEST_HOME - usually $CHECKOUT/tests/unit-rearch
+ JAXWS_HOME - usually $CHECKOUT/bundles/jaxws-ri/target/stage/jaxws-ri/
+ port - usually 8080
+ shutdownport - usually 8005
+
+2. execute hudson-tomcat.sh script

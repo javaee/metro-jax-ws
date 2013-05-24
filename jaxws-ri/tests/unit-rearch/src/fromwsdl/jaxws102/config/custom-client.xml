@@ -41,7 +41,7 @@
 
 -->
 
-<bindings wsdlLocation="http://localhost:/jaxrpc-fromwsdl_jaxws102/jaxws102/benchMarkService?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws">
+<bindings wsdlLocation="http://localhost:8080/jaxrpc-fromwsdl_jaxws102/jaxws102/benchMarkService?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws">
     <package name="fromwsdl.jaxws102.client"/>
 
     <bindings node="ns1:definitions/ns1:types/xs:schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://schemas.xmlsoap.org/wsdl/">

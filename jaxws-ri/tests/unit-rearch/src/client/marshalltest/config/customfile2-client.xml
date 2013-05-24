@@ -44,25 +44,25 @@
               xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
               xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-    <jxb:bindings schemaLocation="http://localhost:/jaxrpc-client_marshalltest/jaxws/MarshallTest?xsd=3" node="/xs:schema">
+    <jxb:bindings schemaLocation="http://localhost:8080/jaxrpc-client_marshalltest/jaxws/MarshallTest?xsd=3" node="/xs:schema">
         <jxb:schemaBindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb">
             <jxb:package name="client.marshalltest.client"/>
         </jxb:schemaBindings>
     </jxb:bindings>
 
-    <jxb:bindings schemaLocation="http://localhost:/jaxrpc-client_marshalltest/jaxws/MarshallTest?xsd=4" node="/xs:schema">
+    <jxb:bindings schemaLocation="http://localhost:8080/jaxrpc-client_marshalltest/jaxws/MarshallTest?xsd=4" node="/xs:schema">
         <jxb:schemaBindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb">
             <jxb:package name="client.marshalltest.client"/>
         </jxb:schemaBindings>
     </jxb:bindings>
 
-    <jxb:bindings schemaLocation="http://localhost:/jaxrpc-client_marshalltest/jaxws/MarshallTest?xsd=1" node="/xs:schema">
+    <jxb:bindings schemaLocation="http://localhost:8080/jaxrpc-client_marshalltest/jaxws/MarshallTest?xsd=1" node="/xs:schema">
         <jxb:schemaBindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb">
             <jxb:package name="client.marshalltest.client"/>
         </jxb:schemaBindings>
     </jxb:bindings>
 
-    <jxb:bindings schemaLocation="http://localhost:/jaxrpc-client_marshalltest/jaxws/MarshallTest?xsd=5" node="/xs:schema">
+    <jxb:bindings schemaLocation="http://localhost:8080/jaxrpc-client_marshalltest/jaxws/MarshallTest?xsd=5" node="/xs:schema">
         <jxb:schemaBindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb">
             <jxb:package name="client.marshalltest.client"/>
         </jxb:schemaBindings>

@@ -94,7 +94,7 @@ public class DispatchHello extends DispatchTestCase {
     private String bindingIdString = "http://schemas.xmlsoap.org/wsdl/soap/http";
 
 
-    private String endpointAddress = "http://localhost:/jaxrpc-client_dispatch_service_wsdl/hello";
+    private String endpointAddress = "http://localhost:8080/jaxrpc-client_dispatch_service_wsdl/hello";
     private Service service;
     private Service serviceWithPorts;
     private Dispatch dispatch;
@@ -110,7 +110,7 @@ public class DispatchHello extends DispatchTestCase {
         if (ClientServerTestUtil.useLocal())
             endpointAddress = "local://" + new File(System.getProperty("tempdir")).getAbsolutePath().replace('\\', '/') + '?' + portQName.getLocalPart();
         else
-            endpointAddress = "http://localhost:/jaxrpc-client_dispatch_service_wsdl/hello";
+            endpointAddress = "http://localhost:8080/jaxrpc-client_dispatch_service_wsdl/hello";
     }
 
     private void createService() {

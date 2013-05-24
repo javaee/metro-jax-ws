@@ -69,7 +69,7 @@ public class Client extends TestCase {
             return;
         }
         Service service = Service.create(new QName("urn:test", "Endpoint"));
-        service.addPort(new QName("urn:test", "EndpointPort"), SOAPBinding.SOAP11HTTP_BINDING, "http://localhost:/jaxrpc-provider_tests_multiple_body/endpoint");
+        service.addPort(new QName("urn:test", "EndpointPort"), SOAPBinding.SOAP11HTTP_BINDING, "http://localhost:8080/jaxrpc-provider_tests_multiple_body/endpoint");
         Dispatch<SOAPMessage> disp = service.createDispatch(new QName("urn:test", "EndpointPort"), SOAPMessage.class, Service.Mode.MESSAGE);
         SOAPMessage sm = SOAPVersion.SOAP_11.saajMessageFactory.createMessage();
         SOAPBody sb = sm.getSOAPBody();

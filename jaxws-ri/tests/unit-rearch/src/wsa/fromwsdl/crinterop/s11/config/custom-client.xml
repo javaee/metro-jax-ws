@@ -41,7 +41,7 @@
 
 -->
 
-<bindings wsdlLocation="http://localhost:/jaxrpc-wsa_fromwsdl_crinterop_s11/cr?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb">
+<bindings wsdlLocation="http://localhost:8080/jaxrpc-wsa_fromwsdl_crinterop_s11/cr?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb">
     <bindings node="wsdl:definitions">
         <package name="wsa.fromwsdl.crinterop.s11.client"/>
     </bindings>

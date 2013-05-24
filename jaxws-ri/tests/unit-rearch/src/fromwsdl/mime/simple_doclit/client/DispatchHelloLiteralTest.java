@@ -96,7 +96,7 @@ public class DispatchHelloLiteralTest extends TestCase {
         if(ClientServerTestUtil.useLocal())
             endpointAddress = "local://"+new File(System.getProperty("tempdir")).getAbsolutePath().replace('\\','/')+'?'+portQName.getLocalPart();
         else
-            endpointAddress = "http://localhost:/jaxrpc-fromwsdl_mime_simple_doclit/simple";
+            endpointAddress = "http://localhost:8080/jaxrpc-fromwsdl_mime_simple_doclit/simple";
 
     }
 

@@ -41,7 +41,7 @@
 
 -->
 
-<jaxws:bindings wsdlLocation="http://localhost:/jaxrpc-customization_external_doclit/helloworld?wsdl"
+<jaxws:bindings wsdlLocation="http://localhost:8080/jaxrpc-customization_external_doclit/helloworld?wsdl"
     xmlns:jaxws="http://java.sun.com/xml/ns/jaxws" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     xmlns:types1="urn:test:types"
     xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"

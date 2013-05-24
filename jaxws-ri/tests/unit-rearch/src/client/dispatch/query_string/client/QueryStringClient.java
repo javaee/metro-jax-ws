@@ -81,7 +81,7 @@ public class QueryStringClient extends TestCase {
     public void testQueryStringClient() throws Exception {
 
         // Create resource representation
-        URI address = new URI("http://localhost:/hello");
+        URI address = new URI("http://localhost:8080/hello");
         System.out.println("Getting URL = '" + address + "' ...");
        // testCreateDispatch(address);
         testCreateDispatchCase2(address);
@@ -111,7 +111,7 @@ public class QueryStringClient extends TestCase {
            //ok
        }
         //System.out.println("EndpointAddress " + requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY));
-       assertEquals("http://localhost:/hello?%E5%B2%A1%E5%B4%8E", requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY));
+       assertEquals("http://localhost:8080/hello?%E5%B2%A1%E5%B4%8E", requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY));
 
     }
 

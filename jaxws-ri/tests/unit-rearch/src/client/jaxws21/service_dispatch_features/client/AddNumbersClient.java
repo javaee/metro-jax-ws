@@ -66,14 +66,14 @@ public class AddNumbersClient extends DispatchTestCase {
     //may be used for verification
     private static final QName SERVICE_QNAME = new QName("http://example.com/", "AddNumbersService");
     private static final QName PORT_QNAME = new QName("http://example.com/", "AddNumbersPort");
-    private static final String ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-client_jaxws21_service_dispatch_features/hello";
+    private static final String ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-client_jaxws21_service_dispatch_features/hello";
     //maybe used for firther tests
     private URL wsdl;
 
     public AddNumbersClient(String name) {
         super(name);
         try {
-            wsdl = new URL("http://localhost:/jaxrpc-client_jaxws21_service_dispatch_features/hello?WSDL");
+            wsdl = new URL("http://localhost:8080/jaxrpc-client_jaxws21_service_dispatch_features/hello?WSDL");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -206,7 +206,7 @@ public class AddNumbersClient extends DispatchTestCase {
 
     public void testCreateDispatchSMWsdlWEPR() throws Exception {
         String eprString = "<EndpointReference xmlns=\"http://www.w3.org/2005/08/addressing\"><Address>" +
-                "http://localhost:/jaxrpc-client_jaxws21_service_dispatch_features/hello</Address>" +
+                "http://localhost:8080/jaxrpc-client_jaxws21_service_dispatch_features/hello</Address>" +
                 "<Metadata><wsaw:ServiceName xmlns:wsaw=\"http://www.w3.org/2006/05/addressing/wsdl\" xmlns:wsns=\"http://example.com/\" EndpointName=\"AddNumbersPort\">wsns:AddNumbersService</wsaw:ServiceName>" +
                 "</Metadata></EndpointReference>";
         if (ClientServerTestUtil.useLocal()) {
@@ -232,7 +232,7 @@ public class AddNumbersClient extends DispatchTestCase {
     //UsingAddressing wsdl:required=true
     public void testCreateDispatchSourceWEPR() throws Exception {
         String eprString = "<EndpointReference xmlns=\"http://www.w3.org/2005/08/addressing\"><Address>" +
-                "http://localhost:/jaxrpc-client_jaxws21_service_dispatch_features/hello</Address>" +
+                "http://localhost:8080/jaxrpc-client_jaxws21_service_dispatch_features/hello</Address>" +
                 "<Metadata><wsaw:ServiceName xmlns:wsaw=\"http://www.w3.org/2006/05/addressing/wsdl\" xmlns:wsns=\"http://example.com/\" EndpointName=\"AddNumbersPort\">wsns:AddNumbersService</wsaw:ServiceName>" +
                 "</Metadata></EndpointReference>";
         if (ClientServerTestUtil.useLocal()) {
@@ -262,7 +262,7 @@ public class AddNumbersClient extends DispatchTestCase {
 
     public void testCreateDispatchJAXBWEPR() throws Exception {
         String eprString = "<EndpointReference xmlns=\"http://www.w3.org/2005/08/addressing\"><Address>" +
-                "http://localhost:/jaxrpc-client_jaxws21_service_dispatch_features/hello</Address>" +
+                "http://localhost:8080/jaxrpc-client_jaxws21_service_dispatch_features/hello</Address>" +
                 "<Metadata><wsaw:ServiceName xmlns:wsaw=\"http://www.w3.org/2006/05/addressing/wsdl\" xmlns:wsns=\"http://example.com/\" EndpointName=\"AddNumbersPort\">wsns:AddNumbersService</wsaw:ServiceName>" +
                 "</Metadata></EndpointReference>";
         if (ClientServerTestUtil.useLocal()) {
@@ -567,10 +567,10 @@ public class AddNumbersClient extends DispatchTestCase {
 
     private ObjectFactory factory = new ObjectFactory();
 
-    private String SMMsg = "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><To xmlns=\"http://www.w3.org/2005/08/addressing\">http://localhost:/jaxrpc-client_jaxws21_service_dispatch_features/hello</To><Action xmlns=\"http://www.w3.org/2005/08/addressing\">http://example.com/AddNumbersPortType/addNumbersRequest</Action><ReplyTo xmlns=\"http://www.w3.org/2005/08/addressing\">" +
+    private String SMMsg = "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><To xmlns=\"http://www.w3.org/2005/08/addressing\">http://localhost:8080/jaxrpc-client_jaxws21_service_dispatch_features/hello</To><Action xmlns=\"http://www.w3.org/2005/08/addressing\">http://example.com/AddNumbersPortType/addNumbersRequest</Action><ReplyTo xmlns=\"http://www.w3.org/2005/08/addressing\">" +
             "<Address>http://www.w3.org/2005/08/addressing/anonymous</Address>" +
             "</ReplyTo><MessageID xmlns=\"http://www.w3.org/2005/08/addressing\">uuid:a89abfcf-0b64-4f71-979e-9ee31ae75b6c</MessageID></S:Header><S:Body><addNumbers xmlns=\"http://example.com/\"><number1>2</number1><number2>4</number2></addNumbers></S:Body></S:Envelope>";
 
-    private String SMMsgString = "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><To xmlns=\"http://www.w3.org/2005/08/addressing\">http://localhost:/jaxrpc-client_jaxws21_service_dispatch_features/hello</To><Action xmlns=\"http://www.w3.org/2005/08/addressing\">http://example.com/AddNumbersPortType/addNumbersRequest</Action><ReplyTo xmlns=\"http://www.w3.org/2005/08/addressing\"><Address>http://www.w3.org/2005/08/addressing/anonymous></Address></ReplyTo><MessageID xmlns=\"http://www.w3.org/2005/08/addressing\">uuid:b63b8097-6ac9-4c6e-83f9-ab9f5b108f5c</MessageID></S:Header><S:Body><addNumbers xmlns=\"http://example.com/\"><number1>2</number1><number2>4</number2></addNumbers></S:Body></S:Envelope>";
+    private String SMMsgString = "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><To xmlns=\"http://www.w3.org/2005/08/addressing\">http://localhost:8080/jaxrpc-client_jaxws21_service_dispatch_features/hello</To><Action xmlns=\"http://www.w3.org/2005/08/addressing\">http://example.com/AddNumbersPortType/addNumbersRequest</Action><ReplyTo xmlns=\"http://www.w3.org/2005/08/addressing\"><Address>http://www.w3.org/2005/08/addressing/anonymous></Address></ReplyTo><MessageID xmlns=\"http://www.w3.org/2005/08/addressing\">uuid:b63b8097-6ac9-4c6e-83f9-ab9f5b108f5c</MessageID></S:Header><S:Body><addNumbers xmlns=\"http://example.com/\"><number1>2</number1><number2>4</number2></addNumbers></S:Body></S:Envelope>";
     private String MSGSrc = "<addNumbers xmlns=\"http://example.com/\"><number1>2</number1><number2>4</number2></addNumbers>";
 }

@@ -75,7 +75,7 @@ public class HelloLiteralTest extends DispatchTestCase {
     private String bindingIdString = SOAPBinding.SOAP11HTTP_BINDING;
 
 
-    private String endpointAddress = "http://localhost:/jaxrpc-wsa_fromwsdl_api_service/hello";
+    private String endpointAddress = "http://localhost:8080/jaxrpc-wsa_fromwsdl_api_service/hello";
     private Service service;
     private Service serviceWithPorts;
 
@@ -128,7 +128,7 @@ public class HelloLiteralTest extends DispatchTestCase {
         if (ClientServerTestUtil.useLocal())
             endpointAddress = "local://" + new File(System.getProperty("tempdir")).getAbsolutePath().replace('\\', '/') + '?' + "hello_literal.wsdl";
         //else
-        //    endpointAddress = "http://localhost:/jaxrpc-client_dispatch_wsdl_hello/hello";
+        //    endpointAddress = "http://localhost:8080/jaxrpc-client_dispatch_wsdl_hello/hello";
     }
 
     //TODO:fix
@@ -761,9 +761,9 @@ public class HelloLiteralTest extends DispatchTestCase {
     //all that is required here is the wsa:Address- other data optional on set EPR
     final static String metadata = "<definitions name=\"HelloTest\" targetNamespace=\"urn:test\" xmlns=\"http://schemas.xmlsoap.org/wsdl/\" xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:types=\"urn:test:types\"  xmlns:tns=\"urn:test\"><types><xsd:schema targetNamespace=\"urn:test:types\" attributeFormDefault=\"unqualified\" elementFormDefault=\"unqualified\"><xsd:element name=\"Hello\"><xsd:complexType><xsd:sequence><xsd:element name=\"argument\" type=\"xsd:string\"/><xsd:element name=\"extra\" type=\"xsd:string\"/></xsd:sequence></xsd:complexType></xsd:element><xsd:complexType name=\"HelloType\"><xsd:sequence><xsd:element name=\"argument\" type=\"xsd:string\"/><xsd:element name=\"extra\" type=\"xsd:string\"/></xsd:sequence></xsd:complexType><xsd:element name=\"HelloResponse\"><xsd:complexType><xsd:sequence><xsd:sequence><xsd:element name=\"name\" type=\"xsd:string\"/></xsd:sequence><xsd:element name=\"argument\" type=\"xsd:string\"/><xsd:element name=\"extra\" type=\"xsd:string\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:schema></types><message name=\"HelloRequest\"><part name=\"parameters\" element=\"types:Hello\"/></message><message name=\"HelloResponse\"><part name=\"parameters\" element=\"types:HelloResponse\"/></message><portType name=\"Hello\"><operation name=\"hello\"><input message=\"tns:HelloRequest\"/><output message=\"tns:HelloResponse\"/></operation></portType><binding name=\"HelloBinding\" type=\"tns:Hello\"><soap:binding style=\"document\" transport=\"http://schemas.xmlsoap.org/soap/http\"/><operation name=\"hello\"><soap:operation soapAction=\"urn:test:hello\"/><input><soap:body use=\"literal\"/></input><output><soap:body use=\"literal\"/></output></operation></binding><service name=\"Hello\"><port name=\"HelloPort\" binding=\"tns:HelloBinding\"><soap:address location=\"http://test.org/hello\"/></port></service></definitions>";
     final static String msEprString =
-            "<wsa:EndpointReference xmlns:wsa = \"http://schemas.xmlsoap.org/ws/2004/08/addressing\"><wsa:Address>http://localhost:/jaxrpc-fromwsdl_wsdl_hello_lit/hello</wsa:Address><wsa:ReferenceProperties></wsa:ReferenceProperties><wsa:ReferenceParameters>" + metadata + "</wsa:ReferenceParameters></wsa:EndpointReference>";
+            "<wsa:EndpointReference xmlns:wsa = \"http://schemas.xmlsoap.org/ws/2004/08/addressing\"><wsa:Address>http://localhost:8080/jaxrpc-fromwsdl_wsdl_hello_lit/hello</wsa:Address><wsa:ReferenceProperties></wsa:ReferenceProperties><wsa:ReferenceParameters>" + metadata + "</wsa:ReferenceParameters></wsa:EndpointReference>";
 
     final static String w3cEprString =
-            "<wsa:EndpointReference xmlns:wsa = \"http://www.w3.org/2005/08/addressing\"><wsa:Address>http://localhost:/jaxrpc-fromwsdl_wsdl_hello_lit/hello</wsa:Address><wsa:ReferenceParameters></wsa:ReferenceParameters><wsa:Metadata>" + metadata + "</wsa:Metadata></wsa:EndpointReference>";
+            "<wsa:EndpointReference xmlns:wsa = \"http://www.w3.org/2005/08/addressing\"><wsa:Address>http://localhost:8080/jaxrpc-fromwsdl_wsdl_hello_lit/hello</wsa:Address><wsa:ReferenceParameters></wsa:ReferenceParameters><wsa:Metadata>" + metadata + "</wsa:Metadata></wsa:EndpointReference>";
 
 }

@@ -71,7 +71,7 @@ import com.sun.xml.ws.transport.Headers;
 public class URLConnectionTest extends TestCase {
 
     private String endpointAddress =
-        "http://localhost:/jaxrpc-provider_tests_rest/hello/restds";
+        "http://localhost:8080/jaxrpc-provider_tests_rest/hello/restds";
     
     // HTTP GET to get image/jpeg
     public void testGetImageFromDS() throws Exception {

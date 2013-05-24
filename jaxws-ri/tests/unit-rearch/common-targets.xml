@@ -43,11 +43,13 @@
 <property environment="env"/>
 <property name="jaxws.home" value="${env.JAXWS_HOME}"/>
 <property name="jaxws.test.home" value="${env.JAXWS_TEST_HOME}"/>
-<property name="tomcat.home" value="${env.TOMCAT_HOME}"/>
+<property name="tomcat.base" value="${env.CATALINA_HOME}"/>
+<property name="tomcat.home" value="${env.CATALINA_HOME}"/>
 
 <property file="${env.JAXWS_TEST_HOME}/build.properties"/>
 
 <property name="lib.home" value="${jaxws.home}/lib"/>
+<property name="test.lib" value="${jaxws.test.home}/lib"/>
 
 <property name="j2se.server.home" value="${jaxws.test.home}/j2seserver"/>
 <property name="protocol" value=""/>
@@ -61,12 +63,17 @@
 <!-- Content negotiation property -->
 <property name="contentNegotiation" value="${env.CONTENT_NEGOTIATION}"/>
 
+<!--client common files -->
+<property name="client.common" value="${jaxws.test.home}/src/client/common"/>
+
 <!-- runtime classpath does not include jaxws-tools.jar -->
 <path id="run.classpath">
     <pathelement location="${jaxws.home}/../rt/build/classes" /><!-- if running for workspace, pick up from build directory directly, so that one doesn't have to build the whole RI from ant -->
     <fileset dir="${lib.home}" includes="*.jar" excludes="jaxws-tools.jar" />
     <fileset file="${jaxws.home}/../../../../../transports/local/target/jaxws-local-transport.jar" />
     <pathelement location="${jaxws.test.home}/src"/>
+    <pathelement location="${test.lib}/junit.jar"/>
+    <pathelement location="${tomcat.home}/common/lib/servlet-api.jar"/>
     <pathelement location="${jaxws.test.home}/build/classes"/>
     <pathelement location="${build.temp.classes}"/>
     <fileset dir="${jaxws.test.home}" includes="build/temp/classes/*.jar"/>
@@ -106,8 +113,8 @@
 
 
 <!-- Properties -->
-<property name="Tomcat.unix" value="${tomcat.home}/bin/catalina.sh" />
-<property name="Tomcat.win" value="${tomcat.home}/bin/catalina.bat" />
+<property name="Tomcat.unix" value="${tomcat.base}/bin/catalina.sh" />
+<property name="Tomcat.win" value="${tomcat.base}/bin/catalina.bat" />
 
 <!-- Configure properties to access the Manager application -->
 <property name="url"      value="${url}"/>
@@ -133,6 +140,11 @@
             <pathelement location="${build.test.classes}"/>
         </classpath>
     </taskdef>
+</target>
+
+<target name="patch_ports">
+    <replace dir="${jaxws.test.home}/src" token="localhost:/" value="localhost:8080/" includes="**/*"/>
+    <replace dir="${jaxws.test.home}/src" token="localhost:8080/" value="localhost:${port}/" includes="**/*"/>
 </target>
 
 <target name="compile_test_util">
@@ -313,7 +325,6 @@ compile common files at this time. -->
     <java classname="testutil.LocalCustomizationFileTransformer" outputproperty="wsdlOnTomcat" errorproperty="errlog" fork="true">
         <arg value="tomcat"/>
         <arg value="${basedir}/config/${client.binding}"/>
-        <arg value="${build.temp}/"/>
         <arg value="${port}"/>
         <classpath refid="run.classpath"/>
     </java>
@@ -326,7 +337,7 @@ compile common files at this time. -->
         verbose="${verbose}"
         wsdl="${wsdlOnTomcat}">
         <jvmarg line="${jvmargs}"/>
-        <binding dir="${build.temp}/" includes="*.xml"/>
+        <binding dir="${basedir}/config/" includes="${client.binding}"/>
     </wsimport>
 </target>
 
@@ -537,7 +548,7 @@ have multiple clients for one test case -->
 <target name="deploy-war">
     <echo message="-------- Deploying war for ${ant.project.name} to jwsdp --------"/>
     <copy file="${build.temp}/../war/jaxrpc-${warfilename}.war"
-              todir="${tomcat.home}/webapps"/>
+              todir="${tomcat.base}/webapps"/>
 </target>
 
 <target name="start-tomcat">

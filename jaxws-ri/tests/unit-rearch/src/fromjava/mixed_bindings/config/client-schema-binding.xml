@@ -43,13 +43,13 @@
 <jxb:bindings version="1.0"
                xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
                xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <jxb:bindings schemaLocation="http://localhost:/jaxrpc-fromjava_mixed_bindings/mixed_bindings?xsd=1" node="/xs:schema">
+  <jxb:bindings schemaLocation="http://localhost:8080/jaxrpc-fromjava_mixed_bindings/mixed_bindings?xsd=1" node="/xs:schema">
     <jxb:schemaBindings>
       <jxb:package name="fromjava.mixed_bindings.client"/>
     </jxb:schemaBindings>
   </jxb:bindings>
 
-  <jxb:bindings schemaLocation="http://localhost:/jaxrpc-fromjava_mixed_bindings/mixed_bindings?xsd=2" node="/xs:schema">
+  <jxb:bindings schemaLocation="http://localhost:8080/jaxrpc-fromjava_mixed_bindings/mixed_bindings?xsd=2" node="/xs:schema">
     <jxb:schemaBindings>
       <jxb:package name="fromjava.mixed_bindings.client"/>
     </jxb:schemaBindings>

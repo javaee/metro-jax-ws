@@ -101,7 +101,7 @@ public abstract class TestCaseBase extends TestCase implements TestConstants {
         if(ClientServerTestUtil.useLocal())
             endpointAddress = "local://"+System.getProperty("tempdir");
         else
-            endpointAddress = "http://localhost:/jaxrpc-fromwsdl_handler/test";
+            endpointAddress = "http://localhost:8080/jaxrpc-fromwsdl_handler/test";
     }
 
     public TestCaseBase(String name) {

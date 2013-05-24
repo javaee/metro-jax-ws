@@ -288,7 +288,7 @@ public class HandlerClient extends TestCase {
 //    public void testDispatchJAXB() throws Exception {
 //        QName portQName = new QName("urn:test", "HelloPort");
 //        String endpointAddress =
-//            "http://localhost:/jaxrpc-fromwsdl_handler_simple_rpclit/hello";
+//            "http://localhost:8080/jaxrpc-fromwsdl_handler_simple_rpclit/hello";
 //
 //        // create service with just qname -- no handlers in that case
 //        //Hello_Service service = createService();
@@ -331,7 +331,7 @@ public class HandlerClient extends TestCase {
 //        String req = "<?xml version=\"1.0\" ?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><Hello xmlns=\"urn:test:types\"><intin>1</intin></Hello></soapenv:Body></soapenv:Envelope>";
 //        QName portQName = new QName("urn:test", "HelloPort");
 //        String endpointAddress =
-//            "http://localhost:/jaxrpc-fromwsdl_handler_simple_rpclit/hello";
+//            "http://localhost:8080/jaxrpc-fromwsdl_handler_simple_rpclit/hello";
 //
 //        // create service with just qname -- no handlers in that case
 //        QName serviceQName = new QName("urn:test", "Hello");
@@ -376,7 +376,7 @@ public class HandlerClient extends TestCase {
 //        String req = "<?xml version=\"1.0\" ?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><Hello xmlns=\"urn:test:types\"><intin>1</intin></Hello></soapenv:Body></soapenv:Envelope>";
 //        QName portQName = new QName("urn:test", "HelloPort");
 //        String endpointAddress =
-//            "http://localhost:/jaxrpc-fromwsdl_handler_simple_rpclit/hello";
+//            "http://localhost:8080/jaxrpc-fromwsdl_handler_simple_rpclit/hello";
 //
 //        // create service with just qname -- no handlers in that case
 //        QName serviceQName = new QName("urn:test", "Hello");

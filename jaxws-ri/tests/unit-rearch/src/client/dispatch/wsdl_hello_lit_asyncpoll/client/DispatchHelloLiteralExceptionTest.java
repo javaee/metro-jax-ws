@@ -85,7 +85,7 @@ public class DispatchHelloLiteralExceptionTest extends TestCase {
     private QName serviceQName = new QName("urn:test", "Hello");
     private QName portQName = new QName("urn:test", "HelloPort");;
     private String bindingIdString = SOAPBinding.SOAP11HTTP_BINDING;
-    private String endpointAddress = "http://localhost:/jaxrpc-client_dispatch_wsdl_hello_lit_asyncpoll/hello";
+    private String endpointAddress = "http://localhost:8080/jaxrpc-client_dispatch_wsdl_hello_lit_asyncpoll/hello";
     private static final String ENDPOINT_IMPL = "client.dispatch.wsdl_hello_lit_asyncpoll.server.Hello_PortType_Impl";
     private Service service;
     private Dispatch dispatch;

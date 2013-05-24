@@ -79,8 +79,8 @@ public class BindingProviderUtil {
         return new WsaTestService().createDispatch(BindingProviderUtil.PORT_QNAME, SOAPMessage.class, Service.Mode.MESSAGE, DISABLED_ADDRESSING_FEATURE);
     }
 
-    private static final String ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-wsa_submission_fromwsdl_crinterop_s11/member";
-    private static final String NON_ANONYMOUS_ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-wsa_submission_fromwsdl_crinterop_s12/nonanonymous";
+    private static final String ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-wsa_submission_fromwsdl_crinterop_s11/member";
+    private static final String NON_ANONYMOUS_ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-wsa_submission_fromwsdl_crinterop_s12/nonanonymous";
     private static final String NAMESPACE_URI = "http://example.org/wsaTestService";
     private static final QName PORT_QNAME = new QName(BindingProviderUtil.NAMESPACE_URI, "wsaTestPort");
     private static final MemberSubmissionAddressingFeature ENABLED_ADDRESSING_FEATURE = new MemberSubmissionAddressingFeature(true);

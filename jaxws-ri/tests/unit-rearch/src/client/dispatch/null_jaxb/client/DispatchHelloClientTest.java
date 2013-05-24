@@ -112,7 +112,7 @@ public class DispatchHelloClientTest extends DispatchTestCase {
         if(ClientServerTestUtil.useLocal())
             endpointAddress = "local://"+new File(System.getProperty("tempdir")).getAbsolutePath().replace('\\','/')+'?'+portQName.getLocalPart();
         else
-            endpointAddress = "http://localhost:/jaxrpc-client_dispatch_null_jaxb/hello";
+            endpointAddress = "http://localhost:8080/jaxrpc-client_dispatch_null_jaxb/hello";
     }
 
     private void createService() {

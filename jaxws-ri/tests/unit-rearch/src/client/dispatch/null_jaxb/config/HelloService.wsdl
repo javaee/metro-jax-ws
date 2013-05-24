@@ -125,7 +125,7 @@
     
   <service name="HelloService">
     <port name="HelloPort" binding="tns:HelloBinding">
-      <soap:address location="http://localhost:/DLHelloService/jaxws/hello"/>
+      <soap:address location="http://localhost:8080/DLHelloService/jaxws/hello"/>
     </port>
   </service>
   

@@ -73,7 +73,7 @@ import java.util.Map;
  */
 public class DispatchClient extends TestCase {
     private String endpointAddress =
-            "http://localhost:/jaxrpc-provider_tests_rest/hello/rest";
+            "http://localhost:8080/jaxrpc-provider_tests_rest/hello/rest";
     private int bodyIndex = 0;
     private static final String[] body = {
         "<HelloRequest xmlns=\"urn:test:types\"><argument xmlns=\"\">foo</argument><extra xmlns=\"\">bar</extra></HelloRequest>",

@@ -49,16 +49,16 @@
   <types />
   <service name="MarshallTestService">
     <port name="MarshallTestPort1" binding="mts1:MarshallTestSoapBinding">
-      <soap:address location="http://localhost:/W2JRLMarshallTest/jaxws/MarshallTest" />
+      <soap:address location="http://localhost:8080/W2JRLMarshallTest/jaxws/MarshallTest" />
     </port>
     <port name="MarshallTestPort2" binding="mts2:NewSchemaTestSoapBinding">
-      <soap:address location="http://localhost:/W2JRLMarshallTest/jaxws/NewSchemaTest" />
+      <soap:address location="http://localhost:8080/W2JRLMarshallTest/jaxws/NewSchemaTest" />
     </port>
     <port name="MarshallTestPort3" binding="mts3:CompoundTestBinding">
-      <soap:address location="http://localhost:/W2JRLMarshallTest/jaxws/CompoundTest" />
+      <soap:address location="http://localhost:8080/W2JRLMarshallTest/jaxws/CompoundTest" />
     </port>
     <port name="MarshallTestPort4" binding="mts4:OneWayTestSoapBinding">
-      <soap:address location="http://localhost:/W2JRLMarshallTest/jaxws/OneWayTest" />
+      <soap:address location="http://localhost:8080/W2JRLMarshallTest/jaxws/OneWayTest" />
     </port>
   </service>
 </definitions>

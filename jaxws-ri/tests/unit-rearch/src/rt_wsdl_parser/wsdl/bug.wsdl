@@ -73,7 +73,7 @@
 </binding>
 <service name="HelloImplService">
 <port name="HelloImpl" binding="tns:HelloImplBinding">
-<soap:address location="http://localhost:/jaxws-hello/hello"/>
+<soap:address location="http://localhost:8080/jaxws-hello/hello"/>
 </port>
 </service>
 </definitions>

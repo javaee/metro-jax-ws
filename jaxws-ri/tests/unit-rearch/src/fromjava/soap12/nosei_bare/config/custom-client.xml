@@ -41,7 +41,7 @@
 
 -->
 
-<bindings wsdlLocation="http://localhost:/jaxrpc-fromjava_soap12_nosei_bare/soap12-nosei_bare?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws">
+<bindings wsdlLocation="http://localhost:8080/jaxrpc-fromjava_soap12_nosei_bare/soap12-nosei_bare?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws">
     <bindings node="ns1:definitions" xmlns:ns1="http://schemas.xmlsoap.org/wsdl/">
         <package name="fromjava.soap12.nosei_bare.client"/>
     </bindings>

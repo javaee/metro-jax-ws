@@ -31,7 +31,6 @@ export JAVA_ENDORSED_DIRS=$CATALINA_HOME/common/endorsed
 cp $JAXWS_HOME/lib/jaxb-api.jar $JAVA_ENDORSED_DIRS
 cp $JAXWS_HOME/lib/jaxws-api.jar $JAVA_ENDORSED_DIRS
 
-export TOMCAT_HOME=$CATALINA_BASE
 export ANT_OPTS="-Djava.endorsed.dirs=$JAVA_ENDORSED_DIRS"
 
 # run all the unit tests
@@ -73,7 +72,7 @@ echo ""
 echo "--------- Running http transport tests --------------"
 >$httpLogFile
 
-    callant.sh clean compile_test_util
+callant.sh clean compile_test_util patch_ports
 
 for file in $XMLS
 do

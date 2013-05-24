@@ -41,7 +41,7 @@
 -->
 
 <EndpointReference xmlns="http://schemas.xmlsoap.org/ws/2004/08/addressing">
-    <Address>http://localhost:/jaxrpc-client_jaxws21_epr_get_port/hello</Address>
+    <Address>http://localhost:8080/jaxrpc-client_jaxws21_epr_get_port/hello</Address>
     <PortType xmlns:wsns="http://example.com/">wsns:AddNumbersPortType</PortType>
     <ServiceName xmlns:wsns="http://example.com/" PortName="AddNumbersPort">wsns:AddNumbersService</ServiceName>
     <mex:Metadata xmlns:mex='http://schemas.xmlsoap.org/ws/2004/09/mex'>
@@ -50,7 +50,7 @@
                               xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
                               xmlns:wsns="http://example.com/">
                 <wsdl:import xmlns:ns6="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns=""
-                             location="http://localhost:/jaxrpc-client_jaxws21_epr_get_port/hello?wsdl"
+                             location="http://localhost:8080/jaxrpc-client_jaxws21_epr_get_port/hello?wsdl"
                              namespace="http://example.com/"/>
             </wsdl:definitions>
         </mex:MetadataSection>

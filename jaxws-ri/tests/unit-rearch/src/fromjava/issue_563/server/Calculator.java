@@ -61,7 +61,7 @@ public class Calculator {
     public static void main(String[] args){
         // create and publish an endpoint
         Calculator calculator = new Calculator();
-        Endpoint endpoint = Endpoint.publish("http://localhost:/calculator", calculator);        
+        Endpoint endpoint = Endpoint.publish("http://localhost:8080/calculator", calculator);        
     }
     */
 }

@@ -66,7 +66,7 @@ import java.io.ByteArrayOutputStream;
 public class AddNumbersClient extends XMLTestCase {
     private static final QName SERVICE_QNAME = new QName("http://example.com/", "AddNumbersService");
     private static final QName PORT_QNAME = new QName("http://example.com/", "AddNumbersPort");
-    private static final String ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-wsa_fromwsdl_api_binding_wsa_required_true/hello";
+    private static final String ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-wsa_fromwsdl_api_binding_wsa_required_true/hello";
     private static final String CORRECT_ACTION = "http://example.com/AddNumbersPortType/addNumbersRequest";
 
     public AddNumbersClient(String name) {

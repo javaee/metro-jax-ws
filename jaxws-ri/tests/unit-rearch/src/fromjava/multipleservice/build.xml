@@ -96,7 +96,7 @@
                 keep="true"
                 verbose="true"
                 destdir="${build.temp.classes}/"
-                wsdl="http://localhost:/jaxrpc-fromjava_multipleservice/serviceone?wsdl">
+                wsdl="http://localhost:8080/jaxrpc-fromjava_multipleservice/serviceone?wsdl">
         </wsimport>
 
         <wsimport
@@ -105,7 +105,7 @@
                 keep="true"
                 verbose="true"
                 destdir="${build.temp.classes}/"
-                wsdl="http://localhost:/jaxrpc-fromjava_multipleservice/servicetwo?wsdl">
+                wsdl="http://localhost:8080/jaxrpc-fromjava_multipleservice/servicetwo?wsdl">
         </wsimport>
 
         <javac srcdir="${basedir}"

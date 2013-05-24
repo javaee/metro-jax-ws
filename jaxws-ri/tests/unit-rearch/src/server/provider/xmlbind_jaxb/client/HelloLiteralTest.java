@@ -101,7 +101,7 @@ public class HelloLiteralTest extends TestCase {
         if(ClientServerTestUtil.useLocal())
             endpointAddress = "local://"+new File(System.getProperty("tempdir")).getAbsolutePath().replace('\\','/')+'?'+portQName.getLocalPart();
         else
-            endpointAddress = "http://localhost:/jaxrpc-provider_tests_xmlbind_jaxb/hello";
+            endpointAddress = "http://localhost:8080/jaxrpc-provider_tests_xmlbind_jaxb/hello";
     }
 
     Service createService () {

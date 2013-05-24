@@ -41,7 +41,7 @@
 -->
 
 <EndpointReference xmlns="http://www.w3.org/2005/08/addressing">
-    <Address>http://localhost:/jaxrpc-client_jaxws21_epr_get_port/hello</Address>
+    <Address>http://localhost:8080/jaxrpc-client_jaxws21_epr_get_port/hello</Address>
     <Metadata>
         <wsaw:InterfaceName xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
                             xmlns:wsa="http://www.w3.org/2005/08/addressing"
@@ -58,7 +58,7 @@
                                   xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
                                   xmlns:wsns="http://example.com/">
                     <wsdl:import xmlns:ns6="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns=""
-                                 location="http://localhost:/jaxrpc-client_jaxws21_epr_get_port/hello?wsdl"
+                                 location="http://localhost:8080/jaxrpc-client_jaxws21_epr_get_port/hello?wsdl"
                                  namespace="http://example.com/"/>
                 </wsdl:definitions>
             </mex:MetadataSection>

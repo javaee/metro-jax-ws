@@ -107,8 +107,8 @@ public class DispatchHelloLiteralTest extends TestCase {
     private QName portQName = new QName("urn:test", "HelloPort");
 
     private String bindingIdString = "http://schemas.xmlsoap.org/wsdl/soap/http";
-    private String endpointWSDL = "http://localhost:/jaxrpc-client_response_context/hello?WSDL";
-    private String endpointAddress = "http://localhost:/jaxrpc-client_response_context/heh";  //bogus endpointAddress
+    private String endpointWSDL = "http://localhost:8080/jaxrpc-client_response_context/hello?WSDL";
+    private String endpointAddress = "http://localhost:8080/jaxrpc-client_response_context/heh";  //bogus endpointAddress
 
     private Service service;
     private Service serviceWithPorts;

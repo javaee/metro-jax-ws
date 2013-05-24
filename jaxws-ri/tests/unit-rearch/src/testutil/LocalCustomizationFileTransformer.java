@@ -1,43 +1,11 @@
 /*
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2004-2013 Oracle and/or its affiliates. All rights reserved.
- *
- * The contents of this file are subject to the terms of either the GNU
- * General Public License Version 2 only ("GPL") or the Common Development
- * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License.  You can
- * obtain a copy of the License at
- * http://glassfish.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
- * language governing permissions and limitations under the License.
- *
- * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
- *
- * GPL Classpath Exception:
- * Oracle designates this particular file as subject to the "Classpath"
- * exception as provided by Oracle in the GPL Version 2 section of the License
- * file that accompanied this code.
- *
- * Modifications:
- * If applicable, add the following below the License Header, with the fields
- * enclosed by brackets [] replaced by your own identifying information:
- * "Portions Copyright [year] [name of copyright owner]"
- *
- * Contributor(s):
- * If you wish your version of this file to be governed by only the CDDL or
- * only the GPL Version 2, indicate your decision by adding "[Contributor]
- * elects to include this software in this distribution under the [CDDL or GPL
- * Version 2] license."  If you don't indicate a single choice of license, a
- * recipient has the option to distribute your version of this file under
- * either the CDDL, the GPL Version 2 or to extend the choice of license to
- * its licensees as provided above.  However, if you add GPL Version 2 code
- * and therefore, elected the GPL Version 2 license, then the option applies
- * only if the new code is made subject to such option by the copyright
- * holder.
+ * $Id: LocalCustomizationFileTransformer.java,v 1.1 2005/10/07 22:46:09 kk122374 Exp $
  */
 
+/*
+ * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
 package testutil;
 
 import java.io.File;
@@ -61,6 +29,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
 
 import com.sun.tools.ws.wsdl.parser.Util;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -74,8 +43,12 @@ import com.sun.xml.ws.util.xml.XmlUtil;
  */
 public class LocalCustomizationFileTransformer {
 
+    /**
+     * 
+     */
     public LocalCustomizationFileTransformer() {
         super();
+        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -97,7 +70,7 @@ public class LocalCustomizationFileTransformer {
 
             boolean localExecType = "local".equals(args[0].toLowerCase());
             
-            if (localExecType) {
+            if(localExecType){
                  File wsdlLocationFile = new File(args[2]);
                  File newLoc = new File(args[1]+"WEB-INF/wsdl/"+wsdlLocationFile.getName());
                  map = buildMap(new File(args[1]+"WEB-INF/wsdl/").getCanonicalPath(), newLoc.getCanonicalPath());
@@ -133,22 +106,26 @@ public class LocalCustomizationFileTransformer {
                         (nspace != null && !wsdlElement.getNamespaceURI().equals("http://java.sun.com/xml/ns/jaxws")))
                     continue;
                 Attr wsdlAttr = wsdlElement.getAttributeNode("wsdlLocation");
-
                 String location = (wsdlAttr != null)?wsdlAttr.getValue():null;
+
                 if (location != null) {
-                    location = location.replaceFirst("/localhost:/", "/localhost:" + port + "/");
+                    location = location.replaceFirst("/localhost:8080/", "/localhost:" + port + "/");
+                    wsdlAttr.setValue(location);
                 }
-                if (!localExecType) {
+
+                if ((location != null) && (!localExecType)) {
                     System.out.println(location);
+                    return;
                 }
 
                 token = "temp-config.xml";
-                String newCustom = args[2]+token;
+                String newCustom = args[1]+token;
 
-                if (location != null) {
-                    File wsdlLocationFile = new File(args[3]);
-                    File newLoc = new File(args[2]+"WEB-INF/wsdl/"+wsdlLocationFile.getName());
+                if(location != null){
+                    File wsdlLocationFile = new File(args[2]);
+                    File newLoc = new File(args[1]+"WEB-INF/wsdl/"+wsdlLocationFile.getName());
                     wsdlAttr.setValue(newLoc.getCanonicalPath());
+                    //System.out.println(args[1]+wsdlLocationFile.getName());
                     System.out.println(newLoc.getCanonicalPath());
                 }else{
                     transformSchemaLocation(wsdlElement, map);
@@ -189,8 +166,44 @@ public class LocalCustomizationFileTransformer {
             if(index != -1){
                 schemaLocationAttr.setValue("file:/"+map.get(sl.substring(index+1)));
             }
+//
+//            int index = sl.lastIndexOf('/');
+//            String path = "./";
+//            String file = sl;
+//            if(index != -1){
+//                //File newLoc = new File(parent+sl.substring(index+1));
+//                schemaLocationAttr.setValue(sl.substring(index+1));
+//            }
         }
     }
+    /*
+     * Make sure that the element was found. It will be null
+     * when there is a problem with the jaxrpc-ri file.
+     *
+    private static void checkEndpoint(Element endpoint) {
+        if (endpoint == null) {
+            System.err.println("\nLocalConfigFileTransformer could not " +
+                "find \"endpoint\" element in sun-jaxws.xml file.\n" +
+                "Please check file and verify that it was generated correctly.\n");
+            throw new RuntimeException("Cannot process sun-jaxws.xml file");
+        }
+    }
+
+    private static Map buildMap(NodeList nodeList) throws Exception {
+        Map map = new HashMap(nodeList.getLength());
+        Element endpoint = null;
+        for (int i=0; i<nodeList.getLength(); i++) {
+            endpoint = (Element) nodeList.item(i);
+            checkEndpoint(endpoint);
+            String urlpattern = endpoint.getAttributeNode("urlpattern").getValue();
+            String wsdl = endpoint.getAttributeNode("wsdl").getValue();
+            
+            // remove the leading "/" from "/WEB-INF/filename.wsdl
+            map.put(urlpattern, wsdl.substring(1, wsdl.length()));
+        }
+        return map;
+    }
+	*/
 
     /**
      *
@@ -230,6 +243,7 @@ public class LocalCustomizationFileTransformer {
         for(String file : schemaIds) {
             map.put("xsd="+schemaNum++, file);
         }
+//System.out.println("Map="+map);
         return map;
     }
 

@@ -75,7 +75,7 @@ public class AddNumbersClient extends XMLTestCase {
     private static final QName SERVICE_QNAME = new QName("http://example.com/", "AddNumbersService");
     private static final QName PORT_QNAME = new QName("http://example.com/", "AddNumbersPort");
     private static final QName PORT_TYPE_QNAME = new QName("http://example.com/", "AddNumbersPortType");
-    private static final String ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-wsa_fromwsdl_custom/hello";
+    private static final String ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-wsa_fromwsdl_custom/hello";
     private static final String CORRECT_ACTION = "http://example.com/AddNumbersPortType/addNumbersRequest";
 
     public AddNumbersClient(String name) {
@@ -98,7 +98,7 @@ public class AddNumbersClient extends XMLTestCase {
         if (ClientServerTestUtil.useLocal())
             return "local://" + new File(System.getProperty("tempdir")).getAbsolutePath().replace('\\', '/') + '?' + "hello_literal.wsdl";
         else
-            return "http://localhost:/jaxrpc-wsa_fromwsdl_custom/hello?wsdl";
+            return "http://localhost:8080/jaxrpc-wsa_fromwsdl_custom/hello?wsdl";
     }
 
     private Dispatch<SOAPMessage> createDispatchWithoutWSDL() throws Exception {

@@ -41,7 +41,7 @@
 
 -->
 
-<bindings wsdlLocation="http://localhost:/jaxrpc-client_jaxws21_epr_get_port_ua/hello?wsdl"
+<bindings wsdlLocation="http://localhost:8080/jaxrpc-client_jaxws21_epr_get_port_ua/hello?wsdl"
           xmlns="http://java.sun.com/xml/ns/jaxws" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
           xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb">
     <bindings node="wsdl:definitions">

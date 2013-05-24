@@ -59,7 +59,7 @@ import javax.xml.ws.soap.SOAPFaultException;
 public class AddNumbersClient extends XMLTestCase {
     private static final QName SERVICE_QNAME = new QName("http://example.com/", "AddNumbersService");
     private static final QName PORT_QNAME = new QName("http://example.com/", "AddNumbersPort");
-    private static final String ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-wsa_submission_fromwsdl_custom/hello";
+    private static final String ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-wsa_submission_fromwsdl_custom/hello";
     private static final String CORRECT_ACTION = "http://example.com/AddNumbersPortType/addNumbersRequest";
     private static final MemberSubmissionAddressingFeature ENABLED_ADDRESSING_FEATURE = new MemberSubmissionAddressingFeature(true);
     private static final MemberSubmissionAddressingFeature DISABLED_ADDRESSING_FEATURE = new MemberSubmissionAddressingFeature(false);

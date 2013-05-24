@@ -41,7 +41,7 @@
 
 -->
 
-<bindings wsdlLocation="http://localhost:/jaxrpc-fromjava_mbyte/mbyte?wsdl"
+<bindings wsdlLocation="http://localhost:8080/jaxrpc-fromjava_mbyte/mbyte?wsdl"
           xmlns="http://java.sun.com/xml/ns/jaxws"
           xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
     <package name="fromjava.mbyte.client"/>

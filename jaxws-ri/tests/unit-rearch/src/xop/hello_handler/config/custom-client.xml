@@ -41,7 +41,7 @@
 
 -->
 
-<bindings wsdlLocation="http://localhost:/jaxrpc-xop_hello_handler/hello?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws">
+<bindings wsdlLocation="http://localhost:8080/jaxrpc-xop_hello_handler/hello?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws">
     <bindings node="ns1:definitions" xmlns:ns1="http://schemas.xmlsoap.org/wsdl/">
         <package name="xop.hello_handler.client"/>
     </bindings>

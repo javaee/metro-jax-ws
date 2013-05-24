@@ -115,7 +115,7 @@
 
     <service name="wsaTestService">
         <port name="wsaTestPort" binding="service:wsaTestSoap12Binding">
-            <soap12:address location="http://localhost:/jaxwsa-w3c_s12/cr"/>
+            <soap12:address location="http://localhost:8080/jaxwsa-w3c_s12/cr"/>
         </port>
     </service>
 </definitions>

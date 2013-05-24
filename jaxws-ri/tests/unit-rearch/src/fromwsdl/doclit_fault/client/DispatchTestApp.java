@@ -63,7 +63,7 @@ public class DispatchTestApp extends DispatchTestCase {
     private QName portQName = new QName("urn:test", "FaultPort");
     private String bindingIdString = SOAPBinding.SOAP11HTTP_BINDING;
 
-    private String endpointAddress = "http://localhost:/jaxrpc-fromwsdl_doclit_fault/hello";
+    private String endpointAddress = "http://localhost:8080/jaxrpc-fromwsdl_doclit_fault/hello";
 
     private Service service;
     private Dispatch dispatch;
@@ -79,7 +79,7 @@ public class DispatchTestApp extends DispatchTestCase {
         if(ClientServerTestUtil.useLocal())
              endpointAddress = "local://"+new File(System.getProperty("tempdir")).getAbsolutePath().replace('\\','/')+'?'+portQName.getLocalPart();
         else
-            endpointAddress = "http://localhost:/jaxrpc-client_dispatch_wsdl_hello/hello";
+            endpointAddress = "http://localhost:8080/jaxrpc-client_dispatch_wsdl_hello/hello";
     }
 
      private void createService() {

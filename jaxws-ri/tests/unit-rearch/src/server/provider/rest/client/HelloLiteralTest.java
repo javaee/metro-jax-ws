@@ -74,7 +74,7 @@ import com.sun.xml.ws.transport.Headers;
 public class HelloLiteralTest extends TestCase {
 
     private String endpointAddress =
-        "http://localhost:/jaxrpc-provider_tests_rest/hello/rest";
+        "http://localhost:8080/jaxrpc-provider_tests_rest/hello/rest";
     private int bodyIndex = 0;
     private String[] body = {
         "<HelloRequest xmlns=\"urn:test:types\"><argument xmlns=\"\">foo</argument><extra xmlns=\"\">bar</extra></HelloRequest>",

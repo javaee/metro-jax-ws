@@ -62,7 +62,7 @@ public class AddNumbersClient extends XMLTestCase {
     //may be used for verification
     private static final QName SERVICE_QNAME = new QName("http://example.com/", "AddNumbersService");
     private static final QName PORT_QNAME = new QName("http://example.com/", "AddNumbersPort");
-    private static final String ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-client_jaxws21_epr_get_port_na/hello";
+    private static final String ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-client_jaxws21_epr_get_port_na/hello";
     //maybe used for firther tests
     // private static final String CORRECT_ACTION = "http://example.com/AddNumbersPortType/addNumbersRequest";
 

@@ -42,7 +42,7 @@
 
 <wsa10:EndpointReference xmlns:wsa10="http://www.w3.org/2005/08/addressing">
     <wsa10:Address>
-        http://localhost:/secure_federation/SecureConversation_MutualCertificate11
+        http://localhost:8080/secure_federation/SecureConversation_MutualCertificate11
     </wsa10:Address>
     <Identity xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
         <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">

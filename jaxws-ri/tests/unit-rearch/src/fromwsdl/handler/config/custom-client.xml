@@ -41,7 +41,7 @@
 
 -->
 
-<bindings wsdlLocation="http://localhost:/jaxrpc-fromwsdl_handler/test?wsdl"
+<bindings wsdlLocation="http://localhost:8080/jaxrpc-fromwsdl_handler/test?wsdl"
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     xmlns="http://java.sun.com/xml/ns/jaxws">
     

@@ -50,7 +50,7 @@ import testutil.ClientServerTestUtil;
 import junit.framework.TestCase;
 
 public class AddNumbersClient extends TestCase {
-    private static final String endpointAddress = "http://localhost:/jaxrpc-wsa_fromjava_epr/hello";
+    private static final String endpointAddress = "http://localhost:8080/jaxrpc-wsa_fromjava_epr/hello";
     private static final QName serviceName = new QName("http://foobar.org/", "AddNumbersService");
     private static final QName portName = new QName("http://foobar.org/", "AddNumbersPort");
     private static final QName portTypeName = new QName("http://foobar.org/", "AddNumbers");

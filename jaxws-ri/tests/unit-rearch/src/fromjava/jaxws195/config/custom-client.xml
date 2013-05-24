@@ -41,6 +41,6 @@
 
 -->
 
-<bindings wsdlLocation="http://localhost:/jaxrpc-fromjava_jaxws195/jaxws195?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws">
+<bindings wsdlLocation="http://localhost:8080/jaxrpc-fromjava_jaxws195/jaxws195?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws">
     <package name="fromjava.jaxws195.client"/>
 </bindings>

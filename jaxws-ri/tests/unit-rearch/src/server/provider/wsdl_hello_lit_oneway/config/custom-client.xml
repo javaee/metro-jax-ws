@@ -40,7 +40,7 @@
     holder.
 
 -->
-<bindings wsdlLocation="http://localhost:/jaxrpc-provider_tests_wsdl_hello_lit_oneway/hello?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws">
+<bindings wsdlLocation="http://localhost:8080/jaxrpc-provider_tests_wsdl_hello_lit_oneway/hello?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws">
     
     <bindings node="ns1:definitions" xmlns:ns1="http://schemas.xmlsoap.org/wsdl/">    
         <package name="server.provider.wsdl_hello_lit_oneway.client"/>

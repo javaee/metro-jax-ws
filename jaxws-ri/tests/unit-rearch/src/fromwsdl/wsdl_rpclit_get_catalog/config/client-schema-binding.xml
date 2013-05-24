@@ -43,13 +43,13 @@
 <jxb:bindings version="1.0"
                xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
                xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <jxb:bindings schemaLocation="http://localhost:/jaxrpc-fromwsdl_wsdl_rpclit_getCatalog/getcatalog?xsd=2" node="/xs:schema">
+  <jxb:bindings schemaLocation="http://localhost:8080/jaxrpc-fromwsdl_wsdl_rpclit_getCatalog/getcatalog?xsd=2" node="/xs:schema">
     <jxb:schemaBindings>
       <jxb:package name="fromwsdl.wsdl_rpclit_get_catalog.client"/>
     </jxb:schemaBindings>
   </jxb:bindings>
 
-  <jxb:bindings schemaLocation="http://localhost:/jaxrpc-fromwsdl_wsdl_rpclit_getCatalog/getcatalog?xsd=1" node="/xs:schema">
+  <jxb:bindings schemaLocation="http://localhost:8080/jaxrpc-fromwsdl_wsdl_rpclit_getCatalog/getcatalog?xsd=1" node="/xs:schema">
     <jxb:schemaBindings>
       <jxb:package name="fromwsdl.wsdl_rpclit_get_catalog.client"/>
     </jxb:schemaBindings>

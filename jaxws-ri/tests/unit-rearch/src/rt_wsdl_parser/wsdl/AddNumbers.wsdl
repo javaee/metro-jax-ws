@@ -150,7 +150,7 @@
       <jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
           <jaxws:method name="getMathUtil"/>
       </jaxws:bindings>
-      <soap:address location="http://localhost:/jaxws-inline-customize/addnumbers"/>
+      <soap:address location="http://localhost:8080/jaxws-inline-customize/addnumbers"/>
     </port>
   </service>
 </definitions>

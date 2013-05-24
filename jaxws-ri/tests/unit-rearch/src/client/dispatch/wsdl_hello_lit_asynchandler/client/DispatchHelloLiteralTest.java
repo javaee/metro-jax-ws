@@ -99,7 +99,7 @@ public class DispatchHelloLiteralTest extends DispatchTestCase {
         if(ClientServerTestUtil.useLocal())
             endpointAddress = "local://"+new File(System.getProperty("tempdir")).getAbsolutePath().replace('\\','/')+'?'+portQName.getLocalPart();
         else
-            endpointAddress = "http://localhost:/jaxrpc-client_dispatch_wsdl_hello_lit_asynchandler/hello";
+            endpointAddress = "http://localhost:8080/jaxrpc-client_dispatch_wsdl_hello_lit_asynchandler/hello";
     }
 
     private static javax.xml.bind.JAXBContext createJAXBContext() {

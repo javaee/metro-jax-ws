@@ -41,7 +41,7 @@
 
 -->
 
-<bindings wsdlLocation="http://localhost:/jaxrpc-fromwsdl_mime_simple_doclit/simple?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<bindings wsdlLocation="http://localhost:8080/jaxrpc-fromwsdl_mime_simple_doclit/simple?wsdl" xmlns="http://java.sun.com/xml/ns/jaxws" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
     <package name="fromwsdl.mime.simple_doclit.client"/>
     <bindings node="wsdl:definitions/wsdl:binding[@name='CatalogSoapBinding']/wsdl:operation[@name='getProductDetails']">
         <enableMIMEContent>true</enableMIMEContent>

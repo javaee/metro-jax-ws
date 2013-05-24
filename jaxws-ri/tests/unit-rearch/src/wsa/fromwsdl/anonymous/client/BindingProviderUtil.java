@@ -257,10 +257,10 @@ public class BindingProviderUtil {
     private static final QName OPTIONAL_ANONYMOUS_PORT_QNAME = new QName(TARGET_NAMESPACE, "AddNumbersPort2");
     private static final QName REQUIRED_ANONYMOUS_PORT_QNAME = new QName(TARGET_NAMESPACE, "AddNumbersPort3");
     private static final QName PROHIBITED_ANONYMOUS_PORT_QNAME = new QName(TARGET_NAMESPACE, "AddNumbersPort4");
-    private static final String NO_ANONYMOUS_ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-wsa_fromwsdl_anonymous/hello1";
-    private static final String OPTIONAL_ANONYMOUS_ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-wsa_fromwsdl_anonymous/hello2";
-    private static final String REQUIRED_ANONYMOUS_ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-wsa_fromwsdl_anonymous/hello3";
-    private static final String PROHIBITED_ANONYMOUS_ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-wsa_fromwsdl_anonymous/hello4";
+    private static final String NO_ANONYMOUS_ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-wsa_fromwsdl_anonymous/hello1";
+    private static final String OPTIONAL_ANONYMOUS_ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-wsa_fromwsdl_anonymous/hello2";
+    private static final String REQUIRED_ANONYMOUS_ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-wsa_fromwsdl_anonymous/hello3";
+    private static final String PROHIBITED_ANONYMOUS_ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-wsa_fromwsdl_anonymous/hello4";
     static final String NO_IN_ACTION = "http://example.com/AddNumbersPortType1/add";
     static final String OPTIONAL_IN_ACTION = "http://example.com/AddNumbersPortType2/add";
     static final String REQUIRED_IN_ACTION = "http://example.com/AddNumbersPortType3/add";

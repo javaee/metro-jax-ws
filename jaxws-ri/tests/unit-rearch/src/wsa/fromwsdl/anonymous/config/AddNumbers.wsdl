@@ -218,16 +218,16 @@
     </binding>
     <service name="AddNumbersService">
         <port name="AddNumbersPort1" binding="tns:AddNumbersBinding1">
-            <soap:address location="http://localhost:/jaxwsa-fromwsdl_anonymous/hello1"/>
+            <soap:address location="http://localhost:8080/jaxwsa-fromwsdl_anonymous/hello1"/>
         </port>
         <port name="AddNumbersPort2" binding="tns:AddNumbersBinding2">
-            <soap:address location="http://localhost:/jaxwsa-fromwsdl_anonymous/hello2"/>
+            <soap:address location="http://localhost:8080/jaxwsa-fromwsdl_anonymous/hello2"/>
         </port>
         <port name="AddNumbersPort3" binding="tns:AddNumbersBinding3">
-            <soap:address location="http://localhost:/jaxwsa-fromwsdl_anonymous/hello3"/>
+            <soap:address location="http://localhost:8080/jaxwsa-fromwsdl_anonymous/hello3"/>
         </port>
         <port name="AddNumbersPort4" binding="tns:AddNumbersBinding4">
-            <soap:address location="http://localhost:/jaxwsa-fromwsdl_anonymous/hello4"/>
+            <soap:address location="http://localhost:8080/jaxwsa-fromwsdl_anonymous/hello4"/>
         </port>
     </service>
 </definitions>

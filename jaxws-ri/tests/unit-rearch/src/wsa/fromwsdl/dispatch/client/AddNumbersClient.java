@@ -69,7 +69,7 @@ import java.util.List;
 public class AddNumbersClient extends XMLTestCase {
     private static final QName SERVICE_QNAME = new QName("http://example.com/", "AddNumbersService");
     private static final QName PORT_QNAME = new QName("http://example.com/", "AddNumbersPort");
-    private static final String ENDPOINT_ADDRESS = "http://localhost:/jaxrpc-wsa_fromwsdl_dispatch/hello";
+    private static final String ENDPOINT_ADDRESS = "http://localhost:8080/jaxrpc-wsa_fromwsdl_dispatch/hello";
     private static final String ADD_NUMBERS_ACTION = "http://example.com/AddNumbersPortType/addNumbers1Request";
     private static final String ADD_NUMBERS2_ACTION = "add2InAction";
     private static final String ADD_NUMBERS3_ACTION = "http://example.com/AddNumbersPortType/addNumbers3Request";

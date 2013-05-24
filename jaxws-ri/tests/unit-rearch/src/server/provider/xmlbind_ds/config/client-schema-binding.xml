@@ -43,7 +43,7 @@
 <jxb:bindings version="1.0"
                xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
                xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <jxb:bindings schemaLocation="http://localhost:/jaxrpc-provider_tests_xmlbind_ds/hello?xsd=1" node="/xs:schema">
+  <jxb:bindings schemaLocation="http://localhost:8080/jaxrpc-provider_tests_xmlbind_ds/hello?xsd=1" node="/xs:schema">
     <jxb:schemaBindings>
       <jxb:package name="server.provider.xmlbind_ds.client"/>
     </jxb:schemaBindings>

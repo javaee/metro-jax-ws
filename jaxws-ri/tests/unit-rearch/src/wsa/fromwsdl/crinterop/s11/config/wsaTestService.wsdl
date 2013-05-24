@@ -116,7 +116,7 @@
 
     <service name="wsaTestService">
         <port name="wsaTestPort" binding="service:wsaTestSoap11Binding">
-            <soap:address location="http://localhost:/jaxrpc-wsa_fromwsdl_crinterop_s11/cr?wsdl"/>
+            <soap:address location="http://localhost:8080/jaxrpc-wsa_fromwsdl_crinterop_s11/cr?wsdl"/>
         </port>
     </service>
 </definitions>

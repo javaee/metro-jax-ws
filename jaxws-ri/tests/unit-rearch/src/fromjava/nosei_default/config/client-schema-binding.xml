@@ -43,7 +43,7 @@
 <jxb:bindings version="1.0"
                xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
                xmlns:xs="http://www.w3.org/2001/XMLSchema"> 
-  <jxb:bindings schemaLocation="http://localhost:/jaxrpc-fromjava_nosei_default/nosei_default?xsd=1" node="/xs:schema">
+  <jxb:bindings schemaLocation="http://localhost:8080/jaxrpc-fromjava_nosei_default/nosei_default?xsd=1" node="/xs:schema">
     <jxb:globalBindings>
        <jxb:serializable uid="1"/>
     </jxb:globalBindings>
