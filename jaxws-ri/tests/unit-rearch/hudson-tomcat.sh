@@ -27,11 +27,14 @@ chmod -R u+w $CATALINA_BASE/conf
 sed -e s:8080:$port:g -e s:8005:$shutdownport:g $CATALINA_BASE/conf/server-minimal.xml > $CATALINA_BASE/conf/server.xml
 cp $JAXWS_HOME/lib/*jar $CATALINA_BASE/shared/lib
 
-export JAVA_ENDORSED_DIRS=$CATALINA_HOME/common/endorsed
+mkdir $CATALINA_BASE/common
+mkdir $CATALINA_BASE/common/endorsed
+export JAVA_ENDORSED_DIRS=$CATALINA_BASE/common/endorsed
+
 cp $JAXWS_HOME/lib/jaxb-api.jar $JAVA_ENDORSED_DIRS
 cp $JAXWS_HOME/lib/jaxws-api.jar $JAVA_ENDORSED_DIRS
 
-export ANT_OPTS="-Djava.endorsed.dirs=$JAVA_ENDORSED_DIRS"
+export ANT_OPTS="-Djava.endorsed.dirs=$JAVA_ENDORSED_DIRS -Djaxws.home=$JAXWS_HOME -Dport=$port -Djaxws.test.home=$JAXWS_TEST_HOME -Dtomcat.base=$CATALINA_BASE -Dtomcat.home=$CATALINA_HOME"
 
 # run all the unit tests
 

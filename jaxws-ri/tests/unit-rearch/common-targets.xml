@@ -146,7 +146,7 @@
 </target>
 
 <target name="patch_ports">
-    <replace dir="${jaxws.test.home}/src" token="localhost:/" value="localhost:8080/" includes="**/*"/>
+    <echo message="Patching ${jaxws.test.home}/src with port localhost:${port}/" /> 
     <replace dir="${jaxws.test.home}/src" token="localhost:8080/" value="localhost:${port}/" includes="**/*"/>
 </target>
 
