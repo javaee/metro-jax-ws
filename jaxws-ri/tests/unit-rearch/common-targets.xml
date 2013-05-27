@@ -48,6 +48,9 @@
 
 <property file="${env.JAXWS_TEST_HOME}/build.properties"/>
 
+<property name="port" value="${env.port}"/>
+<property name="shutdownport" value="${env.shutdownport}"/>
+
 <property name="lib.home" value="${jaxws.home}/lib"/>
 <property name="test.lib" value="${jaxws.test.home}/lib"/>
 
