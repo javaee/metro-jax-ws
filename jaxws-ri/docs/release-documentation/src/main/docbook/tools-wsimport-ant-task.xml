@@ -429,7 +429,7 @@ holder.
                 <para>To specify more than one external binding file at the
                 same time, use a nested <literal>&lt;binding&gt;</literal>
                 element, which has the same syntax as <link
-                xlink:href="http://jakarta.apache.org/ant/manual/CoreTypes/fileset.html"><literal>&lt;fileset&gt;</literal></link>.</para>
+                xlink:href="http://ant.apache.org/manual/Types/fileset.html"><literal>&lt;fileset&gt;</literal></link>.</para>
             </section>
 
             <section xml:id="section-147957817602781">
@@ -475,7 +475,7 @@ holder.
                 <title>xmlcatalog</title>
 
                 <para>The <link
-                xlink:href="http://ant.apache.org/manual/CoreTypes/xmlcatalog.html">xmlcatalog</link>
+                xlink:href="http://ant.apache.org/manual/Types/xmlcatalog.html">xmlcatalog</link>
                 element is used to resolve entities when parsing schema
                 documents.</para>
             </section>

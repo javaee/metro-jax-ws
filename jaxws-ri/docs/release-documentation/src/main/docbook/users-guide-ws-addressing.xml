@@ -546,14 +546,8 @@ SOAPAction: http://example.com/fabrikam/SubmitPO
         specifications is referred as "W3C WS-Addressing".</para>
 
         <para>&jax-ws.product.name.short; supports both versions
-        out-of-the-box. Check <link
-        xlink:href="http://jax-ws.java.net/nonav/jax-ws-21-ea2/docs/users-guide-overview">Users
-        Guide</link> on how to enable either of the versions on a service
-        endpoint <link
-        xlink:href="http://jax-ws.java.net/nonav/jax-ws-21-ea2/docs/users-guide-ws-addressing#Addressing_annotations">starting
-        from Java</link> or <link
-        xlink:href="http://jax-ws.java.net/nonav/jax-ws-21-ea2/docs/users-guide-ws-addressing#Starting_from_WSDL">starting
-        from WSDL</link>.</para>
+        out-of-the-box. Check below on how to enable either of the versions on a service
+        endpoint starting from Java or starting from WSDL.</para>
     </section>
 
     <section xml:id="describing-ws-addressing-in-wsdl">
