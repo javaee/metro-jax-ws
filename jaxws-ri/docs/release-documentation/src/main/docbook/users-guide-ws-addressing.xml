@@ -260,8 +260,7 @@ SOAPAction: http://example.com/fabrikam/SubmitPO
             parameters from the EPR are available as first-class SOAP headers
             allowing the endpoint to restore the state.</para>
 
-            <para>&jax-ws.product.name; enables <link
-            xlink:href="http://jax-ws.java.net/nonav/jax-ws-21-ea2/docs/users-guide-stateful-webservice">stateful
+            <para>&jax-ws.product.name; enables <link xlink:href="#users-guide-stateful-webservice">stateful
             Web services</link> to be annotated with
             <literal>com.sun.xml.ws.developer.Stateful</literal>
             annotation.</para>
