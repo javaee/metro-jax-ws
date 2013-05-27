@@ -906,9 +906,8 @@ public class AddNumbersImpl {
                     classpath so that the file can be found. This means that
                     when a raw WAR file is created that the file must be place
                     in the proper directory. Please refer to the
-                    <application>fromjavahandlers</application> <link
-                    xlink:href="../samples/docs/jax-ws-ri-overview">sample
-                    application</link> and the <xref
+                    <application>fromjavahandlers</application> sample
+                    application and the <xref
                     linkend="users-guide-handler" xrefstyle="select:title" />
                     for more information.</para>
                 </important>

@@ -82,11 +82,6 @@ holder.
             </listitem>
 
             <listitem>
-                <para><xref linkend="samples-samples"
-                xrefstyle="select:title" /></para>
-            </listitem>
-
-            <listitem>
                 <para><link xlink:href="../javadocs/rt">API Documentation</link></para>
             </listitem>
         </itemizedlist>

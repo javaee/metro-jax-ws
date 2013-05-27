@@ -69,8 +69,7 @@ holder.
         <title>SOAP 1.2 Endpoint</title>
 
         <para>To enable SOAP 1.2 binding on an endpoint. You would need to set
-        binding attribute value in <link
-        xlink:href="jaxws-war.html#The_sun-jaxws.xml_File">sun-jaxws.xml</link>
+        binding attribute value in sun-jaxws.xml
         to SOAP 1.2 HTTP binding value as specified by
         <literal>javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING</literal>
         which is: "<link

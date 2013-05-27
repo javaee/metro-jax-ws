@@ -248,8 +248,7 @@ public class HelloImpl implements Hello {
                 <listitem>
                     <para>MTOM can be also be enabled on an endpoint by
                     specifying enable-mtom attribute to true on an endpoint
-                    element in <link
-                    xlink:href="jaxws-war.html#The_sun-jaxws.xml_File">sun-jaxws.xml</link>
+                    element in sun-jaxws.xml 
                     deployment descriptor. <informalexample>
                             <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime'

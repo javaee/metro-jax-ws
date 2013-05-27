@@ -287,8 +287,7 @@ public class ProviderImpl implements Provider<Source> {
         <para>Handlers can be configured with Provider endpoints in
         <filename>sun-jaxws.xml</filename> descriptor or by putting
         <literal>@HandlerChain</literal> on the <literal>Provider</literal>
-        implementation. For more information, see <link
-        xlink:href="jaxws-war.html">handler config</link>.</para>
+        implementation.</para>
 
         <para>For example:</para>
 
