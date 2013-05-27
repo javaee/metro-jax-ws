@@ -107,10 +107,13 @@ grant {
     permission java.lang.RuntimePermission "accessClassInPackage.com.sun.org.glassfish.*";
 
     // JAXP:
-    permission java.lang.RuntimePermission "accessClassInPackage.com.sun.xml.internal.stream";
+    //permission java.lang.RuntimePermission "accessClassInPackage.com.sun.xml.internal.stream";
 
     // SAAJ FactoryFinder:
-    permission java.lang.RuntimePermission "accessClassInPackage.com.sun.xml.internal.messaging.saaj.soap";
+    //permission java.lang.RuntimePermission "accessClassInPackage.com.sun.xml.internal.messaging.saaj.soap";
+
+    // ws-harness needs this
+    permission java.lang.RuntimePermission "accessClassInPackage.com.sun.org.apache.xerces.internal.dom";
 
     // package access -----------------------------------------------------------------
     
