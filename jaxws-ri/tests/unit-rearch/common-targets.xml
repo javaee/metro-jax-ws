@@ -43,7 +43,7 @@
 <property environment="env"/>
 <property name="jaxws.home" value="${env.JAXWS_HOME}"/>
 <property name="jaxws.test.home" value="${env.JAXWS_TEST_HOME}"/>
-<property name="tomcat.base" value="${env.CATALINA_HOME}"/>
+<property name="tomcat.base" value="${env.CATALINA_BASE}"/>
 <property name="tomcat.home" value="${env.CATALINA_HOME}"/>
 
 <property file="${env.JAXWS_TEST_HOME}/build.properties"/>
