@@ -157,8 +157,7 @@ holder.
                 must carry an XPath expression in the node attribute to refer
                 to the WSDL node it customizes.</para>
 
-                <para>Here is an excerpt from an external binding file <link
-                xlink:href="../samples/external-customize/etc/custom-client.xml">custom-client.xml</link>
+                <para>Here is an excerpt from an external binding file <literal>samples/external-customize/etc/custom-client.xml</literal>
                 in the <literal>external-customize</literal> sample:</para>
 
                 <informalexample>

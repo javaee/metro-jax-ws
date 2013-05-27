@@ -94,16 +94,14 @@ public class AsyncProviderImpl implements AsyncProvider<Source> {
     <section xml:id="section-930633228695613">
         <title><literal>AsyncProvider</literal> sample</title>
 
-        <para>See a <link
-        xlink:href="../samples/asyncprovider/Readme.txt">sample</link> that
+        <para>See a <literal>samples/asyncprovider/Readme.txt</literal> that
         illustrates <literal>AsyncProvider</literal> endpoints.</para>
     </section>
 
     <section xml:id="section-5233554712491355">
         <title><literal>AsyncService</literal> sample</title>
 
-        <para>See another <link
-        xlink:href="../samples/asyncservice/Readme.txt">sample</link> that
+        <para>See another <literal>samples/asyncservice/Readme.txt"</literal> sample that
         illustrates <literal>AsyncProvider</literal> endpoint that uses
         asynchronous servlet as the transport to bring true asynchronity on
         the server-side. See <link

@@ -149,7 +149,7 @@ holder.
         &jax-ws.product.name; you would need to specify ONLY
         <filename>jaxws-api.jar</filename>, and
         <filename>jaxb-api.jar</filename> jars using the <link
-        xlink:href="http://java.sun.com/javase/6/docs/technotes/guides/standards/jax-ws-ri-overview">Java
+        xlink:href="http://docs.oracle.com/javase/6/docs/technotes/guides/standards/">Java
         Endorsed Standards Override Mechanism</link></para>
     </section>
 

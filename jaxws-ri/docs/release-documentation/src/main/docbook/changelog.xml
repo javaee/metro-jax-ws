@@ -73,7 +73,7 @@ holder.
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/secure/IssueNavigator.jspa?mode=hide&amp;requestId=10284">Bug
+                    xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10113">Bug
                     fixes</link></para>
                 </listitem>           
            </itemizedlist>
@@ -85,20 +85,20 @@ holder.
             <itemizedlist>
                 <listitem>
                     <para><link
-                    xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=85">wsgen
+                    xlink:href="http://java.net/jira/browse/JAX_WS-85">wsgen
                     can inline schemas in a generated wsdl using a
                     switch</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=777">Schema
+                    xlink:href="http://java.net/jira/browse/JAX_WS-777">Schema
                     Validation support is enhanced</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;issue_type=FEATURE&amp;issue_type=TASK&amp;issue_type=PATCH&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;resolution=FIXED&amp;target_milestone=2.2.1&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;Submit+query=Submit+query">Bug
+                    xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10129">Bug
                     fixes</link></para>
                 </listitem>
             </itemizedlist>
@@ -202,7 +202,7 @@ holder.
 
                 <listitem>
                     <para><link
-                    xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;issue_type=FEATURE&amp;issue_type=TASK&amp;issue_type=PATCH&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;issue_status=CLOSED&amp;resolution=FIXED&amp;target_milestone=2.2&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time&amp;Submit+query=Submit+query">Bug
+                    xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10111">Bug
                     fixes</link></para>
                 </listitem>
             </itemizedlist>
@@ -214,7 +214,7 @@ holder.
         <itemizedlist>
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;resolution=FIXED&amp;target_milestone=2.1.7&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=as91only&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Bug
+                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10109">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -226,14 +226,14 @@ holder.
         <itemizedlist>
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=741">Supportfor
+                xlink:href="http://java.net/jira/browse/JAX_WS-741">Supportfor
                 transport attribute for bindings like SOAP/JMS
                 binding</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;resolution=FIXED&amp;target_milestone=2.1.6&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=as91only&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Bug
+                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10108">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -245,35 +245,35 @@ holder.
         <itemizedlist>
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=607">Allowing
+                xlink:href="http://java.net/jira/browse/JAX_WS-607">Allowing
                 HTTP response code to be set via MessageContext
                 property</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=282">New
+                xlink:href="http://java.net/jira/browse/JAX_WS-2822">New
                 feature: UsesJAXBContextFeature, to control JAXBContext
                 creation</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=289">New
+                xlink:href="http://java.net/jira/browse/JAX_WS-289">New
                 <command>wsimport</command> option: -XdisableSSLHostnameVerfication, to disable
                 SSL Hostname verification</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=490">Wsimport
+                xlink:href="http://java.net/jira/browse/JAX_WS-490">Wsimport
                 ant task accepts nested args for specifying additional
                 options</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;resolution=FIXED&amp;target_milestone=2.1.5&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=as91only&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Bug
+                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10107">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -297,7 +297,7 @@ holder.
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;issue_type=DEFECT&amp;issue_type=ENHANCEMENT&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;issue_status=VERIFIED&amp;resolution=FIXED&amp;target_milestone=2.1.4&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=as91only&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Bug
+                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10106">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -309,68 +309,68 @@ holder.
         <itemizedlist>
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=231">Authentication
+                xlink:href="http://java.net/jira/browse/JAX_WS-231">Authentication
                 support in <command>wsimport</command></link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=263">Additional
+                xlink:href="http://java.net/jira/browse/JAX_WS-263">Additional
                 header support</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=29">Large
+                xlink:href="http://java.net/jira/browse/JAX_WS-29">Large
                 and Streaming attachment support</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=239">XML
+                xlink:href="http://java.net/jira/browse/JAX_WS-239">XML
                 Schema validation support for SOAP message</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=473">Expose
+                xlink:href="473">Expose
                 the -Xnocompile as an Ant task option</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=437">Additional
+                xlink:href="http://java.net/jira/browse/JAX_WS-437">Additional
                 WSDL object methods for policy</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=456">Wsimport
+                xlink:href="http://java.net/jira/browse/JAX_WS-456">Wsimport
                 should be able to handle redirects and see
                 Others</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=54">Remove
+                xlink:href="http://java.net/jira/browse/JAX_WS-54">Remove
                 SJSXP and SAAJ RI dependency</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=387">Wsimport
+                xlink:href="http://java.net/jira/browse/JAX_WS-387">Wsimport
                 should write to passed OutputStream</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=482">Efficient
+                xlink:href="http://java.net/jira/browse/JAX_WS-482">Efficient
                 Handler using Handler&lt;Message&gt; support</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&amp;issue_type=DEFECT&amp;component=jax-ws&amp;issue_status=RESOLVED&amp;resolution=FIXED&amp;target_milestone=2.1.3&amp;email1=&amp;emailtype1=exact&amp;emailassigned_to1=1&amp;email2=&amp;emailtype2=exact&amp;emailreporter2=1&amp;issueidtype=include&amp;issue_id=&amp;changedin=&amp;votes=&amp;chfieldfrom=&amp;chfieldto=Now&amp;chfieldvalue=&amp;short_desc=&amp;short_desc_type=fulltext&amp;long_desc=&amp;long_desc_type=fulltext&amp;issue_file_loc=&amp;issue_file_loc_type=fulltext&amp;status_whiteboard=&amp;status_whiteboard_type=fulltext&amp;keywords=&amp;keywords_type=anytokens&amp;field0-0-0=noop&amp;type0-0-0=noop&amp;value0-0-0=&amp;cmdtype=doit&amp;namedcmd=as91only&amp;newqueryname=&amp;order=Reuse+same+sort+as+last+time">Bug
+                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10127">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -390,7 +390,7 @@ holder.
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?resort=1&amp;issue_type=DEFECT;issue_type=ENHANCEMENT;issue_type=FEATURE;issue_type=TASK;component=jax-ws;issue_status=RESOLVED;resolution=FIXED;priority=P1;priority=P2;priority=P3;priority=P4;email1=;emailtype1=">Bug
+                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10105">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -445,7 +445,7 @@ holder.
 
             <listitem>
                 <para><link
-                xlink:href="https://jax-ws.dev.java.net/issues/buglist.cgi?resort=1&amp;issue_type=DEFECT;issue_type=ENHANCEMENT;issue_type=FEATURE;issue_type=TASK;component=jax-ws;issue_status=RESOLVED;resolution=FIXED;priority=P1;priority=P2;priority=P3;priority=P4;email1=;emailtype1=">Bug
+                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10125">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>

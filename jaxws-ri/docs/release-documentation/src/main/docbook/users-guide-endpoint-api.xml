@@ -86,8 +86,7 @@ holder.
         first two constructors, it can be published using
         <literal>Endpoint.publish()</literal>. Any published
         <literal>Endpoint</literal> can be stopped using
-        <literal>Endpoint.stop()</literal>. <link
-        xlink:href="../samples/supplychain/src/supplychain/server/WarehouseLightWeight.java"><application>supplychain</application></link>
+        <literal>Endpoint.stop()</literal>. <literal>samples/supplychain/src/supplychain/server/WarehouseLightWeight.java</literal> <application>supplychain</application>
         sample shows creating and publishing an
         <literal>Endpoint</literal>.</para>
     </section>

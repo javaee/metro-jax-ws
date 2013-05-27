@@ -243,8 +243,7 @@ public class ProviderImpl implements Provider<Source> {
         query string and path information using standard
         <literal>MessageContext.QUERY_STRING</literal> and
         <literal>MessageContext.PATH_INFO</literal>. For more details on
-        endpoint implementation, see the <link
-        xlink:href="../samples/restful/src/restful/server/AddNumbersImpl.java">restful</link>
+        endpoint implementation, see the <literal>samples/restful/src/restful/server/AddNumbersImpl.java</literal>
         sample. If the endpoint expects GET requests to contain extra path
         after the endpoint address, then <literal>url-pattern</literal> should
         have "<literal>/*</literal>" at the end in both

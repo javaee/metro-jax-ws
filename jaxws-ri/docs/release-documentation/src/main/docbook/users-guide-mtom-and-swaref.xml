@@ -290,8 +290,7 @@ public class HelloImpl implements Hello {
                     <para>To enable MTOM on client-side, pass
                     javax.xml.ws.soap.MTOMFeature as WebServiceFeature
                     parameter while crating the Proxy or Dispatch. Here is the
-                    code snippet from the client <link
-                    xlink:href="../samples/mtom/src/mtom/client/MtomApp.java">MtomApp.java</link>
+                    code snippet from the client <literal>samples/mtom/src/mtom/client/MtomApp.java</literal>
                     of the mtom sample: <itemizedlist>
                             <listitem>
                                 <para>Hello port = new
@@ -523,7 +522,7 @@ Content-ID: <42a7ee0a-20ee-426b-a135-094d72bc138f@example.org>
         xlink:href="http://www.ws-i.org/Profiles/AttachmentsProfile-1.0-2004-08-24.html">WS-I
         Attachment Profile 1.0</link> defines mechanism to reference MIME
         attachment parts using <link
-        xlink:href="http://www.ws-i.org/Profiles/AttachmentsProfile-1.0-2004-08-24.html#Referencing_Attachments_from_the_SOAP_Envelope">swaRef</link>.
+        xlink:href="http://www.ws-i.org/Profiles/AttachmentsProfile-1.0.html#Example_Attachment_Description_Using_swaRef">swaRef</link>.
         In this mechanism the content of XML element of type <link
         xlink:href="http://ws-i.org/profiles/basic/1.1/xsd/"><literal>wsi:swaRef</literal></link>
         is sent as MIME attachment and the element inside SOAP Body holds the
@@ -604,8 +603,7 @@ Content-ID: <]]><emphasis role="bold">b0a597fd-5ef7-4f0c-9d85-6666239f1d25@examp
             <title>swaRef Sample</title>
 
             <para>Refer to <application>swaRef</application> sample
-            <literal>testSwaRef()</literal> method in <link
-            xlink:href="../samples/mime/src/mime/client/MimeApp.java">MimeApp.java.</link></para>
+            <literal>testSwaRef()</literal> method in <literal>samples/mime/src/mime/client/MimeApp.java</literal></para>
         </section>
     </section>
 </section>

@@ -232,7 +232,7 @@ holder.
             Message Transmission Optimization Mechanism)/ <link
             xlink:href="http://www.w3.org/TR/xop10/">XOP</link> (XML Binary
             Optimized Packaing) and <link
-            xlink:href="http://www.ws-i.org/Profiles/AttachmentsProfile-1.0-2004-08-24.html#Referencing_Attachments_from_the_SOAP_Envelope">swaRef</link>
+            xlink:href="http://www.ws-i.org/Profiles/AttachmentsProfile-1.0.html#Example_Attachment_Description_Using_swaRef">swaRef</link>
             (SOAP Attachment References specified by WS-I Attachment Profile
             1.0).</para>
 
@@ -294,8 +294,7 @@ holder.
                 <para>JAXB 2.1 defines <literal>@XmlSeeAlso</literal>
                 annotation which can be used to tell JAXB to use the classes
                 mentioned with this annotation. This allows type substitution
-                to takes place. See the <link
-                xlink:href="../samples/type_substitution/src/type_substitution/server/CarDealer.java">sample</link>
+                to takes place. See the <literal>samples/type_substitution/src/type_substitution/server/CarDealer.java</literal> sample
                 that demonstrates it.</para>
 
                 <para><command>wsimport</command> tool, generates
@@ -658,8 +657,7 @@ holder.
                 </itemizedlist>
 
                 <para>Here is an example of a a simple endpoint implementation
-                class <code> <link
-                xlink:href="../samples/fromjava/src/fromjava/server/AddNumbersImpl.java">AddNumbersImpl.java</link>
+                class <code> <literal>samples/fromjava/src/fromjava/server/AddNumbersImpl.java</literal>
                 </code> from the <application>fromjava</application>
                 sample:</para>
 
@@ -764,8 +762,7 @@ AddNumbersResponse.java]]></programlisting>
                 descriptor, see <xref linkend="users-guide-war-file-packaging"
                 xrefstyle="select:title" />. The deployment descriptor used in
                 <application>fromjava</application> sample is given below and
-                can be found <link
-                xlink:href="../samples/fromjava/etc/sun-jaxws.xml">here</link>:</para>
+                can be found <literal>samples/fromjava/etc/sun-jaxws.xml</literal>:</para>
 
                 <informalexample>
                     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
@@ -870,8 +867,7 @@ WEB-INF/classes/fromjava/server/jaxws/AddNumbersResponse.class]]></programlistin
                     <programlisting><![CDATA[wsimport.sh etc/AddNumbers.wsdl -b custom-server.xml]]></programlisting>
                 </informalexample>
 
-                <para>Lets look at the excerpt of <link
-                xlink:href="../samples/fromwsdl/etc/AddNumbers.wsdl">AddNumbers.wsdl</link>
+                <para>Lets look at the excerpt of <literal>samples/fromwsdl/etc/AddNumbers.wsdl</literal>
                 from the sample <application>fromwsdl</application>:</para>
 
                 <para>The generated service endpoint interface looks as
@@ -917,8 +913,7 @@ public interface AddNumbersPortType extends java.rmi.Remote {
                 <literal>@WebService</literal> annotation on the
                 implementation class with a endpointInteface element
                 specifying the qualified name of the endpoint interface class.
-                Let's look at the implementation class <link
-                xlink:href="../samples/fromwsdl/src/fromwsdl/server/AddNumbersImpl.java">fromwsdl.server.AddNumbersImpl.java</link>
+                Let's look at the implementation class <literal>samples/fromwsdl/src/fromwsdl/server/AddNumbersImpl.java</literal>
                 from the sample application
                 <application>fromwsdl</application>:</para>
 
@@ -957,8 +952,7 @@ public class AddNumbersImpl implements AddNumbersPortType {
                 linkend="generate-a-service-endpoint-interface"
                 xrefstyle="select:title" />.</para>
 
-                <para>Let's look at <link
-                xlink:href="../samples/fromwsdl/etc/sun-jaxws.xml">sun-jaxws.xml</link>
+                <para>Let's look at <literal>samples/fromwsdl/etc/sun-jaxws.xml</literal>
                 from the sample application
                 <application>fromwsdl</application>:</para>
 
@@ -1065,8 +1059,7 @@ public class AddNumbersImpl implements AddNumbersPortType {
                 <para>For more details see the <xref linkend="tools-wsimport"
                 xrefstyle="select:title" /> documentation.</para>
 
-                <para>Here is the excerpt from <link
-                xlink:href="../samples/fromwsdl/src/fromwsdl/client/AddNumbersClient.java">fromwsdl.client.AddNumbersClient.java</link>
+                <para>Here is the excerpt from <literal>samples/fromwsdl/src/fromwsdl/client/AddNumbersClient.java</literal>
                 in the <application>fromjava</application> sample
                 application:</para>
 
