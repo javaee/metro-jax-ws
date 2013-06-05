@@ -114,6 +114,7 @@ grant {
 
     // ws-harness needs this
     permission java.lang.RuntimePermission "accessClassInPackage.com.sun.org.apache.xerces.internal.dom";
+    permission java.lang.RuntimePermission "accessClassInPackage.com.sun.org.apache.xerces.internal.jaxp.datatype";
 
     // package access -----------------------------------------------------------------
     
