@@ -101,7 +101,7 @@
         <ha-api.version>3.1.9</ha-api.version>
         <istack.version>2.17</istack.version>
         <jaxb-api.version>2.2.9</jaxb-api.version>
-        <jaxb-impl.version>2.2.8-b01</jaxb-impl.version>
+        <jaxb-impl.version>2.2.8-b02</jaxb-impl.version>
         <jaxws-api.version>2.2.11</jaxws-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <management-api.version>3.1.0-b001</management-api.version>
