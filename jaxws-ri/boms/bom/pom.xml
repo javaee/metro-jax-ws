@@ -96,12 +96,16 @@
     </scm>
 
     <properties>
-        <fi.version>1.2.13</fi.version>
+        <!--todo: remove when will be fixed inheritance of properties-->
+        <jaxb-api.version>2.2.9</jaxb-api.version>
+        <fastinfoset.version>1.2.13</fastinfoset.version>
+        <stax-ex.version>1.7.1</stax-ex.version>
+        <istack.version>2.17</istack.version>
+        <!--************************************************************-->
+
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
         <ha-api.version>3.1.9</ha-api.version>
-        <istack.version>2.17</istack.version>
-        <jaxb-api.version>2.2.9</jaxb-api.version>
-        <jaxb-impl.version>2.2.8-b02</jaxb-impl.version>
+        <jaxb.version>2.2.8-SNAPSHOT</jaxb.version>
         <jaxws-api.version>2.2.11</jaxws-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <management-api.version>3.1.0-b001</management-api.version>
@@ -110,7 +114,6 @@
         <resolver.version>20050927</resolver.version>
         <saaj-api.version>1.3.6</saaj-api.version>
         <saaj-impl.version>1.3.21</saaj-impl.version>
-        <stax-ex.version>1.7.1</stax-ex.version>
         <streambuffer.version>1.5.1</streambuffer.version>
         <stax2-api.version>3.1.1</stax2-api.version>
         <woodstox-core-asl.version>4.1.2</woodstox-core-asl.version>
@@ -119,50 +122,8 @@
     
     <dependencyManagement>
         <dependencies>
-            
-            <!-- TODO: revisit this and:
-                  - move to JAXB's poms what belongs there
-                    basically every artifact repackaged in JAXB should
-                    be defined there in provided scope -->
-            <dependency>
-                <!-- provided by jaxb-xjc -->
-                <groupId>com.sun.istack</groupId>
-                <artifactId>istack-commons-runtime</artifactId>
-                <scope>provided</scope>
-                <version>${istack.version}</version>
-            </dependency>
-            
+
             <!-- Source artifacts -->
-            <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${jaxb-api.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${jaxb-impl.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${jaxb-impl.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-xjc</artifactId>
-                <version>${jaxb-impl.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-jxc</artifactId>
-                <version>${jaxb-impl.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
             <dependency>
                 <groupId>com.sun.xml.stream.buffer</groupId>
                 <artifactId>streambuffer</artifactId>
@@ -173,18 +134,6 @@
                 <groupId>org.jvnet.mimepull</groupId>
                 <artifactId>mimepull</artifactId>
                 <version>${mimepull.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.jvnet.staxex</groupId>
-                <artifactId>stax-ex</artifactId>
-                <version>${stax-ex.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.fastinfoset</groupId>
-                <artifactId>FastInfoset</artifactId>
-                <version>${fi.version}</version>
                 <classifier>sources</classifier>
             </dependency>
             <dependency>
@@ -224,36 +173,13 @@
 
             <!-- Binary-->
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${jaxb-api.version}</version>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-bom</artifactId>
+                <version>${jaxb.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${jaxb-impl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${jaxb-impl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-xjc</artifactId>
-                <version>${jaxb-impl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-jxc</artifactId>
-                <version>${jaxb-impl.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-osgi</artifactId>
-                <version>${jaxb-impl.version}</version>
-            </dependency>
             <dependency>
                 <groupId>javax.jws</groupId>
                 <artifactId>jsr181-api</artifactId>
@@ -333,34 +259,6 @@
                     <exclusion>
                         <groupId>com.sun.xml.txw2</groupId>
                         <artifactId>txw2</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.jvnet.staxex</groupId>
-                <artifactId>stax-ex</artifactId>
-                <version>${stax-ex.version}</version>
-                <exclusions>
-                    <!-- part of JDK 6+ -->
-                    <exclusion>
-                        <groupId>javax.activation</groupId>
-                        <artifactId>activation</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>stax-api</artifactId>
-                        <groupId>javax.xml.stream</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.fastinfoset</groupId>
-                <artifactId>FastInfoset</artifactId>
-                <version>${fi.version}</version>
-                <exclusions>
-                    <!-- part of JDK 6+ -->
-                    <exclusion>
-                        <artifactId>jsr173_api</artifactId>
-                        <groupId>javax.xml.bind</groupId>
                     </exclusion>
                 </exclusions>
             </dependency>

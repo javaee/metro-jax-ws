@@ -95,8 +95,8 @@
                                     com.sun.xml.ws.encoding.fastinfoset;version=${project.version}
                                 </Export-Package>
                                 <Import-Package>
-                                    com.sun.xml.fastinfoset.stax;version=${fi.version},
-                                    com.sun.xml.fastinfoset.vocab;version=${fi.version}, 
+                                    com.sun.xml.fastinfoset.stax;version=${fastinfoset.version},
+                                    com.sun.xml.fastinfoset.vocab;version=${fastinfoset.version},
                                     com.sun.xml.ws.api;version=${jaxws-rt.version},
                                     com.sun.xml.ws.api.message;version=${jaxws-rt.version},
                                     com.sun.xml.ws.api.pipe;version=${jaxws-rt.version},
