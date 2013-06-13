@@ -245,19 +245,6 @@ holder.
 
     </section>
 
-    <section xml:id="bugs-fixed-in-this-release">
-        <title>Issues Fixed in this release</title>
-
-        <itemizedlist>
-            <listitem>
-                <para><link
-                xlink:href="http://java.net/jira/secure/ReleaseNote.jspa?projectId=10004&amp;version=15918">Bug
-                fixes</link></para>
-            </listitem>
-        </itemizedlist>
-        
-    </section>
-
     <xi:include href="changelog.xml" />
 
 </chapter>
