@@ -54,22 +54,6 @@ holder.
          xmlns:m="http://www.w3.org/1998/Math/MathML">
     <title>Release Notes</title>
 
-    <section xml:id="features-in-this-release">
-        <title>New/Updated in this release</title>
-
-        <itemizedlist>
-
-            <listitem>
-                <para>Reference Implementation (RI) of JAX-WS
-                &jax-ws.release.spec.version; API. Full <link
-                xlink:href="http://jcp.org/en/jsr/detail?id=224">JAX-WS
-                &jax-ws.release.spec.version;</link> compliance</para>
-            </listitem>
-
-        </itemizedlist>
-
-    </section>
-
     <section xml:id="required-software">
         <title>Required Software</title>
 
@@ -85,7 +69,7 @@ holder.
             </listitem>
 
             <listitem>
-                <para>Tested with GlassFish v3.1.x and Apache Tomcat 5.5.20</para>
+                <para>Tested with GlassFish v4.x and Apache Tomcat 5.5.20</para>
             </listitem>
         </itemizedlist>
     </section>
@@ -144,7 +128,7 @@ holder.
     <section xml:id="running-on-top-of-jdk-6">
         <title>Running on top of JDK 6</title>
 
-        <para>JDK 6u4 includes JAX-WS 2.1 and JAXB 2.1 API and RI.
+        <para>JDK includes JAX-WS and JAXB API and RI.
         &jax-ws.product.name; includes RI of JAX-WS/JAXB 2.2. In order to run
         &jax-ws.product.name; you would need to specify ONLY
         <filename>jaxws-api.jar</filename>, and
