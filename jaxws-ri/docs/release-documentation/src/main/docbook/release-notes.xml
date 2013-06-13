@@ -170,6 +170,7 @@ holder.
 
                         <entry><para><filename>FastInfoset.jar</filename>,
                         <filename>jaxb-api.jar</filename>,
+                        <filename>jaxb-core.jar</filename>,
                         <filename>jaxb-impl.jar</filename>,
                         <filename>jaxws-api.jar</filename>,
                         <filename>javax.annotation-api.jar</filename>,
@@ -193,6 +194,7 @@ holder.
 
                         <entry><para>All the runtime jars +
                         <filename>jaxb-xjc.jar</filename>,
+                        <filename>jaxb-jxc.jar</filename>,
                         <filename>jaxws-tools.jar</filename></para></entry>
                     </row>
                 </tbody>
