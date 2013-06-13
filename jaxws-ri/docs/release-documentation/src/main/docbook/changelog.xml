@@ -55,6 +55,49 @@ holder.
 
     <itemizedlist>
         <listitem>
+            <para>2.2.8</para>
+            <itemizedlist>                    
+                <listitem>
+                    <para>See <xref linkend="users-guide-external-metadata"/> for more information on External metadata support.</para>
+                </listitem>
+                <listitem>
+                    <para>JAXB version updated to 2.2.7, for changes see <link xlink:href="https://jaxb.java.net/2.2.7/docs/ch02.html#a-2-2-7">JAXB Changelog</link></para>
+                </listitem>
+                <programlisting language="xml">
+** Bug
+    * [JAX_WS-692] - WsImport fails if wsdl:message/wsdl:part defines "type" (not "element")
+    * [JAX_WS-713] - Document MTOM limitations
+    * [JAX_WS-1062] - wsimport command will throw NullPointerException when no difination of like "xmlns:undns="http://test"" in WSDL file.
+    * [JAX_WS-1064] - Need to use Filer when generating files
+    * [JAX_WS-1068] - Issue with two or more web services in the same war when pointing to wsdls in different META-INF/wsdl subdirs where the wsdl files themselves are the same.
+    * [JAX_WS-1074] - ClassCast exception when wsimport task run in a forked mode
+    * [JAX_WS-1083] -  Error listenerStart Sep 27, 2012 12:02:48 AM org.apache.catalina.core.StandardContext start
+    * [JAX_WS-1087] - unable to delete .war file after wsimport completed
+    * [JAX_WS-1092] - Back Compatible issue, for method: com.sun.xml.ws.server.EndpointFactory.verifyImplementorClass 
+    * [JAX_WS-1095] - Basic Authentication with wsimport does not allow @ in username
+    * [JAX_WS-1098] - IllegalAnnotationsException: 2 counts of IllegalAnnotationExceptions: MemberSubmissionEndpointReference$Address and W3CEndpointReference$Address
+    * [JAX_WS-1099] - com.sun.xml.ws.api.model.wsdl.WSDLModel.WSDLParser.parse error in parsering  wsdl:message/wsdl:part defines "type" (not "element")
+    * [JAX_WS-1101] - wsimport authFile URL containing passwords should support encoded/escaped characters...
+    * [JAX_WS-1105] - wsgen fails to resolve all 'service implementation bean' methods
+    * [JAX_WS-1107] - httpproxy  username and password not supported
+    * [JAX_WS-1118] - Broken links in the guide
+
+** Improvement
+    * [JAX_WS-143] - wsimport does not support jaxb plugins
+    * [JAX_WS-261] - Make WSServletDelegate class public
+    * [JAX_WS-1100] - Allow wild card matching to allow the same user:password for all urls with the same host name 
+    * [JAX_WS-1102] - jaxws should pass encoding option to jaxb
+    * [JAX_WS-1112] - Make JAX-WS run on J2SE 5.0 - fixed documentation to not refer to JDK5
+
+** Task
+    * [JAX_WS-1042] - The documentation in http://jax-ws.java.net/2.2.5/docs/wsgenant.html is incorrect
+    * [JAX_WS-1080] - move build from ant to maven
+    * [JAX_WS-1082] - consider updating dependencies
+                </programlisting>
+           </itemizedlist>
+        </listitem>
+        <listitem>2.2.7 - 2.2.3 - TBD to be added</listitem>
+        <listitem>
             <para>2.2.3</para>
 
             <itemizedlist>

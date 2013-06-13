@@ -171,6 +171,7 @@ holder.
 
                         <entry><para><filename>FastInfoset.jar</filename>,
                         <filename>jaxb-api.jar</filename>,
+                        <filename>jaxb-core.jar</filename>,
                         <filename>jaxb-impl.jar</filename>,
                         <filename>jaxws-api.jar</filename>,
                         <filename>javax.annotation-api.jar</filename>,
@@ -194,6 +195,7 @@ holder.
 
                         <entry><para>All the runtime jars +
                         <filename>jaxb-xjc.jar</filename>,
+                        <filename>jaxb-jxc.jar</filename>,
                         <filename>jaxws-tools.jar</filename></para></entry>
                     </row>
                 </tbody>
@@ -242,19 +244,6 @@ holder.
             </listitem>
         </itemizedlist>
 
-    </section>
-
-    <section xml:id="bugs-fixed-in-this-release">
-        <title>Issues Fixed in this release</title>
-
-        <itemizedlist>
-            <listitem>
-                <para><link
-                xlink:href="http://java.net/jira/secure/ReleaseNote.jspa?projectId=10004&amp;version=15918">Bug
-                fixes</link></para>
-            </listitem>
-        </itemizedlist>
-        
     </section>
 
     <xi:include href="changelog.xml" />
