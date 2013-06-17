@@ -45,6 +45,7 @@ import com.oracle.webservices.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.message.Packet.State;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Codecs;
 import com.sun.xml.ws.encoding.MtomCodec;
@@ -381,6 +382,61 @@ public class StreamMessageTest extends TestCase {
             }
             if (e != null)
                 throw e;
+        }
+    }
+
+    public void testWriteMtomToStreamClientRequest() throws Exception {
+        // DISI may set the packet.state to State.ClientRequest
+        // ((Packet)mc).setState(State.ClientRequest)
+        InputStream is = null;
+        ByteArrayOutputStream baos = null;
+        ByteArrayInputStream bais = null;
+        try {
+            String ctype = "multipart/related; boundary=MIME_Boundary; "+ 
+            "start=\"<ff2b0fb4-9bcf-4ff5-ba16-d3436c78c3fd>\"; " + 
+            "type=\"application/xop+xml\"; start-info=\"text/xml\"";
+            MessageContextFactory mcf = MessageContextFactory.createFactory(new MTOMFeature(true));
+            is = getClass().getClassLoader().getResourceAsStream("etc/testMtomMessage_osb_disi.msg");
+            MessageContext mc = mcf.createContext(is, ctype);
+            Packet packet = (Packet) mc;
+            Message message = packet.getInternalMessage();
+            assertTrue("StreamMessage not found, got : " + message.getClass(),
+                    StreamMessage.class.isAssignableFrom(message.getClass()));
+            baos = new ByteArrayOutputStream();
+
+            ((Packet)mc).setState(State.ClientRequest);
+            mc.writeTo(baos);
+
+            bais = new ByteArrayInputStream(baos.toByteArray());
+            MessageFactory mf = MessageFactory.newInstance();
+            MimeHeaders mh = new MimeHeaders();
+            mh.addHeader("Content-Type", ctype);
+            SOAPMessage sm = mf.createMessage(mh, bais);
+            assertEquals("wrong attachment count", 1, sm.countAttachments());
+            AttachmentPart ap = (AttachmentPart) sm.getAttachments().next();
+            assertEquals("wrong attachemnt Content-Id", "<testAttachmentContentId>", ap.getContentId());
+            NodeList nl = sm.getSOAPBody().getElementsByTagNameNS(MtomCodec.XOP_NAMESPACEURI, MtomCodec.XOP_LOCALNAME);
+            assertEquals(MtomCodec.XOP_NAMESPACEURI + ":" + MtomCodec.XOP_LOCALNAME + " not found", 1, nl.getLength());
+            Element elt = (Element) nl.item(0);
+            assertEquals("wrong href value", "cid:testAttachmentContentId", elt.getAttribute("href"));
+        } finally {
+            Exception e = null;
+            try {
+                if (is != null) is.close();
+            } catch (IOException e1) {
+                e = e1;
+            }
+            try {
+                if (baos != null) baos.close();
+            } catch (IOException e2) {
+                e = e2;
+            }
+            try {
+                if (bais != null) bais.close();
+            } catch (Exception e3) {
+                e = e3;
+            }
+            if (e != null) throw e;
         }
     }
 }
