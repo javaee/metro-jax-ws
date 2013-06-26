@@ -42,6 +42,8 @@ package com.sun.xml.ws.api.pipe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -74,6 +76,10 @@ public class FiberTest extends TestCase {
         executor = new SimpleInlineExecutor();
         engine = new Engine(id, testContainer, executor);
         threadPoolEngine = new Engine(id, testContainer);
+    }
+    
+    public void tearDown() {
+        fiberNameToThreadLocalValueMap.clear();
     }
     
     private static class SimpleInlineExecutor extends InlineExecutor {
@@ -220,6 +226,7 @@ public class FiberTest extends TestCase {
     // NextAction / Flow-controlling tests
     
     static class FilterTestTube extends AbstractFilterTubeImpl {
+        private String tubeName = null;
         private List<TubeCall> calls = new ArrayList<TubeCall>();
 
         public FilterTestTube(Tube next) {
@@ -269,6 +276,14 @@ public class FiberTest extends TestCase {
             return new FilterTestTube(this, cloner);
         }
         
+        public void setName(String tubeName) {
+            this.tubeName = tubeName;
+        }
+        
+        //Useful for debugging
+        public String toString() {
+            return tubeName;
+        }
     }
 
     public void testNextActionInvoke() {
@@ -1407,6 +1422,16 @@ public class FiberTest extends TestCase {
     }
     
     private static class TestFiberContextSwitchInterceptor implements FiberContextSwitchInterceptor {
+        private String name = null;
+        
+        public TestFiberContextSwitchInterceptor(String name) {
+            this.name = name;
+        }
+        
+        public String toString() {
+            return name;
+        }
+        
         private int callCount = 0;
         
         public int getCallCount() { return callCount; }
@@ -1442,7 +1467,10 @@ public class FiberTest extends TestCase {
                 });
             }
         };
+        tubeB.setName("tubeB");
+        
         final FilterTestTube tubeA = new FilterTestTube(tubeB);
+        tubeA.setName("tubeA");
         
         final Packet request = new Packet();
         final SimpleCompletionCallback callback = new SimpleCompletionCallback() {
@@ -1463,7 +1491,7 @@ public class FiberTest extends TestCase {
         
         assertNotNull(fiber);
         
-        TestFiberContextSwitchInterceptor interceptor1 = new TestFiberContextSwitchInterceptor();
+        TestFiberContextSwitchInterceptor interceptor1 = new TestFiberContextSwitchInterceptor("interceptor1");
         fiber.addInterceptor(interceptor1);
 
         fiber.start(tubeA, request, callback);
@@ -1508,7 +1536,7 @@ public class FiberTest extends TestCase {
         
         checkCompleted.release();
         
-        TestFiberContextSwitchInterceptor interceptor2 = new TestFiberContextSwitchInterceptor();
+        TestFiberContextSwitchInterceptor interceptor2 = new TestFiberContextSwitchInterceptor("interceptor2");
         fiber.addInterceptor(interceptor2);
         
         fiber.resume(request);
@@ -1518,6 +1546,211 @@ public class FiberTest extends TestCase {
 
         assertEquals(2, interceptor1.getCallCount());
         assertEquals(1, interceptor2.getCallCount());
+        
+        assertEquals(request, callback.response);
+        assertNull(callback.error);
+        
+        calls = tubeA.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(2, calls.size());
+        
+        firstCall = calls.get(0);
+        
+        assertNotNull(firstCall);
+        assertEquals(TubeCallType.REQUEST, firstCall.callType);
+        assertEquals(testContainer, firstCall.container);
+        
+        TubeCall secondCall = calls.get(1);
+        
+        assertNotNull(secondCall);
+        assertEquals(TubeCallType.RESPONSE, secondCall.callType);
+        assertEquals(testContainer, secondCall.container);
+
+        calls = tubeB.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(2, calls.size());
+        
+        firstCall = calls.get(0);
+        
+        assertNotNull(firstCall);
+        assertEquals(TubeCallType.REQUEST, firstCall.callType);
+        assertEquals(testContainer, firstCall.container);
+        
+        secondCall = calls.get(1);
+        
+        assertNotNull(secondCall);
+        assertEquals(TubeCallType.RESPONSE, secondCall.callType);
+        assertEquals(testContainer, secondCall.container);
+
+        calls = tubeC.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(0, calls.size());
+    }
+    
+    private static final Map<String,Integer> fiberNameToThreadLocalValueMap = new ConcurrentHashMap<String,Integer>();
+    private static final Integer retainMeInteger = new Integer(1001);
+    
+    private static class MyFiberContextSwitchInterceptor implements FiberContextSwitchInterceptor {
+        private String name = null;
+        
+        public MyFiberContextSwitchInterceptor(String name) {
+            this.name = name;
+        }
+        
+        public String toString() {
+            return name;
+        }
+        
+        private int callCount = 0;
+        
+        public int getCallCount() { return callCount; }
+        
+        @Override
+        public <R, P> R execute(Fiber f, P p, Work<R, P> work) {
+            callCount++;
+                       
+            Integer threadLocalValue = fiberNameToThreadLocalValueMap.get(f.toString());                
+            
+            //Set thread-local on the current thread when Fiber is switching context
+            //so that it is available on the thread during further processing
+            ThreadLocalHelper.set(threadLocalValue);
+            
+            try {
+                return work.execute(p);
+            } finally {
+                //When current thread goes back to the thread pool, clean it of our thread-local
+                ThreadLocalHelper.unset();
+            }
+        }
+    }
+    
+    public void testThreadLocalPropagationWithFiberContextSwitch() throws InterruptedException {
+        final Semaphore atSuspend = new Semaphore(0);
+        final Semaphore checkCompleted = new Semaphore(0);
+        final Semaphore atEnd = new Semaphore(0);
+        
+        final TestTube tubeC = new TestTube();
+        
+        final FilterTestTube tubeB = new FilterTestTube(tubeC) {
+            @Override
+            @NotNull
+            public NextAction processRequest(@NotNull Packet request) {
+                super.processRequest(request);
+                
+                //Before suspend, make sure thread-local is available thanks to MyFiberContextSwitchInterceptor.execute
+                Integer threadLocalInteger = ThreadLocalHelper.get();
+                assertNotNull(threadLocalInteger);
+                assertEquals(retainMeInteger, threadLocalInteger);
+
+                return doSuspend(new Runnable() {
+                    @Override
+                    public void run() {
+                        atSuspend.release();
+                        try {
+                            checkCompleted.acquire();
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                });
+            }
+            
+            @Override
+            @NotNull
+            public NextAction processResponse(@NotNull Packet response) {
+                super.processResponse(response);
+                
+                //After resume, make sure thread-local is available thanks to MyFiberContextSwitchInterceptor.execute
+                Integer threadLocalInteger = ThreadLocalHelper.get();
+                assertNotNull(threadLocalInteger);
+                assertEquals(retainMeInteger, threadLocalInteger);
+                
+                return doReturnWith(response);
+            }
+        };
+        tubeB.setName("testThreadLocalPropagationWithFiberContextSwitch.tubeB");
+        
+        final FilterTestTube tubeA = new FilterTestTube(tubeB);
+        tubeA.setName("testThreadLocalPropagationWithFiberContextSwitch.tubeA");
+        
+        final Packet request = new Packet();
+        final SimpleCompletionCallback callback = new SimpleCompletionCallback() {
+            @Override
+            public void onCompletion(@NotNull Packet response) {
+                super.onCompletion(response);
+                atEnd.release();
+            }
+
+            @Override
+            public void onCompletion(@NotNull Throwable error) {
+                super.onCompletion(error);
+                atEnd.release();
+            }
+        };
+        
+        final Fiber fiber = threadPoolEngine.createFiber();
+        
+        assertNotNull(fiber);
+        
+        //Put away some value (say, Transaction context gotten from the thread that is going to invoke fiber.start) before fiber.start
+        //Post fiber.start, processing thread comes from a thread pool, no guarantee of same thread in force
+        fiberNameToThreadLocalValueMap.put(fiber.toString(), retainMeInteger);
+        
+        MyFiberContextSwitchInterceptor interceptor1 = 
+                new MyFiberContextSwitchInterceptor("testThreadLocalPropagationWithFiberContextSwitch.interceptor1");
+        fiber.addInterceptor(interceptor1);
+
+        fiber.start(tubeA, request, callback);
+        
+        if (!atSuspend.tryAcquire(3, TimeUnit.MINUTES))
+            fail("timeout");
+        
+        assertEquals(0, atEnd.availablePermits()); // ensure test thread really blocked
+        
+        // thread is suspended
+        assertEquals(1, interceptor1.getCallCount());
+        
+        assertNull(callback.response);
+        assertNull(callback.error);
+        
+        List<TubeCall> calls = tubeA.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(1, calls.size());
+        
+        TubeCall firstCall = calls.get(0);
+        
+        assertNotNull(firstCall);
+        assertEquals(TubeCallType.REQUEST, firstCall.callType);
+        assertEquals(testContainer, firstCall.container);
+        
+        calls = tubeB.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(1, calls.size());
+        
+        firstCall = calls.get(0);
+        
+        assertNotNull(firstCall);
+        assertEquals(TubeCallType.REQUEST, firstCall.callType);
+        assertEquals(testContainer, firstCall.container);
+        
+        calls = tubeC.getCalls();
+        
+        assertNotNull(calls);
+        assertEquals(0, calls.size());
+        
+        checkCompleted.release();
+        
+        fiber.resume(request);
+        
+        if (!atEnd.tryAcquire(3, TimeUnit.MINUTES))
+            fail("timeout");
+
+        //Two context switches, 1) when fiber.start was done and 2) when fiber was suspended
+        assertEquals(2, interceptor1.getCallCount());
         
         assertEquals(request, callback.response);
         assertNull(callback.error);
