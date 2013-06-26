@@ -57,6 +57,7 @@ import com.sun.xml.ws.api.pipe.EngineTest.SimpleCompletionCallback;
 import com.sun.xml.ws.api.pipe.EngineTest.TestTube;
 import com.sun.xml.ws.api.pipe.EngineTest.TubeCall;
 import com.sun.xml.ws.api.pipe.EngineTest.TubeCallType;
+import com.sun.xml.ws.api.pipe.Fiber.CompletionCallback;
 import com.sun.xml.ws.api.pipe.Fiber.Listener;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
 import com.sun.xml.ws.api.server.Container;
@@ -76,10 +77,6 @@ public class FiberTest extends TestCase {
         executor = new SimpleInlineExecutor();
         engine = new Engine(id, testContainer, executor);
         threadPoolEngine = new Engine(id, testContainer);
-    }
-    
-    public void tearDown() {
-        fiberNameToThreadLocalValueMap.clear();
     }
     
     private static class SimpleInlineExecutor extends InlineExecutor {
@@ -1627,6 +1624,26 @@ public class FiberTest extends TestCase {
         }
     }
     
+    static class MyCompletionCallback implements CompletionCallback {
+        public Packet response = null;
+        public Throwable error = null;
+        private String fiberName = null;
+        
+        public void setFiberName(String name) {
+            this.fiberName = name;
+        }
+        
+        @Override
+        public void onCompletion(@NotNull Packet response) {
+            this.response = response;
+        }
+
+        @Override
+        public void onCompletion(@NotNull Throwable error) {
+            this.error = error;
+        }
+    }
+    
     public void testThreadLocalPropagationWithFiberContextSwitch() throws InterruptedException {
         final Semaphore atSuspend = new Semaphore(0);
         final Semaphore checkCompleted = new Semaphore(0);
@@ -1676,16 +1693,19 @@ public class FiberTest extends TestCase {
         tubeA.setName("testThreadLocalPropagationWithFiberContextSwitch.tubeA");
         
         final Packet request = new Packet();
-        final SimpleCompletionCallback callback = new SimpleCompletionCallback() {
+        
+        final MyCompletionCallback callback = new MyCompletionCallback() {
             @Override
             public void onCompletion(@NotNull Packet response) {
                 super.onCompletion(response);
+                if (super.fiberName != null) fiberNameToThreadLocalValueMap.remove(super.fiberName);
                 atEnd.release();
             }
 
             @Override
             public void onCompletion(@NotNull Throwable error) {
                 super.onCompletion(error);
+                if (super.fiberName != null) fiberNameToThreadLocalValueMap.remove(super.fiberName);
                 atEnd.release();
             }
         };
@@ -1696,7 +1716,11 @@ public class FiberTest extends TestCase {
         
         //Put away some value (say, Transaction context gotten from the thread that is going to invoke fiber.start) before fiber.start
         //Post fiber.start, processing thread comes from a thread pool, no guarantee of same thread in force
+        //This entry will be cleaned up when SimpleCompletionCallback callback method is called at last
         fiberNameToThreadLocalValueMap.put(fiber.toString(), retainMeInteger);
+        
+        //callback has to remember Fiber name so that it can remove the entry from fiberNameToThreadLocalValueMap having Fiber name as the key
+        callback.setFiberName(fiber.toString());
         
         MyFiberContextSwitchInterceptor interceptor1 = 
                 new MyFiberContextSwitchInterceptor("testThreadLocalPropagationWithFiberContextSwitch.interceptor1");
