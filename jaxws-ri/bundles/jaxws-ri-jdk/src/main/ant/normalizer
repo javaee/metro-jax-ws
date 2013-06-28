@@ -1,0 +1,190 @@
+#!/usr/bin/perl
+#
+# (c) Sun Microsystems
+#
+# Version 1.3
+#
+# Parses java files:
+#   1. Removes from the end of lines spaces and TABs
+#   2. Replaces TABs by spaces
+#   3. Replaces all NewLine separators by Unix NewLine separators
+#   4. Makes one and only one empty line at the end of each file
+
+if ($#ARGV < 0) {
+    &usage;
+    
+    die;
+}
+
+use Cwd 'abs_path';
+
+my @extensions = ("java");
+
+# Read options
+my $dirpos = 0;
+
+while ($dirpos < $#ARGV) {
+    if ($ARGV[$dirpos] eq "-e") {
+        @extensions = split(/,/, $ARGV[$dirpos + 1]);
+    } else {
+        last;
+    }
+
+    $dirpos += 2;
+}
+
+if ($dirpos > $#ARGV) {
+    &usage;
+
+    die;
+}
+
+use Cwd;
+my $currdir = getcwd;
+
+my $filecount = 0;
+
+my @tabvalues;
+
+# Init tabvalues
+push (@tabvalues, " ");
+
+for (my $i = 1; $i < 8; $i++) {
+    push(@tabvalues, $tabvalues[$i - 1] . " ");
+}
+
+open(FILELIST, ">$currdir/filelist") or die "Failed while open $currdir/filelist: $!\n";
+
+while ($dirpos <= $#ARGV) {
+    use File::Find;
+
+    find(\&parse_file, abs_path($ARGV[$dirpos]));
+
+    $dirpos += 1;
+}
+
+close(FILELIST);
+
+use Cwd 'chdir';
+chdir $currdir;
+
+print "Processed $filecount file(s)\n";
+print "See results in the file $currdir/filelist\n";
+
+sub parse_file {
+    my $filename = $File::Find::name;
+
+    # Skip directories
+    return if -d;
+    
+    # Skip SCCS files
+    return if ($filename =~ /\/SCCS\//);
+
+    # Skip files with invalid extensions
+    my $accepted = 0;
+    foreach my $ext (@extensions) {
+        if ($_ =~ /\.$ext$/i) {
+            $accepted = 1;
+
+            last;
+        }
+    }
+    return if ($accepted == 0);
+
+    print "$filename: ";
+
+    use File::Basename;
+    my $dirname = dirname($filename);
+
+    use Cwd 'chdir';
+    chdir $dirname;
+
+    #`sccs edit $_`;
+
+    print "edited ";
+
+    open(FILE, $filename) or die "Failed while open $filename: $!\n";
+    
+    # Read file
+    my @content;
+    my $line;
+    my $emptylinescount = 0;
+    my $modified = 0;
+    
+    while ($line = <FILE>) {
+        my $originalline = $line;
+
+        # Process line
+        
+        # Remove from the end of the line spaces and return character
+        while ($line =~ /\s$/) {
+            chop($line);
+        }
+
+        # Replace TABs
+        for (my $i = 0; $i < length($line); $i++) {
+            if (substr($line, $i, 1) =~ /\t/) {
+                $line = substr($line, 0, $i) . $tabvalues[7 - ($i % 8)] . substr($line, $i + 1);
+            }
+        }
+        
+        if (length($line) == 0) {
+            $emptylinescount++;
+        } else {
+            while ($emptylinescount > 0) {
+                push(@content, "");
+                
+                $emptylinescount--;
+            }
+            
+            push(@content, $line);
+        }
+
+        if ($originalline ne ($line . "\n")) {
+            $modified = 1;
+        }
+    }
+    
+    if ($emptylinescount > 0) {
+        $modified = 1;
+    }
+
+    close(FILE);
+    
+    if ($modified != 0) {
+        # Write file
+        open(FILE, ">$filename") or die "Failed while open $filename: $!\n";
+    
+        for (my $i = 0; $i <= $#content; $i++) {
+            print FILE "$content[$i]\n";
+        }
+    
+        close(FILE);
+
+        # Print name from current dir
+        if (index($filename, $currdir) == 0) {
+           print FILELIST substr($filename, length($currdir) + 1);
+        } else {
+           print FILELIST $filename;
+        }
+        print FILELIST "\n";
+
+        $filecount++;
+
+        print "modified\n";
+    } else {
+        #`sccs unedit $_`;
+
+        print "unedited\n";
+    }
+}
+
+sub usage {
+    print "Usage:\n";
+    print "  normalizer.pl [-options] <dir> [dir2 dir3 ...]\n";
+    print "  Available options:\n";
+    print "    -e    comma separated files extensions. By default accepts only java files\n";
+    print "\n";
+    print "Examples:\n";
+    print "  normalizer.pl -e c,cpp,h,hpp .\n";
+}

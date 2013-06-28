@@ -65,7 +65,20 @@
     <modules>
         <module>jaxws-ri</module>
         <module>jaxws-ri-src</module>
-        <module>jaxws-ri-jdk</module>
     </modules>
+
+    <profiles>
+        <!--since building jdk bundle requires perl installed on environment, it may fail; -->
+        <!--run the build explicitly, when required-->
+        <profile>
+            <id>jdk-bundle</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>jaxws-ri-jdk</module>
+            </modules>
+        </profile>
+    </profiles>
 
 </project>

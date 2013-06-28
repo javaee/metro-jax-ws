@@ -1,0 +1,270 @@
+<project name="copyright-check" basedir=".">
+    <property name="rootSrcDir" value="${basedir}/../../repo-renamed"/>
+    <taskdef name="licensetool" classname="org.jvnet.licensetool.LicenseToolTask">
+        <classpath>
+            <fileset dir="lib">
+                <include name="**/*.jar"/>
+            </fileset>
+        </classpath>
+    </taskdef>
+
+    <target name="dryrun">
+        <licensetool srcDir="."
+                     validate="true"
+                     skipdirs=".svn,.cvs,SCCS,.hg"
+                     copyright="copyright/copyright.txt"
+                     startyear="1997"
+                     dryrun="true"
+                     includes="${rootSrcDir}/src/share/classes/">
+        </licensetool>
+    </target>
+
+    <macrodef name="keywordcheck">
+        <attribute name="includes"/>
+        <attribute name="copyright"/>
+        <attribute name="excludes"/>
+        <sequential>
+            <licensetool srcDir="${rootSrcDir}/src/share/classes"
+                         validate="true"
+                         skipdirs=".svn,.cvs,SCCS,.hg"
+                         copyright="@{copyright}"
+                         startyear="1997"
+                         dryrun="false"
+                         options="checkKeyword,checkApache,checkThai,checkNonSun,checkNoSun,checkCddl"
+                         verbose="${verbose}"
+                         includes="@{includes}"
+                         excludes="@{excludes}">
+            </licensetool>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="validate">
+        <attribute name="includes"/>
+        <attribute name="copyright"/>
+        <attribute name="excludes"/>
+        <sequential>
+            <licensetool srcDir="${rootSrcDir}/src/share/classes"
+                         validate="true"
+                         skipdirs=".svn,.cvs,SCCS,.hg"
+                         copyright="@{copyright}"
+                         startyear="1997"
+                         dryrun="false"
+                         options="checkApache"
+                         verbose="${verbose}"
+                         includes="@{includes}"
+                         excludes="@{excludes}">
+            </licensetool>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="correct">
+        <attribute name="includes"/>
+        <attribute name="copyright"/>
+        <attribute name="excludes"/>
+        <sequential>
+            <licensetool srcDir="${rootSrcDir}/src/share/classes"
+                         validate="false"
+                         skipdirs=".svn,.cvs,SCCS,.hg"
+                         copyright="@{copyright}"
+                  		 options=""
+                         dryrun="false"
+                         startyear="2005"
+			 endyear="2010"
+			verbose="${verbose}"
+                         includes="@{includes}"
+                         excludes="@{excludes}">
+            </licensetool>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="prepend">
+        <attribute name="destfile"/>
+        <attribute name="srcfile"/>
+
+        <sequential>
+            <concat destfile="@{destfile}.temp">
+                <fileset file="@{srcfile}"/>
+                <fileset file="@{destfile}"/>
+            </concat>
+            <move file="@{destfile}.temp" tofile="@{destfile}"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="delete">
+        <attribute name="includes"/>
+        <attribute name="copyright"/>
+        <attribute name="excludes"/>
+        <sequential>
+            <licensetool srcDir="${rootSrcDir}/src/share/classes"
+                         validate="false"
+                         skipdirs=".svn,.cvs,SCCS,.hg"
+                         copyright="@{copyright}"
+                         startyear="1997"
+                         dryrun="false"
+                         options="deleteMatch"
+                         verbose="${verbose}"
+                         includes="@{includes}"
+                         excludes="@{excludes}">
+            </licensetool>
+        </sequential>
+    </macrodef>
+
+    <target name="keywordcheck">
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="javax/xml/soap/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/ws/" excludes="com/sun/xml/internal/ws/org/objectweb/asm/"/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/bind/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/dtdparser/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/txw2/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/messaging/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/rngom/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/xsom/" excludes="com/sun/xml/internal/xsom/impl/util/Uri.java"/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/org/jvnet/staxex/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/org/jvnet/mimepull/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/stream/buffer/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/codemodel/internal/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/istack/internal/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/tools/internal/ws/" excludes="com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/tools/internal/xjc/" excludes="com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/tools/internal/jxc/" excludes=""/-->
+        <!--keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/org/glassfish/" excludes=""/-->
+        <keywordcheck copyright="copyright/oracle_gpl_2005-2011.txt"
+                      includes="javax/xml/soap/,com/sun/xml/internal/,com/sun/codemodel/,com/sun/istack/internal/,com/sun/tools/internal/"
+                      excludes="**/javax.xml.stream.XMLOutputFactory,**/javax.xml.stream.XMLInputFactory,**/javax.xml.stream.XMLEventFactory, com/sun/istack/internal/stream/"/>
+    </target>
+
+    <target name="validate">
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="javax/xml/soap/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/ws/" excludes="com/sun/xml/internal/ws/org/objectweb/asm/"/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/bind/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/dtdparser/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/txw2/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/messaging/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/rngom/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/xsom/" excludes="com/sun/xml/internal/xsom/impl/util/Uri.java"/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/org/jvnet/staxex/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/org/jvnet/mimepull/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/stream/buffer/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/codemodel/internal/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/istack/internal/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/tools/internal/ws/" excludes="com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/tools/internal/xj/c" excludes="com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/tools/internal/jxc/" excludes=""/-->
+        <!--validate copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/org/glassfish/" excludes=""/-->
+    </target>
+
+    <target name="correct" depends="correct-bak,normalize">
+        <!--
+        <loadfile property="jaxws-asm" srcFile="copyright/jaxws-asm.txt"/>
+        <loadfile property="openjdk-asm" srcFile="copyright/openjdk-asm.txt"/>
+        <replace dir="${rootSrcDir}/src/share/classes/com/sun/xml/internal/ws/org/objectweb/asm" token="${jaxws-asm}"
+                 value="${openjdk-asm}"/>
+            -->
+    </target>
+
+    <target name="correct-bak">
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="javax/xml/soap/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="javax/jws/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="javax/xml/ws/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="javax/xml/bind/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="javax/annotation/" excludes="javax/annotation/processing"/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/ws/"
+                 excludes="com/sun/xml/internal/ws/org/objectweb/asm/"/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/bind/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/dtdparser/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/txw2/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/messaging/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/rngom/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/xsom/"
+                 excludes="com/sun/xml/internal/xsom/impl/util/Uri.java"/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/org/jvnet/staxex/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/org/jvnet/mimepull/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/org/glassfish/" excludes=""/>
+        <!-- IMP variation -->
+        <!--correct copyright="copyright/oracle_gpl_2005.txt" includes="org/relaxng/"
+                 excludes="org/relaxng/datatype/helpers/DatatypeLibraryLoader.java"/-->
+
+        <!-- variation --> <!-- com/sun/xml/internal/fastinfoset/AbstractResourceBundle.java has freebxml.org license -->
+        <correct copyright="copyright/oracle_gpl_mod.txt" includes="com/sun/xml/internal/fastinfoset/"
+                 excludes="com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java"/>
+
+        <correct copyright="copyright/oracle_gpl_mod.txt" includes="com/sun/xml/internal/org/jvnet/fastinfoset/"
+                 excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/xml/internal/stream/buffer/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/codemodel/internal/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/istack/internal/" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/tools/internal/ws/"
+                 excludes="com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/tools/internal/xjc/"
+                 excludes="com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/sun/tools/internal/jxc/" excludes=""/>
+
+        <!-- handle anamalies -->
+        <correct copyright="copyright/oracle_gpl_portions_2005-2011.txt"
+                 includes="com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_portions_2005-2011.txt"
+                 includes="com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_portions_2005-2011.txt"
+                 includes="com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java" excludes=""/>
+
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/oracle/webservices/internal/**/*" excludes=""/>
+        <correct copyright="copyright/oracle_gpl_2005-2011.txt" includes="com/oracle/xmlns/internal/**/*" excludes=""/>
+
+        <!-- add reserve block for the above three files -->
+        <prepend
+                destfile="${rootSrcDir}/src/share/classes/com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java"
+                srcfile="copyright/reserve-block.txt"/>
+        <prepend
+                destfile="${rootSrcDir}/src/share/classes/com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"
+                srcfile="copyright/reserve-block.txt"/>
+        <prepend
+                destfile="${rootSrcDir}/src/share/classes/com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"
+                srcfile="copyright/reserve-block.txt"/>
+        <!-- See http://openjdk.sfbay.sun.com/space/start/openjdk-legal-notice-howto.html -->
+        <loadfile property="jaxws-asm" srcFile="copyright/jaxws-asm.txt"/>
+        <loadfile property="openjdk-asm" srcFile="copyright/oracle_openjdk-asm.txt"/>
+        <replace dir="/com/sun/xml/internal/ws/org/objectweb/asm" token="${jaxws-asm}" value="${openjdk-asm}"/>
+
+        <!--
+        <exec executable="${basedir}/normalizer">
+            <arg line="-e java,properties,xml"/>
+            <arg value="${rootSrcDir}/src/share/classes"/>
+            </exec>
+        -->
+        <!--
+      com/sun/xml/internal/ws/
+      com/sun/xml/internal/bind/
+      com/sun/xml/internal/dtdparser/
+      com/sun/xml/internal/txw2/
+      com/sun/xml/internal/messaging/
+      com/sun/xml/internal/rngom/
+      com/sun/xml/internal/xsom/
+      com/sun/xml/internal/org/jvnet/staxex/
+      com/sun/xml/internal/org/jvnet/mimepull/
+      com/sun/xml/internal/stream/buffer/
+      com/sun/codemodel/internal/
+      com/sun/istack/internal/
+
+      com/sun/tools/internal/ws/
+      com/sun/tools/internal/xjc/
+      com/sun/tools/internal/jxc/
+
+
+
+      javax/xml/
+      -->
+        <!--
+      com/sun/xml/internal/org/jvnet/fastinfoset/
+      com/sun/xml/internal/fastinfoset/
+      -->
+    </target>
+
+    <target name="normalize">
+
+        <exec executable="${basedir}/normalizer">
+            <arg line="-e java,properties,xml"/>
+            <arg value="${rootSrcDir}/src/share/classes"/>
+        </exec>
+        
+     </target>
+
+</project>

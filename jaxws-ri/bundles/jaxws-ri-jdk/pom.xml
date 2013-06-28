@@ -41,7 +41,8 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -51,11 +52,10 @@
         <version>2.2.9-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-ri-jdk</artifactId>
     <version>2.2.9-SNAPSHOT</version>
-    
-    <packaging>pom</packaging>
+
+    <packaging>jar</packaging>
     <name>JAX-WS RI JDK Sources Bundle</name>
     <description>Open source Reference Implementation of JSR-224: Java API for XML Web Services Distribution Bundle</description>
 
@@ -64,91 +64,14 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>jaxws-rt</artifactId>
             <version>${project.version}</version>
-            <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>jaxws-tools</artifactId>
             <version>${project.version}</version>
-            <classifier>sources</classifier>
         </dependency>
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>${javax.annotation-api.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>javax.jws</groupId>
-            <artifactId>jsr181-api</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-jxc</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-xjc</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.ws</groupId>
-            <artifactId>jaxws-api</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.fastinfoset</groupId>
-            <artifactId>FastInfoset</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.messaging.saaj</groupId>
-            <artifactId>saaj-impl</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.stream.buffer</groupId>
-            <artifactId>streambuffer</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet.mimepull</groupId>
-            <artifactId>mimepull</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>policy</artifactId>
-            <version>${policy.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet.staxex</groupId>
-            <artifactId>stax-ex</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.soap</groupId>
-            <artifactId>javax.xml.soap-api</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
+
+        <!--incorrect source packaging in this version(s), so must be as extra dependencies:-->
         <dependency>
             <groupId>org.glassfish.gmbal</groupId>
             <artifactId>gmbal-api-only-source</artifactId>
@@ -157,30 +80,400 @@
             <groupId>org.glassfish.external</groupId>
             <artifactId>management-api-sources</artifactId>
         </dependency>
+
+        <!--changing scope to compile to be included into sources-->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <!--Dependencies just to compile sources (to verify): -->
+        <dependency>
+            <groupId>com.sun.org.apache.xml.internal</groupId>
+            <artifactId>resolver</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>stax2-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.ha</groupId>
+            <artifactId>ha-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.7</version>
                 <executions>
                     <execution>
-                        <id>make-src-assembly</id>
-                        <phase>package</phase>
+                        <id>unpack-sources</id>
                         <goals>
-                            <goal>single</goal>
+                            <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <attach>false</attach>
-                            <finalName>jaxws-ri-${project.version}</finalName>
-                            <descriptors>
-                                <descriptor>src/main/assembly/assembly-jdk.xml</descriptor>
-                            </descriptors>
+                            <classifier>sources</classifier>
+                            <excludeScope>provided</excludeScope>
+                            <outputDirectory>target/unpacked-sources</outputDirectory>
+
+                            <excludes>
+                                //added after mavenization:,
+                                com/sun/xml/ws/transport/httpspi/servlet/,
+
+                                //JAX-WS Patch,
+                                com/sun/xml/ws/transport/local/,
+                                com/sun/xml/ws/transport/http/servlet/,
+                                com/sun/xml/ws/transport/http/client/CookieManager.java,
+                                com/sun/xml/ws/transport/http/client/CookiePolicy.java,
+                                com/sun/xml/ws/transport/http/client/CookieStore.java,
+                                com/sun/xml/ws/transport/http/client/HttpCookie.java,
+                                com/sun/xml/ws/transport/http/client/InMemoryCookieStore.java,
+                                com/sun/xml/ws/developer/servlet/,
+                                com/sun/xml/ws/server/servlet/,
+                                com/sun/xml/ws/api/ha/HighAvailabilityProvider.java,
+                                com/sun/xml/ws/api/ha/HighAvailabilityProviderException.java,
+                                com/sun/xml/ws/developer/Stateful.java,
+                                com/sun/xml/ws/developer/StatefulFeature.java,
+                                com/sun/xml/ws/developer/StatefulWebServiceManager.java,
+                                com/sun/xml/ws/server/StatefulInstanceResolver.java,
+                                org/glassfish/ha/,
+                                com/sun/tools/ws/ant/,
+                                com/sun/tools/ws/local/,
+                                META-INF/services/com.sun.xml.ws.api.pipe.TransportTubeFactory,
+                                META-INF/services/javax.xml.ws.spi.Provider,
+                                jaxws-databinding.xsd,
+                                jaxws-databinding-translate-namespaces.xml,
+
+                                //JAXB Patch,
+                                com/sun/tools/xjc/XJC2Task.java,
+                                com/sun/istack/tools/ProtectedTask.java,
+                                com/sun/tools/jxc/ApBasedTask.java,
+                                com/sun/tools/jxc/SchemaGenTask.java,
+                                com/sun/tools/xjc/XJCTask.java,
+                                javax/xml/namespace/QName.java,
+                                META-INF/services/javax.xml.bind.JAXBContext,
+                                com/sun/org/apache/xml/internal/resolver/,
+                                com/sun/xml/bind/v2/doc-files/,
+                                com/sun/tools/xjc/reader/xmlschema/doc-files/,
+
+                                //JSR-250 Patch,
+                                javax/annotation/security/,
+                                javax/annotation/sql/,
+                                javax/annotation/ManagedBean.java,
+                                pom.xml,
+                                javax/annotation/package.html,
+
+                                //TODO-Miran: CCC would be created to include this into JDK?,
+                                javax/annotation/Priority.java,
+
+                                //SAAJ Patch,
+                                META-INF/services/javax.xml.soap.MessageFactory,
+                                META-INF/services/javax.xml.soap.MetaFactory,
+                                META-INF/services/javax.xml.soap.SOAPConnectionFactory,
+                                META-INF/services/javax.xml.soap.SOAPFactory,
+
+                                //Misc Patch,
+                                META-INF/MANIFEST.MF,
+                                META-INF/LICENSE.txt,
+                                purify.xsl,
+
+                                //XJC - rngom = incorrectly packaged source bundle,
+                                CompactParseable.java,
+                                CompactSyntaxConstants.java,
+                                CompactSyntax.java,
+                                CompactSyntax.jj,
+                                CompactSyntaxTokenManager.java,
+                                EOFException.java,
+                                EscapeSyntaxException.java,
+                                JavaCharStream.java,
+                                Messages.properties,
+                                ParseException.java,
+                                Token.java,
+                                TokenMgrError.java,
+                                UCode_UCodeESC_CharStream.java,
+                                *.rng
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-sources-non-standard-packaging</id>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/unpacked-sources</outputDirectory>
+                            <includeGroupIds>org.glassfish.gmbal,org.glassfish.external</includeGroupIds>
+                            <excludes>**/**/*.class,**/**/*.swp,META-INF/*</excludes>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!--repackaging sources to internal packages-->
+            <plugin>
+                <groupId>com.sun.wts.tools.ant</groupId>
+                <artifactId>package-rename-task</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <id>repackage-to-internal</id>
+                        <goals>
+                            <goal>rename</goal>
+                        </goals>
+                        <configuration>
+                            <srcDir>${project.basedir}/target/unpacked-sources</srcDir>
+                            <rootDir>${project.basedir}/target/generated-sources/</rootDir>
+                            <excludes>com.sun.xml.internal</excludes>
+                            <patterns>
+                                <com.sun.codemodel>com.sun.codemodel.internal</com.sun.codemodel>
+                                <com.sun.xml>com.sun.xml.internal</com.sun.xml>
+                                <com.sun.istack>com.sun.istack.internal</com.sun.istack>
+                                <org.jvnet.fastinfoset>com.sun.xml.internal.org.jvnet.fastinfoset
+                                </org.jvnet.fastinfoset>
+                                <org.jvnet.staxex>com.sun.xml.internal.org.jvnet.staxex</org.jvnet.staxex>
+                                <org.jvnet.mimepull>com.sun.xml.internal.org.jvnet.mimepull</org.jvnet.mimepull>
+                                <org.kohsuke.rngom>com.sun.xml.internal.rngom</org.kohsuke.rngom>
+                                <com.sun.tools.ws>com.sun.tools.internal.ws</com.sun.tools.ws>
+                                <com.sun.tools.xjc>com.sun.tools.internal.xjc</com.sun.tools.xjc>
+                                <com.sun.tools.jxc>com.sun.tools.internal.jxc</com.sun.tools.jxc>
+                                <org.glassfish>com.sun.org.glassfish</org.glassfish>
+                                <org.jvnet.ws>com.sun.xml.internal.org.jvnet.ws</org.jvnet.ws>
+                                <com.oracle.webservices>com.oracle.webservices.internal</com.oracle.webservices>
+                                <com.oracle.xmlns>com.oracle.xmlns.internal</com.oracle.xmlns>
+                            </patterns>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <id>manual-patch</id>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source>${project.basedir}/src/main/script/manualPatch.groovy</source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--licences update, ant so far; TODO: find non-ant solution-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>rebrand-sources</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <property name="antdir" value="${basedir}/src/main/ant"/>
+                                <property name="lic" value="${antdir}/oracle_gpl_2005-2011.txt"/>
+                                <taskdef name="licensetool" classname="org.jvnet.licensetool.LicenseToolTask">
+                                    <classpath>
+                                        <fileset dir=".">
+                                            <include name="**/*.jar"/>
+                                        </fileset>
+                                    </classpath>
+                                </taskdef>
+                                <macrodef name="prepend">
+                                    <attribute name="destfile"/>
+                                    <attribute name="srcfile"/>
+
+                                    <sequential>
+                                        <concat destfile="target/generated-sources/@{destfile}.temp">
+                                            <fileset file="@{srcfile}"/>
+                                            <fileset file="target/generated-sources/@{destfile}"/>
+                                        </concat>
+                                        <move file="target/generated-sources/@{destfile}.temp"
+                                              tofile="target/generated-sources/@{destfile}"/>
+                                    </sequential>
+                                </macrodef>
+                                <macrodef name="correct">
+                                    <attribute name="includes"/>
+                                    <attribute name="copyright"/>
+                                    <attribute name="excludes"/>
+                                    <sequential>
+                                        <taskdef name="licensetool" classname="org.jvnet.licensetool.LicenseToolTask">
+                                            <classpath>
+                                                <fileset dir="src/main/ant">
+                                                    <include name="**/*.jar"/>
+                                                </fileset>
+                                            </classpath>
+                                        </taskdef>
+                                        <licensetool srcDir="target/generated-sources"
+                                                     validate="false"
+                                                     skipdirs=".svn,.cvs,SCCS,.hg"
+                                                     copyright="@{copyright}"
+                                                     options=""
+                                                     dryrun="false"
+                                                     startyear="2005"
+                                                     endyear="2010"
+                                                     verbose="true"
+                                                     includes="@{includes}"
+                                                     excludes="@{excludes}">
+                                        </licensetool>
+                                    </sequential>
+                                </macrodef>
+
+                                <correct copyright="${lic}" includes="javax/xml/soap/" excludes=""/>
+                                <correct copyright="${lic}" includes="javax/jws/" excludes=""/>
+                                <correct copyright="${lic}" includes="javax/xml/ws/" excludes=""/>
+                                <correct copyright="${lic}" includes="javax/xml/bind/" excludes=""/>
+                                <correct copyright="${lic}" includes="javax/annotation/"
+                                         excludes="javax/annotation/processing"/>
+                                <correct copyright="${lic}" includes="com/sun/xml/internal/ws/"
+                                         excludes="com/sun/xml/internal/ws/org/objectweb/asm/"/>
+                                <correct copyright="${lic}" includes="com/sun/xml/internal/bind/" excludes=""/>
+                                <correct copyright="${lic}" includes="com/sun/xml/internal/dtdparser/" excludes=""/>
+                                <correct copyright="${lic}" includes="com/sun/xml/internal/txw2/" excludes=""/>
+                                <correct copyright="${lic}" includes="com/sun/xml/internal/messaging/" excludes=""/>
+                                <correct copyright="${lic}" includes="com/sun/xml/internal/rngom/" excludes=""/>
+                                <correct copyright="${lic}" includes="com/sun/xml/internal/xsom/"
+                                         excludes="com/sun/xml/internal/xsom/impl/util/Uri.java"/>
+                                <correct copyright="${lic}" includes="com/sun/xml/internal/org/jvnet/staxex/"
+                                         excludes=""/>
+                                <correct copyright="${lic}" includes="com/sun/xml/internal/org/jvnet/mimepull/"
+                                         excludes=""/>
+                                <correct copyright="${lic}" includes="com/sun/org/glassfish/" excludes=""/>
+                                <!-- IMP variation -->
+                                <!--correct copyright="${antdir}/oracle_gpl_2005.txt" includes="org/relaxng/"
+                                         excludes="org/relaxng/datatype/helpers/DatatypeLibraryLoader.java"/-->
+
+                                <!-- variation --> <!-- com/sun/xml/internal/fastinfoset/AbstractResourceBundle.java has freebxml.org license -->
+                                <correct copyright="${antdir}/oracle_gpl_mod.txt"
+                                         includes="com/sun/xml/internal/fastinfoset/"
+                                         excludes="com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java"/>
+
+                                <correct copyright="${antdir}/oracle_gpl_mod.txt"
+                                         includes="com/sun/xml/internal/org/jvnet/fastinfoset/" excludes=""/>
+                                <correct copyright="${lic}" includes="com/sun/xml/internal/stream/buffer/" excludes=""/>
+                                <correct copyright="${lic}" includes="com/sun/codemodel/internal/" excludes=""/>
+                                <correct copyright="${lic}" includes="com/sun/istack/internal/" excludes=""/>
+                                <correct copyright="${lic}" includes="com/sun/tools/internal/ws/"
+                                         excludes="com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"/>
+                                <correct copyright="${lic}" includes="com/sun/tools/internal/xjc/"
+                                         excludes="com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"/>
+                                <correct copyright="${lic}" includes="com/sun/tools/internal/jxc/" excludes=""/>
+
+                                <!-- handle anamalies -->
+                                <correct copyright="${antdir}/oracle_gpl_portions_2005-2011.txt"
+                                         includes="com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java"
+                                         excludes=""/>
+                                <correct copyright="${antdir}/oracle_gpl_portions_2005-2011.txt"
+                                         includes="com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"
+                                         excludes=""/>
+                                <correct copyright="${antdir}/oracle_gpl_portions_2005-2011.txt"
+                                         includes="com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"
+                                         excludes=""/>
+
+                                <correct copyright="${lic}" includes="com/oracle/webservices/internal/**/*"
+                                         excludes=""/>
+                                <correct copyright="${lic}" includes="com/oracle/xmlns/internal/**/*" excludes=""/>
+
+                                <!-- add reserve block for the above three files -->
+                                <prepend destfile="com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java"
+                                         srcfile="${antdir}/reserve-block.txt"/>
+                                <prepend destfile="com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"
+                                         srcfile="${antdir}/reserve-block.txt"/>
+                                <prepend
+                                        destfile="com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"
+                                        srcfile="${antdir}/reserve-block.txt"/>
+
+                                <!-- See http://openjdk.sfbay.sun.com/space/start/openjdk-legal-notice-howto.html -->
+                                <loadfile property="jaxws-asm" srcFile="${antdir}/jaxws-asm.txt"/>
+                                <loadfile property="openjdk-asm" srcFile="${antdir}/oracle_openjdk-asm.txt"/>
+                                <replace dir="target/generated-sources/com/sun/xml/internal/ws/org/objectweb/asm"
+                                        token="${jaxws-asm}" value="${openjdk-asm}"/>
+
+
+                                <echo message="Rebranding done ..."/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--spaces normalization-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <id>normalize-spaces</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>src/main/ant/normalizer</executable>
+                            <arguments>
+                                <argument>-e</argument>
+                                <argument>java,properties,xml</argument>
+                                <argument>target/generated-sources/</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--compilation to verify the sources are complete-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <fork>true</fork>
+                    <!--redirecting to different place not to be contained in the result bundle-->
+                    <generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>
+                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+                    <compilerArgs>
+                        <arg>-XDignore.symbol.file</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

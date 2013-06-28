@@ -171,7 +171,7 @@
                 <plugin>
                     <groupId>com.sun.wts.tools.ant</groupId>
                     <artifactId>package-rename-task</artifactId>
-                    <version>1.2</version>
+                    <version>1.4</version>
                 </plugin>
                 <plugin>
                     <groupId>com.sun.istack</groupId>
