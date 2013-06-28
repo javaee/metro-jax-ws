@@ -549,7 +549,7 @@ have multiple clients for one test case -->
 </target>
 
 <target name="deploy-war">
-    <echo message="-------- Deploying war for ${ant.project.name} to jwsdp --------"/>
+    <echo message="-------- Deploying war for ${ant.project.name} --------"/>
     <copy file="${build.temp}/../war/jaxrpc-${warfilename}.war"
               todir="${tomcat.base}/webapps"/>
 </target>
@@ -568,7 +568,6 @@ have multiple clients for one test case -->
         <http url="${url}"/>
     </condition>
 
-    <!-- JWSDP environment settings -->
     <condition property="catalina.startup.script"
                    value="${Tomcat.win}">
         <os family="Windows"/>
@@ -586,8 +585,8 @@ have multiple clients for one test case -->
 
 <target name="internal-start-tomcat" unless="catalina.already.up">
 
-    <echo message="Starting JWSDP"/>
-    <echo message="JWSDP_HOME : ${env.JWSDP_HOME}"/>
+    <echo message="Starting"/>
+    <echo message="HOME : ${env.JWSDP_HOME}"/>
     <echo message="Checking URL : ${url}"/>
 
     <!-- Wait upto 5 minutes for Tomcat to startup -->
@@ -595,7 +594,7 @@ have multiple clients for one test case -->
                  timeoutproperty="catalina.unavailable">
         <http url="${url}"/>
     </waitfor>
-    <fail message="Unable to start JWSDP. Please start it manually." if="catalina.unavailable"/>
+    <fail message="Unable to start. Please start it manually." if="catalina.unavailable"/>
     <echo message="Tomcat successfully started on ${host} at port ${port} ..."/>
 </target>
 
@@ -613,7 +612,7 @@ have multiple clients for one test case -->
         <http url="${url}"/>
     </condition>
 
-    <!-- JWSDP environment settings -->
+    <!-- environment settings -->
     <condition property="catalina.stop.script"
                    value="${Tomcat.win}">
         <os family="Windows"/>
@@ -631,8 +630,8 @@ have multiple clients for one test case -->
 
 <target name="internal-stop-tomcat" unless="catalina.already.stop">
 
-    <echo message="Stopping JWSDP"/>
-    <echo message="JWSDP_HOME : ${env.JWSDP_HOME}"/>
+    <echo message="Stopping"/>
+    <echo message="HOME : ${env.JWSDP_HOME}"/>
     <exec executable="${catalina.stop.script}">
         <arg line="stop"/>
     </exec>
