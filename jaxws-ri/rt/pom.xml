@@ -94,10 +94,12 @@
         <dependency>
             <artifactId>woodstox-core-asl</artifactId>
             <groupId>org.codehaus.woodstox</groupId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>stax2-api</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.org.apache.xml.internal</groupId>

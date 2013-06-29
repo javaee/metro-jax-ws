@@ -191,7 +191,6 @@
             <dependency>
                 <groupId>org.codehaus.woodstox</groupId>
                 <artifactId>woodstox-core-asl</artifactId>
-                <scope>runtime</scope>
                 <version>${woodstox-core-asl.version}</version>
                 <exclusions>
                     <!-- part of JDK 6+ -->
@@ -205,7 +204,6 @@
                 <groupId>org.codehaus.woodstox</groupId>
                 <artifactId>stax2-api</artifactId>
                 <version>${stax2-api.version}</version>
-                <scope>runtime</scope>
                 <exclusions>
                     <!-- part of JDK 6+ -->
                     <exclusion>
