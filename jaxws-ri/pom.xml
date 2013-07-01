@@ -175,6 +175,11 @@
                 </plugin>
                 <plugin>
                     <groupId>com.sun.istack</groupId>
+                    <artifactId>import-properties-plugin</artifactId>
+                    <version>${istack.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.sun.istack</groupId>
                     <artifactId>istack-commons-maven-plugin</artifactId>
                     <version>${istack.version}</version>
                     <executions>
@@ -467,6 +472,13 @@
                 </configuration>
             </plugin>
         </plugins>
+        <!--extensions>
+            <extension>
+                <groupId>com.sun.istack</groupId>
+                <artifactId>import-properties-plugin</artifactId>
+                <version>${istack.version}</version>
+            </extension>
+        </extensions-->
     </build>
 
     <modules>
