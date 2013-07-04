@@ -78,18 +78,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.sun.istack</groupId>
-                <artifactId>import-properties-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>import-pom-properties</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>1.0.1</version>
@@ -126,21 +114,21 @@
                             <instructions>
                                 <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
                                 <Export-Package>
-                                    com.sun.xml.ws.encoding.fastinfoset;version=${project.version}
+                                    com.sun.xml.ws.encoding.fastinfoset;version=${jaxws.osgiVersion}
                                 </Export-Package>
                                 <Import-Package>
                                     com.sun.xml.fastinfoset.stax;version=${fastinfoset.version},
                                     com.sun.xml.fastinfoset.vocab;version=${fastinfoset.version},
-                                    com.sun.xml.ws.api;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.api.message;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.api.pipe;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.api.streaming;version=${jaxws-rt.version},
-                                    com.sun.xml.ws.encoding;version=${jaxws-rt.version}, 
-                                    com.sun.xml.ws.message.stream;version=${jaxws-rt.version}, 
+                                    com.sun.xml.ws.api;version=${jaxws.osgiVersion},
+                                    com.sun.xml.ws.api.message;version=${jaxws.osgiVersion},
+                                    com.sun.xml.ws.api.pipe;version=${jaxws.osgiVersion},
+                                    com.sun.xml.ws.api.streaming;version=${jaxws.osgiVersion},
+                                    com.sun.xml.ws.encoding;version=${jaxws.osgiVersion}, 
+                                    com.sun.xml.ws.message.stream;version=${jaxws.osgiVersion}, 
                                     com.sun.xml.stream.buffer;version=${streambuffer.version},
                                     javax.xml.stream, 
                                     javax.xml.transform, 
-                                    javax.xml.ws;version=${jaxws-api.version},
+                                    javax.xml.ws;version=${jaxws-api.osgiVersion},
                                     org.jvnet.fastinfoset;version=${fi-api.version}
                                 </Import-Package>
                             </instructions>

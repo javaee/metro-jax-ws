@@ -105,18 +105,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.sun.istack</groupId>
-                <artifactId>import-properties-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>import-pom-properties</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>1.0.1</version>
@@ -130,8 +118,20 @@
                         <configuration>
                             <rules>
                                 <requireProperty>
-                                    <property>jaxb-api.version</property>
-                                    <message>Property not imported!</message>
+                                    <property>jaxws.osgiVersion</property>
+                                    <message>Property jaxws.osgiVersion not imported or set!</message>
+                                </requireProperty>
+                                <requireProperty>
+                                    <property>mail.majorVersion</property>
+                                    <message>Property mail.majorVersion not imported or set!</message>
+                                </requireProperty>
+                                <requireProperty>
+                                    <property>jaxb-api.osgiVersion</property>
+                                    <message>Property jaxb-api.osgiVersion not imported or set!</message>
+                                </requireProperty>
+                                <requireProperty>
+                                    <property>stax-ex.version</property>
+                                    <message>Property stax-ex.version not imported or set!</message>
                                 </requireProperty>
                             </rules>
                             <fail>true</fail>
@@ -187,17 +187,17 @@
                                     <instructions>
                                         <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
                                         <Export-Package>
-                                            com.sun.xml.ws.db.toplink;version=${project.osgi.version}
+                                            com.sun.xml.ws.db.toplink;version=${jaxws.osgiVersion}
                                         </Export-Package>
                                         <Import-Package>
-                                            com.sun.xml.ws.util.xml;version=${project.osgi.version},
-                                            com.sun.xml.ws.model;version=${project.osgi.version},
-                                            com.sun.xml.ws.spi.db;version=${project.osgi.version},
+                                            com.sun.xml.ws.util.xml;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.model;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.spi.db;version=${jaxws.osgiVersion},
                                             javax.activation,
-                                            javax.mail.internet;version=1.4,
-                                            javax.xml.bind;version=${jaxb-api.version},
-                                            javax.xml.bind.annotation;version=${jaxb-api.version},
-                                            javax.xml.bind.attachment;version=${jaxb-api.version},
+                                            javax.mail.internet;version=${mail.majorVersion}.${mail.minorVersion},
+                                            javax.xml.bind;version=${jaxb-api.osgiVersion},
+                                            javax.xml.bind.annotation;version=${jaxb-api.osgiVersion},
+                                            javax.xml.bind.attachment;version=${jaxb-api.osgiVersion},
                                             javax.xml.namespace,
                                             javax.xml.parsers,
                                             javax.xml.stream,
@@ -205,7 +205,7 @@
                                             javax.xml.transform.dom,
                                             javax.xml.transform.sax,
                                             javax.xml.transform.stream,
-                                            javax.xml.ws;version=${jaxws-api.version},
+                                            javax.xml.ws;version=${jaxws-api.osgiVersion},
                                             org.eclipse.persistence;version=2.4.0,
                                             org.eclipse.persistence.internal.oxm.record;version=2.4.0,
                                             org.eclipse.persistence.jaxb;version=2.4.0,

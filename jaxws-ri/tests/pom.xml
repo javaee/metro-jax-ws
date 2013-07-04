@@ -104,7 +104,7 @@
                 <artifactId>harness-maven-plugin</artifactId>
                 <configuration>
                     <tests>${ws.test}</tests>
-                    <version>${project.osgi.version}</version>
+                    <version>${jaxws.majorVersion}.${jaxws.minorVersion}.${jaxws.incrementalVersion}</version>
                     <databinding>${ws.databinding}</databinding>
                     <transport>${ws.transport}</transport>
                     <extraVmArgs>${ws.jvmOpts}</extraVmArgs>

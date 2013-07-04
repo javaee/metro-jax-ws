@@ -101,7 +101,7 @@
                                             com.sun.xml.ws.transport.httpspi.servlet;version=${project.version}
                                         </Export-Package>
                                         <Import-Package>
-                                            com.sun.xml.ws.util;version=${jaxws-rt.version},
+                                            com.sun.xml.ws.util;version=${jaxws.osgiVersion},
                                             javax.annotation,
                                             javax.servlet;version=${servlet-api.version},
                                             javax.servlet.http;version=${servlet-api.version},
@@ -109,11 +109,11 @@
                                             javax.xml.stream,
                                             javax.xml.transform,
                                             javax.xml.transform.stream,
-                                            javax.xml.ws;version=${jaxws-api.version},
-                                            javax.xml.ws.http;version=${jaxws-api.version},
-                                            javax.xml.ws.soap;version=${jaxws-api.version},
-                                            javax.xml.ws.spi;version=${jaxws-api.version},
-                                            javax.xml.ws.spi.http;version=${jaxws-api.version}
+                                            javax.xml.ws;version=${jaxws-api.osgiVersion},
+                                            javax.xml.ws.http;version=${jaxws-api.osgiVersion},
+                                            javax.xml.ws.soap;version=${jaxws-api.osgiVersion},
+                                            javax.xml.ws.spi;version=${jaxws-api.osgiVersion},
+                                            javax.xml.ws.spi.http;version=${jaxws-api.osgiVersion}
                                         </Import-Package>
                                     </instructions>
                                 </configuration>

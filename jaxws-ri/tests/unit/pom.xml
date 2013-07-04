@@ -102,18 +102,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.sun.istack</groupId>
-                <artifactId>import-properties-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>import-pom-properties</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>1.0.1</version>
@@ -128,7 +116,19 @@
                             <rules>
                                 <requireProperty>
                                     <property>jaxb-api.version</property>
-                                    <message>Property not imported!</message>
+                                    <message>Property jaxb-api.version not imported or set!</message>
+                                </requireProperty>
+                                <requireProperty>
+                                    <property>saaj-api.version</property>
+                                    <message>Property saaj-api.version not imported or set!</message>
+                                </requireProperty>
+                                <requireProperty>
+                                    <property>jaxws-api.version</property>
+                                    <message>Property jaxws-api.version not imported or set!</message>
+                                </requireProperty>
+                                <requireProperty>
+                                    <property>javax.annotation-api.version</property>
+                                    <message>Property javax.annotation-api.version not imported or set!</message>
                                 </requireProperty>
                             </rules>
                             <fail>true</fail>

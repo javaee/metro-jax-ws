@@ -115,9 +115,9 @@
                                     javax.servlet.annotation;version=${servlet-api.version}, 
                                     javax.servlet.http;version=${servlet-api.version},
                                     javax.xml.namespace,
-                                    javax.xml.ws;version=${jaxws-api.version},
-                                    javax.xml.ws.http;version=${jaxws-api.version},
-                                    javax.xml.ws.spi;version=${jaxws-api.version},
+                                    javax.xml.ws;version=${jaxws-api.osgiVersion},
+                                    javax.xml.ws.http;version=${jaxws-api.osgiVersion},
+                                    javax.xml.ws.spi;version=${jaxws-api.osgiVersion},
                                     org.glassfish.external.probe.provider.annotations
                                 </Import-Package>
                             </instructions>

@@ -171,18 +171,6 @@
                 <artifactId>istack-commons-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>com.sun.istack</groupId>
-                <artifactId>import-properties-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>import-pom-properties</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>1.0.1</version>
@@ -344,14 +332,14 @@
                                     javax.xml.transform.sax,
                                     javax.xml.transform.stream,
                                     javax.xml.validation,
-                                    javax.xml.ws;version=${jaxws-api.version},
-                                    javax.xml.ws.handler;version=${jaxws-api.version},
-                                    javax.xml.ws.handler.soap;version=${jaxws-api.version},
-                                    javax.xml.ws.http;version=${jaxws-api.version},
-                                    javax.xml.ws.soap;version=${jaxws-api.version},
-                                    javax.xml.ws.spi;version=${jaxws-api.version},
-                                    javax.xml.ws.spi.http;version=${jaxws-api.version},
-                                    javax.xml.ws.wsaddressing;version=${jaxws-api.version},
+                                    javax.xml.ws;version=${jaxws-api.osgiVersion},
+                                    javax.xml.ws.handler;version=${jaxws-api.osgiVersion},
+                                    javax.xml.ws.handler.soap;version=${jaxws-api.osgiVersion},
+                                    javax.xml.ws.http;version=${jaxws-api.osgiVersion},
+                                    javax.xml.ws.soap;version=${jaxws-api.osgiVersion},
+                                    javax.xml.ws.spi;version=${jaxws-api.osgiVersion},
+                                    javax.xml.ws.spi.http;version=${jaxws-api.osgiVersion},
+                                    javax.xml.ws.wsaddressing;version=${jaxws-api.osgiVersion},
                                     org.glassfish.external.amx;version=${management-api.version},
                                     org.glassfish.gmbal;version=${gmbal-api.version},
                                     org.jvnet.mimepull;version=${mimepull.version},

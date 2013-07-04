@@ -131,18 +131,6 @@
                 <artifactId>istack-commons-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>com.sun.istack</groupId>
-                <artifactId>import-properties-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>import-pom-properties</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>1.0.1</version>
@@ -354,7 +342,7 @@
                                     javax.xml.transform.dom,
                                     javax.xml.transform.sax,
                                     javax.xml.transform.stream,
-                                    javax.xml.ws;version=${jaxws-api.version},
+                                    javax.xml.ws;version=${jaxws-api.osgiVersion},
                                     javax.xml.xpath,
                                     org.apache.tools.ant;optional=true,
                                     org.apache.tools.ant.taskdefs;optional=true,

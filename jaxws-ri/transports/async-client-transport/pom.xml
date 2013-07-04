@@ -92,26 +92,26 @@
                                     <instructions>
                                         <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
                                         <Export-Package>
-                                            com.sun.xml.ws.transport.async_client_transport;version=${project.osgi.version}
+                                            com.sun.xml.ws.transport.async_client_transport;version=${jaxws.osgiVersion}
                                         </Export-Package>
                                         <Import-Package>
-                                            com.oracle.webservices.api.message;version=${project.osgi.version},
-                                            com.sun.xml.ws.api;version=${project.osgi.version},
-                                            com.sun.xml.ws.api.addressing;version=${project.osgi.version},
-                                            com.sun.xml.ws.api.message;version=${project.osgi.version},
-                                            com.sun.xml.ws.api.model;version=${project.osgi.version},
-                                            com.sun.xml.ws.api.model.wsdl;version=${project.osgi.version},
-                                            com.sun.xml.ws.api.pipe;version=${project.osgi.version},
-                                            com.sun.xml.ws.api.pipe.helper;version=${project.osgi.version},
-                                            com.sun.xml.ws.api.server;version=${project.osgi.version},
-                                            com.sun.xml.ws.api.streaming;version=${project.osgi.version},
-                                            com.sun.xml.ws.binding;version=${project.osgi.version},
-                                            com.sun.xml.ws.developer;version=${project.osgi.version},
-                                            com.sun.xml.ws.util;version=${project.osgi.version},
+                                            com.oracle.webservices.api.message;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.api;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.api.addressing;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.api.message;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.api.model;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.api.model.wsdl;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.api.pipe;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.api.pipe.helper;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.api.server;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.api.streaming;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.binding;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.developer;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.util;version=${jaxws.osgiVersion},
                                             javax.xml.namespace,
                                             javax.xml.stream,
-                                            javax.xml.ws;version=${jaxws-api.version},
-                                            javax.xml.ws.handler;version=${jaxws-api.version}
+                                            javax.xml.ws;version=${jaxws-api.osgiVersion},
+                                            javax.xml.ws.handler;version=${jaxws-api.osgiVersion}
                                         </Import-Package>
                                     </instructions>
                                 </configuration>
