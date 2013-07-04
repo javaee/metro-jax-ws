@@ -97,7 +97,7 @@
 
     <properties>
         <!--todo: remove when we fix inheritance/import of plugin versions-->
-        <istack.version>2.18</istack.version>
+        <istack.version>2.19</istack.version>
         <!--************************************************************-->
 
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
