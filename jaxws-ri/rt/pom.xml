@@ -180,7 +180,7 @@
                         <goals>
                             <goal>enforce</goal>
                         </goals>
-                        <phase>compile</phase>
+                        <phase>validate</phase>
                         <configuration>
                             <rules>
                                 <requireProperty>
