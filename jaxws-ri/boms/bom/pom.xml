@@ -105,7 +105,7 @@
         <jaxb.version>2.2.8-b20130704.1801</jaxb.version>
         <jaxws-api.version>2.2.11</jaxws-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
-        <management-api.version>3.1.0-b001</management-api.version>
+        <management-api.version>3.2.1-b001</management-api.version>
         <mimepull.version>1.9.3</mimepull.version>
         <policy.version>2.3.1</policy.version>
         <resolver.version>20050927</resolver.version>
@@ -164,8 +164,9 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>management-api-sources</artifactId>
+                <artifactId>management-api</artifactId>
                 <version>${management-api.version}</version>
+                <classifier>sources</classifier>
             </dependency>
 
             <!-- Binary-->

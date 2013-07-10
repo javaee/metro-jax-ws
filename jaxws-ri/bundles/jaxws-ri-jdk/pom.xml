@@ -78,7 +78,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
-            <artifactId>management-api-sources</artifactId>
+            <artifactId>management-api</artifactId>
         </dependency>
 
         <!--changing scope to compile to be included into sources-->
