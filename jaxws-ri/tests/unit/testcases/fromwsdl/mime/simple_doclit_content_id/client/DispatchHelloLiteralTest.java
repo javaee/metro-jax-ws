@@ -38,7 +38,7 @@
  * holder.
  */
 
-package fromwsdl.mime.simple_doclit.client;
+package fromwsdl.mime.simple_doclit_content_id.client;
 
 import junit.framework.TestCase;
 import testutil.AttachmentHelper;
@@ -120,7 +120,7 @@ public class DispatchHelloLiteralTest extends TestCase {
     private String getDataDir() {
         String userDir = System.getProperty("user.dir");
         String sepChar = System.getProperty("file.separator");
-        return userDir + sepChar + "testcases/fromwsdl/mime/simple_doclit/resources/";
+        return userDir + sepChar + "testcases/fromwsdl/mime/simple_doclit_content_id/resources/";
     }
 
     private StreamSource getSampleXML() {

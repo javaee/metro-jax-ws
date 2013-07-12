@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    July 2003
+
+    (c) Copyright 2003, The Web Services-Interoperability Organization (WS-I)
+    Download or use of this file is governed by the Policies and Bylaws of WS-I.
+
+    For more information, send email info@ws-i.org.
+-->
+
+<wsdl:definitions
+    targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.wsdl" xmlns:wsi="http://ws-i.org/schemas/conformanceClaim/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:cat="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.wsdl"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    This WSDL document describes the Catalog service for the WS-I Basic Sample Application 1.1.
+  </wsdl:documentation>
+
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:import namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd"
+schemaLocation="Catalog.xsd"/>
+    </xs:schema>
+  </wsdl:types>
+
+    <wsdl:message name="testDataHandlerRequest">
+        <wsdl:part name="body" element="cat:testDataHandlerBody"/>
+        <wsdl:part name="attachIn" type="xs:string"/>
+    </wsdl:message>
+
+    <wsdl:message name="testDataHandlerResponse">
+        <wsdl:part name="attachOut" type="xs:string"/>
+    </wsdl:message>
+
+  <wsdl:portType name="CatalogPortType">
+    <wsdl:operation name="testDataHandler">
+      <wsdl:input name="testDataHandlerRequest" message="tns:testDataHandlerRequest"/>
+      <wsdl:output name="testDataHandlerResponse" message="tns:testDataHandlerResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:binding name="CatalogSoapBinding" type="tns:CatalogPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="testDataHandler">
+        <soap:operation/>
+        <wsdl:input>
+            <mime:multipartRelated>
+                <mime:part>
+                      <mime:content part="attachIn" type="application/xml"/>
+                      <mime:content part="attachIn" type="text/xml"/>
+                </mime:part>
+                 <mime:part>
+                  <soap:body parts="body" use="literal"/>
+                </mime:part>
+            </mime:multipartRelated>
+        </wsdl:input>
+
+        <wsdl:output>
+          <mime:multipartRelated>
+            <mime:part>
+              <soap:body parts="" use="literal"/>
+            </mime:part>
+            <mime:part>
+              <mime:content part="attachOut" type="text/xml"/>
+              <mime:content part="attachOut" type="application/xml"/>
+            </mime:part>
+          </mime:multipartRelated>
+        </wsdl:output>
+      </wsdl:operation>
+
+  </wsdl:binding>
+  <service name="CatalogService">
+    <port name="CatalogPort" binding="tns:CatalogSoapBinding">
+      <soap:address location="http://localhost/rpcendpoint/TestService"/>
+    </port>
+  </service>
+</wsdl:definitions>
+<!-- The following is an example of a getCatalog SOAP request message compliant with the above WSDL:
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<GetCatalogWithImages xmlns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd">
+</GetCatalogWithImages>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+The following is an example of a getCatalogWithImages SOAP response message compliant with the above WSDL:
+
+MIME-Version 1.0
+Content-Type: Multipart/Related; boundary=MIME_boundary; type=text/xml; start="<soapbody.scm11@ws-i.org>"
+
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: text/xml; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Content-ID: <soapbody.scm11@ws-i.org>
+
+<?xml version='1.0' ?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<ProductCatalog xmlns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd">
+  <Product>
+    <Name>TV,Brand1</Name>
+    <Description>24", Color, Advanced Velocit Scan Modular</Description>
+    <ProductNumber>605001</ProductNumber>
+    <Category>TV</Category>
+    <Brand>Brand1</Brand>
+    <Price>299.95</Price>
+    <Thumbnail>cid:605001_small.jpeg</Thumbnail>
+  </Product>
+  <Product>
+    <Name>TV, Brand2</Name>
+    <Description>32", Super Slim Flat Panel Plasma</Description>
+    <ProductNumber>605002</ProductNumber>
+    <Category>TV</Category>
+    <Brand>Brand2</Brand>
+    <Price>1499.99</Price>
+    <Thumbnail>cid:605002_small.jpeg</Thumbnail>
+  </Product>
+</ProductCatalog>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: image/jpeg
+Content-Transfer-Encoding: binary
+Content-ID: <605001_small.jpeg>
+
+... binary GIF image ...
+
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: image/jpeg
+Content-Transfer-Encoding: binary
+Content-ID: <605002_small.jpeg>
+
+... binary JPEG image ...
+
+
+The following is an example of a getProductDetails SOAP request message compliant with the above WSDL:
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<GetProductDetails xmlns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd">
+  <ProductNumber>605001</ProductNumber>
+</GetProductDetails>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+The following is an example of a Product Details SOAP response message that is compliant with the WSDL:
+
+MIME-Version 1.0
+Content-Type: Multipart/Related; boundary=MIME_boundary; type=text/xml; start="<soapbody.scm11@ws-i.org>"
+
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: text/xml; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Content-ID: <soapbody.scm11@ws-i.org>
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+<SOAP-ENV:Body>
+<ProductDetails xmlns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd">
+  <Weight>24.6</Weight>
+  <WeightUnit>pounds</WeightUnit>
+  <Dimensions>
+    <Height>26</Height>
+    <Width>24</Width>
+    <Depth>21</Depth>
+  </Dimensions>
+  <DimensionUnit>inches</DimensionUnit>
+  <Picture>cid:605001_big.jpeg@ws-i.org</Picture>
+  <SpecSheet>cid:605001_specs.xml@ws-i.org</SpecSheet>
+</ProductDetails>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: image/jpeg
+Content-Transfer-Encoding: binary
+Content-ID: <605001_big.jpeg@ws-i.org>
+
+... binary JPEG image ...
+-MIME_boundary         <== suposed to have a double dash
+Content-Type: text/xml
+Content-Transfer-Encoding: binary
+Content-ID: <605001_specs.xml@ws-i.org>
+
+... XML version of spec sheet ...
+-MIME_boundary         <== suposed to have a double dash
+-->
+
