@@ -1,6 +1,7 @@
 COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
 
 
+
       1. Definitions.
 
             1.1. "Contributor" means each individual or entity that
