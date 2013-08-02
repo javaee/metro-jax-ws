@@ -228,7 +228,8 @@
 
     <target name="copy-woodstox-libs" description="Copies parser into distribution jars" if="woodstox">
         <copy todir="${build.home}/lib">
-            <fileset dir="${lib.home}/" includes="woodstox.jar, stax2-api.jar"/>
+            <fileset dir="${lib.home}/" includes="woodstox.jar"/>
+            <fileset dir="${lib.home}/" includes="stax2-api.jar"/>
         </copy>
     </target>
 
