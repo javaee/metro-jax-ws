@@ -3,7 +3,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2013 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -226,14 +226,13 @@
         </jar>
     </target>
 
-    <target name="copy-woodstox-libs" description="Copies woodstox.jar into distribution jars" if="woodstox">
+    <target name="copy-woodstox-libs" description="Copies parser into distribution jars" if="woodstox">
         <copy todir="${build.home}/lib">
-            <fileset dir="${lib.home}/"
-                     includes="woodstox.jar"/>
+            <fileset dir="${lib.home}/" includes="woodstox.jar, stax2-api.jar"/>
         </copy>
     </target>
 
-    <target name="copy-sjsxp-libs" description="Copies woodstox.jar into distribution jars" unless="woodstox">
+    <target name="copy-sjsxp-libs" description="Copies parser into distribution jars" unless="woodstox">
         <copy todir="${build.home}/lib">
             <fileset dir="${lib.home}/"
                      includes="sjsxp.jar"/>
