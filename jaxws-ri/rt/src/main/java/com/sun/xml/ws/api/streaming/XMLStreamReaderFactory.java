@@ -42,6 +42,7 @@ package com.sun.xml.ws.api.streaming;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.streaming.XMLInputFactoryPropertiesConfig;
 import com.sun.xml.ws.streaming.XMLReaderException;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.xml.sax.InputSource;
@@ -116,6 +117,8 @@ public abstract class XMLStreamReaderFactory {
         xif.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);
         xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         xif.setProperty(XMLInputFactory.IS_COALESCING, true);
+        XMLInputFactoryPropertiesConfig.configXMLInputFactory(xif);
+        
         return xif;
     }
 
