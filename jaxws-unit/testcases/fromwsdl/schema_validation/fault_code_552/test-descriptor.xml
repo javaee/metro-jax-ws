@@ -1,0 +1,51 @@
+<descriptor since="2.2" uses="ri">
+  <description>Schema Validaiton fromwsdl tests</description>
+  <service basedir="./server">
+    <wsdl href="AddNumbers.wsdl"/>
+  </service>
+
+  <client name="fromwsdl.schema_validation.fault_code_552.doclit1">
+    <description>Server should return correct faultCode </description>
+    <![CDATA[
+      import java.lang.reflect.Proxy;
+      import java.io.*;
+      import testutil.ClientServerTestUtil;
+      import testutil.HTTPResponseInfo;
+      import javax.xml.soap.*;
+      import javax.xml.namespace.QName;
+      import javax.xml.ws.soap.*;
+
+      message = "<S:Envelope xmlns:S='http://schemas.xmlsoap.org/soap/envelope/'><S:Body><addNumbers xmlns='http://duke.example.org'><arg0>12345</arg0><arg1>0</arg1></addNumbers></S:Body></S:Envelope>";
+
+      portName = new QName("http://duke.example.org", "AddNumbersPort");
+      dispatch = addNumbersService.createDispatch(portName,
+        SOAPMessage.class, Service.Mode.MESSAGE);
+      messageFactory = MessageFactory.newInstance();
+      headers = new MimeHeaders();
+      headers.addHeader("Content-Type", "text/xml");
+      soapMsg = messageFactory.createMessage(headers, new ByteArrayInputStream(message.getBytes()));
+      try {
+        soapMsg = dispatch.invoke(soapMsg);
+        fail("Should have generated schema validation fault");
+      } catch(Exception e) {
+        assertTrue(e instanceof SOAPFaultException);
+	got = e.getFault().getFaultCodeAsQName();
+	exp = new QName("http://schemas.xmlsoap.org/soap/envelope/", "Client");
+        assertEquals(exp, got);
+        
+        // want to make sure that correct stack trace is sent
+        // cvc-totalDigits-valid: Value '12345' has 5 total digits, but the number of total digits has been limited to 4.
+        sax = false;
+        while(e != null) {
+          if (e.getMessage() != null && e.getMessage().startsWith("cvc-totalDigits-valid")) {
+             sax = true;
+             break;
+          }
+          e = e.getCause();
+        }
+        assertEquals(true, sax);
+      }
+    ]]>
+  </client>
+
+</descriptor>

@@ -1,0 +1,4 @@
+<descriptor since="2.2.2" uses="ri" bugs="6947743">
+  <description>Tests Serializability of JAX-WS RI runtime exceptions </description>
+
+</descriptor>

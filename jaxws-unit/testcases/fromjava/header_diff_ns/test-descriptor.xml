@@ -1,0 +1,13 @@
+<descriptor transport="http">
+  <description>Testcase for issue 733: header under different namespace</description>
+
+  <client name="header_diff_ns_test" sideEffectFree="true">
+  <description>testHeaderinDiffNS</description>
+  <![CDATA[
+
+  ]]></client>
+    
+  <service basedir="./server">    
+  </service>
+
+</descriptor>

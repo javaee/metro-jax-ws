@@ -1,0 +1,152 @@
+<definitions
+  name="HelloTest"
+  targetNamespace="urn:test"
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:types="urn:test:types"
+  xmlns:tns="urn:test">
+
+  <types>
+     <xsd:schema>
+          <xsd:import namespace="urn:test:types" schemaLocation="hello.xsd"/>
+     </xsd:schema>
+  </types>
+
+  <message name="HelloRequest">
+    <part name="parameters" element="types:Hello"/>
+    <part name="header" element="types:Hello"/>
+  </message>
+
+  <message name="HelloResponse">
+    <part name="parameters" element="types:HelloResponse"/>
+  </message>
+
+  <message name="MarshallTest_voidTest">
+    <part name="parameters" element="types:VoidTest"/>
+  </message>
+
+  <message name="MarshallTest_voidTestResponse">
+    <part name="result" element="types:VoidTestResponse"/>
+  </message>
+
+  <message name="echoArrayRequest">
+    <part name="body" element="types:echoArray"/>
+  </message>
+
+  <message name="echoArrayResponse">
+    <part name="body" element="types:echoArray"/>
+  </message>
+
+  <message name="echoArrayRequest1">
+    <part name="body" element="types:echoArray1"/>
+  </message>
+
+  <message name="echoArrayResponse1">
+    <part name="body" element="types:echoArray1"/>
+  </message>
+
+<message name="echoArrayRequest2">
+    <part name="body" element="types:echoArray2"/>
+  </message>
+
+  <message name="echoArrayResponse2">
+    <part name="body" element="types:echoArray2"/>
+  </message>
+
+  <portType name="Hello">
+    <operation name="hello">
+      <input message="tns:HelloRequest"/>
+      <output message="tns:HelloResponse"/>
+    </operation>
+
+    <!-- this is a regression test for bug 4823861 -->
+    <operation name="voidTest">
+      <input message="tns:MarshallTest_voidTest"/>
+      <output message="tns:MarshallTest_voidTestResponse"/>
+    </operation>
+
+
+    <operation name="echoArray">
+      <input message="tns:echoArrayRequest"/>
+      <output message="tns:echoArrayResponse"/>
+    </operation>
+
+    <operation name="echoArray1">
+      <input message="tns:echoArrayRequest1"/>
+      <output message="tns:echoArrayResponse1"/>
+    </operation>
+
+    <operation name="echoArray2">
+      <input message="tns:echoArrayRequest2"/>
+      <output message="tns:echoArrayResponse2"/>
+    </operation>
+    
+
+  </portType>
+
+  <binding name="HelloBinding" type="tns:Hello">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="hello">
+      <soap:operation soapAction="urn:test:hello"/>
+      <input>
+        <soap:body parts="parameters" use="literal"/>
+        <soap:header message="tns:HelloRequest" part="header" use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="voidTest">
+      <input>
+        <soap:body use="literal"/></input>
+      <output>
+        <soap:body use="literal"/></output>
+      <soap:operation soapAction=""/>
+    </operation>
+
+    <operation name="echoArray">
+      <soap:operation soapAction="urn:test:hello"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body parts="" use="literal"/>
+      </output>
+    </operation>
+
+    <operation name="echoArray1">
+      <soap:operation soapAction="urn:test:hello"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body parts="" use="literal"/>
+        <soap:header message="tns:echoArrayResponse1" part="body" use="literal"/>
+      </output>
+    </operation>
+
+    <operation name="echoArray2">
+      <soap:operation soapAction="urn:test:hello"/>
+      <input>
+        <soap:body parts="" use="literal"/>
+        <soap:header message="tns:echoArrayRequest2" part="body" use="literal"/>
+      </input>
+      <output>
+        <soap:body parts="" use="literal"/>
+        <soap:header message="tns:echoArrayResponse2" part="body" use="literal"/>
+      </output>
+    </operation>
+
+  </binding>
+
+  <service name="Hello">
+    <port name="HelloPort" binding="tns:HelloBinding">
+      <soap:address location="http://test.org/hello"/>
+    </port>
+    <port name="HelloAsyncPort" binding="tns:HelloBinding">
+      <soap:address location="http://test.org/hello"/>
+    </port>
+  </service>
+
+</definitions>

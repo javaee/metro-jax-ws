@@ -1,0 +1,8 @@
+<descriptor since="2.1.5" uses="ri">
+  <description>custom_jaxbcontext</description>
+    
+  <service basedir="./server">
+    <wsdl href="EchoImplService.wsdl"/>
+  </service>
+
+</descriptor>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <!--
+    test descriptor
+      Holds information necessary for the test harness to run one specific test.
+    
+    Simple example descriptor file:
+    
+    <descriptor>
+       <description>this is a very useful test that tests stuff</description>
+       <client href="foo.bsh" since="2.0"/>
+       <service basedir=".">
+           <wsdl href="test.wsdl"/>
+       </service>
+    </despcriptor>
+    
+    
+  -->
+  <xs:element name="descriptor">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="description"/>
+        <xs:element ref="client"/>
+        <xs:element ref="service"/>
+        <xs:element ref="sts"/>
+      </xs:choice>
+      <xs:attributeGroup ref="versionAttributes"/>
+      <xs:attribute name="transport">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="http"/>
+            <xs:enumeration value="local"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="client">
+    <xs:complexType mixed="true">
+      <xs:attribute name="href"/>
+      <xs:attributeGroup ref="versionAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="service">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="wsdl"/>
+      </xs:sequence>
+      <xs:attribute name="basedir"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="wsdl">
+    <xs:complexType>
+      <xs:attribute name="href" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sts">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="wsdl"/>
+      </xs:sequence>
+      <xs:attribute name="basedir"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    'versionAttributes' pattern is set of attributes that control
+      applicability of a test
+    
+  -->
+  <xs:attributeGroup name="versionAttributes">
+    <xs:attribute name="since" type="version"/>
+    <xs:attribute name="until" type="version"/>
+    <xs:attribute name="excludeFrom"/>
+  </xs:attributeGroup>
+  <!--
+    version number
+      in the future consider enumeration
+    
+  -->
+  <xs:simpleType name="version">
+    <xs:restriction base="xs:token"/>
+  </xs:simpleType>
+</xs:schema>

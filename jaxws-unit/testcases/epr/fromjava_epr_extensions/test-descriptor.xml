@@ -1,0 +1,6 @@
+<descriptor since="2.2" uses="ri" transport="http">
+    <!-- Not run in local transport, as WSDL filters run during WSDL publshing are not run in In-vm container -->
+    <description>Starting from Java, Tests pluugability of EndpointReferenceExtensionContributor andd acess of extensions on server/client</description>
+    <service basedir="./server"/>        
+</descriptor>
+

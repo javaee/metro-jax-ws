@@ -1,0 +1,85 @@
+<definitions
+        name="HelloTest"
+        targetNamespace="urn:test"
+        xmlns="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:types="urn:test:types"
+        xmlns:itypes="urn:test:importedtypes"
+        xmlns:ws="http://www.w3.org/2005/08/addressing"
+        xmlns:tns="urn:test">
+
+    <types>
+        <xsd:schema
+                targetNamespace="urn:test:types"
+                attributeFormDefault="unqualified"
+                elementFormDefault="unqualified">
+
+            <xsd:import namespace="http://www.w3.org/2005/08/addressing" schemaLocation="http://www.w3.org/2006/03/addressing/ws-addr.xsd"/>
+            <xsd:import namespace="urn:test:importedtypes" schemaLocation="hello.xsd"/>
+
+            <xsd:element name="hello" type="types:ReqType" />
+            <xsd:element name="helloResponse" type="itypes:ImportedResType" />
+
+            <xsd:complexType name="ReqType">
+                <xsd:sequence>
+                    <xsd:element name="epr" type="ws:EndpointReferenceType"/>
+                    <xsd:element name="subepr" type="types:SubType"/>
+                    <xsd:element name="subsubepr" type="types:SubSubType"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="SubType">
+                 <xsd:complexContent>
+                      <xsd:extension base="ws:EndpointReferenceType">
+                           <xsd:attribute name="updateType" type="xsd:anyURI" use="optional"/>
+                      </xsd:extension>
+                 </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:complexType name="SubSubType">
+                 <xsd:complexContent>
+                      <xsd:extension base="types:SubType">
+                           <xsd:attribute name="updateSubType" type="xsd:anyURI" use="optional"/>
+                      </xsd:extension>
+                 </xsd:complexContent>
+            </xsd:complexType>
+
+        </xsd:schema>
+    </types>
+
+    <message name="HelloRequest">
+        <part name="parameters" element="types:hello"/>
+    </message>
+
+    <message name="HelloResponse">
+        <part name="parameters" element="types:helloResponse"/>
+    </message>
+
+    <portType name="Hello">
+        <operation name="hello">
+            <input message="tns:HelloRequest"/>
+            <output message="tns:HelloResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="HelloBinding" type="tns:Hello">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="hello">
+            <soap:operation soapAction="urn:test:hello"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>      
+    </binding>
+
+    <service name="Hello">
+        <port name="HelloPort" binding="tns:HelloBinding">
+            <soap:address location="http://test.org/hello"/>
+        </port>
+    </service>
+
+</definitions>

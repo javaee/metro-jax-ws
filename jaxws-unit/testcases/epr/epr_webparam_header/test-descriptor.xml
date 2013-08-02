@@ -1,0 +1,6 @@
+<descriptor since="2.2" bugs="JAX-WS-804">
+    <description>This is a fromwsdl test with EPR as webparam in body and header</description>
+    <service basedir="./server">
+        <wsdl href="TestService.wsdl"/>
+    </service>
+</descriptor>

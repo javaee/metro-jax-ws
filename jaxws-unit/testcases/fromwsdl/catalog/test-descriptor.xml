@@ -1,0 +1,31 @@
+<descriptor since="2.1.7" >
+    <description>This is a fromwsdl SOAP 1.2 very basic doclit tests tests</description>
+    <service basedir="./server">
+        <wsdl href="hello.wsdl"/>
+    </service>
+
+    <client name="test1">
+        import javax.xml.ws.handler.MessageContext;
+        // http://localhost:8080/fromwsdl.catalog.server/HelloImpl
+        String originalAddress = (String) ((BindingProvider)helloPort).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+
+        //now make catalog effective and get dummy address from the resolved wsdl
+        Hello_Service newService = new Hello_Service(new URL("http://example.com/fromwsdl.catalog.server/HelloImpl?wsdl"),new QName("urn:test","Hello"));
+        Hello newPort = newService.getHelloPort();
+        String newAddress = (String) ((BindingProvider)newPort).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+        //Make sure the catalog was effective
+        assertEquals("http://example.com/service",newAddress);
+
+        //reset the address to original working address
+        ((BindingProvider)newPort).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,originalAddress);
+        arg = "foo";
+        extra = "bar";
+        req = new Hello_Type();
+        req.setArgument(arg);
+        req.setExtra(extra);
+        response = newPort.hello(req);
+        assertEquals(arg, response.getArgument());
+        assertEquals(extra, response.getExtra());
+        
+    </client>
+</descriptor>

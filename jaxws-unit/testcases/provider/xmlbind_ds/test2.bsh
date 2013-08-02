@@ -1,0 +1,6 @@
+service = Service.create(serviceQName);
+service.addPort(portQName, SOAPBinding.SOAP11HTTP_BINDING, helloPortAddress.toString());
+dispatch = service.createDispatch(portQName, SOAPMessage.class, Service.Mode.MESSAGE);
+message = getSOAPMessage();
+result = dispatch.invoke(message);
+assertTrue(result instanceof SOAPMessage);

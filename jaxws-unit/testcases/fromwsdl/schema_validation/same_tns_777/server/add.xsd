@@ -1,0 +1,14 @@
+<xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified" xmlns:tns="urn:ns:2"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="urn:ns:2">
+
+    <complexType name="addNumbers">
+        <sequence>
+            <element name="arg0" type="tns:myint"/>
+            <element name="arg1" type="tns:myint"/>
+        </sequence>
+    </complexType>
+    <element name="addNumbers" type="tns:addNumbers"/>
+
+</xsd:schema>

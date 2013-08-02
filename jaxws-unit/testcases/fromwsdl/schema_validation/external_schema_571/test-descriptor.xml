@@ -1,0 +1,7 @@
+<descriptor since="2.2" uses="ri">
+    <description>Schema Validaiton using separate schema file</description>
+
+    <service basedir="./server">
+        <wsdl href="AddNumbers.wsdl"/>
+    </service>
+</descriptor>

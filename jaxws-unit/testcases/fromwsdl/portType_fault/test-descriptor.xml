@@ -1,0 +1,37 @@
+<descriptor since="2.2" bugs="jax-ws-736">
+    <description>This is a from wsdl fault test where portType and binding faults does not match</description>
+    <client name="fromwsdl.portType_fault1">
+        <description>
+            test nulls in fault bean
+        </description>
+        try{
+            in = "nullBean";
+            faultPort.echo(in);
+            assertTrue(false);
+        }catch(Fault2Exception e){
+            assertTrue(e.getFaultInfo() == null);
+        }
+    </client>
+
+    <client name="fromwsdl.portType_fault4">
+        <description>
+            test WSDL defined Fault4
+        </description>
+        try {
+            in = "Fault4";
+            ret = faultPort.echo(in);
+            fail("did not receive an exception");
+        } catch (Fault4Exception e) {
+            System.out.println("Expected exception received: " + e.getMessage());
+            Fault4 faultbean = e.getFaultInfo();
+            assertEquals(faultbean.getMessage(),"fault4");
+        }
+    </client>
+
+
+    <client href="dispatch.bsh"/>
+    
+    <service basedir="./server">
+        <wsdl href="fault.wsdl"/>
+    </service>
+</descriptor>

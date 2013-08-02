@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+skipping this test since we need to pass file.encoding
+system property
+-->
+<descriptor since="2.1.5" skip="true">
+    <wsimport-client>-p customization.内容.client</wsimport-client>
+    <description>Testcase for issue 397</description>
+    <service basedir="./server">
+        <wsdl href="custom.wsdl"/>
+    </service>
+    <client name="test1">
+        Hello_Type hello = new Hello_Type();
+        hello.setArgument("Hello");
+        hello.setExtra("Works");
+        HelloOutput result = helloPort.sayHello(hello);
+        //System.out.println(result.getArgument());
+        //System.out.println(result.getExtra());
+        assertEquals(result.getArgument(), "Hello World!");
+        assertEquals(result.getExtra(), "Works Fine!");
+
+    </client>
+</descriptor>

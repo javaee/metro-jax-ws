@@ -1,0 +1,57 @@
+<definitions
+        targetNamespace="http://www.abc.com/HelloService"
+        xmlns:tns="http://www.abc.com/HelloService"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns="http://schemas.xmlsoap.org/wsdl/"
+        >
+
+    <types>
+
+        <xs:schema targetNamespace="http://www.abc.com/HelloService">
+            <xs:include schemaLocation="HelloService.xsd"/>
+        </xs:schema>
+
+    </types>
+
+    <message name="getAllGuestNames">
+        <part element="tns:getAllGuestNames" name="body"/>
+    </message>
+    <message name="getAllGuestNamesResponse">
+        <part element="tns:getAllGuestNamesResponse" name="body"/>
+    </message>
+
+    <portType name="HelloServicePortType">
+
+        <operation name="getAllGuestNames">
+            <input message="tns:getAllGuestNames"/>
+            <output message="tns:getAllGuestNamesResponse"/>
+        </operation>
+
+    </portType>
+
+    <binding name="HelloServiceSoapBinding" type="tns:HelloServicePortType">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <operation name="getAllGuestNames">
+            <soap:operation
+                    soapAction="http://www.abc.com/HelloService/getAllGuestNames"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+    </binding>
+
+    <service name="HelloService">
+        <port binding="tns:HelloServiceSoapBinding" name="HelloServicePort">
+            <soap:address
+                    location="http://localhost:8080/soap/servlet/rpcrouter"/>
+        </port>
+    </service>
+
+</definitions>

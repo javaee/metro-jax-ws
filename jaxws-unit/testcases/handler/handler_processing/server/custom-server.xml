@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings wsdlLocation="service.wsdl" xmlns="http://java.sun.com/xml/ns/jaxws">
+  <!-- am mixing soap and logical handlers here -->
+  <bindings>
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <port-name-pattern xmlns:ns2="urn:test">ns2:TestService*</port-name-pattern>
+        <handler>
+          <handler-class>handler.handler_processing.common.ServerSOAPHandler2</handler-class>
+          <init-param>
+            <param-name>foo</param-name>
+            <param-value>ignored</param-value>
+          </init-param>
+        </handler>
+      </handler-chain>
+      <handler-chain>
+        <port-name-pattern xmlns:ns2="urn:test">ns2:ReportService*</port-name-pattern>
+        <handler>
+          <handler-class>handler.handler_processing.common.ServerSOAPHandler3</handler-class>
+        </handler>
+      </handler-chain>
+      <handler-chain>
+        <handler>
+          <handler-class>handler.handler_processing.common.ServerLogicalHandler0</handler-class>
+        </handler>
+      </handler-chain>
+      <handler-chain>
+        <handler>
+          <handler-class>handler.handler_processing.common.ServerSOAPHandler4</handler-class>
+          <soap-role>http://sun.com/server/role1</soap-role>
+          <soap-role>http://sun.com/server/role2</soap-role>
+        </handler>
+      </handler-chain>
+      <handler-chain>
+        <port-name-pattern xmlns:ns2="urn:test">ns2:TestService*</port-name-pattern>
+        <handler>
+          <handler-class>handler.handler_processing.common.ServerLogicalHandler1</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </bindings>
+
+</bindings>

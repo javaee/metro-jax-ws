@@ -1,0 +1,48 @@
+<descriptor since="2.1.3">
+  <description>Asynchronous fault handling with doc/lit</description>
+  <service basedir="./server">
+    <wsdl href="hello_test.wsdl" />
+  </service>
+  <pre-client>
+    req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
+
+    // wait for the completion of the requets
+    block(response) {
+      System.out.print("\npolling for response ...");
+      while (!response.isDone())
+        Thread.yield();
+    }
+  </pre-client>
+  <client name="async.doclit.fault1"><![CDATA[
+    try{
+        helloPort.hello(req);
+        assertNull(response.get());
+    } catch(Exception e){
+        System.out.println("e is " + e.getClass().getName());
+        assertTrue(e instanceof HelloFault);
+    }
+  ]]></client>
+  <client name="async.doclit.fault2"><![CDATA[
+    try{
+      block(helloPort.helloAsync(req));
+    } catch(Exception e){
+      assertTrue(e instanceof ExecutionException);
+      assertTrue(e.getCause() instanceof HelloFault);
+    }
+  ]]></client>
+  <client name="async.doclit.fault3"><![CDATA[
+    handler = new HelloCallbackHandler();
+    response = helloPort.helloAsync(req, handler);
+    block(response);
+    assertTrue(handler.correctException);
+  ]]></client>
+  <client name="async.doclit.fault4" since="2.1.4"><![CDATA[
+    handler = new HelloCallbackHandler();
+    response = helloPort.helloAsync(req, handler);
+    block(response);
+    assertTrue(handler.correctException);
+    assertEquals(1, handler.noTimes);
+  ]]></client>
+</descriptor>

@@ -1,0 +1,293 @@
+<descriptor since="2.0">
+  <description>nosei</description>
+
+  <client name="nosei_testEnum" sideEffectFree="true">
+  <description>testEnum</description>
+  <![CDATA[
+    assertEquals(null, echoPort.echoBook(null));
+    assertEquals(Book.JWSDP, echoPort.echoBook(Book.JWSDP));
+    assertEquals(null, echoPort.echoStatus(null));
+    assertEquals(Status.YELLOW, echoPort.echoStatus(Status.YELLOW));
+    echoPort.setColor(Color.RED);
+    assertEquals(Color.RED, echoPort.getColor());
+  ]]></client>
+
+  <client name="nosei_testGenerics" sideEffectFree="true">
+  <![CDATA[
+    GenericValue var = new GenericValue();
+    var.setValue("fred");
+    assertEquals(null, echoPort.echoGenericString(null));        
+    assertEquals("fred&john", echoPort.echoGenericString(var).getValue());
+    var.setValue(33);
+    assertEquals(null, echoPort.echoGenericInteger(null));        
+    assertEquals(33, echoPort.echoGenericInteger(var).getValue());
+    assertEquals(66, echoPort.echoGenericObject(new Integer(66)));   
+    assertEquals(null, echoPort.echoGenericObject(null));        
+    assertEquals("bill", echoPort.echoGenericObject("bill"));   
+
+    Bar bar = new Bar();
+    bar.setAge(33);
+    assertEquals(bar.getAge(), echoPort.echoGenericBar(bar).getAge());
+    Bar bar2 = new Bar();
+    bar2.setAge(44);
+
+    barArray = new ArrayList();
+    assertEquals(0, echoPort.echoBarList(barArray).size());
+
+    barArray.add(bar);
+    barArray.add(bar2);
+    resultArray = echoPort.echoBarList(barArray);
+    assertEquals(2, resultArray.size());
+    assertEquals(bar.getAge(), resultArray.get(0).getAge());
+    assertEquals(bar2.getAge(), resultArray.get(1).getAge());
+
+    objList = new ArrayList();
+    assertEquals(null, echoPort.echoTList(objList));
+    objList.add(bar);
+    objList.add(bar2);
+    assertEquals(bar.getAge(), ((Bar)echoPort.echoTList(objList)).getAge());
+
+    resultArray = echoPort.echoWildcardBar(barArray);
+    assertEquals(2, resultArray.size());
+    assertEquals(bar.getAge(), resultArray.get(0).getAge());
+    assertEquals(bar2.getAge(), resultArray.get(1).getAge());
+        
+  ]]></client>
+
+  <client name="nosei_testSimple" sideEffectFree="true">
+  <![CDATA[
+    Bar bar = new Bar();
+    bar.setAge(33);
+
+    assertEquals(null, echoPort.echoString(null));
+    assertEquals("test", echoPort.echoString("test"));
+    assertEquals("Mary & Paul", echoPort.echoString("Mary & Paul"));
+
+    assertEquals(null, echoPort.echoBar(null));
+    assertEquals(bar.getAge(), echoPort.echoBar(bar).getAge());
+
+    assertEquals(33L, echoPort.echoLong(33L));
+  ]]></client>
+
+  <client name="nosei_testException" sideEffectFree="true">
+  <![CDATA[
+    try {
+      echoPort.echoString("Exception1");
+      fail("Exception1");
+    } catch (Exception1_Exception e){
+      Exception1 ex = e.getFaultInfo();
+      assertEquals("my exception1", ex.getFaultString());
+      assertTrue(ex.isValid());
+    }
+    try {
+      echoPort.echoString("Fault1");
+      fail("Fault1");
+    } catch (Fault1 e){
+      FooException ex = e.getFaultInfo();
+      assertEquals("fault1", e.getMessage());
+      assertEquals(44F, ex.getVarFloat());
+      assertEquals(33, ex.getVarInt());
+      assertEquals("foo", ex.getVarString());
+    }
+    try {
+      echoPort.echoString("WSDLBarException");
+      fail("WSDLBarException");
+    } catch (WSDLBarException e){
+      Bar ex = e.getFaultInfo();
+      assertEquals("my barException", e.getMessage());
+      assertEquals(33, ex.getAge());
+    }
+    try {
+      echoPort.echoString("Fault2");
+      fail("Fault2");
+    } catch (Fault2_Exception e){
+      assertEquals("my fault2", e.getMessage());
+      Fault2 fault2 = e.getFaultInfo();
+      assertEquals(33, fault2.getAge());
+      assertEquals("myzing", fault2.getZing());
+    }
+    try {
+      echoPort.echoString("GenericException");
+      fail("GenericException");
+    } catch (GenericException_Exception e){
+      GenericException ex = e.getFaultInfo();
+      assertEquals("my genericException", ex.getMessage());
+      assertEquals(33, ex.getAge().value);
+      assertEquals(44, ex.getObject().getAge());
+      assertEquals(33, ex.getBarList().get(0).getAge());
+    }
+    try {
+      echoPort.echoString("RemoteException");
+      fail("RemoteException");
+    } catch (SOAPFaultException ex) {
+      assertEquals("my remote exception", ex.getMessage());
+    }
+  ]]></client>
+
+  <client name="nosei_testHolder" sideEffectFree="true">
+  <![CDATA[
+    strHolder = new Holder();
+    strHolder.value = "fred";
+
+    assertEquals(null, echoPort.outString(null, 44, strHolder));
+    assertEquals("tmp", echoPort.outString("tmp", 44, strHolder));
+    assertEquals("tmp44", strHolder.value);
+
+    assertEquals(null, echoPort.inOutString(null, strHolder, 44));
+    strHolder.value = "fred";
+    assertEquals("tmp", echoPort.inOutString("tmp", strHolder, 44));
+    assertEquals("fredfred", strHolder.value);
+
+    longHolder = new Holder();
+    assertEquals(33, echoPort.outLong(33, null, longHolder));
+    assertEquals(33, echoPort.outLong(33, "tmp", longHolder));
+
+    assertEquals(345L, longHolder.value);
+    assertEquals(44, echoPort.inOutLong(44, longHolder, "tmp"));
+    assertEquals(690L, longHolder.value);
+    assertEquals(44, echoPort.inOutLong(44, longHolder, null));
+  ]]></client>
+
+  <client name="nosei_testHeaders" sideEffectFree="true">
+  <![CDATA[
+    EchoInHeader echoInHeader = new EchoInHeader();
+    echoInHeader.setArg0(33);
+    echoInHeader.setArg2("fred");
+    EchoInHeaderResponse echoInHeaderResp = echoPort.echoInHeader(echoInHeader, 34L);
+    assertEquals(34L, echoInHeaderResp.getReturn());
+
+    echoInHeader.setArg0(33);
+    echoInHeader.setArg2(null);
+    echoInHeaderResp = echoPort.echoInHeader(echoInHeader, 34L);
+    assertEquals(34L, echoInHeaderResp.getReturn());
+        
+    EchoIn2Header echoIn2Header = new EchoIn2Header();
+    echoIn2Header.setArg0(33);
+    echoIn2Header.setArg3("fred");
+    EchoIn2HeaderResponse echoIn2HeaderResp = echoPort.echoIn2Header(echoIn2Header, 34L, "dirk");
+    assertEquals(34L, echoIn2HeaderResp.getReturn());
+
+    echoIn2Header = new EchoIn2Header();
+    echoIn2Header.setArg0(33);
+    echoIn2Header.setArg3(null);
+    echoIn2HeaderResp = echoPort.echoIn2Header(echoIn2Header, 34L, "dirk");
+    assertEquals(34L, echoIn2HeaderResp.getReturn());
+        
+    EchoInOutHeader echoInOutHeader = new EchoInOutHeader();
+    echoInOutHeader.setArg0(33);
+    longHolder = new Holder(new Long(44));
+    echoInOutHeader.setArg2("fred");
+    EchoInOutHeaderResponse echoInOutHeaderResp = echoPort.echoInOutHeader(echoInOutHeader, longHolder);
+    assertEquals("fred88", echoInOutHeaderResp.getReturn());
+    assertEquals(88L, longHolder.value);
+
+    EchoOutHeader echoOutHeader = new EchoOutHeader();
+    echoOutHeader.setArg0(33);
+    longHolder = new Holder();
+    echoOutHeader.setArg2("fred");
+    EchoOutHeaderResponse response = echoPort.echoOutHeader(echoOutHeader, longHolder);
+    assertEquals("fred33", response.getReturn());
+    assertEquals(33L, longHolder.value);
+  ]]></client>
+
+
+  <client name="nosei_testArray1" sideEffectFree="true">
+  <![CDATA[
+    strArray = new ArrayList();
+    strArray.add("Mary");
+    strArray.add("Paul");
+
+    returnArray = echoPort.echoStringArray(null);
+    assertEquals(0, returnArray.size());
+        
+    assertEquals(0, echoPort.echoStringArrayNull(strArray).size());
+        
+    returnArray = echoPort.echoStringArray(strArray);        
+    assertEquals(strArray.size(), returnArray.size());
+    assertEquals(strArray.get(0), returnArray.get(0));
+    assertEquals(strArray.get(1), returnArray.get(1));
+    returnArray = echoPort.echoStringArray(strArray);
+  ]]></client>
+
+  <client name="nosei_testArray2" sideEffectFree="true">
+  <![CDATA[
+    Bar bar = new Bar();
+    bar.setAge(33);
+    Bar bar2 = new Bar();
+    bar2.setAge(44);
+
+    barArray = new ArrayList();
+    barArray.add(bar);
+    barArray.add(bar2);
+    resultArray = echoPort.echoBarArray(barArray);
+    assertEquals(2, resultArray.size());
+    assertEquals(bar.getAge(), resultArray.get(0).getAge());
+    assertEquals(bar2.getAge(), resultArray.get(1).getAge());
+  ]]></client>
+
+  <client name="nosei_testOneway" sideEffectFree="true">
+  <![CDATA[
+    Oneway oneway = new Oneway();
+    oneway.setArg0("fred");
+    echoPort.oneway(oneway, 33.3F);
+    // Wait some time so that service is invoked. Otherwise
+    // verifyOneway() method may be executed before oneway() method on endpoint
+    Thread.sleep(1000);
+    assertTrue(echoPort.verifyOneway());
+    OnewayHeader onewayHeader = new OnewayHeader();
+    echoPort.onewayHeader(onewayHeader, 33.3F);
+    // Wait some time so that service is invoked. Otherwise
+    // verifyOneway() method may be executed before oneway() method on endpoint
+    Thread.sleep(1000);
+    assertTrue(echoPort.verifyOnewayHeader());
+  ]]></client>
+
+  <client name="nosei_testOneway2" sideEffectFree="true">
+  <![CDATA[
+    echoPort.oneway2("fred");
+    // Wait some time so that service is invoked. Otherwise
+    // verifyOneway() method may be executed before oneway() method on endpoint
+    Thread.sleep(1000);
+    assertTrue(echoPort.verifyOneway2());
+  ]]></client>
+
+
+  <client name="nosei_testVoid" sideEffectFree="true">
+  <![CDATA[
+    echoPort.voidTest();
+  ]]></client>
+
+  <client name="nosei_testOverloaded" sideEffectFree="true">
+  <![CDATA[
+    assertEquals("fred", echoPort.overloadedOperation("fred"));
+    Req req = new Req();
+    req.setArg0("earnie");
+    req.setArg1(" & bert");
+    assertEquals("earnie & bert", echoPort.overloadedOperation2(req).getReturn());
+    assertEquals("huey, duey and luey", echoPort.overloadedOperation3("huey", ", duey", " and luey"));
+    assertEquals("1 2 3 4", echoPort.overloadedOperation4("1", "2", "3", "4"));
+  ]]></client>
+
+  <client name="nosei_testResultHeaders" sideEffectFree="true">
+  <![CDATA[
+    intHolder = new Holder();
+    EchoIntHeaderResult result = new EchoIntHeaderResult();
+    result.setArg0(33);
+    respHolder = new Holder();
+    echoPort.echoIntHeaderResult(result, respHolder, intHolder);
+    assertEquals(66, intHolder.value);
+  ]]></client>
+
+  <client name="nosei_testSFE" sideEffectFree="true">
+  <![CDATA[
+    try {
+      echoPort.throwException("SFE");
+      fail();
+    } catch(SOAPFaultException ex) {
+    }    
+  ]]></client>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>

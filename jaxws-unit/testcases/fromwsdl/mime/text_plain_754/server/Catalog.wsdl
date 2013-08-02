@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    July 2003
+
+    (c) Copyright 2003, The Web Services-Interoperability Organization (WS-I)
+    Download or use of this file is governed by the Policies and Bylaws of WS-I.
+
+    For more information, send email info@ws-i.org.
+-->
+
+<wsdl:definitions
+    targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.wsdl"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:cat="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.wsdl"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:import namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2003-07/Catalog.xsd"
+schemaLocation="Catalog.xsd"/>
+    </xs:schema>
+  </wsdl:types>
+
+
+  <wsdl:message name="echoStringRequest">
+        <wsdl:part name="input" element="cat:SpecSheet"/>
+        <wsdl:part name="attInput" type="xs:string"/>
+  </wsdl:message>
+
+    <wsdl:message name="echoStringResponse">
+        <wsdl:part name="output" element="cat:SpecSheet"/>
+        <wsdl:part name="attOutput" type="xs:string"/>
+    </wsdl:message>
+
+  <wsdl:portType name="CatalogPortType">
+    <wsdl:operation name="echoString">
+          <wsdl:input name="echoStringRequest" message="tns:echoStringRequest"/>
+          <wsdl:output name="echoStringResponse" message="tns:echoStringResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+
+  <wsdl:binding name="CatalogSoapBinding" type="tns:CatalogPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="echoString">
+        <soap:operation/>
+        <wsdl:input>
+          <mime:multipartRelated>
+            <mime:part>
+              <soap:body parts="input" use="literal"/>
+            </mime:part>
+              <mime:part>
+              <mime:content part="attInput" type="text/plain"/>
+            </mime:part>
+          </mime:multipartRelated>
+        </wsdl:input>
+
+        <wsdl:output>
+          <mime:multipartRelated>
+            <mime:part>
+              <soap:body parts="output" use="literal"/>
+            </mime:part>
+            <mime:part>
+              <mime:content part="attOutput" type="text/plain"/>
+            </mime:part>
+          </mime:multipartRelated>
+        </wsdl:output>
+      </wsdl:operation>
+
+  </wsdl:binding>
+
+  <service name="CatalogService">
+    <port name="CatalogPort" binding="tns:CatalogSoapBinding">
+      <soap:address location="http://localhost/rpcendpoint/TestService"/>
+    </port>
+  </service>
+</wsdl:definitions>

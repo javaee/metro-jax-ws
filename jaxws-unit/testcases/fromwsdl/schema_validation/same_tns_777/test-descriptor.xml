@@ -1,0 +1,13 @@
+<!--
+Skipping this test because of
+https://jaxp.dev.java.net/issues/show_bug.cgi?id=44
+
+Works now with JDK6, but not with JDK5
+-->
+<descriptor since="2.2.1" uses="ri" skip="true">
+    <description>Schema Validaiton using separate schema file</description>
+
+    <service basedir="./server">
+        <wsdl href="AddNumbers.wsdl"/>
+    </service>
+</descriptor>

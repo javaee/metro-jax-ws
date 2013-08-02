@@ -1,0 +1,26 @@
+<descriptor since="2.1.3" uses="multi-endpoint">
+  <description>Handler tests that test Handler Processing on server and client.
+      It tests handler invocation order, handler closing order, handling Exception processing in handlers.
+  </description>
+
+    <!-- Test for http://java.net/jira/browse/JAX_WS-457, Not fixed in 2.2.2 -->
+    <client name="testAddMimeHeadersInSOAPMessage" since="2.2.3"><![CDATA[
+    import handler.handler_processing.common.*;
+    HandlerTracker tracker = HandlerTracker.getClientInstance();
+    try {
+    tracker.clearAll();
+    tracker.setHandlerAction(TestConstants.CLIENT_PREFIX + "4",TestConstants.HA_ADD_MIMEHEADER_OUTBOUND);
+    reportServicePort.clearHandlerTracker();
+    reportServicePort.setInstruction(TestConstants.SERVER_PREFIX + "4", TestConstants.HA_CHECK_MIMEHEADER_INBOUND);
+    testServicePort.testInt(2);
+    } finally {
+        tracker.clearAll();
+        reportServicePort.clearHandlerTracker();
+    }
+  ]]></client>
+
+  <service basedir="./server">
+      <wsdl href="service.wsdl"/>
+  </service>
+
+</descriptor>

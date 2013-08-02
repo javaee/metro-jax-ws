@@ -1,0 +1,36 @@
+{
+	Hello_Type req = new Hello_Type();
+	req.setArgument("sync");
+	req.setExtra("source");
+	HelloResponse response = helloPort.hello(req, req);
+	assertEquals("foo", response.getArgument());
+	assertEquals("bar", response.getExtra());
+}
+
+{
+	Hello_Type req = new Hello_Type();
+	req.setArgument("sync");
+	req.setExtra("bean");
+	HelloResponse response = helloPort.hello(req, req);
+	assertEquals("foo", response.getArgument());
+	assertEquals("bar", response.getExtra());
+}
+
+{
+	Hello_Type req = new Hello_Type();
+	req.setArgument("async");
+	req.setExtra("source");
+	HelloResponse response = helloPort.hello(req, req);
+	assertEquals("foo", response.getArgument());
+	assertEquals("bar", response.getExtra());
+}
+
+{
+	Hello_Type req = new Hello_Type();
+	req.setArgument("async");
+	req.setExtra("bean");
+	HelloResponse response = helloPort.hello(req, req);
+	assertEquals("foo", response.getArgument());
+	assertEquals("bar", response.getExtra());
+}
+

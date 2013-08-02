@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxws:bindings
+        xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:types1="urn:test:types"
+        xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <jaxws:package name="customization.external.doclit.client"/>
+    <jaxws:enableWrapperStyle>false</jaxws:enableWrapperStyle>
+    <jaxws:bindings node="wsdl:definitions">
+        <jaxws:enableAsyncMapping>true</jaxws:enableAsyncMapping>
+    </jaxws:bindings>
+
+    <jaxws:bindings node="ns1:definitions/ns1:types/xs:schema[@targetNamespace='urn:test:types']"
+                    xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://schemas.xmlsoap.org/wsdl/">
+        <ns2:schemaBindings xmlns:ns2="http://java.sun.com/xml/ns/jaxb">
+            <ns2:package name="customization.external.doclit.client"/>
+        </ns2:schemaBindings>
+        <jaxb:bindings node="//xs:complexType[@name='AbstractType']">
+            <jaxb:class name="MyAbstractType"/>
+        </jaxb:bindings>
+    </jaxws:bindings>
+
+    <jaxws:bindings node="wsdl:definitions/wsdl:portType[@name='Hello']">
+        <jaxws:class name="HelloWorld"/>
+        <jaxws:enableAsyncMapping>false</jaxws:enableAsyncMapping>
+        <jaxws:bindings node="wsdl:operation[@name='Hello']">
+            <jaxws:method name="helloWorld"/>
+            <jaxws:enableAsyncMapping>true</jaxws:enableAsyncMapping>
+            <jaxws:enableWrapperStyle>true</jaxws:enableWrapperStyle>
+            <jaxws:parameter part="wsdl:definitions/wsdl:message[@name='HelloRequest']/wsdl:part[@name='parameters']"
+                             childElementName="types1:argument" name="helloArgument"/>
+            <jaxws:parameter part="wsdl:definitions/wsdl:message[@name='HelloRequest']/wsdl:part[@name='parameters']"
+                             childElementName="types1:extra"
+                             name="helloExtra"/>
+        </jaxws:bindings>
+
+        <jaxws:bindings node="wsdl:operation[@name='Abstract']">
+            <jaxws:method name="helloAbstract"/>
+            <jaxws:enableWrapperStyle>true</jaxws:enableWrapperStyle>
+            <jaxws:parameter part="wsdl:definitions/wsdl:message[@name='AbstractRequest']/wsdl:part[@name='parameters']"
+                             childElementName="types:abstract" name="abstractParam"/>
+            <jaxws:parameter part="wsdl:definitions/wsdl:message[@name='AbstractRequest']/wsdl:part[@name='parameters']"
+                             childElementName="types:static" name="staticParam"/>
+
+        </jaxws:bindings>
+    </jaxws:bindings>
+
+    <jaxws:bindings node="wsdl:definitions/wsdl:portType[@name='Hello']/wsdl:operation[@name='Foo']">
+        <jaxws:method name="echoFoo"/>
+        <jaxws:enableAsyncMapping>false</jaxws:enableAsyncMapping>
+        <jaxws:enableWrapperStyle>false</jaxws:enableWrapperStyle>
+        <jaxws:parameter part="wsdl:definitions/wsdl:message[@name='FooRequest']/wsdl:part[@name='in']"
+                         name="fooRequest"/>
+    </jaxws:bindings>
+
+    <jaxws:bindings
+            node="wsdl:definitions/wsdl:portType[@name='Hello']/wsdl:operation[@name='Foo']/wsdl:fault[@name='FooFault']">
+        <jaxws:class name="FooException"/>
+    </jaxws:bindings>
+
+    <jaxws:bindings node="wsdl:definitions/wsdl:binding[@name='HelloBinding']/wsdl:operation[@name='Hello']">
+        <jaxws:parameter part="wsdl:definitions/wsdl:message[@name='headerMessage']/wsdl:part[@name='info']"
+                         name="infoHeader"/>
+        <!--jaxws:exception>
+            <jaxws:class name="infoException"/>
+        </jaxws:exception-->
+    </jaxws:bindings>
+
+    <jaxws:bindings node="wsdl:definitions/wsdl:service[@name='Hello']">
+        <jaxws:class name="CustomService"/>
+    </jaxws:bindings>
+
+    <jaxws:bindings node="wsdl:definitions/wsdl:service[@name='Hello']/wsdl:port[@name='HelloPort']">
+        <jaxws:method name="getCustomizedPort"/>
+    </jaxws:bindings>
+    <jaxws:bindings
+            node="wsdl:definitions/wsdl:types/xs:schema[@targetNamespace='urn:test:types']/xs:element[@name='Foo']">
+        <jaxb:class name="RenamedFoo"/>
+    </jaxws:bindings>
+</jaxws:bindings>
+

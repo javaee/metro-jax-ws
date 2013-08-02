@@ -1,0 +1,6 @@
+<descriptor since="2.0">
+    <description>MTOM tests encoding</description>
+
+    <service basedir="./server">
+    </service>
+</descriptor>

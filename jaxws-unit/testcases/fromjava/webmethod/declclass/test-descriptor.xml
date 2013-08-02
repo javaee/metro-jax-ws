@@ -1,0 +1,20 @@
+<descriptor since="2.1.4">
+  <description>This is WebMethod test</description>
+
+  <client name="method_has_WebMethod" sideEffectFree="true">
+  <description>method_has_WebMethod</description>
+  <![CDATA[
+    assertEquals("str", testImplPort.method1("str"));
+  ]]></client>
+
+  <client name="method_has_no_WebMethod" sideEffectFree="true">
+  <description>method_has_no_WebMethod</description>
+  <![CDATA[
+    assertEquals("str", testImplPort.method2("str"));
+  ]]></client>
+
+
+  <service basedir="./server">
+  </service>
+
+</descriptor>

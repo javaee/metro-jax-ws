@@ -1,0 +1,21 @@
+<descriptor since="2.1.5" transport="http">
+  <description>http_only</description>
+    
+  <client name="custom-http-header" sideEffectFree="true">
+    import java.util.Collections;
+    import javax.xml.ws.BindingProvider;
+    import javax.xml.ws.handler.MessageContext; 
+
+    // keep singletonMap, singletonList as they are unmodifiable
+    ((BindingProvider)helloPort).getRequestContext().put(
+      MessageContext.HTTP_REQUEST_HEADERS,
+      Collections.singletonMap("custom-header",Collections.singletonList("custom-value")));
+
+    helloPort.testHttpProperties();
+  <![CDATA[
+  ]]></client>
+
+  <service basedir="./server">
+  </service>
+
+</descriptor>

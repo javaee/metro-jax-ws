@@ -1,0 +1,24 @@
+
+    <xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:types="urn:test:types"
+        targetNamespace="urn:test:types">
+
+      <xsd:element name="Hello">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="argument" type="xsd:string"/>
+                <xsd:element name="extra" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="HelloResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="argument" type="xsd:string"/>
+                <xsd:element name="extra" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>

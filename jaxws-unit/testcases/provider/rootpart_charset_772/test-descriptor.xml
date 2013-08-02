@@ -1,0 +1,8 @@
+<descriptor since="2.2" transport="http">
+  <description>This is a Provider test</description>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>

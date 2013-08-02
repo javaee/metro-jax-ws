@@ -1,0 +1,7 @@
+Bar bar = new Bar();
+bar.setAge(33);
+assertTrue(echoImplPort.echoString(null) == null);
+assertTrue(echoImplPort.echoString("test").equals("test"));
+assertTrue(echoImplPort.echoString("Mary & Paul").equals("Mary & Paul"));
+assertTrue(echoImplPort.echoBar(null) == null);
+assertTrue(echoImplPort.echoBar(bar).getAge() == bar.getAge());

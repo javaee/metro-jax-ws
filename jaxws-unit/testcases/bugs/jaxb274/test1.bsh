@@ -1,0 +1,13 @@
+p1 = new Person();
+p1.setFirstname("f");
+p1.setLastname("l");
+
+o = new ArrayList();
+o.add(p1);
+
+h = new Holder(o);
+docLitBarePort.echo(h);
+assertEquals(o.size(), h.value.size());
+
+r=docLitWrappedPort.echo(o);
+assertEquals(o.size(), r.size());

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions targetNamespace="http://marshalltestservice.org/wsdl" name="MarshallTestService" xmlns:tns="http://marshalltestservice.org/wsdl" xmlns:wsp1_2="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"  xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xsd:schema>
+      <xsd:import namespace="http://marshalltestservice.org/wsdl" schemaLocation="MarshallTestService_schema1.xsd"/>
+    </xsd:schema>
+  </types>
+  <message name="javaBeanTest">
+    <part name="parameters" element="tns:javaBeanTest"/>
+  </message>
+  <message name="javaBeanTestResponse">
+    <part name="parameters" element="tns:javaBeanTestResponse"/>
+  </message>
+  <portType name="MarshallTest">
+    <operation name="javaBeanTest">
+      <input message="tns:javaBeanTest"/>
+      <output message="tns:javaBeanTestResponse"/>
+    </operation>
+  </portType>
+  <binding name="MarshallTestPortBinding" type="tns:MarshallTest">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="javaBeanTest">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="MarshallTestService">
+    <port name="MarshallTestPort" binding="tns:MarshallTestPortBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
+    </port>
+  </service>
+</definitions>
+

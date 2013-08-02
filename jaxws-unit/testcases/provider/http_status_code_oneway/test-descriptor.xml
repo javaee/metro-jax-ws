@@ -1,0 +1,18 @@
+<descriptor since="2.1.4" transport="http">
+  <description>This is a Provider Oneway test</description>
+  <client name="provider.http_status_code_oneway" sideEffectFree="true"><![CDATA[
+    req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
+    try {
+        helloPort.hello(req);
+        fail("No exception for 502 status code from server.");
+    } catch(WebServiceException e) {
+    }
+  ]]></client>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal_oneway.wsdl"/>
+  </service>
+
+</descriptor>

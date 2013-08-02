@@ -1,0 +1,1 @@
+<?xml version="1.0" ?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><XDocIn xmlns="http://example.org/mtom"><doc1><Include xmlns="http://www.w3.org/2004/08/xop/include" href="cid:2c5bbb50-5679-4fea-9982-666753769e20@example.jaxws.sun.com"/></doc1></XDocIn></S:Body></S:Envelope>

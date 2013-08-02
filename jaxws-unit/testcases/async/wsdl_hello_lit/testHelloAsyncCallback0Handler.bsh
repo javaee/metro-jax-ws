@@ -1,0 +1,44 @@
+// test with no handler first
+int orig = 1;
+intHolder = new IntHolder();
+
+response = helloPort.hello0Async(orig,
+    new AsyncHandler() {
+    public void handleResponse(Response resp) {
+        try {
+            // add 10 to make sure this was called
+            intHolder.setValue(resp.get()+10);
+        } catch (Exception e) {
+            e.printStackTrace();
+            intHolder.setValue(-100); // will cause failure
+        }
+    }
+});
+
+// wait, but only up to 15 seconds. if it takes more,
+// it's considered a hangup
+response.get(15,TimeUnit.SECONDS);
+
+assertEquals("did not get expected value back in response",
+    orig + 10, intHolder.getValue());
+
+// add handler
+addHandler(new SOAPTestHandler(), helloPort);
+int diff = 2; // 1 per handler invocation
+
+response = helloPort.hello0Async(orig,
+    new AsyncHandler() {
+    public void handleResponse(Response resp) {
+        try {
+            intHolder.setValue(resp.get().intValue());
+        } catch (Exception e) {
+            e.printStackTrace();
+            intHolder.setValue(-100); // will cause failure
+        }
+    }
+});
+
+response.get(15,TimeUnit.SECONDS);
+
+assertEquals("handlers did not execute successfully",
+    orig + diff, intHolder.getValue());

@@ -1,0 +1,6 @@
+<descriptor since="2.1">
+  <description>This is a fromjava type substitution tck test </description>
+  <client href ="*.bsh"/>
+  <service basedir="./server">
+  </service>
+</descriptor>

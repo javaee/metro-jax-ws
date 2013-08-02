@@ -1,0 +1,7 @@
+<descriptor since="2.2.1" transport="http">
+    <description>MTOM large data test(primarily for JAX-WS in JDK)</description>
+
+    <service basedir="./server">
+        <wsdl href="hello.wsdl"/>
+    </service>
+</descriptor>

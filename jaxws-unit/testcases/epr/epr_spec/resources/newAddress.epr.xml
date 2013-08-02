@@ -1,0 +1,17 @@
+<!-- test-epr.xml with a different address -->
+<wsa:EndpointReference
+     xmlns:wsa="http://www.w3.org/2005/08/addressing"
+     xmlns:wsaw="http://www.w3.org/2006/02/addressing/wsdl"
+     xmlns:fabrikam="http://example.com/fabrikam"
+     xmlns:wsdli="http://www.w3.org/2006/01/wsdl-instance"
+     wsdli:wsdlLocation="http://example.com/fabrikam
+       http://example.com/fabrikam/fabrikam.wsdl">
+   <wsa:Address>newAddress</wsa:Address>
+   <wsa:Metadata>
+       <wsaw:InterfaceName>fabrikam:Inventory</wsaw:InterfaceName>
+   </wsa:Metadata>
+   <wsa:ReferenceParameters>
+       <fabrikam:CustomerKey>123456789</fabrikam:CustomerKey>
+       <fabrikam:ShoppingCart>ABCDEFG</fabrikam:ShoppingCart>
+   </wsa:ReferenceParameters>
+</wsa:EndpointReference>

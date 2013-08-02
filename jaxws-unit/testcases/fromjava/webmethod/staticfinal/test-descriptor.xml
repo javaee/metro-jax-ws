@@ -1,0 +1,23 @@
+<descriptor since="2.1.4">
+  <description>This is WebMethod test</description>
+
+  <client name="method_has_WebMethod" sideEffectFree="true">
+  <description>method_has_WebMethod</description>
+  <![CDATA[
+    assertEquals("str", testImplPort.method1("str"));
+    assertEquals("str", testImplPort.method6("str"));
+  ]]></client>
+
+  <client name="static_final_no_WebMethod" sideEffectFree="true">
+  <description>static_final_no_WebMethod</description>
+  <![CDATA[
+    clazz = fromjava.webmethod.staticfinal.client.TestImpl.class;
+    methods = clazz.getMethods();
+    assertEquals(2, methods.length);
+  ]]></client>
+
+
+  <service basedir="./server">
+  </service>
+
+</descriptor>

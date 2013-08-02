@@ -1,0 +1,102 @@
+<descriptor since="2.0">
+    <description>This is a fromwsdl doc/lit fault test</description>
+
+    <client name="header.doclit1">
+        <description>
+            test echo()
+        </description>
+        request = new EchoType();
+        request.setReqInfo("foo");
+        header2 = new Echo2Type();
+        header2.setReqInfo("foo");
+        response = helloPort.echo(request, request, header2);
+        assertEquals("foofoofoo", (response.getRespInfo()));
+    </client>
+
+
+    <client name="header.doclit2">
+        <description>
+            test echo
+        </description>
+        response = helloPort.echo2("foo");
+        assertEquals("foobar", response);
+    </client>
+
+    <client name="header.doclit3">
+        <description>
+            test echo3()
+        </description>
+        <![CDATA[
+        req = new Holder("foo");
+        helloPort.echo3(req);
+        assertEquals("foobar", req.value);
+        ]]></client>
+
+    <client name="header.doclit4"><![CDATA[
+        reqBody = new Echo4Type();
+        reqBody.setExtra("foo1");
+        reqBody.setArgument("bar1");
+
+        reqHeader = new Echo4Type();
+        reqHeader.setExtra("foo2");
+        reqHeader.setArgument("bar2");
+
+        req2HeaderType = "foobar3";
+        req2Header = new Holder(req2HeaderType);
+        respBody = new Holder();
+        respHeader = new Holder();
+        helloPort.echo4(reqBody, reqHeader, req2HeaderType, respBody, respHeader);
+        assertEquals("foo1bar1foo2bar2foobar3", respBody.value);
+        ]]>
+    </client>
+
+    <client name="header.doclit5">
+        <description>
+            test echo5()
+        </description>
+        body = new EchoType();
+        body.setReqInfo("Hello World!");
+        resp = helloPort.echo5(body);
+        assertEquals(resp, body.getReqInfo());
+    </client>
+
+
+    <!--
+    <client name="header-doclit">
+        <description>
+            This test has header as return type, it wont work till we have annotation on
+            @WebResult or similar solution. Commenting out till we have it.
+        </description><![CDATA[
+//        body = new EchoType();
+//        reqName = "Vivek";
+//        address = "4140 Network Cirlce";
+//        body.setReqInfo(reqName);
+//        name = new Holder<String>();
+//        header = new EchoType();
+//        header.setReqInfo(address);
+//        req = new Holder<EchoType>(body);
+//        resp = helloPort.echo6(name, header, req);
+//        assertEquals(req.value.getReqInfo(), reqName + "'s Response");
+//        assertEquals(resp, name.value +"'s Address: "+address);
+
+    ]]>
+     </client>
+    <client name="header-doclit">
+        <description>
+            This test has header as return type, it wont work till we have annotation
+            on @WebResult or similar solution. Commenting out till we have it.
+        </description><![CDATA[
+//        String firstName = "Vivek";
+//        lastName = "Pandey";
+//        address = new Holder<String>();
+//        personDetails = new Holder<String>();
+//        nameType = helloPort.echo7(address, personDetails, lastName, firstName);
+//        assertEquals(nameType.getName(), "Employee");
+//        assertEquals(address.value, "Sun Micro Address");
+//        assertEquals(personDetails.value, "Vivek Pandey");]]>
+    </client>
+-->
+    <service basedir="./server">
+        <wsdl href="header.wsdl"/>
+    </service>
+</descriptor>

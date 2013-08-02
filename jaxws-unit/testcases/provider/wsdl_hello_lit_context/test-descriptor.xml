@@ -1,0 +1,29 @@
+<descriptor since="2.0" transport="http" uses="multi-endpoint">
+  <description>This is a Provider test</description>
+  <client name="testMsgVoid" sideEffectFree="true">
+  <![CDATA[
+    // Setting the address explicitly, so that it works with SE container
+    // In SE, only one endpoint gets patched
+    helloMsgPort.getRequestContext().put(
+        BindingProvider.ENDPOINT_ADDRESS_PROPERTY, helloMsgPortAddress.toString());
+    response = helloMsgPort.voidTest(new VoidType());
+    assertNotNull(response);
+
+    map = helloMsgPort.getResponseContext().get(MessageContext.HTTP_RESPONSE_HEADERS);
+
+    assertNotNull(map);
+    assertEquals("bar", map.get("foo").get(0));
+
+  ]]></client>
+
+  <client name="testVoid" sideEffectFree="true">
+  <![CDATA[
+    response = helloPort.voidTest(new VoidType());
+    assertNotNull(response);
+  ]]></client>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>

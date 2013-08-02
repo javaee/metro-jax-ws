@@ -1,0 +1,6 @@
+<descriptor since="2.1.5">
+    <description>Tests MTOM's mime part boundary condition</description>
+
+    <service basedir="./server">
+    </service>
+</descriptor>

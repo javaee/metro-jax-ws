@@ -1,0 +1,11 @@
+<wsa:EndpointReference xmlns:wsa="http://www.w3.org/2005/08/addressing" eprattr="epr-attribute" >
+  <wsa:Address addrattr="address-attribute">http://www.w3.org/2005/08/addressing/anonymous</wsa:Address>
+  <wsa:ReferenceParameters refattr="ref-attribute">
+    <refelem1>ref-element-1-text</refelem1>
+    <refelem2>ref-element-2-text</refelem2>
+  </wsa:ReferenceParameters>
+  <wsa:Metadata metaattr="meta-attribute">
+    <metadataelem metaelemattr="meta-element-attribute">meta-element-text</metadataelem>
+  </wsa:Metadata>
+  <eprelem eprelemattr="epr-element-attribute">epr-element-text</eprelem>
+</wsa:EndpointReference>

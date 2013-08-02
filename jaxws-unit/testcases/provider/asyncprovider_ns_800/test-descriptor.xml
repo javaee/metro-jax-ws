@@ -1,0 +1,8 @@
+<descriptor since="2.0" uses="ri" transport="http">
+  <description>This is a AsyncProvider test</description>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>

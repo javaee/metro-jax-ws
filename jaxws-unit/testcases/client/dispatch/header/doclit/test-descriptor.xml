@@ -1,0 +1,70 @@
+<descriptor since="2.1">
+  <description>
+    Access to headers with Dispatch
+  </description>
+  <service>
+    <wsdl href="header.wsdl" />
+  </service>
+  
+  <pre-client>
+    portQName = new QName("http://example.com/wsdl", "HelloPort");
+  </pre-client>
+
+  <client name="echoSource"><![CDATA[
+    dispatch = helloService.createDispatch(portQName, Source.class, Service.Mode.PAYLOAD);
+    try {
+        dispatch.invoke(echoRequest.asStreamSource());
+        fail();
+    } catch (SOAPFaultException sfe) {
+        // expected
+        sfe.printStackTrace();
+    }
+  ]]></client>
+  <xml-resource name="echoRequest">
+    <ns1:echo xmlns:ns1="http://example.com/types">
+      <ns1:reqInfo>foo</ns1:reqInfo>
+    </ns1:echo>
+  </xml-resource>
+
+  <client name="echo5JAXB"><![CDATA[
+    dispatch = helloService.createDispatch(portQName, createJAXBContext(), Service.Mode.PAYLOAD);
+
+    body = new EchoType();
+    body.setReqInfo("Hello World!");
+    ObjectFactory of = new ObjectFactory();
+    echo5Request = of.createEcho5Request(body);
+    resp = dispatch.invoke(echo5Request);
+    assertNull(resp);
+  ]]></client>
+
+  <client name="echo4SOAPMessage"><![CDATA[
+    dispatch = helloService.createDispatch(portQName, SOAPMessage.class, Service.Mode.MESSAGE);
+
+    message =  getSOAPMessage(echo4RequestSM.asStreamSource());
+
+    Object result = dispatch.invoke(message);
+    //todo:need to check contents
+
+    System.out.println("Printing out received header");
+    assertTrue(result instanceof SOAPMessage);
+    result.writeTo(System.out);
+  ]]></client>
+  <xml-resource name="echo4RequestSM">
+    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://example.com/types">
+      <soapenv:Header>
+        <ns1:echo4>
+          <ns1:argument>bar2</ns1:argument>
+          <ns1:extra>foo2</ns1:extra>
+        </ns1:echo4>
+        <ns1:echo4Header>foobar3</ns1:echo4Header>
+      </soapenv:Header>
+      <soapenv:Body>
+        <ns1:echo4>
+          <ns1:argument>bar1</ns1:argument>
+          <ns1:extra>foo1</ns1:extra>
+        </ns1:echo4>
+      </soapenv:Body>
+    </soapenv:Envelope>
+  </xml-resource>
+
+</descriptor>

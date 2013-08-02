@@ -1,0 +1,8 @@
+<descriptor uses="servlet30" since="2.2.2">
+  <description>This is a AsyncProvider test</description>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>
