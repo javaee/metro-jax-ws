@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,63 +38,22 @@
  * holder.
  */
 
-package com.sun.xml.ws.encoding;
+package com.sun.xml.ws.test;
 
-import com.sun.xml.stream.buffer.XMLStreamBuffer;
-import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.WSFeatureList;
-import com.sun.xml.ws.api.message.Header;
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.pipe.ContentType;
-import com.sun.xml.ws.message.stream.StreamHeader11;
-
-import javax.xml.stream.XMLStreamReader;
-import java.util.Collections;
-import java.util.List;
-
-/**
- * {@link StreamSOAPCodec} for SOAP 1.1.
- *
- * @author Paul.Sandoz@Sun.Com
- */
-final class StreamSOAP11Codec extends StreamSOAPCodec {
-
-    public static final String SOAP11_MIME_TYPE = "text/xml";
-    public static final String DEFAULT_SOAP11_CONTENT_TYPE =
-            SOAP11_MIME_TYPE+"; charset="+SOAPBindingCodec.DEFAULT_ENCODING;
-
-    private static final List<String> EXPECTED_CONTENT_TYPES = Collections.singletonList(SOAP11_MIME_TYPE);
-
-    /*package*/  StreamSOAP11Codec() {
-        super(SOAPVersion.SOAP_11);
+public class MtomBean {
+    private byte[] binary1;
+    private byte[] binary2;
+    public byte[] getBinary1() {
+        return binary1;
+    }
+    public void setBinary1(byte[] binary1) {
+        this.binary1 = binary1;
+    }
+    public byte[] getBinary2() {
+        return binary2;
+    }
+    public void setBinary2(byte[] binary2) {
+        this.binary2 = binary2;
     }
 
-    /*package*/  StreamSOAP11Codec(WSBinding binding) {
-        super(binding);
-    }
-
-    /*package*/  StreamSOAP11Codec(WSFeatureList features) {
-        super(features);
-    }
-
-    public String getMimeType() {
-        return SOAP11_MIME_TYPE;
-    }
-    
-    @Override
-    protected ContentType getContentType(Packet packet) {
-        ContentTypeImpl.Builder b = getContenTypeBuilder(packet);
-        b.soapAction = packet.soapAction;
-        return b.build();
-    }
-
-    @Override
-    protected String getDefaultContentType() {
-        return DEFAULT_SOAP11_CONTENT_TYPE;
-    }
-
-    protected List<String> getExpectedContentTypes() {
-        return EXPECTED_CONTENT_TYPES;
-    }
 }

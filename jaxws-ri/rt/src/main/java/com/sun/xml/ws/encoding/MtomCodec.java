@@ -56,6 +56,7 @@ import com.sun.xml.ws.developer.StreamingDataHandler;
 import com.sun.xml.ws.message.MimeAttachmentSet;
 import com.sun.xml.ws.streaming.XMLStreamWriterUtil;
 import com.sun.xml.ws.util.ByteArrayDataSource;
+import com.sun.xml.ws.util.xml.NamespaceContextExAdaper;
 import com.sun.xml.ws.util.xml.XMLStreamReaderFilter;
 import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
 import com.sun.xml.ws.streaming.MtomStreamWriter;
@@ -531,42 +532,12 @@ public class MtomCodec extends MimeCodec {
 
         @Override
         public NamespaceContextEx getNamespaceContext() {
-            NamespaceContext nsContext = reader.getNamespaceContext();
-            return new MtomNamespaceContextEx(nsContext);
+            return new NamespaceContextExAdaper(reader.getNamespaceContext());
         }
 
         @Override
         public String getElementTextTrim() throws XMLStreamException {
             throw new UnsupportedOperationException();
-        }
-
-        private static class MtomNamespaceContextEx implements NamespaceContextEx {
-            private final NamespaceContext nsContext;
-
-            public MtomNamespaceContextEx(NamespaceContext nsContext) {
-                this.nsContext = nsContext;
-            }
-
-            @Override
-            public Iterator<Binding> iterator() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public String getNamespaceURI(String prefix) {
-                return nsContext.getNamespaceURI(prefix);
-            }
-
-            @Override
-            public String getPrefix(String namespaceURI) {
-                return nsContext.getPrefix(namespaceURI);
-            }
-
-            @Override
-            public Iterator getPrefixes(String namespaceURI) {
-                return nsContext.getPrefixes(namespaceURI);
-            }
-
         }
 
         @Override

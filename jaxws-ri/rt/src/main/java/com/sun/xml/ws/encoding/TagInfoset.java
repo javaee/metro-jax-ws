@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,6 +39,8 @@
  */
 
 package com.sun.xml.ws.encoding;
+
+import java.util.List;
 
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.ContentHandler;
@@ -236,4 +238,35 @@ public final class TagInfoset {
 
     private static final String[] EMPTY_ARRAY = new String[0];
     private static final AttributesImpl EMPTY_ATTRIBUTES = new AttributesImpl();
+
+    public String getNamespaceURI(String prefix) {
+        int size = ns.length/2;
+        for(int i=0; i<size; i++){
+            String p = ns[i*2  ];
+            String n = ns[i*2+1];
+            if (prefix.equals(p)) return n;
+        }
+        return null;
+    }
+    
+    public String getPrefix(String namespaceURI) {
+        int size = ns.length/2;
+        for(int i=0; i<size; i++){
+            String p = ns[i*2  ];
+            String n = ns[i*2+1];
+            if (namespaceURI.equals(n)) return p;
+        }
+        return null;
+    }
+    //Who wants this?
+    public List<String> allPrefixes(String namespaceURI) {
+        int size = ns.length/2;
+        List<String> l = new java.util.ArrayList<String>();
+        for(int i=0; i<size; i++){
+            String p = ns[i*2  ];
+            String n = ns[i*2+1];
+            if (namespaceURI.equals(n)) l.add(p);
+        }
+        return l;
+    }
 }

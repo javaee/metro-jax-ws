@@ -106,6 +106,7 @@ public abstract class Container implements ComponentRegistry, ComponentEx {
     }
     
     public <S> S getSPI(Class<S> spiType) {
+        if (components == null) return null;
     	for (Component c : components) {
     		S s = c.getSPI(spiType);
     		if (s != null)
