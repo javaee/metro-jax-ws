@@ -112,6 +112,7 @@
         <saaj-api.version>1.3.6</saaj-api.version>
         <saaj-impl.version>1.3.21</saaj-impl.version>
         <streambuffer.version>1.5.3</streambuffer.version>
+        <woodstox-core-asl.version>4.2.0</woodstox-core-asl.version>       
         <stax2-api.version>3.1.1</stax2-api.version>
         <javax.annotation-api.version>1.2-b03</javax.annotation-api.version>
     </properties>
@@ -119,6 +120,33 @@
     <dependencyManagement>
         <dependencies>
 
+            <!-- Parsers -->
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>woodstox-core-asl</artifactId>
+                <version>${woodstox-core-asl.version}</version>
+                <exclusions>
+                    <!-- part of JDK 6+ -->
+                    <exclusion>
+                        <artifactId>stax-api</artifactId>
+                        <groupId>javax.xml.stream</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>stax2-api</artifactId>
+                <version>${stax2-api.version}</version>
+                <exclusions>
+                    <!-- part of JDK 6+ -->
+                    <exclusion>
+                        <artifactId>stax-api</artifactId>
+                        <groupId>javax.xml.stream</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            
+            
             <!-- Source artifacts -->
             <dependency>
                 <groupId>com.sun.xml.stream.buffer</groupId>
