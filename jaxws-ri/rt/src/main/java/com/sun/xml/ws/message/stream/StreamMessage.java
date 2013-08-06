@@ -211,9 +211,9 @@ public class StreamMessage extends AbstractMessageImpl implements StreamingSOAP 
 
         // use the default infoset representation for headers
         int base = soapVersion.ordinal()*3;
-        this.envelopeTag = DEFAULT_TAGS[base];
-        this.headerTag = DEFAULT_TAGS[base+1];
-        this.bodyTag = DEFAULT_TAGS[base+2];
+        this.envelopeTag = DEFAULT_TAGS.get(base);
+        this.headerTag = DEFAULT_TAGS.get(base+1);
+        this.bodyTag = DEFAULT_TAGS.get(base+2);
     }
 
     /**
@@ -515,7 +515,8 @@ public class StreamMessage extends AbstractMessageImpl implements StreamingSOAP 
         }
     }        
 
-    // TODO: this method should be probably rewritten to respect spaces between eelements; is it used at all?
+    // TODO: this method should be probably rewritten to respect spaces between elements; is it used at all?
+    @Override
     public Message copy() {
         if ( envelopeReader != null ) readEnvelope(this);
         try {

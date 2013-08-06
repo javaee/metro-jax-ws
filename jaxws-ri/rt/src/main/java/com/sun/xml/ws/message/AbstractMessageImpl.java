@@ -52,6 +52,8 @@ import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.encoding.TagInfoset;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.spi.db.XMLBridge;
+import java.util.ArrayList;
+import java.util.Collections;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -103,26 +105,28 @@ public abstract class AbstractMessageImpl extends Message {
 
     protected static final AttributesImpl EMPTY_ATTS;
     protected static final LocatorImpl NULL_LOCATOR = new LocatorImpl();
-    protected static final TagInfoset[] DEFAULT_TAGS;
+    protected static final List<TagInfoset> DEFAULT_TAGS;
 
-    static void create(SOAPVersion v) {
+    static void create(SOAPVersion v, List c) {
         int base = v.ordinal()*3;
-        DEFAULT_TAGS[base  ] = new TagInfoset(v.nsUri,"Envelope","S",EMPTY_ATTS,"S",v.nsUri);
-        DEFAULT_TAGS[base+1] = new TagInfoset(v.nsUri,"Header","S",EMPTY_ATTS);
-        DEFAULT_TAGS[base+2] = new TagInfoset(v.nsUri,"Body","S",EMPTY_ATTS);
+        c.add(base, new TagInfoset(v.nsUri, "Envelope", "S", EMPTY_ATTS,"S", v.nsUri));
+        c.add(base+1, new TagInfoset(v.nsUri, "Header", "S", EMPTY_ATTS));
+        c.add(base+2, new TagInfoset(v.nsUri, "Body", "S", EMPTY_ATTS));
     }
 
     static {
         EMPTY_ATTS = new AttributesImpl();
-        DEFAULT_TAGS = new TagInfoset[6];
-        create(SOAPVersion.SOAP_11);
-        create(SOAPVersion.SOAP_12);
+        List<TagInfoset> tagList = new ArrayList<TagInfoset>();
+        create(SOAPVersion.SOAP_11, tagList);
+        create(SOAPVersion.SOAP_12, tagList);
+        DEFAULT_TAGS = Collections.unmodifiableList(tagList);
     }
     
     protected AbstractMessageImpl(SOAPVersion soapVersion) {
         this.soapVersion = soapVersion;
     }
 
+    @Override
     public SOAPVersion getSOAPVersion() {
         return soapVersion;
     }
@@ -133,10 +137,12 @@ public abstract class AbstractMessageImpl extends Message {
         this.soapVersion = that.soapVersion;
     }
 
+    @Override
     public Source readEnvelopeAsSource() {
         return new SAXSource(new XMLReaderImpl(this), XMLReaderImpl.THE_SOURCE);
     }
 
+    @Override
     public <T> T readPayloadAsJAXB(Unmarshaller unmarshaller) throws JAXBException {
         if(hasAttachments())
             unmarshaller.setAttachmentUnmarshaller(new AttachmentUnmarshallerImpl(getAttachments()));
@@ -147,11 +153,13 @@ public abstract class AbstractMessageImpl extends Message {
         }
     }
     /** @deprecated */
+    @Override
     public <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException {
         return bridge.unmarshal(readPayloadAsSource(),
             hasAttachments()? new AttachmentUnmarshallerImpl(getAttachments()) : null );
     }
     
+    @Override
     public <T> T readPayloadAsJAXB(XMLBridge<T> bridge) throws JAXBException {
         return bridge.unmarshal(readPayloadAsSource(),
             hasAttachments()? new AttachmentUnmarshallerImpl(getAttachments()) : null );
@@ -160,6 +168,7 @@ public abstract class AbstractMessageImpl extends Message {
     /**
      * Default implementation that relies on {@link #writePayloadTo(XMLStreamWriter)}
      */
+    @Override
     public void writeTo(XMLStreamWriter w) throws XMLStreamException {
         String soapNsUri = soapVersion.nsUri;
         w.writeStartDocument();
@@ -186,6 +195,7 @@ public abstract class AbstractMessageImpl extends Message {
     /**
      * Writes the whole envelope as SAX events.
      */
+    @Override
     public void writeTo( ContentHandler contentHandler, ErrorHandler errorHandler ) throws SAXException {
         String soapNsUri = soapVersion.nsUri;
 
@@ -230,13 +240,12 @@ public abstract class AbstractMessageImpl extends Message {
     /**
      * Default implementation that uses {@link #writeTo(ContentHandler, ErrorHandler)}
      */
+    @Override
     public SOAPMessage readAsSOAPMessage() throws SOAPException {
         return SAAJFactory.read(soapVersion, this);
     }
 
-    /**
-     *
-     */
+    @Override
     public SOAPMessage readAsSOAPMessage(Packet packet, boolean inbound) throws SOAPException {
         SOAPMessage msg = SAAJFactory.read(soapVersion, this, packet);
         transportHeaders(packet, inbound, msg);
