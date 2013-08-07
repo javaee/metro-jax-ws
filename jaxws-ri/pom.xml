@@ -459,6 +459,20 @@
                         <ignoreYear>false</ignoreYear>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.glassfish.build</groupId>
+                    <artifactId>gfnexus-maven-plugin</artifactId>
+                    <version>0.12</version>
+                    <configuration>
+                        <stagingRepos>
+                            <stagingRepo>
+                                <ref>com.sun.xml.ws:rt:${project.version}:jar</ref>
+                                <profile>javax.jws</profile>
+                            </stagingRepo>
+                        </stagingRepos>
+                        <promotionProfile>metro</promotionProfile>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -526,6 +540,10 @@
                         </plugin>
                     </reportPlugins>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>gfnexus-maven-plugin</artifactId>
             </plugin>
         </plugins>
         <!--extensions>
