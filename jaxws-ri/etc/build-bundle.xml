@@ -219,12 +219,12 @@
 
     <target name="copy-woodstox-libs" description="Copies woodstox.jar into distribution jars" if="woodstox">
         <copy todir="${build.home}/lib">
-            <fileset dir="${lib.home}/"
-                     includes="woodstox.jar"/>
+            <fileset dir="${lib.home}/" includes="woodstox.jar"/>
+            <fileset dir="${lib.home}/" includes="stax2-api.jar"/>
         </copy>
     </target>
 
-    <target name="copy-sjsxp-libs" description="Copies woodstox.jar into distribution jars" unless="woodstox">
+    <target name="copy-sjsxp-libs" description="Copies sjsxp.jar into distribution jars" unless="woodstox">
         <copy todir="${build.home}/lib">
             <fileset dir="${lib.home}/"
                      includes="sjsxp.jar"/>
