@@ -40,13 +40,13 @@
     Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br />
       (JAX-WS)
   </banner>
-  <!-- this portion is excuted as the footer -->
+  <!-- this portion is executed as the footer -->
   <footer>
     $Revision: 1.9 $<br/>      $Date: 2009-04-21 21:45:00 $<br/>
     <a href="Copyright.html">Copyright&#169; 2006 Sun Microsystems, Inc. All rights reserved.</a>
   </footer>
     
-  <chapter name="JAX-WS RI 2.1.11">
+  <chapter name="JAX-WS RI 2.1.12">
     <document name="Overview"
               url="index.html"/>
     <document name="Release Notes"
