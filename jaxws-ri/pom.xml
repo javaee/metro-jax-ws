@@ -77,6 +77,19 @@
         </mailingList>
     </mailingLists>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>jvnet-nexus-snapshots</id>
+            <uniqueVersion>false</uniqueVersion>
+            <url>https://maven.java.net/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>jvnet-nexus-staging</id>
+            <name>Java.net Nexus Staging Repository</name>
+            <url>https://maven.java.net/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>releases.java.net</id>
@@ -462,7 +475,7 @@
                 <plugin>
                     <groupId>org.glassfish.build</groupId>
                     <artifactId>gfnexus-maven-plugin</artifactId>
-                    <version>0.12</version>
+                    <version>0.13</version>
                     <configuration>
                         <stagingRepos>
                             <stagingRepo>
