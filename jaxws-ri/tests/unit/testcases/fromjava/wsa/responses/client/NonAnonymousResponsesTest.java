@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -86,7 +86,7 @@ public class NonAnonymousResponsesTest extends TestCase {
     /**
      * Sets up a Endpoint for listenign to non-anonymous responses,
      * which uses the Exchanger to pass the request message.
-     * This in unncessaery for anonymous tests.�
+     * This in unnecessary for anonymous tests.
      *
      * @throws Exception
      */
