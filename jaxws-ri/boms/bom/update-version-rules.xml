@@ -59,15 +59,13 @@
                 <ignoreVersion type="regex">1.7.1-.*</ignoreVersion>
             </ignoreVersions>
         </rule>
-        <rule groupId="com.sun.xml.bind" artifactId="policy" comparisonMethod="maven">
+        <rule groupId="com.sun.xml.bind" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">2.2.8-20.*</ignoreVersion>
                 <ignoreVersion type="regex">2.2.8-b20.*</ignoreVersion>
             </ignoreVersions>
         </rule>
-        <rule groupId="org.glassfish.jaxb" artifactId="policy" comparisonMethod="maven">
+        <rule groupId="org.glassfish.jaxb" comparisonMethod="maven">
             <ignoreVersions>
-                <ignoreVersion type="regex">2.2.8-20.*</ignoreVersion>
                 <ignoreVersion type="regex">2.2.8-b20.*</ignoreVersion>
             </ignoreVersions>
         </rule>
