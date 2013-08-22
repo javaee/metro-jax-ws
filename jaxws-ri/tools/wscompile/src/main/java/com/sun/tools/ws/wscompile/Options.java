@@ -109,10 +109,13 @@ public class Options {
     public boolean nocompile;
 
     /**
-     * Disable secure xml processing.
-     * -XdisableSecureXmlProcessing
+     * If true XML security features when parsing XML documents will be disabled.
+     * The default value is false.
+     *
+     * Boolean
+     * @since 2.2.9
      */
-    public boolean disableSecureXmlProcessing = false;
+    public boolean disableXmlSecurity;
 
     public enum Target {
         V2_0, V2_1, V2_2;
@@ -369,11 +372,16 @@ public class Options {
                 throw new BadCommandLineException(WscompileMessages.WSCOMPILE_UNSUPPORTED_ENCODING(encoding));
             }
             return 2;
-        } else if (args[i].equals("-XdisableSecureXmlProcessing")) {
-            disableSecureXmlProcessing= true;
+        } else if (args[i].equals("-disableXmlSecurity")) {
+            disableXmlSecurity();
             return 1;
         }
         return 0;
+    }
+
+    // protected method to allow overriding
+    protected void disableXmlSecurity() {
+        disableXmlSecurity= true;
     }
 
     /**

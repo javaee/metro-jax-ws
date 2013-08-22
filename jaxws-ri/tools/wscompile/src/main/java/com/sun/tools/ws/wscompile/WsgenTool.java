@@ -220,9 +220,9 @@ public class WsgenTool {
             DatabindingConfig config = new DatabindingConfig();
 
             List<String> externalMetadataFileNames = options.externalMetadataFiles;
-            boolean disableSecureXmlProcessing = options.disableSecureXmlProcessing;
+            boolean disableXmlSecurity = options.disableXmlSecurity;
             if (externalMetadataFileNames != null && externalMetadataFileNames.size() > 0) {
-                config.setMetadataReader(new ExternalMetadataReader(getExternalFiles(externalMetadataFileNames), null, null, true, disableSecureXmlProcessing));
+                config.setMetadataReader(new ExternalMetadataReader(getExternalFiles(externalMetadataFileNames), null, null, true, disableXmlSecurity));
             }
 
             String tmpPath = options.destDir.getAbsolutePath() + File.pathSeparator + options.classpath;
@@ -258,7 +258,7 @@ public class WsgenTool {
             final Map<String, File> schemaFiles = new HashMap<String, File>();
 
             WSDLGenInfo wsdlGenInfo = new WSDLGenInfo();
-            wsdlGenInfo.setSecureXmlProcessingDisabled(disableSecureXmlProcessing);
+            wsdlGenInfo.setSecureXmlProcessingDisabled(disableXmlSecurity);
 
             wsdlGenInfo.setWsdlResolver(
                     new WSDLResolver() {
