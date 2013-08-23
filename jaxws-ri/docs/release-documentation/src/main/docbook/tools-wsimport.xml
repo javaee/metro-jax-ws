@@ -148,6 +148,20 @@ holder.
                     </row>
 
                     <row>
+                        <entry><literal>-classpath &lt;path&gt;</literal></entry>
+
+                        <entry>Specify where to find user class files
+                        and wsimport extensions.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-cp &lt;path&gt;</literal></entry>
+
+                        <entry>Specify where to find user class files
+                        and wsimport extensions.</entry>
+                    </row>
+
+                    <row>
                         <entry><literal>-b &lt;path&gt;</literal></entry>
 
                         <entry>Specify external JAX-WS or JAXB binding files
