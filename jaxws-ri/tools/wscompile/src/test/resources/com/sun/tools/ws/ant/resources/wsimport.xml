@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -193,6 +193,31 @@
             extension="true"
             fork="true">
             <jvmArg line="${coverage}"/>
+        </wsimport>
+    </target>
+
+    <target name="wsimport-javac" depends="setup">
+        <javac srcdir="${src.dir}" destdir="${build.dir}" fork="true">
+            <compilerarg line="-J-Djava.endorsed.dirs=${api.dir}"/>
+            <classpath refid="task.cp"/>
+        </javac>
+
+        <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport2">
+            <classpath>
+                <path refid="task.cp"/>
+                <pathelement location="${build.dir}"/>
+            </classpath>
+        </taskdef>
+
+        <wsimport
+            sourcedestdir="${src.dir}"
+            destdir="${build.dir}"
+            wsdl="${wsdl}"
+            extension="true"
+            fork="true">
+            <jvmArg line="${coverage}"/>
+            <javacarg value="-source=1.5"/>
+            <javacarg value="-target=1.5"/>
         </wsimport>
     </target>
 

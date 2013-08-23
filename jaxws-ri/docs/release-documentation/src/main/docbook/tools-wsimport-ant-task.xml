@@ -129,6 +129,8 @@ holder.
     <binding dir="..." includes="..." />
     <arg value="..."/>
     <xjcarg value="..."/>
+    <javacarg value="..."/>
+    <jvmarg value="..."/>
     <xmlcatalog refid="another catalog file"/>
 </wsimport>]]></programlisting>
         </informalexample>
@@ -467,6 +469,29 @@ holder.
                 passed to the XJC tool (JAXB Schema Compiler), which will be
                 used for compiling the schema referenced in the wsdl. For
                 details about the syntax, see <link
+                xlink:href="http://ant.apache.org/manual/using.html#arg">the
+                relevant section</link> in the Ant manual.</para>
+            </section>
+
+            <section xml:id="section-wsimport-ant-javacarg">
+                <title><literal>javacarg</literal></title>
+
+                <para>The usage is similar to <literal>&lt;arg&gt;</literal>
+                nested element, except that these arguments are directly passed
+                to the Javac Compiler, which will be used for compiling sources
+                generated during processing the referenced wsdl. For details
+                about the syntax, see <link
+                xlink:href="http://ant.apache.org/manual/using.html#arg">the
+                relevant section</link> in the Ant manual.Note: use '=' instead of
+                space as a delimiter between option name and its value.</para>
+            </section>
+
+            <section xml:id="section-wsimport-ant-jvmarg">
+                <title><literal>jvmarg</literal></title>
+
+                <para>Use nested <literal>&lt;jvmarg&gt;</literal> elements to
+                specify arguments for the the forked VM (ignored if fork is
+                disabled), see <link
                 xlink:href="http://ant.apache.org/manual/using.html#arg">the
                 relevant section</link> in the Ant manual.</para>
             </section>

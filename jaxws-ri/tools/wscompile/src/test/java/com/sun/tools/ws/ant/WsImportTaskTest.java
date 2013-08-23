@@ -154,4 +154,21 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
         copy(buildDir,  "META-INF/com.sun.tools.ws.api.wsdl.TWSDLExtensionHandler", WsImportTaskTest.class.getResourceAsStream("resources/TWSDLExtensionHandler"));
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-fork"));
     }
+
+    public void testJavac() throws IOException {
+        assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-javac"));
+        //wsimport compiled classes should be valid for java 5
+        File f = new File(buildDir, "test/types/HelloType.class");
+        DataInputStream in = new DataInputStream(new FileInputStream(f));
+        assertEquals(0xcafebabe, in.readInt());
+        assertEquals(0, in.readUnsignedShort());
+        assertEquals(49, in.readUnsignedShort());
+
+        f = new File(buildDir, "test/Hello.class");
+        in = new DataInputStream(new FileInputStream(f));
+        assertEquals(0xcafebabe, in.readInt());
+        assertEquals(0, in.readUnsignedShort());
+        assertEquals(49, in.readUnsignedShort());
+    }
+
 }

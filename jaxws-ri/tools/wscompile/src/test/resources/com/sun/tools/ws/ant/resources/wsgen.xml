@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -127,7 +127,7 @@
             <classpath>
                 <pathelement location="${src.dir}"/>
             </classpath>
-            <jvmArg line="${coverage}"/>
+            <jvmarg line="${coverage}"/>
         </wsgen>
     </target>
 
@@ -174,7 +174,7 @@
             <classpath>
                 <pathelement location="${src.dir}"/>
             </classpath>
-            <jvmArg line="-Xmx256m ${coverage}"/>
+            <jvmarg line="-Xmx256m ${coverage}"/>
         </wsgen>
     </target>
 
@@ -200,7 +200,30 @@
             <classpath>
                 <pathelement location="${src.dir}"/>
             </classpath>
-            <jvmArg line="${coverage}"/>
+            <jvmarg line="${coverage}"/>
+        </wsgen>
+    </target>
+
+    <target name="wsgen-javac" depends="setup">
+        <javac srcdir="${src.dir}" destdir="${src.dir}" fork="true">
+            <compilerarg line="-J-Djava.endorsed.dirs=${api.dir}"/>
+            <classpath refid="task.cp"/>
+        </javac>
+
+        <taskdef name="wsgen" classname="com.sun.tools.ws.ant.WsGen2">
+            <classpath refid="task.cp"/>
+        </taskdef>
+
+        <wsgen
+            sei="test.TestWs"
+            destdir="${build.dir}"
+            fork="true">
+            <classpath>
+                <pathelement location="${src.dir}"/>
+            </classpath>
+            <jvmarg line="${coverage}"/>
+            <javacarg value="-source=1.5"/>
+            <javacarg value="-target=1.5"/>
         </wsgen>
     </target>
 

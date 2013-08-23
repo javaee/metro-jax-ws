@@ -176,7 +176,7 @@ public class WsgenTool {
         final ErrorReceiverFilter errReceiver = new ErrorReceiverFilter(listener);
 
         boolean bootCP = useBootClasspath(EndpointReference.class) || useBootClasspath(XmlSeeAlso.class);
-        Collection<String> args = new ArrayList<String>(6 + (bootCP ? 1 : 0) + (options.nocompile ? 1 : 0)
+        List<String> args = new ArrayList<String>(6 + (bootCP ? 1 : 0) + (options.nocompile ? 1 : 0)
                 + (options.encoding != null ? 2 : 0));
         args.add("-d");
         args.add(options.destDir.getAbsolutePath());
@@ -197,6 +197,9 @@ public class WsgenTool {
                     .append(JavaCompilerHelper.getJarFile(EndpointReference.class))
                     .append(File.pathSeparator)
                     .append(JavaCompilerHelper.getJarFile(XmlSeeAlso.class)).toString());
+        }
+        if (options.javacOptions != null) {
+            args.addAll(options.getJavacOptions(args, listener));
         }
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();//        compiler = JavacTool.create();

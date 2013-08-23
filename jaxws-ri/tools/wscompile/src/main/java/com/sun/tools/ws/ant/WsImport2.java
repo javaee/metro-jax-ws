@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -80,6 +80,9 @@ public class WsImport2 extends MatchingTask {
 
     /** Additional command line arguments for XJC. The equivalent of the -B option. */
     private final Commandline xjcCmdLine = new Commandline();
+
+    /** Additional command line arguments for Javac. The equivalent of the -J option. */
+    private final Commandline javacCmdLine = new Commandline();
 
     /** Enable/disable debug messages - stack trace **/
     private boolean xdebug = false;
@@ -270,6 +273,16 @@ public class WsImport2 extends MatchingTask {
      */
     public Commandline.Argument createXjcarg() {
         return xjcCmdLine.createArgument();
+    }
+
+    /**
+     * Adds Javac argument.
+     *
+     * @since 2.2.9
+     * @return Javac argument created
+     */
+    public Commandline.Argument createJavacarg() {
+        return javacCmdLine.createArgument();
     }
 
     /********************* failonerror option  ***********************/
@@ -671,6 +684,10 @@ public class WsImport2 extends MatchingTask {
 
         if(isXnocompile()){
             cmd.createArgument().setValue("-Xnocompile");
+        } else {
+            for (String a : javacCmdLine.getArguments()) {
+                cmd.createArgument().setValue("-J" + a);
+            }
         }
 
         if(isXadditionalHeaders()){

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,6 +66,9 @@ import java.util.List;
 public class WsGen2 extends MatchingTask {
 
     private CommandlineJava cmd = new CommandlineJava();
+    /** Additional command line arguments for Javac. The equivalent of the -J option. */
+    private final Commandline javacCmdLine = new Commandline();
+
     /**
      * **********************  -classpath option ************************
      */
@@ -168,6 +171,15 @@ public class WsGen2 extends MatchingTask {
         return cmd.createVmArgument();
     }
 
+    /**
+     * Adds Javac argument.
+     *
+     * @since 2.2.9
+     * @return Javac argument created
+     */
+    public Commandline.Argument createJavacarg() {
+        return javacCmdLine.createArgument();
+    }
 
     /********************  -Xendorsed option **********************/
 
@@ -654,6 +666,10 @@ public class WsGen2 extends MatchingTask {
                 cmd.createArgument().setValue("-x");
                 cmd.createArgument().setValue(file.file);
             }
+        }
+
+        for (String a : javacCmdLine.getArguments()) {
+            cmd.createArgument().setValue("-J" + a);
         }
 
         if (getSei() != null) {

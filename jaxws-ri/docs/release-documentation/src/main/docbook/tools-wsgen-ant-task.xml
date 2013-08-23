@@ -3,7 +3,7 @@
 
 DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
 
 The contents of this file are subject to the terms of either the GNU
 General Public License Version 2 only ("GPL") or the Common Development
@@ -62,6 +62,24 @@ holder.
         deployment, and invocation.</para>
     </section>
 
+    <section xml:id="using-wsgen-task">
+        <title>Using <command>wsgen</command> Task</title>
+
+        <para>Before this task can be used, a <literal>&lt;taskdef&gt;</literal>
+        element needs to be added to the project as given below:</para>
+
+        <informalexample>
+            <programlisting language="xml"><![CDATA[<taskdef name="wsgen" classname="com.sun.tools.ws.ant.WsGen">
+    <classpath path="jaxws.classpath"/>
+</taskdef>]]></programlisting>
+        </informalexample>
+
+        <para>where <literal>jaxws.classpath</literal> is a reference to a
+        <link
+        xlink:href="http://ant.apache.org/manual/using.html#path">path-like
+        structure</link>, defined elsewhere in the build environment, and
+        contains the list of classes required by the JAX-WS tools.</para>
+
     <section xml:id="wsgen-task-attributes">
         <title><command>wsgen</command> Task Attributes</title>
 
@@ -85,6 +103,9 @@ holder.
         extension="true|false"
         inlineSchemas="true|false"
     <classpath refid="..."/>
+    <externalmetadata file="..."/>
+    <javacarg value="..."/>
+    <jvmarg value="..."/>
 </wsgen>]]></programlisting>
         </informalexample>
 
@@ -260,12 +281,23 @@ holder.
         xlink:href="http://ant.apache.org/manual/using.html#path">path-like
         structure</link> and can also be set via nested
         <literal>&lt;classpath&gt;</literal> elements. </para>
+    </section>
 
-        <para>There is an optional element <literal>external-metadata</literal> which can be used if there are any
-            web service metadata to be specified in xml file instead of java annotations: </para>
+        <section xml:id="section-wsgen-ant-nestedelements">
+            <title>Nested Elements</title>
 
-        <informalexample>
-            <programlisting language="xml"><![CDATA[<wsgen
+            <para><command>wsgen</command> supports the following nested
+            element parameters.</para>
+
+            <section xml:id="section-wsgen-ant-extmetadata">
+                <title><literal>external-metadata</literal></title>
+
+                <para>An optional element <literal>external-metadata</literal>
+                can be used if there are any web service metadata to be
+                specified in xml file instead of java annotations: </para>
+
+                <informalexample>
+                    <programlisting language="xml"><![CDATA[<wsgen
         resourcedestdir="${wsdl.dir}"
         sei="fromjava.server.AddNumbersImpl">
     <classpath refid="compile.classpath"/>
@@ -273,28 +305,39 @@ holder.
 </wsgen>]]></programlisting>
         </informalexample>
 
-        <para>For details see
-            <xref linkend="users-guide-external-metadata" xrefstyle="select:title" />.</para>
+                <para>For details see
+                <xref linkend="users-guide-external-metadata" xrefstyle="select:title" />.</para>
+            </section>
 
-        <para>Before this task can be
-        used, a <literal>&lt;taskdef&gt;</literal> element needs to be added
-        to the project as given below:</para>
+            <section xml:id="section-wsgen-ant-javacarg">
+                <title><literal>javacarg</literal></title>
 
-        <informalexample>
-            <programlisting language="xml"><![CDATA[<taskdef name="wsgen" classname="com.sun.tools.ws.ant.WsGen">
-    <classpath path="jaxws.classpath"/>
-</taskdef>]]></programlisting>
-        </informalexample>
+                <para>The usage is similar to <literal>&lt;arg&gt;</literal>
+                nested element, except that these arguments are directly passed
+                to the Javac Compiler, which will be used for compiling sources
+                generated during processing the referenced wsdl. For details
+                about the syntax, see <link
+                xlink:href="http://ant.apache.org/manual/using.html#arg">the
+                relevant section</link> in the Ant manual.
+                Note: use '=' instead of space as a delimiter between
+                option name and its value.</para>
+            </section>
 
-        <para>where <literal>jaxws.classpath</literal> is a reference to a
-        <link
-        xlink:href="http://ant.apache.org/manual/using.html#path">path-like
-        structure</link>, defined elsewhere in the build environment, and
-        contains the list of classes required by the JAX-WS tools.</para>
+            <section xml:id="section-wsgen-ant-jvmarg">
+                <title><literal>jvmarg</literal></title>
+
+                <para>Use nested <literal>&lt;jvmarg&gt;</literal> elements to
+                specify arguments for the the forked VM (ignored if fork is
+                disabled), see <link
+                xlink:href="http://ant.apache.org/manual/using.html#arg">the
+                relevant section</link> in the Ant manual.</para>
+            </section>
+
+        </section>
     </section>
 
     <section xml:id="wsgen-task-example">
-        <title><command>wsgen</command> Task Example</title>
+        <title><command>wsgen</command> Task Examples</title>
 
         <informalexample>
             <programlisting language="xml"><![CDATA[<wsgen

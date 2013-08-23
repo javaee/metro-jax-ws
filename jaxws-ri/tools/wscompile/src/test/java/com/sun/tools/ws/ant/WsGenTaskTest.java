@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package com.sun.tools.ws.ant;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -107,5 +108,23 @@ public class WsGenTaskTest extends WsAntTaskTestBase {
     public void testFork() throws IOException, URISyntaxException {
         copy(pkg, "TestWs.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs.java_"));
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-fork"));
+    }
+
+    public void testJavac() throws IOException, URISyntaxException {
+        copy(pkg, "TestWs.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs.java_"));
+        assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-javac"));
+        //wsgen compiled classes should be valid for java 5
+        File f = new File(buildDir, "test/jaxws/Hello.class");
+        DataInputStream in = new DataInputStream(new FileInputStream(f));
+        assertEquals(0xcafebabe, in.readInt());
+        assertEquals(0, in.readUnsignedShort());
+        assertEquals(49, in.readUnsignedShort());
+
+        //ws class is compiled by default javac (6+)
+        f = new File(srcDir, "test/TestWs.class");
+        in = new DataInputStream(new FileInputStream(f));
+        assertEquals(0xcafebabe, in.readInt());
+        in.readUnsignedShort();
+        assertTrue(49 != in.readUnsignedShort());
     }
 }

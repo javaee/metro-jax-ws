@@ -198,6 +198,14 @@ holder.
                     </row>
 
                     <row>
+                        <entry><literal>-J&lt;javacOption&gt;</literal></entry>
+
+                        <entry>Pass this option to Javac compiler. Note: use '='
+                        instead of space as a delimiter between option name and
+                        its value.</entry>
+                    </row>
+
+                    <row>
                         <entry><literal>-keep</literal></entry>
 
                         <entry>Keep generated source code files. It is enabled

@@ -41,6 +41,8 @@
 package com.sun.tools.ws.wscompile;
 
 import com.sun.tools.xjc.api.SchemaCompiler;
+import java.util.ArrayList;
+import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -91,5 +93,36 @@ public class WsimportOptionsTest extends TestCase {
         assertNull("ws encoding set", options.encoding);
         assertNotNull("xjc encoding not set", sc.getOptions().encoding);
         assertEquals("UTF-16", sc.getOptions().encoding);
+    }
+
+    /**
+     * Test of parseArguments(String[]) method, of class WsimportOptions.
+     */
+    public void testParseArgument_javacArgs() throws Exception {
+        WsimportOptions options = new WsimportOptions();
+        String[] args = new String[] {"-g", "-J-g", "-J-source=1.6", "-J-target=1.6", "-J-XprintRounds"};
+        options.parseArguments(args);
+        assertFalse("javac options not set", options.javacOptions.isEmpty());
+        assertEquals("invalid option recognized", 4, options.javacOptions.size());
+        L l = new L();
+        List<String> jopts = options.getJavacOptions(new ArrayList<String>(){{add("-g");}}, l);
+        assertEquals("incorrect split of javac options", 5, jopts.size());
+        assertTrue(jopts.remove("-source"));
+        assertTrue(jopts.remove("1.6"));
+        assertTrue(jopts.remove("-target"));
+        assertTrue(jopts.remove("1.6"));
+        assertTrue(jopts.remove("-XprintRounds"));
+        assertTrue(jopts.isEmpty());
+        assertEquals(1, l.i);
+    }
+
+    private static class L extends WsimportListener {
+        int i = 0;
+
+        @Override
+        public void message(String msg) {
+            i++;
+        }
+
     }
 }
