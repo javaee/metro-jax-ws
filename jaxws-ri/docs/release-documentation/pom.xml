@@ -167,6 +167,7 @@
                     <htmlStylesheet>style/documentation.css</htmlStylesheet>
                     <htmlCustomization>${basedir}/src/main/docbook/stylesheet/htmlCustomizations.xsl</htmlCustomization>
                     <foCustomization>${basedir}/src/main/docbook/stylesheet/foCustomizations.xsl</foCustomization>
+                    <fop1Extensions>true</fop1Extensions>
                     <partAutolabel>true</partAutolabel>
                     <sectionAutolabel>true</sectionAutolabel>
                     <sectionLabelIncludesComponentLabel>true</sectionLabelIncludesComponentLabel>
