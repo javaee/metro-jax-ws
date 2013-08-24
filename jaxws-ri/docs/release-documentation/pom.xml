@@ -124,6 +124,11 @@
 
                                 <replace file="${src.dir}/docbook.ent" token="$release.spec.version" value="${jaxws-api.version}" />
                                 <replace file="${src.dir}/docbook.ent" token="$release.impl.version" value="${project.version}" />
+
+                                <mkdir dir="${src.dir}/icons/callouts" />
+                                <copy todir="${src.dir}/icons/callouts">
+                                    <fileset dir="src/main/docbook/icons/callouts" includes="*.*" />
+                                </copy>
                             </target>
                         </configuration>
                     </execution>
