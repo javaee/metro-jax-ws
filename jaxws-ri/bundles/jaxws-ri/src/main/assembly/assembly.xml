@@ -102,10 +102,6 @@
                 <include>${project.groupId}:jaxws-rt</include>
                 <include>${project.groupId}:jaxws-tools</include>
             </includes>
-            <excludes>
-                <exclude>javax.activation:activation</exclude>
-                <exclude>javax.xml.soap:saaj-api</exclude>
-            </excludes>
         </dependencySet>
         <dependencySet>
             <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
