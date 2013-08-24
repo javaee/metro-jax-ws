@@ -269,6 +269,11 @@ holder.
                             the option must be used before each of those.
                         </entry>
                     </row>
+                    <row>
+                        <entry><literal>-Xnocompile</literal></entry>
+
+                        <entry>Do not compile generated Java files.</entry>
+                    </row>
                 </tbody>
             </tgroup>
         </informaltable>

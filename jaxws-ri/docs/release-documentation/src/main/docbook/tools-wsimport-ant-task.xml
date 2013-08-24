@@ -104,6 +104,26 @@ holder.
         structure</link>, defined elsewhere in the build environment, and
         contains the list of classes required by the JAX-WS tools.</para>
 
+        <section xml:id="section-8164488302388055">
+            <title>Environment Variables</title>
+
+            <itemizedlist>
+                <listitem>
+                    <para><link
+                    xlink:href="http://wiki.apache.org/ant/TheElementsOfAntStyle">ANT_OPTS</link>
+                    - command-line arguments that should be passed to the JVM.
+                    For example, you can define system properties or set the
+                    maximum Java heap size here.</para>
+                </listitem>
+            </itemizedlist>
+        </section>
+
+        <section xml:id="section-925990378001543">
+            <title>wsimport Task Attributes</title>
+
+            <para><command>wsimport</command> supports the following parameter
+            attributes:</para>
+
         <informalexample>
             <programlisting language="xml"><![CDATA[<wsimport
         wsdl="..."
@@ -120,40 +140,24 @@ holder.
         target="target release"
         binding="..."
         quiet="true|false"
+        fork="true|false"
+        failonerror="true|false"
         xadditionalHeaders="true|false"
         xauthfile="authorization file"
         xdisableAuthenticator="true|false"
         xdebug="true|false"
         xNoAddressingDatabinding="true|false"
-        xnocompile="true|false"
-    <binding dir="..." includes="..." />
+        xnocompile="true|false">
+    <binding dir="..." includes="..."/>
     <arg value="..."/>
     <xjcarg value="..."/>
     <javacarg value="..."/>
     <jvmarg value="..."/>
     <xmlcatalog refid="another catalog file"/>
+    <depends file="..."/>
+    <produces dir="..."/>
 </wsimport>]]></programlisting>
         </informalexample>
-
-        <section xml:id="section-8164488302388055">
-            <title>Environment Variables</title>
-
-            <itemizedlist>
-                <listitem>
-                    <para><link
-                    xlink:href="http://wiki.apache.org/ant/TheElementsOfAntStyle">ANT_OPTS</link>
-                    - command-line arguments that should be passed to the JVM.
-                    For example, you can define system properties or set the
-                    maximum Java heap size here.</para>
-                </listitem>
-            </itemizedlist>
-        </section>
-
-        <section xml:id="section-925990378001543">
-            <title>Parameter Attributes</title>
-
-            <para><command>wsimport</command> supports the following parameter
-            attributes.</para>
 
             <informaltable frame="all">
                 <tgroup cols="4" colsep="1" rowsep="1">
@@ -349,6 +353,26 @@ holder.
                         </row>
 
                         <row>
+                            <entry><literal>fork</literal></entry>
+
+                            <entry>Used to execute wsgen using forked VM.</entry>
+
+                            <entry>No. Defaults to false.</entry>
+                        
+                            <entry>None.</entry>
+                        </row>
+
+                        <row>
+                            <entry><literal>failonerror</literal></entry>
+
+                            <entry>Indicates whether errors will fail the build.</entry>
+
+                            <entry>No. Defaults to true.</entry>
+
+                            <entry>None.</entry>
+                        </row>
+
+                        <row>
                             <entry><literal>xadditionalHeaders</literal></entry>
 
                             <entry>Map headers not bound to request or response
@@ -503,6 +527,15 @@ holder.
                 xlink:href="http://ant.apache.org/manual/Types/xmlcatalog.html">xmlcatalog</link>
                 element is used to resolve entities when parsing schema
                 documents.</para>
+            </section>
+
+            <section xml:id="section-wsimport-ant-depprod">
+                <title><literal>depends</literal>/<literal>produces</literal></title>
+
+                <para>Files specified with this nested element are taken into
+                account when the task does a modification date check. For proper
+                syntax, see <link
+                xlink:href="http://ant.apache.org/manual/Types/fileset.html"><literal>&lt;fileset&gt;</literal></link>.</para>
             </section>
         </section>
     </section>

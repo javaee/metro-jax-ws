@@ -422,6 +422,7 @@ public class WsgenTool {
             System.out.println(WscompileMessages.WSGEN_HELP("WSGEN", 
                     ((WsgenOptions)options).protocols, 
                     ((WsgenOptions)options).nonstdProtocols.keySet()));
+            System.out.println(WscompileMessages.WSGEN_USAGE_EXTENSIONS());
             System.out.println(WscompileMessages.WSGEN_USAGE_EXAMPLES());
         }
     }
