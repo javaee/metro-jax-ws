@@ -334,8 +334,8 @@ holder.
             </listitem>
 
             <listitem>
-                <para><xref linkend="samples-samples"
-                xrefstyle="select:title" /></para>
+                <para><link linkend="samples">Support for dual binding (SOAP/HTTP
+                and XML/HTTP) for the same service class</link></para>
             </listitem>
 
             <listitem>

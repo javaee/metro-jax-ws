@@ -749,7 +749,7 @@ public Future<?> addNumbers(int number1, int number2,
 
             <para>The external JAXB binding declaration file can be passed to
             <command>wsimport</command> using the <option>-b</option> switch.
-            See the JAX-WS <xref linkend="wscompiletool"
+            See the JAX-WS <xref linkend="tools-wsimport"
             xrefstyle="select:title" /> documentation for details.</para>
         </section>
 
