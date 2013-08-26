@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,15 +60,16 @@ public class WsAntToolsTest extends TestCase {
     }
 
     public void testWsGenForkedCommand() {
-        String method = "setupWscompileForkCommand";
+        String method = "setupForkCommand";
         String field = "cmd";
+        String arg = "";
         //API jars are somewhere on the classpath
         File tmpDir = new File(System.getProperty("java.io.tmpdir"), "wsi2test");
         WsGen2 wsg2 = new WsGen2();
         wsg2.setFork(true);
         wsg2.setDestdir(new File(tmpDir, "dest"));
         wsg2.setSourcedestdir(new File(tmpDir, "srcDest"));
-        CommandlineJava cmd = (CommandlineJava) run(WsGen2.class, wsg2, method, field);
+        CommandlineJava cmd = (CommandlineJava) run(WsGen2.class, wsg2, method, arg, field);
         verifyCommand(cmd.describeCommand());
 
         //API jars are defined using CLASSPATH environment variable (= System class loader)
@@ -79,7 +80,7 @@ public class WsAntToolsTest extends TestCase {
             wsg2.setFork(true);
             wsg2.setDestdir(new File(tmpDir, "dest"));
             wsg2.setSourcedestdir(new File(tmpDir, "srcDest"));
-            cmd = (CommandlineJava) run(WsGen2.class, wsg2, method, field);
+            cmd = (CommandlineJava) run(WsGen2.class, wsg2, method, arg, field);
             verifyCommand(cmd.describeCommand());
         } finally {
             Thread.currentThread().setContextClassLoader(cl);
@@ -87,15 +88,16 @@ public class WsAntToolsTest extends TestCase {
     }
 
     public void testWsImportForkedCommand() {
-        String method = "setupWsimportForkCommand";
+        String method = "setupForkCommand";
         String field = "cmd";
+        String arg = "";
         //API jars are somewhere on the classpath
         File tmpDir = new File(System.getProperty("java.io.tmpdir"), "wsi2test");
         WsImport2 wsi2 = new WsImport2();
         wsi2.setFork(true);
         wsi2.setDestdir(new File(tmpDir, "dest"));
         wsi2.setSourcedestdir(new File(tmpDir, "srcDest"));
-        CommandlineJava cmd = (CommandlineJava) run(WsImport2.class, wsi2, method, field);
+        CommandlineJava cmd = (CommandlineJava) run(WsImport2.class, wsi2, method, arg, field);
         verifyCommand(cmd.describeCommand());
 
         //API jars are defined using CLASSPATH environment variable (= System class loader)
@@ -106,15 +108,15 @@ public class WsAntToolsTest extends TestCase {
             wsi2.setFork(true);
             wsi2.setDestdir(new File(tmpDir, "dest"));
             wsi2.setSourcedestdir(new File(tmpDir, "srcDest"));
-            cmd = (CommandlineJava) run(WsImport2.class, wsi2, method, field);
+            cmd = (CommandlineJava) run(WsImport2.class, wsi2, method, arg, field);
             verifyCommand(cmd.describeCommand());
         } finally {
             Thread.currentThread().setContextClassLoader(cl);
         }
     }
 
-    private Object run(Class<?> c, Object i, String method, String field) {
-        runVoidMethod(c, i, method);
+    private Object run(Class<?> c, Object i, String method, String arg, String field) {
+        runVoidMethod(c, i, method, arg);
         return getField(c, i, field);
     }
 
@@ -128,12 +130,12 @@ public class WsAntToolsTest extends TestCase {
         Assert.assertTrue(jar + " not found " + command, command.contains(jar));
     }
 
-    private void runVoidMethod(Class<?> c, Object i, String name) {
+    private void runVoidMethod(Class<?> c, Object i, String name, String arg) {
         Method m = null;
         try {
-            m = c.getDeclaredMethod(name);
+            m = c.getSuperclass().getDeclaredMethod(name, String.class);
             m.setAccessible(true);
-            m.invoke(i);
+            m.invoke(i, arg);
         } catch (Throwable t) {
             Logger.getLogger(WsAntToolsTest.class.getName()).log(Level.SEVERE, null, t);
             Assert.fail(t.getMessage());
@@ -147,7 +149,7 @@ public class WsAntToolsTest extends TestCase {
     private Object getField(Class<?> c, Object i, String name) {
         Field f = null;
         try {
-            f = c.getDeclaredField(name);
+            f = c.getSuperclass().getDeclaredField(name);
             f.setAccessible(true);
             return f.get(i);
         } catch (Throwable t) {

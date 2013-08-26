@@ -40,30 +40,21 @@
 
 package com.sun.tools.ws.ant;
 
-import com.sun.tools.ws.ToolVersion;
 import com.sun.tools.ws.wscompile.Options;
 import com.sun.tools.ws.wscompile.WsimportTool;
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Execute;
-import org.apache.tools.ant.taskdefs.LogOutputStream;
-import org.apache.tools.ant.taskdefs.LogStreamHandler;
-import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.XMLCatalog;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URL;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,17 +63,12 @@ import java.util.Set;
  * wscompile task for use with the JAXWS project.
  *
  */
-public class WsImport2 extends MatchingTask {
+public class WsImport2 extends WsTask2 {
 
-    private final CommandlineJava cmd = new CommandlineJava();
-    /** -d option. */
-    private File destDir = null;
+    private final Commandline extraArgs = new Commandline();
 
     /** Additional command line arguments for XJC. The equivalent of the -B option. */
     private final Commandline xjcCmdLine = new Commandline();
-
-    /** Additional command line arguments for Javac. The equivalent of the -J option. */
-    private final Commandline javacCmdLine = new Commandline();
 
     /** Enable/disable debug messages - stack trace **/
     private boolean xdebug = false;
@@ -91,26 +77,8 @@ public class WsImport2 extends MatchingTask {
         return xdebug;
     }
 
-    /**
-     * Set to true to perform the endorsed directory override so that
-     * Ant tasks can run on JavaSE 6.
-     * This is used only when fork is true. With fork=false which is default, it is handled way before in the WrapperTask.
-     */
-    private boolean xendorsed = false;
-    public void setXendorsed(boolean xendorsed) {
-        this.xendorsed = xendorsed;
-    }
-    public boolean isXendorsed() {
-        return xendorsed;
-    }
-
     public void setXdebug(boolean xdebug) {
         this.xdebug = xdebug;
-    }
-
-
-    public boolean isXnocompile() {
-        return xnocompile;
     }
     
     private boolean xuseBaseResourceAndURLToLoadWSDL = false;
@@ -174,20 +142,13 @@ public class WsImport2 extends MatchingTask {
         this.implPortName = base;
     }
 
-    public void setXnocompile(boolean xnocompile) {
-      this.xnocompile = xnocompile;
-    }
-
-    /** do not compile generated classes **/
-    private boolean xnocompile = false;
-
     /**
      * Provides a way to directly pass wsimport commandline options through nested arg
      * instead of a separate attribute for each option.
      * @return argument created
      */
     public Commandline.Argument createArg() {
-        return cmd.createArgument();
+        return extraArgs.createArgument();
     }
 
     /**
@@ -203,31 +164,28 @@ public class WsImport2 extends MatchingTask {
         this.xadditionalHeaders = xadditionalHeaders;
     }
 
-    /** Gets the base directory to output generated class. **/
-    public File getDestdir() {
-        return this.destDir;
-    }
-
-    /** Sets the base directory to output generated class. **/
-    public void setDestdir(File base) {
-        this.destDir = base;
-    }
-
     /** -clientjar option. */
     private String clientjar = null;
 
-    /** Gets the clientjar to output generated artifacts into a jar. **/
+    /**
+     * Gets the clientjar to output generated artifacts into a jar.
+     *
+     * @return jar file where to put generated artifacts.
+     */
     public String getClientjar() {
         return this.clientjar;
     }
 
-    /** Sets the base directory to output generated class. **/
+    /**
+     * Sets the base directory to output generated class.
+     *
+     * @param clientjar jar file where to put generated artifacts.
+     */
     public void setClientjar(String clientjar) {
         this.clientjar = clientjar;
     }
 
     /** wsdllocation - set @WebService.wsdlLocation and @WebServiceClient.wsdlLocation values */
-
     private String wsdlLocation;
 
     public String getWsdllocation() {
@@ -258,57 +216,13 @@ public class WsImport2 extends MatchingTask {
     }
 
     /**
-     * Adds a JVM argument.
-     *
-     * @return JVM argument created
-     */
-    public Commandline.Argument createJvmarg() {
-        return cmd.createVmArgument();
-    }
-
-    /**
      * Adds XJC argument.
      *
+     * @return XJC argument created.
      * @since 2.1
      */
     public Commandline.Argument createXjcarg() {
         return xjcCmdLine.createArgument();
-    }
-
-    /**
-     * Adds Javac argument.
-     *
-     * @since 2.2.9
-     * @return Javac argument created
-     */
-    public Commandline.Argument createJavacarg() {
-        return javacCmdLine.createArgument();
-    }
-
-    /********************* failonerror option  ***********************/
-    /**
-     * False to continue the build even if the compilation fails.
-     */
-    private boolean failonerror = true;
-
-    /**
-     * Mostly for our SQE teams and not to be advertized.
-     */
-    public void setFailonerror(boolean value) {
-        failonerror = value;
-    }
-
-    /********************  -extensions option **********************/
-    protected boolean extension;
-
-    /** Gets the "extension" flag. **/
-    public boolean getExtension() {
-        return extension;
-    }
-
-    /** Sets the "extension" flag. **/
-    public void setExtension(boolean extension) {
-        this.extension = extension;
     }
 
     public boolean getxNoAddressingDatabinding() {
@@ -321,21 +235,6 @@ public class WsImport2 extends MatchingTask {
 
     /**** -Xno-addressing-databinding ***/
     protected boolean xNoAddressingDatabinding;
-
-
-
-    /*************************  -keep option *************************/
-    private boolean keep = false;
-
-    /** Gets the "keep" flag. **/
-    public boolean getKeep() {
-        return keep;
-    }
-
-    /** Sets the "keep" flag. **/
-    public void setKeep(boolean keep) {
-        this.keep = keep;
-    }
 
     /** -quiet switch **/
     private boolean quiet = false;
@@ -352,133 +251,12 @@ public class WsImport2 extends MatchingTask {
     /**
      * Sets the target version of the compilation
      */
-    private String target;
+    private String specTarget;
     public void setTarget( String version ) {
         Options.Target targetVersion = Options.Target.parse(version);
         if(targetVersion==null)
             throw new BuildException(version+" is not a valid version number");
-        target = targetVersion.getVersion();
-    }
-
-
-
-
-    /*************************  -fork option *************************/
-    private boolean fork = false;
-
-    /** Gets the "fork" flag. **/
-    public boolean getFork() {
-        return fork;
-    }
-
-    /** Sets the "fork" flag. **/
-    public void setFork(boolean fork) {
-        this.fork = fork;
-    }
-
-    /*************************  -O option *************************/
-    private boolean optimize = false;
-
-    /** Gets the optimize flag. **/
-    public boolean getOptimize() {
-        return optimize;
-    }
-
-    /** Sets the optimize flag. **/
-    public void setOptimize(boolean optimize) {
-        this.optimize = optimize;
-    }
-
-    /*************************  -s option *************************/
-    private File sourcedestdir;
-
-    /** Sets the directory to place generated source java files. **/
-    public void setSourcedestdir(File sourceBase) {
-        keep = true;
-        this.sourcedestdir = sourceBase;
-    }
-
-    /** Gets the directory to place generated source java files. **/
-    public File getSourcedestdir() {
-        return sourcedestdir;
-    }
-
-    /*************************  -encoding option *************************/
-    private String encoding;
-
-    /** Sets the encoding for generated source java files. **/
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
-
-    /** Gets the encoding for generated source java files. **/
-    public String getEncoding() {
-        return encoding;
-    }
-
-    /*************************  -verbose option *************************/
-    protected boolean verbose = false;
-
-    /** Gets the "verbose" flag. **/
-    public boolean getVerbose() {
-        return verbose;
-    }
-
-    /** Sets the "verbose" flag. **/
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
-
-     /*************************  -g option *************************/
-     private boolean debug = false;
-
-     /** Gets the debug flag. **/
-     public boolean getDebug() {
-         return debug;
-     }
-
-     /** Sets the debug flag. **/
-     public void setDebug(boolean debug) {
-         this.debug = debug;
-     }
-
-    /***********************  include ant runtime **********************/
-    /** not sure if these methods are needed */
-    private boolean includeAntRuntime = false;
-
-    /**
-     * Include ant's own classpath in this task's classpath?
-     */
-    public void setIncludeantruntime(boolean include) {
-        includeAntRuntime = include;
-    }
-
-    /**
-     * Gets whether or not the ant classpath is to be included in the
-     * task's classpath.
-     */
-    public boolean getIncludeantruntime() {
-        return includeAntRuntime;
-    }
-
-    /***********************  include java runtime **********************/
-    /** not sure if these methods are needed */
-    private boolean includeJavaRuntime = false;
-
-    /**
-     * Sets whether or not to include the java runtime libraries to this
-     * task's classpath.
-     */
-    public void setIncludejavaruntime(boolean include) {
-        includeJavaRuntime = include;
-    }
-
-    /**
-     * Gets whether or not the java runtime should be included in this
-     * task's classpath.
-     */
-    public boolean getIncludejavaruntime() {
-        return includeJavaRuntime;
+        specTarget = targetVersion.getVersion();
     }
 
     /**
@@ -488,17 +266,25 @@ public class WsImport2 extends MatchingTask {
     private final ArrayList<File> producesSet = new ArrayList<File>();
 
     /**
-     * Set to true once the &lt;produces> element is used.
+     * Set to true once the &lt;produces&gt; element is used.
      * This flag is used to issue a suggestion to users.
      */
     private boolean producesSpecified = false;
 
-    /** Nested &lt;depends> element. */
+    /**
+     * Nested &lt;depends&gt; element.
+     *
+     * @param fs FileSet to check for modifications.
+     */
     public void addConfiguredDepends( FileSet fs ) {
         addIndividualFilesTo( fs, dependsSet );
     }
 
-    /** Nested &lt;produces> element. */
+    /**
+     * Nested &lt;produces&gt; element.
+     *
+     * @param fs FileSet to check for modifications.
+     */
     public void addConfiguredProduces( FileSet fs ) {
         producesSpecified = true;
         if( !fs.getDir(getProject()).exists() ) {
@@ -559,6 +345,7 @@ public class WsImport2 extends MatchingTask {
 
     /**
      * Adds a new catalog file.
+     * @param catalog catalog file to use.
      */
     public void setCatalog( File catalog ) {
         this.catalog = catalog;
@@ -569,8 +356,6 @@ public class WsImport2 extends MatchingTask {
     }
 
     private File catalog;
-
-
 
     private String wsdl;
     /**
@@ -624,58 +409,11 @@ public class WsImport2 extends MatchingTask {
         addIndividualFilesTo( fs, dependsSet );
     }
 
-    private void setupWsimportForkCommand() {
-        ClassLoader loader = this.getClass().getClassLoader();
-        while(loader!=null && !(loader instanceof AntClassLoader)) {
-            loader = loader.getParent();
-        }
-
-        String antcp = loader != null
-                //taskedef cp
-                ? ((AntClassLoader) loader).getClasspath()
-                //system classloader, ie. env CLASSPATH=...
-                : System.getProperty("java.class.path");
-        // try to find tools.jar and add it to the cp
-        // so the behaviour on all JDKs is the same
-        // (avoid creating MaskingClassLoader on non-Mac JDKs)
-        File jreHome = new File(System.getProperty("java.home"));
-        File toolsJar = new File(jreHome.getParent(), "lib/tools.jar");
-        if (toolsJar.exists()) {
-            antcp += File.pathSeparatorChar + toolsJar.getAbsolutePath();
-        }
-        cmd.createClasspath(getProject()).append(new Path(getProject(), antcp));
-        String apiCp = getApiClassPath(this.getClass().getClassLoader());
-        if (apiCp != null) {
-            //TODO: jigsaw - Xbootclaspath may get deprecated/removed
-            //and replaced with '-L' or '-m' options
-            //see also: http://mail.openjdk.java.net/pipermail/jigsaw-dev/2010-April/000778.html
-            cmd.createVmArgument().setLine("-Xbootclasspath/p:" + apiCp);
-        }
-        cmd.setClassname("com.sun.tools.ws.WsImport");
-
-        //setupWsimportArgs();
-        //cmd.createArgument(true).setLine(forkCmd.toString());
-    }
-
-    private void setupWsimportArgs() {
-        // d option
-        if (null != getDestdir() && !getDestdir().getName().equals("")) {
-            cmd.createArgument().setValue("-d");
-            cmd.createArgument().setFile(getDestdir());
-        }
-
-        // extension flag
-        if (getExtension()) {
-            cmd.createArgument().setValue("-extension");
-        }
-
+    @Override
+    protected CommandlineJava setupCommand() {
+        CommandlineJava cmd = super.setupCommand();
         if(getxNoAddressingDatabinding()){
             cmd.createArgument().setValue("-Xno-addressing-databinding");
-        }
-
-        // g option
-        if (getDebug()) {
-            cmd.createArgument().setValue("-g");
         }
 
         if(isXdebug()){
@@ -685,7 +423,7 @@ public class WsImport2 extends MatchingTask {
         if(isXnocompile()){
             cmd.createArgument().setValue("-Xnocompile");
         } else {
-            for (String a : javacCmdLine.getArguments()) {
+            for (String a : getJavacargs().getArguments()) {
                 cmd.createArgument().setValue("-J" + a);
             }
         }
@@ -694,34 +432,8 @@ public class WsImport2 extends MatchingTask {
             cmd.createArgument().setValue("-XadditionalHeaders");
         }
 
-        if(isXendorsed()){
-            cmd.createArgument().setValue("-Xendorsed");
-        }
-        
         if(isXUseBaseResourceAndURLToLoadWSDL()){
         	cmd.createArgument().setValue("-XuseBaseResourceAndURLToLoadWSDL");
-        }
-
-        // keep option
-        if (getKeep()) {
-            cmd.createArgument().setValue("-keep");
-        }
-
-        // optimize option
-        if (getOptimize()) {
-            cmd.createArgument().setValue("-O");
-        }
-
-        // s option
-        if (null != getSourcedestdir() && !getSourcedestdir().getName().equals("")) {
-            cmd.createArgument().setValue("-s");
-            cmd.createArgument().setFile(getSourcedestdir());
-        }
-
-        // encoding option
-        if (getEncoding() != null) {
-            cmd.createArgument().setValue("-encoding");
-            cmd.createArgument().setValue(getEncoding());
         }
 
         //catalog
@@ -730,18 +442,13 @@ public class WsImport2 extends MatchingTask {
             cmd.createArgument().setFile(getCatalog());
         }
 
-        // verbose option
-        if (getVerbose()) {
-            cmd.createArgument().setValue("-verbose");
-        }
-
         if(quiet){
             cmd.createArgument().setValue("-quiet");
         }
 
-        if(target != null){
+        if(specTarget != null){
             cmd.createArgument().setValue("-target");
-            cmd.createArgument().setValue(target);
+            cmd.createArgument().setValue(specTarget);
         }
 
         //wsdl
@@ -777,17 +484,17 @@ public class WsImport2 extends MatchingTask {
                 cmd.createArgument().setValue(a);
             }
         }
-        
+
         if(!bindingFiles.isEmpty()){
             for(File binding : bindingFiles){
-                cmd.createArgument().setValue("-b"); 
+                cmd.createArgument().setValue("-b");
 
 		//Bug 10384615 - CLIENTGEN FAIL TO DEAL WITH BINGDING FILE USING SOFT LINK
                 boolean isLink = false;
                 try {
                 	isLink = !binding.getCanonicalPath().equals(binding.getAbsolutePath())
                 	  && !(binding.getAbsolutePath().indexOf("~1") >= 0 && 
-				binding.getCanonicalPath().indexOf(" ")>= 0 );
+				binding.getCanonicalPath().indexOf(' ') >= 0);
 		} catch (IOException e) {
 					// do nothing
 		}
@@ -805,187 +512,71 @@ public class WsImport2 extends MatchingTask {
         }
         
         //implDestDir option
-        if (isGenerateJWS())
-        {
-          cmd.createArgument().setValue("-generateJWS");
+        if (isGenerateJWS()) {
+            cmd.createArgument().setValue("-generateJWS");
 
-          if (getImplDestDir() != null)
-          {
-        	cmd.createArgument().setValue("-implDestDir");
-        	cmd.createArgument().setFile(getImplDestDir());
-          }          
-          if (getImplServiceName() != null)
-          {
-          	cmd.createArgument().setValue("-implServiceName");
-          	cmd.createArgument().setValue(getImplServiceName());
-          }
-          
-          if (getImplPortName() != null)
-          {
-          	cmd.createArgument().setValue("-implPortName");
-          	cmd.createArgument().setValue(getImplPortName());
-          }
+            if (getImplDestDir() != null) {
+                cmd.createArgument().setValue("-implDestDir");
+                cmd.createArgument().setFile(getImplDestDir());
+            }
+            if (getImplServiceName() != null) {
+                cmd.createArgument().setValue("-implServiceName");
+                cmd.createArgument().setValue(getImplServiceName());
+            }
+
+            if (getImplPortName() != null) {
+                cmd.createArgument().setValue("-implPortName");
+                cmd.createArgument().setValue(getImplPortName());
+            }
         }
-         
+        
+        for (String a : extraArgs.getArguments()) {
+            cmd.createArgument().setValue(a);
+        }
+        return cmd;
     }
 
 
     /** Called by the project to let the task do it's work **/
+    @Override
     public void execute() throws BuildException {
-        /* Create an instance of the rmic, redirecting output to
-         * the project log
-         */
-        LogOutputStream logstr = null;
-        boolean ok = false;
+        if (!producesSpecified) {
+            log("Consider using <depends>/<produces> so that wsimport won't do unnecessary compilation", Project.MSG_INFO);
+        }
+
+        // up to date check
+        long srcTime = computeTimestampFor(dependsSet, true);
+        long dstTime = computeTimestampFor(producesSet, false);
+        log("the last modified time of the inputs is  " + srcTime, Project.MSG_VERBOSE);
+        log("the last modified time of the outputs is " + dstTime, Project.MSG_VERBOSE);
+
+        if (srcTime < dstTime) {
+            log("files are up to date");
+            return;
+        }
+
+        execute("wsimport", "com.sun.tools.ws.WsImport");
+    }
+
+    private final Set<File> bindingFiles = new HashSet<File>();
+
+    @Override
+    protected boolean runInVm(String[] arguments, OutputStream out) {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        String sysPath = System.getProperty("java.class.path");
+        if (loader instanceof AntClassLoader) {
+            System.setProperty("java.class.path", ((AntClassLoader) loader).getClasspath());
+        }
+        WsimportTool compTool = new WsimportTool(out);
+        if (xmlCatalog != null) {
+            compTool.setEntityResolver(xmlCatalog);
+        }
         try {
-            if( !producesSpecified ) {
-                log("Consider using <depends>/<produces> so that wsimport won't do unnecessary compilation",Project.MSG_INFO);
-            }
-
-            // up to date check
-            long srcTime = computeTimestampFor(dependsSet,true);
-            long dstTime = computeTimestampFor(producesSet,false);
-            log("the last modified time of the inputs is  "+srcTime, Project.MSG_VERBOSE);
-            log("the last modified time of the outputs is "+dstTime, Project.MSG_VERBOSE);
-
-            if( srcTime < dstTime ) {
-                log("files are up to date");
-                return;
-            }
-
-
-            if(fork){
-                setupWsimportForkCommand();
-            } else {
-                if (cmd.getVmCommand().size() > 1) {
-                    log("JVM args ignored when same JVM is used.",Project.MSG_WARN);
-                }
-            }
-            setupWsimportArgs();
-            if (fork) {
-                if (verbose) {
-                    log(ToolVersion.VERSION.BUILD_VERSION);
-                    log("command line: "+"wsimport "+cmd.toString());
-                }
-                int status = run(cmd.getCommandline());
-                ok = (status == 0);
-            } else {
-                if (verbose) {
-                    log(ToolVersion.VERSION.BUILD_VERSION);
-                    log("command line: "+"wsimport "+cmd.getJavaCommand().toString());
-                }
-                logstr = new LogOutputStream(this, Project.MSG_WARN);
-
-                ClassLoader old = Thread.currentThread().getContextClassLoader();
-                ClassLoader loader = this.getClass().getClassLoader();
-                Thread.currentThread().setContextClassLoader(loader);
-                String sysPath = System.getProperty("java.class.path");
-                try {
-                    WsimportTool compTool = new WsimportTool(logstr);
-                    if(xmlCatalog != null){
-                        compTool.setEntityResolver(xmlCatalog);
-                    }
-                    if (loader instanceof AntClassLoader) {
-                        System.setProperty("java.class.path", ((AntClassLoader)loader).getClasspath());
-                    }
-                    ok = compTool.run(cmd.getJavaCommand().getArguments());
-                } finally {
-                    if (sysPath != null) {
-                        System.setProperty("java.class.path", sysPath);
-                    }
-                    Thread.currentThread().setContextClassLoader(old);
-                }
-            }
-            if (!ok) {
-                if (!verbose) {
-                    log("Command invoked: "+"wsimport "+cmd.toString());
-                }
-                throw new BuildException("wsimport failed", location);
-            }
-        } catch (Exception ex) {
-            if (failonerror) {
-                if (ex instanceof BuildException) {
-                    throw (BuildException) ex;
-                } else {
-                    throw new BuildException("Error starting wsimport: ", ex,
-                            getLocation());
-                }
-            } else {
-                StringWriter sw = new StringWriter();
-                ex.printStackTrace(new PrintWriter(sw));
-                getProject().log(sw.toString(), Project.MSG_WARN);
-                // continue
-            }
-
+            return compTool.run(arguments);
         } finally {
-            try {
-                if (logstr != null) {
-                    logstr.close();
-                }
-            } catch (IOException e) {
-                throw new BuildException(e);
+            if (sysPath != null) {
+                System.setProperty("java.class.path", sysPath);
             }
         }
-    }
-
-    /**
-     * Executes the given classname with the given arguments in a separate VM.
-     */
-    private int run(String[] command) throws BuildException {
-        LogStreamHandler logstr = new LogStreamHandler(this,
-            Project.MSG_INFO, Project.MSG_WARN);
-        Execute exe = new Execute(logstr);
-        exe.setAntRun(project);
-        exe.setCommandline(command);
-        try {
-            int rc = exe.execute();
-            if (exe.killedProcess()) {
-                log("Timeout: killed the sub-process", Project.MSG_WARN);
-            }
-            return rc;
-        } catch (IOException e) {
-            throw new BuildException(e, location);
-        }
-    }
-
-    private Set<File> bindingFiles = new HashSet<File>();
-
-    private String getApiClassPath(ClassLoader cl) {
-        StringBuilder sb = new StringBuilder();
-        URL wsAPI = getResourceFromCP(cl, "javax/xml/ws/EndpointContext.class");
-        if (wsAPI != null) {
-            sb.append(jarToPath(wsAPI));
-            URL jaxbAPI = getResourceFromCP(cl, "javax/xml/bind/JAXBPermission.class");
-            if (jaxbAPI != null) {
-                String s = jarToPath(jaxbAPI);
-                if (sb.indexOf(s) < 0) {
-                    sb.append(File.pathSeparator);
-                    sb.append(s);
-                }
-            }
-        }
-        return sb.length() != 0 ? sb.toString() : null;
-    }
-
-    private URL getResourceFromCP(ClassLoader cl, String resource) {
-        try {
-            Enumeration<URL> res = cl.getResources(resource);
-            while (res.hasMoreElements()) {
-                URL u = res.nextElement();
-                String s = u.toExternalForm();
-                if (!s.contains("rt.jar") && !s.contains("classes.jar")) {
-                    return u;
-                }
-            }
-        } catch (IOException ex) {
-            log(ex.getMessage(), Project.MSG_WARN);
-        }
-        return null;
-    }
-
-    private String jarToPath(URL u) {
-        String s = u.toExternalForm();
-        s = s.substring(s.lastIndexOf(":") + 1);
-        return s.indexOf('!') < 0 ? s : s.substring(0, s.indexOf('!'));
     }
 }
