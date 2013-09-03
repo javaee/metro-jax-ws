@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,9 +60,9 @@ import org.xml.sax.SAXException;
 //import com.example.globalcompany.ns.orderbookingservice.OrderProcessorService;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
-import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
-import com.sun.xml.ws.model.wsdl.WSDLOperationImpl;
-import com.sun.xml.ws.model.wsdl.WSDLPortTypeImpl;
+import com.sun.xml.ws.api.model.wsdl.WSDLModel;
+import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
+import com.sun.xml.ws.api.model.wsdl.WSDLPortType;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 
@@ -84,14 +84,14 @@ public class FODTest extends TestCase {
 		String WSDL_NAME = "concrete.wsdl";  
 		Source wsdlSource = getSource(WSDL_NAME);
 		
-		WSDLModelImpl model = RuntimeWSDLParser.parse(getURL(WSDL_NAME), wsdlSource, XmlUtil.createDefaultCatalogResolver(), true, Container.NONE, new WSDLParserExtension[]{});
-		Map<QName, WSDLPortTypeImpl> portTypes = model.getPortTypes();
+		WSDLModel model = RuntimeWSDLParser.parse(getURL(WSDL_NAME), wsdlSource, XmlUtil.createDefaultCatalogResolver(), true, Container.NONE, new WSDLParserExtension[]{});
+		Map<QName, WSDLPortType> portTypes = model.getPortTypes();
 		Set<QName> keySet = portTypes.keySet();
 		for (QName name : keySet) {
-			WSDLPortTypeImpl pt = portTypes.get(name);
+			WSDLPortType pt = portTypes.get(name);
 			System.out.println(name.toString() + portTypes.get(name));
-			Iterable<WSDLOperationImpl> operations = pt.getOperations();
-			for (WSDLOperationImpl operation : operations)  {
+			Iterable<WSDLOperation> operations = pt.getOperations();
+			for (WSDLOperation operation : operations)  {
 				assertNotNull(operation.getInput().getMessage());
 			
 			}
