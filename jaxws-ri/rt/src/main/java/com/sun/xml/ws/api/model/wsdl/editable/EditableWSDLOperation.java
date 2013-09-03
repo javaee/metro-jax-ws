@@ -38,55 +38,55 @@
  * holder.
  */
 
-package com.sun.xml.ws.model.wsdl;
-
-import com.oracle.webservices.api.message.BasePropertySet;
-import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+package com.sun.xml.ws.api.model.wsdl.editable;
 
 import javax.xml.namespace.QName;
-import javax.xml.ws.handler.MessageContext;
 
+import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 
-import org.xml.sax.InputSource;
+public interface EditableWSDLOperation extends WSDLOperation {
 
-/**
- * Properties exposed from {@link WSDLPort} for {@link MessageContext}.
- * Donot add this satellite if {@link WSDLPort} is null.
- *
- * @author Jitendra Kotamraju
- */
-public abstract class WSDLProperties extends BasePropertySet {
-
-    private static final PropertyMap model;
-    static {
-        model = parse(WSDLProperties.class);
-    }
-
-    private final @Nullable SEIModel seiModel;
-
-    protected WSDLProperties(@Nullable SEIModel seiModel) {
-        this.seiModel = seiModel;
-    }
-
-    @Property(MessageContext.WSDL_SERVICE)
-    public abstract QName getWSDLService();
-
-    @Property(MessageContext.WSDL_PORT)
-    public abstract QName getWSDLPort();
-
-    @Property(MessageContext.WSDL_INTERFACE)
-    public abstract QName getWSDLPortType();
+	@Override
+    @NotNull EditableWSDLInput getInput();
     
-    @Property(MessageContext.WSDL_DESCRIPTION)
-    public InputSource getWSDLDescription() {
-    	return seiModel != null ? new InputSource(seiModel.getWSDLLocation()) : null;
-    }
+	/**
+	 * Set input
+	 * @param input Input
+	 */
+    public void setInput(EditableWSDLInput input);
 
     @Override
-    protected PropertyMap getPropertyMap() {
-        return model;
-    }
+    @Nullable EditableWSDLOutput getOutput();
+    
+    /**
+     * Set output
+     * @param output Output
+     */
+    public void setOutput(EditableWSDLOutput output);
 
+    @Override
+    Iterable<? extends EditableWSDLFault> getFaults();
+
+    /**
+     * Add fault
+     * @param fault Fault
+     */
+    public void addFault(EditableWSDLFault fault);
+
+    @Override
+    @Nullable EditableWSDLFault getFault(QName faultDetailName);
+
+    /**
+     * Set parameter order
+     * @param parameterOrder Parameter order
+     */
+    public void setParameterOrder(String parameterOrder);
+    
+	/**
+	 * Freezes WSDL model to prevent further modification
+	 * @param root WSDL Model
+	 */
+    public void freeze(EditableWSDLModel root);
 }

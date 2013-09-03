@@ -42,9 +42,11 @@ package com.sun.xml.ws.api.model.wsdl;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.model.ParameterBinding;
 
 import javax.jws.WebParam.Mode;
 import javax.xml.namespace.QName;
+
 import java.util.Map;
 
 /**
@@ -94,14 +96,62 @@ public interface WSDLBoundOperation extends WSDLObject, WSDLExtensible {
     @Nullable WSDLPart getPart(@NotNull String partName, @NotNull Mode mode);
 
     /**
+     * Gets {@link ParameterBinding} for a given wsdl part in wsdl:input
+     *
+     * @param part Name of wsdl:part, must be non-null
+     * @return null if the part is not found.
+     */
+    public ParameterBinding getInputBinding(String part);
+    
+    /**
+     * Gets {@link ParameterBinding} for a given wsdl part in wsdl:output
+     *
+     * @param part Name of wsdl:part, must be non-null
+     * @return null if the part is not found.
+     */
+    public ParameterBinding getOutputBinding(String part);
+    
+    /**
+     * Gets {@link ParameterBinding} for a given wsdl part in wsdl:fault
+     *
+     * @param part Name of wsdl:part, must be non-null
+     * @return null if the part is not found.
+     */
+    public ParameterBinding getFaultBinding(String part);
+    
+    /**
+     * Gets the MIME type for a given wsdl part in wsdl:input
+     *
+     * @param part Name of wsdl:part, must be non-null
+     * @return null if the part is not found.
+     */
+    public String getMimeTypeForInputPart(String part);
+    
+    /**
+     * Gets the MIME type for a given wsdl part in wsdl:output
+     *
+     * @param part Name of wsdl:part, must be non-null
+     * @return null if the part is not found.
+     */
+    public String getMimeTypeForOutputPart(String part);
+    
+    /**
+     * Gets the MIME type for a given wsdl part in wsdl:fault
+     *
+     * @param part Name of wsdl:part, must be non-null
+     * @return null if the part is not found.
+     */
+    public String getMimeTypeForFaultPart(String part);
+    
+    /**
      * Gets all inbound {@link WSDLPart} by its {@link WSDLPart#getName() name}.
      */
-    @NotNull Map<String,WSDLPart> getInParts();
+    @NotNull Map<String,? extends WSDLPart> getInParts();
 
     /**
      * Gets all outbound {@link WSDLPart} by its {@link WSDLPart#getName() name}.
      */
-    @NotNull Map<String,WSDLPart> getOutParts();
+    @NotNull Map<String,? extends WSDLPart> getOutParts();
 
     /**
      * Gets all the {@link WSDLFault} bound to this operation.
@@ -109,13 +159,34 @@ public interface WSDLBoundOperation extends WSDLObject, WSDLExtensible {
     @NotNull Iterable<? extends WSDLBoundFault> getFaults();
 
     /**
+     * Map of wsdl:input part name and the binding as {@link ParameterBinding}
+     *
+     * @return empty Map if there is no parts
+     */
+    public Map<String, ParameterBinding> getInputParts();
+    
+    /**
+     * Map of wsdl:output part name and the binding as {@link ParameterBinding}
+     *
+     * @return empty Map if there is no parts
+     */
+    public Map<String, ParameterBinding> getOutputParts();
+    
+    /**
+     * Map of wsdl:fault part name and the binding as {@link ParameterBinding}
+     *
+     * @return empty Map if there is no parts
+     */
+    public Map<String, ParameterBinding> getFaultParts();
+    
+    /**
      * Gets the payload QName of the request message.
      *
      * <p>
      * It's possible for an operation to define no body part, in which case
      * this method returns null. 
      */
-    @Nullable QName getReqPayloadName();
+    @Nullable QName getRequestPayloadName();
 
     /**
      * Gets the payload QName of the response message.
@@ -124,7 +195,7 @@ public interface WSDLBoundOperation extends WSDLObject, WSDLExtensible {
      * It's possible for an operation to define no body part, in which case
      * this method returns null. 
      */
-    @Nullable QName getResPayloadName();
+    @Nullable QName getResponsePayloadName();
 
     /**
      * Gets the namespace of request payload.

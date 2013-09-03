@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,9 @@
 package com.sun.xml.ws.api.model.wsdl;
 
 import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.EndpointAddress;
+import com.sun.xml.ws.api.addressing.WSEndpointReference;
 
 import javax.xml.namespace.QName;
 
@@ -79,4 +81,10 @@ public interface WSDLPort extends WSDLFeaturedObject, WSDLExtensible {
      */
     @NotNull
     WSDLService getOwner();
+    
+    /**
+     * Returns endpoint reference
+     * @return Endpoint reference
+     */
+    public @Nullable WSEndpointReference getEPR();
 }

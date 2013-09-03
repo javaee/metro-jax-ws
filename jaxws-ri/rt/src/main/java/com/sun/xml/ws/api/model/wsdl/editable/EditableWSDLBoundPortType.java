@@ -38,55 +38,56 @@
  * holder.
  */
 
-package com.sun.xml.ws.model.wsdl;
+package com.sun.xml.ws.api.model.wsdl.editable;
 
-import com.oracle.webservices.api.message.BasePropertySet;
-import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-
+import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.namespace.QName;
-import javax.xml.ws.handler.MessageContext;
 
+import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
+import com.sun.xml.ws.api.model.wsdl.WSDLBoundPortType;
 
-import org.xml.sax.InputSource;
+public interface EditableWSDLBoundPortType extends WSDLBoundPortType {
 
-/**
- * Properties exposed from {@link WSDLPort} for {@link MessageContext}.
- * Donot add this satellite if {@link WSDLPort} is null.
- *
- * @author Jitendra Kotamraju
- */
-public abstract class WSDLProperties extends BasePropertySet {
+	@Override
+    @NotNull EditableWSDLModel getOwner();
 
-    private static final PropertyMap model;
-    static {
-        model = parse(WSDLProperties.class);
-    }
+	@Override
+    public EditableWSDLBoundOperation get(QName operationName);
 
-    private final @Nullable SEIModel seiModel;
+	@Override
+    EditableWSDLPortType getPortType();
 
-    protected WSDLProperties(@Nullable SEIModel seiModel) {
-        this.seiModel = seiModel;
-    }
+	@Override
+    Iterable<? extends EditableWSDLBoundOperation> getBindingOperations();
 
-    @Property(MessageContext.WSDL_SERVICE)
-    public abstract QName getWSDLService();
+	@Override
+    @Nullable EditableWSDLBoundOperation getOperation(String namespaceUri, String localName);
 
-    @Property(MessageContext.WSDL_PORT)
-    public abstract QName getWSDLPort();
+    /**
+     * Populates the Map that holds operation name as key and {@link WSDLBoundOperation} as the value.
+     *
+     * @param opName Must be non-null
+     * @param ptOp   Must be non-null
+     * @throws NullPointerException if either opName or ptOp is null
+     */
+    public void put(QName opName, EditableWSDLBoundOperation ptOp);
 
-    @Property(MessageContext.WSDL_INTERFACE)
-    public abstract QName getWSDLPortType();
-    
-    @Property(MessageContext.WSDL_DESCRIPTION)
-    public InputSource getWSDLDescription() {
-    	return seiModel != null ? new InputSource(seiModel.getWSDLLocation()) : null;
-    }
-
-    @Override
-    protected PropertyMap getPropertyMap() {
-        return model;
-    }
-
+    /**
+     * Sets the binding ID
+     * @param bindingId Binding ID
+     */
+	public void setBindingId(BindingID bindingId);
+	
+    /**
+     * sets whether the {@link WSDLBoundPortType} is rpc or lit
+     */
+	public void setStyle(Style style);
+	
+	/**
+	 * Freezes WSDL model to prevent further modification
+	 */
+	public void freeze();
 }

@@ -77,7 +77,6 @@ import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.developer.WSBindingProvider;
 import com.sun.xml.ws.model.wsdl.WSDLDirectProperties;
-import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortProperties;
 import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import com.sun.xml.ws.resources.ClientMessages;
@@ -369,7 +368,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
      */
     private static void checkAllWSDLExtensionsUnderstood(WSPortInfo port, WSBinding binding) {
         if (port.getPort() != null && binding.isFeatureEnabled(RespectBindingFeature.class)) {
-            ((WSDLPortImpl) port.getPort()).areRequiredExtensionsUnderstood();
+            port.getPort().areRequiredExtensionsUnderstood();
         }
     }
 
@@ -664,7 +663,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 
             //gather EPRExtensions specified in WSDL.
             try {
-                WSEndpointReference wsdlEpr = ((WSDLPortImpl) wsdlPort).getEPR();
+                WSEndpointReference wsdlEpr = wsdlPort.getEPR();
                 if (wsdlEpr != null) {
                     for (WSEndpointReference.EPRExtension extnEl : wsdlEpr.getEPRExtensions()) {
                         wsdlEPRExtensions.add(new WSEPRExtension(

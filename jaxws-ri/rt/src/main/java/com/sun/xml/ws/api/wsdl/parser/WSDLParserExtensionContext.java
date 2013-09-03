@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,7 @@
 package com.sun.xml.ws.api.wsdl.parser;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.model.wsdl.WSDLModel;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLModel;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.policy.PolicyResolver;
 
@@ -59,10 +59,10 @@ public interface WSDLParserExtensionContext {
     boolean isClientSide();
 
     /**
-     * Gives the {@link WSDLModel}. The WSDLModel may not be complete until
+     * Gives the {@link EditableWSDLModel}. The WSDLModel may not be complete until
      * {@link WSDLParserExtension#finished(WSDLParserExtensionContext)} is called.
      */
-    WSDLModel getWSDLModel();
+    EditableWSDLModel getWSDLModel();
 
     /**
      * Provides the {@link Container} in which this service or client is running.

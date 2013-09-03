@@ -42,17 +42,18 @@ package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.SOAPBindingImpl;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.client.seiportinfo.Hello;
 import com.sun.xml.ws.model.SOAPSEIModel;
-import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
+
 import junit.framework.TestCase;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
-import java.io.File;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -85,7 +86,7 @@ public class SEIPortInfoTest extends TestCase {
     private SEIPortInfo createSEIPortInfo() throws MalformedURLException {
         WSServiceDelegate delegate = (WSServiceDelegate) WSService.create(WSDL_URL, SERVICE_NAME);
 
-        WSDLPortImpl wsdlPort = delegate.getPortModel(delegate.getWsdlService(), PORT_NAME);
+        WSDLPort wsdlPort = delegate.getPortModel(delegate.getWsdlService(), PORT_NAME);
         SEIModel model = delegate.buildRuntimeModel(delegate.getServiceName(), PORT_NAME, PORT_INTERFACE, wsdlPort, new WebServiceFeatureList());
 
         return new SEIPortInfo(delegate, PORT_INTERFACE, (SOAPSEIModel) model, wsdlPort);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,8 +40,10 @@
 
 package com.sun.xml.ws.model.wsdl;
 
-import com.sun.xml.ws.api.model.wsdl.WSDLFault;
-import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLFault;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLMessage;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLModel;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLOperation;
 import com.sun.istack.NotNull;
 
 import javax.xml.namespace.QName;
@@ -50,15 +52,15 @@ import javax.xml.stream.XMLStreamReader;
 /**
  * @author Vivek Pandey
  */
-public final class WSDLFaultImpl extends AbstractExtensibleImpl implements WSDLFault {
+public final class WSDLFaultImpl extends AbstractExtensibleImpl implements EditableWSDLFault {
     private final String name;
     private final QName messageName;
-    private WSDLMessageImpl message;
-    private WSDLOperationImpl operation;
+    private EditableWSDLMessage message;
+    private EditableWSDLOperation operation;
     private String action = "";
     private boolean defaultAction = true;
 
-    public WSDLFaultImpl(XMLStreamReader xsr, String name, QName messageName, WSDLOperationImpl operation) {
+    public WSDLFaultImpl(XMLStreamReader xsr, String name, QName messageName, EditableWSDLOperation operation) {
         super(xsr);
         this.name = name;
         this.messageName = messageName;
@@ -69,12 +71,12 @@ public final class WSDLFaultImpl extends AbstractExtensibleImpl implements WSDLF
         return name;
     }
 
-    public WSDLMessageImpl getMessage() {
+    public EditableWSDLMessage getMessage() {
         return message;
     }
 
     @NotNull
-    public WSDLOperation getOperation() {
+    public EditableWSDLOperation getOperation() {
         return operation;
     }
 
@@ -87,6 +89,7 @@ public final class WSDLFaultImpl extends AbstractExtensibleImpl implements WSDLF
     public String getAction() {
         return action;
     }
+    
     public void setAction(String action) {
         this.action = action;
     }
@@ -99,7 +102,7 @@ public final class WSDLFaultImpl extends AbstractExtensibleImpl implements WSDLF
         this.defaultAction = defaultAction;
     }
 
-    void freeze(WSDLModelImpl root){
+    public void freeze(EditableWSDLModel root){
         message = root.getMessage(messageName);
     }
 }

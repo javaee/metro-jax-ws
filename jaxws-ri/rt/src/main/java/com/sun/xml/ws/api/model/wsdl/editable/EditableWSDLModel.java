@@ -38,55 +38,84 @@
  * holder.
  */
 
-package com.sun.xml.ws.model.wsdl;
+package com.sun.xml.ws.api.model.wsdl.editable;
 
-import com.oracle.webservices.api.message.BasePropertySet;
-import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
-import javax.xml.ws.handler.MessageContext;
 
+import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.model.wsdl.WSDLModel;
+import com.sun.xml.ws.policy.PolicyMap;
 
-import org.xml.sax.InputSource;
+public interface EditableWSDLModel extends WSDLModel {
 
-/**
- * Properties exposed from {@link WSDLPort} for {@link MessageContext}.
- * Donot add this satellite if {@link WSDLPort} is null.
- *
- * @author Jitendra Kotamraju
- */
-public abstract class WSDLProperties extends BasePropertySet {
-
-    private static final PropertyMap model;
-    static {
-        model = parse(WSDLProperties.class);
-    }
-
-    private final @Nullable SEIModel seiModel;
-
-    protected WSDLProperties(@Nullable SEIModel seiModel) {
-        this.seiModel = seiModel;
-    }
-
-    @Property(MessageContext.WSDL_SERVICE)
-    public abstract QName getWSDLService();
-
-    @Property(MessageContext.WSDL_PORT)
-    public abstract QName getWSDLPort();
-
-    @Property(MessageContext.WSDL_INTERFACE)
-    public abstract QName getWSDLPortType();
+	@Override
+    EditableWSDLPortType getPortType(@NotNull QName name);
     
-    @Property(MessageContext.WSDL_DESCRIPTION)
-    public InputSource getWSDLDescription() {
-    	return seiModel != null ? new InputSource(seiModel.getWSDLLocation()) : null;
-    }
+	/**
+	 * Add Binding
+	 * @param portType Bound port type
+	 */
+    void addBinding(EditableWSDLBoundPortType portType);
 
     @Override
-    protected PropertyMap getPropertyMap() {
-        return model;
-    }
+    EditableWSDLBoundPortType getBinding(@NotNull QName name);
 
+    @Override
+    EditableWSDLBoundPortType getBinding(@NotNull QName serviceName, @NotNull QName portName);
+
+    @Override
+    EditableWSDLService getService(@NotNull QName name);
+
+    @Override
+    @NotNull Map<QName, ? extends EditableWSDLMessage> getMessages();
+    
+    /**
+     * Add message
+     * @param msg Message
+     */
+    public void addMessage(EditableWSDLMessage msg);
+    
+    @Override
+    @NotNull Map<QName, ? extends EditableWSDLPortType> getPortTypes();
+    
+    /**
+     * Add port type
+     * @param pt Port type
+     */
+    public void addPortType(EditableWSDLPortType pt);
+
+    @Override
+    @NotNull Map<QName, ? extends EditableWSDLBoundPortType> getBindings();
+
+    @Override
+    @NotNull Map<QName, ? extends EditableWSDLService> getServices();
+    
+    /**
+     * Add service
+     * @param svc Service
+     */
+    public void addService(EditableWSDLService svc);
+
+    @Override
+    public EditableWSDLMessage getMessage(QName name);
+    
+    /**
+     * @deprecated
+     * @param policyMap
+     */
+    public void setPolicyMap(PolicyMap policyMap);
+    
+    /**
+     * Finalize rpc-lit binding
+     * @param portType Binding
+     */
+    public void finalizeRpcLitBinding(EditableWSDLBoundPortType portType);
+    
+	/**
+	 * Freezes WSDL model to prevent further modification
+	 */
+    public void freeze();
+    
 }

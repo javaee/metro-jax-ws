@@ -62,14 +62,12 @@ import javax.xml.ws.WebServiceFeature;
 
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
-import org.xml.sax.EntityResolver;
 
 import junit.framework.TestCase;
 
 import com.oracle.webservices.api.databinding.DatabindingModeFeature;
 import com.oracle.webservices.api.databinding.ExternalMetadataFeature;
 import com.oracle.webservices.api.databinding.JavaCallInfo;
-
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.ComponentFeature;
 import com.sun.xml.ws.api.WSBinding;
@@ -78,6 +76,7 @@ import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.ClientTubeAssemblerContext;
 import com.sun.xml.ws.api.pipe.Codec;
@@ -94,15 +93,11 @@ import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.db.sdo.HelperContextResolver;
-import com.sun.xml.ws.db.sdo.SDOUtils;
 import com.sun.xml.ws.db.sdo.SchemaInfo;
-import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
-import com.sun.xml.ws.sdo.sample.service.HRAppService;
-import com.sun.xml.ws.sdo.sample.service.HRAppServiceImpl;
-import com.sun.xml.ws.sdo.sample.service.HRAppService_Service;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
+
 import commonj.sdo.helper.HelperContext;
 
 /**
@@ -142,7 +137,7 @@ abstract public class SDODatabindingTestBase extends TestCase {
         wsdlGenInfo.setInlineSchemas(true);
         srvDb.generateWSDL(wsdlGenInfo);
         if (debug) result.print();
-        WSDLModelImpl wsdl = RuntimeWSDLParser.parse( 
+        WSDLModel wsdl = RuntimeWSDLParser.parse( 
                 result.getWsdlSource(), result.getEntityResolver(), false, null, new WSDLParserExtension[0]);
         QName serviceName = wsdl.getFirstServiceName();
         WSDLPort wsdlPort = wsdl.getService(serviceName).getFirstPort();

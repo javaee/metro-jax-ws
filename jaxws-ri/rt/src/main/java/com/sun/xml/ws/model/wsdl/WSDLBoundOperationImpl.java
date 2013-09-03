@@ -44,12 +44,20 @@ import com.sun.istack.Nullable;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.wsdl.*;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLBoundFault;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLBoundOperation;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLBoundPortType;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLMessage;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLModel;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLOperation;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLPart;
 import com.sun.xml.ws.model.RuntimeModeler;
 
 import javax.jws.WebParam.Mode;
 import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
+
 import java.util.*;
 
 /**
@@ -57,7 +65,7 @@ import java.util.*;
  *
  * @author Vivek Pandey
  */
-public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl implements WSDLBoundOperation {
+public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl implements EditableWSDLBoundOperation {
     private final QName name;
 
     // map of wsdl:part to the binding
@@ -76,20 +84,20 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     private Boolean emptyOutputBody;
     private Boolean emptyFaultBody;
 
-    private final Map<String, WSDLPartImpl> inParts;
-    private final Map<String, WSDLPartImpl> outParts;
-    private final List<WSDLBoundFaultImpl> wsdlBoundFaults;
-    private WSDLOperationImpl operation;
+    private final Map<String, EditableWSDLPart> inParts;
+    private final Map<String, EditableWSDLPart> outParts;
+    private final List<EditableWSDLBoundFault> wsdlBoundFaults;
+    private EditableWSDLOperation operation;
     private String soapAction;
     private ANONYMOUS anonymous;
 
-    private final WSDLBoundPortTypeImpl owner;
+    private final EditableWSDLBoundPortType owner;
 
     /**
      *
      * @param name wsdl:operation name qualified value
      */
-    public WSDLBoundOperationImpl(XMLStreamReader xsr, WSDLBoundPortTypeImpl owner, QName name) {
+    public WSDLBoundOperationImpl(XMLStreamReader xsr, EditableWSDLBoundPortType owner, QName name) {
         super(xsr);
         this.name = name;
         inputParts = new HashMap<String, ParameterBinding>();
@@ -98,9 +106,9 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         inputMimeTypes = new HashMap<String, String>();
         outputMimeTypes = new HashMap<String, String>();
         faultMimeTypes = new HashMap<String, String>();
-        inParts = new HashMap<String, WSDLPartImpl>();
-        outParts = new HashMap<String, WSDLPartImpl>();
-        wsdlBoundFaults = new ArrayList<WSDLBoundFaultImpl>();
+        inParts = new HashMap<String, EditableWSDLPart>();
+        outParts = new HashMap<String, EditableWSDLPart>();
+        wsdlBoundFaults = new ArrayList<EditableWSDLBoundFault>();
         this.owner = owner;
     }
 
@@ -119,7 +127,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     }
 
     @Override
-    public WSDLPartImpl getPart(String partName, Mode mode) {
+    public EditableWSDLPart getPart(String partName, Mode mode) {
         if(mode==Mode.IN){
             return inParts.get(partName);
         }else if(mode==Mode.OUT){
@@ -128,7 +136,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         return null;
     }
 
-    public void addPart(WSDLPartImpl part, Mode mode){
+    public void addPart(EditableWSDLPart part, Mode mode){
         if(mode==Mode.IN)
             inParts.put(part.getName(), part);
         else if(mode==Mode.OUT)
@@ -164,52 +172,25 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
 
     // TODO: what's the difference between this and inputParts/outputParts?
     @Override
-    public Map<String,WSDLPart> getInParts() {
-        return Collections.<String,WSDLPart>unmodifiableMap(inParts);
+    public Map<String, ? extends EditableWSDLPart> getInParts() {
+        return Collections.<String, EditableWSDLPart>unmodifiableMap(inParts);
     }
 
     @Override
-    public Map<String,WSDLPart> getOutParts() {
-        return Collections.<String,WSDLPart>unmodifiableMap(outParts);
+    public Map<String, ? extends EditableWSDLPart> getOutParts() {
+        return Collections.<String, EditableWSDLPart>unmodifiableMap(outParts);
     }
 
     @NotNull
     @Override
-    public List<WSDLBoundFaultImpl> getFaults() {
+    public List<? extends EditableWSDLBoundFault> getFaults() {
         return wsdlBoundFaults;
     }
 
-    public void addFault(@NotNull WSDLBoundFaultImpl fault){
+    public void addFault(@NotNull EditableWSDLBoundFault fault){
         wsdlBoundFaults.add(fault);
     }
 
-
-    /**
-     * Map of mime:content@part and the mime type from mime:content@type for wsdl:output
-     *
-     * @return empty Map if there is no parts
-     */
-    public Map<String, String> getInputMimeTypes() {
-        return inputMimeTypes;
-    }
-
-    /**
-     * Map of mime:content@part and the mime type from mime:content@type for wsdl:output
-     *
-     * @return empty Map if there is no parts
-     */
-    public Map<String, String> getOutputMimeTypes() {
-        return outputMimeTypes;
-    }
-
-    /**
-     * Map of mime:content@part and the mime type from mime:content@type for wsdl:fault
-     *
-     * @return empty Map if there is no parts
-     */
-    public Map<String, String> getFaultMimeTypes() {
-        return faultMimeTypes;
-    }
 
     /**
      * Gets {@link ParameterBinding} for a given wsdl part in wsdl:input
@@ -311,13 +292,13 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     }
 
     @Override
-    public WSDLOperationImpl getOperation() {
+    public EditableWSDLOperation getOperation() {
         return operation;
     }
 
 
     @Override
-    public WSDLBoundPortType getBoundPortType() {
+    public EditableWSDLBoundPortType getBoundPortType() {
         return owner;
     }
 
@@ -339,7 +320,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     }
 
     @Override
-    public @Nullable QName getReqPayloadName() {
+    public @Nullable QName getRequestPayloadName() {
         if (emptyRequestPayload)
             return null;
 
@@ -352,8 +333,8 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
             return requestPayloadName;
         }else{
             QName inMsgName = operation.getInput().getMessage().getName();
-            WSDLMessageImpl message = messages.get(inMsgName);
-            for(WSDLPartImpl part:message.parts()){
+            EditableWSDLMessage message = messages.get(inMsgName);
+            for(EditableWSDLPart part:message.parts()){
                 ParameterBinding binding = getInputBinding(part.getName());
                 if(binding.isBody()){
                     requestPayloadName = part.getDescriptor().name();
@@ -369,7 +350,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     }
 
     @Override
-    public @Nullable QName getResPayloadName() {
+    public @Nullable QName getResponsePayloadName() {
         if (emptyResponsePayload)
             return null;
 
@@ -382,8 +363,8 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
             return responsePayloadName;
         }else{
             QName outMsgName = operation.getOutput().getMessage().getName();
-            WSDLMessageImpl message = messages.get(outMsgName);
-            for(WSDLPartImpl part:message.parts()){
+            EditableWSDLMessage message = messages.get(outMsgName);
+            for(EditableWSDLPart part:message.parts()){
                 ParameterBinding binding = getOutputBinding(part.getName());
                 if(binding.isBody()){
                     responsePayloadName = part.getDescriptor().name();
@@ -417,7 +398,6 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         reqNamespace = ns;
     }
 
-
     /**
      * For rpclit gives namespace value on soapbinding:body@namespace
      *
@@ -433,7 +413,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         respNamespace = ns;
     }
 
-    WSDLBoundPortTypeImpl getOwner(){
+    EditableWSDLBoundPortType getOwner(){
         return owner;
     }
 
@@ -441,12 +421,12 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     private QName responsePayloadName;
     private boolean emptyRequestPayload;
     private boolean emptyResponsePayload;
-    private Map<QName, WSDLMessageImpl> messages;
+    private Map<QName, ? extends EditableWSDLMessage> messages;
 
-    void freeze(WSDLModelImpl parent) {
+    public void freeze(EditableWSDLModel parent) {
         messages = parent.getMessages();
         operation = owner.getPortType().get(name.getLocalPart());
-        for(WSDLBoundFaultImpl bf : wsdlBoundFaults){
+        for(EditableWSDLBoundFault bf : wsdlBoundFaults){
             bf.freeze(this);
         }
     }

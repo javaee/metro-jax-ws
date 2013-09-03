@@ -42,8 +42,6 @@ package com.sun.xml.ws.cts.dl_swa;
 
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
@@ -58,24 +56,20 @@ import javax.xml.ws.handler.MessageContext;
 
 import com.oracle.webservices.api.databinding.DatabindingModeFeature;
 import com.oracle.webservices.api.databinding.JavaCallInfo;
+
 import org.xml.sax.EntityResolver;
 
-import com.oracle.webservices.api.message.ContentType;
-
-import com.sun.xml.ws.InVmWSDLResolver;
 import com.sun.xml.ws.WsDatabindingTestBase;
 import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
-import com.sun.xml.ws.api.databinding.WSDLGenInfo;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
-import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.handler.SOAPMessageContextImpl;
 import com.sun.xml.ws.message.DataHandlerAttachment;
-import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
@@ -481,7 +475,7 @@ public class SwaMimeAttachmentTest extends WsDatabindingTestBase  {
     
     static WSDLPort getWSDLPort(URL wsdlLoc) throws Exception {
         EntityResolver er = XmlUtil.createDefaultCatalogResolver();
-        WSDLModelImpl wsdl = RuntimeWSDLParser.parse(wsdlLoc, new StreamSource(wsdlLoc.toExternalForm()), er,
+        WSDLModel wsdl = RuntimeWSDLParser.parse(wsdlLoc, new StreamSource(wsdlLoc.toExternalForm()), er,
                 true, null, ServiceFinder.find(WSDLParserExtension.class).toArray());
         QName serviceName = wsdl.getFirstServiceName();
         return wsdl.getService(serviceName).getFirstPort();

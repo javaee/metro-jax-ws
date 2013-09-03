@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,11 +44,9 @@ import com.sun.xml.ws.api.model.wsdl.WSDLExtensible;
 import com.sun.xml.ws.api.model.wsdl.WSDLExtension;
 import com.sun.xml.ws.api.model.wsdl.WSDLObject;
 import com.sun.xml.ws.resources.UtilMessages;
-import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import com.sun.istack.NotNull;
 
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.Location;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
@@ -57,7 +55,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.xml.sax.Locator;
-import org.xml.sax.helpers.LocatorImpl;
 
 /**
  * All the WSDL 1.1 elements that are extensible should subclass from this abstract implementation of
@@ -102,7 +99,7 @@ abstract class AbstractExtensibleImpl extends AbstractObjectImpl implements WSDL
         }
         return null;
     }
-
+    
     public void addExtension(WSDLExtension ex) {
         if(ex==null)
             // I don't trust plugins. So let's always check it, instead of making this an assertion
@@ -110,6 +107,10 @@ abstract class AbstractExtensibleImpl extends AbstractObjectImpl implements WSDL
         extensions.add(ex);
     }
 
+    public List<? extends UnknownWSDLExtension> getNotUnderstoodExtensions() {
+    	return notUnderstoodExtensions;
+    }
+    
     /**
      * This can be used if a WSDL extension element that has wsdl:required=true
      * is not understood

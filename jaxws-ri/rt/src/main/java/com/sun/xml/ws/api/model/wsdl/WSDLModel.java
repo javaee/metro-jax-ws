@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,10 +49,12 @@ import com.sun.xml.ws.api.policy.PolicyResolver;
 import com.sun.xml.ws.api.policy.PolicyResolverFactory;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import com.sun.xml.ws.policy.PolicyMap;
+
 import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -111,7 +113,7 @@ public interface WSDLModel extends WSDLExtensible {
      *
      * @return an empty Map if the wsdl document has no wsdl:binding
      */
-    @NotNull Map<QName, WSDLBoundPortType> getBindings();
+    @NotNull Map<QName, ? extends WSDLBoundPortType> getBindings();
 
     /**
      * Gives a {@link Map} of wsdl:service qualified name and {@link com.sun.xml.ws.api.model.wsdl.WSDLService}
@@ -119,6 +121,25 @@ public interface WSDLModel extends WSDLExtensible {
      * @return an empty Map if the wsdl document has no wsdl:service
      */
     @NotNull Map<QName, ? extends WSDLService> getServices();
+
+    /**
+     * Returns the first service QName from insertion order
+     */
+    public QName getFirstServiceName();
+    
+    /**
+     * Returns the message with the given QName
+     * @param name Message name
+     * @return Message
+     */
+    public WSDLMessage getMessage(QName name);
+    
+    /**
+     * Gives a {@link Map} of wsdl:message qualified name and {@link com.sun.xml.ws.api.model.wsdl.WSDLMesage}
+     *
+     * @return an empty Map if the wsdl document has no wsdl:message
+     */
+    @NotNull Map<QName, ? extends WSDLMessage> getMessages();
 
     /**
      * Gives the PolicyMap associated with the WSDLModel
@@ -129,7 +150,6 @@ public interface WSDLModel extends WSDLExtensible {
      * Do not use this method as the PolicyMap API is not final yet and might change in next few months.
      */
     public PolicyMap getPolicyMap();
-
 
     /**
      * Main purpose of this class is to  parsing of a WSDL and get the {@link WSDLModel} from it.

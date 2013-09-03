@@ -58,21 +58,19 @@ import junit.framework.TestCase;
 
 import com.oracle.webservices.api.databinding.DatabindingModeFeature;
 import com.oracle.webservices.api.databinding.JavaCallInfo;
-
 import com.oracle.webservices.api.message.ContentType;
-
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.databinding.DatabindingConfig;
 import com.sun.xml.ws.api.databinding.DatabindingFactory;
 import com.sun.xml.ws.api.databinding.WSDLGenInfo;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 //import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
-import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 
@@ -113,7 +111,7 @@ abstract public class WsDatabindingTestBase extends TestCase {
         wsdlGenInfo.setInlineSchemas(true);
         srvDb.generateWSDL(wsdlGenInfo);
         if (debug) result.print();
-        WSDLModelImpl wsdl = RuntimeWSDLParser.parse( 
+        WSDLModel wsdl = RuntimeWSDLParser.parse( 
         		result.getWsdlSource(), result.getEntityResolver(), false, null, new WSDLParserExtension[0]);
         QName serviceName = wsdl.getFirstServiceName();
         WSDLPort wsdlPort = wsdl.getService(serviceName).getFirstPort();

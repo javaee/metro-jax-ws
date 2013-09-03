@@ -40,7 +40,6 @@
 
 package com.sun.xml.ws.model;
 
-import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.api.databinding.MetadataReader;
 import com.sun.xml.ws.api.model.JavaMethod;
@@ -231,14 +230,14 @@ public final class JavaMethodImpl implements JavaMethod {
      * @return soap:Body's first child name for request message.
      */
     public @Nullable QName getRequestPayloadName() {
-        return (wsdlOperation != null)? wsdlOperation.getReqPayloadName(): requestPayloadName;
+        return (wsdlOperation != null)? wsdlOperation.getRequestPayloadName(): requestPayloadName;
     }
 
     /**
      * @return soap:Body's first child name for response message.
      */
     public @Nullable QName getResponsePayloadName() {
-        return (mep == MEP.ONE_WAY) ? null : wsdlOperation.getResPayloadName();
+        return (mep == MEP.ONE_WAY) ? null : wsdlOperation.getResponsePayloadName();
     }
 
     /**

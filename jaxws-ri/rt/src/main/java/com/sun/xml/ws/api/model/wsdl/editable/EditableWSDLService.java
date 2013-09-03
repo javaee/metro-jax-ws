@@ -38,55 +38,43 @@
  * holder.
  */
 
-package com.sun.xml.ws.model.wsdl;
-
-import com.oracle.webservices.api.message.BasePropertySet;
-import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+package com.sun.xml.ws.api.model.wsdl.editable;
 
 import javax.xml.namespace.QName;
-import javax.xml.ws.handler.MessageContext;
 
+import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.model.wsdl.WSDLService;
 
-import org.xml.sax.InputSource;
+public interface EditableWSDLService extends WSDLService {
 
-/**
- * Properties exposed from {@link WSDLPort} for {@link MessageContext}.
- * Donot add this satellite if {@link WSDLPort} is null.
- *
- * @author Jitendra Kotamraju
- */
-public abstract class WSDLProperties extends BasePropertySet {
+	@Override
+    @NotNull
+    EditableWSDLModel getParent();
 
-    private static final PropertyMap model;
-    static {
-        model = parse(WSDLProperties.class);
-    }
+	@Override
+    EditableWSDLPort get(QName portName);
 
-    private final @Nullable SEIModel seiModel;
+	@Override
+    EditableWSDLPort getFirstPort();
 
-    protected WSDLProperties(@Nullable SEIModel seiModel) {
-        this.seiModel = seiModel;
-    }
+	@Override
+    @Nullable
+    EditableWSDLPort getMatchingPort(QName portTypeName);
 
-    @Property(MessageContext.WSDL_SERVICE)
-    public abstract QName getWSDLService();
-
-    @Property(MessageContext.WSDL_PORT)
-    public abstract QName getWSDLPort();
-
-    @Property(MessageContext.WSDL_INTERFACE)
-    public abstract QName getWSDLPortType();
+	@Override
+    Iterable<? extends EditableWSDLPort> getPorts();
     
-    @Property(MessageContext.WSDL_DESCRIPTION)
-    public InputSource getWSDLDescription() {
-    	return seiModel != null ? new InputSource(seiModel.getWSDLLocation()) : null;
-    }
+	/**
+	 * Associate WSDL port with port QName
+	 * @param portName Port QName
+	 * @param port Port
+	 */
+    public void put(QName portName, EditableWSDLPort port);
 
-    @Override
-    protected PropertyMap getPropertyMap() {
-        return model;
-    }
-
+	/**
+	 * Freezes WSDL model to prevent further modification
+	 * @param root WSDL Model
+	 */
+    void freeze(EditableWSDLModel root);
 }

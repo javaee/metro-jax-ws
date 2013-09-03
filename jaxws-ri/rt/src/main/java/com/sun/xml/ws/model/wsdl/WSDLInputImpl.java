@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,11 +40,11 @@
 
 package com.sun.xml.ws.model.wsdl;
 
-import com.sun.xml.ws.api.model.wsdl.WSDLInput;
-import com.sun.xml.ws.api.model.wsdl.WSDLMessage;
-import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLInput;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLMessage;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLModel;
+import com.sun.xml.ws.api.model.wsdl.editable.EditableWSDLOperation;
 import com.sun.istack.NotNull;
-import com.sun.istack.Nullable;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
@@ -52,15 +52,15 @@ import javax.xml.stream.XMLStreamReader;
 /**
  * @author Vivek Pandey
  */
-public final class WSDLInputImpl extends AbstractExtensibleImpl implements WSDLInput {
+public final class WSDLInputImpl extends AbstractExtensibleImpl implements EditableWSDLInput {
     private String name;
     private QName messageName;
-    private WSDLOperationImpl operation;
-    private WSDLMessageImpl message;
+    private EditableWSDLOperation operation;
+    private EditableWSDLMessage message;
     private String action;
     private boolean defaultAction = true;
 
-    public WSDLInputImpl(XMLStreamReader xsr,String name, QName messageName, WSDLOperationImpl operation) {
+    public WSDLInputImpl(XMLStreamReader xsr,String name, QName messageName, EditableWSDLOperation operation) {
         super(xsr);
         this.name = name;
         this.messageName = messageName;
@@ -74,7 +74,7 @@ public final class WSDLInputImpl extends AbstractExtensibleImpl implements WSDLI
         return (operation.isOneWay())?operation.getName().getLocalPart():operation.getName().getLocalPart()+"Request";
     }
 
-    public WSDLMessage getMessage() {
+    public EditableWSDLMessage getMessage() {
         return message;
     }
 
@@ -83,7 +83,7 @@ public final class WSDLInputImpl extends AbstractExtensibleImpl implements WSDLI
     }
 
     @NotNull
-    public WSDLOperation getOperation() {
+    public EditableWSDLOperation getOperation() {
         return operation;
     }
 
@@ -103,7 +103,7 @@ public final class WSDLInputImpl extends AbstractExtensibleImpl implements WSDLI
         this.defaultAction = defaultAction;
     }
     
-    void freeze(WSDLModelImpl parent) {
+    public void freeze(EditableWSDLModel parent) {
         message = parent.getMessage(messageName);
     }
 }
