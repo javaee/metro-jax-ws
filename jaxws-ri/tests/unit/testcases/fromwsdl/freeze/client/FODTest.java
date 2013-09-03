@@ -85,12 +85,12 @@ public class FODTest extends TestCase {
 		Source wsdlSource = getSource(WSDL_NAME);
 		
 		WSDLModel model = RuntimeWSDLParser.parse(getURL(WSDL_NAME), wsdlSource, XmlUtil.createDefaultCatalogResolver(), true, Container.NONE, new WSDLParserExtension[]{});
-		Map<QName, WSDLPortType> portTypes = model.getPortTypes();
+		Map<QName, ? extends WSDLPortType> portTypes = model.getPortTypes();
 		Set<QName> keySet = portTypes.keySet();
 		for (QName name : keySet) {
 			WSDLPortType pt = portTypes.get(name);
 			System.out.println(name.toString() + portTypes.get(name));
-			Iterable<WSDLOperation> operations = pt.getOperations();
+			Iterable<? extends WSDLOperation> operations = pt.getOperations();
 			for (WSDLOperation operation : operations)  {
 				assertNotNull(operation.getInput().getMessage());
 			
