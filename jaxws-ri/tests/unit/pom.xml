@@ -64,7 +64,7 @@
         <ws.args></ws.args>
         <!-- DEFAULT = JAXB, TOPLINK = MOXy -->
         <ws.databinding>DEFAULT</ws.databinding>
-        <!-- IN_VM, LWHS, TOMCAT (requires tomcat.home to be set) -->
+        <!-- IN_VM, LWHS, TOMCAT/TOMCAT_LOCAL (requires tomcat.home to be set) -->
         <ws.transport>IN_VM</ws.transport>
         <ws.test>${project.basedir}/testcases</ws.test>
         <!-- extra JVM options for JVM forked by test harness, ie proxy, tests' debugging-->
