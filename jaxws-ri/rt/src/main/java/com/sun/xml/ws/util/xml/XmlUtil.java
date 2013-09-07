@@ -381,7 +381,7 @@ public class XmlUtil {
         try {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, isXMLSecurityDisabled(secureXmlProcessing));
         } catch (ParserConfigurationException e) {
-            LOGGER.log(Level.WARNING, "Factory [{}] doesn't support secure xml processing!", new Object[] { factory.getClass().getName() } );
+            LOGGER.log(Level.WARNING, "Factory [{0}] doesn't support secure xml processing!", new Object[] { factory.getClass().getName() } );
         }
         return factory;
     }
@@ -391,7 +391,7 @@ public class XmlUtil {
         try {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, isXMLSecurityDisabled(secureXmlProcessingEnabled));
         } catch (TransformerConfigurationException e) {
-            LOGGER.log(Level.WARNING, "Factory [{}] doesn't support secure xml processing!", new Object[]{factory.getClass().getName()});
+            LOGGER.log(Level.WARNING, "Factory [{0}] doesn't support secure xml processing!", new Object[]{factory.getClass().getName()});
         }
         return factory;
     }
@@ -405,7 +405,7 @@ public class XmlUtil {
         try {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, isXMLSecurityDisabled(secureXmlProcessingEnabled));
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Factory [{}] doesn't support secure xml processing!", new Object[]{factory.getClass().getName()});
+            LOGGER.log(Level.WARNING, "Factory [{0}] doesn't support secure xml processing!", new Object[]{factory.getClass().getName()});
         }
         return factory;
     }
@@ -415,7 +415,7 @@ public class XmlUtil {
         try {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, isXMLSecurityDisabled(secureXmlProcessingEnabled));
         } catch (XPathFactoryConfigurationException e) {
-            LOGGER.log(Level.WARNING, "Factory [{}] doesn't support secure xml processing!", new Object[] { factory.getClass().getName() } );
+            LOGGER.log(Level.WARNING, "Factory [{0}] doesn't support secure xml processing!", new Object[] { factory.getClass().getName() } );
         }
         return factory;
     }
@@ -454,12 +454,12 @@ public class XmlUtil {
         try {
             sf.setProperty(ACCESS_EXTERNAL_SCHEMA, value);
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Property \"{}\" is supported and has been successfully set by used JAXP implementation.", new Object[]{ACCESS_EXTERNAL_SCHEMA});
+                LOGGER.log(Level.FINE, "Property \"{0}\" is supported and has been successfully set by used JAXP implementation.", new Object[]{ACCESS_EXTERNAL_SCHEMA});
             }
         } catch (SAXException ignored) {
             // nothing to do; support depends on version JDK or SAX implementation
             if (LOGGER.isLoggable(Level.CONFIG)) {
-                LOGGER.log(Level.CONFIG, "Property \"{}\" is not supported by used JAXP implementation.", new Object[]{ACCESS_EXTERNAL_SCHEMA});
+                LOGGER.log(Level.CONFIG, "Property \"{0}\" is not supported by used JAXP implementation.", new Object[]{ACCESS_EXTERNAL_SCHEMA});
             }
         }
         return sf;
