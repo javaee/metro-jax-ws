@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2005-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,7 @@ import handler.handler_processing.common.TestConstants;
 /**
  * @author Rama Pulavarthi
  */
-@javax.jws.WebService(serviceName="TestService", portName="ReportServicePort", targetNamespace="urn:test", endpointInterface="handler.handler_processing.server.ReportService")
+@javax.jws.WebService(serviceName="ReportService", portName="ReportServicePort", targetNamespace="urn:test", endpointInterface="handler.handler_processing.server.ReportService")
 public class ReportService_Impl implements ReportService, TestConstants {
 
     public void setInstruction(String name, int x) {
