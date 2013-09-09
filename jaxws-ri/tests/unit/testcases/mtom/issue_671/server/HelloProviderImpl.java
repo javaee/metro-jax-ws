@@ -57,7 +57,7 @@ import java.io.*;
 /**
  * @author Rama Pulavarthi
  */
-@WebServiceProvider(targetNamespace="http://example.org/mtom", portName="HelloProviderPort", serviceName="HelloProviderService")
+@WebServiceProvider(targetNamespace="http://example.org/mtom", portName="HelloProviderPort", serviceName="HelloService")
 @ServiceMode(value= Mode.MESSAGE)
 @BindingType(value=HTTPBinding.HTTP_BINDING)
 public class HelloProviderImpl implements Provider<DataSource> {
