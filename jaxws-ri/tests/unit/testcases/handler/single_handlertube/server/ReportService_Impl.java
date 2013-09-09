@@ -49,7 +49,7 @@ import java.util.List;
 /**
  * @author Rama Pulavarthi
  */
-@javax.jws.WebService(serviceName = "Hello", portName="ReportServicePort", targetNamespace="urn:test", endpointInterface="handler.single_handlertube.server.ReportService")
+@javax.jws.WebService(serviceName = "ReportService", portName="ReportServicePort", targetNamespace="urn:test", endpointInterface="handler.single_handlertube.server.ReportService")
 public class ReportService_Impl implements ReportService{
 
     public void setInstruction(String name, int x) {

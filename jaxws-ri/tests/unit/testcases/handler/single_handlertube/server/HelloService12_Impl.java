@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2005-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,7 +50,7 @@ import javax.xml.ws.soap.SOAPBinding;
  * @author Rama Pulavarthi
  */
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
-@javax.jws.WebService(serviceName = "Hello", portName="HelloPort12", targetNamespace="urn:test", endpointInterface="handler.single_handlertube.server.Hello12")
+@javax.jws.WebService(serviceName = "HelloService12", portName="HelloPort12", targetNamespace="urn:test", endpointInterface="handler.single_handlertube.server.Hello12")
 public class HelloService12_Impl implements Hello12 {
     
     public int hello12(int x) {
