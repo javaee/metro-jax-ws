@@ -67,7 +67,7 @@ public class Issue671Test extends TestCase {
     private Hello mtom_proxy;
     private Hello no_mtom_proxy;
     private Dispatch<DataSource> dispatch;
-    private Hello provider_proxy;
+    private mtom.issue_671.client2.Hello provider_proxy;
 
     public Issue671Test(String name) throws Exception {
         super(name);
@@ -76,7 +76,7 @@ public class Issue671Test extends TestCase {
     protected void setUp() throws Exception {
         mtom_proxy = new HelloService().getHelloPort(new MTOMFeature());
         no_mtom_proxy = new HelloService().getHelloPort();
-        provider_proxy = new HelloService().getHelloProviderPort(new MTOMFeature());
+        provider_proxy = new mtom.issue_671.client2.HelloService().getHelloProviderPort(new MTOMFeature());
         String helloPortAddress = (String) ((BindingProvider) mtom_proxy).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
         QName serviceName = new QName("http://example.org/mtom", "Hello");
         QName portName = new QName("http://example.org/mtom", "HelloPort");
@@ -102,9 +102,9 @@ public class Issue671Test extends TestCase {
      * @throws Exception if the request is not XOPed
      */
     public void testVerifyMtomEnabled() throws Exception {
-        XDoc xdoc = new XDoc();
+        mtom.issue_671.client2.XDoc xdoc = new mtom.issue_671.client2.XDoc();
         xdoc.setDoc1(getSource("gpsXml.xml"));
-        XDoc out = provider_proxy.xDoc(xdoc);
+        mtom.issue_671.client2.XDoc out = provider_proxy.xDoc(xdoc);
         assertNotNull(out.getDoc1());
     }
 
