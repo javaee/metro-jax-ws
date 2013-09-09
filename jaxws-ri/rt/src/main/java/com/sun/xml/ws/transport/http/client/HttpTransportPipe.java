@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,7 +50,9 @@ import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
 import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.developer.HttpConfigFeature;
 import com.sun.xml.ws.resources.ClientMessages;
+import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.transport.Headers;
+import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.util.StreamUtils;
@@ -441,7 +443,14 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             }
         }
 
-        buf.writeTo(baos);
+        if (buf.size() > HttpAdapter.dump_threshold) {
+            byte[] b = buf.getRawData();
+            baos.write(b, 0, HttpAdapter.dump_threshold);
+            pw.println();
+            pw.println(WsservletMessages.MESSAGE_TOO_LONG(HttpAdapter.class.getName() + ".dumpTreshold"));
+        } else {
+            buf.writeTo(baos);
+        }
         pw.println("--------------------");
 
         String msg = baos.toString();
