@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,13 +40,10 @@
 
 package server.endpoint.client;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
-import javax.xml.ws.Holder;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.ws.Endpoint;
@@ -58,6 +55,7 @@ import java.io.*;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.soap.SOAPBinding;
 
+import com.sun.xml.ws.transport.http.HttpAdapter;
 import testutil.PortAllocator;
 
 /**
@@ -110,17 +108,22 @@ public class EndpointWsdlLocationTest extends TestCase {
     }
 
     public void testHtmlPage() throws Exception {
-        int port = PortAllocator.getFreePort();
-        String address = "http://localhost:"+port+"/hello";
-        Endpoint endpoint = Endpoint.create(new RpcLitEndpointWsdlLocation());
-        endpoint.publish(address);
-        URL pubUrl = new URL(address);
-        URLConnection con = pubUrl.openConnection();
-        InputStream is = con.getInputStream();
-        int ch;
-        while((ch=is.read()) != -1);
-        assertTrue(con.getContentType().contains("text/html"));
-        endpoint.stop();
+        try {
+            HttpAdapter.setPublishStatus(true);
+            int port = PortAllocator.getFreePort();
+            String address = "http://localhost:" + port + "/hello";
+            Endpoint endpoint = Endpoint.create(new RpcLitEndpointWsdlLocation());
+            endpoint.publish(address);
+            URL pubUrl = new URL(address);
+            URLConnection con = pubUrl.openConnection();
+            InputStream is = con.getInputStream();
+            int ch;
+            while ((ch = is.read()) != -1);
+            assertTrue(con.getContentType().contains("text/html"));
+            endpoint.stop();
+        } finally {
+            HttpAdapter.setPublishStatus(false);
+        }
     }
 
     public boolean isGenerated(InputStream in) throws IOException {
