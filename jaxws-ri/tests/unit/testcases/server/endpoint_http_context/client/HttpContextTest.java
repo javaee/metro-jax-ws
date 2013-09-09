@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package server.endpoint_http_context.client;
 
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.xml.ws.transport.http.HttpAdapter;
 import junit.framework.TestCase;
 import testutil.ClientServerTestUtil;
 import testutil.PortAllocator;
@@ -70,46 +71,51 @@ import java.util.concurrent.Executors;
 public class HttpContextTest extends TestCase {
 
     public void testContext() throws Exception {
-        int port = PortAllocator.getFreePort();
-        String address = "http://localhost:"+port+"/hello";
+        try {
+            HttpAdapter.setPublishStatus(true);
+            int port = PortAllocator.getFreePort();
+            String address = "http://localhost:" + port + "/hello";
 
-        HttpServer server = HttpServer.create(new InetSocketAddress(port), 5);
-        ExecutorService threads  = Executors.newFixedThreadPool(5);
-        server.setExecutor(threads);
-        server.start();
+            HttpServer server = HttpServer.create(new InetSocketAddress(port), 5);
+            ExecutorService threads = Executors.newFixedThreadPool(5);
+            server.setExecutor(threads);
+            server.start();
 
-        Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
-        HttpContext context = server.createContext("/hello");
-        endpoint.publish(context);
+            Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
+            HttpContext context = server.createContext("/hello");
+            endpoint.publish(context);
 
-        // access HTML page and check the wsdl location
-        String wsdlAddress = address+"?wsdl";
-        String str = getHtmlPage(address);
-        assertTrue(str+"doesn't have "+wsdlAddress, str.contains(wsdlAddress));
+            // access HTML page and check the wsdl location
+            String wsdlAddress = address + "?wsdl";
+            String str = getHtmlPage(address);
+            assertTrue(str + "doesn't have " + wsdlAddress, str.contains(wsdlAddress));
 
-        // See if WSDL is published at the correct address
-        int code = getHttpStatusCode(wsdlAddress);
-        assertEquals(HttpURLConnection.HTTP_OK, code);
+            // See if WSDL is published at the correct address
+            int code = getHttpStatusCode(wsdlAddress);
+            assertEquals(HttpURLConnection.HTTP_OK, code);
 
-        // Check abstract wsdl address
-        String wsdlImportAddress = getWsdlImportAddress(wsdlAddress);
-        assertEquals(address+"?wsdl=1", wsdlImportAddress);
+            // Check abstract wsdl address
+            String wsdlImportAddress = getWsdlImportAddress(wsdlAddress);
+            assertEquals(address + "?wsdl=1", wsdlImportAddress);
 
-        // See if abstract WSDL is published at the correct address
-        code = getHttpStatusCode(wsdlImportAddress);
-        assertEquals(HttpURLConnection.HTTP_OK, code);
+            // See if abstract WSDL is published at the correct address
+            code = getHttpStatusCode(wsdlImportAddress);
+            assertEquals(HttpURLConnection.HTTP_OK, code);
 
-        // Check published web service soap address
-        String pubAddress = getSoapAddress(wsdlAddress);
-        assertEquals(address, pubAddress);
+            // Check published web service soap address
+            String pubAddress = getSoapAddress(wsdlAddress);
+            assertEquals(address, pubAddress);
 
-        // Invoke service
-        invoke(address);
+            // Invoke service
+            invoke(address);
 
-        endpoint.stop();
+            endpoint.stop();
 
-        server.stop(1);
-        threads.shutdown();
+            server.stop(1);
+            threads.shutdown();
+        } finally {
+            HttpAdapter.setPublishStatus(false);
+        }
     }
 
     private void invoke(String address) {
