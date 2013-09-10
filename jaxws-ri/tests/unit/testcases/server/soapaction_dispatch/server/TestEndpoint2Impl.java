@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@ import javax.xml.ws.BindingType;
 /**
  * @author Rama Pulavarthi
  */
-@WebService(portName = "TestEndpointPort2", targetNamespace = "http://server.soapaction_dispatch.server/", serviceName="TestEndpointService",
+@WebService(portName = "TestEndpointPort2", targetNamespace = "http://server.soapaction_dispatch.server/", serviceName="TestEndpoint2Service",
         endpointInterface = "server.soapaction_dispatch.server.TestEndpoint")
 @BindingType("http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/")
 public class TestEndpoint2Impl {
