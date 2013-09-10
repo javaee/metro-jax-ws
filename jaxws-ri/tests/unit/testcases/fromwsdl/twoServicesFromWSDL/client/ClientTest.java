@@ -53,7 +53,7 @@ public class ClientTest extends TestCase {
     }
 
     public void testWs1Client() throws Exception {
-        AddNumbersPortType port = new AddNumbersService().getAddNumbersPort();
+        AddNumbersPortType port = new AddNumbersService2().getAddNumbersPort();
         assertTrue("WS1 invocation failed." , values.remove(Integer.valueOf(port.addNumbers(1, 2))));
     }
 

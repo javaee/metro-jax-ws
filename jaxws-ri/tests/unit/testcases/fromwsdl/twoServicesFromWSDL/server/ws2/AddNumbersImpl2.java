@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,7 @@ import org.example.AddNumbersFault_Exception;
  *
  * @author ljungman
  */
-@WebService(serviceName = "AddNumbersService", portName = "AddNumbersPort", endpointInterface = "org.example.AddNumbersPortType", targetNamespace = "http://example.org", wsdlLocation = "/WEB-INF/wsdl/ws2/AddNumbers.wsdl")
+@WebService(serviceName = "AddNumbersService2", portName = "AddNumbersPort", endpointInterface = "org.example.AddNumbersPortType", targetNamespace = "http://example.org", wsdlLocation = "/WEB-INF/wsdl/AddNumbers.wsdl")
 public class AddNumbersImpl2 {
 
     public int addNumbers(int arg0, int arg1) throws AddNumbersFault_Exception {
