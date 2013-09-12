@@ -41,7 +41,7 @@
 
 -->
 
-<descriptor since="2.2" uses="ri" transport="in-vm">
+<descriptor since="2.2" uses="ri">
     <description>End to End WSA Interop tests </description>
     <service basedir="./server">
         <wsdl href="wsaTestService.wsdl"/>

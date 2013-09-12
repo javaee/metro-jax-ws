@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,9 +48,9 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WebServiceContextDelegate;
 import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.transport.Headers;
-import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
 import com.sun.xml.ws.developer.JAXWSProperties;
+import com.sun.xml.ws.util.ReadAllStream;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
@@ -59,6 +59,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
+import java.io.FilterInputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -85,6 +87,8 @@ public class ServletConnectionImpl extends WSHTTPConnection implements WebServic
     private final ServletAdapter adapter;
     private Headers responseHeaders;
     private HaInfo haInfo;
+    private ServerInputStream in;
+    private OutputStream out;
 
     public ServletConnectionImpl(@NotNull ServletAdapter adapter, ServletContext context, HttpServletRequest request, HttpServletResponse response) {
         this.adapter = adapter;
@@ -189,7 +193,10 @@ public class ServletConnectionImpl extends WSHTTPConnection implements WebServic
 
     @Override
     public @NotNull InputStream getInput() throws IOException {
-        return request.getInputStream();
+        if (in == null) {
+            in = new ServerInputStream(request.getInputStream());
+        }
+        return in;
     }
 
     @Override
@@ -199,30 +206,61 @@ public class ServletConnectionImpl extends WSHTTPConnection implements WebServic
             for (Map.Entry<String, List<String>> entry : responseHeaders.entrySet()) {
                 String name = entry.getKey();
                 if (name == null) {
-                	continue;
+                    continue;
                 }
-                if(name.equalsIgnoreCase("Content-Type") || name.equalsIgnoreCase("Content-Length"))
+                if (name.equalsIgnoreCase("Content-Type") || name.equalsIgnoreCase("Content-Length")) {
                     continue;   // ignore headers that interfere with the operation
+                }
                 for (String value : entry.getValue()) {
                     response.addHeader(name, value);
                 }
             }
         }
-        return response.getOutputStream();
+        if (out == null) {
+            out = new FilterOutputStream(response.getOutputStream()) {
+                boolean closed;
+
+                @Override
+                public void close() throws IOException {
+                    if (!closed) {
+                        closed = true;
+                        // server closes input stream, when you close the output stream
+                        // This causes problems for streaming in one-way cases
+                        in.readAll();
+                        try {
+                            super.close();
+                        } catch (IOException ioe) {
+                            // Ignoring purposefully.
+                        }
+                    }
+                }
+
+                // Otherwise, FilterOutpuStream writes byte by byte
+                @Override
+                public void write(byte[] buf, int start, int len) throws IOException {
+                    out.write(buf, start, len);
+                }
+            };
+        }
+        return out;
     }
 
+    @Override
     public @NotNull WebServiceContextDelegate getWebServiceContextDelegate() {
         return this;
     }
 
+    @Override
     public Principal getUserPrincipal(Packet p) {
         return request.getUserPrincipal();
     }
 
+    @Override
     public boolean isUserInRole(Packet p,String role) {
         return request.isUserInRole(role);
     }
 
+    @Override
     public @NotNull String getEPRAddress(Packet p, WSEndpoint endpoint) {
         PortAddressResolver resolver = adapter.owner.createPortAddressResolver(getBaseAddress(), endpoint.getImplementationClass());
         String address = resolver.getAddressFor(endpoint.getServiceName(), endpoint.getPortName().getLocalPart());
@@ -232,6 +270,7 @@ public class ServletConnectionImpl extends WSHTTPConnection implements WebServic
     }
 
 
+    @Override
     public String getWSDLAddress(@NotNull Packet request, @NotNull WSEndpoint endpoint) {
         String eprAddress = getEPRAddress(request,endpoint);
         if(adapter.getEndpoint().getPort() != null)
@@ -302,7 +341,8 @@ public class ServletConnectionImpl extends WSHTTPConnection implements WebServic
     public @NotNull String getContextPath() {
     	return request.getContextPath();
     }
-    
+
+    @Override
     public @NotNull String getBaseAddress() {
         return getBaseAddress(request);
     }
@@ -324,6 +364,7 @@ public class ServletConnectionImpl extends WSHTTPConnection implements WebServic
     	return request.getAttribute(key);
     }
 
+    @Override
     @Property(MessageContext.SERVLET_CONTEXT)
     public ServletContext getContext() {
         return context;
@@ -404,6 +445,7 @@ public class ServletConnectionImpl extends WSHTTPConnection implements WebServic
         this.haInfo = replicaInfo;
     }
 
+    @Override
     protected PropertyMap getPropertyMap() {
         return model;
     }
@@ -412,5 +454,36 @@ public class ServletConnectionImpl extends WSHTTPConnection implements WebServic
 
     static {
         model = parse(ServletConnectionImpl.class);
+    }
+
+    // http server's InputStream.close() throws exception if
+    // all the bytes are not read. Work around until it is fixed.
+    private static class ServerInputStream extends FilterInputStream {
+        // Workaround for "Woodstox/SJSXP XMLStreamReader.next() closes stream".
+        boolean closed;
+        boolean readAll;
+
+        ServerInputStream(InputStream in) {
+            super(in);
+        }
+
+        void readAll() throws IOException {
+            if (!closed && !readAll) {
+                ReadAllStream all = new ReadAllStream();
+                all.readAll(in, 4000000);
+                in.close();
+                in = all;
+                readAll = true;
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (!closed) {
+                readAll();
+                super.close();
+                closed = true;
+            }
+        }
     }
 }
