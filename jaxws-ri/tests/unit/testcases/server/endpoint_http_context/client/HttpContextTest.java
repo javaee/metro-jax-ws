@@ -42,6 +42,7 @@ package server.endpoint_http_context.client;
 
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.xml.ws.transport.http.HttpAdapter;
 import junit.framework.TestCase;
 import testutil.ClientServerTestUtil;
 import testutil.PortAllocator;
@@ -69,65 +70,52 @@ import java.util.concurrent.Executors;
  */
 public class HttpContextTest extends TestCase {
 
-    public static final String JDK_PROP = "com.sun.xml.internal.ws.transport.http.HttpAdapter.publishStatusPage";
-    public static final String STANDALONE_PROP = "com.sun.xml.ws.transport.http.HttpAdapter.publishStatusPage";
-
-    private String jdkPublishStatusPage;
-    private String standalonePublishStatusPage;
-
-    @Override
-    protected void setUp() throws Exception {
-        jdkPublishStatusPage = System.setProperty(JDK_PROP, "true");
-        standalonePublishStatusPage = System.setProperty(STANDALONE_PROP, "true");
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        System.setProperty(JDK_PROP, Boolean.valueOf(jdkPublishStatusPage).toString());
-        System.setProperty(STANDALONE_PROP, Boolean.valueOf(standalonePublishStatusPage).toString());
-    }
-
     public void testContext() throws Exception {
-        int port = PortAllocator.getFreePort();
-        String address = "http://localhost:" + port + "/hello";
+        try {
+            HttpAdapter.setPublishStatus(true);
+            int port = PortAllocator.getFreePort();
+            String address = "http://localhost:" + port + "/hello";
 
-        HttpServer server = HttpServer.create(new InetSocketAddress(port), 5);
-        ExecutorService threads = Executors.newFixedThreadPool(5);
-        server.setExecutor(threads);
-        server.start();
+            HttpServer server = HttpServer.create(new InetSocketAddress(port), 5);
+            ExecutorService threads = Executors.newFixedThreadPool(5);
+            server.setExecutor(threads);
+            server.start();
 
-        Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
-        HttpContext context = server.createContext("/hello");
-        endpoint.publish(context);
+            Endpoint endpoint = Endpoint.create(new RpcLitEndpoint());
+            HttpContext context = server.createContext("/hello");
+            endpoint.publish(context);
 
-        // access HTML page and check the wsdl location
-        String wsdlAddress = address + "?wsdl";
-        String str = getHtmlPage(address);
-        assertTrue(str + "doesn't have " + wsdlAddress, str.contains(wsdlAddress));
+            // access HTML page and check the wsdl location
+            String wsdlAddress = address + "?wsdl";
+            String str = getHtmlPage(address);
+            assertTrue(str + "doesn't have " + wsdlAddress, str.contains(wsdlAddress));
 
-        // See if WSDL is published at the correct address
-        int code = getHttpStatusCode(wsdlAddress);
-        assertEquals(HttpURLConnection.HTTP_OK, code);
+            // See if WSDL is published at the correct address
+            int code = getHttpStatusCode(wsdlAddress);
+            assertEquals(HttpURLConnection.HTTP_OK, code);
 
-        // Check abstract wsdl address
-        String wsdlImportAddress = getWsdlImportAddress(wsdlAddress);
-        assertEquals(address + "?wsdl=1", wsdlImportAddress);
+            // Check abstract wsdl address
+            String wsdlImportAddress = getWsdlImportAddress(wsdlAddress);
+            assertEquals(address + "?wsdl=1", wsdlImportAddress);
 
-        // See if abstract WSDL is published at the correct address
-        code = getHttpStatusCode(wsdlImportAddress);
-        assertEquals(HttpURLConnection.HTTP_OK, code);
+            // See if abstract WSDL is published at the correct address
+            code = getHttpStatusCode(wsdlImportAddress);
+            assertEquals(HttpURLConnection.HTTP_OK, code);
 
-        // Check published web service soap address
-        String pubAddress = getSoapAddress(wsdlAddress);
-        assertEquals(address, pubAddress);
+            // Check published web service soap address
+            String pubAddress = getSoapAddress(wsdlAddress);
+            assertEquals(address, pubAddress);
 
-        // Invoke service
-        invoke(address);
+            // Invoke service
+            invoke(address);
 
-        endpoint.stop();
+            endpoint.stop();
 
-        server.stop(1);
-        threads.shutdown();
+            server.stop(1);
+            threads.shutdown();
+        } finally {
+            HttpAdapter.setPublishStatus(false);
+        }
     }
 
     private void invoke(String address) {
@@ -137,14 +125,14 @@ public class HttpContextTest extends TestCase {
         Service service = Service.create(serviceName);
         service.addPort(portName, SOAPBinding.SOAP11HTTP_BINDING, address);
         Dispatch<Source> d = service.createDispatch(portName, Source.class, Service.Mode.PAYLOAD);
-        String body = "<ns0:echoInteger xmlns:ns0=\"http://echo.abstract.org/\"><arg0>2</arg0></ns0:echoInteger>";
+        String body  = "<ns0:echoInteger xmlns:ns0=\"http://echo.abstract.org/\"><arg0>2</arg0></ns0:echoInteger>";
         Source request = new StreamSource(new ByteArrayInputStream(body.getBytes()));
         d.invoke(request);
     }
 
     private int getHttpStatusCode(String address) throws Exception {
         URL url = new URL(address);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        HttpURLConnection con = (HttpURLConnection)url.openConnection();
         con.connect();
         return con.getResponseCode();
     }
@@ -154,7 +142,7 @@ public class HttpContextTest extends TestCase {
         BufferedReader rdr = new BufferedReader(new InputStreamReader(url.openStream()));
         StringBuilder sb = new StringBuilder();
         String str;
-        while ((str = rdr.readLine()) != null) {
+        while ((str=rdr.readLine()) != null) {
             sb.append(str);
         }
         rdr.close();
@@ -166,7 +154,7 @@ public class HttpContextTest extends TestCase {
         URL url = new URL(wsdlAddress);
         XMLStreamReader rdr = XMLInputFactory.newInstance().createXMLStreamReader(url.openStream());
         try {
-            while (rdr.hasNext()) {
+            while(rdr.hasNext()) {
                 int event = rdr.next();
                 if (event == XMLStreamReader.START_ELEMENT) {
                     if (rdr.getName().equals(new QName("http://schemas.xmlsoap.org/wsdl/", "import"))) {
@@ -184,7 +172,7 @@ public class HttpContextTest extends TestCase {
         URL url = new URL(wsdlAddress);
         XMLStreamReader rdr = XMLInputFactory.newInstance().createXMLStreamReader(url.openStream());
         try {
-            while (rdr.hasNext()) {
+            while(rdr.hasNext()) {
                 int event = rdr.next();
                 if (event == XMLStreamReader.START_ELEMENT) {
                     if (rdr.getName().equals(new QName("http://schemas.xmlsoap.org/wsdl/soap/", "address"))) {

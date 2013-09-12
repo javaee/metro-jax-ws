@@ -41,7 +41,7 @@
 
 -->
 
-<descriptor since="2.2.3">
+<descriptor since="2.2.3" uses="ri">
   <description>Endpoint HttpContext test</description>
 
 </descriptor>
