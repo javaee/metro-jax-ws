@@ -90,8 +90,8 @@
     </developers>
 
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri/boms/bom</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/jax-ws~sources/branches/jaxws22/jaxws-ri/boms/bom</developerConnection>
+        <connection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</connection>
+        <developerConnection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</developerConnection>
         <url>http://java.net/projects/jax-ws/sources/sources/show/branches/jaxws22/jaxws-ri/boms/bom</url>
     </scm>
 

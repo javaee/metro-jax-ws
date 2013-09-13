@@ -64,6 +64,12 @@
         <url>http://java.net/jira/browse/JAX_WS</url>
     </issueManagement>
 
+    <scm>
+        <connection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</connection>
+        <developerConnection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</developerConnection>
+        <url>http://java.net/projects/jax-ws/sources/sources/show/branches/jaxws22/jaxws-ri/boms/bom</url>
+    </scm>
+
     <mailingLists>
         <mailingList>
             <name>JAX-WS RI Users List</name>
@@ -321,8 +327,8 @@
                                 <Implementation-Vendor>Sun Microsystems Inc</Implementation-Vendor>
                                 <Implementation-Vendor-Id>com.sun</Implementation-Vendor-Id>
                                 <Build-Id>${project.version}</Build-Id>
-                                <SVN-Revision>${buildNumber}</SVN-Revision>
-                                <SVN-URL>${project.scm.connection}</SVN-URL>
+                                <Git-Revision>${buildNumber}</Git-Revision>
+                                <Git-Url>${project.scm.connection}</Git-Url>
                                 <Build-Version>JAX-WS RI ${project.version}</Build-Version>
                                 <Major-Version>${jaxws.majorVersion}.${jaxws.minorVersion}.${jaxws.incrementalVersion}</Major-Version>
                             </manifestEntries>
@@ -343,8 +349,8 @@
                                 <Implementation-Vendor>Sun Microsystems Inc</Implementation-Vendor>
                                 <Implementation-Vendor-Id>com.sun</Implementation-Vendor-Id>
                                 <Build-Id>${project.version}</Build-Id>
-                                <SVN-Revision>${buildNumber}</SVN-Revision>
-                                <SVN-URL>${project.scm.connection}</SVN-URL>
+                                <Git-Revision>${buildNumber}</Git-Revision>
+                                <Git-Url>${project.scm.connection}</Git-Url>
                                 <Build-Version>JAX-WS RI ${project.version}</Build-Version>
                                 <Major-Version>${jaxws.majorVersion}.${jaxws.minorVersion}.${jaxws.incrementalVersion}</Major-Version>
                             </manifestEntries>
@@ -365,8 +371,8 @@
                                 <Implementation-Vendor>Sun Microsystems Inc</Implementation-Vendor>
                                 <Implementation-Vendor-Id>com.sun</Implementation-Vendor-Id>
                                 <Build-Id>${project.version}</Build-Id>
-                                <SVN-Revision>${buildNumber}</SVN-Revision>
-                                <SVN-URL>${project.scm.connection}</SVN-URL>
+                                <Git-Revision>${buildNumber}</Git-Revision>
+                                <Git-Url>${project.scm.connection}</Git-Url>
                                 <Build-Version>JAX-WS RI ${project.version}</Build-Version>
                                 <Major-Version>${jaxws.majorVersion}.${jaxws.minorVersion}.${jaxws.incrementalVersion}</Major-Version>
                             </manifestEntries>
@@ -685,6 +691,22 @@
             <id>release-profile</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>default</id>
+                                <goals>
+                                    <goal>perform</goal>
+                                </goals>
+                                <configuration>
+                                    <pomFileName>jaxws-ri/pom.xml</pomFileName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-site-plugin</artifactId>
