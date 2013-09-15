@@ -139,12 +139,6 @@
                     <chapterAutolabel>0</chapterAutolabel>
 
                     <preProcess>
-                        <copy todir="${project.build.directory}/docbook/figures">
-                            <fileset dir="${src.dir}/figures" />
-                        </copy>
-                        <copy todir="${project.build.directory}/docbook/download">
-                            <fileset dir="${src.dir}/download" />
-                        </copy>
                         <copy todir="${project.build.directory}/docbook/style">
                             <fileset dir="${src.dir}/style" />
                         </copy>
