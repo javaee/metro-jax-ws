@@ -5,5 +5,11 @@ try {
 } catch( javax.xml.ws.soap.SOAPFaultException e ) {
   e.printStackTrace(); // so that we can see it
 
-  assertNull(e.getCause());
+  top = e.getCause().getCause().getStackTrace()[0];
+  System.out.println(top);
+  assertEquals(top.getMethodName(),"bar");
+
+  top = e.getCause().getStackTrace()[0];
+  System.out.println(top);
+  assertEquals(top.getMethodName(),"foo");
 }

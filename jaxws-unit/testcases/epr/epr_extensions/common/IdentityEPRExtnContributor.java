@@ -35,9 +35,12 @@
  */
 package epr.epr_extensions.common;
 
+import com.sun.xml.ws.api.server.EndpointComponent;
 import com.sun.xml.ws.api.server.EndpointReferenceExtensionContributor;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
+import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
@@ -61,7 +64,7 @@ public class IdentityEPRExtnContributor extends EndpointReferenceExtensionContri
 
     QName ID_QNAME = new QName("http://example.com/addressingidentity", "Identity");
 
-    public WSEndpointReference.EPRExtension getEPRExtension(WSEndpoint endpoint, WSEndpointReference.EPRExtension extension) {
+    public WSEndpointReference.EPRExtension getEPRExtension(WSEndpoint endpoint, @Nullable WSEndpointReference.EPRExtension extension) {
         return new WSEndpointReference.EPRExtension() {
             public XMLStreamReader readAsXMLStreamReader() throws XMLStreamException {
                 XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new ByteArrayInputStream(s.getBytes()));

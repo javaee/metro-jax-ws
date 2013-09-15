@@ -1,7 +1,0 @@
-<descriptor since="2.2.2" transport="http" uses="servlet">
-  <description>Bug fix 834</description>
-    
-  <service basedir="./server">
-  </service>
-
-</descriptor>

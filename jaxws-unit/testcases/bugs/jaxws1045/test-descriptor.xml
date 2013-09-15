@@ -1,6 +1,0 @@
-<descriptor since="2.2.7" bugs="jaxws-1045">
-    <!--transport="http">-->
-    <description>JAX_WS-1045 http://java.net/jira/browse/JAX_WS-1045 - NPE at com.sun.xml.internal.ws.wsdl.writer.W3CAddressingWSDLGeneratorExtension:72 (Soap12/no Action)</description>
-    <service basedir="./server" />
-    <wsgen-options>-wsdl:Xsoap1.2 -extension</wsgen-options>
-</descriptor>

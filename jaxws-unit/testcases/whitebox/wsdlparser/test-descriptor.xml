@@ -1,5 +1,5 @@
 <descriptor since="2.2" uses="ri" bugs="jax-ws-674">
-    <description>Tests RuntimeWSDLParser.java</description>
-    <javac-options>-XDignore.symbol.file=true</javac-options>
-</descriptor>
+  <description>Tests RuntimeWSDLParser.java </description>
+  <client href="test.bsh" />
+ </descriptor>
 

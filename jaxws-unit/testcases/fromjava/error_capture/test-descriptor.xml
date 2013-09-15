@@ -1,4 +1,4 @@
-<descriptor since="2.2.4">
+<descriptor since="2.1">
   <description>
     Test the ability to capture the stack trace on the server and recreate that on clients.
   </description>

@@ -1,7 +1,0 @@
-<descriptor>
-    <description>
-        legacy test migrated from rearch2005 branch
-    </description>
-    <javac-options>-XDignore.symbol.file=true</javac-options>
-</descriptor>
-

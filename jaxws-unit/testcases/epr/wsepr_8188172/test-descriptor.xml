@@ -1,5 +1,0 @@
-<descriptor since="2.2.6" uses="ri">
-  <description>Tests WSEndpointReference API </description>
-  <service basedir="./server" />
-</descriptor>
-

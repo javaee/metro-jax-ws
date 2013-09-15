@@ -1,4 +1,0 @@
-<descriptor since="2.2.6" uses="ri">
-    <description>ServerMgr NPE issue for 0.0.0.0 IP dress, #941</description>
-
-</descriptor>

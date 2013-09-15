@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" name="async.wsdl_hello_lit.client testHello1AsyncCallback_bsh" tests="1" time="0.059">
+  <properties></properties>
+  <testcase name="async.wsdl_hello_lit.client testHello1AsyncCallback_bsh" time="0.06"></testcase>
+  <system-out><![CDATA[injected services: hello_Service
+injected ports: helloPort
+injected addresses: helloPortAddress
+should fail next line
+
+Waiting for CallbackHandler to complete...]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

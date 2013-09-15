@@ -46,7 +46,6 @@ import javax.xml.ws.soap.MTOMFeature;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Closeable;
 import java.util.Map;
 
 /**
@@ -55,7 +54,7 @@ import java.util.Map;
 public class MtomAppTest extends TestCase {
 
     public void testUpload() throws Exception {
-        int size = 123*1000 *1000;
+        int size = 423456000;
         Hello port = new HelloService().getHelloPort(new MTOMFeature());
         Map<String, Object> ctxt = ((BindingProvider)port).getRequestContext();
         // At present, JDK internal property - not supported
@@ -77,10 +76,6 @@ public class MtomAppTest extends TestCase {
         System.out.println("Going to verify DataHandler. This would take some time");
         validateDataHandler(total.value, dh.value);
         System.out.println("SUCCESS: DataHandler is verified");
-        if (dh.value instanceof Closeable) {
-            System.out.println("Client:Received DH is closeable");
-            ((Closeable)dh.value).close();
-        }
     }
 
     private DataHandler getDataHandler(final int total)  {
@@ -117,15 +112,12 @@ public class MtomAppTest extends TestCase {
         int total = 0;
         while((ch=in.read()) != -1) {
             if (total++%256 != ch) {
-                fail("Client:FAIL: DataHandler data is different");
-            }
-            if (total%(10*1000*1000) == 0) {
-                System.out.println("Client: Received="+total); 
+                fail("FAIL: DataHandler data is different");
             }
         }
         in.close();
         if (total != expTotal) {
-            fail("Client:FAIL: DataHandler data is different. Expecting "+expTotal+" but got "+total+" bytes");
+            fail("FAIL: DataHandler data is different. Expecting "+expTotal+" but got "+total+" bytes");
         }
     }
 

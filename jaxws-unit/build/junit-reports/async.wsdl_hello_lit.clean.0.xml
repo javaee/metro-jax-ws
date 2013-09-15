@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" name="async.wsdl_hello_lit.clean" tests="1" time="0.007">
+  <properties></properties>
+  <testcase name="async.wsdl_hello_lit.clean" time="0.005"></testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

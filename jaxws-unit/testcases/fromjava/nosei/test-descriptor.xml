@@ -120,7 +120,7 @@
       echoPort.echoString("RemoteException");
       fail("RemoteException");
     } catch (SOAPFaultException ex) {
-      assertTrue(ex.getMessage().contains("my remote exception"));
+      assertEquals("my remote exception", ex.getMessage());
     }
   ]]></client>
 

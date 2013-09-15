@@ -1,4 +1,5 @@
-<descriptor since="2.2.6" uses="ri">
+<!-- Not fixed in 2.2.1 -->
+<descriptor since="2.2.2">
   <description>Testcase for issue 564 </description>
   <client href="test.bsh" />
   <client href="test1.bsh" />

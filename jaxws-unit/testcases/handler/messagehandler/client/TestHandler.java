@@ -20,7 +20,7 @@ public class TestHandler implements MessageHandler<MessageHandlerContext> {
     }
 
     public boolean handleMessage(MessageHandlerContext context) {
-       JAXBContext jc = ((com.sun.xml.ws.model.AbstractSEIModelImpl)(context.getSEIModel())).getBindingContext().getJAXBContext();
+       JAXBContext jc = context.getSEIModel().getJAXBContext();
        Message in_message = context.getMessage();
        try {
             JAXBElement obj = in_message.readPayloadAsJAXB(jc.createUnmarshaller());
@@ -35,8 +35,7 @@ public class TestHandler implements MessageHandler<MessageHandlerContext> {
                 obj.setValue(helloResponse);
                 System.out.println(helloResponse);
             }
-           //Message newMessage = Messages.create(jc.createMarshaller(),obj,context.getWSBinding().getSOAPVersion());
-           Message newMessage = Messages.create(jc,obj,context.getWSBinding().getSOAPVersion());
+           Message newMessage = Messages.create(jc.createMarshaller(),obj,context.getWSBinding().getSOAPVersion());
            context.setMessage(newMessage);
        } catch (JAXBException e) {
             throw new RuntimeException(e);

@@ -1,9 +1,12 @@
 package mtom.tcktest.server;
 
 import javax.xml.ws.WebServiceException;
-import javax.activation.*;
+import javax.activation.DataHandler;
+import javax.annotation.Resource;
 import javax.jws.WebService;
 import javax.xml.ws.Holder;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
@@ -50,22 +53,6 @@ public class HelloImpl {
         Holder<DataHandler> doc3,
         Holder<Image> doc4,
         Holder<Image> doc5) {
-
-        try {
-            DataHandler dh = getDataHandler(doc1.value);
-        	closeDataHandler(doc1.value);
-            doc1.value = dh;
-
-            dh = getDataHandler(doc2.value);
-        	closeDataHandler(doc2.value);
-            doc2.value = dh;
-
-            dh = getDataHandler(doc3.value);
-        	closeDataHandler(doc3.value);
-            doc3.value = dh;
-        } catch(Exception e) {
-            throw new WebServiceException(e);
-        }
     }
 
     private String getStringFromSource(Source source) throws Exception {
@@ -78,42 +65,6 @@ public class HelloImpl {
         trans.transform(source, sr);
         bos.flush();
         return bos.toString();
-    }
-
-    private void closeDataHandler(DataHandler dh) throws Exception {
-        if (dh instanceof Closeable) {
-            ((Closeable)dh).close();
-        }
-    }
-
-    private DataHandler getDataHandler(DataHandler dh) throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte buf[] = new byte[4096];
-        int len;
-        InputStream in = dh.getInputStream();
-        while((len=in.read(buf)) != -1) {
-            baos.write(buf, 0, len);
-        }
-        in.close();
-        final String ct = dh.getContentType();
-        final InputStream bin = new ByteArrayInputStream(baos.toByteArray());
-        return new DataHandler(new DataSource() {
-            public String getContentType() {
-                return ct;
-            }
-
-            public InputStream getInputStream() {
-                return bin;
-            }
-
-            public String getName() {
-                return null;
-            }
-
-            public OutputStream getOutputStream() {
-                throw new UnsupportedOperationException();
-            }
-        });
     }
 
 }

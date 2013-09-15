@@ -1,6 +1,0 @@
-<descriptor since="2.2.3" transport="http">
-  <description>HA test</description>
-  <service basedir="./server">
-  </service>
-
-</descriptor>

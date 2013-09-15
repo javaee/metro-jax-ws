@@ -83,7 +83,6 @@ public class MUTest extends TestCase {
             Object result = dispatch.invoke(message);
         } catch (SOAPFaultException e) {
             SOAPFault sf = e.getFault();
-            assertTrue(sf.getFaultCode().endsWith(":MustUnderstand"));
             NodeList nl = ((Element)sf).getChildNodes();
             int codeIndex = indexOf(new QName("","faultcode"),nl);
             int reasonIndex = indexOf(new QName("","faultstring"),nl);
@@ -105,7 +104,6 @@ public class MUTest extends TestCase {
             fail("MU Fault not thrown");
         }
         SOAPFault sf = body.getFault();
-        assertTrue(sf.getFaultCode().endsWith(":MustUnderstand"));
         NodeList nl = ((Element)sf).getChildNodes();
         int codeIndex = indexOf(new QName("", "faultcode"), nl);
         int reasonIndex = indexOf(new QName("", "faultstring"), nl);
@@ -121,7 +119,6 @@ public class MUTest extends TestCase {
             Object result = dispatch.invoke(message);
         } catch (SOAPFaultException e) {
             SOAPFault sf = e.getFault();
-            assertTrue(sf.getFaultCode().endsWith(":MustUnderstand"));
             NodeList nl = ((Element)sf).getChildNodes();
             int codeIndex = indexOf(new QName("http://www.w3.org/2003/05/soap-envelope","Code"),nl);
             int reasonIndex = indexOf(new QName("http://www.w3.org/2003/05/soap-envelope","Reason"),nl);
@@ -145,7 +142,6 @@ public class MUTest extends TestCase {
             fail("MU Fault not thrown");
         }
         SOAPFault sf = body.getFault();
-        assertTrue(sf.getFaultCode().endsWith(":MustUnderstand"));
         NodeList nl = ((Element) sf).getChildNodes();
         int codeIndex = indexOf(new QName("http://www.w3.org/2003/05/soap-envelope", "Code"), nl);
         int reasonIndex = indexOf(new QName("http://www.w3.org/2003/05/soap-envelope", "Reason"), nl);

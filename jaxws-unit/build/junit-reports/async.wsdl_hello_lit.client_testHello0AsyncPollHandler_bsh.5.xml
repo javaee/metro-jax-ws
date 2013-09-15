@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" name="async.wsdl_hello_lit.client testHello0AsyncPollHandler_bsh" tests="1" time="0.152">
+  <properties></properties>
+  <testcase name="async.wsdl_hello_lit.client testHello0AsyncPollHandler_bsh" time="0.152"></testcase>
+  <system-out><![CDATA[injected services: hello_Service
+injected ports: helloPort
+injected addresses: helloPortAddress
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

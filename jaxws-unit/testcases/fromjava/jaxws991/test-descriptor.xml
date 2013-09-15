@@ -1,6 +1,0 @@
-<descriptor since="2.2.6" bugs="jaxws-991" uses="ri">
-    <description>This is test for JAXWS-991 bug</description>
-    <service basedir="./server">
-    </service>
-</descriptor>
-

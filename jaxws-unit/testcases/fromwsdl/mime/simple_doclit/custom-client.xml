@@ -16,19 +16,4 @@
             <parameter part="wsdl:definitions/wsdl:message[@name='echoImageWithInfoResp']/wsdl:part[@name='image']"  name="out_image"/>
      </bindings>
 
-    <bindings>
-      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
-        <handler-chain>
-          <!--
-          <handler>
-            <handler-class>fromwsdl.mime.simple_doclit.client.ClientLogicalHandler</handler-class>
-          </handler>
-          -->
-          <handler>
-            <handler-class>fromwsdl.mime.simple_doclit.client.ClientHandler</handler-class>
-          </handler>
-        </handler-chain>
-      </handler-chains>
-    </bindings>
-
 </bindings>

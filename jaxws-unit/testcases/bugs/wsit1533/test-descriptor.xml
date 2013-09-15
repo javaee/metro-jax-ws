@@ -1,4 +1,0 @@
-<descriptor since="2.2.6" bugs="wsit-1533" uses="ri">
-    <description>WSIT-1533: Uploading huge binary data</description>
-    <service basedir="./server" />
-</descriptor>

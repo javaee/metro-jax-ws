@@ -18,8 +18,8 @@ public class TestHandler implements MessageHandler<MessageHandlerContext> {
     }
 
     public boolean handleMessage(MessageHandlerContext context) {
-        JAXBContext jc = ((com.sun.xml.ws.model.AbstractSEIModelImpl)(context.getSEIModel())).getBindingContext().getJAXBContext();
-        Message in_message = context.getMessage();
+        JAXBContext jc = context.getSEIModel().getJAXBContext();
+       Message in_message = context.getMessage();
        try {
             JAXBElement obj = in_message.readPayloadAsJAXB(jc.createUnmarshaller());
             //handler.messagehandler.client.Hello hello= obj.getValue();

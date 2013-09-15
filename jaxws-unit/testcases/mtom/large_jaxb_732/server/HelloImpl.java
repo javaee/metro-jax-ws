@@ -45,7 +45,6 @@ import javax.xml.ws.soap.MTOM;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Closeable;
 
 /**
  * @author Jitendra Kotamraju
@@ -55,22 +54,14 @@ import java.io.Closeable;
 public class HelloImpl implements Hello {
 
     public void upload(Holder<Integer> total, Holder<String> name, Holder<DataHandler> dh) {
-        System.out.println("Server:Got name="+name.value);
+        System.out.println("Got name="+name.value);
         name.value = "hugehuge";
         try {
     	    validateDataHandler(total.value, dh.value);
         } catch(IOException ioe) {
             throw new WebServiceException(ioe);
         }
-        System.out.println("Server:All the data received correctly");
-        if (dh.value instanceof Closeable) {
-            System.out.println("Server:Received DH is closeable");
-            try {
-                ((Closeable)dh.value).close();
-        	} catch(IOException ioe) {
-            	throw new WebServiceException(ioe);
-        	}
-        }
+        System.out.println("All the data received correctly");
         total.value = total.value + 1;
         dh.value = getDataHandler(total.value);
     }
@@ -108,15 +99,12 @@ public class HelloImpl implements Hello {
         int total = 0;
         while((ch=in.read()) != -1) {
             if (total++%256 != ch) {
-                System.out.println("Server:FAIL: DataHandler data is different");
-            }
-            if (total%(10*1000*1000) == 0) {
-                System.out.println("Server: Received="+total); 
+                System.out.println("FAIL: DataHandler data is different");
             }
         }
         in.close();
         if (total != expTotal) {
-           throw new WebServiceException("Server:DataHandler data size is different. Expecting "+expTotal+" but got "+total+" bytes");
+           throw new WebServiceException("DataHandler data size is different. Expecting "+expTotal+" but got "+total+" bytes");
         }
     }
 }

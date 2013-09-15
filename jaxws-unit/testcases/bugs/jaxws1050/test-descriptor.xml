@@ -1,8 +1,0 @@
-<descriptor since="2.2.6" bugs="jaxws-1050">
-    <description>
-        Although the jaxws-1050 is not real bug - the wsdl isn't correct,
-        a regression in rearch2005 tests indicates, this case should't fail
-        (definitely not with NPE); behavior changed to display warning
-        but not fail (see: testcases/rt_wsdl_parser )
-    </description>
-</descriptor>

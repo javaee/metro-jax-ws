@@ -1,0 +1,9 @@
+<endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
+
+
+  <endpoint service="{urn:test}Hello" wsdl="WEB-INF/wsdl/hello_literal.wsdl" implementation="async.wsdl_hello_lit.server.HelloService" url-pattern="/HelloService" port="{urn:test}HelloPort" name="endpoint0">
+    
+  </endpoint>
+      
+
+</endpoints>

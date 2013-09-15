@@ -1,4 +1,0 @@
-<descriptor since="2.2.6" uses="ri">
-  <description>ServerMgr NPE issue for zero port, #975</description>
-
-</descriptor>

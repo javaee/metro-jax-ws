@@ -138,7 +138,7 @@ public class HelloProviderImpl implements Provider<DataSource> {
         SOAPMessage msg = MessageFactory.newInstance().createMessage(headers, is);
 
         AttachmentPart doc1 = msg.createAttachmentPart(getDataHandler(attachment,"text/xml"));
-        doc1.setContentId(attachment_cid);
+        doc1.setContentId("2c5bbb50-5679-4fea-9982-666753769e20@example.jaxws.sun.com");
         msg.addAttachmentPart(doc1);
 
         MimeHeaders hdrs = msg.getMimeHeaders();

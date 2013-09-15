@@ -1,3 +1,4 @@
-<descriptor since="2.0" uses="ri">
-    <description>Endpoint API</description>
+<descriptor since="2.0">
+  <description>Endpoint API</description>
+
 </descriptor>

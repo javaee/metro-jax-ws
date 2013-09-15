@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" name="async.wsdl_hello_lit.Deploy server" tests="1" time="4.238">
+  <properties></properties>
+  <testcase name="async.wsdl_hello_lit.Deploy server" time="4.238"></testcase>
+  <system-out><![CDATA[Generating server artifacts from ./testcases/async/wsdl_hello_lit/./server/hello_literal.wsdl
+parsing WSDL...
+
+
+generating code...
+
+Using javac from jar:file:/Library/Java/JavaVirtualMachines/jdk1.7.0_25.jdk/Contents/Home/lib/tools.jar!/com/sun/tools/javac/Main.class
+parsing WSDL...
+
+
+[WARNING] EmptyTargetNamespace: In schema document 'http://dummy.pseudo-schema#schema1', the value of the 'targetNamespace' attribute cannot be an empty string.
+  line 1 of http://dummy.pseudo-schema#schema1
+
+[WARNING] src-resolve: Cannot resolve the name 'types:HelloOutput' to a(n) 'element declaration' component.
+  line 7 of http://dummy.pseudo-schema#schema1
+
+[WARNING] EmptyTargetNamespace: In schema document 'http://dummy.pseudo-schema#schema1', the value of the 'targetNamespace' attribute cannot be an empty string.
+  line 1 of http://dummy.pseudo-schema#schema1
+
+[WARNING] src-resolve: Cannot resolve the name 'types:HelloOutput' to a(n) 'element declaration' component.
+  line 7 of http://dummy.pseudo-schema#schema1
+
+generating code...
+
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
