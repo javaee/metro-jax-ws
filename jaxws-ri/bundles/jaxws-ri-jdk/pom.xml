@@ -58,7 +58,7 @@
     <packaging>jar</packaging>
     <name>JAX-WS RI JDK Sources Bundle</name>
     <description>Open source Reference Implementation of JSR-224: Java API for XML Web Services Distribution Bundle</description>
-
+    
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -246,8 +246,7 @@
                                 <com.sun.codemodel>com.sun.codemodel.internal</com.sun.codemodel>
                                 <com.sun.xml>com.sun.xml.internal</com.sun.xml>
                                 <com.sun.istack>com.sun.istack.internal</com.sun.istack>
-                                <org.jvnet.fastinfoset>com.sun.xml.internal.org.jvnet.fastinfoset
-                                </org.jvnet.fastinfoset>
+                                <org.jvnet.fastinfoset>com.sun.xml.internal.org.jvnet.fastinfoset</org.jvnet.fastinfoset>
                                 <org.jvnet.staxex>com.sun.xml.internal.org.jvnet.staxex</org.jvnet.staxex>
                                 <org.jvnet.mimepull>com.sun.xml.internal.org.jvnet.mimepull</org.jvnet.mimepull>
                                 <org.kohsuke.rngom>com.sun.xml.internal.rngom</org.kohsuke.rngom>

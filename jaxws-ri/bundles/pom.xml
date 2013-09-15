@@ -77,6 +77,8 @@
             </activation>
             <modules>
                 <module>jaxws-ri-jdk</module>
+                <module>jaxws-ri-jdk-utility/anttasks</module>
+                <module>jaxws-ri-jdk-utility/servlet</module>
             </modules>
         </profile>
     </profiles>
