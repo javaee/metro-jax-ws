@@ -15,3 +15,7 @@
 /jaxws-ri/bundles/jaxws-tools/target/
 /jaxws-ri/servlet/target/
 /jaxws-ri/transports/local/target/
+/jaxws-ri/bundles/jaxws-ri-jdk/target/
+/jaxws-ri/bundles/jaxws-ri-jdk-utility/servlet/target/
+/jaxws-ri/bundles/jaxws-ri-jdk-utility/anttasks/target/
+/jaxws-ri/bundles/jaxws-ri-jdk/filelist
