@@ -38,21 +38,9 @@
 
 <!-- ************ JAXWS build file ************************************** -->
 
-
-
 <project name="JAXWS-RI" default="main" basedir=".">
   <import file="etc/build-bundle.xml"/>
   <import file="build-taskdefs.xml" />  
-
-  <target name="runtime-compile-mustang" depends="prepare">
-    <ant dir="${basedir}/rt"
-        target="compile-mustang"
-        inheritrefs="true"/>
-    <ant dir="${basedir}/rt-fi"
-        target="compile-mustang"
-        inheritrefs="true"/>
-  </target>
-
 
   <target name="javadocs-spi" depends="image">
     <javadoc packagenames="com.sun.xml.ws.spi.runtime.*, com.sun.tools.ws.spi.*"
@@ -67,95 +55,9 @@
     </javadoc>
   </target>
 
-
-    <target name="architecture-document" depends="prepare"
-            description="generate architecture documents (which is just a glorified javadoc)">
-      <mkdir dir="${build.home}/javadoc" />
-      <taskdef name="sequence-diagram" classname="com.sun.xml.bind.taglets.SequenceDiagramTask">
-        <classpath>
-          <pathelement path="${basedir}/tools/lib/taglets.jar" />
-        </classpath>
-      </taskdef>
-      <sequence-diagram
-        src="${basedir}/javadoc"
-        dest="${build.home}/javadoc"
-        includes="**/*.seq" />
-
-      <javadoc
-            destdir="${build.home}/javadoc"
-            use="true"
-            author="false"
-            version="false"
-            windowtitle="JAX-WS RI"
-            doctitle="JAX-WS RI"
-            access="package">
-
-      <doclet name="com.sun.xml.bind.taglets.CustomHtmlDoclet"
-        path="${basedir}/tools/lib/taglets.jar">
-      </doclet>
-
-    <!--doclet name="wrappertaglet.WrapperTaglet" path="${basedir}/tools/lib/wrappertaglet.jar:${build.home}/lib/UmlGraph-4.4.jar:${basedir}/tools/lib/taglets.jar">
-		<param name="-inferrel"/>
-		<param name="-inferdep"/>
-		<param name="-hide" value="java.*"/>
-		<param name="-collpackages" value="java.util.*"/>
-		<param name="-qualify"/>
-		<param name="-postfixpackage"/>
-		<param name="-nodefontsize" value="9"/>
-		<param name="-nodefontpackagesize" value="7"/>
-	</doclet-->
-      <packageset dir="${basedir}/javadoc"/>
-      <group title="Root Architecture Document" packages="jaxws" />
-
-      <packageset dir="${basedir}/rt/src"/>
-      <group title="Runtime" packages="com.sun.xml.ws.*,com.sun.pept.*" />
-
-      <packageset dir="${basedir}/servlet/src"/>
-      <group title="Runtime" packages="com.sun.xml.ws.*" />
-
-      <packageset dir="${basedir}/transports/local/src"/>
-      <group title="Runtime" packages="com.sun.xml.ws.transport.local.*" />
-
-      <packageset dir="${basedir}/tools/wscompile/src"/>
-      <group title="Tools" packages="com.sun.tools.ws.*,com.sun.istack.*" />
-
-      <link href="https://jaxb.dev.java.net/nonav/jaxb20-pr/api/"
-        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"   />
-      <link href="http://java.sun.com/j2se/1.5.0/docs/api/"
-        offline="true" packagelistloc="${basedir}/tools/javadoc-link/j2se5.0"  />
-      <link href="https://jaxb-architecture-document.dev.java.net/nonav/doc/"
-        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-ri"  />
-
-      <classpath refid="tools.compile.classpath"/>
-    </javadoc>
-    </target>
-
   <target name="generate-code" description="Just run the code generators. Designed to be invoked from IDE while developing the RI">
     <ant dir="${basedir}/rt"              target="generate-code" inheritrefs="true"/>
     <ant dir="${basedir}/tools/wscompile" target="generate-code" inheritrefs="true"/>
-  </target>
-
-
-
-  <target name="runtime-build-mustang" depends="runtime-compile-mustang">
-    <!-- Copy resource files etc -->
-    <copy todir="${basedir}/rt/build/classes">
-      <fileset dir="${basedir}/rt/src">
-        <include name="**/*.properties" />
-      </fileset>
-    </copy>
-
-    <versionProp file="${basedir}/rt/build/classes/com/sun/xml/ws/version.properties" />
-
-    <!-- Copying the manifest -->
-    <copy file="${basedir}/rt/etc/manifest" todir="${basedir}/rt/build"/>
-    <updateManifestWithVersion file="${basedir}/rt/build/manifest" />
-
-    <jar jarfile="${build.home}/lib/jaxws-rt.jar"
-        manifest="${basedir}/rt/build/manifest">
-      <fileset dir="${basedir}/rt/build/classes"/>
-      <fileset dir="${basedir}/rt-fi/build/classes"/>
-    </jar>
   </target>
 
   <target name="docs" depends="prepare">
@@ -395,17 +297,7 @@
     </maven-repository-importer>
   </target>
 
-   <target name="replace-binaries-with-re-build">
-      <!--
-        this target replaces the dist jars with RE BUILD.
-        Here JAXWS_RE_BUILD points to the url of jax-ws binaries where jax-ws jars can be found.
-      -->
-      <get src="${JAXWS_RE_BUILD}/jaxws-rt.jar" dest="${dist20.home}/lib/jaxws-rt.jar"/>
-      <get src="${JAXWS_RE_BUILD}/jaxws-tools.jar" dest="${dist20.home}/lib/jaxws-tools.jar"/>
-      <get src="${JAXWS_RE_BUILD}/jsr181-api.jar" dest="${dist20.home}/lib/jsr181-api.jar"/>
-  </target>
-
-  <target name="push-to-maven" depends="src.zip, replace-binaries-with-re-build"
+  <target name="push-to-maven" depends="src.zip"
     description="publish artifacts into the maven repository">
     <property name="jar.suffix" value="${release.impl.version}" />
     <antcall target="push-to-maven-prepare"/>
@@ -423,8 +315,6 @@
       <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
   </target>
 
-
-  
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
       <get src="http://prg10044.cz.oracle.com/hudson/job/jaxb-ri-2.1-pushtomaven/lastSuccessfulBuild/artifact/jaxb-ri/jaxb-ri.zip"
@@ -518,40 +408,12 @@
          dest="lib/FastInfoset.src.zip" />
   </target>
 
-    <target name="integrate-htmlmacro-hudson" depends="prepare"
-             description="integrate the last successful htmlmacro Hudson build">
-       <get src="http://hudson.sfbay.sun.com/job/htmlmacro/lastSuccessfulBuild/artifact/htmlmacro/build/htmlmacro.zip"
-            dest="${lib.home}/htmlmacro.zip" />
-       <mkdir dir="${lib.home}/htmlmacro" />
-       <unzip src="${lib.home}/htmlmacro.zip" dest="${lib.home}/htmlmacro"/>
-       <copy todir="lib" overwrite="true">
-         <fileset dir="${lib.home}/htmlmacro/" includes="*.zip,*.jar"/>
-       </copy>
-        <delete dir="${lib.home}/htmlmacro" />
-        <delete file="${lib.home}/htmlmacro.zip"/>
-     </target>
-
-
     <taskdef name="installerBuilder"
         classname="com.sun.tools.xjc.installer.builder.BuilderTask">
       <classpath>
         <fileset dir="${basedir}/tools/lib" includes="installer-builder.jar, sfx4j-1.0.jar"/>
       </classpath>
     </taskdef>
-
-    <target name="re-build"
-        description="RE build target">
-      <antcall target="generate-binary">
-        <param name="compile.debug" value="true"/>
-      </antcall>
-      <antcall target="generate-weekly-source">
-        <param name="compile.debug" value="true"/>
-      </antcall>
-      <move tofile="${build.home}/jaxws${release.jar.version}.jar"
-         file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_${DSTAMP}.jar"/>
-      <move tofile="${build.home}/jaxws${release.jar.version}-src.jar"
-         file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.jar"/>
-    </target>
 
     <target name="generate-binary"
         description="generate java.net binary distribution">
@@ -572,7 +434,6 @@
       </antcall>
       <delete file="${build.home}/jaxws-ri.zip" />
     </target>
-
 
     <patternset id="src-includes"
                 description="This pattern set defines which files will be in/excluded in the src bundle">
@@ -696,85 +557,11 @@
     </target>
 
   <!-- =====================
-       SVR4 DISTRIBUTION 
-       ===================== -->
-  <!-- assumes the dist target has been run -->
-  <target name="create.pkg" description="Create JAX-WS svr4 package">
-    <ant antfile="build-pkg.xml" target="create.pkg" inheritrefs="true"/>
-  </target>
-
-  <!-- =====================
-       RPM DISTRIBUTION 
-       ===================== -->
-  <!-- assumes the dist target has been called -->
-  <target name="create.rpm" description="Create JAX-WS RPM">
-    <ant antfile="build-pkg.xml" target="create.rpm" inheritrefs="true"/>
-  </target>
-
-  <!-- =====================
        ZIP FILE DISTRIBUTION 
        ======================= -->
   <!-- assumes the dist target has been called -->
   <target name="create.zip" description="Create JAX-WS ZIP">
     <ant antfile="build-pkg.xml" target="create.zip" inheritrefs="true"/>
   </target>
-
-  <!-- =======================
-       HPUX DISTRIBUTION 
-       ======================= -->
-  <!-- assumes the dist target has been called -->
-  <target name="create.hpux" description="Create HPUX pkg for JAX-WS">
-    <ant antfile="build-pkg.xml" target="create.hpux" inheritrefs="true"/>
-  </target>
-
-
-
-    <!-- fundbugs -->
-     <property name="findbugs.home" value="${basedir}/etc/findbugs/"/>
-
-    <path id="findbugs.class">
-        <fileset dir="${findbugs.home}/lib" includes="*.jar"/>
-    </path>
-    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
-        <classpath refid="findbugs.class"/>
-    </taskdef>
-
-
-    <target name="findbugs">
-        <findbugs home="${findbugs.home}"
-                  output="xml"
-                  outputFile="${build.home}/jaxws-findbugs.xml"
-                  jvmargs="-Xms64m -Xmx256m">
-            <auxclasspath>
-                <fileset dir="${build.home}/lib" includes="*.jar" excludes="jaxws-rt.jar, jaxws-tools.jar"/>
-                <fileset file="${java.home}/../lib/tools.jar"/>
-            </auxclasspath>
-            <sourcepath>
-                <pathelement location="${basedir}/rt/src"/>
-                <pathelement location="${basedir}/wscompile/src"/>                
-            </sourcepath>
-            <class location="${build.home}/lib/jaxws-rt.jar"/>
-            <class location="${build.home}/lib/jaxws-tools.jar"/>
-        </findbugs>
-    </target>
-
-
-    <target name="findbugs-html" depends="main">
-        <findbugs home="${findbugs.home}"
-                  output="html"
-                  outputFile="${build.home}/jaxws-findbugs.html"
-                  jvmargs="-Xms64m -Xmx256m ">
-            <auxclasspath>
-                <fileset dir="${build.home}/lib" includes="*.jar" excludes="jaxws-rt.jar, jaxws-tools.jar"/>
-                <fileset file="${java.home}/../lib/tools.jar"/>
-            </auxclasspath>
-            <sourcepath>
-                <pathelement location="${basedir}/rt/src"/>
-                <pathelement location="${basedir}/wscompile/src"/>
-            </sourcepath>
-            <class location="${build.home}/lib/jaxws-rt.jar"/>
-            <class location="${build.home}/lib/jaxws-tools.jar"/>
-        </findbugs>
-    </target>
 
 </project>
