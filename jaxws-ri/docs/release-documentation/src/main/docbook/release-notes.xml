@@ -190,8 +190,9 @@ holder.
                 <listitem><para>to add Oracles's JAXP implementation jars along</para></listitem>
                 <listitem><para>to remove the saaj-impl.jar from the libraries in order IBM SAAJ implementation to be used</para></listitem>
             </itemizedlist>
-            JAXWS also depends on resolver implementation form JDK, which is not found on AIX. The repackaged resolver jar can be found in maven though:
-            http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.sun.org.apache.xml.internal%22
+            JAXWS also depends on resolver implementation form JDK, which is not found on AIX. The repackaged resolver jar can be found in <link
+        xlink:href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.sun.org.apache.xml.internal%22">Maven</link> though.
+            
             First approach is recommended.
         </para>
 
