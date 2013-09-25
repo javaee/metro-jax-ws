@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,20 +48,24 @@ import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 
 public interface EditableWSDLOperation extends WSDLOperation {
 
-	@Override
-    @NotNull EditableWSDLInput getInput();
-    
-	/**
-	 * Set input
-	 * @param input Input
-	 */
+    @Override
+    @NotNull
+    EditableWSDLInput getInput();
+
+    /**
+     * Set input
+     *
+     * @param input Input
+     */
     public void setInput(EditableWSDLInput input);
 
     @Override
-    @Nullable EditableWSDLOutput getOutput();
-    
+    @Nullable
+    EditableWSDLOutput getOutput();
+
     /**
      * Set output
+     *
      * @param output Output
      */
     public void setOutput(EditableWSDLOutput output);
@@ -71,22 +75,26 @@ public interface EditableWSDLOperation extends WSDLOperation {
 
     /**
      * Add fault
+     *
      * @param fault Fault
      */
     public void addFault(EditableWSDLFault fault);
 
     @Override
-    @Nullable EditableWSDLFault getFault(QName faultDetailName);
+    @Nullable
+    EditableWSDLFault getFault(QName faultDetailName);
 
     /**
      * Set parameter order
+     *
      * @param parameterOrder Parameter order
      */
     public void setParameterOrder(String parameterOrder);
-    
-	/**
-	 * Freezes WSDL model to prevent further modification
-	 * @param root WSDL Model
-	 */
+
+    /**
+     * Freezes WSDL model to prevent further modification
+     *
+     * @param root WSDL Model
+     */
     public void freeze(EditableWSDLModel root);
 }
