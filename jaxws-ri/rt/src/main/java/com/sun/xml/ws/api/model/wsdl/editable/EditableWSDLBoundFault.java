@@ -46,16 +46,18 @@ import com.sun.xml.ws.api.model.wsdl.WSDLBoundFault;
 
 public interface EditableWSDLBoundFault extends WSDLBoundFault {
 
-	@Override
+    @Override
     @Nullable
     EditableWSDLFault getFault();
 
-	@Override
-	@NotNull EditableWSDLBoundOperation getBoundOperation();
+    @Override
+    @NotNull
+    EditableWSDLBoundOperation getBoundOperation();
 
-	/**
-	 * Freezes WSDL model to prevent further modification
-	 * @param operation Operation
-	 */
-	void freeze(EditableWSDLBoundOperation operation);
+    /**
+     * Freezes WSDL model to prevent further modification
+     *
+     * @param operation Operation
+     */
+    void freeze(EditableWSDLBoundOperation operation);
 }

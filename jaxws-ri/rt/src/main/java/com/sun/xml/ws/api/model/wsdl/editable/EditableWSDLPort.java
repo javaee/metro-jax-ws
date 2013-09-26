@@ -46,30 +46,33 @@ import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 
 public interface EditableWSDLPort extends WSDLPort {
-	
-	@Override
+
+    @Override
     @NotNull
     EditableWSDLBoundPortType getBinding();
 
-	@Override
+    @Override
     @NotNull
     EditableWSDLService getOwner();
 
-	/**
-	 * Sets endpoint address
-	 * @param address Endpoint address
-	 */
+    /**
+     * Sets endpoint address
+     *
+     * @param address Endpoint address
+     */
     public void setAddress(EndpointAddress address);
-    
+
     /**
      * Sets endpoint reference
+     *
      * @param epr Endpoint reference
      */
     public void setEPR(@NotNull WSEndpointReference epr);
-    
-	/**
-	 * Freezes WSDL model to prevent further modification
-	 * @param root WSDL Model
-	 */
+
+    /**
+     * Freezes WSDL model to prevent further modification
+     *
+     * @param root WSDL Model
+     */
     void freeze(EditableWSDLModel root);
 }

@@ -44,21 +44,22 @@ import com.sun.xml.ws.api.model.wsdl.WSDLPortType;
 
 public interface EditableWSDLPortType extends WSDLPortType {
 
-	@Override
+    @Override
     public EditableWSDLOperation get(String operationName);
 
-	@Override
+    @Override
     public Iterable<? extends EditableWSDLOperation> getOperations();
 
-	/**
-	 * Associate WSDL operation with operation name
-	 * @param opName Operation name
-	 * @param ptOp Operation
-	 */
+    /**
+     * Associate WSDL operation with operation name
+     *
+     * @param opName Operation name
+     * @param ptOp   Operation
+     */
     public void put(String opName, EditableWSDLOperation ptOp);
-    
-	/**
-	 * Freezes WSDL model to prevent further modification
-	 */
+
+    /**
+     * Freezes WSDL model to prevent further modification
+     */
     public void freeze();
 }

@@ -48,33 +48,35 @@ import com.sun.xml.ws.api.model.wsdl.WSDLService;
 
 public interface EditableWSDLService extends WSDLService {
 
-	@Override
+    @Override
     @NotNull
     EditableWSDLModel getParent();
 
-	@Override
+    @Override
     EditableWSDLPort get(QName portName);
 
-	@Override
+    @Override
     EditableWSDLPort getFirstPort();
 
-	@Override
+    @Override
     @Nullable
     EditableWSDLPort getMatchingPort(QName portTypeName);
 
-	@Override
+    @Override
     Iterable<? extends EditableWSDLPort> getPorts();
-    
-	/**
-	 * Associate WSDL port with port QName
-	 * @param portName Port QName
-	 * @param port Port
-	 */
+
+    /**
+     * Associate WSDL port with port QName
+     *
+     * @param portName Port QName
+     * @param port     Port
+     */
     public void put(QName portName, EditableWSDLPort port);
 
-	/**
-	 * Freezes WSDL model to prevent further modification
-	 * @param root WSDL Model
-	 */
+    /**
+     * Freezes WSDL model to prevent further modification
+     *
+     * @param root WSDL Model
+     */
     void freeze(EditableWSDLModel root);
 }

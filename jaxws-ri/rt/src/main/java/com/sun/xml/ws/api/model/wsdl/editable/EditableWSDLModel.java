@@ -50,13 +50,14 @@ import com.sun.xml.ws.policy.PolicyMap;
 
 public interface EditableWSDLModel extends WSDLModel {
 
-	@Override
+    @Override
     EditableWSDLPortType getPortType(@NotNull QName name);
-    
-	/**
-	 * Add Binding
-	 * @param portType Bound port type
-	 */
+
+    /**
+     * Add Binding
+     *
+     * @param portType Bound port type
+     */
     void addBinding(EditableWSDLBoundPortType portType);
 
     @Override
@@ -69,53 +70,61 @@ public interface EditableWSDLModel extends WSDLModel {
     EditableWSDLService getService(@NotNull QName name);
 
     @Override
-    @NotNull Map<QName, ? extends EditableWSDLMessage> getMessages();
-    
+    @NotNull
+    Map<QName, ? extends EditableWSDLMessage> getMessages();
+
     /**
      * Add message
+     *
      * @param msg Message
      */
     public void addMessage(EditableWSDLMessage msg);
-    
+
     @Override
-    @NotNull Map<QName, ? extends EditableWSDLPortType> getPortTypes();
-    
+    @NotNull
+    Map<QName, ? extends EditableWSDLPortType> getPortTypes();
+
     /**
      * Add port type
+     *
      * @param pt Port type
      */
     public void addPortType(EditableWSDLPortType pt);
 
     @Override
-    @NotNull Map<QName, ? extends EditableWSDLBoundPortType> getBindings();
+    @NotNull
+    Map<QName, ? extends EditableWSDLBoundPortType> getBindings();
 
     @Override
-    @NotNull Map<QName, ? extends EditableWSDLService> getServices();
-    
+    @NotNull
+    Map<QName, ? extends EditableWSDLService> getServices();
+
     /**
      * Add service
+     *
      * @param svc Service
      */
     public void addService(EditableWSDLService svc);
 
     @Override
     public EditableWSDLMessage getMessage(QName name);
-    
+
     /**
-     * @deprecated
      * @param policyMap
+     * @deprecated
      */
     public void setPolicyMap(PolicyMap policyMap);
-    
+
     /**
      * Finalize rpc-lit binding
+     *
      * @param portType Binding
      */
     public void finalizeRpcLitBinding(EditableWSDLBoundPortType portType);
-    
-	/**
-	 * Freezes WSDL model to prevent further modification
-	 */
+
+    /**
+     * Freezes WSDL model to prevent further modification
+     */
     public void freeze();
-    
+
 }
