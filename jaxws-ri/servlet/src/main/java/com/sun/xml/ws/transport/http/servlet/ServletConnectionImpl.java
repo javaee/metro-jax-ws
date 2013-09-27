@@ -226,7 +226,8 @@ public class ServletConnectionImpl extends WSHTTPConnection implements WebServic
                         closed = true;
                         // server closes input stream, when you close the output stream
                         // This causes problems for streaming in one-way cases
-                        in.readAll();
+                        if (in != null)
+                        	in.readAll();
                         try {
                             super.close();
                         } catch (IOException ioe) {
