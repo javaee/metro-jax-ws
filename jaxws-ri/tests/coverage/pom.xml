@@ -48,14 +48,14 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>jaxws-ri-tests</artifactId>
-        <version>2.2.9-b130928.1732</version>
+        <version>2.2.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-coverage</artifactId>
-    <version>2.2.9-b130928.1732</version>
+    <version>2.2.9-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>JAX-WS RI Unit Tests Coverage</name>
