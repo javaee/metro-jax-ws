@@ -458,4 +458,35 @@ public final class JAXBMessage extends AbstractMessageImpl implements StreamingS
             throw new RuntimeException(e);
         }
     }
+    
+    public boolean isPayloadStreamReader() { return false; }
+
+    public QName getPayloadQName() {
+        return new QName(getPayloadNamespaceURI(), getPayloadLocalPart());
+    }
+    
+    public XMLStreamReader readToBodyStarTag() {
+        int base = soapVersion.ordinal()*3;
+        this.envelopeTag = DEFAULT_TAGS.get(base);
+        this.bodyTag = DEFAULT_TAGS.get(base+2);
+        List<XMLStreamReader> hReaders = new java.util.ArrayList<XMLStreamReader>();
+        ElemInfo envElem =  new ElemInfo(envelopeTag, null);
+        ElemInfo bdyElem =  new ElemInfo(bodyTag, envElem);
+        for (Header h : getHeaders().asList()) {
+            try {
+                hReaders.add(h.readHeader());
+            } catch (XMLStreamException e) { 
+                throw new RuntimeException(e);
+            }
+        }
+        XMLStreamReader soapHeader = null;
+        if(hReaders.size()>0) {
+            headerTag = DEFAULT_TAGS.get(base+1);
+            ElemInfo hdrElem = new ElemInfo(headerTag, envElem);
+            soapHeader = new XMLReaderComposite(hdrElem, hReaders.toArray(new XMLStreamReader[hReaders.size()]));
+        }
+        XMLStreamReader soapBody = new XMLReaderComposite(bdyElem, new XMLStreamReader[]{}); 
+        XMLStreamReader[] soapContent = (soapHeader != null) ? new XMLStreamReader[]{soapHeader, soapBody} : new XMLStreamReader[]{soapBody};
+        return new XMLReaderComposite(envElem, soapContent);
+    }
 }

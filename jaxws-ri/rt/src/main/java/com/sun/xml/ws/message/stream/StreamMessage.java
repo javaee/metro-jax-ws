@@ -76,6 +76,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.stream.*;
 
 import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
@@ -778,4 +779,30 @@ public class StreamMessage extends AbstractMessageImpl implements StreamingSOAP 
         // the pipe line.
         return new MutableXMLStreamBuffer();
     }
+    
+    public boolean isPayloadStreamReader() { return true; }
+
+    public QName getPayloadQName() {
+        return this.hasPayload() ? new QName(payloadNamespaceURI, payloadLocalName) : null;
+    }
+    
+    public XMLStreamReader readToBodyStarTag() {
+        if ( envelopeReader != null ) readEnvelope(this);
+        List<XMLStreamReader> hReaders = new java.util.ArrayList<XMLStreamReader>();
+        ElemInfo envElem =  new ElemInfo(envelopeTag, null);
+        ElemInfo hdrElem =  (headerTag != null) ? new ElemInfo(headerTag, envElem) : null;
+        ElemInfo bdyElem =  new ElemInfo(bodyTag, envElem);
+        for (Header h : getHeaders().asList()) {
+            try {
+                hReaders.add(h.readHeader());
+            } catch (XMLStreamException e) { 
+                throw new RuntimeException(e);
+            }
+        }
+        XMLStreamReader soapHeader = (hdrElem != null) ? new XMLReaderComposite(hdrElem, hReaders.toArray(new XMLStreamReader[hReaders.size()])) : null;        
+        XMLStreamReader[] payload = {};
+        XMLStreamReader soapBody = new XMLReaderComposite(bdyElem, payload); 
+        XMLStreamReader[] soapContent = (soapHeader != null) ? new XMLStreamReader[]{soapHeader, soapBody} : new XMLStreamReader[]{soapBody};
+        return new XMLReaderComposite(envElem, soapContent);
+    }    
 }
