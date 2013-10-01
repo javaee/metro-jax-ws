@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -118,7 +118,9 @@ public class StreamMessage extends AbstractMessageImpl {
      * If the creater of this object didn't care about those,
      * we use stock values.
      */
-    private @NotNull TagInfoset envelopeTag,headerTag,bodyTag;
+    private @NotNull TagInfoset envelopeTag;
+    private @NotNull TagInfoset headerTag;
+    private @NotNull TagInfoset bodyTag;
 
     /**
      * Used only for debugging. This records where the message was consumed.
@@ -217,8 +219,7 @@ public class StreamMessage extends AbstractMessageImpl {
             throw new IllegalArgumentException("BodyTag TagInfoset cannot be null");
         }
         this.envelopeTag = envelopeTag;
-        this.headerTag = headerTag!=null ? headerTag : 
-            new TagInfoset(envelopeTag.nsUri,"Header",envelopeTag.prefix,EMPTY_ATTS);
+        this.headerTag = headerTag;
         this.bodyTag = bodyTag;
         this.bodyPrologue = bodyPrologue;
         this.bodyEpilogue = bodyEpilogue;
@@ -405,11 +406,14 @@ public class StreamMessage extends AbstractMessageImpl {
 
         //write headers
         HeaderList hl = getHeaders();
-        if(hl.size() > 0){
+        if (hl.size() > 0 && headerTag == null) headerTag = new TagInfoset(envelopeTag.nsUri,"Header",envelopeTag.prefix,EMPTY_ATTS);
+        if (headerTag != null) {
             headerTag.writeStart(writer);
-            for(Header h:hl){
-                h.writeTo(writer);
-            }
+	        if (hl.size() > 0) {
+	            for(Header h:hl){
+	                h.writeTo(writer);
+	            }
+	        }
             writer.writeEndElement();
         }
         bodyTag.writeStart(writer);
@@ -541,16 +545,19 @@ public class StreamMessage extends AbstractMessageImpl {
         contentHandler.setDocumentLocator(NULL_LOCATOR);
         contentHandler.startDocument();
         envelopeTag.writeStart(contentHandler);
-        headerTag.writeStart(contentHandler);
-        if(hasHeaders()) {
-            HeaderList headers = getHeaders();
-            int len = headers.size();
-            for( int i=0; i<len; i++ ) {
-                // shouldn't JDK be smart enough to use array-style indexing for this foreach!?
-                headers.get(i).writeTo(contentHandler,errorHandler);
-            }
+        if (hasHeaders() && headerTag == null) headerTag = new TagInfoset(envelopeTag.nsUri,"Header",envelopeTag.prefix,EMPTY_ATTS);
+        if (headerTag != null) {
+	        headerTag.writeStart(contentHandler);
+	        if(hasHeaders()) {
+	            HeaderList headers = getHeaders();
+	            int len = headers.size();
+	            for( int i=0; i<len; i++ ) {
+	                // shouldn't JDK be smart enough to use array-style indexing for this foreach!?
+	                headers.get(i).writeTo(contentHandler,errorHandler);
+	            }
+	        }
+	        headerTag.writeEnd(contentHandler);
         }
-        headerTag.writeEnd(contentHandler);
         bodyTag.writeStart(contentHandler);
         writePayloadTo(contentHandler,errorHandler, true);
         bodyTag.writeEnd(contentHandler);
