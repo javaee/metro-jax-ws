@@ -49,12 +49,12 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>bundles</artifactId>
-        <version>2.2.9-b131002.1732</version>
+        <version>2.2.9-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>jaxws-ri-jdk-anttasks</artifactId>
-    <version>2.2.9-b131002.1732</version>
+    <version>2.2.9-SNAPSHOT</version>
 
     <packaging>jar</packaging>
     <name>JAX-WS RI - JDK Utility jars - Ant tasks</name>
