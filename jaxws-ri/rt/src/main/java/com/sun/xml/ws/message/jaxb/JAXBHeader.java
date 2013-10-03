@@ -43,6 +43,7 @@ package com.sun.xml.ws.message.jaxb;
 import com.sun.istack.NotNull;
 import com.sun.istack.XMLStreamException2;
 import com.sun.xml.bind.api.Bridge;
+import com.sun.xml.stream.buffer.MutableXMLStreamBuffer;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.stream.buffer.XMLStreamBufferResult;
 import com.sun.xml.ws.api.message.Header;
@@ -157,16 +158,12 @@ public final class JAXBHeader extends AbstractHeaderImpl {
     }
 
     public XMLStreamReader readHeader() throws XMLStreamException {
-        try {
-            if(infoset==null) {
-                XMLStreamBufferResult sbr = new XMLStreamBufferResult();
-                bridge.marshal(jaxbObject,sbr);
-                infoset = sbr.getXMLStreamBuffer();
-            }
-            return infoset.readAsXMLStreamReader();
-        } catch (JAXBException e) {
-            throw new XMLStreamException2(e);
+        if(infoset==null) {
+            MutableXMLStreamBuffer buffer = new MutableXMLStreamBuffer();
+            writeTo(buffer.createFromXMLStreamWriter());
+            infoset = buffer;
         }
+        return infoset.readAsXMLStreamReader();
     }
 
     public <T> T readAsJAXB(Unmarshaller unmarshaller) throws JAXBException {

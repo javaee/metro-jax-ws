@@ -514,6 +514,14 @@ public class JAXBBond<T> implements XMLBridge<T> {
                         throw new WebServiceException(e);
                     }
                     return;
+                } else if (value instanceof byte[]) {
+                    try {
+                        byte[] b = (byte[])value;
+                        xsw.writeBinary(b,0,b.length, null);
+                    } catch (XMLStreamException e) {
+                        throw new WebServiceException(e);
+                    }
+                    return;
                 }
             }
             super.characters(schemaType, value, mimeType, isCData);

@@ -83,10 +83,10 @@ final class StreamSOAP12Codec extends StreamSOAPCodec {
         return SOAP12_MIME_TYPE;
     }
     
-    @Override
-    protected final StreamHeader createHeader(XMLStreamReader reader, XMLStreamBuffer mark) {
-        return new StreamHeader12(reader, mark);
-    }
+//    @Override
+//    protected final StreamHeader createHeader(XMLStreamReader reader, XMLStreamBuffer mark) {
+//        return new StreamHeader12(reader, mark);
+//    }
 
     @Override
     protected ContentType getContentType(Packet packet) {

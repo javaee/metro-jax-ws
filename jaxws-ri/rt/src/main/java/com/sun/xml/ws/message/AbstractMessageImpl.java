@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.message;
 
+import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.HeaderList;
@@ -48,6 +49,7 @@ import com.sun.xml.ws.api.message.MessageHeaders;
 import com.sun.xml.ws.api.message.MessageWritable;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.saaj.SAAJFactory;
+import com.sun.xml.ws.encoding.TagInfoset;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import org.xml.sax.ContentHandler;
@@ -93,7 +95,35 @@ public abstract class AbstractMessageImpl extends Message {
      * this can be null.
      */
     protected final SOAPVersion soapVersion;
+    
+    /**
+     * infoset about the SOAP envelope, header, and body.
+     *
+     * <p>
+     * If the creater of this object didn't care about those,
+     * we use stock values.
+     */
+    protected @NotNull TagInfoset envelopeTag;
+    protected @NotNull TagInfoset headerTag;
+    protected @NotNull TagInfoset bodyTag;
 
+    protected static final AttributesImpl EMPTY_ATTS;
+    protected static final LocatorImpl NULL_LOCATOR = new LocatorImpl();
+    protected static final TagInfoset[] DEFAULT_TAGS;
+
+    static void create(SOAPVersion v) {
+        int base = v.ordinal()*3;
+        DEFAULT_TAGS[base  ] = new TagInfoset(v.nsUri,"Envelope","S",EMPTY_ATTS,"S",v.nsUri);
+        DEFAULT_TAGS[base+1] = new TagInfoset(v.nsUri,"Header","S",EMPTY_ATTS);
+        DEFAULT_TAGS[base+2] = new TagInfoset(v.nsUri,"Body","S",EMPTY_ATTS);
+    }
+    static {
+        EMPTY_ATTS = new AttributesImpl();
+        DEFAULT_TAGS = new TagInfoset[6];
+        create(SOAPVersion.SOAP_11);
+        create(SOAPVersion.SOAP_12);
+    }
+    
     protected AbstractMessageImpl(SOAPVersion soapVersion) {
         this.soapVersion = soapVersion;
     }
@@ -236,6 +266,4 @@ public abstract class AbstractMessageImpl extends Message {
     public MessageHeaders getMessageHeaders() {
         return getHeaders();
     }
-    protected static final AttributesImpl EMPTY_ATTS = new AttributesImpl();
-    protected static final LocatorImpl NULL_LOCATOR = new LocatorImpl();
 }
