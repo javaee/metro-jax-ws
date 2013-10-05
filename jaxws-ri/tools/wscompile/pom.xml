@@ -46,14 +46,14 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>project</artifactId>
-        <version>2.2.9-b131005.1733</version>
+        <version>2.2.9-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>wscompile</artifactId>
-    <version>2.2.9-b131005.1733</version>
+    <version>2.2.9-SNAPSHOT</version>
 
     <name>JAX-WS RI Tools (wscompile)</name>
     <description>JAX-WS RI Tools</description>
