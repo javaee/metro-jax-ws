@@ -1,3 +1,7 @@
+*.iml
+*.ipr
+*.iws
+.idea
 /jaxws-ri/docs/www/target/
 /jaxws-ri/docs/release-documentation/target/
 /jaxws-ri/eclipselink_sdo/target/
