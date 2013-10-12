@@ -46,14 +46,14 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>project</artifactId>
-        <version>2.2.9-SNAPSHOT</version>
+        <version>2.2.9-b131012.1732</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-local-transport</artifactId>
-    <version>2.2.9-SNAPSHOT</version>
+    <version>2.2.9-b131012.1732</version>
 
     <name>JAX-WS RI Local-Transport Implementation</name>
     <description>Implementation of Local-Transport for JAX-WS RI, used mainly in tests</description>
