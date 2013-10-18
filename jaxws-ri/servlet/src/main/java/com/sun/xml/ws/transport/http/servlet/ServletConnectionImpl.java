@@ -229,7 +229,8 @@ public class ServletConnectionImpl extends WSHTTPConnection implements WebServic
                         if (in != null)
                         	in.readAll();
                         try {
-                            super.close();
+                            if (status == 202) out.close(); //avoid flush call
+                            else super.close(); //super.close() has a flush call
                         } catch (IOException ioe) {
                             // Ignoring purposefully.
                         }

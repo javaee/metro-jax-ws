@@ -272,7 +272,13 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         // Allows only certain http status codes for a binding. For all
         // other status codes, throws exception
         checkStatusCode(responseStream, con); // throws ClientTransportException
-
+        //To avoid zero-length chunk for One-Way
+        if (cl ==-1 && con.statusCode == 202 && "Accepted".equals(con.statusMessage) && responseStream != null) {
+            ByteArrayBuffer buf = new ByteArrayBuffer();
+            buf.write(responseStream); //What is within the responseStream?
+            responseStream.close();
+            responseStream = (buf.size()==0)? null : buf.newInputStream();
+        }
         Packet reply = request.createClientResponse(null);
         reply.wasTransportSecure = con.isSecure();
         if (responseStream != null) {
