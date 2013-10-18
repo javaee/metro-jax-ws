@@ -278,6 +278,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             buf.write(responseStream); //What is within the responseStream?
             responseStream.close();
             responseStream = (buf.size()==0)? null : buf.newInputStream();
+            buf.close();
         }
         Packet reply = request.createClientResponse(null);
         reply.wasTransportSecure = con.isSecure();
