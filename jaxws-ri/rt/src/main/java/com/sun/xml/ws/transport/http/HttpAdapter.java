@@ -996,7 +996,9 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             }
         }
         try {
-            setPublishStatus(Boolean.getBoolean(HttpAdapter.class.getName() + ".publishStatusPage"));
+            if (System.getProperty(HttpAdapter.class.getName() + ".publishStatusPage") != null) {
+                setPublishStatus(Boolean.getBoolean(HttpAdapter.class.getName() + ".publishStatusPage"));
+            }
         } catch (SecurityException se) {
             if (LOGGER.isLoggable(Level.CONFIG)) {
                 LOGGER.log(Level.CONFIG, "Cannot read ''{0}'' property, using defaults.",
