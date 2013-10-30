@@ -61,7 +61,7 @@ import com.sun.xml.ws.spi.db.BindingContextFactory;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.streaming.XMLStreamWriterUtil;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.streaming.MtomStreamWriter;
+import org.jvnet.staxex.util.MtomStreamWriter;
 import com.sun.xml.ws.util.xml.XMLReaderComposite;
 import com.sun.xml.ws.util.xml.XMLReaderComposite.ElemInfo;
 

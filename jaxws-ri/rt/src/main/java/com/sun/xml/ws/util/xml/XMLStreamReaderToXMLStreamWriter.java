@@ -63,6 +63,8 @@ import org.jvnet.staxex.XMLStreamWriterEx;
  *
  * @author Kohsuke Kawaguchi
  * @author Ryan Shoemaker
+ * 
+ * @deprecated use org.jvnet.staxex.util.XMLStreamReaderToXMLStreamWriter
  */
 public class XMLStreamReaderToXMLStreamWriter {
 

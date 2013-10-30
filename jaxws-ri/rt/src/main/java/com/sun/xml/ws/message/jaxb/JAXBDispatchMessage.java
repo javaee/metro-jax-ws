@@ -48,7 +48,7 @@ import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.PayloadElementSniffer;
 import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.XMLBridge;
-import com.sun.xml.ws.streaming.MtomStreamWriter;
+import org.jvnet.staxex.util.MtomStreamWriter;
 import com.sun.xml.ws.streaming.XMLStreamWriterUtil;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;

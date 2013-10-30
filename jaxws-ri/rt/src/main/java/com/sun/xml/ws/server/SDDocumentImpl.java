@@ -46,7 +46,7 @@ import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.wsdl.SDDocumentResolver;
 import com.sun.xml.ws.util.RuntimeVersion;
-import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
+import org.jvnet.staxex.util.XMLStreamReaderToXMLStreamWriter;
 import com.sun.xml.ws.wsdl.parser.ParserUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import com.sun.xml.ws.wsdl.writer.DocumentLocationResolver;

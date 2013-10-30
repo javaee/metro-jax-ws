@@ -65,8 +65,6 @@ import javax.activation.DataSource;
  */
 public abstract class StreamingDataHandler extends org.jvnet.staxex.StreamingDataHandler {
     
-    private String hrefCid;
-    
     public StreamingDataHandler(Object o, String s) {
         super(o, s);
     }
@@ -78,13 +76,4 @@ public abstract class StreamingDataHandler extends org.jvnet.staxex.StreamingDat
     public StreamingDataHandler(DataSource dataSource) {
         super(dataSource);
     }
-
-    public String getHrefCid() {
-        return hrefCid;
-    }
-
-    public void setHrefCid(final String cid) {
-        this.hrefCid = cid;
-    }
-
 }

@@ -77,7 +77,7 @@ import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.message.saaj.SaajStaxWriter;
+import org.jvnet.staxex.util.SaajStaxWriter;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.developer.StreamingDataHandler;
 import com.sun.xml.ws.encoding.MIMEPartStreamingDataHandler;
@@ -192,7 +192,7 @@ public class SAAJMessageTest extends TestCase {
         //SAAJFactory:
         SOAPVersion soapVersion = packet.getMessage().getSOAPVersion();
         SOAPMessage msg = soapVersion.getMessageFactory().createMessage();
-        SaajStaxWriterEx writer = new SaajStaxWriterEx(msg);
+        SaajStaxWriterEx writer = new SaajStaxWriterEx(msg, soapVersion.nsUri);
         try {
             message.writeTo(writer);
         } catch (XMLStreamException e) {
@@ -225,7 +225,7 @@ public class SAAJMessageTest extends TestCase {
         //SAAJFactory:
         SOAPVersion soapVersion = packet.getMessage().getSOAPVersion();
         SOAPMessage saajMsg = soapVersion.getMessageFactory().createMessage();
-        SaajStaxWriterEx writer = new SaajStaxWriterEx(saajMsg);
+        SaajStaxWriterEx writer = new SaajStaxWriterEx(saajMsg, soapVersion.nsUri);
         try {
             riMsg.writeTo(writer);
         } catch (XMLStreamException e) {
@@ -254,7 +254,7 @@ public class SAAJMessageTest extends TestCase {
       return Thread.currentThread().getContextClassLoader().getResource("etc/"+str).openStream();
     }
     
-    static class SaajStaxWriterEx extends SaajStaxWriter implements XMLStreamWriterEx, MtomStreamWriter {
+    static class SaajStaxWriterEx extends SaajStaxWriter implements XMLStreamWriterEx, org.jvnet.staxex.util.MtomStreamWriter {
         
         static final protected String xopNS = "http://www.w3.org/2004/08/xop/include";
         static final protected String Include = "Include";
@@ -266,8 +266,8 @@ public class SAAJMessageTest extends TestCase {
         ArrayList<Object> ma;
         private Object binaryText;
 
-        public SaajStaxWriterEx(SOAPMessage msg) throws SOAPException {
-            super(msg);
+        public SaajStaxWriterEx(SOAPMessage msg, String ns) throws SOAPException {
+            super(msg, ns);
             ma = new ArrayList<Object> ();
         }
         

@@ -57,6 +57,8 @@ import org.w3c.dom.Node;
 /**
  * SaajStaxWriter builds a SAAJ SOAPMessage by using XMLStreamWriter interface. 
  * 
+ * @deprecated use org.jvnet.staxex.util.SaajStaxWriter
+ * 
  * @author shih-chang.chen@oracle.com
  */
 public class SaajStaxWriter implements XMLStreamWriter {

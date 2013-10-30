@@ -51,9 +51,12 @@ import javax.xml.stream.XMLStreamWriter;
  * {@link AttachmentMarshaller}. The marshaller could do processing based on
  * MTOM threshold, and make decisions about inlining the attachment data or not.
  *
+ * 
  * @author Jitendra Kotamraju
  * @see JAXBMessage
  * @see MtomCodec
+ * 
+ * @deprecated use org.jvnet.staxex.util.MtomStreamWriter
  */
 public interface MtomStreamWriter {
     AttachmentMarshaller getAttachmentMarshaller();

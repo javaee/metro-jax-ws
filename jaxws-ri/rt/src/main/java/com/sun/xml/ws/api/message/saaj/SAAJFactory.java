@@ -51,6 +51,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.stream.XMLStreamException;
 
 import org.xml.sax.SAXException;
+import org.jvnet.staxex.util.SaajStaxWriter;
 
 import com.sun.xml.bind.marshaller.SAX2DOMEx;
 import com.sun.xml.ws.api.SOAPVersion;
@@ -280,7 +281,7 @@ public class SAAJFactory {
 	 */
 	public SOAPMessage readAsSOAPMessage(final SOAPVersion soapVersion, final Message message) throws SOAPException {
         SOAPMessage msg = soapVersion.getMessageFactory().createMessage();
-        SaajStaxWriter writer = new SaajStaxWriter(msg);
+        SaajStaxWriter writer = new SaajStaxWriter(msg, soapVersion.nsUri);
         try {
             message.writeTo(writer);
         } catch (XMLStreamException e) {
