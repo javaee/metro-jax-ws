@@ -46,14 +46,14 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>project</artifactId>
-        <version>2.2.9-b131104.1831</version>
+        <version>2.2.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>rt-fi</artifactId>
-    <version>2.2.9-b131104.1831</version>
+    <version>2.2.9-SNAPSHOT</version>
 
     <name>JAX-WS RI Fast Infoset Support (rt-fi)</name>
     <description>Fast Infoset Support for JAX-WS RI</description>
