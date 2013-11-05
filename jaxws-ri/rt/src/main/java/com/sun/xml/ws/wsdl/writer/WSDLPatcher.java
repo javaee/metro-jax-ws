@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,7 +42,7 @@ package com.sun.xml.ws.wsdl.writer;
 
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.PortAddressResolver;
-import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
+import org.jvnet.staxex.util.XMLStreamReaderToXMLStreamWriter;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import com.sun.xml.ws.addressing.W3CAddressingConstants;
 import com.sun.xml.ws.addressing.v200408.MemberSubmissionAddressingConstants;

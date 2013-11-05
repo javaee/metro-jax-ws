@@ -342,7 +342,7 @@ public class MtomCodec extends MimeCodec {
     }
     
     public static class MtomStreamWriterImpl extends XMLStreamWriterFilter implements XMLStreamWriterEx,
-            MtomStreamWriter, HasEncoding {
+    org.jvnet.staxex.util.MtomStreamWriter, HasEncoding {
         private final List<ByteArrayBuffer> mtomAttachments;
         private final String boundary;
         private final MTOMFeature myMtomFeature;

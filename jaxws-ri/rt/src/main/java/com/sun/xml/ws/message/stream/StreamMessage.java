@@ -65,7 +65,7 @@ import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.xml.DummyLocation;
 import com.sun.xml.ws.util.xml.StAXSource;
 import com.sun.xml.ws.util.xml.XMLReaderComposite;
-import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
+import org.jvnet.staxex.util.XMLStreamReaderToXMLStreamWriter;
 import com.sun.xml.ws.util.xml.XMLReaderComposite.ElemInfo;
 
 import org.xml.sax.ContentHandler;
@@ -430,12 +430,8 @@ public class StreamMessage extends AbstractMessageImpl implements StreamingSOAP 
         if ( envelopeReader != null ) readEnvelope(this);
         writeEnvelope(sw);
     }
-
-    /**
-     * This method should be called when the StreamMessage is created with a payload
-     * @param writer
-     */
-    private void writeEnvelope(XMLStreamWriter writer) throws XMLStreamException {
+    
+    public void writeToBodyStart(XMLStreamWriter writer) throws XMLStreamException {
         if ( envelopeReader != null ) readEnvelope(this);
         writer.writeStartDocument();
         envelopeTag.writeStart(writer);
@@ -453,6 +449,15 @@ public class StreamMessage extends AbstractMessageImpl implements StreamingSOAP 
             writer.writeEndElement();
         }
         bodyTag.writeStart(writer);
+        
+    }
+
+    /**
+     * This method should be called when the StreamMessage is created with a payload
+     * @param writer
+     */
+    private void writeEnvelope(XMLStreamWriter writer) throws XMLStreamException {
+        writeToBodyStart(writer);
         if(hasPayload())
             writePayloadTo(writer);
         writer.writeEndElement();
