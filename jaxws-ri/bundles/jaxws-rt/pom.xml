@@ -47,12 +47,12 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>bundles</artifactId>
-        <version>2.2.9-SNAPSHOT</version>
+        <version>2.2.9-b131107.1831</version>
     </parent>
 
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-rt</artifactId>
-    <version>2.2.9-SNAPSHOT</version>
+    <version>2.2.9-b131107.1831</version>
     
     <packaging>pom</packaging>
     <name>JAX-WS RI Runtime Bundle</name>
