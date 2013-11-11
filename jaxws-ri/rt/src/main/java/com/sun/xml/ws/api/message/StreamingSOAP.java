@@ -12,6 +12,7 @@ public interface StreamingSOAP {
     public QName getPayloadQName();   
     public XMLStreamReader readToBodyStarTag() throws XMLStreamException;
     public XMLStreamReader readPayload() throws XMLStreamException;
+    public void writeToBodyStart(XMLStreamWriter w) throws XMLStreamException;
     public void writePayloadTo(XMLStreamWriter writer)throws XMLStreamException;
     public boolean isPayloadStreamReader();
 }

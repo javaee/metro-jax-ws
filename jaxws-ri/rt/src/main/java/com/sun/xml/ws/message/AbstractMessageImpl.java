@@ -165,7 +165,7 @@ public abstract class AbstractMessageImpl extends Message {
     /**
      * Default implementation that relies on {@link #writePayloadTo(XMLStreamWriter)}
      */
-    public void writeTo(XMLStreamWriter w) throws XMLStreamException {
+    public void writeToBodyStart(XMLStreamWriter w) throws XMLStreamException {
         String soapNsUri = soapVersion.nsUri;
         w.writeStartDocument();
         w.writeStartElement("S","Envelope",soapNsUri);
@@ -179,9 +179,16 @@ public abstract class AbstractMessageImpl extends Message {
             }
             w.writeEndElement();
         }
-        // write the body
+        // write the body start tag
         w.writeStartElement("S","Body",soapNsUri);
+   }
 
+   /**
+    * Default implementation that relies on {@link #writePayloadTo(XMLStreamWriter)}
+    */
+    @Override
+    public void writeTo(XMLStreamWriter w) throws XMLStreamException {
+        writeToBodyStart(w);
         writePayloadTo(w);
 
         w.writeEndElement();

@@ -433,7 +433,7 @@ public class StreamMessage extends AbstractMessageImpl implements StreamingSOAP 
      * This method should be called when the StreamMessage is created with a payload
      * @param writer
      */
-    private void writeEnvelope(XMLStreamWriter writer) throws XMLStreamException {
+    public void writeToBodyStart(XMLStreamWriter writer) throws XMLStreamException {
         if ( envelopeReader != null ) readEnvelope(this);
         writer.writeStartDocument();
         envelopeTag.writeStart(writer);
@@ -451,6 +451,15 @@ public class StreamMessage extends AbstractMessageImpl implements StreamingSOAP 
             writer.writeEndElement();
         }
         bodyTag.writeStart(writer);
+    }
+
+    /**
+     * This method should be called when the StreamMessage is created with a payload
+     * @param writer
+    */
+
+    private void writeEnvelope(XMLStreamWriter writer) throws XMLStreamException {
+        writeToBodyStart(writer);
         if(hasPayload())
             writePayloadTo(writer);
         writer.writeEndElement();
