@@ -508,6 +508,7 @@ public class SAAJMessage extends Message {
      */
     public Message copy() {
         try {
+            access();
             if (!parsedMessage) {
                 return new SAAJMessage(readAsSOAPMessage());
             } else {
