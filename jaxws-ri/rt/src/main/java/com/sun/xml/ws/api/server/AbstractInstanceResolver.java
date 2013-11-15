@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
@@ -81,7 +82,7 @@ public abstract class AbstractInstanceResolver<T> extends InstanceResolver<T> {
                     if (!method.isAccessible()) {
                         method.setAccessible(true);
                     }
-                    method.invoke(instance,args);
+                    MethodUtil.invoke(instance,method, args);
                 } catch (IllegalAccessException e) {
                     throw new ServerRtException("server.rt.err",e);
                 } catch (InvocationTargetException e) {
