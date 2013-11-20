@@ -364,8 +364,8 @@
                                          excludes=""/>
                                 <correct copyright="${lic}" includes="com/sun/org/glassfish/" excludes=""/>
                                 <!-- IMP variation -->
-                                <!--correct copyright="${antdir}/oracle_gpl_2005.txt" includes="org/relaxng/"
-                                         excludes="org/relaxng/datatype/helpers/DatatypeLibraryLoader.java"/-->
+                                <correct copyright="${antdir}/relaxng.txt" includes="org/relaxng/"
+                                         excludes="org/relaxng/datatype/helpers/DatatypeLibraryLoader.java"/>
 
                                 <!-- variation --> <!-- com/sun/xml/internal/fastinfoset/AbstractResourceBundle.java has freebxml.org license -->
                                 <correct copyright="${antdir}/oracle_gpl_mod.txt"
