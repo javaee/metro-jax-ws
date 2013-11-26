@@ -46,14 +46,14 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>project</artifactId>
-        <version>2.2.9-SNAPSHOT</version>
+        <version>2.2.9-b131126.1832</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>sdo-eclipselink-plugin</artifactId>
-    <version>2.2.9-SNAPSHOT</version>
+    <version>2.2.9-b131126.1832</version>
 
     <name>JAX-WS RI Eclipselink SDO Plugin</name>
     <description>Pluggable databinding module employing Eclipselink SDO</description>
