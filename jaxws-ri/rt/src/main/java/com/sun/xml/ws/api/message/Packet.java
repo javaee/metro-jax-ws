@@ -262,7 +262,18 @@ public final class Packet
         this.message = message;
         if (message != null) this.message.setMessageMedadata(this);
     }
-    
+
+    // ALL NEW PACKETS SHOULD HAVE THIS AS false.
+    // SETTING TO true MUST BE DONE EXPLICITLY,
+    // NOT VIA COPYING/RELATING PACKETS.
+    public  boolean isProtocolMessage() {
+        return message != null && message.isProtocolMessage();
+    }
+    public void  setIsProtocolMessage() {
+        assert message != null;
+        message.setIsProtocolMessage();
+    }
+
     private WSDLOperationMapping wsdlOperationMapping = null;
 
     private QName wsdlOperation;
