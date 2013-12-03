@@ -214,8 +214,8 @@ public abstract class Message {
     // See Packet for doc.
     private boolean isProtocolMessage = false;
     // next two are package protected - should only be used from Packet
-    public  boolean isProtocolMessage() { return isProtocolMessage; }
-    public void  setIsProtocolMessage() { isProtocolMessage = true; }
+    boolean  isProtocolMessage() { return isProtocolMessage; }
+    void  setIsProtocolMessage() { isProtocolMessage = true; }
 
     /**
      * Returns true if headers are present in the message.
