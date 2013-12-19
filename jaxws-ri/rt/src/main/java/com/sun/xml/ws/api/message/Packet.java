@@ -274,6 +274,15 @@ public final class Packet
         message.setIsProtocolMessage();
     }
 
+    private String    userStateId;
+    public  String getUserStateId() {
+        return userStateId;
+    }
+    public  void   setUserStateId(final String x) {
+        assert x != null && x.length() <= 256;
+        userStateId = x;
+    }
+
     private WSDLOperationMapping wsdlOperationMapping = null;
 
     private QName wsdlOperation;
