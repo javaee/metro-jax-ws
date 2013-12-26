@@ -49,13 +49,13 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>project</artifactId>
-        <version>2.2.9-SNAPSHOT</version>
+        <version>2.2.9-b131226.1832</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>jaxws-ri-tests</artifactId>
     <packaging>pom</packaging>
-    <version>2.2.9-SNAPSHOT</version>
+    <version>2.2.9-b131226.1832</version>
     <name>JAX-WS RI Tests</name>
 
     <properties>
