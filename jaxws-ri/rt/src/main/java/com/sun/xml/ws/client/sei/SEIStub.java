@@ -43,7 +43,6 @@ package com.sun.xml.ws.client.sei;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.api.databinding.Databinding;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
