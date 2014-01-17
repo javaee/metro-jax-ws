@@ -175,7 +175,7 @@ public final class Packet
 	// usage is updated.
     extends com.oracle.webservices.api.message.BaseDistributedPropertySet 
     implements com.oracle.webservices.api.message.MessageContext, MessageMetadata {
-
+	
     /**
      * Creates a {@link Packet} that wraps a given {@link Message}.
      *
@@ -1290,6 +1290,12 @@ public final class Packet
         return getCodec().encode(this, buffer);
     }
     
+    /**
+     * This content type may be set by one of the following ways:
+     * (1) By the codec as a result of decoding an incoming message
+     * (2) Cached by a codec after encoding the message
+     * (3) By a caller of Codec.decode(InputStream, String contentType, Packet)
+     */
     private ContentType contentType;
 
     /**
@@ -1445,6 +1451,13 @@ public final class Packet
         //Use the getter to make sure all the logic is executed correctly
         MTOMFeature myMtomFeature = getMtomFeature();
         if(myMtomFeature != null && myMtomFeature.isEnabled()) {
+        	//If the content type is set already on this outbound Packet, 
+        	//(e.g.) through Codec.decode(InputStream, String contentType, Packet)
+        	//and it is a non-mtom content type, then don't use mtom to encode it
+        	ContentType curContentType = getInternalContentType();
+        	if (curContentType != null && !isMtomContentType(curContentType)) {
+        		return false;
+        	}
             //On client, always use XOP encoding if MTOM is enabled
             //On Server, mtomAcceptable and mtomRequest will be set - use XOP encoding 
             //if either request is XOP encoded (mtomRequest) or 
@@ -1467,11 +1480,14 @@ public final class Packet
     }
     
     private boolean isMtomContentType() {
-        return (getInternalContentType() != null) && 
-        (getInternalContentType().getContentType().contains("application/xop+xml"));
+    	return (getInternalContentType() != null && isMtomContentType(getInternalContentType()));
     }   
     
-    /**
+    private boolean isMtomContentType(ContentType cType) {
+		return cType.getContentType().contains("application/xop+xml");
+	}
+
+	/**
      * @deprecated
      */
     public void addSatellite(@NotNull com.sun.xml.ws.api.PropertySet satellite) {

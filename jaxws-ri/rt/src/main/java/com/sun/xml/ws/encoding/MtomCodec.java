@@ -127,9 +127,15 @@ public class MtomCodec extends MimeCodec {
     }
     
     public static ContentType getStaticContentTypeStatic(Packet packet, SOAPVersion version) {
-        ContentType ct = (ContentType) packet.getInternalContentType();
-        if ( ct != null ) return ct;
-
+        ContentTypeImpl ct = (ContentTypeImpl) packet.getInternalContentType();
+        if ( ct != null ) {
+        	//Note - this case of boundary = null or root content ID = null should never happen 
+        	//after a recent bug fix in Packet.shouldUseMtom logic, but just in 
+        	//case we get here with a Packet that has a non-null content type with
+        	//a null boundary, the content type of the Packet will be reset
+        	if (ct.getBoundary() != null && ct.getRootId() != null) 
+        		return ct;
+        }
         String uuid = UUID.randomUUID().toString();
         String boundary = "uuid:" + uuid;
         String rootId = "<rootpart*"+uuid+"@example.jaxws.sun.com>";
