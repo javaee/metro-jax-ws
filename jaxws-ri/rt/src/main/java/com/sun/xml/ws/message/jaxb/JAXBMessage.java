@@ -426,7 +426,7 @@ public final class JAXBMessage extends AbstractMessageImpl implements StreamingS
 
     @Override
     public Message copy() {
-        return new JAXBMessage(this);
+        return new JAXBMessage(this).copyFrom(this);
     }
     
     public XMLStreamReader readEnvelope() {

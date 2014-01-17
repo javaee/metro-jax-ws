@@ -165,7 +165,7 @@ public final class DOMMessage extends AbstractMessageImpl {
     }
 
     public Message copy() {
-        return new DOMMessage(this);
+        return new DOMMessage(this).copyFrom(this);
     }
 
 }

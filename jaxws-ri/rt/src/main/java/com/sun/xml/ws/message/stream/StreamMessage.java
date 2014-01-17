@@ -571,7 +571,7 @@ public class StreamMessage extends AbstractMessageImpl implements StreamingSOAP 
             proceedToRootElement(reader);
             proceedToRootElement(clone);
 
-            return new StreamMessage(envelopeTag, headerTag, attachmentSet, HeaderList.copy(headers), bodyPrologue, bodyTag, bodyEpilogue, clone, soapVersion);
+            return new StreamMessage(envelopeTag, headerTag, attachmentSet, HeaderList.copy(headers), bodyPrologue, bodyTag, bodyEpilogue, clone, soapVersion).copyFrom(this);
         } catch (XMLStreamException e) {
             throw new WebServiceException("Failed to copy a message",e);
         }

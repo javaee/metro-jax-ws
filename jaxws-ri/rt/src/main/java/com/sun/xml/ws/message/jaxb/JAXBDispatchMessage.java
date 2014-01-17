@@ -193,7 +193,7 @@ public class JAXBDispatchMessage extends AbstractMessageImpl {
 
     @Override
     public Message copy() {
-        return new JAXBDispatchMessage(this);
+        return new JAXBDispatchMessage(this).copyFrom(this);
     }
 
     @Override

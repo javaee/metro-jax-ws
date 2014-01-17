@@ -229,7 +229,7 @@ class MessageWrapper extends StreamMessage {
 
     @Override
     public Message copy() {
-        return delegate.copy();
+        return delegate.copy().copyFrom(delegate);
     }
 
     @Override

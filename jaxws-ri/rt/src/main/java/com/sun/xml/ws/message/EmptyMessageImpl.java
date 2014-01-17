@@ -130,7 +130,7 @@ public class EmptyMessageImpl extends AbstractMessageImpl {
     }
 
     public Message copy() {
-        return new EmptyMessageImpl(this);
+        return new EmptyMessageImpl(this).copyFrom(this);
     }
 
 }

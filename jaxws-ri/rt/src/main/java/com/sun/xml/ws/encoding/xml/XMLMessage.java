@@ -341,7 +341,7 @@ public final class XMLMessage {
         }
 
         public Message copy() {
-            return getMessage().copy();
+            return getMessage().copy().copyFrom(getMessage());
         }
 
         protected void writePayloadTo(ContentHandler contentHandler, ErrorHandler errorHandler, boolean fragment) throws SAXException {
@@ -464,7 +464,7 @@ public final class XMLMessage {
         }
 
         public Message copy() {
-            return getMessage().copy();
+            return getMessage().copy().copyFrom(getMessage());
         }
 
         protected void writePayloadTo(ContentHandler contentHandler, ErrorHandler errorHandler, boolean fragment) throws SAXException {
@@ -575,7 +575,7 @@ public final class XMLMessage {
         }
 
         public Message copy() {
-            return new UnknownContent(this);
+            return new UnknownContent(this).copyFrom(this);
         }
 
     }

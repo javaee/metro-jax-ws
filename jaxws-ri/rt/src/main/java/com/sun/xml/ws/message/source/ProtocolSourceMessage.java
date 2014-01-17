@@ -113,7 +113,7 @@ public class ProtocolSourceMessage extends Message {
     }
 
     public Message copy() {
-        return sm.copy();
+        return sm.copy().copyFrom(sm);
     }
 
     public Source readEnvelopeAsSource() {
