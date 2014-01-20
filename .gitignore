@@ -5,3 +5,4 @@
 /jaxws-ri/**/target/
 /jaxws-ri/bundles/jaxws-ri-jdk/filelist
 /jaxws-ri/tests/unit/testcases/**/work/
+.DS_Store
