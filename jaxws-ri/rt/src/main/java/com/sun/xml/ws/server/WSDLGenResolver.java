@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,9 +50,11 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceException;
+
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +67,7 @@ import java.util.Map;
  */
 final class WSDLGenResolver implements com.oracle.webservices.api.databinding.WSDLResolver {
     
-    private final List<SDDocumentImpl> docs;
+    private final Collection<SDDocumentImpl> docs;
     private final List<SDDocumentSource> newDocs = new ArrayList<SDDocumentSource>();
     private SDDocumentSource concreteWsdlSource;
     
@@ -80,7 +82,7 @@ final class WSDLGenResolver implements com.oracle.webservices.api.databinding.WS
     private final QName serviceName;
     private final QName portTypeName;
 
-    public WSDLGenResolver(@NotNull List<SDDocumentImpl> docs,QName serviceName,QName portTypeName) {
+    public WSDLGenResolver(@NotNull Collection<SDDocumentImpl> docs,QName serviceName,QName portTypeName) {
         this.docs = docs;
         this.serviceName = serviceName;
         this.portTypeName = portTypeName;

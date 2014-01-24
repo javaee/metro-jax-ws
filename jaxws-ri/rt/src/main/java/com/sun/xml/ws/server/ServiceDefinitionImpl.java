@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import com.sun.xml.ws.api.server.ServiceDefinition;
 import com.sun.xml.ws.wsdl.SDDocumentResolver;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -62,7 +63,7 @@ import java.util.Map;
  * @author Kohsuke Kawaguchi
  */
 public final class ServiceDefinitionImpl implements ServiceDefinition, SDDocumentResolver {
-    private final List<SDDocumentImpl> docs;
+    private final Collection<SDDocumentImpl> docs;
 
     private final Map<String,SDDocumentImpl> bySystemId;
     private final @NotNull SDDocumentImpl primaryWsdl;
@@ -80,19 +81,27 @@ public final class ServiceDefinitionImpl implements ServiceDefinition, SDDocumen
      *      There must be at least one entry.
      *      The first document is considered {@link #getPrimary() primary}.
      */
-    public ServiceDefinitionImpl(List<SDDocumentImpl> docs, @NotNull SDDocumentImpl primaryWsdl) {
+    public ServiceDefinitionImpl(Collection<SDDocumentImpl> docs, @NotNull SDDocumentImpl primaryWsdl) {
         assert docs.contains(primaryWsdl);
         this.docs = docs;
         this.primaryWsdl = primaryWsdl;
+        this.bySystemId = new HashMap<String, SDDocumentImpl>();
+    }
 
-        this.bySystemId = new HashMap<String, SDDocumentImpl>(docs.size());
+    private boolean isInitialized = false;
+    
+    private synchronized void init() {
+        if (isInitialized)
+            return;
+        isInitialized = true;
+        
         for (SDDocumentImpl doc : docs) {
             bySystemId.put(doc.getURL().toExternalForm(),doc);
             doc.setFilters(filters);
             doc.setResolver(this);
         }
     }
-
+    
     /**
      * The owner is set when {@link WSEndpointImpl} is created.
      */
@@ -110,6 +119,7 @@ public final class ServiceDefinitionImpl implements ServiceDefinition, SDDocumen
     }
 
     public Iterator<SDDocument> iterator() {
+        init();
         return (Iterator)docs.iterator();
     }
 
@@ -121,6 +131,7 @@ public final class ServiceDefinitionImpl implements ServiceDefinition, SDDocumen
      *      null if none is found.
      */
     public SDDocument resolve(String systemId) {
+        init();
         return bySystemId.get(systemId);
     }
 }

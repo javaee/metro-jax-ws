@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -170,7 +170,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         this.owner = owner;
         this.urlPattern = urlPattern;
 
-        initWSDLMap(endpoint.getServiceDefinition());
+        this.serviceDefinition = endpoint.getServiceDefinition();
     }
 
     /**
@@ -182,14 +182,19 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         return this.serviceDefinition;
     }
 
+    private boolean initDone = false;
+    
     /**
      * Fill in WSDL map.
      *
      * @param sdef service definition
      */
-    public final void initWSDLMap(ServiceDefinition sdef) {
-        this.serviceDefinition = sdef;
-        if(sdef==null) {
+    public synchronized final void initWSDLMap() {
+        if (initDone)
+            return;
+        initDone = true;
+        
+        if(serviceDefinition==null) {
             wsdls = Collections.emptyMap();
             revWsdls = Collections.emptyMap();
         } else {
@@ -197,8 +202,8 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             // Sort WSDL, Schema documents based on SystemId so that the same
             // document gets wsdl=x mapping
             Map<String, SDDocument> systemIds = new TreeMap<String, SDDocument>();
-            for (SDDocument sdd : sdef) {
-                if (sdd == sdef.getPrimary()) { // No sorting for Primary WSDL
+            for (SDDocument sdd : serviceDefinition) {
+                if (sdd == serviceDefinition.getPrimary()) { // No sorting for Primary WSDL
                     wsdls.put("wsdl", sdd);
                     wsdls.put("WSDL", sdd);
                 } else {
@@ -304,6 +309,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             connection.getInput().close();
             Binding binding = getEndpoint().getBinding();
             if (isMetadataQuery(connection.getQueryString())) {
+                initWSDLMap();
                 SDDocument doc = wsdls.get(connection.getQueryString());
                 connection.setStatus(doc != null
                         ? HttpURLConnection.HTTP_OK
@@ -767,6 +773,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     public void publishWSDL(@NotNull WSHTTPConnection con) throws IOException {
         con.getInput().close();
         
+        initWSDLMap();
         SDDocument doc = wsdls.get(con.getQueryString());
         if (doc == null) {
             writeNotFoundErrorPage(con,"Invalid Request");
@@ -791,6 +798,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     
     public DocumentAddressResolver getDocumentAddressResolver(
 			PortAddressResolver portAddressResolver) {
+        initWSDLMap();
         final String address = portAddressResolver.getAddressFor(endpoint.getServiceName(), endpoint.getPortName().getLocalPart());
         assert address != null;
         return new DocumentAddressResolver() {

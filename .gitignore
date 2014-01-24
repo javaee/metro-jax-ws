@@ -1,8 +1,36 @@
+generated/
+target/
+*.class
+
+# eclipse
+.project
+.classpath
+.settings/
+.wtpmodules
+
+# intellij
 *.iml
 *.ipr
 *.iws
 .idea
-/jaxws-ri/**/target/
-/jaxws-ri/bundles/jaxws-ri-jdk/filelist
-/jaxws-ri/tests/unit/testcases/**/work/
+
+*.log
+*.tlog
+
+derbyDB/
+*.swp
 .DS_Store
+
+# junit
+TEST-*.txt
+TEST-*.xml
+
+# hprof
+java_pid*
+
+# vi backup file
+*~
+
+# gradle
+.gradle/
+/build
