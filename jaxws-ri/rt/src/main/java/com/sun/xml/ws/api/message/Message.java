@@ -767,7 +767,7 @@ public abstract class Message {
      * @return The Message that calls {@code copyFrom} inside the
      * {@code copy} method after the copy constructor
      */
-    public Message copyFrom(Message m) {
+    public final Message copyFrom(Message m) {
         isProtocolMessage = m.isProtocolMessage;
         return this;
     }
