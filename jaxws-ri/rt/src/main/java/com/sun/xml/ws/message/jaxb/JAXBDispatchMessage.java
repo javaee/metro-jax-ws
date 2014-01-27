@@ -102,6 +102,7 @@ public class JAXBDispatchMessage extends AbstractMessageImpl {
         jaxbObject = that.jaxbObject;
         rawContext = that.rawContext;
         bridge = that.bridge;
+        copyFrom(that);
     }
 
     public JAXBDispatchMessage(JAXBContext rawContext, Object jaxbObject, SOAPVersion soapVersion) {

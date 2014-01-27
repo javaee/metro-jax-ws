@@ -522,6 +522,7 @@ public final class XMLMessage {
             super(that.soapVersion);
             this.ds = that.ds;
             this.headerList = HeaderList.copy(that.headerList);
+            this.copyFrom(that);
         }
 
         public boolean hasUnconsumedDataSource() {

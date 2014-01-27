@@ -255,6 +255,7 @@ public final class JAXBMessage extends AbstractMessageImpl implements StreamingS
         this.jaxbObject = that.jaxbObject;
         this.bridge = that.bridge;
         this.rawContext = that.rawContext;
+        this.copyFrom(that);
     }
     
     @Override

@@ -91,6 +91,7 @@ public class EmptyMessageImpl extends AbstractMessageImpl {
         super(that);
         this.headers = new HeaderList(that.headers);
         this.attachmentSet = that.attachmentSet;
+        this.copyFrom(that);
     }
 
     public boolean hasHeaders() {

@@ -135,6 +135,7 @@ public abstract class AbstractMessageImpl extends Message {
      */
     protected AbstractMessageImpl(AbstractMessageImpl that) {
         this.soapVersion = that.soapVersion;
+        this.copyFrom(that);
     }
 
     @Override
