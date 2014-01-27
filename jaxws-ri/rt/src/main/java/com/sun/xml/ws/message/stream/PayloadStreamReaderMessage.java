@@ -122,7 +122,7 @@ public class PayloadStreamReaderMessage extends AbstractMessageImpl {
     }
 
     public Message copy() {
-        return message.copy();
+        return message.copy().copyFrom(message);
     }
     
     @Override

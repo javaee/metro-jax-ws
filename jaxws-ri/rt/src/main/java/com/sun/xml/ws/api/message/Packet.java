@@ -929,6 +929,7 @@ public final class Packet
     	response.component = request.component;
     	response.mtomAcceptable = request.mtomAcceptable;
     	response.mtomRequest = request.mtomRequest;
+        response.userStateId = request.userStateId;
         // copy other properties that need to be copied. is there any?
     }
 

@@ -507,10 +507,11 @@ public class SAAJMessage extends Message {
      * the {@link com.sun.xml.ws.api.message.Message} implementation itself.
      */
     public Message copy() {
+        Message result = null;
         try {
             access();
             if (!parsedMessage) {
-                return new SAAJMessage(readAsSOAPMessage());
+                result = new SAAJMessage(readAsSOAPMessage());
             } else {
                 SOAPMessage msg = soapVersion.getMessageFactory().createMessage();
                 SOAPBody newBody = msg.getSOAPPart().getEnvelope().getBody();
@@ -519,8 +520,9 @@ public class SAAJMessage extends Message {
                     newBody.appendChild(n);
                 }
                 addAttributes(newBody, bodyAttrs);
-                return new SAAJMessage(getHeaders(), getAttachments(), msg, soapVersion);
+                result = new SAAJMessage(getHeaders(), getAttachments(), msg, soapVersion);
             }
+            return result.copyFrom(this);
         } catch (SOAPException e) {
             throw new WebServiceException(e);
         }

@@ -91,6 +91,7 @@ public class EmptyMessageImpl extends AbstractMessageImpl {
         super(that);
         this.headers = new HeaderList(that.headers);
         this.attachmentSet = that.attachmentSet;
+        this.copyFrom(that);
     }
 
     public boolean hasHeaders() {
@@ -130,7 +131,7 @@ public class EmptyMessageImpl extends AbstractMessageImpl {
     }
 
     public Message copy() {
-        return new EmptyMessageImpl(this);
+        return new EmptyMessageImpl(this).copyFrom(this);
     }
 
 }

@@ -95,6 +95,7 @@ public final class DOMMessage extends AbstractMessageImpl {
         super(that);
         this.headers = HeaderList.copy(that.headers);
         this.payload = that.payload;
+        this.copyFrom(that);
     }
 
     public boolean hasHeaders() {
@@ -165,7 +166,7 @@ public final class DOMMessage extends AbstractMessageImpl {
     }
 
     public Message copy() {
-        return new DOMMessage(this);
+        return new DOMMessage(this).copyFrom(this);
     }
 
 }
