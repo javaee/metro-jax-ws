@@ -109,6 +109,11 @@ class MessageWrapper extends StreamMessage {
     }
 
     @Override
+    boolean  isProtocolMessage() { return delegate.isProtocolMessage(); }
+    @Override
+    void  setIsProtocolMessage() { delegate.setIsProtocolMessage(); }
+
+    @Override
     public boolean hasHeaders() {
         return delegate.hasHeaders();
     }
@@ -120,7 +125,7 @@ class MessageWrapper extends StreamMessage {
 
     @Override
     public String toString() {
-        return delegate.toString();
+        return "{MessageWrapper: " + delegate.toString() + "}";
     }
 
     @Override
