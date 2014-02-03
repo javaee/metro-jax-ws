@@ -709,6 +709,11 @@ public class EndpointFactory {
             private final Collection<SDDocumentImpl> theConverted = new ArrayList<SDDocumentImpl>();
 
             @Override
+            public boolean add(SDDocumentImpl arg0) {
+                return theConverted.add(arg0);
+            }
+
+            @Override
             public Iterator<SDDocumentImpl> iterator() {
                 return new Iterator<SDDocumentImpl>() {
                     private Iterator<SDDocumentImpl> convIt = theConverted.iterator();
