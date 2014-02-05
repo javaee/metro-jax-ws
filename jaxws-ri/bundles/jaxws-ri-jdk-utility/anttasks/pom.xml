@@ -101,7 +101,7 @@
                             <excludeScope>provided</excludeScope>
                             <outputDirectory>target/unpacked-sources</outputDirectory>
                             <includes>
-                                **/*Task.java,
+                                com/sun/**/*Task.java,
                                 com/sun/tools/ws/ant/*,
                                 com/sun/tools/xjc/Messages.java,
                                 com/sun/tools/xjc/ClassLoaderBuilder.java,
