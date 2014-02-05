@@ -173,8 +173,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         this.owner = owner;
         this.urlPattern = urlPattern;
 
-        this.serviceDefinition = endpoint.getServiceDefinition();
-        initWSDLMap();
+        initWSDLMap(endpoint.getServiceDefinition());
     }
 
     /**
@@ -191,7 +190,8 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      *
      * @param sdef service definition
      */
-    public final void initWSDLMap() {
+    public final void initWSDLMap(final ServiceDefinition serviceDefinition) {
+        this.serviceDefinition = serviceDefinition;
         if(serviceDefinition==null) {
             wsdls = Collections.emptyMap();
             revWsdls = Collections.emptyMap();
