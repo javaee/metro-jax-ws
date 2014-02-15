@@ -46,14 +46,14 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>project</artifactId>
-        <version>2.2.10-b140215.1832</version>
+        <version>2.2.10-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>rt</artifactId>
-    <version>2.2.10-b140215.1832</version>
+    <version>2.2.10-SNAPSHOT</version>
 
     <name>JAX-WS RI Runtime (rt)</name>
     <description>JAX-WS Reference Implementation Runtime</description>
