@@ -45,6 +45,8 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
+import javax.xml.ws.WebServiceException;
+
 
 /**
  * MethodInjection 
@@ -68,35 +70,14 @@ public class MethodSetter extends PropertySetterBase {
         Class c = annotationType;
         return (A) method.getAnnotation(c);
     }
-
-    public void set(final Object instance, Object resource) {
+    
+    public void set(final Object instance, Object val) {
+        final Object resource = (type.isPrimitive() && val == null)? uninitializedValue(type): val;
         final Object[] args = {resource};
-        if (method.isAccessible()) {
-            try {
-                method.invoke(instance, args);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
-                    public Object run() throws IllegalAccessException {
-                        if (!method.isAccessible()) {
-                            method.setAccessible(true);
-                        }
-                        try {
-                            method.invoke(instance, args);
-                        } catch (Exception e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        } 
-                        return null;
-                    }
-                });
-            } catch (PrivilegedActionException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        try {
+            method.invoke(instance, args);
+        } catch (Exception e) {
+            throw new WebServiceException(e);
         }
     }
 }
