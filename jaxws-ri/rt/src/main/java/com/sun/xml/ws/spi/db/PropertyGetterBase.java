@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,7 +61,7 @@ public abstract class PropertyGetterBase implements PropertyGetter {
                 method.getName().length() > 3) {
                 return true;
             } else {
-                if (method.getReturnType().equals(boolean.class) &&
+                if ((method.getReturnType().equals(boolean.class) || method.getReturnType().equals(Boolean.class)) &&
                     method.getName().startsWith("is") &&
                     method.getName().length() > 2) {
                     return true;
