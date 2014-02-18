@@ -133,12 +133,14 @@ abstract class MimeCodec implements Codec {
         }
         ContentTypeImpl ctImpl = (ContentTypeImpl)getStaticContentType(packet);
         String boundary = ctImpl.getBoundary();
+        String rootId = ctImpl.getRootId();
         boolean hasAttachments = (boundary != null);
         Codec rootCodec = getMimeRootCodec(packet);
         if (hasAttachments) {
             writeln("--"+boundary, out);
             ContentType ct = rootCodec.getStaticContentType(packet);
             String ctStr = (ct != null) ? ct.getContentType() : rootCodec.getMimeType();
+            if (rootId != null) writeln("Content-ID: " + rootId, out);
             writeln("Content-Type: " + ctStr, out);
             writeln(out);
         }

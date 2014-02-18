@@ -77,6 +77,7 @@ public final class ContentTypeImpl implements com.sun.xml.ws.api.pipe.ContentTyp
             try {
                 internalContentType = new ContentType(contentType);
                 tmpCharset = internalContentType.getParameter("charset");
+                rootId = internalContentType.getParameter("start");
             } catch(Exception e) {
                 //Ignore the parsing exception.
             }

@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.message.stream;
 
+import com.oracle.webservices.api.message.ContentType;
 import com.oracle.webservices.api.message.MessageContext;
 import com.oracle.webservices.api.message.MessageContextFactory;
 import com.sun.xml.ws.api.SOAPVersion;
@@ -438,5 +439,35 @@ public class StreamMessageTest extends TestCase {
             }
             if (e != null) throw e;
         }
+    }
+    
+    //Bug 17367334
+    public void testWriteSwaToStreamClientRequest() throws Exception {
+        String ctype = "multipart/related; boundary=MIME_Boundary; "+ 
+        "start=\"<6232425701115978772--54bee05.140acdf4f8a.-7f3f>\"; " + 
+        "type=\"text/xml\"; start-info=\"text/xml\"";
+        MessageContextFactory mcf = MessageContextFactory.createFactory(new MTOMFeature(true));
+        InputStream is = getClass().getClassLoader().getResourceAsStream("etc/bug17367334InputMsg.txt");
+        Packet packet = (Packet) mcf.createContext(is, ctype);
+        Message message = packet.getInternalMessage();
+        assertTrue("StreamMessage not found, got : " + message.getClass(),
+                    StreamMessage.class.isAssignableFrom(message.getClass()));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        packet.setState(State.ClientRequest);
+//System.out.println("SWA packet.getContentType(): " + packet.getContentType().getContentType() );
+        
+        ContentType contentType = packet.writeTo(baos);
+//System.out.println("etc/bug17367334InputMsg.txt\r\n" + contentType.getContentType() + "\r\n" + new String(baos.toByteArray()));
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        MessageFactory mf = MessageFactory.newInstance();
+        MimeHeaders mh = new MimeHeaders();
+        mh.addHeader("Content-Type", ctype);
+        SOAPMessage sm = mf.createMessage(mh, bais);
+        assertEquals("wrong attachment count", 1, sm.countAttachments());
+        AttachmentPart ap = (AttachmentPart) sm.getAttachments().next();
+        assertEquals("wrong attachemnt Content-Id", "<testAttachmentContentId>", ap.getContentId());
+//        NodeList nl = sm.getSOAPBody().getElementsByTagNameNS(MtomCodec.XOP_NAMESPACEURI, MtomCodec.XOP_LOCALNAME);
     }
 }
