@@ -41,12 +41,8 @@
 package com.sun.xml.ws.spi.db;
 
 import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-
 import javax.xml.ws.WebServiceException;
-
+import static com.sun.xml.ws.spi.db.PropertyGetterBase.verifyWrapperType;
 
 /**
  * FieldSetter 
@@ -58,6 +54,7 @@ public class FieldSetter extends PropertySetterBase {
     protected Field field;
     
     public FieldSetter(Field f) {
+        verifyWrapperType(f.getDeclaringClass());        
         field = f;
         type = f.getType();
     }

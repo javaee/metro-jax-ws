@@ -41,10 +41,6 @@
 package com.sun.xml.ws.spi.db;
 
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-
 import javax.xml.ws.WebServiceException;
 
 
@@ -58,6 +54,7 @@ public class MethodGetter extends PropertyGetterBase {
     private Method method;
     
     public MethodGetter(Method m) {
+        verifyWrapperType(m.getDeclaringClass());    
         method = m;
         type = m.getReturnType();
     }

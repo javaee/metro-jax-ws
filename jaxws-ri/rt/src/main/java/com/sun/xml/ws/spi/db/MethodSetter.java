@@ -40,11 +40,8 @@
 
 package com.sun.xml.ws.spi.db;
 
+import static com.sun.xml.ws.spi.db.PropertyGetterBase.verifyWrapperType;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-
 import javax.xml.ws.WebServiceException;
 
 
@@ -58,6 +55,7 @@ public class MethodSetter extends PropertySetterBase {
     private Method method;
     
     public MethodSetter(Method m) {
+        verifyWrapperType(m.getDeclaringClass());      
         method = m;
         type = m.getParameterTypes()[0];
     }
