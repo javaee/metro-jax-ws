@@ -61,6 +61,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
+import static com.sun.xml.ws.spi.db.PropertyGetterBase.verifyWrapperType;
 
 /**
  * JAXBWrapperAccessor
@@ -74,6 +75,7 @@ public class JAXBWrapperAccessor extends WrapperAccessor {
     protected HashMap<Object, Class> elementDeclaredTypes;
 
     public JAXBWrapperAccessor(Class<?> wrapperBean) {
+        verifyWrapperType(wrapperBean);   
         contentClass = (Class<?>) wrapperBean;
 
         HashMap<Object, PropertySetter> setByQName = new HashMap<Object, PropertySetter>();

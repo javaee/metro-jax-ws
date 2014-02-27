@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.spi.db;
 
+import javax.xml.ws.WebServiceException;
+
 /**
  * This is the Gtter of a bean property. 
  * 
@@ -69,5 +71,12 @@ public abstract class PropertyGetterBase implements PropertyGetter {
             }
         } 
         return false;
+    }
+    
+    static void verifyWrapperType(Class wrapperType) {
+        String className = wrapperType.getName();
+        if (className.startsWith("java.") || className.startsWith("javax.")) {
+            throw new WebServiceException("Invalid wrapper type " + className);
+        }
     }
 }
