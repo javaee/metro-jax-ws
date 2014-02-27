@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,7 +68,12 @@ public final class Converter {
         // prevents instantiation
     }
     private static final Logger LOGGER = Logger.getLogger(Converter.class);
-    private static final XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
+    private static final ContextClassloaderLocal<XMLOutputFactory> xmlOutputFactory = new ContextClassloaderLocal<XMLOutputFactory>() {
+        @Override
+        protected XMLOutputFactory initialValue() throws Exception {
+            return XMLOutputFactory.newInstance();
+        }
+    };
     private static final AtomicBoolean logMissingStaxUtilsWarning = new AtomicBoolean(false);
 
     /**
@@ -125,7 +130,7 @@ public final class Converter {
             stringOut = new StringWriter();
             XMLStreamWriter writer = null;
             try {
-                writer = xmlOutputFactory.createXMLStreamWriter(stringOut);
+                writer = xmlOutputFactory.get().createXMLStreamWriter(stringOut);
                 if (createIndenter) {
                     writer = createIndenter(writer);
                 }
@@ -158,7 +163,7 @@ public final class Converter {
 
         try {
             if (message != null) {
-                XMLStreamWriter xsw = xmlOutputFactory.createXMLStreamWriter(baos, encoding);
+                XMLStreamWriter xsw = xmlOutputFactory.get().createXMLStreamWriter(baos, encoding);
                 try {
                     message.writeTo(xsw);
                 } finally {

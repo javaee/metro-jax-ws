@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,8 +69,14 @@ import java.util.Map;
 public class JAXWSBindingExtensionHandler extends AbstractExtensionHandler {
 
     // xml security enabled always, xpath used for parsing "part" attribute
-    private static final XPathFactory xpf = XmlUtil.newXPathFactory(true);
-    private final XPath xpath = xpf.newXPath();
+    private static final ContextClassloaderLocal<XPathFactory> xpf = new ContextClassloaderLocal<XPathFactory>() {
+        @Override
+        protected XPathFactory initialValue() throws Exception {
+            return XPathFactory.newInstance();
+        }
+    };
+
+    private final XPath xpath = xpf.get().newXPath();
 
     public JAXWSBindingExtensionHandler(Map<String, AbstractExtensionHandler> extensionHandlerMap) {
         super(extensionHandlerMap);

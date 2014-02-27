@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -75,11 +75,9 @@ import java.util.Set;
  */
 public class Internalizer {
 
-    private static final XPathFactory xpf = XmlUtil.newXPathFactory(true);
-    private final XPath xpath = xpf.newXPath();
+    private final XPath xpath = xpf.get().newXPath();
     private final DOMForest forest;
     private final ErrorReceiver errorReceiver;
-
 
     public Internalizer(DOMForest forest, WsimportOptions options, ErrorReceiver errorReceiver) {
         this.forest = forest;
@@ -92,6 +90,12 @@ public class Internalizer {
         }
     }
 
+    private static final ContextClassloaderLocal<XPathFactory> xpf = new ContextClassloaderLocal<XPathFactory>() {
+        @Override
+        protected XPathFactory initialValue() throws Exception {
+            return XPathFactory.newInstance();
+        }
+    };
     /**
      * Validates attributes of a &lt;JAXWS:bindings> element.
      */
