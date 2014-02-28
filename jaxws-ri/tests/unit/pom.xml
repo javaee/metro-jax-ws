@@ -249,6 +249,19 @@
             <properties>
                 <ws.all-args>-jaxwsInJDK -version 2.2.8 -lwhs ${ws.args}</ws.all-args>
                 <maven.endorsed.skip>true</maven.endorsed.skip>
+                <ws.permGenJvmOpts></ws.permGenJvmOpts>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>jaxwsInJDK9</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <ws.all-args>-jaxwsInJDK -version 2.2.10 -lwhs ${ws.args}</ws.all-args>
+                <maven.endorsed.skip>true</maven.endorsed.skip>
+                <ws.permGenJvmOpts></ws.permGenJvmOpts>
             </properties>
         </profile>
 

@@ -68,6 +68,7 @@
         <ws.test>${project.basedir}/testcases</ws.test>
         <!-- extra JVM options for JVM forked by test harness, ie proxy, tests' debugging-->
         <ws.jvmOpts></ws.jvmOpts>
+        <ws.permGenJvmOpts>-XX:PermSize=128m -XX:MaxPermSize=256m</ws.permGenJvmOpts>
     </properties>
 
     <pluginRepositories>
@@ -110,7 +111,8 @@
                     <extraVmArgs>${ws.jvmOpts}</extraVmArgs>
                     <!--<debug>true</debug>-->
                     <vmArgs>
-                        <vmArg>-Xms256m -Xmx512m -XX:PermSize=128m -XX:MaxPermSize=256m</vmArg>
+                        <!-- ensure that you are specifying PermGen jvm options only for jdk < 8 -->
+                        <vmArg>-Xms256m -Xmx512m ${ws.permGenJvmOpts}</vmArg>
                     </vmArgs>
                 </configuration>
             </plugin>
