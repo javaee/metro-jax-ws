@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,6 +56,7 @@ import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -122,7 +123,7 @@ public class PseudoSchemaBuilder {
         }
         //add w3c EPR binding
         if(!(options.noAddressingBbinding) && options.target.isLaterThan(Options.Target.V2_1)){
-            InputSource is = new InputSource(new ByteArrayInputStream(w3ceprSchemaBinding.getBytes()));
+            InputSource is = new InputSource(new ByteArrayInputStream(getUTF8Bytes(w3ceprSchemaBinding)));
             is.setSystemId(sysId+(++i +1));
             b.schemas.add(is);
         }
@@ -135,6 +136,15 @@ public class PseudoSchemaBuilder {
 //        b.schemas.add(is1);
 
         return b.schemas;
+    }
+
+    private static byte[] getUTF8Bytes(String w3ceprSchemaBinding1) {
+        try {
+            return w3ceprSchemaBinding1.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException unexpected) {
+            // should never happen
+            throw new IllegalStateException(unexpected);
+        }
     }
 
 

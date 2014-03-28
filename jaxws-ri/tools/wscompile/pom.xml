@@ -236,6 +236,40 @@
                     <forkMode>always</forkMode>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>EBCDIC-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo message="Starting EBCDIC test." />
+                                <path id="compile.classpath">
+                                    <pathelement location="${basedir}/target/classes"/>
+                                    <fileset dir="${basedir}/target/lib/" includes="*.jar"/>
+                                </path>
+                                <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+                                    <classpath refid="compile.classpath"/>
+                                </taskdef>
+                                <mkdir dir="${basedir}/target/EBCDIC" />
+                                <wsimport
+                                        fork="true"
+                                        debug="true"
+                                        destdir="${basedir}/target/EBCDIC"
+                                        verbose="true"
+                                        wsdl="${basedir}/src/test/resources/com/sun/tools/ws/EBCDIC.wsdl">
+                                    <jvmarg line="-Dfile.encoding=Cp037"/>
+                                </wsimport>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!--
             <plugin>
                 <groupId>org.apache.felix</groupId>
