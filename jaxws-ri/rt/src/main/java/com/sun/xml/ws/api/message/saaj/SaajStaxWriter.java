@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,30 +56,33 @@ import org.w3c.dom.Node;
 
 /**
  * SaajStaxWriter builds a SAAJ SOAPMessage by using XMLStreamWriter interface. 
- * 
- * @deprecated use org.jvnet.staxex.util.SaajStaxWriter
- * 
+ *
  * @author shih-chang.chen@oracle.com
  */
 public class SaajStaxWriter implements XMLStreamWriter {
-    
+
     protected SOAPMessage soap;
     protected String envURI;
     protected SOAPElement currentElement;
-    
+
     static final protected String Envelope = "Envelope";
     static final protected String Header = "Header";
     static final protected String Body = "Body";
     static final protected String xmlns = "xmlns";
 
-    public SaajStaxWriter(final SOAPMessage msg) throws SOAPException {
+    private boolean isHeaderSeen = false;
+
+    public SaajStaxWriter(final SOAPMessage msg, String uri) throws SOAPException {
         soap = msg;
-        currentElement = soap.getSOAPPart().getEnvelope();
-        envURI = currentElement.getNamespaceURI();
+        this.envURI = uri;
     }
-    
+
     public SOAPMessage getSOAPMessage() {
         return soap;
+    }
+
+    protected SOAPElement getEnvelope() throws SOAPException {
+        return soap.getSOAPPart().getEnvelope();
     }
 
     @Override
@@ -101,47 +104,52 @@ public class SaajStaxWriter implements XMLStreamWriter {
         try {
             if (envURI.equals(ns)) {
                 if (Envelope.equals(ln)) {
-                    currentElement = soap.getSOAPPart().getEnvelope();
-                    fixPrefix(prefix);                    
+                    currentElement = getEnvelope();
+                    fixPrefix(prefix);
                     return;
                 } else if (Header.equals(ln)) {
+                    isHeaderSeen = true;
                     currentElement = soap.getSOAPHeader();
-                    fixPrefix(prefix);                    
+                    fixPrefix(prefix);
                     return;
                 } else if (Body.equals(ln)) {
                     currentElement = soap.getSOAPBody();
-                    fixPrefix(prefix);                    
+                    fixPrefix(prefix);
                     return;
                 }
             }
-            currentElement = (prefix == null) ? 
+            currentElement = (prefix == null) ?
                     currentElement.addChildElement(new QName(ns, ln)) :
                     currentElement.addChildElement(ln, prefix, ns);
         } catch (SOAPException e) {
             throw new XMLStreamException(e);
-        }           
+        }
     }
-    
+
     private void fixPrefix(final String prfx) throws XMLStreamException {
-        String oldPrfx = currentElement.getPrefix();
+        fixPrefix(prfx, currentElement);
+    }
+
+    private void fixPrefix(final String prfx, SOAPElement element) throws XMLStreamException {
+        String oldPrfx = element.getPrefix();
         if (prfx != null && !prfx.equals(oldPrfx)) {
-            currentElement.setPrefix(prfx);
+            element.setPrefix(prfx);
         }
     }
 
     @Override
     public void writeEmptyElement(final String uri, final String ln) throws XMLStreamException {
-        writeStartElement(null, ln, uri);        
+        writeStartElement(null, ln, uri);
     }
 
     @Override
     public void writeEmptyElement(final String prefix, final String ln, final String uri) throws XMLStreamException {
-        writeStartElement(prefix, ln, uri);        
+        writeStartElement(prefix, ln, uri);
     }
 
     @Override
     public void writeEmptyElement(final String ln) throws XMLStreamException {
-        writeStartElement(null, ln, null);        
+        writeStartElement(null, ln, null);
     }
 
     @Override
@@ -150,15 +158,30 @@ public class SaajStaxWriter implements XMLStreamWriter {
     }
 
     @Override
-    public void writeEndDocument() throws XMLStreamException {        
+    public void writeEndDocument() throws XMLStreamException {
+        try {
+            if (!isHeaderSeen) {
+                SOAPElement header = soap.getSOAPHeader();
+                if (header != null) {
+                    String prefixAtHeader = header.getPrefix();
+                    SOAPElement env = getEnvelope();
+                    header.detachNode();
+                    if (prefixAtHeader != null && !prefixAtHeader.equals(env.getPrefix())) {
+                        env.removeNamespaceDeclaration(prefixAtHeader);
+                    }
+                }
+            }
+        } catch (SOAPException e) {
+            throw new XMLStreamException(e);
+        }
     }
 
     @Override
-    public void close() throws XMLStreamException {        
+    public void close() throws XMLStreamException {
     }
 
     @Override
-    public void flush() throws XMLStreamException {        
+    public void flush() throws XMLStreamException {
     }
 
     @Override
@@ -181,7 +204,7 @@ public class SaajStaxWriter implements XMLStreamWriter {
             }
         } catch (SOAPException e) {
             throw new XMLStreamException(e);
-        }        
+        }
     }
 
     @Override
@@ -201,7 +224,7 @@ public class SaajStaxWriter implements XMLStreamWriter {
             currentElement.addNamespaceDeclaration(prefix, uri);
         } catch (SOAPException e) {
             throw new XMLStreamException(e);
-        }        
+        }
     }
 
     @Override
@@ -218,7 +241,7 @@ public class SaajStaxWriter implements XMLStreamWriter {
     @Override
     public void writeProcessingInstruction(final String target) throws XMLStreamException {
         Node n = soap.getSOAPPart().createProcessingInstruction(target, "");
-        currentElement.appendChild(n);        
+        currentElement.appendChild(n);
     }
 
     @Override
@@ -230,7 +253,7 @@ public class SaajStaxWriter implements XMLStreamWriter {
     @Override
     public void writeCData(final String data) throws XMLStreamException {
         Node n = soap.getSOAPPart().createCDATASection(data);
-        currentElement.appendChild(n);        
+        currentElement.appendChild(n);
     }
 
     @Override
@@ -249,13 +272,13 @@ public class SaajStaxWriter implements XMLStreamWriter {
     }
 
     @Override
-    public void writeStartDocument(final String version) throws XMLStreamException {        
-        if (version != null) soap.getSOAPPart().setXmlVersion(version);     
+    public void writeStartDocument(final String version) throws XMLStreamException {
+        if (version != null) soap.getSOAPPart().setXmlVersion(version);
     }
 
     @Override
-    public void writeStartDocument(final String encoding, final String version) throws XMLStreamException {     
-        if (version != null) soap.getSOAPPart().setXmlVersion(version);         
+    public void writeStartDocument(final String encoding, final String version) throws XMLStreamException {
+        if (version != null) soap.getSOAPPart().setXmlVersion(version);
         if (encoding != null) {
             try {
                 soap.setProperty(SOAPMessage.CHARACTER_SET_ENCODING, encoding);
@@ -271,7 +294,7 @@ public class SaajStaxWriter implements XMLStreamWriter {
             currentElement.addTextNode(text);
         } catch (SOAPException e) {
             throw new XMLStreamException(e);
-        }        
+        }
     }
 
     @Override
@@ -336,9 +359,9 @@ public class SaajStaxWriter implements XMLStreamWriter {
                         prefix = null;
                         return next;
                     }
-                    public void remove() {}                    
+                    public void remove() {}
                 };
-            }            
+            }
         };
     }
 }
