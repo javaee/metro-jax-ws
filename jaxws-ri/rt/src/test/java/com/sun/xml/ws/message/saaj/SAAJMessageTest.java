@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,6 +62,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.soap.MTOMFeature;
 
+import com.sun.xml.ws.api.message.saaj.SaajStaxWriter;
 import junit.framework.TestCase;
 
 import org.jvnet.staxex.NamespaceContextEx;
@@ -77,12 +78,10 @@ import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
-import org.jvnet.staxex.util.SaajStaxWriter;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.developer.StreamingDataHandler;
 import com.sun.xml.ws.encoding.MIMEPartStreamingDataHandler;
 import com.sun.xml.ws.message.StringHeader;
-import com.sun.xml.ws.streaming.MtomStreamWriter;
 
 /**
  * @author Rama Pulavarthi
