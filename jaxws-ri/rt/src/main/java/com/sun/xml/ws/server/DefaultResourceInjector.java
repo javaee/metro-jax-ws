@@ -55,7 +55,7 @@ import javax.xml.ws.WebServiceContext;
  */
 public final class DefaultResourceInjector extends ResourceInjector {
     public void inject(@NotNull WSWebServiceContext context, @NotNull Object instance) {
-        InjectionPlan.buildInjectionPlan(
+        InjectionPlan.<Object, WebServiceContext>buildInjectionPlan(
             instance.getClass(),WebServiceContext.class,false).inject(instance,context);
     }
 
