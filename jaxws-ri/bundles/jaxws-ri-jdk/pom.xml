@@ -209,7 +209,13 @@
                                 Token.java,
                                 TokenMgrError.java,
                                 UCode_UCodeESC_CharStream.java,
-                                *.rng
+                                *.rng,
+                                com/sun/tools/xjc/reader/dtd/bindinfo/bindingfile.rng,
+                                com/sun/tools/xjc/reader/xmlschema/bindinfo/binding.rng,
+                                com/sun/tools/jxc/gen/config/config.rng,
+                                com/sun/xml/bind/v2/schemagen/xmlschema/xmlschema-for-jaxb.rng,
+                                org/kohsuke/rngom/parse/compact/CompactSyntax.jj,
+                                META-INF/services/com.sun.xml.ws.spi.db.BindingContextFactory
                             </excludes>
                         </configuration>
                     </execution>
