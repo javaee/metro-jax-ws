@@ -106,6 +106,8 @@ grant {
 
     permission java.lang.RuntimePermission "accessClassInPackage.com.sun.org.glassfish.*";
 
+    permission java.lang.RuntimePermission "accessClassInPackage.com.sun.org.apache.xerces.internal.util;
+
     // JAXP:
     //permission java.lang.RuntimePermission "accessClassInPackage.com.sun.xml.internal.stream";
 
