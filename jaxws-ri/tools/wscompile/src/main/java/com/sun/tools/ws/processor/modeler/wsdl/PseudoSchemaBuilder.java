@@ -56,7 +56,7 @@ import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -123,7 +123,7 @@ public class PseudoSchemaBuilder {
         }
         //add w3c EPR binding
         if(!(options.noAddressingBbinding) && options.target.isLaterThan(Options.Target.V2_1)){
-            InputSource is = new InputSource(new ByteArrayInputStream(w3ceprSchemaBinding.getBytes(StandardCharsets.UTF_8)));
+            InputSource is = new InputSource(new ByteArrayInputStream(getUTF8Bytes(w3ceprSchemaBinding)));
             is.setSystemId(sysId+(++i +1));
             b.schemas.add(is);
         }
@@ -137,6 +137,16 @@ public class PseudoSchemaBuilder {
 
         return b.schemas;
     }
+
+    private static byte[] getUTF8Bytes(String w3ceprSchemaBinding1) {
+        try {
+            return w3ceprSchemaBinding1.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException unexpected) {
+            // should never happen
+            throw new IllegalStateException(unexpected);
+        }
+    }
+
 
     private PseudoSchemaBuilder(WSDLDocument _wsdl) {
         this.wsdlDocument = _wsdl;
