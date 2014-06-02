@@ -1806,9 +1806,9 @@ public class WSDLModeler extends WSDLModelerBase {
                 }
 
                 if (part.isIN()) {
-                    setCustomizedParameterName(info.portTypeOperation, inMsg, part, param, false);
+                    setCustomizedParameterName(info.bindingOperation, inMsg, part, param, false);
                 } else if (outMsg != null) {
-                    setCustomizedParameterName(info.portTypeOperation, outMsg, part, param, false);
+                    setCustomizedParameterName(info.bindingOperation, outMsg, part, param, false);
                 }
 
                 params.add(param);
