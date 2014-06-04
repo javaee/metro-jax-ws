@@ -263,7 +263,7 @@
                                         fork="true"
                                         debug="true"
                                         destdir="${basedir}/target/EBCDIC"
-                                        verbose="true"
+                                        quiet="true"
                                         xendorsed="true"
                                         wsdl="${basedir}/src/test/resources/com/sun/tools/ws/EBCDIC.wsdl">
                                     <jvmarg line="-Dfile.encoding=Cp037"/>

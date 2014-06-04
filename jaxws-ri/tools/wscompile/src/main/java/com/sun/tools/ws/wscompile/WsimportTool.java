@@ -569,7 +569,8 @@ public class WsimportTool {
                 args.add(sourceFiles.get(i));
             }
             
-            listener.message(WscompileMessages.WSIMPORT_COMPILING_CODE());
+            if (!options.quiet) listener.message(WscompileMessages.WSIMPORT_COMPILING_CODE());
+
             if(options.verbose){
                 StringBuilder argstr = new StringBuilder();
                 for(String arg:args){
