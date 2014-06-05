@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -124,11 +124,12 @@ final class TubelineAssemblyController {
     }
 
     private Collection<TubeCreator> initializeTubeCreators(TubeFactoryList tfl) {
-        final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        ClassLoader classLoader = tccl != null ? tccl : TubelineAssemblyController.class.getClassLoader();
 
         LinkedList<TubeCreator> tubeCreators = new LinkedList<TubeCreator>();
         for (TubeFactoryConfig tubeFactoryConfig : tfl.getTubeFactoryConfigs()) {
-            tubeCreators.addFirst(new TubeCreator(tubeFactoryConfig, contextClassLoader));
+            tubeCreators.addFirst(new TubeCreator(tubeFactoryConfig, classLoader));
         }
         return tubeCreators;
     }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -273,7 +273,7 @@ class MetroConfigLoader {
                         public JAXBContext run() throws Exception {
                             return JAXBContext.newInstance(MetroConfig.class.getPackage().getName());
                         }
-                    }, createSecurityContext()
+                    }, createSecurityContext() // Comment ... this out solves the problem
             );
         } else {
             // usage from JAX-WS/Metro/Glassfish
@@ -285,6 +285,7 @@ class MetroConfigLoader {
         PermissionCollection perms = new Permissions();
         perms.add(new RuntimePermission("accessClassInPackage.com" + ".sun.xml.internal.ws.runtime.config")); // avoid repackaging
         perms.add(new ReflectPermission("suppressAccessChecks"));
+        perms.add(new ReflectPermission("accessDeclaredMembers"));
         return new AccessControlContext(
                 new ProtectionDomain[]{
                         new ProtectionDomain(null, perms),
