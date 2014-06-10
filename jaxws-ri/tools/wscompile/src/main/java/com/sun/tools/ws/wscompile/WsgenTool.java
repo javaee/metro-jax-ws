@@ -84,7 +84,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -202,7 +201,11 @@ public class WsgenTool {
             args.addAll(options.getJavacOptions(args, listener));
         }
 
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();//        compiler = JavacTool.create();
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        if (compiler == null) {
+            out.println(WscompileMessages.WSCOMPILE_CANT_GET_COMPILER(property("java.home"), property("java.version"), property("java.vendor")));
+            return false;
+        }
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
         JavaCompiler.CompilationTask task = compiler.getTask(
@@ -318,6 +321,15 @@ public class WsgenTool {
                 generateWsgenReport(endpointClass, (AbstractSEIModelImpl) rt.getModel(), wsdlFileName[0], schemaFiles);
         }
         return true;
+    }
+
+    private String property(String key) {
+        try {
+            String property = System.getProperty(key);
+            return property != null ? property : "UNKNOWN";
+        } catch (SecurityException ignored) {
+            return "UNKNOWN";
+        }
     }
 
     private List<File> getExternalFiles(List<String> exts) {
