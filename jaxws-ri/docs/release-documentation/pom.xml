@@ -46,12 +46,12 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>docs</artifactId>
-        <version>2.2.11-SNAPSHOT</version>
+        <version>2.2.11-b140611.0810</version>
     </parent>
 
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>release-documentation</artifactId>
-    <version>2.2.11-SNAPSHOT</version>
+    <version>2.2.11-b140611.0810</version>
 
     <packaging>pom</packaging>
     <name>JAX-WS RI Release Documentation</name>
