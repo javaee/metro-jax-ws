@@ -57,13 +57,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.ws.WebServiceException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ReflectPermission;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.*;
-import java.util.PropertyPermission;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
 import java.util.logging.Level;
 
 /**
@@ -273,23 +272,11 @@ class MetroConfigLoader {
                         public JAXBContext run() throws Exception {
                             return JAXBContext.newInstance(MetroConfig.class.getPackage().getName());
                         }
-                    }, createSecurityContext() // Comment ... this out solves the problem
-            );
+                    });
         } else {
             // usage from JAX-WS/Metro/Glassfish
             return JAXBContext.newInstance(MetroConfig.class.getPackage().getName());
         }
-    }
-
-    private static AccessControlContext createSecurityContext() {
-        PermissionCollection perms = new Permissions();
-        perms.add(new RuntimePermission("accessClassInPackage.com" + ".sun.xml.internal.ws.runtime.config")); // avoid repackaging
-        perms.add(new ReflectPermission("suppressAccessChecks"));
-        perms.add(new ReflectPermission("accessDeclaredMembers"));
-        return new AccessControlContext(
-                new ProtectionDomain[]{
-                        new ProtectionDomain(null, perms),
-                });
     }
 
     private static boolean isJDKInternal() {

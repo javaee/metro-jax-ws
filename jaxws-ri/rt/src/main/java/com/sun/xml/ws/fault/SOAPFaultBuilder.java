@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,12 +73,8 @@ import javax.xml.ws.soap.SOAPFaultException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.ReflectPermission;
-import java.security.AccessControlContext;
 import java.security.AccessController;
-import java.security.Permissions;
 import java.security.PrivilegedAction;
-import java.security.ProtectionDomain;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
@@ -584,9 +580,6 @@ public abstract class SOAPFaultBuilder {
 
         // in jdk runtime doPrivileged is necessary since JAX-WS internal classes are in restricted packages
         if (isJDKRuntime()) {
-            Permissions permissions = new Permissions();
-            permissions.add(new RuntimePermission("accessClassInPackage.com.sun." + "xml.internal.ws.fault"));
-            permissions.add(new ReflectPermission("suppressAccessChecks"));
             return AccessController.doPrivileged(
                     new PrivilegedAction<JAXBContext>() {
                         @Override
@@ -597,9 +590,7 @@ public abstract class SOAPFaultBuilder {
                                 throw new Error(e);
                             }
                         }
-                    },
-                    new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)})
-            );
+                    });
 
         } else {
             try {

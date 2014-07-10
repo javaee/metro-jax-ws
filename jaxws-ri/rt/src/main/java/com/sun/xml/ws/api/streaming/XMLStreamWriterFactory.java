@@ -58,8 +58,7 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
-import java.security.PrivilegedExceptionAction;
-import java.security.PrivilegedActionException;
+import java.security.PrivilegedAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -314,22 +313,19 @@ public abstract class XMLStreamWriterFactory {
         }
 
         private static Method getMethod(final Class<?> c, final String methodname, final Class<?>... params) {
-            try {
-                return AccessController.doPrivileged(new PrivilegedExceptionAction<Method>() {
-                    @Override
-                    public Method run() throws Exception {
-                        Method m = c.getMethod(methodname, params);
-                        return m;
+            return AccessController.doPrivileged(
+                    new PrivilegedAction<Method>() {
+                        @Override
+                        public Method run() {
+                            try {
+                                return c.getMethod(methodname, params);
+                            } catch (NoSuchMethodException e) {
+                                // impossible
+                                throw new NoSuchMethodError(e.getMessage());
+                            }
+                        }
                     }
-                });
-            } catch (PrivilegedActionException e) {
-                if (e.getCause() instanceof NoSuchMethodException) {
-                    // impossible
-                    throw new NoSuchMethodError(e.getMessage());
-                } else {
-                    throw new Error(e);
-                }
-            }
+            );
         }
 
         /**
