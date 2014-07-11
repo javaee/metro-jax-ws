@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,8 +48,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
-
-import com.sun.xml.bind.v2.model.nav.Navigator;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  * A reference to a JAXB-bound type.
@@ -90,6 +89,8 @@ public final class TypeInfo {
     
     private TypeInfo parentCollectionType;
     
+    private TypeInfo wrapperType;
+   
     private Type genericType;
     
     private boolean nillable = true;
@@ -187,7 +188,6 @@ public final class TypeInfo {
     }
 
     public TypeInfo getItemType() {
-//      System.out.println("????? TypeInfo " + type);
         if (type instanceof Class && ((Class)type).isArray() && !byte[].class.equals(type)) {
             Type componentType = ((Class)type).getComponentType();
             Type genericComponentType = null;
@@ -198,6 +198,7 @@ public final class TypeInfo {
             }
             TypeInfo ti =new TypeInfo(tagName, componentType, annotations);
             if (genericComponentType != null) ti.setGenericType(genericComponentType);
+            for(Annotation anno : annotations) if (anno instanceof XmlElementWrapper) ti.wrapperType = this;
             return ti;
         }
 //        if (type instanceof Class && java.util.Collection.class.isAssignableFrom((Class)type)) {
@@ -207,5 +208,9 @@ public final class TypeInfo {
             return new TypeInfo(tagName, Utils.REFLECTION_NAVIGATOR.getTypeArgument(base,0), annotations);
         }    
         return null;
+    }
+    
+    public TypeInfo getWrapperType() {
+        return wrapperType;
     }
 }

@@ -116,7 +116,7 @@ public class ParameterImpl implements Parameter {
     
     public XMLBridge getInlinedRepeatedElementBridge() {
         TypeInfo itemType = getItemType();
-        if (itemType != null) {
+        if (itemType != null && itemType.getWrapperType() == null) {
             XMLBridge xb = getOwner().getXMLBridge(itemType);
             if (xb != null) return new RepeatedElementBridge(typeInfo, xb);
         }
@@ -270,6 +270,11 @@ public class ParameterImpl implements Parameter {
 
     void fillTypes(List<TypeInfo> types) {
         TypeInfo itemType = getItemType();
-        types.add((itemType != null) ? itemType : getTypeInfo());
+        if (itemType != null) {
+            types.add(itemType);
+            if (itemType.getWrapperType() != null) types.add(getTypeInfo());
+        } else {
+            types.add(getTypeInfo());
+        }
     }
 }

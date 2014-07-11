@@ -68,6 +68,7 @@ import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingInfo;
 import com.sun.xml.ws.spi.db.PropertyAccessor;
+import com.sun.xml.ws.spi.db.ServiceArtifactSchemaGenerator;
 import com.sun.xml.ws.spi.db.TypeInfo;
 import com.sun.xml.ws.spi.db.WrapperComposite;
 import com.sun.xml.ws.spi.db.XMLBridge;
@@ -105,8 +106,11 @@ public final class SDOContextWrapper implements BindingContext {
     
     private HelperContext defaultContext;
 
+    private BindingInfo bindingInfo;
+
     public SDOContextWrapper(BindingInfo bi) {
         this.properties = bi.properties();
+        bindingInfo = bi;
         wrapperAccessors = new HashMap<Class<?>, SDOWrapperAccessor>();
         contextResolver = (HelperContextResolver) properties.get(SDO_HELPER_CONTEXT_RESOLVER);
         if (contextResolver == null) {
@@ -270,6 +274,9 @@ public final class SDOContextWrapper implements BindingContext {
         }
         SDOSchemaCompiler compiler = createSDOCompiler();
         model = compiler.bind();
+
+        ServiceArtifactSchemaGenerator xsdgen = new ServiceArtifactSchemaGenerator(bindingInfo.getSEIModel());
+        xsdgen.generate(outputResolver);
     }
     
     public SDOSchemaCompiler createSDOCompiler() {

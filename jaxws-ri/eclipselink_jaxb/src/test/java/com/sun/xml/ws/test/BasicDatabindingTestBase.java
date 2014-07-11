@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.test;
 
+import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceFeature;
 
 import com.oracle.webservices.api.databinding.DatabindingModeFeature;
@@ -52,6 +53,10 @@ import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.BindingContextFactory;
 import com.sun.xml.ws.test.HelloImpl;
 import com.sun.xml.ws.test.HelloPort;
+import com.sun.xml.ws.test.xbeandoc.Countries;
+import com.sun.xml.ws.test.xbeandoc.CountryInfoType;
+import com.sun.xml.ws.test.xbeandoc.TypedXmlBeansDOC;
+import com.sun.xml.ws.test.xbeandoc.TypedXmlBeansDOCImpl;
 
 /**
  * 1. @WebService
@@ -105,5 +110,48 @@ public abstract class BasicDatabindingTestBase extends WsDatabindingTestBase  {
         cliConfig.setFeatures(f);  
         Databinding db = (Databinding) factory.createRuntime(cliConfig);     
         assertNotNull(db);
+    }
+
+    /**
+     * Test topdown xbean TypedXmlBeansDOC
+     */
+    public void testGlobalElementParamXmlBeansTopdown() throws Exception {
+        Class endpointClass =  TypedXmlBeansDOCImpl.class;
+        Class proxySEIClass =  TypedXmlBeansDOC.class;
+        DatabindingConfig srvConfig = new DatabindingConfig();
+        srvConfig.setEndpointClass(endpointClass);
+        DatabindingModeFeature dbf = databindingMode();
+        dbf.getProperties().put("com.sun.xml.ws.api.model.DocWrappeeNamespapceQualified",   true);
+        srvConfig.setMetadataReader(new JWSAnnotationReader());
+        WebServiceFeature[] f = { dbf };
+        srvConfig.setFeatures(f);
+
+        DatabindingConfig cliConfig = new DatabindingConfig();
+        cliConfig.setContractClass(proxySEIClass);
+        cliConfig.setFeatures(f);
+        cliConfig.setMetadataReader(new JWSAnnotationReader());
+        TypedXmlBeansDOC proxy = createProxy(TypedXmlBeansDOC.class, srvConfig, cliConfig, true);
+        {
+            Holder<Countries> countries = new Holder<Countries>(new Countries());
+            countries.value.getCountry().add(countryInfo("1", "banana"));
+            countries.value.getCountry().add(countryInfo("2", "apple"));
+            countries.value.getCountry().add(countryInfo("3", "peach"));
+            proxy.addCountry(countries, countryInfo("x", "foo"));
+            assertEquals(4, countries.value.getCountry().size());
+        }
+        {
+            Countries countries = new Countries();
+            countries.getCountry().add(countryInfo("1", "banana"));
+            countries.getCountry().add(countryInfo("2", "apple"));
+            String res = proxy.getCountryName(countries, "hello");
+            assertEquals("hello2", res);
+        }
+    }
+    
+    CountryInfoType countryInfo(String code, String name) {
+        CountryInfoType c = new CountryInfoType();
+        c.setCode(code);
+        c.setName(name);
+        return c;
     }
 }
