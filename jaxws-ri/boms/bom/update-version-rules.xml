@@ -62,11 +62,13 @@
         <rule groupId="com.sun.xml.bind" comparisonMethod="maven">
             <ignoreVersions>
                 <ignoreVersion type="regex">2.2.8-b20.*</ignoreVersion>
+                <ignoreVersion type="regex">2.2.11-M.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.glassfish.jaxb" comparisonMethod="maven">
             <ignoreVersions>
                 <ignoreVersion type="regex">2.2.8-b20.*</ignoreVersion>
+                <ignoreVersion type="regex">2.2.11-M.*</ignoreVersion>
             </ignoreVersions>
         </rule>
     </rules>
