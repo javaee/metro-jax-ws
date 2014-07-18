@@ -108,8 +108,6 @@ public abstract class XMLStreamWriterFactory {
                     }
                 } catch (XMLStreamException ex) {
                     Logger.getLogger(XMLStreamWriterFactory.class.getName()).log(Level.INFO, null, ex);
-                } catch (NoSuchMethodException ex) {
-                    Logger.getLogger(XMLStreamWriterFactory.class.getName()).log(Level.INFO, null, ex);
                 }
             }
 
@@ -299,12 +297,10 @@ public abstract class XMLStreamWriterFactory {
                 return new Zephyr(xof,clazz);
             } catch (XMLStreamException e) {
                 return null;    // impossible
-            } catch (NoSuchMethodException e) {
-                return null;    // this xof wasn't Zephyr
             }
         }
 
-        private Zephyr(XMLOutputFactory xof, Class clazz) throws NoSuchMethodException {
+        private Zephyr(XMLOutputFactory xof, Class clazz) {
             this.xof = xof;
 
             zephyrClass = clazz;
