@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<WL5G3N0:definitions name="ArraysBareServiceDefinitions" targetNamespace="http://www.openuri.org/" xmlns="" xmlns:WL5G3N0="http://schemas.xmlsoap.org/wsdl/" xmlns:WL5G3N1="http://www.openuri.org/" xmlns:WL5G3N2="http://schemas.xmlsoap.org/wsdl/soap/">
+  <WL5G3N0:types>
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.openuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="ArrayOfJavaLangstring_literal">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="JavaLangstring" nillable="true" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="arg0" type="open:ArrayOfJavaLangstring_literal" xmlns:open="http://www.openuri.org/"/>
+      <xs:element name="ArrayOfJavaLangstring_literal" type="open:ArrayOfJavaLangstring_literal" xmlns:open="http://www.openuri.org/"/>
+      <xs:element name="return" type="open:ArrayOfJavaLangstring_literal" xmlns:open="http://www.openuri.org/"/>
+    </xs:schema>
+  </WL5G3N0:types>
+  <WL5G3N0:message name="sort1">
+    <WL5G3N0:part element="WL5G3N1:arg0" name="arg0"/>
+  </WL5G3N0:message>
+  <WL5G3N0:message name="sort1Response">
+    <WL5G3N0:part element="WL5G3N1:return" name="return"/>
+  </WL5G3N0:message>
+  <WL5G3N0:portType name="ArraysBare">
+    <WL5G3N0:operation name="sort1" parameterOrder="arg0">
+      <WL5G3N0:input message="WL5G3N1:sort1"/>
+      <WL5G3N0:output message="WL5G3N1:sort1Response"/>
+    </WL5G3N0:operation>
+  </WL5G3N0:portType>
+  <WL5G3N0:binding name="ArraysBareServiceSoapBinding" type="WL5G3N1:ArraysBare">
+    <WL5G3N2:binding style="document" transport="http://www.bea.com/soap/transport/local"/>
+    <WL5G3N0:operation name="sort1">
+      <WL5G3N2:operation soapAction="http://www.openuri.org/sort1" style="document"/>
+      <WL5G3N0:input>
+        <WL5G3N2:body parts="arg0" use="literal"/>
+      </WL5G3N0:input>
+      <WL5G3N0:output>
+        <WL5G3N2:body parts="return" use="literal"/>
+      </WL5G3N0:output>
+    </WL5G3N0:operation>
+  </WL5G3N0:binding>
+  <WL5G3N0:service name="ArraysBareService">
+    <WL5G3N0:port binding="WL5G3N1:ArraysBareServiceSoapBinding" name="ArraysBareSoapPort">
+      <WL5G3N2:address location="local://localhost:7001/alsb/internal/transports/ejb/ejb_ejb_conv-5095/service.jws"/>
+    </WL5G3N0:port>
+  </WL5G3N0:service>
+</WL5G3N0:definitions>

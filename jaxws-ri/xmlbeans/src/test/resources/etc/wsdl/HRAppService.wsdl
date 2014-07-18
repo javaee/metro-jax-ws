@@ -1,0 +1,605 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    http://glassfish.java.net/public/CDDL+GPL_1_1.html
+    or packager/legal/LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at packager/legal/LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<definitions name="HRAppService"
+             targetNamespace="http://sdo.sample.service/"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:tns="http://sdo.sample.service/"
+             xmlns:types="http://sdo.sample.service/types/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+   <types>
+      <xsd:schema elementFormDefault="qualified"
+                  targetNamespace="http://sdo.sample.service/types/"
+                  xmlns="http://sdo.sample.service/types/"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:sdoJava="commonj.sdo/java"
+                  sdoJava:package="com.sun.xml.ws.sdo.sample.service.types">
+         <!--<xsd:import namespace="http://xmlns.oracle.com/bc4j/service/metadata/" schemaLocation="ServiceMetadata.xsd"/>-->
+         <xsd:element name="createEmpElement" type="CreateEmpElement"/>
+         <xsd:complexType name="CreateEmpElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.CreateEmpElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="createEmpResponseElement" type="CreateEmpResponseElement"/>
+         <xsd:complexType name="CreateEmpResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.CreateEmpResponseElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="deleteEmpElement" type="DeleteEmpElement"/>
+         <xsd:complexType name="DeleteEmpElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.DeleteEmpElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="deleteEmpResponseElement" type="DeleteEmpResponseElement"/>
+         <xsd:complexType name="DeleteEmpResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.DeleteEmpResponseElement"/>
+         <xsd:element name="findClerksElement" type="FindClerksElement"/>
+         <xsd:complexType name="FindClerksElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.FindClerksElement">
+            <xsd:sequence>
+               <xsd:element name="findCriteria" type="FindCriteria"/>
+               <xsd:element name="findControl" type="FindControl" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="findClerksResponseElement" type="FindClerksResponseElement"/>
+         <xsd:complexType name="FindClerksResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.FindClerksResponseElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="findDeptsElement" type="FindDeptsElement"/>
+         <xsd:complexType name="FindDeptsElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.FindDeptsElement">
+            <xsd:sequence>
+               <xsd:element name="findCriteria" type="FindCriteria"/>
+               <xsd:element name="findControl" type="FindControl" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="findDeptsResponseElement" type="FindDeptsResponseElement"/>
+         <xsd:complexType name="FindDeptsResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.FindDeptsResponseElement">
+            <xsd:sequence>
+               <xsd:element name="dept" type="Dept" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="findEmpsElement" type="FindEmpsElement"/>
+         <xsd:complexType name="FindEmpsElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.FindEmpsElement">
+            <xsd:sequence>
+               <xsd:element name="findCriteria" type="FindCriteria"/>
+               <xsd:element name="findControl" type="FindControl" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="findEmpsResponseElement" type="FindEmpsResponseElement"/>
+         <xsd:complexType name="FindEmpsResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.FindEmpsResponseElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="findEmpsByJobElement" type="FindEmpsByJobElement"/>
+         <xsd:complexType name="FindEmpsByJobElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.FindEmpsByJobElement">
+            <xsd:sequence>
+               <xsd:element name="findCriteria" type="FindCriteria"/>
+               <xsd:element name="job" type="xsd:string" nillable="true"/>
+               <xsd:element name="findControl" type="FindControl" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="findEmpsByJobResponseElement" type="FindEmpsByJobResponseElement"/>
+         <xsd:complexType name="FindEmpsByJobResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.FindEmpsByJobResponseElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="getDeptElement" type="GetDeptElement"/>
+         <xsd:complexType name="GetDeptElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.GetDeptElement">
+            <xsd:sequence>
+               <xsd:element name="deptno" type="xsd:integer"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="getDeptResponseElement" type="GetDeptResponseElement"/>
+         <xsd:complexType name="GetDeptResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.GetDeptResponseElement">
+            <xsd:sequence>
+               <xsd:element name="dept" type="Dept" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="getEmpElement" type="GetEmpElement"/>
+         <xsd:complexType name="GetEmpElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.GetEmpElement">
+            <xsd:sequence>
+               <xsd:element name="empno" type="xsd:integer"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="getEmpResponseElement" type="GetEmpResponseElement"/>
+         <xsd:complexType name="GetEmpResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.GetEmpResponseElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="getManagerAndPeersElement" type="GetManagerAndPeersElement"/>
+         <xsd:complexType name="GetManagerAndPeersElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.GetManagerAndPeersElement">
+            <xsd:sequence>
+               <xsd:element name="empno" type="xsd:integer"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="getManagerAndPeersResponseElement" type="GetManagerAndPeersResponseElement"/>
+         <xsd:complexType name="GetManagerAndPeersResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.GetManagerAndPeersResponseElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="getTotalCompElement" type="GetTotalCompElement"/>
+         <xsd:complexType name="GetTotalCompElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.GetTotalCompElement">
+            <xsd:sequence>
+               <xsd:element name="empno" type="xsd:integer"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="getTotalCompResponseElement" type="GetTotalCompResponseElement"/>
+         <xsd:complexType name="GetTotalCompResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.GetTotalCompResponseElement">
+            <xsd:sequence>
+               <xsd:element name="result" type="xsd:decimal" nillable="true"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="mergeEmpElement" type="MergeEmpElement"/>
+         <xsd:complexType name="MergeEmpElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.MergeEmpElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="mergeEmpResponseElement" type="MergeEmpResponseElement"/>
+         <xsd:complexType name="MergeEmpResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.MergeEmpResponseElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="processEmpsElement" type="ProcessEmpsElement"/>
+         <xsd:complexType name="ProcessEmpsElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.ProcessEmpsElement">
+            <xsd:sequence>
+               <xsd:element name="changeOperation" type="ChangeOperation"/>
+               <xsd:element name="emp" type="Emp" maxOccurs="unbounded"/>
+               <xsd:element name="processControl" type="ProcessControl" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="processEmpsResponseElement" type="ProcessEmpsResponseElement"/>
+         <xsd:complexType name="ProcessEmpsResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.ProcessEmpsResponseElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="updateEmpElement" type="UpdateEmpElement"/>
+         <xsd:complexType name="UpdateEmpElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.UpdateEmpElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="updateEmpResponseElement" type="UpdateEmpResponseElement"/>
+         <xsd:complexType name="UpdateEmpResponseElement" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.UpdateEmpResponseElement">
+            <xsd:sequence>
+               <xsd:element name="emp" type="Emp"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="dept" type="Dept"/>
+         <xsd:complexType name="Dept" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.Dept">
+            <!--<xsd:annotation>
+         <xsd:appinfo source="Key">
+            <key xmlns="http://xmlns.oracle.com/bc4j/service/metadata/">
+               <attribute>Deptno</attribute>
+            </key>
+         </xsd:appinfo>
+      </xsd:annotation>-->
+            <xsd:sequence>
+               <xsd:element name="Deptno" type="xsd:integer" minOccurs="0"/>
+               <xsd:element name="Dname" type="xsd:string" minOccurs="0" nillable="true"/>
+               <xsd:element name="Loc" type="xsd:string" minOccurs="0" nillable="true"/>
+               <xsd:element name="Emp" type="Emp" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="emp" type="Emp"/>
+         <xsd:complexType name="Emp" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.Emp">
+            <!--<xsd:annotation>
+         <xsd:appinfo source="Key">
+            <key xmlns="http://xmlns.oracle.com/bc4j/service/metadata/">
+               <attribute>Empno</attribute>
+            </key>
+         </xsd:appinfo>
+      </xsd:annotation>-->
+            <xsd:sequence>
+               <xsd:element name="Empno" type="xsd:integer" minOccurs="0"/>
+               <xsd:element name="Ename" type="xsd:string" minOccurs="0" nillable="true"/>
+               <xsd:element name="Job" type="xsd:string" minOccurs="0" nillable="true"/>
+               <xsd:element name="Mgr" type="xsd:integer" minOccurs="0" nillable="true"/>
+               <xsd:element name="Hiredate" type="xsd:date" minOccurs="0" nillable="true"/>
+               <xsd:element name="Sal" type="xsd:decimal" minOccurs="0" nillable="true"/>
+               <xsd:element name="Comm" type="xsd:decimal" minOccurs="0" nillable="true"/>
+               <xsd:element name="Deptno" type="xsd:integer" minOccurs="0" nillable="true"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="findCriteria" type="FindCriteria"/>
+         <xsd:complexType name="FindCriteria" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.FindCriteria">
+            <xsd:sequence>
+               <xsd:element name="fetchStart" type="xsd:int" default="0"/>
+               <xsd:element name="fetchSize" type="xsd:int" default="-1"/>
+               <xsd:element name="filter" type="ViewCriteria" minOccurs="0"/>
+               <xsd:element name="sortOrder" type="SortOrder" minOccurs="0"/>
+               <xsd:element name="findAttribute" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+               <xsd:element name="excludeAttribute" type="xsd:boolean" default="false"/>
+               <xsd:element name="childFindCriteria" type="ChildFindCriteria" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:complexType name="ViewCriteria" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.ViewCriteria">
+            <xsd:sequence>
+               <xsd:element name="conjunction" type="Conjunction" minOccurs="0"/>
+               <xsd:element name="group" type="ViewCriteriaRow" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:complexType name="ViewCriteriaRow" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.ViewCriteriaRow">
+            <xsd:sequence>
+               <xsd:element name="conjunction" type="Conjunction" minOccurs="0"/>
+               <xsd:element name="upperCaseCompare" type="xsd:boolean" minOccurs="0"/>
+               <xsd:element name="item" type="ViewCriteriaItem" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:complexType name="ViewCriteriaItem" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.ViewCriteriaItem">
+            <xsd:sequence>
+               <xsd:element name="conjunction" type="Conjunction" minOccurs="0"/>
+               <xsd:element name="upperCaseCompare" type="xsd:boolean" minOccurs="0"/>
+               <xsd:element name="attribute" type="xsd:string"/>
+               <xsd:element name="operator" type="xsd:string"/>
+               <xsd:choice>
+                  <xsd:element name="value" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
+                  <xsd:element name="nested" type="ViewCriteria"/>
+               </xsd:choice>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:simpleType name="Conjunction" sdoJava:instanceClass="java.lang.String">
+            <xsd:restriction base="xsd:string">
+               <xsd:enumeration value="And"/>
+               <xsd:enumeration value="Or"/>
+               <xsd:enumeration value="Not"/>
+               <xsd:enumeration value="AndNot"/>
+               <xsd:enumeration value="OrNot"/>
+            </xsd:restriction>
+         </xsd:simpleType>
+         <xsd:complexType name="SortOrder" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.SortOrder">
+            <xsd:sequence>
+               <xsd:element name="sortAttribute" type="SortAttribute" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:complexType name="SortAttribute" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.SortAttribute">
+            <xsd:sequence>
+               <xsd:element name="name" type="xsd:string"/>
+               <xsd:element name="descending" type="xsd:boolean" default="false"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:complexType name="ChildFindCriteria" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.ChildFindCriteria">
+            <xsd:complexContent>
+               <xsd:extension base="FindCriteria">
+                  <xsd:sequence>
+                     <xsd:element name="childAttrName" type="xsd:string"/>
+                  </xsd:sequence>
+               </xsd:extension>
+            </xsd:complexContent>
+         </xsd:complexType>
+         <xsd:simpleType name="ChangeOperation" sdoJava:instanceClass="java.lang.String">
+            <xsd:restriction base="xsd:string">
+               <xsd:enumeration value="Create"/>
+               <xsd:enumeration value="Update"/>
+               <xsd:enumeration value="Merge"/>
+               <xsd:enumeration value="Delete"/>
+            </xsd:restriction>
+         </xsd:simpleType>
+         <xsd:element name="findControl" type="FindControl"/>
+         <xsd:complexType name="FindControl" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.FindControl">
+            <xsd:sequence>
+               <xsd:element name="retrieveAllTranslations" type="xsd:boolean" default="false"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="processControl" type="ProcessControl"/>
+         <xsd:complexType name="ProcessControl" sdoJava:instanceClass="com.sun.xml.ws.sdo.sample.service.types.ProcessControl">
+            <xsd:sequence>
+               <xsd:element name="returnMode" type="ReturnMode" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:simpleType name="ReturnMode" sdoJava:instanceClass="java.lang.String">
+            <xsd:restriction base="xsd:string">
+               <xsd:enumeration value="Full"/>
+               <xsd:enumeration value="Key"/>
+               <xsd:enumeration value="None"/>
+            </xsd:restriction>
+         </xsd:simpleType>
+      </xsd:schema>
+   </types>
+   <message name="HRAppService_createEmp">
+      <part name="parameters" element="types:createEmpElement"/>
+   </message>
+   <message name="HRAppService_createEmpResponse">
+      <part name="parameters" element="types:createEmpResponseElement"/>
+   </message>
+   <message name="HRAppService_deleteEmp">
+      <part name="parameters" element="types:deleteEmpElement"/>
+   </message>
+   <message name="HRAppService_deleteEmpResponse">
+      <part name="parameters" element="types:deleteEmpResponseElement"/>
+   </message>
+   <message name="HRAppService_findClerks">
+      <part name="parameters" element="types:findClerksElement"/>
+   </message>
+   <message name="HRAppService_findClerksResponse">
+      <part name="parameters" element="types:findClerksResponseElement"/>
+   </message>
+   <message name="HRAppService_findDepts">
+      <part name="parameters" element="types:findDeptsElement"/>
+   </message>
+   <message name="HRAppService_findDeptsResponse">
+      <part name="parameters" element="types:findDeptsResponseElement"/>
+   </message>
+   <message name="HRAppService_findEmps">
+      <part name="parameters" element="types:findEmpsElement"/>
+   </message>
+   <message name="HRAppService_findEmpsResponse">
+      <part name="parameters" element="types:findEmpsResponseElement"/>
+   </message>
+   <message name="HRAppService_findEmpsByJob">
+      <part name="parameters" element="types:findEmpsByJobElement"/>
+   </message>
+   <message name="HRAppService_findEmpsByJobResponse">
+      <part name="parameters" element="types:findEmpsByJobResponseElement"/>
+   </message>
+   <message name="HRAppService_getDept">
+      <part name="parameters" element="types:getDeptElement"/>
+   </message>
+   <message name="HRAppService_getDeptResponse">
+      <part name="parameters" element="types:getDeptResponseElement"/>
+   </message>
+   <message name="HRAppService_getEmp">
+      <part name="parameters" element="types:getEmpElement"/>
+   </message>
+   <message name="HRAppService_getEmpResponse">
+      <part name="parameters" element="types:getEmpResponseElement"/>
+   </message>
+   <message name="HRAppService_getManagerAndPeers">
+      <part name="parameters" element="types:getManagerAndPeersElement"/>
+   </message>
+   <message name="HRAppService_getManagerAndPeersResponse">
+      <part name="parameters" element="types:getManagerAndPeersResponseElement"/>
+   </message>
+   <message name="HRAppService_getTotalComp">
+      <part name="parameters" element="types:getTotalCompElement"/>
+   </message>
+   <message name="HRAppService_getTotalCompResponse">
+      <part name="parameters" element="types:getTotalCompResponseElement"/>
+   </message>
+   <message name="HRAppService_mergeEmp">
+      <part name="parameters" element="types:mergeEmpElement"/>
+   </message>
+   <message name="HRAppService_mergeEmpResponse">
+      <part name="parameters" element="types:mergeEmpResponseElement"/>
+   </message>
+   <message name="HRAppService_processEmps">
+      <part name="parameters" element="types:processEmpsElement"/>
+   </message>
+   <message name="HRAppService_processEmpsResponse">
+      <part name="parameters" element="types:processEmpsResponseElement"/>
+   </message>
+   <message name="HRAppService_updateEmp">
+      <part name="parameters" element="types:updateEmpElement"/>
+   </message>
+   <message name="HRAppService_updateEmpResponse">
+      <part name="parameters" element="types:updateEmpResponseElement"/>
+   </message>
+   <portType name="HRAppService">
+      <operation name="createEmp">
+         <input message="tns:HRAppService_createEmp"/>
+         <output message="tns:HRAppService_createEmpResponse"/>
+      </operation>
+      <operation name="deleteEmp">
+         <input message="tns:HRAppService_deleteEmp"/>
+         <output message="tns:HRAppService_deleteEmpResponse"/>
+      </operation>
+      <operation name="findClerks">
+         <input message="tns:HRAppService_findClerks"/>
+         <output message="tns:HRAppService_findClerksResponse"/>
+      </operation>
+      <operation name="findDepts">
+         <input message="tns:HRAppService_findDepts"/>
+         <output message="tns:HRAppService_findDeptsResponse"/>
+      </operation>
+      <operation name="findEmps">
+         <input message="tns:HRAppService_findEmps"/>
+         <output message="tns:HRAppService_findEmpsResponse"/>
+      </operation>
+      <operation name="findEmpsByJob">
+         <input message="tns:HRAppService_findEmpsByJob"/>
+         <output message="tns:HRAppService_findEmpsByJobResponse"/>
+      </operation>
+      <operation name="getDept">
+         <input message="tns:HRAppService_getDept"/>
+         <output message="tns:HRAppService_getDeptResponse"/>
+      </operation>
+      <operation name="getEmp">
+         <input message="tns:HRAppService_getEmp"/>
+         <output message="tns:HRAppService_getEmpResponse"/>
+      </operation>
+      <operation name="getManagerAndPeers">
+         <input message="tns:HRAppService_getManagerAndPeers"/>
+         <output message="tns:HRAppService_getManagerAndPeersResponse"/>
+      </operation>
+      <operation name="getTotalComp">
+         <input message="tns:HRAppService_getTotalComp"/>
+         <output message="tns:HRAppService_getTotalCompResponse"/>
+      </operation>
+      <operation name="mergeEmp">
+         <input message="tns:HRAppService_mergeEmp"/>
+         <output message="tns:HRAppService_mergeEmpResponse"/>
+      </operation>
+      <operation name="processEmps">
+         <input message="tns:HRAppService_processEmps"/>
+         <output message="tns:HRAppService_processEmpsResponse"/>
+      </operation>
+      <operation name="updateEmp">
+         <input message="tns:HRAppService_updateEmp"/>
+         <output message="tns:HRAppService_updateEmpResponse"/>
+      </operation>
+   </portType>
+   <binding name="HRAppServiceSoapHttp" type="tns:HRAppService">
+      <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+      <operation name="createEmp">
+         <soap:operation soapAction="http://sdo.sample.service//createEmp"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="deleteEmp">
+         <soap:operation soapAction="http://sdo.sample.service//deleteEmp"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="findClerks">
+         <soap:operation soapAction="http://sdo.sample.service//findClerks"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="findDepts">
+         <soap:operation soapAction="http://sdo.sample.service//findDepts"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="findEmps">
+         <soap:operation soapAction="http://sdo.sample.service//findEmps"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="findEmpsByJob">
+         <soap:operation soapAction="http://sdo.sample.service//findEmpsByJob"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="getDept">
+         <soap:operation soapAction="http://sdo.sample.service//getDept"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="getEmp">
+         <soap:operation soapAction="http://sdo.sample.service//getEmp"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="getManagerAndPeers">
+         <soap:operation soapAction="http://sdo.sample.service//getManagerAndPeers"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="getTotalComp">
+         <soap:operation soapAction="http://sdo.sample.service//getTotalComp"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="mergeEmp">
+         <soap:operation soapAction="http://sdo.sample.service//mergeEmp"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="processEmps">
+         <soap:operation soapAction="http://sdo.sample.service//processEmps"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+      <operation name="updateEmp">
+         <soap:operation soapAction="http://sdo.sample.service//updateEmp"/>
+         <input>
+            <soap:body use="literal"/>
+         </input>
+         <output>
+            <soap:body use="literal"/>
+         </output>
+      </operation>
+   </binding>
+   <service name="HRAppService">
+      <port name="HRAppServiceSoapHttpPort" binding="tns:HRAppServiceSoapHttp">
+         <soap:address location="http://localhost:8888/sdoTest/sdoTest"/>
+      </port>
+   </service>
+</definitions>

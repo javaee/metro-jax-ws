@@ -1,0 +1,174 @@
+<?xml version='1.0'?>
+<WL5G3N0:definitions name="TypedXmlBeansDOCServiceDefinitions" targetNamespace="http://www.openuri.org/" xmlns="" xmlns:WL5G3N0="http://schemas.xmlsoap.org/wsdl/" xmlns:WL5G3N1="http://www.openuri.org/" xmlns:WL5G3N2="http://schemas.xmlsoap.org/wsdl/soap/">
+  <WL5G3N0:types>
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.bea.com/wli/sb/transports/ejb/test/xbean" xmlns:tns="http://www.bea.com/wli/sb/transports/ejb/test/xbean" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="Countries">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="country" type="tns:CountryInfoType"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:complexType name="CountryInfoType">
+        <xs:sequence>
+          <xs:element name="code" type="tns:code"/>
+          <xs:element name="name" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="code">
+        <xs:restriction base="xs:string">
+          <xs:length fixed="true" value="2"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.openuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://www.bea.com/wli/sb/transports/ejb/test/xbean"/>
+      <xs:element name="getCountryName">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="xbe:Countries" xmlns:xbe="http://www.bea.com/wli/sb/transports/ejb/test/xbean"/>
+            <xs:element name="param1" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getCountryNameResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getCountryInfo">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="param0" type="xs:string"/>
+            <xs:element name="param1" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getCountryInfoResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="CountryInfoType" type="xbe:CountryInfoType" xmlns:xbe="http://www.bea.com/wli/sb/transports/ejb/test/xbean"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="addCountry">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="xbe:Countries" xmlns:xbe="http://www.bea.com/wli/sb/transports/ejb/test/xbean"/>
+            <xs:element name="param1" type="xbe:CountryInfoType" xmlns:xbe="http://www.bea.com/wli/sb/transports/ejb/test/xbean"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="addCountryResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="xbe:Countries" xmlns:xbe="http://www.bea.com/wli/sb/transports/ejb/test/xbean"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getCountryNameXml">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="xbe:Countries" xmlns:xbe="http://www.bea.com/wli/sb/transports/ejb/test/xbean"/>
+            <xs:element name="param1" type="xbe:code" xmlns:xbe="http://www.bea.com/wli/sb/transports/ejb/test/xbean"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getCountryNameXmlResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+  </WL5G3N0:types>
+  <WL5G3N0:message name="getCountryName">
+    <WL5G3N0:part element="WL5G3N1:getCountryName" name="parameters"/>
+  </WL5G3N0:message>
+  <WL5G3N0:message name="getCountryNameResponse">
+    <WL5G3N0:part element="WL5G3N1:getCountryNameResponse" name="parameters"/>
+  </WL5G3N0:message>
+  <WL5G3N0:message name="getCountryInfo">
+    <WL5G3N0:part element="WL5G3N1:getCountryInfo" name="parameters"/>
+  </WL5G3N0:message>
+  <WL5G3N0:message name="getCountryInfoResponse">
+    <WL5G3N0:part element="WL5G3N1:getCountryInfoResponse" name="parameters"/>
+  </WL5G3N0:message>
+  <WL5G3N0:message name="addCountry">
+    <WL5G3N0:part element="WL5G3N1:addCountry" name="parameters"/>
+  </WL5G3N0:message>
+  <WL5G3N0:message name="addCountryResponse">
+    <WL5G3N0:part element="WL5G3N1:addCountryResponse" name="parameters"/>
+  </WL5G3N0:message>
+  <WL5G3N0:message name="getCountryNameXml">
+    <WL5G3N0:part element="WL5G3N1:getCountryNameXml" name="parameters"/>
+  </WL5G3N0:message>
+  <WL5G3N0:message name="getCountryNameXmlResponse">
+    <WL5G3N0:part element="WL5G3N1:getCountryNameXmlResponse" name="parameters"/>
+  </WL5G3N0:message>
+  <WL5G3N0:portType name="TypedXmlBeansDOC">
+    <WL5G3N0:operation name="getCountryName" parameterOrder="parameters">
+      <WL5G3N0:input message="WL5G3N1:getCountryName"/>
+      <WL5G3N0:output message="WL5G3N1:getCountryNameResponse"/>
+    </WL5G3N0:operation>
+    <WL5G3N0:operation name="getCountryInfo" parameterOrder="parameters">
+      <WL5G3N0:input message="WL5G3N1:getCountryInfo"/>
+      <WL5G3N0:output message="WL5G3N1:getCountryInfoResponse"/>
+    </WL5G3N0:operation>
+    <WL5G3N0:operation name="addCountry" parameterOrder="parameters">
+      <WL5G3N0:input message="WL5G3N1:addCountry"/>
+      <WL5G3N0:output message="WL5G3N1:addCountryResponse"/>
+    </WL5G3N0:operation>
+    <WL5G3N0:operation name="getCountryNameXml" parameterOrder="parameters">
+      <WL5G3N0:input message="WL5G3N1:getCountryNameXml"/>
+      <WL5G3N0:output message="WL5G3N1:getCountryNameXmlResponse"/>
+    </WL5G3N0:operation>
+  </WL5G3N0:portType>
+  <WL5G3N0:binding name="TypedXmlBeansDOCServiceSoapBinding" type="WL5G3N1:TypedXmlBeansDOC">
+    <WL5G3N2:binding style="document" transport="http://www.bea.com/soap/transport/local"/>
+    <WL5G3N0:operation name="getCountryName">
+      <WL5G3N2:operation soapAction="http://www.openuri.org/getCountryName" style="document"/>
+      <WL5G3N0:input>
+        <WL5G3N2:body parts="parameters" use="literal"/>
+      </WL5G3N0:input>
+      <WL5G3N0:output>
+        <WL5G3N2:body parts="parameters" use="literal"/>
+      </WL5G3N0:output>
+    </WL5G3N0:operation>
+    <WL5G3N0:operation name="getCountryInfo">
+      <WL5G3N2:operation soapAction="http://www.openuri.org/getCountryInfo" style="document"/>
+      <WL5G3N0:input>
+        <WL5G3N2:body parts="parameters" use="literal"/>
+      </WL5G3N0:input>
+      <WL5G3N0:output>
+        <WL5G3N2:body parts="parameters" use="literal"/>
+      </WL5G3N0:output>
+    </WL5G3N0:operation>
+    <WL5G3N0:operation name="addCountry">
+      <WL5G3N2:operation soapAction="http://www.openuri.org/addCountry" style="document"/>
+      <WL5G3N0:input>
+        <WL5G3N2:body parts="parameters" use="literal"/>
+      </WL5G3N0:input>
+      <WL5G3N0:output>
+        <WL5G3N2:body parts="parameters" use="literal"/>
+      </WL5G3N0:output>
+    </WL5G3N0:operation>
+    <WL5G3N0:operation name="getCountryNameXml">
+      <WL5G3N2:operation soapAction="http://www.openuri.org/getCountryNameXml" style="document"/>
+      <WL5G3N0:input>
+        <WL5G3N2:body parts="parameters" use="literal"/>
+      </WL5G3N0:input>
+      <WL5G3N0:output>
+        <WL5G3N2:body parts="parameters" use="literal"/>
+      </WL5G3N0:output>
+    </WL5G3N0:operation>
+  </WL5G3N0:binding>
+  <WL5G3N0:service name="TypedXmlBeansDOCService">
+    <WL5G3N0:port binding="WL5G3N1:TypedXmlBeansDOCServiceSoapBinding" name="TypedXmlBeansDOCSoapPort">
+      <WL5G3N2:address location="local://localhost:7001/alsb/internal/transports/ejb/ejb_doc-wrap_xbean-8151/service.jws"/>
+    </WL5G3N0:port>
+  </WL5G3N0:service>
+</WL5G3N0:definitions>
