@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,10 +51,15 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.spi.db.BindingContext;
 import com.sun.xml.ws.spi.db.DatabindingException;
+import com.sun.xml.ws.spi.db.ServiceArtifactSchemaGenerator;
 import com.sun.xml.ws.spi.db.XMLBridge;
 import com.sun.xml.ws.spi.db.JAXBWrapperAccessor;
 import com.sun.xml.ws.spi.db.PropertyAccessor;
@@ -66,6 +71,7 @@ import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class JAXBContextWrapper implements BindingContext {
 	org.eclipse.persistence.jaxb.JAXBContext jaxbContext;	  
 	ObjectPool<JAXBMarshaller>   mpool;	  
@@ -73,10 +79,11 @@ public class JAXBContextWrapper implements BindingContext {
     Map<TypeInfo, TypeMappingInfo> infoMap;
     Map<TypeMappingInfo, QName> typeNames;
     Map<Class<?>, JAXBWrapperAccessor> wrapperAccessors;
+    SEIModel seiModel;
 
     private boolean hasSwaRef = false;
 
-	JAXBContextWrapper(javax.xml.bind.JAXBContext cxt, Map<TypeInfo, TypeMappingInfo> map) {
+	JAXBContextWrapper(javax.xml.bind.JAXBContext cxt, Map<TypeInfo, TypeMappingInfo> map, SEIModel model) {
 		jaxbContext = (org.eclipse.persistence.jaxb.JAXBContext) cxt;
 		infoMap = map;
 	    mpool = new ObjectPool<JAXBMarshaller>() {
@@ -101,6 +108,7 @@ public class JAXBContextWrapper implements BindingContext {
 		};
 		wrapperAccessors = new HashMap<Class<?>, JAXBWrapperAccessor>();
 		hasSwaRef = jaxbContext.hasSwaRef();
+        seiModel = model;
 	}
 	
 	public String getBuildId() {
@@ -126,6 +134,10 @@ public class JAXBContextWrapper implements BindingContext {
 	public void generateSchema(SchemaOutputResolver outputResolver)
 			throws IOException {
 		jaxbContext.generateSchema(outputResolver);
+        if (seiModel != null) {
+            ServiceArtifactSchemaGenerator xsdgen = new ServiceArtifactSchemaGenerator(seiModel);
+            xsdgen.generate(outputResolver);
+        }
 	}
 
 	public QName getElementName(Object o) throws JAXBException {
@@ -133,10 +145,21 @@ public class JAXBContextWrapper implements BindingContext {
 		return null;
 	}
 
-	public QName getElementName(Class o) throws JAXBException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public QName getElementName(Class cls) throws JAXBException {
+        XmlRootElement xre = (XmlRootElement) cls.getAnnotation(XmlRootElement.class);
+        XmlType xt = (XmlType) cls.getAnnotation(XmlType.class);
+        if (xt != null && xt.name() != null && !"".equals(xt.name())) return null;
+        if (xre != null) {
+            String lp = xre.name();
+            String ns = xre.namespace();
+            if (ns.equals("##default")) {
+                XmlSchema xs = cls.getPackage().getAnnotation(XmlSchema.class);
+                ns = (xs != null) ? xs.namespace() : "";
+          }
+          return new QName(ns, lp);
+      }
+      return null;
+    }
 
 	public <B, V> PropertyAccessor<B, V> getElementPropertyAccessor(Class<B> wrapperBean, String ns, String name) throws JAXBException {
 		JAXBWrapperAccessor wa = wrapperAccessors.get(wrapperBean);

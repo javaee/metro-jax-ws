@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,8 @@
 
 package com.sun.xml.ws.model;
 
+import java.lang.reflect.Method;
+
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.model.CheckedException;
 import com.sun.xml.ws.api.model.ExceptionType;
@@ -67,6 +69,7 @@ public final class CheckedExceptionImpl implements CheckedException {
     private final JavaMethodImpl javaMethod;
     private String messageName;
     private String faultAction = "";
+    private Method faultInfoGetter;
 
     /**
      * @param jm {@link JavaMethodImpl} that throws this exception
@@ -142,5 +145,11 @@ public final class CheckedExceptionImpl implements CheckedException {
         return WsaActionUtil.getDefaultFaultAction(javaMethod,this);  
     }
 
+    public Method getFaultInfoGetter() {
+        return faultInfoGetter;
+    }
 
+    public void setFaultInfoGetter(Method faultInfoGetter) {
+        this.faultInfoGetter = faultInfoGetter;
+    }
 }

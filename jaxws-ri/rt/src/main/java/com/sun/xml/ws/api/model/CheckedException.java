@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,10 +41,9 @@
 package com.sun.xml.ws.api.model;
 
 import com.sun.xml.bind.api.Bridge;
+import com.sun.xml.ws.spi.db.TypeInfo;
 
 import javax.xml.ws.WebFault;
-import javax.xml.namespace.QName;
-import java.rmi.RemoteException;
 
 /**
  * This class provides abstractio to the  the exception class
@@ -113,4 +112,9 @@ public interface CheckedException {
      * referenced by wsdl:fault
      */
     String getMessageName();
+
+    /**
+     * Gives the {@link com.sun.xml.ws.spi.db.TypeInfo} of the detail
+     */
+    TypeInfo getDetailType();
 }

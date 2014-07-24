@@ -117,7 +117,7 @@ public class JAXBContextFactory extends BindingContextFactory {
 
     @Override
     protected BindingContext newContext(JAXBContext context) {
-        return new JAXBContextWrapper(context, null);
+        return new JAXBContextWrapper(context, null, null);
     }
 
     @Override
@@ -185,7 +185,7 @@ public class JAXBContextFactory extends BindingContextFactory {
         try {
             org.eclipse.persistence.jaxb.JAXBContext jaxbContext = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory
                     .createContext(types, properties, bi.getClassLoader());
-            return new JAXBContextWrapper(jaxbContext, map);
+            return new JAXBContextWrapper(jaxbContext, map, bi.getSEIModel());
         } catch (JAXBException e) {
             throw new DatabindingException(e.getMessage(), e);
         }
