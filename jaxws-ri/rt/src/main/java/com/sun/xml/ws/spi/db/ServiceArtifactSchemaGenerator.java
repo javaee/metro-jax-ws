@@ -44,6 +44,7 @@ import static com.sun.xml.ws.model.RuntimeModeler.DocWrappeeNamespapceQualified;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -205,8 +206,9 @@ public class ServiceArtifactSchemaGenerator {
                 }
             }
         }
-        for(String tns : imports.keySet()) {
-            Set<String> importSet = imports.get(tns);
+        for(Entry<String, Set<String>> entry: imports.entrySet()) {
+            String tns = entry.getKey();
+            Set<String> importSet = entry.getValue();
             Schema xsd = xsds.get(tns);
             for(String nsToImport : importSet) xsd._namespace(nsToImport, true);
             for(String nsToImport : importSet) {
