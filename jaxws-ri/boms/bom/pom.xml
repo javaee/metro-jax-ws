@@ -102,7 +102,7 @@
 
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
         <ha-api.version>3.1.9</ha-api.version>
-        <jaxb.version>2.2.11-b140716.1822</jaxb.version>
+        <jaxb.version>2.2.11-b140725.1821</jaxb.version>
         <jaxws-api.version>2.2.12</jaxws-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <management-api.version>3.2.1-b001</management-api.version>
