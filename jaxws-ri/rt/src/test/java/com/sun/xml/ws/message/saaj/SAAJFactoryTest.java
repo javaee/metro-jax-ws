@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,12 +43,16 @@ package com.sun.xml.ws.message.saaj;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
@@ -57,8 +61,10 @@ import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.api.pipe.Codec;
+import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.encoding.SOAPBindingCodec;
+import com.sun.xml.ws.message.stream.StreamMessage;
 
 import junit.framework.TestCase;
 
@@ -91,6 +97,42 @@ public class SAAJFactoryTest extends TestCase {
         SOAPMessage msg2 = SAAJFactory.read(SOAPVersion.SOAP_11, message);
         assertCustomMimeHeadersOnAttachments(msg2);
         msg2.writeTo(System.out);
+    }
+    
+    /**
+     * Test whether SAAJFactory.readAsSOAPMessage can handle null namespace prefixes if the 
+     * appropriate flag is set on Woodstox
+     * @throws Exception
+     */
+    public void testNullNamespacePrefix() throws Exception {
+    	XMLInputFactory infact = XMLInputFactory.newFactory();
+    	try {
+    		//for Woodstox, set property that ensures it will return null prefixes for default namespace
+    		infact.setProperty("com.ctc.wstx.returnNullForDefaultNamespace", Boolean.TRUE);
+    	} catch(Throwable t) {
+    		//ignore - it is not Woodstox or it is an old version of Woodstox, so this
+    		//test is irrelevant. Note this try/catch is needed because Woodstox isPropertySupported
+    		//is unreliable
+    		return;
+    	}
+    	
+		String soap = "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" + 
+			    "<soap:Body>" + 
+			        "<sendMessage xmlns=\"http://www.foo.bar/schema/\" xmlns:ns2=\"http://www.foo.bar/types/\">;" +
+			        "    <message xsi:type=\"ns2:someType\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+			            "</message>" + 
+			        "</sendMessage></soap:Body></soap:Envelope>";
+		XMLStreamReader envelope = infact.createXMLStreamReader(new StringReader(soap));
+		StreamMessage smsg = new StreamMessage(SOAPVersion.SOAP_11, 
+				envelope, null);
+		SAAJFactory saajFac = new SAAJFactory();
+		try {
+			//Previously this line failed with NPE - should be fixed now. 
+			SOAPMessage msg = saajFac.readAsSOAPMessage(SOAPVersion.SOAP_11, smsg);
+		} catch (NullPointerException npe) {
+			fail("NPE for null namespace prefix is not fixed!");
+			npe.printStackTrace();
+		}
     }
 
     private AttachmentPart addAttachmentPart(SOAPMessage msg, String value) {
