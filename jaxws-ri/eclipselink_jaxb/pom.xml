@@ -192,6 +192,7 @@
                                         <Import-Package>
                                             com.sun.xml.ws.util.xml;version=${jaxws.osgiVersion},
                                             com.sun.xml.ws.model;version=${jaxws.osgiVersion},
+                                            com.sun.xml.ws.api.model;version=${jaxws.osgiVersion},
                                             com.sun.xml.ws.spi.db;version=${jaxws.osgiVersion},
                                             javax.activation,
                                             javax.mail.internet;version=${mail.majorVersion}.${mail.minorVersion},
