@@ -306,7 +306,6 @@ public final class WebServiceFeatureList extends AbstractMap<Class<? extends Web
                 throw new WebServiceException("Not a WebServiceFeature: " + result);
             }
         } catch (final NoSuchMethodException e) {
-            LOGGER.log(Level.INFO, "Unable to find builder method on webservice feature: " + beanClass.getName(), e);
             return null;
         } catch (final IllegalAccessException e) {
             throw new WebServiceException(e);
