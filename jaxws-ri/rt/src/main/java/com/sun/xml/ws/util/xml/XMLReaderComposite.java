@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -100,7 +100,7 @@ public class XMLReaderComposite implements XMLStreamReaderEx {
     public XMLReaderComposite(final ElemInfo elem, XMLStreamReader[] wrapees) {
         elemInfo = elem;
         tagInfo = elem.tagInfo;
-        children = wrapees;
+        children = wrapees.clone();
         if (children != null && children.length > 0) {
             payloadIndex = 0;
             payloadReader = children[payloadIndex]; 

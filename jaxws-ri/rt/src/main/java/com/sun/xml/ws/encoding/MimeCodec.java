@@ -49,8 +49,6 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
-import javax.activation.CommandMap;
-import javax.activation.MailcapCommandMap;
 
 import java.io.IOException;
 import java.io.InputStream;

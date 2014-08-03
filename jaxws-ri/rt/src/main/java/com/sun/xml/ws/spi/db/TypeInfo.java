@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -187,7 +187,6 @@ public final class TypeInfo {
     }
 
     public TypeInfo getItemType() {
-//      System.out.println("????? TypeInfo " + type);
         if (type instanceof Class && ((Class)type).isArray() && !byte[].class.equals(type)) {
             Type componentType = ((Class)type).getComponentType();
             Type genericComponentType = null;
