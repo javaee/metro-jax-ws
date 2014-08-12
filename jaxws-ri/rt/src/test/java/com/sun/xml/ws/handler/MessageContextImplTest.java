@@ -61,14 +61,16 @@ public class MessageContextImplTest extends TestCase {
             System.out.println(ctx.entrySet());
 
             checkProperty(ctx, DIRECT_CHILD);
+
+            // this property wasn't found before fix
             checkProperty(ctx, SATELLITES_CHILD);
 
-            // uncoment when fixed ...
-            // checkAll(ctx);
+            // check all ...
+            checkAll(ctx);
 
         } catch(Throwable t) {
-            // let the test pass for now before we know how to fix it ...
             t.printStackTrace();
+            throw new RuntimeException(t);
         }
 
     }
