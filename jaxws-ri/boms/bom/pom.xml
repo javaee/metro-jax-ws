@@ -104,7 +104,7 @@
         <ha-api.version>3.1.9</ha-api.version>
         <jaxb.version>2.2.11-b140731.1112</jaxb.version>
         <jaxws-api.version>2.2.12</jaxws-api.version>
-        <jsr181-api.version>2.1.1</jsr181-api.version>
+        <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <management-api.version>3.2.1-b001</management-api.version>
         <mimepull.version>1.9.4</mimepull.version>
         <policy.version>2.5</policy.version>
