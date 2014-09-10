@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,14 +43,13 @@ package com.sun.tools.ws.wscompile;
 import com.sun.istack.tools.ParallelWorldClassLoader;
 import com.sun.tools.ws.resources.JavacompilerMessages;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * A helper class to invoke javac.
@@ -76,34 +75,17 @@ class JavaCompilerHelper{
     }
 
     static boolean compile(String[] args, OutputStream out, ErrorReceiver receiver){
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
-            /* try to use the new compiler */
-            Class comSunToolsJavacMainClass =
-                    cl.loadClass("com.sun.tools.javac.Main");
-            try {
-                Method compileMethod =
-                        comSunToolsJavacMainClass.getMethod(
-                                "compile",
-                                compileMethodSignature);
-                    Object result =
-                            compileMethod.invoke(
-                                    null, args, new PrintWriter(out));
-                    return result instanceof Integer && (Integer) result == 0;
-            } catch (NoSuchMethodException e2) {
-                receiver.error(JavacompilerMessages.JAVACOMPILER_NOSUCHMETHOD_ERROR("getMethod(\"compile\", Class[])"), e2);
-            } catch (IllegalAccessException e) {
-                receiver.error(e);
-            } catch (InvocationTargetException e) {
-                receiver.error(e);
+            JavaCompiler comp = ToolProvider.getSystemJavaCompiler();
+            if (comp == null) {
+                receiver.error(JavacompilerMessages.NO_JAVACOMPILER_ERROR(), null);
+                return false;
             }
-        } catch (ClassNotFoundException e) {
-            receiver.error(JavacompilerMessages.JAVACOMPILER_CLASSPATH_ERROR("com.sun.tools.javac.Main"), e);
+            return 0 == comp.run(null, out, out, args);
         } catch (SecurityException e) {
             receiver.error(e);
         }
         return false;
     }
     
-    private static final Class[] compileMethodSignature = {String[].class, PrintWriter.class};
 }
