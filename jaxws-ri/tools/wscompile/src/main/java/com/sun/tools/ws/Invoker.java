@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,13 +50,11 @@ import com.sun.xml.bind.util.Which;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.namespace.QName;
-import java.io.File;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -145,26 +143,8 @@ public final class Invoker {
                     return -1;
                 }
 
-                //find and load tools.jar
-                List<URL> urls = new ArrayList<URL>();
-                findToolsJar(cl, urls);
-
-                if(urls.size() > 0){
-                    List<String> mask = new ArrayList<String>(Arrays.asList(maskedPackages));
-
-                    // first create a protected area so that we load JAXB/WS 2.1 API
-                    // and everything that depends on them inside
-                    cl = new MaskingClassLoader(cl,mask);
-
-                    // then this classloader loads the API and tools.jar
-                    cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), cl);
-
-                    // finally load the rest of the RI. The actual class files are loaded from ancestors
-                    cl = new ParallelWorldClassLoader(cl,"");
-                        }
-
             }
-            
+
             Thread.currentThread().setContextClassLoader(cl);
 
             Class compileTool = cl.loadClass(mainClass);
@@ -218,8 +198,8 @@ public final class Invoker {
 
 
     /**
-     * Creates a classloader that can load JAXB/WS 2.2 API and tools.jar,
-     * and then return a classloader that can RI classes, which can see all those APIs and tools.jar.  
+     * Creates a classloader that can load JAXB/WS 2.2 API,
+     * and then return a classloader that can RI classes, which can see all those APIs.
      */
     public static ClassLoader createClassLoader(ClassLoader cl) throws ClassNotFoundException, IOException, ToolsJarNotFoundException {
 
@@ -238,7 +218,7 @@ public final class Invoker {
         // and everything that depends on them inside
         cl = new MaskingClassLoader(cl,mask);
 
-        // then this classloader loads the API and tools.jar
+        // then this classloader loads the API
         cl = new URLClassLoader(urls, cl);
 
         // finally load the rest of the RI. The actual class files are loaded from ancestors
@@ -248,7 +228,7 @@ public final class Invoker {
     }
 
     /**
-     * Creates a classloader for loading JAXB/WS 2.2 jar and tools.jar
+     * Creates a classloader for loading JAXB/WS 2.2 jar
      */
     private static URL[] findIstack22APIs(ClassLoader cl) throws ClassNotFoundException, IOException, ToolsJarNotFoundException {
         List<URL> urls = new ArrayList<URL>();
@@ -265,28 +245,7 @@ public final class Invoker {
             urls.add(ParallelWorldClassLoader.toJarUrl(res));
         }
 
-        findToolsJar(cl, urls);
-
         return urls.toArray(new URL[urls.size()]);
-    }
-
-    private static void findToolsJar(ClassLoader cl, List<URL> urls) throws ToolsJarNotFoundException, MalformedURLException {
-        try {
-            Class.forName("com.sun.tools.javac.Main",false,cl);
-            // we can already load them in the parent class loader.
-            // so no need to look for tools.jar.
-            // this happens when we are run inside IDE/Ant, or
-            // in Mac OS.
-        } catch (ClassNotFoundException e) {
-            // otherwise try to find tools.jar
-            File jreHome = new File(System.getProperty("java.home"));
-            File toolsJar = new File( jreHome.getParent(), "lib/tools.jar" );
-
-            if (!toolsJar.exists()) {
-                throw new ToolsJarNotFoundException(toolsJar);
-            }
-            urls.add(toolsJar.toURL());
-        }
     }
 
 }
