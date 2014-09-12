@@ -44,7 +44,6 @@ import com.sun.istack.tools.MaskingClassLoader;
 import com.sun.istack.tools.ParallelWorldClassLoader;
 import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.wscompile.Options;
-import com.sun.tools.xjc.api.util.ToolsJarNotFoundException;
 import com.sun.xml.bind.util.Which;
 
 import javax.xml.ws.Service;
@@ -72,7 +71,7 @@ public final class Invoker {
     /**
      * The list of package prefixes we want the
      * {@link MaskingClassLoader} to prevent the parent
-     * classLoader from loading
+     * class loader from loading
      */
     static final String[] maskedPackages = new String[]{
             "com.sun.istack.tools.",
@@ -153,8 +152,6 @@ public final class Invoker {
             Method runMethod = compileTool.getMethod("run",String[].class);
             boolean r = (Boolean)runMethod.invoke(tool,new Object[]{args});
             return r ? 0 : 1;
-        } catch (ToolsJarNotFoundException e) {
-            System.err.println(e.getMessage());
         } catch (InvocationTargetException e) {
             throw e.getCause();
         } catch(ClassNotFoundException e){
@@ -162,8 +159,6 @@ public final class Invoker {
         }finally {
             Thread.currentThread().setContextClassLoader(oldcc);
         }
-
-        return -1;
     }
 
     /**
@@ -198,10 +193,10 @@ public final class Invoker {
 
 
     /**
-     * Creates a classloader that can load JAXB/WS 2.2 API,
-     * and then return a classloader that can RI classes, which can see all those APIs.
+     * Creates a class loader that can load JAXB/WS 2.2 API,
+     * and then return a class loader that can RI classes, which can see all those APIs.
      */
-    public static ClassLoader createClassLoader(ClassLoader cl) throws ClassNotFoundException, IOException, ToolsJarNotFoundException {
+    public static ClassLoader createClassLoader(ClassLoader cl) throws ClassNotFoundException, IOException {
 
         URL[] urls = findIstack22APIs(cl);
         if(urls.length==0)
@@ -218,7 +213,7 @@ public final class Invoker {
         // and everything that depends on them inside
         cl = new MaskingClassLoader(cl,mask);
 
-        // then this classloader loads the API
+        // then this class loader loads the API
         cl = new URLClassLoader(urls, cl);
 
         // finally load the rest of the RI. The actual class files are loaded from ancestors
@@ -228,13 +223,13 @@ public final class Invoker {
     }
 
     /**
-     * Creates a classloader for loading JAXB/WS 2.2 jar
+     * Creates a class loader for loading JAXB/WS 2.2 jar
      */
-    private static URL[] findIstack22APIs(ClassLoader cl) throws ClassNotFoundException, IOException, ToolsJarNotFoundException {
+    private static URL[] findIstack22APIs(ClassLoader cl) throws ClassNotFoundException, IOException {
         List<URL> urls = new ArrayList<URL>();
 
         if(Service.class.getClassLoader()==null) {
-            // JAX-WS API is loaded from bootstrap classloader
+            // JAX-WS API is loaded from bootstrap class loader
             URL res = cl.getResource("javax/xml/ws/EndpointContext.class");
             if(res==null)
                 throw new ClassNotFoundException("There's no JAX-WS 2.2 API in the classpath");

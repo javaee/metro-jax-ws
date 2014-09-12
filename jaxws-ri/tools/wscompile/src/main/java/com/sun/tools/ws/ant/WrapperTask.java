@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,6 @@ import com.sun.istack.tools.ProtectedTask;
 import com.sun.tools.ws.Invoker;
 import com.sun.tools.ws.wscompile.Options;
 import com.sun.tools.ws.resources.WscompileMessages;
-import com.sun.tools.xjc.api.util.ToolsJarNotFoundException;
 import com.sun.xml.bind.util.Which;
 import org.apache.tools.ant.BuildException;
 
@@ -83,31 +82,27 @@ public abstract class WrapperTask extends ProtectedTask {
     }
 
     protected ClassLoader createClassLoader() throws ClassNotFoundException, IOException {
-        try {
-            ClassLoader cl = getClass().getClassLoader();
-            if (doEndorsedMagic) {
-                return Invoker.createClassLoader(cl);
+        ClassLoader cl = getClass().getClassLoader();
+        if (doEndorsedMagic) {
+            return Invoker.createClassLoader(cl);
+        } else {
+            Options.Target targetVersion;
+            if (targetVersionAttribute != null) {
+                targetVersion = Options.Target.parse(targetVersionAttribute);
             } else {
-                Options.Target targetVersion;
-                if (targetVersionAttribute != null) {
-                    targetVersion = Options.Target.parse(targetVersionAttribute);
-                } else {
-                    targetVersion = Options.Target.getDefault();
-                }
-                Options.Target loadedVersion = Options.Target.getLoadedAPIVersion();
-                //Check if the target version is supported by the loaded API version
-                if (loadedVersion.isLaterThan(targetVersion)) {
-                    return cl;
-                } else {
-                    if (Service.class.getClassLoader() == null)
-                        throw new BuildException(WscompileMessages.WRAPPER_TASK_NEED_ENDORSED(loadedVersion.getVersion(), targetVersion.getVersion(), getTaskName()));
-                    else {
-                        throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API(loadedVersion.getVersion(), Which.which(Service.class), targetVersion.getVersion()));
-                    }
+                targetVersion = Options.Target.getDefault();
+            }
+            Options.Target loadedVersion = Options.Target.getLoadedAPIVersion();
+            //Check if the target version is supported by the loaded API version
+            if (loadedVersion.isLaterThan(targetVersion)) {
+                return cl;
+            } else {
+                if (Service.class.getClassLoader() == null)
+                    throw new BuildException(WscompileMessages.WRAPPER_TASK_NEED_ENDORSED(loadedVersion.getVersion(), targetVersion.getVersion(), getTaskName()));
+                else {
+                    throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API(loadedVersion.getVersion(), Which.which(Service.class), targetVersion.getVersion()));
                 }
             }
-        } catch (ToolsJarNotFoundException e) {
-            throw new ClassNotFoundException(e.getMessage(), e);
         }
     }
 }
