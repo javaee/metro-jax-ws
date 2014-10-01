@@ -49,7 +49,7 @@ cleanModule() {
 # clean all local modifications
 cd $JDK_HOME/jaxws
 rm -rf src
-hg revert -C .
+hg revert --no-backup .
 cd ..
 
 cleanModule java.annotations.common '*'
