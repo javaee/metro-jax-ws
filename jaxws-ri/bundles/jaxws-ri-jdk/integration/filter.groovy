@@ -162,7 +162,7 @@ boolean processFile( String diff, def changes, def revertScript, def changesLst)
     } else {
         if (debug) println " no changes, revreting " + getFileName(diff)
 
-        revertScript.append("hg revert -C " + getFileName(diff) + ";\n")
+        revertScript.append("hg revert --no-backup " + getFileName(diff) + ";\n")
         return false
     }
 }
