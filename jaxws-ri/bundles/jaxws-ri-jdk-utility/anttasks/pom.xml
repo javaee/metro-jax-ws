@@ -115,14 +115,16 @@
                                     <overWrite>true</overWrite>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>com.sun.xml.bind</groupId>
+                                    <groupId>org.glassfish.jaxb</groupId>
+
                                     <artifactId>jaxb-xjc</artifactId>
                                     <version>${jaxb.version}</version>
                                     <classifier>sources</classifier>
                                     <overWrite>true</overWrite>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>com.sun.xml.bind</groupId>
+                                    <groupId>org.glassfish.jaxb</groupId>
+
                                     <artifactId>jaxb-jxc</artifactId>
                                     <version>${jaxb.version}</version>
                                     <classifier>sources</classifier>
