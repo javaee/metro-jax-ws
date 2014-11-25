@@ -201,8 +201,8 @@ class Change {
                 (newValue != null && newValue.matches("(.*)Copyright (.*) Oracle and/or its affiliates. All rights reserved.\$"))) ||
         oldValue.trim().equals(newValue.trim()) ||
         oldValue.equals("/**\n * Copyright (c) 2001, Thai Open Source Software Center Ltd") ||
-        oldValue.contains(" @since") ||
-        newValue.contains(" @since");
+        oldValue.contains("@since") ||
+        newValue.contains("@since");
     }
 
     public String toString() {
