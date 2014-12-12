@@ -49,12 +49,12 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>bundles</artifactId>
-        <version>2.2.11-b141212.1831</version>
+        <version>2.2.11-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>jaxws-ri-jdk-http-transport</artifactId>
-    <version>2.2.11-b141212.1831</version>
+    <version>2.2.11-SNAPSHOT</version>
 
     <packaging>jar</packaging>
     <name>JAX-WS RI - JDK Utility jars - HTTP Servlet support</name>
