@@ -54,7 +54,7 @@ cd ..
 
 cleanModule java.annotations.common '*'
 cleanModule java.xml.bind '*'
-cleanModule java.xml.soap '*'
+#cleanModule java.xml.soap '*'
 cleanModule java.xml.ws '*'
 cleanModule jdk.xml.bind com
 cleanModule jdk.xml.bind org
@@ -76,9 +76,9 @@ extractTo() {
 #java.annotations.common
 extractTo java.annotations.common javax/annotation
 
-#java.xml.soap
-extractTo java.xml.soap javax/xml/soap
-extractTo java.xml.soap com/sun/xml/internal/messaging/saaj
+#used to be java.xml.soap, now java.xml.ws
+extractTo java.xml.ws javax/xml/soap
+extractTo java.xml.ws com/sun/xml/internal/messaging/saaj
 
 #jdk.xml.ws
 extractTo jdk.xml.ws com/sun/tools/internal/ws
