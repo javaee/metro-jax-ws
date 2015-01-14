@@ -48,12 +48,12 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>bundles</artifactId>
-        <version>2.2.10-SNAPSHOT</version>
+        <version>2.2.10</version>
     </parent>
 
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-ri</artifactId>
-    <version>2.2.10-SNAPSHOT</version>
+    <version>2.2.10</version>
     
     <packaging>pom</packaging>
     <name>JAX-WS RI Standalone Zipped Bundle</name>
@@ -199,9 +199,9 @@
                                 <configuration>
                                     <target>
                                         <taskdef classpathref="maven.test.classpath" resource="tasks.properties" />
-                                        <property name="jaxws-ri.instr.dir" location="${project.build.directory}/jaxws-ri-instrumented"/>
-                                        <property name="jaxws-ri.instr.full.name" location="${project.build.directory}/jaxws-ri-instrumented-full.zip"/>
-                                        <unzip src="${project.build.directory}/jaxws-ri.zip" dest="${jaxws-ri.instr.dir}"/>
+                                        <property name="jaxws-ri.instr.dir" location="${project.build.directory}/jaxws-ri-instrumented" />
+                                        <property name="jaxws-ri.instr.full.name" location="${project.build.directory}/jaxws-ri-instrumented-full.zip" />
+                                        <unzip src="${project.build.directory}/jaxws-ri.zip" dest="${jaxws-ri.instr.dir}" />
                                         <cobertura-instrument datafile="${jaxws-ri.instr.dir}/jaxws-ri/cobertura/cobertura.ser">
                                             <includeClasses regex=".*" />
                                             <fileset dir="${jaxws-ri.instr.dir}/jaxws-ri/lib">
@@ -210,9 +210,9 @@
                                                 <include name="plugins/*-plugin.jar" />
                                             </fileset>
                                         </cobertura-instrument>
-                                        <attachartifact file="${jaxws-ri.instr.dir}/jaxws-ri/cobertura/cobertura.ser" classifier="cobertura" type="ser"/>
-                                        <zip destfile="${jaxws-ri.instr.full.name}" basedir="${project.build.directory}/jaxws-ri-instrumented"/>
-                                        <attachartifact file="${jaxws-ri.instr.full.name}" classifier="instrumented" type="zip"/>
+                                        <attachartifact file="${jaxws-ri.instr.dir}/jaxws-ri/cobertura/cobertura.ser" classifier="cobertura" type="ser" />
+                                        <zip destfile="${jaxws-ri.instr.full.name}" basedir="${project.build.directory}/jaxws-ri-instrumented" />
+                                        <attachartifact file="${jaxws-ri.instr.full.name}" classifier="instrumented" type="zip" />
                                     </target>
                                 </configuration>
                             </execution>

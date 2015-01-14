@@ -41,21 +41,19 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>project</artifactId>
-        <version>2.2.10-SNAPSHOT</version>
+        <version>2.2.10</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>jaxws-ri-tests</artifactId>
     <packaging>pom</packaging>
-    <version>2.2.10-SNAPSHOT</version>
+    <version>2.2.10</version>
     <name>JAX-WS RI Tests</name>
 
     <properties>
@@ -67,7 +65,7 @@
         <ws.transport>IN_VM</ws.transport>
         <ws.test>${project.basedir}/testcases</ws.test>
         <!-- extra JVM options for JVM forked by test harness, ie proxy, tests' debugging-->
-        <ws.jvmOpts></ws.jvmOpts>
+        <ws.jvmOpts />
         <ws.permGenJvmOpts>-XX:PermSize=128m -XX:MaxPermSize=256m</ws.permGenJvmOpts>
     </properties>
 
