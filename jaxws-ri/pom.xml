@@ -65,8 +65,8 @@
     </issueManagement>
 
     <scm>
-        <connection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</connection>
-        <developerConnection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</developerConnection>
+        <connection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git</connection>
+        <developerConnection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git</developerConnection>
         <url>http://java.net/projects/jax-ws/sources/sources/show/branches/jaxws22/jaxws-ri/boms/bom</url>
     </scm>
 
