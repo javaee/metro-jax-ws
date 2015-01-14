@@ -48,13 +48,13 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>jaxws-ri-tests</artifactId>
-        <version>2.2.10-SNAPSHOT</version>
+        <version>2.2.10-SNAPSHOT-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jaxws-unit</artifactId>
-    <version>2.2.10-SNAPSHOT</version>
+    <version>2.2.10-SNAPSHOT-SNAPSHOT</version>
 
     <name>JAX-WS RI Unit Tests</name>
     <description>JAX-WS RI Unit Tests</description>
@@ -259,7 +259,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <ws.all-args>-jaxwsInJDK -version 2.2.10 -lwhs ${ws.args}</ws.all-args>
+                <ws.all-args>-jaxwsInJDK -version 2.2.10-SNAPSHOT -lwhs ${ws.args}</ws.all-args>
                 <maven.endorsed.skip>true</maven.endorsed.skip>
                 <ws.permGenJvmOpts></ws.permGenJvmOpts>
             </properties>
