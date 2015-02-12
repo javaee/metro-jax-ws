@@ -137,11 +137,13 @@ git clone git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git || {
 # create release branch from the given git version to be released
 cd jaxws-ri
 RELEASE_BRANCH=`echo jaxws${RELEASE_VERSION} |sed 's/\.//g'`
+echo "INFO: git checkout -b $RELEASE_BRANCH $GIT_VERSION"
 git checkout -b $RELEASE_BRANCH $GIT_VERSION || {
     echo "ERROR: fail to checkout $GIT_VRSION to branch $RELEASE_BRANCH"
     exit 1
 }
-
+GIT_SHA=`git rev-parse --short HEAD`
+echo "INFO: release $RELEASE_VERSION base on the git sha $GIT_SHA"
 SOURCES_VERSION=${SOURCES_VERSION:-"${RELEASE_VERSION}-SNAPSHOT"}
 echo "INFO: Replacing project version $SOURCES_VERSION in sources with new release version $RELEASE_VERSION"
 find ./ -name "pom.xml" | while read file; do
@@ -178,10 +180,12 @@ fi
   
 if [ "$debug" = "true" ]; then
     echo "DEBUG: build while no deploy"
-    mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Dgpg.passphrase=jaxbgpgpassword -DretryFailedDeploymentCount=10  -Prelease-profile -DaltDeploymentRepository=jvnet-nexus-staging::default::https://maven.java.net/service/local/staging/deploy/maven2/ -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean package gpg:sign
+    echo "INFO:  mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Dgpg.passphrase=jaxbgpgpassword -Prelease-profile -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install"
+    mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Dgpg.passphrase=jaxbgpgpassword -Prelease-profile -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install
 else
     echo "INFO: Build and Deploy ..."
-    mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Dgpg.passphrase=jaxbgpgpassword -DretryFailedDeploymentCount=10  -Prelease-profile -DaltDeploymentRepository=jvnet-nexus-staging::default::https://maven.java.net/service/local/staging/deploy/maven2/ -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean package gpg:sign deploy
+    echo "INFO:  mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Dgpg.passphrase=jaxbgpgpassword -Prelease-profile -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install deploy"
+    mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Dgpg.passphrase=jaxbgpgpassword -Prelease-profile -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install deploy
 fi
 if [ $? -ne 0 ]; then
       exit 1
@@ -203,18 +207,47 @@ echo "INFO: Updating www docs ..."
 if [ -d "www" ]; then
     rm -rf www
 fi
-svn checkout --non-interactive --depth=empty https://svn.java.net/svn/jax-ws~wcr/trunk/www
+echo "INFO: svn checkout --non-interactive --depth=empty https://svn.java.net/svn/jax-ws~wcr/trunk/www"
+svn checkout --non-interactive --depth=empty https://svn.java.net/svn/jax-ws~wcr/trunk/www || {
+    echo "ERROR: checkout www failed"
+    exit 1
+}
 # create www release folder and copy the built out docs
-cd www
+cd www || {
+    echo "ERROR: fail chdir to www"
+    exit 1
+}
 mkdir -p $RELEASE_VERSION/docs $RELEASE_VERSION/javadocs/rt $RELEASE_VERSION/javadocs/tools
-cp $WORKROOT/jaxws-ri/jaxws-ri/target/jaxws-ri-$RELEASE_VERSION-src-licensee.zip $RELEASE_VERSION/
-cp $WORKROOT/jaxws-ri/jaxws-ri/docs/www/target/www-stage/index.html $RELEASE_VERSION/
-cp -r $WORKROOT/jaxws-ri/jaxws-ri/docs/release-documentation/target/docbook/* $RELEASE_VERSION/docs/
+echo "INFO: cp $WORKROOT/jaxws-ri/jaxws-ri/target/jaxws-ri-$RELEASE_VERSION-src-licensee.zip $RELEASE_VERSION/"
+cp $WORKROOT/jaxws-ri/jaxws-ri/target/jaxws-ri-$RELEASE_VERSION-src-licensee.zip $RELEASE_VERSION/ || {
+    echo "ERROR: fail copy jaxws-ri-$RELEASE_VERSION-src-licensee.zip"
+    exit 1
+}
+echo "INFO: cp $WORKROOT/jaxws-ri/jaxws-ri/docs/www/target/www-stage/index.html $RELEASE_VERSION/"
+cp $WORKROOT/jaxws-ri/jaxws-ri/docs/www/target/www-stage/index.html $RELEASE_VERSION/ || {
+    echo "ERROR: fail copy index.html"
+    exit 1
+}
+echo "INFO: cp -r $WORKROOT/jaxws-ri/jaxws-ri/docs/release-documentation/target/docbook/* $RELEASE_VERSION/docs/"
+cp -r $WORKROOT/jaxws-ri/jaxws-ri/docs/release-documentation/target/docbook/* $RELEASE_VERSION/docs/ || {
+    echo "ERROR: fail copy docbook"
+    exit 1
+}
 find $RELEASE_VERSION/docs -type f -name "*.fo" |xargs rm -f
-cd $WORKROOT/www/$RELEASE_VERSION/javadocs/rt
-jar -xf $WORKROOT/jaxws-ri/jaxws-ri/bundles/jaxws-rt/target/jaxws-rt-$RELEASE_VERSION-javadoc.jar
-cd $WORKROOT/www/$RELEASE_VERSION/javadocs/tools
-jar -xf $WORKROOT/jaxws-ri/jaxws-ri/bundles/jaxws-tools/target/jaxws-tools-$RELEASE_VERSION-javadoc.jar
+(
+    cd $WORKROOT/www/$RELEASE_VERSION/javadocs/rt
+    jar -xf $WORKROOT/jaxws-ri/jaxws-ri/bundles/jaxws-rt/target/jaxws-rt-$RELEASE_VERSION-javadoc.jar
+) || {
+    echo "ERROR: fail extract jaxws-rt-$RELEASE_VERSION-javadoc.jar"
+    exit 1
+}
+(
+    cd $WORKROOT/www/$RELEASE_VERSION/javadocs/tools
+    jar -xf $WORKROOT/jaxws-ri/jaxws-ri/bundles/jaxws-tools/target/jaxws-tools-$RELEASE_VERSION-javadoc.jar
+) || {
+    echo "ERROR: fail extract jaxws-tools-$RELEASE_VERSION-javadoc.jar"
+    exit 1
+}
 cd $WORKROOT/www
 svn add --non-interactive $RELEASE_VERSION
 
