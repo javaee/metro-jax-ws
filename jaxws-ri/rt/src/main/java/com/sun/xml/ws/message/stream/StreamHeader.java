@@ -209,7 +209,7 @@ public abstract class StreamHeader extends AbstractHeaderImpl {
             // TODO what about in-scope namespaces
             // Not very efficient consider implementing a stream buffer
             // processor that produces a DOM node from the buffer.
-            TransformerFactory tf = XmlUtil.newTransformerFactory();
+            TransformerFactory tf = XmlUtil.newTransformerFactory(true);
             Transformer t = tf.newTransformer();
             XMLStreamBufferSource source = new XMLStreamBufferSource(_mark);
             DOMResult result = new DOMResult();

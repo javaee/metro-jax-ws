@@ -71,7 +71,7 @@ public class DOMUtil {
         synchronized (DOMUtil.class) {
             if (db == null) {
                 try {
-                    DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory();
+                    DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory(true);
                     dbf.setNamespaceAware(true);
                     db = dbf.newDocumentBuilder();
                 } catch (ParserConfigurationException e) {

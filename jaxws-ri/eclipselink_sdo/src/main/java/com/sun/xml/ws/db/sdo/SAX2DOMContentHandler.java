@@ -66,7 +66,7 @@ public class SAX2DOMContentHandler implements ContentHandler {
     private Map<String, String> prefixMappings;
 
     public SAX2DOMContentHandler() {
-        DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory();
+        DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory(false);
         dbf.setValidating(false);
         dbf.setNamespaceAware(true);
         dbf.setIgnoringElementContentWhitespace(true);

@@ -118,7 +118,7 @@ public class SDOUtils {
         if (transformerFactory == null) {
             synchronized(SDOUtils.class) {
                 if (transformerFactory == null) {
-                    transformerFactory = XmlUtil.newTransformerFactory();
+                    transformerFactory = XmlUtil.newTransformerFactory(false);
                 }
             }
         }
@@ -133,7 +133,7 @@ public class SDOUtils {
         if (dbf == null) {
             synchronized(SDOUtils.class) {
                 if (dbf == null) {
-                    DocumentBuilderFactory tmpDBF = XmlUtil.newDocumentBuilderFactory();
+                    DocumentBuilderFactory tmpDBF = XmlUtil.newDocumentBuilderFactory(false);
                     tmpDBF.setValidating(false);
                     tmpDBF.setNamespaceAware(true);
                     tmpDBF.setIgnoringElementContentWhitespace(true);
@@ -405,7 +405,7 @@ public class SDOUtils {
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             StreamResult sr = new StreamResult(bos);
-            TransformerFactory tf = XmlUtil.newTransformerFactory();
+            TransformerFactory tf = XmlUtil.newTransformerFactory(false);
             Transformer trans = tf.newTransformer();
             trans.transform(src, sr);
             System.out.println("**********\n" + bos.toString());
@@ -418,7 +418,7 @@ public class SDOUtils {
     public static String dom2String(DOMSource domSrc) throws TransformerConfigurationException, TransformerException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         StreamResult sr = new StreamResult(bos);
-        TransformerFactory tf = XmlUtil.newTransformerFactory();
+        TransformerFactory tf = XmlUtil.newTransformerFactory(false);
         Transformer trans = tf.newTransformer();
         trans.transform(domSrc, sr);
         return sr.toString();

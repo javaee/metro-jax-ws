@@ -255,7 +255,7 @@ public final class SDOContextWrapper implements BindingContext {
     public void generateSchema(SchemaOutputResolver outputResolver)
             throws IOException {
         try {
-            TransformerFactory tf = XmlUtil.newTransformerFactory();
+            TransformerFactory tf = XmlUtil.newTransformerFactory(false);
             Transformer tx = tf.newTransformer();
             for (SchemaInfo si : suppliedSchemas) {
                 Result res = outputResolver.createOutput(si.getTargetNamespace(),
