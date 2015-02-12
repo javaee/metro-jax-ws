@@ -180,12 +180,12 @@ fi
   
 if [ "$debug" = "true" ]; then
     echo "DEBUG: build while no deploy"
-    echo "INFO:  mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Dgpg.passphrase=jaxbgpgpassword -Prelease-profile -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install"
-    mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Dgpg.passphrase=jaxbgpgpassword -Prelease-profile -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install
+    echo "INFO:  mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Prelease-profile,release-sign-artifacts -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install"
+    mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Prelease-profile,release-sign-artifacts -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install
 else
     echo "INFO: Build and Deploy ..."
-    echo "INFO:  mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Dgpg.passphrase=jaxbgpgpassword -Prelease-profile -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install deploy"
-    mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Dgpg.passphrase=jaxbgpgpassword -Prelease-profile -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install deploy
+    echo "INFO:  mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Prelease-profile,release-sign-artifacts -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install deploy"
+    mvn $MAVEN_SETTINGS -B -C -f jaxws-ri/pom.xml $MAVEN_LOCAL_REPO -DskipTests=true -Prelease-profile,release-sign-artifacts -Dlicense.url=http://hudson-sca.us.oracle.com/job/tlda-license/lastSuccessfulBuild/artifact/ clean install deploy
 fi
 if [ $? -ne 0 ]; then
       exit 1
