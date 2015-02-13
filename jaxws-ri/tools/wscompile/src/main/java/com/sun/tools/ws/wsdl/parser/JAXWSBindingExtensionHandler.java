@@ -40,10 +40,10 @@
 
 package com.sun.tools.ws.wsdl.parser;
 
+import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.tools.ws.api.wsdl.TWSDLExtensible;
 import com.sun.tools.ws.api.wsdl.TWSDLExtension;
 import com.sun.tools.ws.api.wsdl.TWSDLParserContext;
-import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.tools.ws.wsdl.document.*;
 import com.sun.tools.ws.wsdl.document.jaxws.CustomName;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBinding;
@@ -72,7 +72,7 @@ public class JAXWSBindingExtensionHandler extends AbstractExtensionHandler {
     private static final ContextClassloaderLocal<XPathFactory> xpf = new ContextClassloaderLocal<XPathFactory>() {
         @Override
         protected XPathFactory initialValue() throws Exception {
-            return XPathFactory.newInstance();
+            return XmlUtil.newXPathFactory(false);
         }
     };
 

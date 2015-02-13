@@ -272,7 +272,7 @@ public class JAXBContextFactory extends BindingContextFactory {
             if (src instanceof DOMSource) {
                 xmlbindings = (Element) ((DOMSource) src).getNode();
             } else {
-                TransformerFactory tf = XmlUtil.newTransformerFactory();
+                TransformerFactory tf = XmlUtil.newTransformerFactory(true);
                 try {
                     Transformer t = tf.newTransformer();
                     DOMResult dr = new DOMResult();

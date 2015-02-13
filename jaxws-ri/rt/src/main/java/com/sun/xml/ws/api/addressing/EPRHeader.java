@@ -134,7 +134,7 @@ final class EPRHeader extends AbstractHeaderImpl {
             epr.writeTo(localName, w);
             w.flush();
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory fac = XmlUtil.newDocumentBuilderFactory(false);
             fac.setNamespaceAware(true);
             Node eprNode = fac.newDocumentBuilder().parse(bais).getDocumentElement();
             Node eprNodeToAdd = header.getOwnerDocument().importNode(eprNode, true);

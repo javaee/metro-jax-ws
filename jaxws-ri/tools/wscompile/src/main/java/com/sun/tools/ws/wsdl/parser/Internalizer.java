@@ -93,7 +93,7 @@ public class Internalizer {
     private static final ContextClassloaderLocal<XPathFactory> xpf = new ContextClassloaderLocal<XPathFactory>() {
         @Override
         protected XPathFactory initialValue() throws Exception {
-            return XPathFactory.newInstance();
+            return XmlUtil.newXPathFactory(true);
         }
     };
     /**

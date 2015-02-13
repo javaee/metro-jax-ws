@@ -93,8 +93,8 @@ public class SDOBond<T> implements XMLBridge<T> {
     private Class<T> javaType = null;
     private Type theType = null;
     private SDOContextWrapper parent;
-    TransformerFactory tf = XmlUtil.newTransformerFactory();
-    DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory();
+    TransformerFactory tf = XmlUtil.newTransformerFactory(false);
+    DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory(false);
 
     public SDOBond(SDOContextWrapper parent, TypeInfo ti) {
         this.parent = parent;
