@@ -74,16 +74,19 @@
     Bar bar2 = new Bar();
     bar2.setAge(44);
 
+    java.util.List barArray;
     barArray = new ArrayList();
     assertEquals(0, echoPort.echoBarList(barArray).size());
 
     barArray.add(bar);
     barArray.add(bar2);
+    java.util.List resultArray;
     resultArray = echoPort.echoBarList(barArray);
     assertEquals(2, resultArray.size());
-    assertEquals(bar.getAge(), resultArray.get(0).getAge());
-    assertEquals(bar2.getAge(), resultArray.get(1).getAge());
+    assertEquals(bar.getAge(), ((Bar) resultArray.get(0)).getAge());
+    assertEquals(bar2.getAge(), ((Bar) resultArray.get(1)).getAge());
 
+    java.util.List objList;
     objList = new ArrayList();
     assertEquals(null, echoPort.echoTList(objList));
     objList.add(bar);
@@ -92,8 +95,8 @@
 
     resultArray = echoPort.echoWildcardBar(barArray);
     assertEquals(2, resultArray.size());
-    assertEquals(bar.getAge(), resultArray.get(0).getAge());
-    assertEquals(bar2.getAge(), resultArray.get(1).getAge());
+    assertEquals(bar.getAge(), ((Bar)resultArray.get(0)).getAge());
+    assertEquals(bar2.getAge(), ((Bar)resultArray.get(1)).getAge());
         
   ]]></client>
 
@@ -155,7 +158,7 @@
     } catch (GenericException_Exception e){
       GenericException ex = e.getFaultInfo();
       assertEquals("my genericException", ex.getMessage());
-      assertEquals(33, ex.getAge().value);
+      assertEquals(33, ex.getAge().getValue());
       assertEquals(44, ex.getObject().getAge());
       assertEquals(33, ex.getBarList().get(0).getAge());
     }
@@ -169,6 +172,7 @@
 
   <client name="nosei_testHolder" sideEffectFree="true">
   <![CDATA[
+    Holder strHolder;
     strHolder = new Holder();
     strHolder.value = "fred";
 
@@ -181,6 +185,7 @@
     assertEquals("tmp", echoPort.inOutString("tmp", strHolder, 44));
     assertEquals("fredfred", strHolder.value);
 
+    Holder longHolder;
     longHolder = new Holder();
     assertEquals(33, echoPort.outLong(33, null, longHolder));
     assertEquals(33, echoPort.outLong(33, "tmp", longHolder));
@@ -218,7 +223,7 @@
         
     EchoInOutHeader echoInOutHeader = new EchoInOutHeader();
     echoInOutHeader.setArg0(33);
-    longHolder = new Holder(new Long(44));
+    Holder longHolder = new Holder(new Long(44));
     echoInOutHeader.setArg2("fred");
     EchoInOutHeaderResponse echoInOutHeaderResp = echoPort.echoInOutHeader(echoInOutHeader, longHolder);
     assertEquals("fred88", echoInOutHeaderResp.getReturn());
@@ -236,10 +241,12 @@
 
   <client name="nosei_testArray1" sideEffectFree="true">
   <![CDATA[
+    List strArray;
     strArray = new ArrayList();
     strArray.add("Mary");
     strArray.add("Paul");
 
+    List returnArray;
     returnArray = echoPort.echoStringArray(null);
     assertEquals(0, returnArray.size());
         
@@ -259,13 +266,15 @@
     Bar bar2 = new Bar();
     bar2.setAge(44);
 
+    List barArray;
     barArray = new ArrayList();
     barArray.add(bar);
     barArray.add(bar2);
+    List resultArray;
     resultArray = echoPort.echoBarArray(barArray);
     assertEquals(2, resultArray.size());
-    assertEquals(bar.getAge(), resultArray.get(0).getAge());
-    assertEquals(bar2.getAge(), resultArray.get(1).getAge());
+    assertEquals(bar.getAge(), ((Bar)resultArray.get(0)).getAge());
+    assertEquals(bar2.getAge(), ((Bar)resultArray.get(1)).getAge());
   ]]></client>
 
   <client name="nosei_testOneway" sideEffectFree="true">
@@ -313,10 +322,10 @@
 
   <client name="nosei_testResultHeaders" sideEffectFree="true">
   <![CDATA[
-    intHolder = new Holder();
+    Holder intHolder = new Holder();
     EchoIntHeaderResult result = new EchoIntHeaderResult();
     result.setArg0(33);
-    respHolder = new Holder();
+    Holder respHolder = new Holder();
     echoPort.echoIntHeaderResult(result, respHolder, intHolder);
     assertEquals(66, intHolder.value);
   ]]></client>

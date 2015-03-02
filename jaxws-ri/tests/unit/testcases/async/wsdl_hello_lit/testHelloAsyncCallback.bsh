@@ -38,17 +38,18 @@
  * holder.
  */
 
-arg = "foo";
-extra = "bar";
+String arg = "foo";
+String extra = "bar";
 
-req = new Hello_Type();
+Hello_Type req = new Hello_Type();
 req.setArgument(arg);req.setExtra(extra);
 
-response = helloPort.helloAsync(req, new HelloCallbackHandler());
-
-System.out.print("\nWaiting for CallbackHandler to complete...");
-
-while(!response.isDone()) {
-  System.out.print(".");
-  Thread.sleep(1000);
-}
+// TODO: Miran BSH: HelloCallbackHandler
+//Future response = helloPort.helloAsync(req, new HelloCallbackHandler());
+//
+//System.out.print("\nWaiting for CallbackHandler to complete...");
+//
+//while(!response.isDone()) {
+//  System.out.print(".");
+//  Thread.sleep(1000);
+//}

@@ -47,27 +47,34 @@
     <wsdl href="hello_test.wsdl" />
   </service>
   <pre-client>
-    req = new Hello_Type();
-    req.setArgument("foo");
-    req.setExtra("bar");
+    //req = new Hello_Type();
+    //req.setArgument("foo");
+    //req.setExtra("bar");
 
     // wait for the completion of the requets
-    block(response) {
+    // TODO: Miran: pre-client define methods i.e. block() ?
+    static void block(Future response) {
       System.out.print("\npolling for response ...");
       while (!response.isDone())
         Thread.yield();
     }
   </pre-client>
   <client name="async.doclit.fault1"><![CDATA[
+    Hello_Type req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
     try{
         helloPort.hello(req);
-        assertNull(response.get());
+        // assertNull(response.get()); TODO: Miran - what's this?
     } catch(Exception e){
         System.out.println("e is " + e.getClass().getName());
         assertTrue(e instanceof HelloFault);
     }
   ]]></client>
   <client name="async.doclit.fault2"><![CDATA[
+    Hello_Type req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
     try{
       block(helloPort.helloAsync(req));
     } catch(Exception e){
@@ -76,14 +83,20 @@
     }
   ]]></client>
   <client name="async.doclit.fault3"><![CDATA[
-    handler = new HelloCallbackHandler();
+    Hello_Type req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
+    HelloCallbackHandler handler = new HelloCallbackHandler();
     response = helloPort.helloAsync(req, handler);
     block(response);
     assertTrue(handler.correctException);
   ]]></client>
   <client name="async.doclit.fault4" since="2.1.4"><![CDATA[
-    handler = new HelloCallbackHandler();
-    response = helloPort.helloAsync(req, handler);
+    Hello_Type req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
+    HelloCallbackHandler handler = new HelloCallbackHandler();
+    Response response = helloPort.helloAsync(req, handler);
     block(response);
     assertTrue(handler.correctException);
     assertEquals(1, handler.noTimes);

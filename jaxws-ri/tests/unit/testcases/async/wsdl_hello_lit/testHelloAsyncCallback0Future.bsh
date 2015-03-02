@@ -41,10 +41,10 @@
 /*
  * test for bug 6311690
  */
-orig = 1;
+int orig = 1;
 
-intHolder = new IntHolder();
-response = helloPort.hello0Async(orig,
+final IntHolder intHolder = new IntHolder();
+Future response = helloPort.hello0Async(orig,
     new AsyncHandler() {
     public void handleResponse(Response resp) {
         try {

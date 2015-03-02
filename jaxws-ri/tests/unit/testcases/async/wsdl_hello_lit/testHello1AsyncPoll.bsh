@@ -38,20 +38,20 @@
  * holder.
  */
 
-arg = "foo";
-extra = "bar";
-req = new HelloType();
+String arg = "foo";
+String extra = "bar";
+HelloType req = new HelloType();
 req.setArgument(arg);req.setExtra(extra);
 
-reqH = new HelloType();
+HelloType reqH = new HelloType();
 reqH.setArgument("header arg");
 reqH.setExtra("header extra");
 
-response = helloPort.hello1WorldAsync(req, reqH);
+Response response = helloPort.hello1WorldAsync(req, reqH);
 System.out.print("\npolling for response ...");
-resp = response.get(15,TimeUnit.SECONDS);
-out = resp.getHelloOutput();
-outH = resp.getHeader();
+Hello1WorldResponse resp = (Hello1WorldResponse) response.get(15,TimeUnit.SECONDS);
+HelloOutput out = resp.getHelloOutput();
+HelloType outH = resp.getHeader();
 
 assertEquals(arg, out.getArgument());
 assertEquals(extra, out.getExtra());

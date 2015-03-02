@@ -40,9 +40,9 @@
 
 // test with no handler first
 int orig = 1;
-intHolder = new IntHolder();
+final IntHolder intHolder = new IntHolder();
 
-response = helloPort.hello0Async(orig,
+Response response = helloPort.hello0Async(orig,
     new AsyncHandler() {
     public void handleResponse(Response resp) {
         try {

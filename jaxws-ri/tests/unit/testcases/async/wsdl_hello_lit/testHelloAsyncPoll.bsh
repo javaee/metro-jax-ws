@@ -38,14 +38,14 @@
  * holder.
  */
 
-arg = "foo";
-extra = "bar";
+String arg = "foo";
+String extra = "bar";
 
-req = new Hello_Type();
+Hello_Type req = new Hello_Type();
 req.setArgument(arg);req.setExtra(extra);
 
-response = helloPort.helloAsync(req);
-output = response.get(15,TimeUnit.SECONDS);
+Future response = helloPort.helloAsync(req);
+HelloOutput output = (HelloOutput) response.get(15,TimeUnit.SECONDS);
 
 assertEquals(arg, output.getArgument());
 assertEquals(extra, output.getExtra());
