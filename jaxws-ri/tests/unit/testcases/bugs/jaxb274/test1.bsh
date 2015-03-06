@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,24 +38,24 @@
  * holder.
  */
 
-p1 = new bugs.jaxb274.client.Person();
+bugs.jaxb274.client.Person p1 = new bugs.jaxb274.client.Person();
 p1.setFirstname("f");
 p1.setLastname("l");
 
-o = new ArrayList();
+List o = new ArrayList();
 o.add(p1);
 
-h = new Holder(o);
+Holder h = new Holder(o);
 docLitBarePort.echo(h);
-assertEquals(o.size(), h.value.size());
+assertEquals(o.size(), ((List) h.value).size());
 
-p1 = new bugs.jaxb274.client2.Person();
-p1.setFirstname("f");
-p1.setLastname("l");
+bugs.jaxb274.client2.Person p2 = new bugs.jaxb274.client2.Person();
+p2.setFirstname("f");
+p2.setLastname("l");
 
 o = new ArrayList();
-o.add(p1);
+o.add(p2);
 
 h = new Holder(o);
-r=docLitWrappedPort.echo(o);
+List r=docLitWrappedPort.echo(o);
 assertEquals(o.size(), r.size());

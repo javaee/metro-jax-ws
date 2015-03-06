@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,14 +47,14 @@
   <client name="nosei_default_testSimple" sideEffectFree="true">
   <description>testSimple</description>
   <![CDATA[
-        bar = new Bar();
+        Bar bar = new Bar();
         bar.setAge(33);
 
         assertEquals("test", echoImplPort.echoString("test"));
         assertEquals("Mary & Paul", echoImplPort.echoString("Mary & Paul"));
         assertEquals(bar.getAge(), echoImplPort.echoBar(bar).getAge());
         
-        cls = new Class2();
+        Class2 cls = new Class2();
         cls.setAge(33);
         assertEquals(cls.getAge(), echoImplPort.echoClass2(cls).getAge());
   ]]></client>
@@ -62,11 +62,11 @@
   <client name="nosei_default_testArray1" sideEffectFree="true">
   <description>testArray1</description>
   <![CDATA[
-        strArray = new ArrayList();
+        List strArray = new ArrayList();
         strArray.add("Mary");
         strArray.add("Paul");
 
-        returnArray = echoImplPort.echoStringArray(strArray);
+        List returnArray = echoImplPort.echoStringArray(strArray);
         assertEquals(strArray.size(), returnArray.size());
         assertEquals(strArray.get(0), returnArray.get(0));
         assertEquals(strArray.get(1), returnArray.get(1));
@@ -76,33 +76,33 @@
   <client name="nosei_default_testArray2" sideEffectFree="true">
   <description>testArray2</description>
   <![CDATA[
-        bar = new Bar();
+        Bar bar = new Bar();
         bar.setAge(33);
         Bar bar2 = new Bar();
         bar2.setAge(44);
 
-        barArray = new ArrayList();
+        List barArray = new ArrayList();
         barArray.add(bar);
         barArray.add(bar2);
-        resultArray = echoImplPort.echoBarArray(barArray);
+        List resultArray = echoImplPort.echoBarArray(barArray);
         assertEquals(2, resultArray.size());
-        assertEquals(bar.getAge(), resultArray.get(0).getAge());
-        assertEquals(bar2.getAge(), resultArray.get(1).getAge());
+        assertEquals(bar.getAge(), ((Bar) resultArray.get(0)).getAge());
+        assertEquals(bar2.getAge(), ((Bar) resultArray.get(1)).getAge());
   ]]></client>
 
 
   <client name="nosei_default_testArray3" sideEffectFree="true">
   <description>testArray3</description>
   <![CDATA[
-        bar = new Bar();
+        Bar bar = new Bar();
         bar.setAge(33);
-        bar2 = new Bar();
+        Bar bar2 = new Bar();
         bar2.setAge(44);
 
-        barArray = echoImplPort.echoTwoBar(bar, bar2);
+        List barArray = echoImplPort.echoTwoBar(bar, bar2);
         assertEquals(2, barArray.size());
-        assertEquals(bar.getAge(), barArray.get(0).getAge());
-        assertEquals(bar2.getAge(), barArray.get(1).getAge());
+        assertEquals(bar.getAge(), ((Bar) barArray.get(0)).getAge());
+        assertEquals(bar2.getAge(), ((Bar) barArray.get(1)).getAge());
   ]]></client>
 
   <client name="nosei_default_testOneway" sideEffectFree="true">

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@
   <client name="fromjava.seiimpl1" sideEffectFree="true">
   <description>testSimple</description>
   <![CDATA[
-        bar = new Bar();
+        Bar bar = new Bar();
         bar.setAge(33);
         assertEquals("test", echoImplPort.echoString("test"));
         assertEquals("Mary & Paul", echoImplPort.echoString("Mary & Paul"));
@@ -57,19 +57,19 @@
   <client name="fromjava.seiimpl2" sideEffectFree="true">
   <description>echoBarList</description>
   <![CDATA[
-        bar1 = new Bar();
+        Bar bar1 = new Bar();
         bar1.setAge(33); 
-        bar2 = new Bar();
+        Bar bar2 = new Bar();
         bar2.setAge(44);
 
-        barList = new ArrayList();
+        List barList = new ArrayList();
         barList.add(bar1);
         barList.add(bar2);
 
-        retList = echoImplPort.echoBarList(barList);
+        List retList = echoImplPort.echoBarList(barList);
         assertEquals(2, retList.size());
-        assertEquals(bar1.getAge(), retList.get(0).getAge());
-        assertEquals(bar2.getAge(), retList.get(1).getAge());
+        assertEquals(bar1.getAge(), ((Bar) retList.get(0)).getAge());
+        assertEquals(bar2.getAge(), ((Bar) retList.get(1)).getAge());
   ]]></client>
 
   <service basedir="./server">

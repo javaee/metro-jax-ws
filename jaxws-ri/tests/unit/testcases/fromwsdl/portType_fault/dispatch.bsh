@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,27 +38,27 @@
  * holder.
  */
 
-serviceQName = new QName("urn:test", "FaultService");
-portQName = new QName("urn:test", "FaultPort");
-bindingIdString = SOAPBinding.SOAP11HTTP_BINDING;
+QName serviceQName = new QName("urn:test", "FaultService");
+QName portQName = new QName("urn:test", "FaultPort");
+String bindingIdString = SOAPBinding.SOAP11HTTP_BINDING;
 System.out.println(faultPortAddress);
-service = Service.create(serviceQName);
+Service service = Service.create(serviceQName);
 service.addPort(portQName, bindingIdString, faultPortAddress.toString());
-jaxbContext = createJAXBContext();
-dispatch = service.createDispatch(portQName, jaxbContext, Service.Mode.PAYLOAD);
+JAXBContext jaxbContext = createJAXBContext(ObjectFactory.class);
+Dispatch dispatch = service.createDispatch(portQName, jaxbContext, Service.Mode.PAYLOAD);
 
 try {
-    in = "Fault4";
-    echoElement = new ObjectFactory().createEchoElement(in);
+    String in = "Fault4";
+    JAXBElement echoElement = new ObjectFactory().createEchoElement(in);
     Object ret = dispatch.invoke(echoElement);
     fail("did not receive an exception");
 } catch (SOAPFaultException e) {
     System.out.println("Expected exception received: " + e.getMessage());
     Detail detail = e.getFault().getDetail();
     assertNotNull(detail);
-    i = detail.getDetailEntries();
+    Iterator i = detail.getDetailEntries();
     assertTrue(i.hasNext());
-    detail1 = (DetailEntry) i.next();
+    DetailEntry detail1 = (DetailEntry) i.next();
     assertEquals(detail1.getElementQName(),
             new QName(
                     "urn:test:types", "fault4Element"));

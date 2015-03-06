@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,19 +38,19 @@
  * holder.
  */
 
-service = Service.create(new QName("urn:test", "Endpoint"));
+Service service = Service.create(new QName("urn:test", "Endpoint"));
 service.addPort(new QName("urn:test", "EndpointPort"), SOAPBinding.SOAP11HTTP_BINDING, endpointPortAddress.toString());
-disp = service.createDispatch(new QName("urn:test", "EndpointPort"), SOAPMessage.class, Service.Mode.MESSAGE);
-sm = MessageFactory.newInstance().createMessage();
+Dispatch disp = service.createDispatch(new QName("urn:test", "EndpointPort"), SOAPMessage.class, Service.Mode.MESSAGE);
+SOAPMessage sm = MessageFactory.newInstance().createMessage();
 SOAPBody sb = sm.getSOAPBody();
 sb.addBodyElement(new QName("http://first.body", "first"));
 sb.addBodyElement(new QName("http://second.body", "second"));
-resp = disp.invoke(sm);
+SOAPMessage resp = (SOAPMessage) disp.invoke(sm);
 
-body = resp.getSOAPBody();
-nl = body.getChildNodes();
+org.w3c.dom.Node body = (org.w3c.dom.Node) resp.getSOAPBody();
+org.w3c.dom.NodeList nl = body.getChildNodes();
 assertTrue(nl.getLength() == 2);
-n = nl.item(0);
+org.w3c.dom.Node n = nl.item(0);
 assertTrue(n.getLocalName().equals("first") && n.getNamespaceURI().equals("http://first.body"));
 n = nl.item(1);
 assertTrue(n.getLocalName().equals("second") && n.getNamespaceURI().equals("http://second.body"));

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -50,12 +50,12 @@
         <description>
             Test hello().
         </description>
-        arg = "foo";
-        extra = "bar";
-        req = new Hello_Type();
+        String arg = "foo";
+        String extra = "bar";
+        Hello_Type req = new Hello_Type();
         req.setArgument(arg);
         req.setExtra(extra);
-        response = helloPort.hello(req);
+        HelloResponse response = helloPort.hello(req);
         assertEquals(arg, response.getArgument());
         assertEquals(extra, response.getExtra());
     </client>
@@ -71,8 +71,8 @@
         <description>
             Test method with void.
         </description>
-        req = new VoidType();
-        response = helloPort.voidTest(req);
+        VoidType req = new VoidType();
+        VoidType response = helloPort.voidTest(req);
         assertNotNull(response);
     </client>
 
@@ -80,14 +80,14 @@
         <description>
             Test echoArray()
         </description>
-        in = new String[]{"JAXRPC 1.0", "JAXRPC 1.1", "JAXRPC 1.1.2", "JAXRPC 2.0"};
+        String[] in = new String[]{"JAXRPC 1.0", "JAXRPC 1.1", "JAXRPC 1.1.2", "JAXRPC 2.0"};
 
-        nt = new NameType();
+        NameType nt = new NameType();
         nt.getName().add(in[0]);
         nt.getName().add(in[1]);
         nt.getName().add(in[2]);
         nt.getName().add(in[3]);
-        req = new javax.xml.ws.Holder(nt);
+        Holder req = new javax.xml.ws.Holder(nt);
         helloPort.echoArray(req);
         assertNull(req.value);
     </client>
@@ -96,23 +96,23 @@
         <description>
             Test echoArray1()
         </description>
-        in = new String[]{"JAXRPC 1.0", "JAXRPC 1.1", "JAXRPC 1.1.2", "JAXRPC 2.0", "EA"};
+        String[] in = new String[]{"JAXRPC 1.0", "JAXRPC 1.1", "JAXRPC 1.1.2", "JAXRPC 2.0", "EA"};
 
-        nt = new NameType();
+        NameType nt = new NameType();
         nt.getName().add(in[0]);
         nt.getName().add(in[1]);
         nt.getName().add(in[2]);
         nt.getName().add(in[3]);
-        req = new javax.xml.ws.Holder(nt);
+        Holder req = new javax.xml.ws.Holder(nt);
         helloPort.echoArray1(req);
-        assertTrue(Arrays.equals(in, req.value.getName().toArray()));
+        assertTrue(Arrays.equals(in, ((NameType)req.value).getName().toArray()));
     </client>
 
     <client name="fromwsdl.doclit6">
         <description>
             Test echoArray2().
         </description>
-        req = new javax.xml.ws.Holder();
+        Holder req = new javax.xml.ws.Holder();
         helloPort.echoArray2(req);
         assertNull(req.value);
     </client>
@@ -121,12 +121,12 @@
         <description>
             Test echoArray3()
         </description>
-        in = new ArrayList();
+        List in = new ArrayList();
         in.add("JAXRPC 1.0");
         in.add("JAXRPC 1.1");
         in.add("JAXRPC 1.1.2");
         in.add("JAXRPC 2.0");
-        req = new javax.xml.ws.Holder(in);
+        Holder req = new javax.xml.ws.Holder(in);
         helloPort.echoArray3(req);
         assertEquals(in, req.value);
     </client>
@@ -135,11 +135,11 @@
         <description>
             Test echoArray4().
         </description>
-        resp = helloPort.echoArray4(new NameType1());
-        assertEquals(resp.getName().get(0).getArgument(), "arg1");
-        assertEquals(resp.getName().get(0).getExtra(), "extra1");
-        assertEquals(resp.getName().get(1).getArgument(), "arg2");
-        assertEquals(resp.getName().get(1).getExtra(), "extra2");
+        NameType1 resp = helloPort.echoArray4(new NameType1());
+        assertEquals(((HelloType)resp.getName().get(0)).getArgument(), "arg1");
+        assertEquals(((HelloType)resp.getName().get(0)).getExtra(), "extra1");
+        assertEquals(((HelloType)resp.getName().get(1)).getArgument(), "arg2");
+        assertEquals(((HelloType)resp.getName().get(1)).getExtra(), "extra2");
     </client>
 
     <client name="fromwsdl.doclit9">
@@ -151,7 +151,7 @@
         ((BindingProvider) helloPort).getBinding().setHandlerChain(new ArrayList());
         MUHelperHandler handler = new MUHelperHandler();
 
-        handlers = ((BindingProvider) helloPort).getBinding().getHandlerChain();
+        List handlers = ((BindingProvider) helloPort).getBinding().getHandlerChain();
         handlers.add(handler);
         ((BindingProvider) helloPort).getBinding().setHandlerChain(handlers);
 
@@ -160,10 +160,10 @@
             "notarealactor");
 
         // make the call
-        arg = "foo";
-        req = new Hello_Type();
+        String arg = "foo";
+        Hello_Type req = new Hello_Type();
         req.setArgument(arg);
-        response = helloPort.hello(req);
+        HelloResponse response = helloPort.hello(req);
         assertEquals(arg, response.getArgument());
 
         // add header that should result in soap fault
@@ -173,7 +173,7 @@
         try {
             response = helloPort.hello(req);
             fail("did not receive any exception");
-        } catch (ProtocolException e) {
+        } catch (javax.xml.ws.ProtocolException e) {
             if (e instanceof SOAPFaultException) {
                 // pass
             } else {
@@ -191,7 +191,7 @@
             Test echoAnyType
         </description>
         <![CDATA[
-        import javax.xml.namespace.QName;
+        //import javax.xml.namespace.QName;
         
         String str = "\u0938\u094D\u0935\u093E\u0917\u0924";
         assertEquals(str, (String)helloPort.echoAnyType(str));

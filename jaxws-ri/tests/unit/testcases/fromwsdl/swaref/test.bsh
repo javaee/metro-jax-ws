@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,32 +38,33 @@
  * holder.
  */
 
-import javax.activation.DataHandler;
-import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import testutil.AttachmentHelper;
+//import javax.activation.DataHandler;
+//import javax.xml.transform.stream.StreamSource;
+//import java.io.*;
+//import testutil.AttachmentHelper;
 
-testXml = resource("test.xml");
+java.io.File testXml = resource("test.xml");
 
-ByteArrayOutputStream baos = new ByteArrayOutputStream();
-InputStream in = new FileInputStream(testXml);
+java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+java.io.InputStream in = new java.io.FileInputStream(testXml);
 int ch;
 while((ch=in.read()) != -1) {
   baos.write(ch);
 }
-data = baos.toByteArray();
+byte [] data = baos.toByteArray();
 
-claimForm = new DataHandler(new StreamSource(new ByteArrayInputStream(data)), "text/xml");
+javax.activation.DataHandler claimForm = new javax.activation.DataHandler(
+    new javax.xml.transform.stream.StreamSource(new java.io.ByteArrayInputStream(data)), "text/xml");
 assertNotNull(testXml);
-req = new ClaimFormTypeRequest();
+ClaimFormTypeRequest req = new ClaimFormTypeRequest();
 req.setRequest(claimForm);
 
-resp = helloPort.claimForm(req);
+ClaimFormTypeResponse resp = helloPort.claimForm(req);
 
-DataHandler out = resp.getResponse();
+javax.activation.DataHandler out = resp.getResponse();
 assertNotNull(out);
 
-resSrc = out.getContent();
+Object resSrc = out.getContent();
 assertNotNull(resSrc);
 
-assertTrue(AttachmentHelper.compareSource(new StreamSource(new ByteArrayInputStream(data)), resSrc));
+assertTrue(testutil.AttachmentHelper.compareSource(new StreamSource(new ByteArrayInputStream(data)), resSrc));

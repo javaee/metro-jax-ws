@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,13 +38,10 @@
  * holder.
  */
 
-import javax.xml.ws.wsaddressing.W3CEndpointReference;
-import javax.xml.transform.stream.StreamResult;
+javax.xml.ws.wsaddressing.W3CEndpointReference epr = addNumbersPort.getW3CEPR();
+epr.writeTo(new javax.xml.transform.stream.StreamResult(System.out));
 
-W3CEndpointReference epr = addNumbersPort.getW3CEPR();
-epr.writeTo(new StreamResult(System.out));
-
-r =addNumbersPort.addNumbers(10,20);
+int r =addNumbersPort.addNumbers(10,20);
 assertEquals(30,r);
 System.out.println(r);
 

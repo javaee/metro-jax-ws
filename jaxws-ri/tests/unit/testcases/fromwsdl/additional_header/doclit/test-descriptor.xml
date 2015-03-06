@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -50,7 +50,7 @@
         <description>
             test additional headers - echoWithInHeaders
         </description>
-        resp = helloPort.echoWithInHeaders("body", "additionalHeader1", "additionalHeader2");
+        String resp = helloPort.echoWithInHeaders("body", "additionalHeader1", "additionalHeader2");
         assertEquals("bodyadditionalHeader1additionalHeader2", resp);
     </client>
 
@@ -58,9 +58,9 @@
         <description>
             test additional headers - echoWithOutHeaders
         </description>
-        header1 = new Holder();
-        header2 = new Holder();
-        resp = helloPort.echoWithOutHeaders("body", header1, header2);
+        Holder header1 = new Holder();
+        Holder header2 = new Holder();
+        String resp = helloPort.echoWithOutHeaders("body", header1, header2);
         assertEquals("bodyadditionalHeader1additionalHeader2", resp);
         assertEquals("bodyadditionalHeader1", header1.value);
         assertEquals("bodyadditionalHeader2", header2.value);
@@ -70,10 +70,10 @@
         <description>
             test additional headers - echoWithInOutHeaders
         </description>
-        header1 = new Holder();
+        Holder header1 = new Holder();
         header1.value = "additionalHeader1";
-        header2 = new Holder();
-        resp = helloPort.echoWithInOutHeaders("body", header1, header2);
+        Holder header2 = new Holder();
+        String resp = helloPort.echoWithInOutHeaders("body", header1, header2);
         assertEquals("bodyadditionalHeader1additionalHeader2", resp);
         assertEquals("bodyadditionalHeader1", header1.value);
         assertEquals("bodyadditionalHeader2", header2.value);
@@ -83,12 +83,12 @@
         <description>
             test additional headers - echoWithInOutHeaders
         </description>
-        req = new EchoType();
+        EchoType req = new EchoType();
         req.setReqInfo("body");
-        header1 = new Holder();
-        header2 = new Holder();
+        Holder header1 = new Holder();
+        Holder header2 = new Holder();
         header2.value = "additionalHeader2";
-        resp = helloPort.echoWithInOutHeadersBare(req, "header", header2, header1);
+        EchoResponseType resp = helloPort.echoWithInOutHeadersBare(req, "header", header2, header1);
         assertEquals("bodyheaderadditionalHeader1additionalHeader2", resp.getRespInfo());
         assertEquals("bodyadditionalHeader1", header1.value);
         assertEquals("bodyadditionalHeader2", header2.value);

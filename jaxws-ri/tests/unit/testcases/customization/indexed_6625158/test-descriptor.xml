@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -50,8 +50,8 @@
     <client name="customization.indexed" sideEffectFree="true">
     <description>customization.indexed</description>
     <![CDATA[
-      Name[] name = new Name[1];
-      name[0] = new Name();
+      customization.indexed_6625158.client.Name[] name = new customization.indexed_6625158.client.Name[1];
+      name[0] = new customization.indexed_6625158.client.Name();
       name[0].setFirst("first");
       name[0].setLast("last");
       

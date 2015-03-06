@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -45,29 +45,29 @@
   <description>This is a Provider SOAP12 test</description>
 
   <client name="provider.soap12_doclit1" sideEffectFree="true"><![CDATA[
-    req = new Hello_Type();
+    Hello_Type req = new Hello_Type();
     req.setArgument("sendBean");
     req.setExtra("bar");
-    response = helloPort.hello(req, req);
+    HelloResponse response = helloPort.hello(req, req);
     assertEquals("foo", response.getArgument());
     assertEquals("bar", response.getExtra());
   ]]></client>
 
   <client name="provider.soap12_doclit2" sideEffectFree="true"><![CDATA[
-    req = new Hello_Type();
+    Hello_Type req = new Hello_Type();
     req.setArgument("sendSource");
     req.setExtra("bar");
-    response = helloPort.hello(req, req);
+    HelloResponse response = helloPort.hello(req, req);
     assertEquals("foo", response.getArgument());
     assertEquals("bar", response.getExtra());
   ]]></client>
 
   <client name="provider.soap12_doclit3" sideEffectFree="true"><![CDATA[
     try {
-      req = new Hello_Type();
+      Hello_Type req = new Hello_Type();
       req.setArgument("exp");
       req.setExtra("bar");
-      response = helloPort.hello(req, req);
+      HelloResponse response = helloPort.hello(req, req);
       assertEquals("foo", response.getArgument());
       assertEquals("bar", response.getExtra());
       assertTrue(false);

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -50,11 +50,11 @@
   </service>
   
   <pre-client>
-    portQName = new QName("http://example.com/wsdl", "HelloPort");
+    static final QName portQName = new QName("http://example.com/wsdl", "HelloPort");
   </pre-client>
 
   <client name="echoSource"><![CDATA[
-    dispatch = helloService.createDispatch(portQName, Source.class, Service.Mode.PAYLOAD);
+    Dispatch dispatch = helloService.createDispatch(portQName, Source.class, Service.Mode.PAYLOAD);
     try {
         dispatch.invoke(echoRequest.asStreamSource());
         fail();
@@ -70,20 +70,21 @@
   </xml-resource>
 
   <client name="echo5JAXB"><![CDATA[
-    dispatch = helloService.createDispatch(portQName, createJAXBContext(), Service.Mode.PAYLOAD);
+    Dispatch dispatch = helloService.createDispatch(portQName, createJAXBContext(ObjectFactory.class),
+                                        Service.Mode.PAYLOAD);
 
-    body = new EchoType();
+    EchoType body = new EchoType();
     body.setReqInfo("Hello World!");
     ObjectFactory of = new ObjectFactory();
-    echo5Request = of.createEcho5Request(body);
-    resp = dispatch.invoke(echo5Request);
+    JAXBElement echo5Request = of.createEcho5Request(body);
+    Object resp = dispatch.invoke(echo5Request);
     assertNull(resp);
   ]]></client>
 
   <client name="echo4SOAPMessage"><![CDATA[
-    dispatch = helloService.createDispatch(portQName, SOAPMessage.class, Service.Mode.MESSAGE);
+    Dispatch dispatch = helloService.createDispatch(portQName, SOAPMessage.class, Service.Mode.MESSAGE);
 
-    message =  getSOAPMessage(echo4RequestSM.asStreamSource());
+    SOAPMessage message =  getSOAPMessage(echo4RequestSM.asStreamSource());
 
     Object result = dispatch.invoke(message);
     //todo:need to check contents
