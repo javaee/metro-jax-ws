@@ -45,14 +45,14 @@
     <parent>
         <artifactId>docs</artifactId>
         <groupId>com.sun.xml.ws</groupId>
-        <version>2.2.11-b150308.1833</version>
+        <version>2.2.11-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>www</artifactId>
-    <version>2.2.11-b150308.1833</version>
+    <version>2.2.11-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>JAX-WS RI WWW Help files</name>
 
