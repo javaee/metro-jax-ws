@@ -56,18 +56,13 @@
   <client name="echoSource"><![CDATA[
     Dispatch dispatch = helloService.createDispatch(portQName, Source.class, Service.Mode.PAYLOAD);
     try {
-        dispatch.invoke(echoRequest.asStreamSource());
+        dispatch.invoke(streamSource(resource("echoRequest.xml")));
         fail();
     } catch (SOAPFaultException sfe) {
         // expected
         sfe.printStackTrace();
     }
   ]]></client>
-  <xml-resource name="echoRequest">
-    <ns1:echo xmlns:ns1="http://example.com/types">
-      <ns1:reqInfo>foo</ns1:reqInfo>
-    </ns1:echo>
-  </xml-resource>
 
   <client name="echo5JAXB"><![CDATA[
     Dispatch dispatch = helloService.createDispatch(portQName, createJAXBContext(ObjectFactory.class),
@@ -84,31 +79,13 @@
   <client name="echo4SOAPMessage"><![CDATA[
     Dispatch dispatch = helloService.createDispatch(portQName, SOAPMessage.class, Service.Mode.MESSAGE);
 
-    SOAPMessage message =  getSOAPMessage(echo4RequestSM.asStreamSource());
-
-    Object result = dispatch.invoke(message);
+    SOAPMessage message =  getSOAPMessage(streamSource(resource("echo4RequestSM.xml")));
+    SOAPMessage result = (SOAPMessage) dispatch.invoke(message);
     //todo:need to check contents
 
     System.out.println("Printing out received header");
     assertTrue(result instanceof SOAPMessage);
     result.writeTo(System.out);
   ]]></client>
-  <xml-resource name="echo4RequestSM">
-    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://example.com/types">
-      <soapenv:Header>
-        <ns1:echo4>
-          <ns1:argument>bar2</ns1:argument>
-          <ns1:extra>foo2</ns1:extra>
-        </ns1:echo4>
-        <ns1:echo4Header>foobar3</ns1:echo4Header>
-      </soapenv:Header>
-      <soapenv:Body>
-        <ns1:echo4>
-          <ns1:argument>bar1</ns1:argument>
-          <ns1:extra>foo1</ns1:extra>
-        </ns1:echo4>
-      </soapenv:Body>
-    </soapenv:Envelope>
-  </xml-resource>
 
 </descriptor>

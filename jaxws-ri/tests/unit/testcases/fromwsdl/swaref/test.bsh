@@ -38,10 +38,8 @@
  * holder.
  */
 
-//import javax.activation.DataHandler;
-//import javax.xml.transform.stream.StreamSource;
-//import java.io.*;
-//import testutil.AttachmentHelper;
+// TODO: internal vs. non-internal
+com.sun.xml.internal.ws.binding.BindingImpl.initializeJavaActivationHandlers();
 
 java.io.File testXml = resource("test.xml");
 
@@ -64,7 +62,7 @@ ClaimFormTypeResponse resp = helloPort.claimForm(req);
 javax.activation.DataHandler out = resp.getResponse();
 assertNotNull(out);
 
-Object resSrc = out.getContent();
+StreamSource resSrc = (StreamSource) out.getContent();
 assertNotNull(resSrc);
 
-assertTrue(testutil.AttachmentHelper.compareSource(new StreamSource(new ByteArrayInputStream(data)), resSrc));
+assertTrue(testutil.AttachmentHelper.compareSource(new StreamSource(new java.io.ByteArrayInputStream(data)), resSrc));

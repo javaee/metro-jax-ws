@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ns1:echo xmlns:ns1="http://example.com/types">
+    <ns1:reqInfo>foo</ns1:reqInfo>
+</ns1:echo>
