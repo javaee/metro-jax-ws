@@ -46,6 +46,10 @@ List o = new ArrayList();
 o.add(p1);
 
 Holder h = new Holder(o);
+
+// declarating and creating port explicitly due to no-harness mode
+bugs.jaxb274.client.DocLitBare docLitBarePort = new bugs.jaxb274.client.DocLitBareService().getDocLitBarePort();
+
 docLitBarePort.echo(h);
 assertEquals(o.size(), ((List) h.value).size());
 

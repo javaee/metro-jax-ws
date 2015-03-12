@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -100,7 +100,7 @@
             try {
                 faultPort.echo("NullPointerException");
                 fail("no exception was received");
-            } catch (ProtocolException e) {
+            } catch (javax.xml.ws.ProtocolException e) {
                 System.out.println("Expected exception received: " + e.getMessage());
             }
     </client>
@@ -112,7 +112,7 @@
             try {
                 faultPort.echo("SOAPFaultException");
                 fail("no exception was received");
-            } catch (ProtocolException e) {
+            } catch (javax.xml.ws.ProtocolException e) {
                 if (e instanceof SOAPFaultException) {
                     System.out.println("Expected exception received: " + e.getMessage());
                     SOAPFaultException sfe = (SOAPFaultException)e;
@@ -142,7 +142,7 @@
             try {
                 faultPort.echo("ProtocolException");
                 fail("no exception was received");
-            } catch (ProtocolException e) {
+            } catch (javax.xml.ws.ProtocolException e) {
                 // pass if ProtocolException received
             }
     </client>
@@ -154,7 +154,7 @@
         try {
             faultPort.echo("ProtocolException2");
             fail("no exception was received");
-        } catch (ProtocolException e) {
+        } catch (javax.xml.ws.ProtocolException e) {
             assertNotNull("message in exception is null", e.getMessage());
             System.out.println("Expected exception received: " + e.getMessage());
             if (e.getMessage().indexOf("FaultImpl") == -1) {
