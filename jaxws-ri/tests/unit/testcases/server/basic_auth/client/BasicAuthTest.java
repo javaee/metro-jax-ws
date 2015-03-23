@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2005-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,16 +40,8 @@
 
 package server.basic_auth.client;
 
-import java.util.Map;
-import java.util.List;
-
 import javax.xml.ws.BindingProvider;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.Service;
-
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 /**
  * HTTP Basic Auth test
