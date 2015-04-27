@@ -49,11 +49,11 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>bundles</artifactId>
-        <version>2.3.0-SNAPSHOT</version>
+        <version>2.3.0-b150427.0817</version>
     </parent>
 
     <artifactId>jaxws-ri-jdk</artifactId>
-    <version>2.3.0-SNAPSHOT</version>
+    <version>2.3.0-b150427.0817</version>
 
     <packaging>jar</packaging>
     <name>JAX-WS RI JDK Sources Bundle</name>
