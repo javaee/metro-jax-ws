@@ -1,5 +1,21 @@
 #!/bin/bash
 
+# if option -n ... do not commit
+COMMIT=Y
+while getopts ":n" opt; do
+  case $opt in
+    n)
+      COMMIT=N
+      shift
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+echo "Script will commit changes: [$COMMIT] (pass option -n not to commit)"
+
 if [ "$#" -eq 1 ]; then
     CURRENT_VERSION=$1
 fi
@@ -23,7 +39,8 @@ command -v git > /dev/null 2>&1 || {
 	exit 1
 }
 
-GIT=$(command -v git 2>&1)
+#GIT=$(command -v git 2>&1)
+GIT=$(command -v echo 2>&1)
 LAST_GIT_COMMIT=$(${GIT} rev-parse --short HEAD) || exit 1
 
 DATESTAMP=`date +%y%m%d.%H%M`
@@ -51,7 +68,7 @@ edit_poms()
 	while read line
 	do
 		echo -n "Editing $line..."
-		perl -i -pe "s|${DEVELOPER_VERSION}|${RELEASE_VERSION}|g" $line
+		perl -i -pe "s|<version>${DEVELOPER_VERSION}|<version>${RELEASE_VERSION}|g" $line
 		if [ $? -ne 0 ]; then
 			echo "FAILED."
 			echo "Replace versions failed for $line: $!"
@@ -68,7 +85,9 @@ edit_poms()
 		fi
 		echo "DONE."
 	done < "$TMPFILE"
+}
 
+function commit_changes() {
 	echo -n "Committing rewritten POMs to git..."
 	${GIT} commit --verbose -m "Preparing for release ${RELEASE_VERSION}"
 	if [ $? -ne 0 ]; then
@@ -158,7 +177,11 @@ echo "RELEASE_VERSION = ${RELEASE_VERSION}"
 ${GIT} clean -d -f -x
 
 edit_poms
-push_changes
-checkout_tag
+
+if [ "COMMIT" = "Y" ]; then
+    commit_changes
+    push_changes
+    checkout_tag
+fi
 
 exit 0
