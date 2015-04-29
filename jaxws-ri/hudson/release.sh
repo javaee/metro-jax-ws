@@ -39,10 +39,12 @@
 # holder.
 #
 
-while getopts :r:l:t:s:b:m:u:p:w:dh arg
+while getopts :r:l:t:s:b:j:m:u:p:w:dh arg
 do
     case "$arg" in
         r)  RELEASE_VERSION="${OPTARG:?}" ;;
+        b)  RELEASE_BRANCH="${OPTARG:?}" ;;
+        j)  JAXB_VERSION="${OPTARG:?}" ;;
         t)  GIT_VERSION="${OPTARG:?}" ;;
         l)  MAVEN_USER_HOME="${OPTARG:?}" ;;
         s)  MAVEN_SETTINGS="${OPTARG:?}" ;;
@@ -54,6 +56,8 @@ do
         h)
             echo "Usage: release.sh [-r RELEASE_VERSION] --mandatory, the release version string, for example 2.2.11"
             echo "                   [-t GIT_VERSION] --mandatory, git tag or sha to checkout for the release"
+            echo "                   [-b RELEASE_BRANCH] --optional, the branch for the release"
+            echo "                   [-j JAXB_VERSION] --optional, the branch for the release"
             echo "                   [-l MVEN_USER_HOME] -- optional, alternative maven local repository location"
             echo "                   [-w WORKROOT] -- optional, default is current dir (`pwd`)"
             echo "                   [-m SOURCES_VERSION] -- optional, version in pom.xml need to be repaced with \$RELEASE_VERSION, default is \${RELEASE_VERSION}-SNAPSHOT"
@@ -136,7 +140,7 @@ git clone git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git || {
 
 # create release branch from the given git version to be released
 cd jaxws-ri
-RELEASE_BRANCH=`echo jaxws${RELEASE_VERSION} |sed 's/\.//g'`
+RELEASE_BRANCH=${RELEASE_BRANCH:-`echo jaxws${RELEASE_VERSION} |sed 's/\.//g'`}
 echo "INFO: git checkout -b $RELEASE_BRANCH $GIT_VERSION"
 git checkout -b $RELEASE_BRANCH $GIT_VERSION || {
     echo "ERROR: fail to checkout $GIT_VRSION to branch $RELEASE_BRANCH"
@@ -162,6 +166,9 @@ find ./ -name "pom.xml" | while read file; do
         exit 1
     fi
 done
+if [ -n "$JAXB_VERSION" ]; then
+    perl -i -pe "s|<jaxb.version>.*</jaxb.version>|<jaxb.version>$JAXB_VERSION</jaxb.version>|g" jaxws-ri/boms/bom/pom.xml
+fi
 
 if [ $? -ne 0 ]; then
     echo "ERROR: fail to replace release version $RELEASE_VERSION to pom.xml files"
@@ -300,7 +307,7 @@ else
 fi
 if [ "$debug" = "true" ]; then
     echo "DEBUG: debug only, not commit the docs."
-    echo "DEBUG: svn $AUTH --non-interactive commit -m \"JAXB  release $RELEASE_VERSION\""
+    echo "DEBUG: svn $AUTH --non-interactive commit -m \"JAXWS release $RELEASE_VERSION\""
 else
     echo "INFO: commit the updated docs"
     svn $AUTH --non-interactive commit -m "JAXWS $RELEASE_VERSION" .
