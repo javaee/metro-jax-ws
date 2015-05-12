@@ -39,8 +39,8 @@ command -v git > /dev/null 2>&1 || {
 	exit 1
 }
 
-#GIT=$(command -v git 2>&1)
-GIT=$(command -v echo 2>&1)
+GIT=$(command -v git 2>&1)
+#GIT=$(command -v echo 2>&1)
 LAST_GIT_COMMIT=$(${GIT} rev-parse --short HEAD) || exit 1
 
 DATESTAMP=`date +%y%m%d.%H%M`
