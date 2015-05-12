@@ -178,7 +178,7 @@ ${GIT} clean -d -f -x
 
 edit_poms
 
-if [ "COMMIT" = "Y" ]; then
+if [ "$COMMIT" = "Y" ]; then
     commit_changes
     push_changes
     checkout_tag
