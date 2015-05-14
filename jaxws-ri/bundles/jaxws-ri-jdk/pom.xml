@@ -342,7 +342,7 @@
                                                      dryrun="false"
                                                      startyear="2005"
                                                      endyear="2010"
-                                                     verbose="true"
+                                                     verbose="false"
                                                      includes="@{includes}"
                                                      excludes="@{excludes}">
                                         </licensetool>
@@ -455,10 +455,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
                     <fork>true</fork>
                     <!--redirecting to different place not to be contained in the result bundle-->
                     <generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>
