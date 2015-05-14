@@ -47,12 +47,8 @@
     <wsdl href="hello_test.wsdl" />
   </service>
   <pre-client>
-    //req = new Hello_Type();
-    //req.setArgument("foo");
-    //req.setExtra("bar");
-
+    // TODO-Miran: check this test
     // wait for the completion of the requets
-    // TODO: Miran: pre-client define methods i.e. block() ?
     static void block(Future response) {
       System.out.print("\npolling for response ...");
       while (!response.isDone())
@@ -65,7 +61,7 @@
     req.setExtra("bar");
     try{
         helloPort.hello(req);
-        // assertNull(response.get()); TODO: Miran - what's this?
+        assertNull(response.get());
     } catch(Exception e){
         System.out.println("e is " + e.getClass().getName());
         assertTrue(e instanceof HelloFault);

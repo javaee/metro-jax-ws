@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,11 +38,10 @@
  * holder.
  */
 
-// TODO: miran: BSH
-// handler containing JUnit!
-//addHandler(new client.SOAPTestHandler(), helloPort);
-//
-//response = helloPort.hello0Async(1);
-//output = response.get(15,TimeUnit.SECONDS);
-//
-//assertEquals("Handlers were not invoked properly", 3, output);
+addHandler(new async.wsdl_hello_lit.client.SOAPTestHandler(), helloPort);
+
+// TODO-Miran: check this test
+Future response = helloPort.hello0Async(1);
+Integer output = response.get(15,TimeUnit.SECONDS);
+
+assertEquals("Handlers were not invoked properly", 3, output);
