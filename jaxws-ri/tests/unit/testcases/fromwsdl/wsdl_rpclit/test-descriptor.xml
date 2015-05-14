@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,29 +46,26 @@
     <service basedir="./server">
         <wsdl href="service.wsdl"/>
     </service>
-    <pre-client>
-        import java.math.BigDecimal;
-    </pre-client>
     <client name="fromwsdl.wsdl_rpclit.getCatalog">
         <description>
             Test GetCatalog()
         </description><![CDATA[
-        CatalogItem [] cil = {new CatalogItem(), new CatalogItem()};
+        CatalogItem [] cil = new CatalogItem [] {new CatalogItem(), new CatalogItem()};
         cil[0].setName("JAXWS RI 2.1.1");
         cil[0].setBrand("java.net");
         cil[0].setCategory("Web Services");
         cil[0].setProductNumber(1234);
         cil[0].setDescription("Coolest Webservice Product");
-        cil[0].setPrice(new BigDecimal("100"));
+        cil[0].setPrice(new java.math.BigDecimal("100"));
 
         cil[1].setName("JAXWS RI 2.0");
         cil[1].setBrand("java.net");
         cil[1].setCategory("Web Services");
         cil[1].setProductNumber(5678);
         cil[1].setDescription("Coolest Webservice Product");
-        cil[1].setPrice(new BigDecimal("200"));
+        cil[1].setPrice(new java.math.BigDecimal("200"));
 
-        ret = retailerPort.getCatalog();
+        CatalogType ret = retailerPort.getCatalog();
         for(int i = 0; i < ret.getItem().size(); i++){
             CatalogItem gci = (CatalogItem)ret.getItem().get(i);
             assertEquals(gci.getName(), cil[i].getName());
@@ -83,25 +80,25 @@
 
     <client name="fromwsdl.wsdl_rpclit.echoCatalog">
         <![CDATA[
-        in = new CatalogType();
+        CatalogType in = new CatalogType();
         CatalogItem [] cil = {new CatalogItem(), new CatalogItem()};
         cil[0].setName("JAXRPC SI 1.1.2");
         cil[0].setBrand("Sun Microsystems, Inc.");
         cil[0].setCategory("Web Services");
         cil[0].setProductNumber(1234);
         cil[0].setDescription("Coolest Webservice Product");
-        cil[0].setPrice(new BigDecimal("100"));
+        cil[0].setPrice(new java.math.BigDecimal("100"));
         cil[1].setName("JAXRPC SI 2.0");
         cil[1].setBrand("Sun Microsystems, Inc.");
         cil[1].setCategory("Web Services");
         cil[1].setProductNumber(5678);
         cil[1].setDescription("Coolest Webservice Product");
-        cil[1].setPrice(new BigDecimal("200"));
+        cil[1].setPrice(new java.math.BigDecimal("200"));
         in.getItem().add(cil[0]);
         in.getItem().add(cil[1]);
-        ret = retailerPort.echoCatalog(in);
+        CatalogType ret = retailerPort.echoCatalog(in);
         for(int i = 0; i < ret.getItem().size(); i++){
-            gci = ret.getItem().get(i);
+            CatalogItem gci = ret.getItem().get(i);
             assertEquals(gci.getName(), cil[i].getName());
             assertEquals(gci.getBrand(), cil[i].getBrand());
             assertEquals(gci.getCategory(), cil[i].getCategory());
@@ -117,26 +114,26 @@
             testCatalog() test.
         </description>
         <![CDATA[
-        in = new CatalogType();
-        cil = new CatalogItem();
+        CatalogType in = new CatalogType();
+        CatalogItem cil = new CatalogItem();
         cil.setName("JAXWS RI 2.1.1");
         cil.setBrand("java.net");
         cil.setCategory("Web Services");
         cil.setProductNumber(1234);
         cil.setDescription("Coolest Webservice Product");
-        cil.setPrice(new BigDecimal("100"));
+        cil.setPrice(new java.math.BigDecimal("100"));
 
-        expectedName = "java.net";
+        String expectedName = "java.net";
 
-        name = new Holder();
+        Holder name = new Holder();
         name.value = "java";
 
         int index = 1234;
 
-        ret = retailerPort.testCatalog(name, index);
+        CatalogType ret = retailerPort.testCatalog(name, index);
         assertEquals(name.value, expectedName);
 
-        gci = ret.getItem().get(0);
+        CatalogItem gci = ret.getItem().get(0);
         assertEquals(gci.getName(), cil.getName());
         assertEquals(gci.getBrand(), cil.getBrand());
         assertEquals(gci.getCategory(), cil.getCategory());
@@ -158,8 +155,8 @@
             Test for Holders.
         </description>
         <![CDATA[
-        str = "1";
-        inout = new Holder();
+        String str = "1";
+        Holder inout = new Holder();
         inout.value = 1;
         double out = retailerPort.testHolders(str, inout);
         assertEquals(inout.value, 2);
@@ -171,11 +168,11 @@
         <description>
             Test for arrays.
         </description>
-        req = new ShortArrayType();
+        ShortArrayType req = new ShortArrayType();
         req.getShortArray().add((short)100);
         req.getShortArray().add((short)200);
         req.getShortArray().add((short)210);
-        resp = retailerPort.shortArrayTest(req);        
+        ShortArrayResponseType resp = retailerPort.shortArrayTest(req);
         assertEquals(resp.getShortArray().get(0), (short)100);
         assertEquals(resp.getShortArray().get(1), (short)200);
         assertEquals(resp.getShortArray().get(2), (short)210);
@@ -187,8 +184,8 @@
         </description>
         <![CDATA[
         int bar = 1;
-        foo = "Hello World!";
-        foo1 = new Holder();
+        String foo = "Hello World!";
+        Holder foo1 = new Holder();
         int resp = retailerPort.testParameterOrder(bar, foo, foo1);
         assertTrue(bar == resp && foo.equals(foo1.value));
         ]]>
@@ -199,12 +196,12 @@
             Test for unbound parts.
         </description>
         <![CDATA[
-        foo = "3";
-        foo1 = "4";
-        bar = new Holder();
-        bar1 = new Holder();
+        String foo = "3";
+        String foo1 = "4";
+        Holder bar = new Holder();
+        Holder bar1 = new Holder();
         int resp = retailerPort.testUnboundedParts(foo, foo1, bar, bar1);
-        assertEquals(bar.value.intValue(), 3);
+        assertEquals(((Integer)bar.value).intValue(), 3);
         assertEquals(foo1, "4");
         assertNull(bar1.value);
         assertEquals(resp, 0);
@@ -216,16 +213,16 @@
             JAXWS spec General Consideration test for unbound parts with default values
         </description>
         <![CDATA[
-        fn = "foo";
-        ln = "bar";
-        mn = "duke";
-        age = 100;
-        nameHolder = new Holder();
-        addressHolder = new Holder();
-        personalHolder = new Holder();
+        String fn = "foo";
+        String ln = "bar";
+        String mn = "duke";
+        int age = 100;
+        Holder nameHolder = new Holder();
+        Holder addressHolder = new Holder();
+        Holder personalHolder = new Holder();
         retailerPort.getGCBug(fn, ln, mn, age, nameHolder, personalHolder,addressHolder);
-        assertEquals(nameHolder.value.getFn(),fn);
-        assertEquals(nameHolder.value.getLn(), ln);
+        assertEquals(((NameType)nameHolder.value).getFn(),fn);
+        assertEquals(((NameType)nameHolder.value).getLn(), ln);
         ]]>
     </client>
 </descriptor>

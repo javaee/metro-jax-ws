@@ -38,5 +38,5 @@
  * holder.
  */
 
-response = helloPort.hello0(54321);
+int response = helloPort.hello0(54321);
 assertEquals(54321, response);

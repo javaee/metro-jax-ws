@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -48,11 +48,11 @@
         <description>
             test echo()
         </description>
-        request = new EchoType();
+        EchoType request = new EchoType();
         request.setReqInfo("foo");
-        header2 = new Echo2Type();
+        Echo2Type header2 = new Echo2Type();
         header2.setReqInfo("foo");
-        response = helloPort.echo(request, request, header2);
+        EchoResponseType response = helloPort.echo(request, request, header2);
         assertEquals("foofoofoo", (response.getRespInfo()));
     </client>
 
@@ -61,7 +61,7 @@
         <description>
             test echo
         </description>
-        response = helloPort.echo2("foo");
+        String response = helloPort.echo2("foo");
         assertEquals("foobar", response);
     </client>
 
@@ -70,24 +70,24 @@
             test echo3()
         </description>
         <![CDATA[
-        req = new Holder("foo");
+        Holder req = new Holder("foo");
         helloPort.echo3(req);
         assertEquals("foobar", req.value);
         ]]></client>
 
     <client name="header.doclit4"><![CDATA[
-        reqBody = new Echo4Type();
+        Echo4Type reqBody = new Echo4Type();
         reqBody.setExtra("foo1");
         reqBody.setArgument("bar1");
 
-        reqHeader = new Echo4Type();
+        Echo4Type reqHeader = new Echo4Type();
         reqHeader.setExtra("foo2");
         reqHeader.setArgument("bar2");
 
-        req2HeaderType = "foobar3";
-        req2Header = new Holder(req2HeaderType);
-        respBody = new Holder();
-        respHeader = new Holder();
+        String req2HeaderType = "foobar3";
+        Holder req2Header = new Holder(req2HeaderType);
+        Holder respBody = new Holder();
+        Holder respHeader = new Holder();
         helloPort.echo4(reqBody, reqHeader, req2HeaderType, respBody, respHeader);
         assertEquals("foo1bar1foo2bar2foobar3", respBody.value);
         ]]>
@@ -97,9 +97,9 @@
         <description>
             test echo5()
         </description>
-        body = new EchoType();
+        EchoType body = new EchoType();
         body.setReqInfo("Hello World!");
-        resp = helloPort.echo5(body);
+        String resp = helloPort.echo5(body);
         assertEquals(resp, body.getReqInfo());
     </client>
 

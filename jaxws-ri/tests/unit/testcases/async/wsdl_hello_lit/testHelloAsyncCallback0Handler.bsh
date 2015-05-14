@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,19 +40,19 @@
 
 // test with no handler first
 int orig = 1;
-intHolder = new IntHolder();
+final IntHolder intHolder = new IntHolder();
 
-response = helloPort.hello0Async(orig,
+Future response = helloPort.hello0Async(orig,
     new AsyncHandler() {
-    public void handleResponse(Response resp) {
-        try {
-            // add 10 to make sure this was called
-            intHolder.setValue(resp.get()+10);
-        } catch (Exception e) {
-            e.printStackTrace();
-            intHolder.setValue(-100); // will cause failure
+        public void handleResponse(Response resp) {
+            try {
+                // add 10 to make sure this was called
+                intHolder.setValue(((Integer)resp.get())+10);
+            } catch (Exception e) {
+                e.printStackTrace();
+                intHolder.setValue(-100); // will cause failure
+            }
         }
-    }
 });
 
 // wait, but only up to 15 seconds. if it takes more,
@@ -70,7 +70,7 @@ response = helloPort.hello0Async(orig,
     new AsyncHandler() {
     public void handleResponse(Response resp) {
         try {
-            intHolder.setValue(resp.get().intValue());
+            intHolder.setValue(((Integer) resp.get()).intValue());
         } catch (Exception e) {
             e.printStackTrace();
             intHolder.setValue(-100); // will cause failure

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,9 +47,9 @@
   <client name="nosei_apt_testSimple" sideEffectFree="true">
   <description>testSimple</description>
   <![CDATA[
-        bar = new Bar();
+        Bar bar = new Bar();
         bar.setAge(33);
-        strHolder = new Holder();
+        Holder strHolder = new Holder();
         strHolder.value = "fred";
 
         assertEquals("test", echoPort.echoString("test"));
@@ -80,7 +80,7 @@
             echoPort.echoString("Fault1");
             fail();
          } catch (Fault1 e) {
-            ex = e.getFaultInfo();
+            FooException ex = e.getFaultInfo();
             assertEquals("fault1", e.getMessage());
             assertEquals(44F, ex.getVarFloat());
             assertEquals(33, ex.getVarInt());
@@ -95,7 +95,7 @@
             echoPort.echoString("WSDLBarException");
             fail();
         } catch (WSDLBarException e){
-            ex = e.getFaultInfo();
+            Bar ex = e.getFaultInfo();
             assertEquals("my barException", e.getMessage());
             assertEquals(33, ex.getAge());
         }
@@ -109,7 +109,7 @@
             fail();
         } catch (Fault2_Exception e){
             assertEquals("my fault2", e.getMessage());
-            fault2 = e.getFaultInfo();
+            Fault2 fault2 = e.getFaultInfo();
             assertEquals(33, fault2.getAge());
         }
   ]]></client>
@@ -122,7 +122,7 @@
             fail();
         } catch (InterruptedException_Exception e){
             assertEquals("bummer", e.getMessage());
-            InterruptedException ie = e.getFaultInfo();
+            fromjava.nosei_apt.client.InterruptedException ie = e.getFaultInfo();
             assertEquals("bummer", ie.getMessage());
         }
   ]]></client>
@@ -130,7 +130,7 @@
   <client name="nosei_apt_testHolder" sideEffectFree="true">
   <description>testHolder</description>
   <![CDATA[
-        strHolder = new Holder();
+        Holder strHolder = new Holder();
         strHolder.value = "fred";
 
         assertEquals("tmp", echoPort.outString("tmp", 44, strHolder));
@@ -140,7 +140,7 @@
         assertEquals("tmp", echoPort.inOutString("tmp", strHolder, 44));
         assertEquals("fredfred", strHolder.value);
 
-        longHolder = new Holder();
+        Holder longHolder = new Holder();
         assertEquals(33, echoPort.outLong(33, "tmp", longHolder));
 
         assertEquals(345L, longHolder.value);
@@ -151,7 +151,7 @@
   <client name="nosei_apt_testHeaders" sideEffectFree="true">
   <description>testHeaders</description>
   <![CDATA[
-        echoInHeader = new EchoInHeader();
+        EchoInHeader echoInHeader = new EchoInHeader();
         echoInHeader.setArg0(33);
         echoInHeader.setArg2("fred");
         EchoInHeaderResponse echoInHeaderResp = echoPort.echoInHeader(echoInHeader, 34L);
@@ -159,7 +159,7 @@
 
         EchoInOutHeader echoInOutHeader = new EchoInOutHeader();
         echoInOutHeader.setArg0(33);
-        longHolder = new Holder(new Long(44));
+        Holder longHolder = new Holder(new Long(44));
         echoInOutHeader.setArg2("fred");
         EchoInOutHeaderResponse echoInOutHeaderResp = echoPort.echoInOutHeader(echoInOutHeader, longHolder);
         assertEquals("fred88", echoInOutHeaderResp.getReturn());
@@ -181,11 +181,11 @@
   <client name="nosei_apt_testArray1" sideEffectFree="true">
   <description>testArray1</description>
   <![CDATA[
-        strArray = new ArrayList();
+        List strArray = new ArrayList();
         strArray.add("Mary");
         strArray.add("Paul");
 
-        returnArray = echoPort.echoStringArray(strArray);
+        List returnArray = echoPort.echoStringArray(strArray);
         assertEquals(strArray.size(), returnArray.size());
         assertEquals(strArray.get(0), returnArray.get(0));
         assertEquals(strArray.get(1), returnArray.get(1));
@@ -195,17 +195,17 @@
   <client name="nosei_apt_testArray2" sideEffectFree="true">
   <description>testArray2</description>
   <![CDATA[
-        bar = new Bar();
+        Bar bar = new Bar();
         bar.setAge(33); 
-        bar2 = new Bar();
+        Bar bar2 = new Bar();
         bar2.setAge(44);
-        barArray = new ArrayList();
+        List barArray = new ArrayList();
         barArray.add(bar);
         barArray.add(bar2);
-        resultArray = echoPort.echoBarArray(barArray);
+        List resultArray = echoPort.echoBarArray(barArray);
         assertEquals(2, resultArray.size());
-        assertEquals(bar.getAge(), resultArray.get(0).getAge());
-        assertEquals(bar2.getAge(), resultArray.get(1).getAge());
+        assertEquals(bar.getAge(), ((Bar) resultArray.get(0)).getAge());
+        assertEquals(bar2.getAge(), ((Bar) resultArray.get(1)).getAge());
   ]]></client>
 
   <client name="nosei_apt_testOneway" >
@@ -226,7 +226,7 @@
   <description>testOverloaded</description>
   <![CDATA[
         assertEquals("fred", echoPort.overloadedOperation("fred"));
-        req = new Req();
+        Req req = new Req();
         req.setArg0("earnie");
         req.setArg1(" & bert");
         assertEquals("earnie & bert", echoPort.overloadedOperation2(req).getReturn());
@@ -237,10 +237,10 @@
   <client name="nosei_apt_testHeader" sideEffectFree="true">
   <description>testHeader</description>
   <![CDATA[
-        intHolder = new Holder();
-        result = new EchoIntHeaderResult();
+        Holder intHolder = new Holder();
+        EchoIntHeaderResult result = new EchoIntHeaderResult();
         result.setArg0(33);
-        respHolder = new Holder();
+        Holder respHolder = new Holder();
         echoPort.echoIntHeaderResult(result, respHolder, intHolder);
         assertEquals(66, intHolder.value);
   ]]></client>

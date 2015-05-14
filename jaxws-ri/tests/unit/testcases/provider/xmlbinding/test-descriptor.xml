@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -45,11 +45,11 @@
   <description>This is a Provider XML/HTTP test</description>
 
   <client name="provider.xmlbind1" sideEffectFree="true"><![CDATA[
-    req = new Hello_Type();
+    Hello_Type req = new Hello_Type();
     req.setArgument("foo");
     req.setExtra("bar");
     for(int i=0; i < 10; i++) {
-      response = helloPort.hello(req, req);
+      HelloResponse response = helloPort.hello(req, req);
       assertEquals("foo", response.getArgument());
       assertEquals("bar", response.getExtra());
     }
@@ -57,10 +57,10 @@
 
   <client name="provider.xmlbind2" sideEffectFree="true"><![CDATA[
     try {
-      req = new Hello_Type();
+      Hello_Type req = new Hello_Type();
       req.setArgument("foo1");
       req.setExtra("bar");
-      response = helloPort.hello(req, req);
+      HelloResponse response = helloPort.hello(req, req);
       assertTrue(false);
     } catch(Exception e) {
       // Should get an exception

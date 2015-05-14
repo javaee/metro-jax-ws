@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,31 +46,28 @@
     <service basedir="./server">
         <wsdl href="service.wsdl"/>
     </service>
-    <pre-client>
-        import java.math.BigDecimal;
-    </pre-client>
 
     <client name="wsimport.wsdl_import.echoCatalog">
         <![CDATA[
-        in = new CatalogType();
+        CatalogType in = new CatalogType();
         CatalogItem [] cil = {new CatalogItem(), new CatalogItem()};
         cil[0].setName("JAXRPC SI 1.1.2");
         cil[0].setBrand("Sun Microsystems, Inc.");
         cil[0].setCategory("Web Services");
         cil[0].setProductNumber(1234);
         cil[0].setDescription("Coolest Webservice Product");
-        cil[0].setPrice(new BigDecimal("100"));
+        cil[0].setPrice(new java.math.BigDecimal("100"));
         cil[1].setName("JAXRPC SI 2.0");
         cil[1].setBrand("Sun Microsystems, Inc.");
         cil[1].setCategory("Web Services");
         cil[1].setProductNumber(5678);
         cil[1].setDescription("Coolest Webservice Product");
-        cil[1].setPrice(new BigDecimal("200"));
+        cil[1].setPrice(new java.math.BigDecimal("200"));
         in.getItem().add(cil[0]);
         in.getItem().add(cil[1]);
-        ret = retailerPort.echoCatalog(in);
+        CatalogType ret = retailerPort.echoCatalog(in);
         for(int i = 0; i < ret.getItem().size(); i++){
-            gci = ret.getItem().get(i);
+            CatalogItem gci = ret.getItem().get(i);
             assertEquals(gci.getName(), cil[i].getName());
             assertEquals(gci.getBrand(), cil[i].getBrand());
             assertEquals(gci.getCategory(), cil[i].getCategory());

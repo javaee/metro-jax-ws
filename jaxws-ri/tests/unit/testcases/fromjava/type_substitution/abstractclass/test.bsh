@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,17 +38,20 @@
  * holder.
  */
 
-r = carDealerPort.getSedans();
+List r = carDealerPort.getSedans();
 
-assertEquals("Toyota", r.get(0).getMake());
-assertEquals("Camry", r.get(0).getModel());
-assertEquals("1998", r.get(0).getYear());
-assertEquals("white", r.get(0).getColor());
+Toyota car = (Toyota) r.get(0);
+assertEquals("Toyota", car.getMake());
+assertEquals("Camry", car.getModel());
+assertEquals("1998", car.getYear());
+assertEquals("white", car.getColor());
 
-assertEquals("Toyota", r.get(1).getMake());
-assertEquals("Corolla", r.get(1).getModel());
-assertEquals("1999", r.get(1).getYear());
-assertEquals("red", r.get(1).getColor());
+car = (Toyota) r.get(1);
+
+assertEquals("Toyota", car.getMake());
+assertEquals("Corolla", car.getModel());
+assertEquals("1999", car.getYear());
+assertEquals("red", car.getColor());
 
 Toyota oldCar = new Toyota();
 oldCar.setMake("Toyota");
@@ -56,20 +59,21 @@ oldCar.setModel("Avalon");
 oldCar.setYear("1999");
 oldCar.setColor("white");
 
-r = carDealerPort.tradeIn(oldCar);
-assertEquals("Toyota", r.getMake());
-assertEquals("Avalon", r.getModel());
-assertEquals("2007", r.getYear());
-assertEquals("black", r.getColor());
+car = (Toyota) carDealerPort.tradeIn(oldCar);
+assertEquals("Toyota", car.getMake());
+assertEquals("Avalon", car.getModel());
+assertEquals("2007", car.getYear());
+assertEquals("black", car.getColor());
 
-Toyota oldCar = new Toyota();
+oldCar = new Toyota();
 oldCar.setMake("Toyota");
 oldCar.setModel("Celica");
 oldCar.setYear("2007");
 oldCar.setColor("red");
-r = carDealerPort.tradeInVehicle(oldCar);
-assertEquals("Toyota", r.getMake());
-assertEquals("Prius", r.getModel());
-assertEquals("2007", r.getYear());
-assertEquals("white", r.getColor());
+
+car = (Toyota) carDealerPort.tradeInVehicle(oldCar);
+assertEquals("Toyota", car.getMake());
+assertEquals("Prius", car.getModel());
+assertEquals("2007", car.getYear());
+assertEquals("white", car.getColor());
 

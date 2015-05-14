@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,16 +38,14 @@
  * holder.
  */
 
-import javax.xml.datatype.DatatypeFactory;
+javax.xml.datatype.DatatypeFactory dtf = javax.xml.datatype.DatatypeFactory.newInstance();
 
-dtf = DatatypeFactory.newInstance();
-
-date = dtf.newXMLGregorianCalendar(6,5,1,10,0,0,0,0);
+javax.xml.datatype.XMLGregorianCalendar date = dtf.newXMLGregorianCalendar(6,5,1,10,0,0,0,0);
 System.out.println("Sending : "+date.toXMLFormat());
-req = new GYearMonthTest();
+GYearMonthTest req = new GYearMonthTest();
 req.setValue(date);
-resp = dateTimePort.gYearMonthTest(req);
-respDate = resp.getResult();
+GYearMonthTestResponse resp = dateTimePort.gYearMonthTest(req);
+javax.xml.datatype.XMLGregorianCalendar respDate = resp.getResult();
 System.out.println("Received : "+respDate.toXMLFormat());
-System.out.println("compare result: "+result);
+System.out.println("compare result: "+respDate);
 assertTrue(respDate.getMonth() == date.getMonth() && respDate.getYear() == date.getYear());

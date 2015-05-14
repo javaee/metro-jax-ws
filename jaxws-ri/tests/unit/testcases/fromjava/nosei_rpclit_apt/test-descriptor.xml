@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -54,7 +54,7 @@
     assertEquals(echoPort.echoStatus(Status.YELLOW),Status.YELLOW);
   ]]></client>
   <client name="fromjava.nosei_rpclit_apt2"><![CDATA[
-    var = new GenericValue();
+    GenericValue var = new GenericValue();
     var.setValue("fred");
     assertEquals(echoPort.echoGenericString(var).getValue(),"fred&john");
     var.setValue(null);
@@ -127,7 +127,7 @@
     }
   ]]></client>
   <client name="fromjava.nosei_rpclit_apt8"><![CDATA[
-    strHolder = new Holder("fred");
+    Holder strHolder = new Holder("fred");
 
     assertEquals(echoPort.outString("tmp", strHolder, 44),"tmp");
     assertEquals(strHolder.value,"tmp44");
@@ -136,7 +136,7 @@
     assertEquals(echoPort.inOutString("tmp", strHolder, 44),"tmp");
     assertEquals(strHolder.value,"fredfred");
 
-    longHolder = new Holder();
+    Holder longHolder = new Holder();
     assertEquals(echoPort.outLong(33, longHolder, "tmp"),33);
 
     assertEquals(longHolder.value,345L);
@@ -146,14 +146,14 @@
   <client name="fromjava.nosei_rpclit_apt9"><![CDATA[
         assertTrue(echoPort.echoInHeader(33, 34L, "fred") == 34L);
 
-        longHolder = new Holder(new Long(44));
+        Holder longHolder = new Holder(new Long(44));
         assertEquals(echoPort.echoInOutHeader(33, longHolder, "fred"),"fred88");
         assertEquals(longHolder.value,88L);
 
 
         longHolder = new Holder();
         assertTrue(echoPort.echoOutHeader(33, longHolder, "fred").equals("fred33"));
-        assertTrue(longHolder.value == 33L);
+        assertTrue(((long)longHolder.value) == 33L);
   ]]></client>
   <client name="fromjava.nosei_rpclit_apt10"><![CDATA[
         StringArray strArray = new StringArray();
@@ -163,9 +163,9 @@
 //        String[] strArray = new String[] { "Mary", "Paul" };
 
         StringArray returnArray = echoPort.echoStringArray(strArray);
-        assertTrue(returnArray.getItem().size() == strArray.getItem().size());
-        assertTrue(returnArray.getItem().get(0).equals(strArray.getItem().get(0)));
-        assertTrue(returnArray.getItem().get(1).equals(strArray.getItem().get(1)));
+        assertTrue(((List) returnArray.getItem()).size() == ((List) strArray.getItem()).size());
+        assertTrue(((List) returnArray.getItem()).get(0).equals(((List) strArray.getItem()).get(0)));
+        assertTrue(((List) returnArray.getItem()).get(1).equals(((List) strArray.getItem()).get(1)));
 //        assertTrue(returnArray[1].equals(strArray[1]));
   ]]></client>
   <client name="fromjava.nosei_rpclit_apt11"><![CDATA[
@@ -174,13 +174,13 @@
         Bar bar2 = new Bar();
         bar2.setAge(44);
       BarArray array = new BarArray();
-      array.getItem().add(bar);
-      array.getItem().add(bar2);
+      ((List) array.getItem()).add(bar);
+      ((List) array.getItem()).add(bar2);
 
         BarArray barArray = echoPort.echoBarArray(array);
-        assertTrue(barArray.getItem().size() == 2);
-        assertTrue(barArray.getItem().get(0).getAge() == bar.getAge());
-        assertTrue(barArray.getItem().get(1).getAge() == bar2.getAge());
+        assertTrue(((List) barArray.getItem()).size() == 2);
+        assertTrue(((Bar) ((List) barArray.getItem()).get(0)).getAge() == bar.getAge());
+        assertTrue(((Bar) ((List) barArray.getItem()).get(1)).getAge() == bar2.getAge());
   ]]></client>
   <client name="fromjava.nosei_rpclit_apt12"><![CDATA[
         Bar bar = new Bar();
@@ -192,9 +192,9 @@
 //    array.getItem().add(bar2);
 
         BarArray barArray = echoPort.echoBarAndBar(bar, bar2);
-        assertTrue(barArray.getItem().size() == 2);
-        assertTrue(barArray.getItem().get(0).getAge() == bar.getAge());
-        assertTrue(barArray.getItem().get(1).getAge() == bar2.getAge());
+        assertTrue(((List) barArray.getItem()).size() == 2);
+        assertTrue(((Bar) ((List) barArray.getItem()).get(0)).getAge() == bar.getAge());
+        assertTrue(((Bar) ((List) barArray.getItem()).get(1)).getAge() == bar2.getAge());
 //        assertTrue(barArray[0].getAge() == bar.getAge());
 //        assertTrue(barArray[1].getAge() == bar2.getAge());
   ]]></client>
@@ -209,12 +209,12 @@
         assertTrue(echoPort.overloadedOperation("fred").equals("fred"));
         assertTrue(echoPort.overloadedOperation2("ernie", " and bert").equals("ernie and bert"));
         StringArray strArray = echoPort.arrayOperation();
-        assertTrue(strArray.getItem().get(0).equals("one"));
-        assertTrue(strArray.getItem().get(1).equals("two"));
-        assertTrue(strArray.getItem().get(2).equals("three"));
+        assertTrue(((List) strArray.getItem()).get(0).equals("one"));
+        assertTrue(((List) strArray.getItem()).get(1).equals("two"));
+        assertTrue(((List) strArray.getItem()).get(2).equals("three"));
         assertTrue(echoPort.arrayOperationFromClient(strArray).equals("success"));
-        h1 = new Holder("Hello1");
-        h2 = new Holder("Hello2");
+        Holder h1 = new Holder("Hello1");
+        Holder h2 = new Holder("Hello2");
         assertTrue(echoPort.holderOperation(h1, h2).equals("success"));
         assertTrue(h1.value.equals("Hello11"));
         assertTrue(h2.value.equals("Hello22"));

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -44,10 +44,10 @@
 <descriptor since="2.0">
   <description>This is a Provider Oneway test</description>
   <client name="provider.doclit.oneway" sideEffectFree="true"><![CDATA[
-    req = new Hello_Type();
+    Hello_Type req = new Hello_Type();
     req.setArgument("foo");
     req.setExtra("bar");
-    for(i=0; i < 5; i++) {
+    for(int i=0; i < 5; i++) {
         helloPort.hello(req);
     }
   ]]></client>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://example.com/types">
+    <soapenv:Header>
+        <ns1:echo4>
+            <ns1:argument>bar2</ns1:argument>
+            <ns1:extra>foo2</ns1:extra>
+        </ns1:echo4>
+        <ns1:echo4Header>foobar3</ns1:echo4Header>
+    </soapenv:Header>
+    <soapenv:Body>
+        <ns1:echo4>
+            <ns1:argument>bar1</ns1:argument>
+            <ns1:extra>foo1</ns1:extra>
+        </ns1:echo4>
+    </soapenv:Body>
+</soapenv:Envelope>

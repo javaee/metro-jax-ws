@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -44,39 +44,48 @@
 <descriptor since="2.0">
   <description>This is a Provider test</description>
   <client name="provider.doclit1" sideEffectFree="true"><![CDATA[
-    req = new Hello_Type();
+    Hello_Type req = new Hello_Type();
     req.setArgument("arg");
     req.setExtra("extra");
-    for(i=0; i < 5; i++) {
-        response = helloPort.hello(req, req);
+    for(int i=0; i < 5; i++) {
+        HelloResponse response = helloPort.hello(req, req);
         assertEquals("arg", response.getArgument());
         assertEquals("extra", response.getExtra());
     }
   ]]></client>
 
   <client name="provider.doclit3" sideEffectFree="true"><![CDATA[
-    req = new Hello_Type();
+    Hello_Type req = new Hello_Type();
     req.setArgument("fault");
     req.setExtra("extra");
     try {
-        response = helloPort.hello(req, req);
+        HelloResponse response = helloPort.hello(req, req);
     } catch (SOAPFaultException e) {
-        se = (SOAPFaultException)e;
+        SOAPFaultException se = (SOAPFaultException)e;
         assertEquals("Server was unable to process request. ---> Not a valid accountnumber.", se.getFault().getFaultString());
     }
   ]]></client>
 
   <client name="provider.verify.wsdl" transport="http" sideEffectFree="true"><![CDATA[
         URL pubUrl = new URL(helloPortAddress + "?wsdl");
-        InputStream in = pubUrl.openStream();
-        while(in.read() != -1);
+        java.io.InputStream in = pubUrl.openStream();
+        java.io.BufferedReader bufferedReader = new java.io.BufferedReader(new java.io.InputStreamReader(in), 1);
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            System.out.println(line);
+        }
         in.close();
   ]]></client>
 
   <client name="provider.verify.xsd" transport="http" sideEffectFree="true"><![CDATA[
         URL pubUrl = new URL(helloPortAddress + "?xsd=1");
-        InputStream in = pubUrl.openStream();
-        while(in.read() != -1);
+        java.io.InputStream in = pubUrl.openStream();
+        java.io.BufferedReader bufferedReader = new java.io.BufferedReader(new java.io.InputStreamReader(in), 1);
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            System.out.println(line);
+        }
+        //while(in.read() != -1);
         in.close();
   ]]></client>
 

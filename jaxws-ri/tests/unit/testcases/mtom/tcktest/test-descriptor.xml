@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -44,9 +44,226 @@
 <descriptor since="2.0">
     <description>XOP test from TCK </description>
 
-    <client href ="test.bsh" />
-
     <service basedir="./server">
         <wsdl href="hello.wsdl"/>
     </service>
+    <pre-client>
+
+
+    static SOAPMessage getSOAPMessage() throws Exception {
+        MimeHeaders headers = new MimeHeaders();
+        headers.addHeader("Content-Type", "text/xml");
+
+        java.io.FileInputStream in = new java.io.FileInputStream(resource("raw.envelope"));
+        SOAPMessage msg = MessageFactory.newInstance().createMessage(headers, in);
+
+        AttachmentPart doc1 = msg.createAttachmentPart(getDataHandler("attach.txt"));
+        doc1.setContentId("6f43c576-1c18-441a-8aaa-a455dc87a656@example.jaxws.sun.com");
+        msg.addAttachmentPart(doc1);
+
+        AttachmentPart doc2 = msg.createAttachmentPart(getDataHandler("attach.html"));
+        doc2.setContentId("d04800fe-ec4b-4312-97f3-eb84172ac6d9@example.jaxws.sun.com");
+        msg.addAttachmentPart(doc2);
+
+        AttachmentPart doc3 = msg.createAttachmentPart(getDataHandler("attach.xml"));
+        doc3.setContentId("0e558b51-7c30-4fe5-b65a-d01ac86129e5@example.jaxws.sun.com");
+        msg.addAttachmentPart(doc3);
+
+        AttachmentPart doc4 = msg.createAttachmentPart(getDataHandler("attach.jpeg"));
+        doc4.setContentId("72d1efa4-e45d-4cf0-90b5-56d111a4cb03@example.jaxws.sun.com");
+        doc4.setContentType("image/jpeg");
+        msg.addAttachmentPart(doc4);
+
+        AttachmentPart doc5 = msg.createAttachmentPart(getDataHandler("attach2.jpeg"));
+        doc5.setContentType("image/jpeg");
+        doc5.setContentId("e622a8c0-b994-424e-8343-f15b18bb2fa2@example.jaxws.sun.com");
+        msg.addAttachmentPart(doc5);
+
+        MimeHeaders hdrs = msg.getMimeHeaders();
+        String boundary = "BOUNDARY_123456789_BOUNDARY";
+        String ct = "multipart/related;type=\"application/xop+xml\";boundary=" + boundary + ";start-info=\"text/xml\"";
+        hdrs.setHeader("Content-Type", ct);
+
+        msg.saveChanges();
+        return msg;
+    }
+
+    static void validate(java.io.InputStream exp, java.io.InputStream got) throws Exception {
+        int ch;
+        while ((ch = exp.read()) != -1) {
+            assertEquals(ch, got.read());
+        }
+        assertEquals(-1, got.read());
+        exp.close();
+        got.close();
+    }
+
+    static java.awt.image.BufferedImage getImage(String image) throws Exception {
+        java.io.InputStream is = new java.io.FileInputStream(resource(image));
+        return javax.imageio.ImageIO.read(is);
+    }
+
+    static DataHandler getDataHandler(String f) throws Exception {
+        return new DataHandler(new MDataSource(f));
+    }
+
+    static class MDataSource implements DataSource {
+
+        String file;
+        public MDataSource(String filename) {
+            file = filename;            
+        }
+        public java.io.InputStream getInputStream() throws java.io.IOException {
+            return new java.io.FileInputStream(resource(file));
+        }
+
+        public java.io.OutputStream getOutputStream() throws java.io.IOException {
+            throw new UnsupportedOperationException();
+        }
+
+        public String getContentType() {
+            return "text/html";
+        }
+
+        public String getName() {
+            return null;
+        }
+        
+    }
+
+    static class SDataSource implements DataSource {
+
+        SOAPMessage msg;
+        public SDataSource(SOAPMessage msg) {
+            this.msg = msg;            
+        }
+        public String getContentType() {
+            return msg.getMimeHeaders().getHeader("Content-Type")[0];
+        }
+
+        public java.io.InputStream getInputStream() throws java.io.IOException {
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            try {
+                msg.writeTo(baos);
+                return new java.io.ByteArrayInputStream(baos.toByteArray());
+            } catch (SOAPException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public String getName() {
+            return null;
+        }
+
+        public java.io.OutputStream getOutputStream() throws java.io.IOException {
+            throw new UnsupportedOperationException();
+        }
+        
+    }
+
+    static DataSource getDataSource(SOAPMessage msg) throws Exception {
+        return new SDataSource(msg);
+    }
+
+
+    </pre-client>
+
+    <client name="all"><![CDATA[
+        QName serviceName = new QName("http://example.org/mtom", "Hello");
+        QName portName = new QName("http://example.org/mtom", "HelloPort");
+        Service service = Service.create(serviceName);
+        service.addPort(portName, javax.xml.ws.http.HTTPBinding.HTTP_BINDING, helloPortAddress.toString());
+        Dispatch disp = service.createDispatch(portName, DataSource.class, javax.xml.ws.Service.Mode.MESSAGE);
+
+        // Create a request SOAPMessage
+        SOAPMessage soap = getSOAPMessage();
+        DataSource ds = getDataSource(soap);
+        ds = (DataSource) disp.invoke(ds);
+
+        // Create a SOAPMessage from response
+        MimeHeaders headers = new MimeHeaders();
+        headers.addHeader("Content-Type", ds.getContentType());
+        soap =  MessageFactory.newInstance().createMessage(headers, ds.getInputStream());
+
+        // verify S:Body
+        SOAPBody body = soap.getSOAPBody();
+        Iterator it = body.getChildElements();
+        SOAPElement elem = (SOAPElement) it.next();
+        assertEquals(new QName("http://example.org/mtom", "MTOMInOutResponse"), elem.getElementQName());
+        Iterator docit = elem.getChildElements();
+
+        // verify <doc1> contains xop:Include
+        elem = (SOAPElement) docit.next();
+        assertEquals(new QName("http://example.org/mtom", "doc1"), elem.getElementQName());
+        Iterator xopit = elem.getChildElements();
+        elem = (SOAPElement) xopit.next();
+        assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+        String href = elem.getAttributeValue(new QName("", "href"));
+        assertEquals("cid:", href.substring(0,4));
+
+        // verify <doc2> contains xop:Include
+        elem = (SOAPElement) docit.next();
+        assertEquals(new QName("http://example.org/mtom", "doc2"), elem.getElementQName());
+        xopit = elem.getChildElements();
+        elem = (SOAPElement) xopit.next();
+        assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+        href = elem.getAttributeValue(new QName("", "href"));
+        assertEquals("cid:", href.substring(0,4));
+
+        // verify <doc3> contains xop:Include
+        elem = (SOAPElement) docit.next();
+        assertEquals(new QName("http://example.org/mtom", "doc3"), elem.getElementQName());
+        xopit = elem.getChildElements();
+        elem = (SOAPElement) xopit.next();
+        assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+        href = elem.getAttributeValue(new QName("", "href"));
+        assertEquals("cid:", href.substring(0,4));
+
+        // verify <doc4> contains xop:Include
+        elem = (SOAPElement) docit.next();
+        assertEquals(new QName("http://example.org/mtom", "doc4"), elem.getElementQName());
+        xopit = elem.getChildElements();
+        elem = (SOAPElement) xopit.next();
+        assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+        href = elem.getAttributeValue(new QName("", "href"));
+        assertEquals("cid:", href.substring(0,4));
+
+        // verify <doc5> contains xop:Include
+        elem = (SOAPElement) docit.next();
+        assertEquals(new QName("http://example.org/mtom", "doc5"), elem.getElementQName());
+        xopit = elem.getChildElements();
+        elem = (SOAPElement) xopit.next();
+        assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+        href = elem.getAttributeValue(new QName("", "href"));
+        assertEquals("cid:", href.substring(0,4));
+
+        // Validate the number of attachments
+        assertEquals(5, soap.countAttachments());
+
+        it = soap.getAttachments();
+
+        // Validate attach.txt attachement
+        AttachmentPart at = (AttachmentPart) it.next();
+        validate(new java.io.FileInputStream(resource("attach.txt")), at.getRawContent());
+
+        // Validate attach.html attachment
+        at = (AttachmentPart) it.next();
+        validate(new java.io.FileInputStream(resource("attach.html")), at.getRawContent());
+
+        // Validate attach.xml attachment
+        at = (AttachmentPart) it.next();
+        validate(new java.io.FileInputStream(resource("attach.xml")), at.getRawContent());
+
+        // Validate attach.jpeg attachment
+        at = (AttachmentPart) it.next();
+        java.awt.Image img = javax.imageio.ImageIO.read(at.getRawContent());
+        assertNotNull(img);
+
+        // Validate attach2.jpeg attachment
+        at = (AttachmentPart) it.next();
+        img = javax.imageio.ImageIO.read(at.getRawContent());
+        assertNotNull(img);
+
+ ]]></client>
+
 </descriptor>

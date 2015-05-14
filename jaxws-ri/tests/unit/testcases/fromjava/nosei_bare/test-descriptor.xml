@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@
   <client name="nosei_bare_testGenerics" sideEffectFree="true">
   <description>testGenerics</description>
   <![CDATA[
-        holder = new Holder();
+        Holder holder = new Holder();
         echoPort.echoGenericString(holder);
         assertEquals("null&john", holder.value);
         holder.value = "fred";        
@@ -134,7 +134,7 @@
   <client name="nosei_bare_testHolders" sideEffectFree="true">
   <description>testHolders</description>
   <![CDATA[
-        strHolder = new Holder();
+        Holder strHolder = new Holder();
         strHolder.value = "fred";
 
         echoPort.inOutString(strHolder);
@@ -146,9 +146,9 @@
         
         strHolder.value = null;
         echoPort.inOutString(strHolder);
-        assertTrue(strHolder.value == null || strHolder.value.length() == 0);
+        assertTrue(strHolder.value == null || ((String) strHolder.value).length() == 0);
         
-        longHolder = new Holder();
+        Holder longHolder = new Holder();
         longHolder.value = 0L;
         longHolder.value = 345L;
         echoPort.inOutLong(longHolder);
@@ -162,7 +162,7 @@
         assertEquals(77L, echoPort.echoInHeader(33, 44L));
         assertEquals(77L, echoPort.echoIn2Header(33, 44L, "dirk"));
 
-        longHolder = new Holder(new Long(44));
+        Holder longHolder = new Holder(new Long(44));
         assertEquals(121L, echoPort.echoInOutHeader(33, longHolder));
         assertEquals(88L, longHolder.value);
 
@@ -172,7 +172,7 @@
         assertEquals(33L, longHolder.value);
 
         longHolder = new Holder();
-        stringHolder = new Holder();
+        Holder stringHolder = new Holder();
         result = echoPort.echoOut2Header(33, longHolder, stringHolder);
         assertEquals(66L, result);
         assertEquals("Fred", stringHolder.value);
@@ -182,12 +182,12 @@
   <client name="nosei_bare_testArray1" sideEffectFree="true">
   <description>testArray1</description>
   <![CDATA[
-        strArray = new StringArray();
-        list = strArray.getItem();
+        StringArray strArray = new StringArray();
+        List list = strArray.getItem();
         list.add("Mary");
         list.add("Paul");
 
-        returnArray = echoPort.echoStringArray(strArray);
+        StringArray returnArray = echoPort.echoStringArray(strArray);
         assertEquals(strArray.getItem().size(), returnArray.getItem().size());
         assertEquals(strArray.getItem().get(0), returnArray.getItem().get(0));
         assertEquals(strArray.getItem().get(1), returnArray.getItem().get(1));

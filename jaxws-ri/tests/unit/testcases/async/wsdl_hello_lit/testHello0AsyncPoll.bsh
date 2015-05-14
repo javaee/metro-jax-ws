@@ -38,8 +38,8 @@
  * holder.
  */
 
-response = helloPort.hello0Async(54321);
+Response response = helloPort.hello0Async(54321);
 System.out.print("\npolling for response ...");
 
-output = response.get(15,TimeUnit.SECONDS);
+Object output = response.get(15,TimeUnit.SECONDS);
 assertEquals(54321, output);

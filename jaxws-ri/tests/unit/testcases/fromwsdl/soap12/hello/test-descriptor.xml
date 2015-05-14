@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -48,19 +48,19 @@
     </service>
 
     <client name="test1">
-            arg = "foo";
-            extra = "bar";
-            req = new Hello_Type();
+            String arg = "foo";
+            String extra = "bar";
+            Hello_Type req = new Hello_Type();
             req.setArgument(arg);
             req.setExtra(extra);
-            response = helloPort.hello(req);
+            HelloResponse response = helloPort.hello(req);
             assertEquals(arg, response.getArgument());
             assertEquals(extra, response.getExtra());
     </client>
 
     <client name="test2">
-        req = new VoidType();
-        response = helloPort.voidTest(req);
+        VoidType req = new VoidType();
+        VoidType response = helloPort.voidTest(req);
         assertNotNull(response);
     </client>
 
@@ -69,12 +69,12 @@
             Tests SOAP header and body with inout rules in doclit wrapped mode.
         </description>
             String[] in = {"JAXRPC 1.0", "JAXRPC 1.1", "JAXRPC 1.1.2", "JAXRPC 2.0"};
-            nt = new NameType();
+            NameType nt = new NameType();
             nt.getName().add(in[0]);
             nt.getName().add(in[1]);
             nt.getName().add(in[2]);
             nt.getName().add(in[3]);
-            req = new Holder(nt);
+            Holder req = new Holder(nt);
             helloPort.echoArray(req);
             assertNull(req.value);
     </client>
@@ -84,35 +84,35 @@
             Tests inout SOAP header and body in dolict bare mode.
         </description>
             String[] in = {"JAXRPC 1.0", "JAXRPC 1.1", "JAXRPC 1.1.2", "JAXRPC 2.0", "EA"};
-            nt = new NameType();
+            NameType nt = new NameType();
             nt.getName().add(in[0]);
             nt.getName().add(in[1]);
             nt.getName().add(in[2]);
             nt.getName().add(in[3]);
-            req = new Holder(nt);
+            Holder req = new Holder(nt);
             helloPort.echoArray1(req);
-            assertTrue(java.util.Arrays.equals(in, req.value.getName().toArray()));
+            assertTrue(java.util.Arrays.equals(in, ((NameType) req.value).getName().toArray()));
     </client>
 
     <client name="test5">
-            req = new Holder();
+            Holder req = new Holder();
             helloPort.echoArray2(req);
             assertNull(req.value);
     </client>
 
     <client name="test6">
-            in = new ArrayList();
+            List in = new ArrayList();
             in.add("JAXRPC 1.0");
             in.add("JAXRPC 1.1");
             in.add("JAXRPC 1.1.2");
             in.add("JAXRPC 2.0");
-            req = new Holder(in);
+            Holder req = new Holder(in);
             helloPort.echoArray3(req);
             assertEquals(in, req.value);
     </client>
 
     <client name="test7">
-            resp = helloPort.echoArray4(new NameType1());
+            NameType1 resp = helloPort.echoArray4(new NameType1());
             assertEquals(resp.getName().get(0).getArgument(), "arg1");
             assertEquals(resp.getName().get(0).getExtra(), "extra1");
             assertEquals(resp.getName().get(1).getArgument(), "arg2");

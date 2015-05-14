@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -48,11 +48,11 @@
         <description>
             test echo()
         </description>
-        reqBody = new EchoType();
+        EchoType reqBody = new EchoType();
         reqBody.setReqInfo("foobar");
-        reqHeader = new EchoType();
+        EchoType reqHeader = new EchoType();
         reqHeader.setReqInfo("foobar");
-        response = helloPort.echo(reqBody, reqHeader);
+        EchoResponseType response = helloPort.echo(reqBody, reqHeader);
         assertEquals("foobarfoobar", response.getRespInfo());
     </client>
 
@@ -60,7 +60,7 @@
         <description>
             test NULL parameter to test BP 1.1 R2211 violation
         </description>
-        reqHeader = new EchoType();
+        EchoType reqHeader = new EchoType();
         reqHeader.setReqInfo("foobar");
         try{
             EchoResponseType response = helloPort.echo(null, reqHeader);
@@ -74,13 +74,13 @@
         <description>
             Test Null parameter on the server, BP 1.1 R2211 violation
         </description>
-        of = new ObjectFactory();
-        reqBody = new EchoType();
+        ObjectFactory of = new ObjectFactory();
+        EchoType reqBody = new EchoType();
         reqBody.setReqInfo("sendNull");
-        reqHeader = new EchoType();
+        EchoType reqHeader = new EchoType();
         reqHeader.setReqInfo("foobar");
         try{
-            response = helloPort.echo(reqBody, reqHeader);
+            EchoResponseType response = helloPort.echo(reqBody, reqHeader);
             assertTrue(false);
         }catch(WebServiceException e){
             assertTrue(true);
@@ -91,7 +91,7 @@
         <description>
             Test echo1().
         </description>
-        req = new Holder("Hello");
+        Holder req = new Holder("Hello");
         helloPort.echo1(req);
         assertEquals("Hello World!", req.value);
     </client>
@@ -101,14 +101,14 @@
             Test echo2()
         </description>
 
-        of = new ObjectFactory();
-        reqBody = of.createEchoType();
+        ObjectFactory of = new ObjectFactory();
+        EchoType reqBody = of.createEchoType();
         reqBody.setReqInfo("foobar");
-        req1Header = of.createEchoType();
+        EchoType req1Header = of.createEchoType();
         req1Header.setReqInfo("foobar");
-        req2Header = of.createEcho2Type();
+        Echo2Type req2Header = of.createEcho2Type();
         req2Header.setReqInfo("foobar");
-        response = helloPort.echo2(reqBody, req1Header, req2Header);
+        Echo2ResponseType response = helloPort.echo2(reqBody, req1Header, req2Header);
         assertEquals("foobarfoobarfoobar", response.getRespInfo());
     </client>
     <service basedir="./server">

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,18 +47,18 @@
     <wsdl href="hello_test.wsdl" />
   </service>
   <pre-client>
-    req = new Hello_Type();
-    req.setArgument("foo");
-    req.setExtra("bar");
-
+    // TODO-Miran: check this test
     // wait for the completion of the requets
-    block(response) {
+    static void block(Future response) {
       System.out.print("\npolling for response ...");
       while (!response.isDone())
         Thread.yield();
     }
   </pre-client>
   <client name="async.doclit.fault1"><![CDATA[
+    Hello_Type req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
     try{
         helloPort.hello(req);
         assertNull(response.get());
@@ -68,6 +68,9 @@
     }
   ]]></client>
   <client name="async.doclit.fault2"><![CDATA[
+    Hello_Type req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
     try{
       block(helloPort.helloAsync(req));
     } catch(Exception e){
@@ -76,14 +79,20 @@
     }
   ]]></client>
   <client name="async.doclit.fault3"><![CDATA[
-    handler = new HelloCallbackHandler();
-    response = helloPort.helloAsync(req, handler);
+    Hello_Type req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
+    HelloCallbackHandler handler = new HelloCallbackHandler();
+    Future response = helloPort.helloAsync(req, handler);
     block(response);
     assertTrue(handler.correctException);
   ]]></client>
   <client name="async.doclit.fault4" since="2.1.4"><![CDATA[
-    handler = new HelloCallbackHandler();
-    response = helloPort.helloAsync(req, handler);
+    Hello_Type req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
+    HelloCallbackHandler handler = new HelloCallbackHandler();
+    Future response = helloPort.helloAsync(req, handler);
     block(response);
     assertTrue(handler.correctException);
     assertEquals(1, handler.noTimes);

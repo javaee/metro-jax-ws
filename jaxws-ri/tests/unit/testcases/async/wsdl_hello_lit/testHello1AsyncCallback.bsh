@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,17 +38,18 @@
  * holder.
  */
 
-arg = "foo";
-extra = "bar";
-req = new HelloType();
+String arg = "foo";
+String extra = "bar";
+HelloType req = new HelloType();
 req.setArgument(arg);
 req.setExtra(extra);
 
-reqH = new HelloType();
+HelloType reqH = new HelloType();
 reqH.setArgument("header arg");
 reqH.setExtra("header extra");
 
-response = helloPort.hello1WorldAsync(req, reqH, new Hello1CallbackHandler());
+// TODO-Miran: check this test
+Response response = helloPort.hello1WorldAsync(req, reqH, new async.wsdl_hello_lit.client.Hello1CallbackHandler());
 System.out.print("\nWaiting for CallbackHandler to complete...");
-//      while(!response.isDone())
-//          System.out.print(".");
+while(!response.isDone())
+    System.out.print(".");

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,15 +46,11 @@
     <service basedir="./server">
         <wsdl href="WrapperService.wsdl"/>
     </service>
-    <pre-client>
-        import java.math.BigDecimal;
-    </pre-client>
     <client name="fromwsdl.wsa.wsdl_rpclit.echoMsgOperation" since="2.1.4">
         <description>
             Test WS-Addressing with rpclit
         </description>
         assertEquals(wrapperPort.echoMsgOperation("Duke"),"Hello Duke");
-        
     </client>
 
 </descriptor>

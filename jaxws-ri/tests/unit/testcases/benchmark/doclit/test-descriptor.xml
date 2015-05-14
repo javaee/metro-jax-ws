@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,15 +47,15 @@
     <wsdl href="doclit.wsdl" />
   </service>
   <pre-client>
-    createComplexType() {
-      ct = new ComplexType();
+    static ComplexType createComplexType() {
+      ComplexType ct = new ComplexType();
       ct.setVarString("hello world");
       ct.setVarInt(53);
       ct.setVarFloat(913.4f);
       return ct;
     }
-    createNestedComplexType() {
-      nct = new NestedComplexType();
+    static NestedComplexType createNestedComplexType() {
+      NestedComplexType nct = new NestedComplexType();
       nct.setVarString("hello world");
       nct.setVarInt(53);
       nct.setVarFloat(913.4f);
@@ -74,15 +74,14 @@
     echoPort.echoBoolean(false);
   </client>
   <client name="echoBase64"><![CDATA[
-    buf = new StringBuffer();
+    StringBuffer buf = new StringBuffer();
     for(int i=0;i<10;i++) buf.append("0123456789");
     echoPort.echoBase64(buf.toString().getBytes());
   ]]></client>
   <client name="echoDate">
-    import javax.xml.datatype.*;
-    DatatypeFactory dtf = DatatypeFactory.newInstance();
+    javax.xml.datatype.DatatypeFactory dtf = javax.xml.datatype.DatatypeFactory.newInstance();
     Calendar cal = Calendar.getInstance();
-    gregorianDate = dtf.newXMLGregorianCalendarDate(2005, 1, 12, DatatypeConstants.FIELD_UNDEFINED);
+    javax.xml.datatype.XMLGregorianCalendar gregorianDate = dtf.newXMLGregorianCalendarDate(2005, 1, 12, javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED);
 
     echoPort.echoDate(gregorianDate);
   </client>
@@ -96,22 +95,22 @@
     echoPort.echoDecimal(new java.math.BigDecimal("123"));
   </client>
   <client name="echoEnum">
-    echoPort.echoEnum(Enum.BIT_FIVE);
+    echoPort.echoEnum(benchmark.doclit.client.Enum.BIT_FIVE);
   </client>
   <client name="echoStringArray"><![CDATA[
-    lst = new ArrayList();
+    List lst = new ArrayList();
     for( int i=0; i<10; i++ )
       lst.add("hello world");
     echoPort.echoStringArray(lst);
   ]]></client>
   <client name="echoIntArray"><![CDATA[
-    lst = new ArrayList();
+    List lst = new ArrayList();
     for( int i=0; i<10; i++ )
       lst.add(i);
     echoPort.echoIntegerArray(lst);
   ]]></client>
   <client name="echoFloatArray"><![CDATA[
-    lst = new ArrayList();
+    List lst = new ArrayList();
     for( int i=0; i<10; i++ )
       lst.add((float)i);
     echoPort.echoFloatArray(lst);
@@ -123,7 +122,7 @@
     echoPort.echoNestedComplexType(createNestedComplexType());
   </client>
   <client name="echoComplexTypeArray"><![CDATA[
-    lst = new ArrayList();
+    List lst = new ArrayList();
     for(int i=0;i<100;i++)
       lst.add(createComplexType());
     echoPort.echoComplexTypeArray(lst);

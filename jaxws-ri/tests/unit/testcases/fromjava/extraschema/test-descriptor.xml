@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -48,27 +48,27 @@
     </description>
     <client name="fromjava.extraschema"><![CDATA[
 
-        import org.w3c.dom.*;
-        import javax.xml.parsers.*;
+        //import org.w3c.dom.*;
+        //import javax.xml.parsers.*;
         
-        File f = new File(home,"work/services/war/WEB-INF/wsdl/TestEndpointService.wsdl");
-        InputStream is = new FileInputStream(f);
+        java.io.File f = new java.io.File(home,"work/services/war/WEB-INF/wsdl/TestEndpointService.wsdl");
+        java.io.InputStream is = new java.io.FileInputStream(f);
         assertTrue(is != null);
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        javax.xml.parsers.DocumentBuilderFactory dbf = javax.xml.parsers.DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         dbf.setValidating(false);
-        DocumentBuilder builder = dbf.newDocumentBuilder();
-        node = builder.parse(is);
+        javax.xml.parsers.DocumentBuilder builder = dbf.newDocumentBuilder();
+        org.w3c.dom.Document node = builder.parse(is);
 
-        Element e = null;
-        for(Node n = node.getFirstChild(); n != null; n = n.getNextSibling()) {
+        org.w3c.dom.Element e = null;
+        for(org.w3c.dom.Node n = node.getFirstChild(); n != null; n = n.getNextSibling()) {
             if (n.getNodeType() == Node.ELEMENT_NODE) {
-                e = n;
+                e = (org.w3c.dom.Element)n;
                 break;
             }
         }
-        NodeList nl = e.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "import");
+        org.w3c.dom.NodeList nl = e.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "import");
         if(nl.getLength() > 0)
             System.out.println("Expected none but "+ nl.getLength()+" xs:import found!");
         assertTrue(nl.getLength() == 0);

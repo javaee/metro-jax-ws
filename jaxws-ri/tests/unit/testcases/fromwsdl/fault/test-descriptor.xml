@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,7 @@
             test nulls in fault bean
         </description>
         try{
-            in = "nullBean";
+            String in = "nullBean";
             faultPort.echo(in);
             assertTrue(false);
         }catch(Fault2Exception e){
@@ -61,8 +61,8 @@
             test WSDL defined Fault1
         </description>
         try {
-            in = "Fault1";
-            ret = faultPort.echo(in);
+            String in = "Fault1";
+            Object ret = faultPort.echo(in);
             fail("did not receive an exception");
         } catch (Fault1Exception e) {
             System.out.println("Expected exception received: " + e.getMessage());
@@ -75,8 +75,8 @@
             test WSDL defined Fault2
         </description>
         try {
-            in = "Fault2";
-            ret = faultPort.echo(in);
+            String in = "Fault2";
+            Object ret = faultPort.echo(in);
             fail("did not receive an exception");
         } catch (Fault2Exception e) {
             System.out.println("Expected exception received: " + e.getMessage());
@@ -89,8 +89,8 @@
             test WSDL defined Fault3
         </description>
         try {
-            in = "Fault3";
-            ret = faultPort.echo(in);
+            String in = "Fault3";
+            Object ret = faultPort.echo(in);
             fail("did not receive an exception");
         } catch (Fault3Exception e) {
             System.out.println("Expected exception received: " + e.getMessage());
@@ -103,8 +103,8 @@
             test WSDL defined Fault4
         </description>
         try {
-            in = "Fault4";
-            ret = faultPort.echo(in);
+            String in = "Fault4";
+            Object ret = faultPort.echo(in);
             fail("did not receive an exception");
         } catch (Fault4Exception e) {
             System.out.println("Expected exception received: " + e.getMessage());
@@ -117,10 +117,10 @@
             test SOAPFaultException due to NPE on the server
         </description>
         try {
-            in = "NullPointerException";
-            ret = faultPort.echo(in);
+            String in = "NullPointerException";
+            Object ret = faultPort.echo(in);
             fail("did not receive an exception");
-        } catch (ProtocolException e) {
+        } catch (javax.xml.ws.ProtocolException e) {
             System.out.println("Expected exception received: " + e.getMessage());
             assertTrue(true);
         }
@@ -131,10 +131,10 @@
             SOAPFaultException
         </description>
         try {
-            in = "SOAPFaultException";
-            ret = faultPort.echo(in);
+            String in = "SOAPFaultException";
+            Object ret = faultPort.echo(in);
             fail("did not receive an exception");
-        } catch (ProtocolException e) {
+        } catch (javax.xml.ws.ProtocolException e) {
             if (e instanceof SOAPFaultException) {
                 System.out.println("Expected exception received: " + e.getMessage());
                 Detail detail = ((SOAPFaultException)e).getFault().getDetail();
@@ -153,8 +153,8 @@
             test SOAP fault with cause
         </description>
         try {
-            in = "Fault1-SOAPFaultException";
-            ret = faultPort.echo(in);
+            String in = "Fault1-SOAPFaultException";
+            Object ret = faultPort.echo(in);
             fail("did not receive an exception");
         } catch (Fault1Exception e) {
             System.out.println("Expected exception received: " + e.getMessage());
@@ -200,10 +200,10 @@
             test ProtocolException
         </description>
         try {
-            in = "ProtocolException";
-            ret = faultPort.echo(in);
+            String in = "ProtocolException";
+            Object ret = faultPort.echo(in);
             fail("did not receive an exception");
-        } catch (ProtocolException e) {
+        } catch (javax.xml.ws.ProtocolException e) {
             System.out.println("Expected exception received: " + e.getMessage());
             if (e.getMessage().indexOf("javax.xml.ws.ProtocolException") != -1)
                 assertTrue(true);
@@ -217,10 +217,10 @@
             test ProtocolException with cause
         </description>
         try {
-            in = "ProtocolException2";
-            ret = faultPort.echo(in);
+            String in = "ProtocolException2";
+            Object ret = faultPort.echo(in);
             fail("did not receive an exception");
-        } catch (ProtocolException e) {
+        } catch (javax.xml.ws.ProtocolException e) {
             System.out.println("Expected exception received: " + e.getMessage());
             if (e.getMessage().indexOf("FaultImpl") != -1)
                 assertTrue(true);
