@@ -64,8 +64,8 @@
     } catch (Exception e) {
       Map rc = ((BindingProvider) helloPort).getResponseContext();
       assertNotNull(rc);
-      assertNotNull(rc.get(MessageContext.HTTP_RESPONSE_CODE));
-      assertEquals(200,rc.get(MessageContext.HTTP_RESPONSE_CODE));
+      assertNotNull(rc.get(javax.xml.ws.handler.MessageContext.HTTP_RESPONSE_CODE));
+      assertEquals(200,rc.get(javax.xml.ws.handler.MessageContext.HTTP_RESPONSE_CODE));
     }
   ]]></client>
   <client name="client.response-context2"><![CDATA[
@@ -120,7 +120,7 @@
         dispatch.invoke(req);
     } catch (Exception e) {
         Map rc = dispatch.getResponseContext();
-        assertEquals(200,rc.get(MessageContext.HTTP_RESPONSE_CODE));
+        assertEquals(200,rc.get(javax.xml.ws.handler.MessageContext.HTTP_RESPONSE_CODE));
     }
   ]]></client>
   <client name="client.response-context4"><![CDATA[

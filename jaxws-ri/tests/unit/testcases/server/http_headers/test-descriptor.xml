@@ -47,7 +47,7 @@
   <client name="custom-http-header" sideEffectFree="true">
     // keep singletonMap, singletonList as they are unmodifiable
     ((BindingProvider)helloPort).getRequestContext().put(
-      MessageContext.HTTP_REQUEST_HEADERS,
+      javax.xml.ws.handler.MessageContext.HTTP_REQUEST_HEADERS,
       Collections.singletonMap("custom-header",Collections.singletonList("custom-value")));
 
     helloPort.testHttpProperties();
