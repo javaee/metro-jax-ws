@@ -259,7 +259,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <ws.all-args>-jaxwsInJDK -version 2.2.10 -lwhs ${ws.args}</ws.all-args>
+                <ws.all-args>-jaxwsInJDK -version 2.3.0 -lwhs ${ws.args}</ws.all-args>
                 <maven.endorsed.skip>true</maven.endorsed.skip>
                 <ws.permGenJvmOpts></ws.permGenJvmOpts>
             </properties>
