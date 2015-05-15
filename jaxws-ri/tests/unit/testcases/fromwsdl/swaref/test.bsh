@@ -38,8 +38,8 @@
  * holder.
  */
 
-// TODO: internal vs. non-internal
-com.sun.xml.internal.ws.binding.BindingImpl.initializeJavaActivationHandlers();
+// not necessary
+//com.sun.xml.internal.ws.binding.BindingImpl.initializeJavaActivationHandlers();
 
 java.io.File testXml = resource("test.xml");
 
