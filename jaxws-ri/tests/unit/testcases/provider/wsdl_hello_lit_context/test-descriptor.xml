@@ -52,7 +52,7 @@
     response = helloMsgPort.voidTest(new VoidType());
     assertNotNull(response);
 
-    map = helloMsgPort.getResponseContext().get(MessageContext.HTTP_RESPONSE_HEADERS);
+    map = helloMsgPort.getResponseContext().get(javax.xml.ws.handler.MessageContext.HTTP_RESPONSE_HEADERS);
 
     assertNotNull(map);
     assertEquals("bar", map.get("foo").get(0));
