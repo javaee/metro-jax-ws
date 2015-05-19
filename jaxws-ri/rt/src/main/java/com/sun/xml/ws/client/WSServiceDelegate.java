@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -907,15 +907,6 @@ public class WSServiceDelegate extends WSService {
 
     public WSDLService getWsdlService() {
         return wsdlService;
-    }
-
-    static class DaemonThreadFactory implements ThreadFactory {
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread daemonThread = new Thread(r);
-            daemonThread.setDaemon(Boolean.TRUE);
-            return daemonThread;
-        }
     }
 
     protected static final WebServiceFeature[] EMPTY_FEATURES = new WebServiceFeature[0];
