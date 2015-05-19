@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package com.sun.xml.ws.spi.db;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -171,17 +172,9 @@ abstract public class BindingContextFactory {
                         + " based on '" + JAXB_CONTEXT_FACTORY_PROPERTY
                         + "' System property");
         } else {
-            // Find a default provider.  Note we always ensure the list
-            // is always non-empty.
-            for (BindingContextFactory factory : factories()) {
-                if (LOGGER.isLoggable(Level.FINE))
-                    LOGGER.log(Level.FINE,
-                            "Using SPI-determined databindng mode: "
-                                    + factory.getClass().getName());
-                // Special case: no name lookup used.
-                return factory.newContext(bi);
-            }
-            
+            // Find a default provider.  Note we always ensure the list is always non-empty.
+            BindingContext factory = getBindingContextFromSpi(factories(), bi);
+            if (factory != null) return factory;
             // Should never get here as the list is non-empty.
             LOGGER.log(Level.SEVERE, "No Binding Context Factories found.");
             throw new DatabindingException("No Binding Context Factories found.");
@@ -193,7 +186,64 @@ abstract public class BindingContextFactory {
         throw new DatabindingException("Unknown Databinding mode: " + mode);
     }
 
-	static public boolean isContextSupported(Object o) {
+    /**
+     * Creates JAXB bindingContext with one of the provided factories.
+     * To filter appropriate factory {@link BindingContextFactory#isFor(String)} method is used.
+     * Currently known 2 appropriate factories: JAXB RI and MOXY.
+     * In case no suitable factory is found we are trying to create context with any given factory.
+     *
+     * @param factories given collection of factories.
+     * @param bindingInfo will be used to create bindingContext.
+     * @return Created context or null. Null will be returned if we were not able to create context with any given factory.
+     */
+    private static BindingContext getBindingContextFromSpi(List<BindingContextFactory> factories, BindingInfo bindingInfo) {
+        List<BindingContextFactory> fallback = new ArrayList<BindingContextFactory>();
+        BindingContext result;
+        for (BindingContextFactory factory : factories) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Found SPI-determined databindng mode: " + factory.getClass().getName());
+            }
+            if (factory.isFor("org.eclipse.persistence.jaxb") || factory.isFor("com.sun.xml.bind.v2.runtime")) { // filter (JAXB RI || MOXy) implementation
+                result = createContext(factory, bindingInfo);
+                if (result != null) {
+                    return result;
+                }
+            } else {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "Skipped -> not JAXB.");
+                }
+                fallback.add(factory);
+            }
+        }
+        for (BindingContextFactory factory : fallback) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Fallback. Creating from: " + factory.getClass().getName());
+            }
+            result = createContext(factory, bindingInfo);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Factory creates new context bases on provided bindingInfo.
+     * @param factory given factory.
+     * @param bindingInfo to be used to create context.
+     * @return Created context or null. Null will be returned if an error happened during the creation process.
+     */
+    private static BindingContext createContext(BindingContextFactory factory, BindingInfo bindingInfo) {
+        try {
+            // Special case: no name lookup used.
+            return factory.newContext(bindingInfo);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            return null;
+        }
+    }
+
+    static public boolean isContextSupported(Object o) {
 	    if (o == null) return false;
 		String pkgName = o.getClass().getPackage().getName();
 		for (BindingContextFactory f: factories()) if (f.isFor(pkgName)) return true;
