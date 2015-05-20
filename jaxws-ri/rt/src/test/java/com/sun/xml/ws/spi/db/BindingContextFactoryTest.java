@@ -65,7 +65,7 @@ public class BindingContextFactoryTest extends TestCase {
 
     public void setUp() throws Exception {
         Class<BindingContextFactory> bcf = BindingContextFactory.class;
-        getBindingContextFromSpi = bcf.getDeclaredMethod("getBindingContextFromSpi", BindingInfo.class, List.class);
+        getBindingContextFromSpi = bcf.getDeclaredMethod("getBindingContextFromSpi", List.class, BindingInfo.class);
         getBindingContextFromSpi.setAccessible(true);
     }
     //</editor-fold>
@@ -74,28 +74,28 @@ public class BindingContextFactoryTest extends TestCase {
 
     public void test_receivedOnlyBadImpls() throws Exception {
         BindingContextFactory[] bcf = {new Bad(), new Bad()};
-        BindingContext bc = (BindingContext) getBindingContextFromSpi.invoke(null, null, Arrays.asList(bcf));
+        BindingContext bc = (BindingContext) getBindingContextFromSpi.invoke(null, Arrays.asList(bcf), null);
         // two exceptions should be caught
         assertNull("Null should be returned.", bc);
     }
 
     public void test_receivedJaxbImpl() throws Exception {
         BindingContextFactory[] bcf = {new Bad(), new Good(), new Jaxb()};
-        BindingContext bc = (BindingContext) getBindingContextFromSpi.invoke(null, null, Arrays.asList(bcf));
+        BindingContext bc = (BindingContext) getBindingContextFromSpi.invoke(null, Arrays.asList(bcf), null);
         assertNotNull("Not null should be returned.", bc);
         assertEquals("BindingContext from JaxbBcf is expected", Jaxb.BC, bc);
     }
 
     public void test_receivedMoxyImpl() throws Exception {
         BindingContextFactory[] bcf = {new Bad(), new Good(), new Moxy()};
-        BindingContext bc = (BindingContext) getBindingContextFromSpi.invoke(null, null, Arrays.asList(bcf));
+        BindingContext bc = (BindingContext) getBindingContextFromSpi.invoke(null, Arrays.asList(bcf), null);
         assertNotNull("Not null should be returned.", bc);
         assertEquals("BindingContext from MoxyBcf is expected", Moxy.BC, bc);
     }
 
     public void test_receivedUnexpectedGood() throws Exception {
         BindingContextFactory[] bcf = {new Bad(), new Good()};
-        BindingContext bc = (BindingContext) getBindingContextFromSpi.invoke(null, null, Arrays.asList(bcf));
+        BindingContext bc = (BindingContext) getBindingContextFromSpi.invoke(null, Arrays.asList(bcf), null);
         // one exception should be caught
         assertNotNull("Not null should be returned.", bc);
         assertEquals("BindingContext from GoodBcf is expected", Good.BC, bc);
