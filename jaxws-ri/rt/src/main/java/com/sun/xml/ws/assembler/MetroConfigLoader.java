@@ -56,6 +56,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.ws.WebServiceException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -253,27 +254,29 @@ class MetroConfigLoader {
     }
 
     private static MetroConfig loadMetroConfig(@NotNull URL resourceUrl) {
-        try {
+        try (InputStream is = getConfigInputStream(resourceUrl)) {
             JAXBContext jaxbContext = createJAXBContext();
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             XMLInputFactory factory = XmlUtil.newXMLInputFactory(true);
-
-            InputStream is;
-            if (resourceUrl != null) {
-                is = resourceUrl.openStream();
-            } else {
-                is = MetroConfig.class.getResourceAsStream("jaxws-tubes-default.xml");
-            }
             JAXBElement<MetroConfig> configElement = unmarshaller.unmarshal(factory.createXMLStreamReader(is), MetroConfig.class);
-
             return configElement.getValue();
         } catch (Exception e) {
-            InternalError error = new InternalError(
-                    TubelineassemblyMessages.MASM_0010_ERROR_READING_CFG_FILE_FROM_LOCATION(resourceUrl != null ? resourceUrl.toString() : null)
-            );
+            String message = TubelineassemblyMessages.MASM_0010_ERROR_READING_CFG_FILE_FROM_LOCATION(
+                    resourceUrl != null ? resourceUrl.toString() : null);
+            InternalError error = new InternalError(message);
             LOGGER.logException(error, e, Level.SEVERE);
             throw error;
         }
+    }
+
+    private static InputStream getConfigInputStream(URL resourceUrl) throws IOException {
+        InputStream is;
+        if (resourceUrl != null) {
+            is = resourceUrl.openStream();
+        } else {
+            is = MetroConfigLoader.class.getResourceAsStream("jaxws-tubes-default.xml");
+        }
+        return is;
     }
 
     private static JAXBContext createJAXBContext() throws Exception {
