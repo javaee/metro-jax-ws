@@ -1,7 +1,13 @@
-export JAKE_HOME=~/java/jake-2015-04-29
-export WS_RI_SRC=~/dev/jaxws-ri/jaxws-ri
-export WORKSPACE=`pwd`/..
+#!/bin/sh -e
+
+export JAKE_HOME=`pwd`/../../../../../jake
+export WS_RI_SRC=`pwd`/../../../
+export NO_HARNESS=`pwd`
 
 . build-harness.sh
-. build-tests.sh
-. run-tests.sh
+
+cd $NO_HARNESS
+. build-tests.sh $1
+
+cd $NO_HARNESS
+. run-tests.sh $1

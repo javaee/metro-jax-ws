@@ -1,13 +1,13 @@
-#!/bin/sh
+#!/bin/sh -e
 
-export WS_RI_SRC=~/dev/jaxws-ri/jaxws-ri
+# pass as parametere what test should be run (all by default), i.e. fromjava/nosei
+TESTS=$1
+
+export WS_RI_SRC=`pwd`/../../../
 
 sh -x prepare.sh
 
-# git clone git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git $WS_RI_SRC
-
-cd $WS_RI_SRC/tests/unit
-git checkout jigsaw
+cd ..
 
 export JAVA_HOME=$JAVA8_HOME
 export PATH=$JAVA_HOME/bin:$PATH
@@ -19,4 +19,4 @@ export MAVEN_OPTS=
 mvn -o clean test \
   -P jaxwsInJDK9 \
   -Dws.args=-generateTestSources \
-  -Dws.test=testcases 2>&1 |tee no-harness/`date +%Y-%m-%d_%H%M`-harness-run.txt
+  -Dws.test=testcases/$TESTS 2>&1 |tee no-harness/`date +%Y-%m-%d_%H%M`-harness-run.txt
