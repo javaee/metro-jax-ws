@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 
 if [ "$JAKE_HOME" = "" ]; then
     export JAKE_HOME=`pwd`/../../../../../jake
