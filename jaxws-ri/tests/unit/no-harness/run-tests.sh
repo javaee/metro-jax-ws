@@ -40,4 +40,3 @@ rmp no-harness/fromjava/default_pkg/work/log.txt
 rmp no-harness/epr/w3cepr_6675760/work/log.txt
 rmp no-harness/bugs/jaxws1050/work/log.txt
 
-java -version
