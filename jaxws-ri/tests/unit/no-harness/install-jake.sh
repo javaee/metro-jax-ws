@@ -1,4 +1,4 @@
-#!/bin/sh -xe
+#!/bin/bash -xe
 
 if [ $# = 0 ]; then
    # for convinience default bundle is mac version to run it locally

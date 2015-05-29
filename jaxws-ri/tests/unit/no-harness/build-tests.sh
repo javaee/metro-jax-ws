@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 # pass as parametere what test should be run (all by default), i.e. fromjava/nosei
 TESTS=$1

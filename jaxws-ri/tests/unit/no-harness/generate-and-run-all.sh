@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/bash
 
 export JAKE_HOME=`pwd`/../../../../../jake
 export WS_RI_SRC=`pwd`/../../../
