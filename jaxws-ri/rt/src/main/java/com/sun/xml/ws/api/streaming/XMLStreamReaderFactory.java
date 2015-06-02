@@ -209,10 +209,11 @@ public abstract class XMLStreamReaderFactory {
      *      of this class needs to be aware of that.
      */
     public static void recycle(XMLStreamReader r) {
+     /* the XMLStreamReaderFactory recycle becomes expenisve in the threadLocal get operation.
         get().doRecycle(r);
         if (r instanceof RecycleAware) {
             ((RecycleAware)r).onRecycled();
-        }
+        }*/
     }
 
     // implementations

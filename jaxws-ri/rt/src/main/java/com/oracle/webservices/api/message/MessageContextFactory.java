@@ -55,6 +55,8 @@ import javax.xml.ws.WebServiceFeature;
 public abstract class MessageContextFactory
 {   
     private static final MessageContextFactory DEFAULT = new com.sun.xml.ws.api.message.MessageContextFactory(new WebServiceFeature[0]);
+    
+    protected com.sun.xml.ws.api.message.saaj.SAAJFactory saajFactory = null;
 
     protected abstract MessageContextFactory newFactory(WebServiceFeature ... f);
     
@@ -141,6 +143,10 @@ public abstract class MessageContextFactory
     @Deprecated
     private static interface Creator {
         public MessageContext create(MessageContextFactory f);
+    }
+    
+    public void setSAAJFactory(com.sun.xml.ws.api.message.saaj.SAAJFactory saajFactory) {
+        this.saajFactory = saajFactory;
     }
 }
 
