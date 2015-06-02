@@ -81,6 +81,7 @@ import java.util.logging.Level;
 // TODO Move the logic of this class directly into MetroConfig class.
 class MetroConfigLoader {
 
+    private static final String JAXWS_TUBES_JDK_XML_RESOURCE = "jaxws-tubes-default.xml";
     private static final Logger LOGGER = Logger.getLogger(MetroConfigLoader.class);
 
     private MetroConfigName defaultTubesConfigNames;
@@ -139,13 +140,10 @@ class MetroConfigLoader {
             defaultFileName = defaultTubesConfigNames.getDefaultFileName();
         }
         this.defaultConfigUrl = locateResource(defaultFileName, loaders);
+        if (defaultConfigUrl != null) {
+            LOGGER.config(TubelineassemblyMessages.MASM_0002_DEFAULT_CFG_FILE_LOCATED(defaultFileName, defaultConfigUrl));
+        }
 
-        // TODO-Miran: revisit
-        //    if (defaultConfigUrl == null) {
-        //        throw LOGGER.logSevereException(new IllegalStateException(TubelineassemblyMessages.MASM_0001_DEFAULT_CFG_FILE_NOT_FOUND(defaultFileName)));
-        //    }
-
-        LOGGER.config(TubelineassemblyMessages.MASM_0002_DEFAULT_CFG_FILE_LOCATED(defaultFileName, defaultConfigUrl));
         this.defaultConfig = MetroConfigLoader.loadMetroConfig(defaultConfigUrl);
         if (defaultConfig == null) {
             throw LOGGER.logSevereException(new IllegalStateException(TubelineassemblyMessages.MASM_0003_DEFAULT_CFG_FILE_NOT_LOADED(defaultFileName)));
@@ -274,8 +272,14 @@ class MetroConfigLoader {
         if (resourceUrl != null) {
             is = resourceUrl.openStream();
         } else {
-            is = MetroConfigLoader.class.getResourceAsStream("jaxws-tubes-default.xml");
+            is = MetroConfigLoader.class.getResourceAsStream(JAXWS_TUBES_JDK_XML_RESOURCE);
+
+            if (is == null)
+                throw LOGGER.logSevereException(
+                        new IllegalStateException(
+                                TubelineassemblyMessages.MASM_0001_DEFAULT_CFG_FILE_NOT_FOUND(JAXWS_TUBES_JDK_XML_RESOURCE)));
         }
+
         return is;
     }
 
