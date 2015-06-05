@@ -1529,4 +1529,12 @@ public final class Packet
     public void setFastInfosetDisabled(boolean b) {
         isFastInfosetDisabled = b;
     }
+    
+    private com.sun.xml.ws.api.message.saaj.SAAJFactory saajFactory;
+    public  com.sun.xml.ws.api.message.saaj.SAAJFactory getSAAJFactory() {
+        return saajFactory;
+    }
+    public void setSAAJFactory(com.sun.xml.ws.api.message.saaj.SAAJFactory saajFactory) {
+        this.saajFactory = saajFactory;
+    }
 }

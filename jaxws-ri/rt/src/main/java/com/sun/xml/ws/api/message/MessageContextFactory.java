@@ -110,6 +110,7 @@ public class MessageContextFactory extends com.oracle.webservices.api.message.Me
 
     public com.oracle.webservices.api.message.MessageContext createContext(SOAPMessage soap) {
         throwIfIllegalMessageArgument(soap);
+        if (saajFactory!= null) return packet(saajFactory.createMessage(soap));
         return packet(Messages.create(soap));
     }
 
@@ -177,6 +178,7 @@ public class MessageContextFactory extends com.oracle.webservices.api.message.Me
         if (mf != null) {
             p.setMtomFeature(mf);
         }
+        p.setSAAJFactory(saajFactory); 
         return p;
     }  
 
