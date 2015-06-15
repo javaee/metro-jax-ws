@@ -204,7 +204,7 @@ abstract public class BindingContextFactory {
                 LOGGER.log(Level.FINE, "Found SPI-determined databindng mode: " + factory.getClass().getName());
             }
             if (factory.isFor("org.eclipse.persistence.jaxb") || factory.isFor("com.sun.xml.bind.v2.runtime")) { // filter (JAXB RI || MOXy) implementation
-                result = createContext(factory, bindingInfo);
+                result = factory.newContext(bindingInfo);
                 if (result != null) {
                     return result;
                 }
@@ -219,7 +219,7 @@ abstract public class BindingContextFactory {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Fallback. Creating from: " + factory.getClass().getName());
             }
-            result = createContext(factory, bindingInfo);
+            result = getContextOrNullIfError(factory, bindingInfo);
             if (result != null) {
                 return result;
             }
@@ -233,9 +233,8 @@ abstract public class BindingContextFactory {
      * @param bindingInfo to be used to create context.
      * @return Created context or null. Null will be returned if an error happened during the creation process.
      */
-    private static BindingContext createContext(BindingContextFactory factory, BindingInfo bindingInfo) {
+    private static BindingContext getContextOrNullIfError(BindingContextFactory factory, BindingInfo bindingInfo) {
         try {
-            // Special case: no name lookup used.
             return factory.newContext(bindingInfo);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
@@ -264,50 +263,4 @@ abstract public class BindingContextFactory {
 	static public BindingContext getBindingContext(Marshaller m) {
 		return getJAXBFactory(m).getContext(m);
 	}
-
-    /**
-     * Creates a new {@link BindingContext}.
-     *
-     * <p>
-     * {@link JAXBContext#newInstance(Class[]) JAXBContext.newInstance()} methods may
-     * return other JAXB providers that are not compatible with the JAX-RPC RI.
-     * This method guarantees that the JAX-WS RI will finds the JAXB RI.
-     *
-     * @param classes
-     *      Classes to be bound. See {@link JAXBContext#newInstance(Class[])} for the meaning.
-     * @param typeRefs
-     *      See {@link #TYPE_REFERENCES} for the meaning of this parameter.
-     *      Can be null.
-     * @param subclassReplacements
-     *      See {@link #SUBCLASS_REPLACEMENTS} for the meaning of this parameter.
-     *      Can be null.
-     * @param defaultNamespaceRemap
-     *      See {@link #DEFAULT_NAMESPACE_REMAP} for the meaning of this parameter.
-     *      Can be null (and should be null for ordinary use of JAXB.)
-     * @param c14nSupport
-     *      See {@link #CANONICALIZATION_SUPPORT} for the meaning of this parameter.
-     * @param ar
-     *      See {@link #ANNOTATION_READER} for the meaning of this parameter.
-     *      Can be null.
-     * @since JAXB 2.1 EA2
-     */
-//    public static BindingContext newInstance(@NotNull Class[] classes, 
-//       @Nullable Collection<TypeInfo> typeRefs, 
-//       @Nullable Map<Class,Class> subclassReplacements, 
-//       @Nullable String defaultNamespaceRemap, boolean c14nSupport, 
-//       @Nullable RuntimeAnnotationReader ar) throws JAXBException {
-//        return ContextFactory.createContext(classes, typeRefs, subclassReplacements, 
-//                defaultNamespaceRemap, c14nSupport, ar, false, false, false);
-//    }
-//
-//    /**
-//     * @deprecated
-//     *      Compatibility with older versions.
-//     */
-//    public static BindingContext newInstance(@NotNull Class[] classes,
-//        @Nullable Collection<TypeInfo> typeRefs,
-//        @Nullable String defaultNamespaceRemap, boolean c14nSupport ) throws JAXBException {
-//        return newInstance(classes,typeRefs, Collections.<Class,Class>emptyMap(), 
-//                defaultNamespaceRemap,c14nSupport,null);
-//    }
 }

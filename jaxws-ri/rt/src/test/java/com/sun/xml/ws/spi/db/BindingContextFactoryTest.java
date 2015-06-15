@@ -49,6 +49,7 @@ import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -99,6 +100,22 @@ public class BindingContextFactoryTest extends TestCase {
         // one exception should be caught
         assertNotNull("Not null should be returned.", bc);
         assertEquals("BindingContext from GoodBcf is expected", Good.BC, bc);
+    }
+
+    public void test_exceptionToBeThrown() {
+        boolean expectedExceptionWasThrown = false;
+        BindingContextFactory[] bcf = {new Bad(), new JaxbWithException()};
+        try {
+            getBindingContextFromSpi.invoke(null, Arrays.asList(bcf), null);
+        } catch (InvocationTargetException e) {
+            Throwable realCause = e.getCause();
+            if (realCause instanceof IllegalStateException) {
+                expectedExceptionWasThrown = true;
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        assertTrue("Illegal state exception should be thrown", expectedExceptionWasThrown);
     }
 //---------- end --------------
 
@@ -201,6 +218,30 @@ public class BindingContextFactoryTest extends TestCase {
         @Override
         protected BindingContext getContext(Marshaller m) {
             throw new IllegalStateException();
+        }
+    }
+
+    private static class JaxbWithException extends BindingContextFactory {
+        private static final Marker BC = new Marker();
+
+        @Override
+        protected BindingContext newContext(JAXBContext context) {
+            throw new IllegalStateException("Bad context");
+        }
+
+        @Override
+        protected BindingContext newContext(BindingInfo bi) {
+            throw new IllegalStateException("Bad context");
+        }
+
+        @Override
+        protected BindingContext getContext(Marshaller m) {
+            return null;
+        }
+
+        @Override
+        protected boolean isFor(String s) {
+            return "com.sun.xml.bind.v2.runtime".equals(s);
         }
     }
 
