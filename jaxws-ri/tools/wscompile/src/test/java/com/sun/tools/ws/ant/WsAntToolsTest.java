@@ -121,14 +121,27 @@ public class WsAntToolsTest extends TestCase {
     }
 
     private void verifyCommand(String command) {
+        Assert.assertTrue("-Xbootclasspath/p not set: " + command, command.contains("-Xbootclasspath/p"));
+
         String v = System.getProperty("jaxb-api.version");
         String jar = v != null ? "jaxb-api-" + v + ".jar" : "jaxb-api.jar";
-        Assert.assertTrue("-Xbootclasspath/p not set: " + command, command.contains("-Xbootclasspath/p"));
+        jar = fixIfSNAPSHOT(jar);
         Assert.assertTrue(jar + " not found " + command, command.contains(jar));
+
         v = System.getProperty("jaxws-api.version");
         jar = v != null ? "jaxws-api-" + v + ".jar" : "jaxws-api.jar";
+        jar = fixIfSNAPSHOT(jar);
         Assert.assertTrue(jar + " not found " + command, command.contains(jar));
     }
+
+    // translate maven timestamps to SNAPSHOT:
+    //  jaxb-api-2.3.0-20150602.094817-2.jar
+    //    >>
+    //  jaxb-api-2.3.0-SNAPSHOT.jar
+    private String fixIfSNAPSHOT(String jar) {
+        return jar.replaceAll("(.*)-(\\d+\\.\\d+\\.\\d+)\\-?(\\d+\\.\\d+-\\d+).jar", "$1-$2-SNAPSHOT.jar");
+    }
+
 
     private void runVoidMethod(Class<?> c, Object i, String name, String arg) {
         Method m = null;

@@ -296,8 +296,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.5.1</version>
                     <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
+                        <source>1.8</source>
+                        <target>1.8</target>
                         <fork>true</fork>
                         <compilerArguments>
                             <endorseddirs>${endorsed.dir}</endorseddirs>
@@ -413,12 +413,12 @@
                         <dependency>
                             <groupId>org.apache.ant</groupId>
                             <artifactId>ant</artifactId>
-                            <version>1.8.4</version>
+                            <version>1.9.5</version>
                         </dependency>
                         <dependency>
                             <groupId>org.apache.ant</groupId>
                             <artifactId>ant-junit</artifactId>
-                            <version>1.8.1</version>
+                            <version>1.9.5</version>
                         </dependency>
                     </dependencies>
                 </plugin>
