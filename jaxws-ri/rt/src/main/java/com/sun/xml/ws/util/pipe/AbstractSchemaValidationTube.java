@@ -536,7 +536,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
             String systemId = e.getValue();
             String ns = e.getKey();
             sb.append("<xsd:import schemaLocation='").append(systemId).append("'");
-            if (!"".equals(ns)) {
+            if (ns != null && !("".equals(ns))) {
                 sb.append(" namespace='").append(ns).append("'");
             }
             sb.append("/>\n");
