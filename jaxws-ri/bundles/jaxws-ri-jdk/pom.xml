@@ -169,6 +169,7 @@
                                 com/sun/tools/jxc/SchemaGenTask.java,
                                 com/sun/tools/xjc/XJCTask.java,
                                 javax/xml/namespace/QName.java,
+                                javax/xml/ws/wsaddressing/package.html,
                                 META-INF/services/javax.xml.bind.JAXBContext,
                                 com/sun/org/apache/xml/internal/resolver/,
                                 com/sun/xml/bind/v2/doc-files/,
