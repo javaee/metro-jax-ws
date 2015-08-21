@@ -48,8 +48,7 @@ HelloType reqH = new HelloType();
 reqH.setArgument("header arg");
 reqH.setExtra("header extra");
 
-// TODO-Miran: check this test
-Response response = helloPort.hello1WorldAsync(req, reqH, new async.wsdl_hello_lit.client.Hello1CallbackHandler());
+Future response = helloPort.hello1WorldAsync(req, reqH, new async.wsdl_hello_lit.client.Hello1CallbackHandler());
 System.out.print("\nWaiting for CallbackHandler to complete...");
 while(!response.isDone())
     System.out.print(".");

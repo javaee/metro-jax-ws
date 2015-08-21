@@ -60,8 +60,7 @@
     req.setArgument("foo");
     req.setExtra("bar");
     try{
-        helloPort.hello(req);
-        assertNull(response.get());
+        HelloOutput response = helloPort.hello(req);
     } catch(Exception e){
         System.out.println("e is " + e.getClass().getName());
         assertTrue(e instanceof HelloFault);

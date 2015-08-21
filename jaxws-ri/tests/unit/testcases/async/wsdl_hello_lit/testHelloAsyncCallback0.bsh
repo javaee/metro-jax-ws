@@ -38,8 +38,7 @@
  * holder.
  */
 
-// TODO-Miran: check this test
-Response response = helloPort.hello0Async(54321, new async.wsdl_hello_lit.client.Hello0CallbackHandler());
+Future response = helloPort.hello0Async(54321, new async.wsdl_hello_lit.client.Hello0CallbackHandler());
 System.out.print("\nWaiting for CallbackHandler to complete...");
 while(!response.isDone()) {
   Thread.sleep(1000);

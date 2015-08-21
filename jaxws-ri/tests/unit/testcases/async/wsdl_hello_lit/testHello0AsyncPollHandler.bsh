@@ -40,8 +40,7 @@
 
 addHandler(new async.wsdl_hello_lit.client.SOAPTestHandler(), helloPort);
 
-// TODO-Miran: check this test
-Future response = helloPort.hello0Async(1);
-Integer output = response.get(15,TimeUnit.SECONDS);
+Response response = helloPort.hello0Async(1);
+Object output = response.get(15,TimeUnit.SECONDS);
 
 assertEquals("Handlers were not invoked properly", 3, output);

@@ -99,12 +99,12 @@ public class ClientTest extends TestCase {
             assertNotNull(rc.get(javax.xml.ws.handler.MessageContext.HTTP_RESPONSE_CODE));
             assertEquals(200,rc.get(javax.xml.ws.handler.MessageContext.HTTP_RESPONSE_CODE));
         }
-        System.out.println("MIRAN: TEST finished.");
     }
 
     public void testResponseContext2() throws Exception {
-        assertNull(((BindingProvider)helloPort).getResponseContext());
-        System.out.println("MIRAN: TEST finished.");
+        Object ctx = ((BindingProvider)helloPort).getResponseContext();
+        System.out.println("ctx = " + ctx);
+        assertNull(ctx);
     }
 
     public void testResponseContext3() throws Exception {
@@ -120,13 +120,11 @@ public class ClientTest extends TestCase {
             Map rc = dispatch.getResponseContext();
             assertEquals(200,rc.get(javax.xml.ws.handler.MessageContext.HTTP_RESPONSE_CODE));
         }
-        System.out.println("MIRAN: TEST finished.");
     }
 
     public void testResponseContext4() throws Exception {
         Dispatch dispatch = createDispatchJAXB();
         assertNull(dispatch.getResponseContext());
-        System.out.println("MIRAN: TEST finished.");
     }
 
 }
