@@ -20,3 +20,5 @@ mvn -o clean test \
   -P jaxwsInJDK9 \
   -Dws.args=-generateTestSources \
   -Dws.test=testcases/$TESTS 2>&1 |tee no-harness/`date +%Y-%m-%d_%H%M`-harness-run.txt
+#  -Dws.jvmOpts=$DEBUG \
+

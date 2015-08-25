@@ -1,0 +1,34 @@
+#!/bin/bash -ex
+# service id:  fromjava.innerclass
+# stage: 4
+L_STATUS=0
+
+if [ "$G_STATUS" = "1" ]; then
+    return 1
+fi;
+
+TOTAL_STEPS=$((TOTAL_STEPS+1))
+
+export CTX=fromjava.innerclass:4-tool
+
+. shared
+
+prolog $CTX
+
+mkdirp client-source
+mkdirp client-classes
+
+r wsimport $TOOL_JAVA_OPTS \
+      -J-Dhttp.proxyHost=www-proxy.us.oracle.com \
+      -J-Dhttp.proxyPort=80 \
+      -J-Dhttp.nonProxyHosts="127.0.0.1|127.0.0.1|192.168.0.*|prg10040.cz.oracle.com|*.oracle.com|*.oracleads.com|*.us.oracle.com|*.cz.oracle.com|*.uk.oracle.com|*.ca.oracle.com|*.oraclecorp.com|*.oracleportal.com" \
+      -p \
+      fromjava.innerclass.client \
+      -extension \
+      -s \
+      client-source \
+      -d \
+      client-classes \
+      -Xnocompile \
+      http://127.0.0.1:8080/fromjava.innerclass/EchoImpl.EchoInner?wsdl
+
