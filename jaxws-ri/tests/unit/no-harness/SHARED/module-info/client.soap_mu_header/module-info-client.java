@@ -1,4 +1,4 @@
-module server {
+module client {
     requires java.xml.ws;
       requires jdk.httpserver;
       requires java.logging; 
