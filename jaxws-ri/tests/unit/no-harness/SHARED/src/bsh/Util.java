@@ -95,10 +95,20 @@ public class Util {
 
     public static java.io.File resource(String path) {
         URL resource = Util.class.getResource("/" + path);
-        try {
-            return new File(resource.toURI());
-        } catch (URISyntaxException e) {
-            throw  new RuntimeException(e);
+        if (resource != null) {
+            try {
+                return new File(resource.toURI());
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            String pwd = System.getenv("PWD");
+            File f =  new File(pwd + "/client-classes/client/" + path);
+            if (f.exists()) {
+                return f;
+            } else {
+                throw new RuntimeException("No resource found! resource: " + path + ", path = " + pwd);
+            }
         }
     }
 
