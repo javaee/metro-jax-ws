@@ -30,24 +30,18 @@ public class Deploy3 {
         new EndpointStopper(STOP_PORT, e);
     }
 
-    static javax.xml.ws.Endpoint deploy() throws Exception {
+    static Endpoint deploy() throws Exception {
         List<Source> metadata = new ArrayList<Source>();
-//        metadata.add(
-//            new StreamSource(
-//                Deploy3.class.getResourceAsStream("/WEB-INF/wsdl/wsgen.report"),
-//                Deploy3.class.getResource("/WEB-INF/wsdl/wsgen.report").toString()
-//            )
-//        );
         metadata.add(
             new StreamSource(
                 Deploy3.class.getResourceAsStream("/WEB-INF/wsdl/EchoInnerService_schema1.xsd"),
-                Deploy3.class.getResource("/WEB-INF/wsdl/EchoInnerService_schema1.xsd").toString()
+                "file://WEB-INF/wsdl/EchoInnerService_schema1.xsd"
             )
         );
         metadata.add(
             new StreamSource(
                 Deploy3.class.getResourceAsStream("/WEB-INF/wsdl/EchoInnerService.wsdl"),
-                Deploy3.class.getResource("/WEB-INF/wsdl/EchoInnerService.wsdl").toString()
+                "file://WEB-INF/wsdl/EchoInnerService.wsdl"
             )
         );
 
@@ -59,7 +53,7 @@ public class Deploy3 {
         // testEndpoint.className = fromjava.innerclass.EchoImpl.EchoInner
         Object endpointImpl = fromjava.innerclass.EchoImpl.EchoInner.class.newInstance();
 
-        javax.xml.ws.Endpoint endpoint = javax.xml.ws.Endpoint.create(endpointImpl);
+        Endpoint endpoint = Endpoint.create(endpointImpl);
         endpoint.setMetadata(metadata);
         endpoint.setProperties(properties);
         String address = "http://localhost:" + DEPLOY_PORT + "/fromjava.innerclass/EchoImpl.EchoInner";
