@@ -256,6 +256,7 @@
                                 <org.jvnet.fastinfoset>com.sun.xml.internal.org.jvnet.fastinfoset</org.jvnet.fastinfoset>
                                 <org.jvnet.staxex>com.sun.xml.internal.org.jvnet.staxex</org.jvnet.staxex>
                                 <org.jvnet.mimepull>com.sun.xml.internal.org.jvnet.mimepull</org.jvnet.mimepull>
+                                <org.relaxng.datatype>com.sun.xml.internal.org.relaxng.datatype</org.relaxng.datatype>
                                 <org.kohsuke.rngom>com.sun.xml.internal.rngom</org.kohsuke.rngom>
                                 <com.sun.tools.ws>com.sun.tools.internal.ws</com.sun.tools.ws>
                                 <com.sun.tools.xjc>com.sun.tools.internal.xjc</com.sun.tools.xjc>
@@ -371,8 +372,8 @@
                                          excludes=""/>
                                 <correct copyright="${lic}" includes="com/sun/org/glassfish/" excludes=""/>
                                 <!-- IMP variation -->
-                                <correct copyright="${antdir}/relaxng.txt" includes="org/relaxng/"
-                                         excludes="org/relaxng/datatype/helpers/DatatypeLibraryLoader.java"/>
+                                <correct copyright="${antdir}/relaxng.txt" includes="com/sun/xml/internal/org/relaxng/"
+                                         excludes="com/sun/xml/internal/org/relaxng/datatype/helpers/DatatypeLibraryLoader.java"/>
 
                                 <!-- variation --> <!-- com/sun/xml/internal/fastinfoset/AbstractResourceBundle.java has freebxml.org license -->
                                 <correct copyright="${antdir}/oracle_gpl_mod.txt"

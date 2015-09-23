@@ -94,7 +94,7 @@ extractTo java.xml.ws com/sun/xml/internal/stream
 
 
 #jdk.xml.bind
-extractTo jdk.xml.bind org/relaxng 
+extractTo jdk.xml.bind com/sun/xml/internal/org/relaxng
 extractTo jdk.xml.bind com/sun/codemodel/internal 
 extractTo jdk.xml.bind com/sun/istack/internal/tools 
 extractTo jdk.xml.bind com/sun/tools/internal/jxc
