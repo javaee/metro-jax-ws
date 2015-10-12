@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -191,6 +191,7 @@ public class Options {
     public Target target = Target.V2_2;
 
     /**
+     * Type of input schema language. One of the {@code SCHEMA_XXX}
      * strictly follow the compatibility rules specified in JAXWS spec
      */
     public static final int STRICT = 1;
@@ -203,8 +204,8 @@ public class Options {
 
     /**
      * this switch determines how carefully the compiler will follow
-     * the compatibility rules in the spec. Either <code>STRICT</code>
-     * or <code>EXTENSION</code>.
+     * the compatibility rules in the spec. Either {@code STRICT}
+     * or {@code EXTENSION}.
      */
     public int compatibilityMode = STRICT;
 
@@ -308,7 +309,7 @@ public class Options {
     protected void addFile(String arg) throws BadCommandLineException {}
 
     /**
-     * Parses an option <code>args[i]</code> and return
+     * Parses an option {@code args[i]} and return
      * the number of tokens consumed.
      *
      * @return

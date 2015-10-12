@@ -51,7 +51,7 @@ import javax.xml.ws.WebServiceException;
  * <p>
  * When the JAX-WS RI is asked to parse a binding ID string into a {@link BindingID}
  * object, it uses service idiom to look for the implementations of this class
- * in the <tt>META-INF/services/...</tt>.
+ * in the {@code META-INF/services/...}.
  *
  * @since JAX-WS 2.0.next
  * @author Kohsuke Kawaguchi
@@ -96,7 +96,7 @@ public abstract class BindingIDFactory {
      *      if the implementation understood the transport but it is not correct,
      *      this exception can be thrown to abort the creation with error.
      *      No further {@link BindingIDFactory} will be consulted, and
-     *      {@link BindingID#create(String, SOAPVersion)} will throw the exception.
+     *      {@link #create(String, SOAPVersion)} will throw the exception.
      */
     public @Nullable BindingID create(@NotNull String transport, @NotNull SOAPVersion soapVersion) throws WebServiceException {
         return null;

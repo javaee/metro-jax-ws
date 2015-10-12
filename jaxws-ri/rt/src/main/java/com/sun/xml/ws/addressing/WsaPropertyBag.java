@@ -84,7 +84,7 @@ public class WsaPropertyBag extends BasePropertySet {
     }
 
     /**
-     * Gets the <tt>wsa:To</tt> header.
+     * Gets the {@code wsa:To} header.
      *
      * @return
      *      null if the incoming SOAP message didn't have the header.
@@ -100,7 +100,7 @@ public class WsaPropertyBag extends BasePropertySet {
     }
 
     /**
-     * Gets the <tt>wsa:To</tt> header.
+     * Gets the {@code wsa:To} header.
      *
      * @return
      *      null if the incoming SOAP message didn't have the header.
@@ -116,7 +116,7 @@ public class WsaPropertyBag extends BasePropertySet {
     }
 
     /**
-     * Gets the <tt>wsa:From</tt> header.
+     * Gets the {@code wsa:From} header.
      *
      * @return
      *      null if the incoming SOAP message didn't have the header.
@@ -127,7 +127,7 @@ public class WsaPropertyBag extends BasePropertySet {
     }
 
     /**
-     * Gets the <tt>wsa:Action</tt> header content as String.
+     * Gets the {@code wsa:Action} header content as String.
      *
      * @return
      *      null if the incoming SOAP message didn't have the header.
@@ -143,7 +143,7 @@ public class WsaPropertyBag extends BasePropertySet {
     }
 
     /**
-     * Gets the <tt>wsa:MessageID</tt> header content as String.
+     * Gets the {@code wsa:MessageID} header content as String.
      *
      * @return
      *      null if the incoming SOAP message didn't have the header.

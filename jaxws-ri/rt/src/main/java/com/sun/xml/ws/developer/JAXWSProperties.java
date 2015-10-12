@@ -163,7 +163,7 @@ public interface JAXWSProperties {
     public static final String WSENDPOINT = "com.sun.xml.ws.api.server.WSEndpoint";
 
     /**
-     * Gets the <tt>wsa:To</tt> header.
+     * Gets the {@code wsa:To} header.
      *
      * The propery value is available on incoming SOAP message. The type of the value
      * is {@link WSEndpointReference}.
@@ -175,7 +175,7 @@ public interface JAXWSProperties {
     public static final String ADDRESSING_TO = "com.sun.xml.ws.api.addressing.to";
 
     /**
-     * Gets the <tt>wsa:From</tt> header.
+     * Gets the {@code wsa:From} header.
      *
      * The propery value is available on incoming SOAP message. The type of the value
      * is {@link WSEndpointReference}.
@@ -187,7 +187,7 @@ public interface JAXWSProperties {
     public static final String ADDRESSING_FROM = "com.sun.xml.ws.api.addressing.from";
 
     /**
-     * Gets the <tt>wsa:Action</tt> header value.
+     * Gets the {@code wsa:Action} header value.
      *
      * The propery value is available on incoming SOAP message. The type of the value
      * is {@link String}.
@@ -199,7 +199,7 @@ public interface JAXWSProperties {
     public static final String ADDRESSING_ACTION = "com.sun.xml.ws.api.addressing.action";
 
     /**
-     * Gets the <tt>wsa:MessageID</tt> header value.
+     * Gets the {@code wsa:MessageID} header value.
      *
      * The propery value is available on incoming SOAP message. The type of the value
      * is {@link String}.
