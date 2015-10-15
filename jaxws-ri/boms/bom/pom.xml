@@ -106,8 +106,8 @@
         <jaxws-api.version>2.2.12</jaxws-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <management-api.version>3.2.1-b001</management-api.version>
-        <mimepull.version>1.9.6</mimepull.version>
-        <policy.version>2.5</policy.version>
+        <mimepull.version>1.9.7</mimepull.version>
+        <policy.version>2.6</policy.version>
         <resolver.version>20050927</resolver.version>
         <saaj-api.version>1.3.7</saaj-api.version>
         <saaj-impl.version>1.3.25</saaj-impl.version>
