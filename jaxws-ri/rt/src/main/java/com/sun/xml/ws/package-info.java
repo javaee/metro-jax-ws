@@ -63,7 +63,6 @@
  *
  * </dl>
  * 
- * @ArchitectureDocument
  **/
 package com.sun.xml.ws;
 

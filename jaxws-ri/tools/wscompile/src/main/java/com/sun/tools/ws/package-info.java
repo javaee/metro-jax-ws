@@ -94,6 +94,5 @@
  *    idirectly via the {@link com.sun.istack.ws.WSAP WSAP} when invoked by Annotation Processing.
  *   </d1>
  *
- * @ArchitectureDocument
  **/
 package com.sun.tools.ws;

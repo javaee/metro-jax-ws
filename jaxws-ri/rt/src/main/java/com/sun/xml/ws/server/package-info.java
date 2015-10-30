@@ -149,7 +149,6 @@
  * 	<LI><P>{@link com.sun.xml.bind.api.Bridge#unmarshal(BridgeContext, XMLStreamReader) Object Bridge.unmarshal(BridgeContext, XMLStreamReader)}</P>
  * </UL>
  * 
- * @ArchitectureDocument
  **/
 package com.sun.xml.ws.server;
 
