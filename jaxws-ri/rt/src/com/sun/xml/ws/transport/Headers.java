@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -140,6 +140,19 @@ public class Headers extends TreeMap<String,List<String>> {
         LinkedList<String> l = new LinkedList<String>();
         l.add (value);
         put(key, l);
+    }
+
+    /**
+     * Added to fix issue
+     * putAll() is easier to deal with as it doesn't return anything
+     */
+    public void putAll(Map<? extends String,? extends List<String>> map) {
+        for (String k : map.keySet()) {
+            List<String> list = map.get(k);
+            for (String v : list) {
+                add(k,v); 
+            }
+        }
     }
 
 }
