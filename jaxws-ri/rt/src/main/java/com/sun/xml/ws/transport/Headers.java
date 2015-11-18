@@ -142,5 +142,17 @@ public class Headers extends TreeMap<String,List<String>> {
         l.add (value);
         put(key, l);
     }
+    /**
+     * Added to fix issue
+     * putAll() is easier to deal with as it doesn't return anything
+     */
+    public void putAll(Map<? extends String,? extends List<String>> map) {
+        for (String k : map.keySet()) {
+            List<String> list = map.get(k);
+            for (String v : list) {
+                add(k,v); 
+            }
+        }
+    }
 
 }
