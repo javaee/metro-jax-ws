@@ -353,13 +353,13 @@ public final class ServiceFinder<T> implements Iterable<T> {
             int lc = 1;
             while ((lc = parseLine(service, u, r, lc, names, returned)) >= 0) ;
         } catch (IOException x) {
-            fail(service, ": " + x);
+            fail(service, ": " + x +";URL is :"+u.toString());
         } finally {
             try {
                 if (r != null) r.close();
                 if (in != null) in.close();
             } catch (IOException y) {
-                fail(service, ": " + y);
+                fail(service, ": " + y +";URL is :"+u.toString());
             }
         }
         return names.iterator();
