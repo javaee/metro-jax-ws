@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,6 +53,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import java.util.Optional;
+
 
 /**
  * Manages all the WebService HTTP servers created by JAXWS runtime.
@@ -96,24 +98,38 @@ final class ServerMgr {
             synchronized(servers) {
                 state = servers.get(inetAddress);
                 if (state == null) {
-                    logger.fine("Creating new HTTP Server at "+inetAddress);
-                    // Creates server with default socket backlog
-                    server = HttpServer.create(inetAddress, 0);
-                    server.setExecutor(Executors.newCachedThreadPool());
-                    String path = url.toURI().getPath();
-                    logger.fine("Creating HTTP Context at = "+path);
-                    HttpContext context = server.createContext(path);
-                    server.start();
+                    final int finalPortNum = port;
+                    Optional<ServerState> stateOpt =
+                               servers.values()
+                                       .stream()
+                                       .filter(s -> s.getServer()
+                                                     .getAddress()
+                                                     .getPort() == finalPortNum)
+                                       .findAny();
 
-                    // we have to get actual inetAddress from server, which can differ from the original in some cases.
-                    // e.g. A port number of zero will let the system pick up an ephemeral port in a bind operation,
-                    // or IP: 0.0.0.0 - which is used to monitor network traffic from any valid IP address
-                    inetAddress = server.getAddress();
+                    if (inetAddress.getAddress().isAnyLocalAddress() &&
+                        stateOpt.isPresent()) {
+                        state = stateOpt.get();
+                    } else {
+                        logger.fine("Creating new HTTP Server at "+inetAddress);
+                        // Creates server with default socket backlog
+                        server = HttpServer.create(inetAddress, 0);
+                        server.setExecutor(Executors.newCachedThreadPool());
+                        String path = url.toURI().getPath();
+                        logger.fine("Creating HTTP Context at = "+path);
+                        HttpContext context = server.createContext(path);
+                        server.start();
 
-                    logger.fine("HTTP server started = "+inetAddress);
-                    state = new ServerState(server, path);
-                    servers.put(inetAddress, state);
-                    return context;
+                        // we have to get actual inetAddress from server, which can differ from the original in some cases.
+                        // e.g. A port number of zero will let the system pick up an ephemeral port in a bind operation,
+                        // or IP: 0.0.0.0 - which is used to monitor network traffic from any valid IP address
+                        inetAddress = server.getAddress();
+
+                        logger.fine("HTTP server started = "+inetAddress);
+                        state = new ServerState(server, path);
+                        servers.put(inetAddress, state);
+                        return context;
+                    }
                 }
             }
             server = state.getServer();
