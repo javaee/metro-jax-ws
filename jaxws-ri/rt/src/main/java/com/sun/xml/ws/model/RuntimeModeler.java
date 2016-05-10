@@ -1184,7 +1184,7 @@ public class RuntimeModeler {
                     if(p == null)
                         reqRpcParams.put(reqRpcParams.size()+10000, param);
                     else
-                        reqRpcParams.put(p.getIndex(), param);
+                        reqRpcParams.put(param.getIndex(), param);
                 }
 
                 if(!param.isIN()){
@@ -1196,7 +1196,7 @@ public class RuntimeModeler {
                     if(p == null)
                         resRpcParams.put(resRpcParams.size()+10000, param);
                     else
-                        resRpcParams.put(p.getIndex(), param);
+                        resRpcParams.put(param.getIndex(), param);
                 }
             }else{
                 javaMethod.addParameter(param);
