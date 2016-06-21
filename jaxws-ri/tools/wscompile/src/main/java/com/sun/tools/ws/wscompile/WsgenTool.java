@@ -46,7 +46,7 @@ import com.sun.tools.ws.ToolVersion;
 import com.sun.tools.ws.processor.modeler.annotation.WebServiceAp;
 import com.sun.tools.ws.processor.modeler.wsdl.ConsoleErrorReporter;
 import com.sun.tools.ws.resources.WscompileMessages;
-import com.sun.tools.ws.util.ModularChecker;
+import com.sun.tools.ws.util.ModuleHelper;
 import com.sun.tools.xjc.util.NullStream;
 import com.sun.xml.txw2.TXW;
 import com.sun.xml.txw2.TypedXmlWriter;
@@ -179,7 +179,7 @@ public class WsgenTool {
         List<String> args = new ArrayList<String>(6 + (bootCP ? 1 : 0) + (options.nocompile ? 1 : 0)
                 + (options.encoding != null ? 2 : 0));
 
-        if (ModularChecker.isModularJDK()) {
+        if (ModuleHelper.isModularJDK()) {
             args.add("-addmods");
             args.add("java.xml.ws");
         }

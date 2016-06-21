@@ -3,7 +3,7 @@
 REM
 REM DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 REM 
-REM Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+REM Copyright 1997-2016 Sun Microsystems, Inc. All rights reserved.
 REM 
 REM The contents of this file are subject to the terms of either the GNU
 REM General Public License Version 2 only ("GPL") or the Common Development
@@ -57,14 +57,22 @@ goto END
 if not "%JAVA_HOME%" == "" goto USE_JAVA_HOME
 
 set JAVA=java
-goto LAUNCH
+goto PREPARE_OPTS
 
 :USE_JAVA_HOME
 set JAVA="%JAVA_HOME%\bin\java"
-goto LAUNCH
+goto PREPARE_OPTS
+
+rem Extend wsimport options with options specific to modular JDK
+:PREPARE_OPTS
+set RUN_OPTS=%WSIMPORT_OPTS%
+%JAVA% -cp "%JAXWS_HOME%\lib\jaxws-tools.jar" com.sun.tools.ws.util.ModuleHelper
+if %ERRORLEVEL% == 0 goto LAUNCH
+set RUN_OPTS=-addmods java.xml.ws %RUN_OPTS%
+set RUN_OPTS=-XaddExports:java.xml/com.sun.org.apache.xml.internal.resolver=ALL-UNNAMED %RUN_OPTS%
 
 :LAUNCH
-%JAVA% %WSIMPORT_OPTS% -jar "%JAXWS_HOME%\lib\jaxws-tools.jar" %*
+%JAVA% %RUN_OPTS% -jar "%JAXWS_HOME%\lib\jaxws-tools.jar" %*
 
 :END
 %COMSPEC% /C exit %ERRORLEVEL%

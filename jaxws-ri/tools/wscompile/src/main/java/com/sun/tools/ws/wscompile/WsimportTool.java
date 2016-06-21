@@ -57,7 +57,7 @@ import com.sun.tools.ws.processor.util.DirectoryUtil;
 import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.resources.WsdlMessages;
 import com.sun.tools.ws.util.WSDLFetcher;
-import com.sun.tools.ws.util.ModularChecker;
+import com.sun.tools.ws.util.ModuleHelper;
 import com.sun.tools.ws.wsdl.parser.MetadataFinder;
 import com.sun.tools.ws.wsdl.parser.WSDLInternalizationLogic;
 import com.sun.tools.xjc.util.NullStream;
@@ -542,7 +542,7 @@ public class WsimportTool {
             boolean bootCP = useBootClasspath(EndpointContext.class) || useBootClasspath(JAXBPermission.class);
             List<String> args = new ArrayList<String>();
 
-            if (ModularChecker.isModularJDK()) {
+            if (ModuleHelper.isModularJDK()) {
                 args.add("-addmods");
                 args.add("java.xml.ws");
             }

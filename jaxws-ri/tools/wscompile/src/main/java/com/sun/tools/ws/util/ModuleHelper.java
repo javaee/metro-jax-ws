@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,22 +40,23 @@
 
 package com.sun.tools.ws.util;
 
-public class ModularChecker {
+public class ModuleHelper {
     public static void main(String [] args) {
         System.exit(isModular ? 1 : 0);
     }
 
     // Indicates if JDK runtime is modular
-    private static boolean isModular;
+    private final static boolean isModular;
 
     // Check JDK runtime for modules support
     static {
-        isModular = true;
+        boolean noException = true;
         try {
             Class.forName( "java.lang.reflect.Module" );
-        } catch(Throwable t) {
-            isModular = false;
+        } catch(ClassNotFoundException ex) {
+            noException = false;
         }
+        isModular = noException;
     }
 
     // Returns true if executing on modular JDK runtime
