@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+# Copyright 1997-2016 Sun Microsystems, Inc. All rights reserved.
 # 
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -83,4 +83,13 @@ else
     JAVA=java
 fi
 
-exec "$JAVA" $WSIMPORT_OPTS -jar "$JAXWS_HOME/lib/jaxws-tools.jar" "$@"
+# Extend wsimport options with options specific to modular JDK
+RUN_OPTS="$WSIMPORT_OPTS"
+"$JAVA" -cp "$JAXWS_HOME/lib/jaxws-tools.jar" com.sun.xml.bind.util.ModuleHelper
+if [ $? -ne 0 ]
+then
+    RUN_OPTS="-addmods java.xml.ws $RUN_OPTS"
+    RUN_OPTS="-XaddExports:java.xml/com.sun.org.apache.xml.internal.resolver=ALL-UNNAMED $RUN_OPTS"
+fi
+
+exec "$JAVA" $RUN_OPTS -jar "$JAXWS_HOME/lib/jaxws-tools.jar" "$@"
