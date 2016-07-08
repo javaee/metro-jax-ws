@@ -46,14 +46,23 @@ import com.sun.org.apache.xml.internal.resolver.CatalogManager;
 import com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.util.ByteArrayBuffer;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
-import org.w3c.dom.EntityReference;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.xml.sax.*;
-
+import com.sun.xml.ws.util.ModuleHelper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -73,20 +82,18 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.ws.WebServiceException;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+import org.w3c.dom.EntityReference;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 
 /**
  * @author WS Development Team
@@ -251,7 +258,7 @@ public class XmlUtil {
             return factory;
         }
     };
-    
+
     /**
      * Creates a new identity transformer.
      */
@@ -297,74 +304,147 @@ public class XmlUtil {
     * Gets an EntityResolver using XML catalog
     */
      public static EntityResolver createEntityResolver(@Nullable URL catalogUrl) {
-        // set up a manager
-        CatalogManager manager = new CatalogManager();
-        manager.setIgnoreMissingProperties(true);
-        // Using static catalog may  result in to sharing of the catalog by multiple apps running in a container
-        manager.setUseStaticCatalog(false);
-        Catalog catalog = manager.getCatalog();
+        ArrayList<URL> urlsArray = new ArrayList<URL>();
+        EntityResolver er;
+        if (catalogUrl != null) {
+            urlsArray.add(catalogUrl);
+        }
         try {
-            if (catalogUrl != null) {
-                catalog.parseCatalog(catalogUrl);
+            // Analyze java runtime
+            if (ModuleHelper.isModularJDK()) {
+                // Modular runtime (JDK9+)
+                er = createCatalogResolver(urlsArray);
+            } else {
+                // JDK8 or earlier runtime
+                Catalog catalog = createCatalogResolver(Collections.enumeration(urlsArray));
+                er = CatalogWorkaroundWrapper.doWorkaround(catalog);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ServerRtException("server.rt.err",e);
         }
-        return workaroundCatalogResolver(catalog);
+        return er;
     }
 
     /**
      * Gets a default EntityResolver for catalog at META-INF/jaxws-catalog.xml
      */
     public static EntityResolver createDefaultCatalogResolver() {
-
-        // set up a manager
-        CatalogManager manager = new CatalogManager();
-        manager.setIgnoreMissingProperties(true);
-        // Using static catalog may  result in to sharing of the catalog by multiple apps running in a container
-        manager.setUseStaticCatalog(false);
-        // parse the catalog
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        Enumeration<URL> catalogEnum;
-        Catalog catalog = manager.getCatalog();
+        Catalog catalog;
+        EntityResolver er;
         try {
+            /**
+             * Gets a URLs for catalog defined at META-INF/jaxws-catalog.xml
+             */
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            Enumeration<URL> catalogEnum;
             if (cl == null) {
                 catalogEnum = ClassLoader.getSystemResources("META-INF/jax-ws-catalog.xml");
             } else {
                 catalogEnum = cl.getResources("META-INF/jax-ws-catalog.xml");
             }
-
-            while(catalogEnum.hasMoreElements()) {
-                URL url = catalogEnum.nextElement();
-                catalog.parseCatalog(url);
+            if (ModuleHelper.isModularJDK()) {
+                // JDK9+ runtime
+                er = createCatalogResolver(Collections.list(catalogEnum));
+            } else {
+                // JDK8 or earlier runtime
+                catalog = createCatalogResolver(catalogEnum);
+                er = CatalogWorkaroundWrapper.doWorkaround(catalog);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new WebServiceException(e);
         }
 
-        return workaroundCatalogResolver(catalog);
+        return er;
     }
 
     /**
-     *  Default CatalogResolver implementation is broken as it depends on CatalogManager.getCatalog() which will always create a new one when
-     *  useStaticCatalog is false.
-     *  This returns a CatalogResolver that uses the catalog passed as parameter.
-     * @param catalog
-     * @return  CatalogResolver
+     * JDK8 and earlier catalog resolver
      */
-    private static CatalogResolver workaroundCatalogResolver(final Catalog catalog) {
+    private static Catalog createCatalogResolver(Enumeration<URL> urls) throws IOException {
         // set up a manager
-        CatalogManager manager = new CatalogManager() {
-            @Override
-            public Catalog getCatalog() {
-                return catalog;
-            }
-        };
+        CatalogManager manager = new CatalogManager();
         manager.setIgnoreMissingProperties(true);
-        // Using static catalog may  result in to sharing of the catalog by multiple apps running in a container
+        // Using static catalog may result in to sharing of the catalog by multiple apps running in a container
         manager.setUseStaticCatalog(false);
+        // parse the catalog
+        Catalog catalog = manager.getCatalog();
+        while (urls.hasMoreElements()) {
+            URL url = urls.nextElement();
+            catalog.parseCatalog(url);
+        }
 
-        return new CatalogResolver(manager);
+        return catalog;
+    }
+
+    /**
+     * Instantiate catalog resolver using new catalog API (javax.xml.catalog.*) added in
+     * JDK9.
+     * Usage of new API removes dependency on internal API (com.sun.org.apache.xml.internal)
+     * for modular runtime.
+     */
+    private static EntityResolver createCatalogResolver(ArrayList<URL> urls) throws Exception {
+        // Create javax.xml.CatalogResolver with use of reflection API:
+        //      CatalogFeatures cf = CatalogFeatures.builder()
+        //        .with(Feature.RESOLVE, "continue")
+        //        .build();
+        //      CatalogResolver resolver = CatalogManager.catalogResolver(f, catalogFiles);
+        Class<?> catalogManagerCls = Class.forName("javax.xml.catalog.CatalogManager");
+        Class<?> catalogFeaturesCls = Class.forName("javax.xml.catalog.CatalogFeatures");
+        Class<?> featureCls = Class.forName("javax.xml.catalog.CatalogFeatures$Feature");
+        Enum RESOLVE = Enum.valueOf((Class<Enum>)featureCls, "RESOLVE");
+        Class<?> builderCls = Class.forName("javax.xml.catalog.CatalogFeatures$Builder");
+        Method builderMethod = catalogFeaturesCls.getMethod("builder");
+        Method withMethod = builderCls.getMethod("with", featureCls, String.class);
+        Method buildMethod = builderCls.getMethod("build");
+        Method catalogResolverMethod = catalogManagerCls.getMethod("catalogResolver", catalogFeaturesCls, String[].class);
+
+        // Prepare array of catalog urls
+        String[] paths = new String[urls.size()];
+        int processed = 0;
+        for (URL u : urls) {
+            paths[processed++] = u.toExternalForm();
+        }
+        // Invoke static method CatalogFeatures.builder()
+        Object m = builderMethod.invoke( null );
+        // Invoke .with on Builder instance
+        m = withMethod.invoke( m, RESOLVE, "continue" );
+        // Invoke .build on Builder instance
+        m = buildMethod.invoke(m);
+        // Invoke CatalogManager.catalogResolver
+        Object catalogResolver = catalogResolverMethod.invoke(null, m, paths);
+
+        return (EntityResolver) catalogResolver;
+    }
+
+    /*
+     * We need to wrap the catalog workaround into private static class to avoid
+     * IllegalAccessError on modular JDK runtime, because of the catalog internal API
+     * unavailibility (it is an internal API that is NOT exported into all unnamed modules
+     * by default)
+     */
+    private static final class CatalogWorkaroundWrapper {
+
+        /**
+         * Default CatalogResolver implementation is broken as it depends on CatalogManager.getCatalog() which will always create a new one when
+         * useStaticCatalog is false.
+         * This returns a CatalogResolver that uses the catalog passed as parameter.
+         * @param catalog
+         * @return  CatalogResolver
+         */
+        private static CatalogResolver doWorkaround(final Catalog catalog) {
+            // set up a manager
+            CatalogManager manager = new CatalogManager() {
+                @Override
+                public Catalog getCatalog() {
+                    return catalog;
+                }
+            };
+            manager.setIgnoreMissingProperties(true);
+            // Using static catalog may  result in to sharing of the catalog by multiple apps running in a container
+            manager.setUseStaticCatalog(false);
+
+            return new CatalogResolver(manager);
+        }
     }
 
     /**

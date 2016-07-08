@@ -85,11 +85,10 @@ fi
 
 # Extend wsimport options with options specific to modular JDK
 RUN_OPTS="$WSIMPORT_OPTS"
-"$JAVA" -cp "$JAXWS_HOME/lib/jaxws-tools.jar" com.sun.xml.bind.util.ModuleHelper
+"$JAVA" -cp "$JAXWS_HOME/lib/jaxws-rt.jar" com.sun.xml.ws.util.ModuleHelper
 if [ $? -ne 0 ]
 then
     RUN_OPTS="-addmods java.xml.ws $RUN_OPTS"
-    RUN_OPTS="-XaddExports:java.xml/com.sun.org.apache.xml.internal.resolver=ALL-UNNAMED $RUN_OPTS"
 fi
 
 exec "$JAVA" $RUN_OPTS -jar "$JAXWS_HOME/lib/jaxws-tools.jar" "$@"
