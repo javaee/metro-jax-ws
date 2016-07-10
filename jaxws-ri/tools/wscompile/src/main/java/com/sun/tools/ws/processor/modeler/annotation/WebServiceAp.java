@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,13 +66,11 @@ import javax.xml.ws.WebServiceProvider;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.lang.reflect.Method;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -104,13 +102,14 @@ import java.util.logging.Level;
         "javax.xml.ws.WebServiceProvider",
         "javax.xml.ws.WebServiceRef"
 })
-@SupportedOptions({WebServiceAp.DO_NOT_OVERWRITE, WebServiceAp.IGNORE_NO_WEB_SERVICE_FOUND_WARNING})
+@SupportedOptions({WebServiceAp.DO_NOT_OVERWRITE, WebServiceAp.IGNORE_NO_WEB_SERVICE_FOUND_WARNING, WebServiceAp.VERBOSE})
 public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(WebServiceAp.class);
     
     public static final String DO_NOT_OVERWRITE = "doNotOverWrite";
     public static final String IGNORE_NO_WEB_SERVICE_FOUND_WARNING = "ignoreNoWebServiceFoundWarning";
+    public static final String VERBOSE = "verbose";
 
     private WsgenOptions options;
     protected AnnotationProcessorContext context;
@@ -150,69 +149,12 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
             options = new WsgenOptions();
 
             out = new PrintStream(new ByteArrayOutputStream());
-
             doNotOverWrite = getOption(DO_NOT_OVERWRITE);
             ignoreNoWebServiceFoundWarning = getOption(IGNORE_NO_WEB_SERVICE_FOUND_WARNING);
-
-            String classDir = parseArguments();
-            String property = System.getProperty("java.class.path");
-            options.classpath = classDir + File.pathSeparator + (property != null ? property : "");
+            options.verbose = getOption(VERBOSE);
             isCommandLineInvocation = true;
         }
         options.filer = processingEnv.getFiler();
-    }
-
-    private String parseArguments() {
-        // let's try to parse JavacOptions
-
-        String classDir = null;
-        try {
-            ClassLoader cl = WebServiceAp.class.getClassLoader();
-            Class javacProcessingEnvironmentClass = Class.forName("com.sun.tools.javac.processing.JavacProcessingEnvironment", false, cl);
-            if (javacProcessingEnvironmentClass.isInstance(processingEnv)) {
-                Method getContextMethod = javacProcessingEnvironmentClass.getDeclaredMethod("getContext");
-                Object tmpContext = getContextMethod.invoke(processingEnv);
-                Class optionsClass = Class.forName("com.sun.tools.javac.util.Options", false, cl);
-                Class contextClass = Class.forName("com.sun.tools.javac.util.Context", false, cl);
-                Method instanceMethod = optionsClass.getDeclaredMethod("instance", new Class[]{contextClass});
-                Object tmpOptions = instanceMethod.invoke(null, tmpContext);
-                if (tmpOptions != null) {
-                    Method getMethod = optionsClass.getDeclaredMethod("get", new Class[]{String.class});
-                    Object result = getMethod.invoke(tmpOptions, "-s"); // todo: we have to check for -d also
-                    if (result != null) {
-                        classDir = (String) result;
-                    }
-                    this.options.verbose = getMethod.invoke(tmpOptions, "-verbose") != null;
-                }
-            }
-        } catch (Exception e) {
-            /// some Error was here - problems with reflection or security
-            processWarning(WebserviceapMessages.WEBSERVICEAP_PARSING_JAVAC_OPTIONS_ERROR());
-            report(e.getMessage());
-        }
-
-        if (classDir == null) { // some error within reflection block
-            String property = System.getProperty("sun.java.command");
-            if (property != null) {
-                Scanner scanner = new Scanner(property);
-                boolean sourceDirNext = false;
-                while (scanner.hasNext()) {
-                    String token = scanner.next();
-                    if (sourceDirNext) {
-                        classDir = token;
-                        sourceDirNext = false;
-                    } else if ("-verbose".equals(token)) {
-                        options.verbose = true;
-                    } else if ("-s".equals(token)) {
-                        sourceDirNext = true;
-                    }
-                }
-            }
-        }
-        if (classDir != null) {
-            sourceDir = new File(classDir);
-        }
-        return classDir;
     }
 
     private boolean getOption(String key) {
