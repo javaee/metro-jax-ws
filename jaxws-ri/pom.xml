@@ -46,7 +46,7 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>jaxws-ri-bom</artifactId>
-        <version>2.2.8-b160713.1231</version>
+        <version>2.2.8-SNAPSHOT</version>
         <relativePath>bom/pom.xml</relativePath>
     </parent>
 
