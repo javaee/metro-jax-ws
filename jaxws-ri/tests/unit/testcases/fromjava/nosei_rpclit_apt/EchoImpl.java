@@ -306,11 +306,10 @@ public class EchoImpl {
     }
 
     @WebMethod
-    public String holderOperation(@WebParam(name="holder1", mode=WebParam.Mode.INOUT)Holder<String> holder1,
+    public void holderOperation(@WebParam(name="holder1", mode=WebParam.Mode.INOUT)Holder<String> holder1,
                                   @WebParam(name="holder2", mode=WebParam.Mode.INOUT)Holder<String> holder2) throws RemoteException{
         holder1.value += "1";
         holder2.value += "2";
-        return "success";
     }
 
 }

@@ -124,8 +124,8 @@
     </wsdl:message>
 
     <wsdl:message name="testCatalogResponse">
-        <wsdl:part name="output" type="cat:CatalogType"/>
         <wsdl:part name="name" type="xs:string"/>
+        <wsdl:part name="output" type="cat:CatalogType"/>
     </wsdl:message>
 
     <wsdl:message name="testHoldersRequest">

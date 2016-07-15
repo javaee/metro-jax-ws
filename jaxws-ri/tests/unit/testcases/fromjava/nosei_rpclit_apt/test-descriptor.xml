@@ -215,7 +215,7 @@
         assertTrue(echoPort.arrayOperationFromClient(strArray).equals("success"));
         Holder h1 = new Holder("Hello1");
         Holder h2 = new Holder("Hello2");
-        assertTrue(echoPort.holderOperation(h1, h2).equals("success"));
+        echoPort.holderOperation(h1, h2);
         assertTrue(h1.value.equals("Hello11"));
         assertTrue(h2.value.equals("Hello22"));
   ]]></client>
