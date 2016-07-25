@@ -142,6 +142,7 @@
         <findbugs.common>exclude-common.xml</findbugs.common>
         <findbugs.exclude/>
         <findbugs.version>3.0.1</findbugs.version>
+        <glassfish.findbugs.version>1.7</glassfish.findbugs.version>
         <netbeans.hint.jdkPlatform>JDK_1.6</netbeans.hint.jdkPlatform>
     </properties>
 
@@ -451,7 +452,7 @@
                         <dependency>
                             <groupId>org.glassfish.findbugs</groupId>
                             <artifactId>findbugs</artifactId>
-                            <version>1.2</version>
+                            <version>${glassfish.findbugs.version}</version>
                         </dependency>
                     </dependencies>
                 </plugin>
