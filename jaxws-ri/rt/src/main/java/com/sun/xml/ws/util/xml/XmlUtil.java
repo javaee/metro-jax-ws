@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -377,26 +377,17 @@ public class XmlUtil {
     }
 
     /**
-     * Instantiate catalog resolver using new catalog API (javax.xml.catalog.*) added in
-     * JDK9.
-     * Usage of new API removes dependency on internal API (com.sun.org.apache.xml.internal)
-     * for modular runtime.
+     * Instantiate catalog resolver using new catalog API (javax.xml.catalog.*)
+     * added in JDK9. Usage of new API removes dependency on internal API
+     * (com.sun.org.apache.xml.internal) for modular runtime.
      */
     private static EntityResolver createCatalogResolver(ArrayList<URL> urls) throws Exception {
         // Create javax.xml.CatalogResolver with use of reflection API:
-        //      CatalogFeatures cf = CatalogFeatures.builder()
-        //        .with(Feature.RESOLVE, "continue")
-        //        .build();
-        //      CatalogResolver resolver = CatalogManager.catalogResolver(f, catalogFiles);
-        Class<?> catalogManagerCls = Class.forName("javax.xml.catalog.CatalogManager");
-        Class<?> catalogFeaturesCls = Class.forName("javax.xml.catalog.CatalogFeatures");
-        Class<?> featureCls = Class.forName("javax.xml.catalog.CatalogFeatures$Feature");
-        Enum RESOLVE = Enum.valueOf((Class<Enum>)featureCls, "RESOLVE");
-        Class<?> builderCls = Class.forName("javax.xml.catalog.CatalogFeatures$Builder");
-        Method builderMethod = catalogFeaturesCls.getMethod("builder");
-        Method withMethod = builderCls.getMethod("with", featureCls, String.class);
-        Method buildMethod = builderCls.getMethod("build");
-        Method catalogResolverMethod = catalogManagerCls.getMethod("catalogResolver", catalogFeaturesCls, String[].class);
+        //    CatalogResolver resolver = CatalogManager.catalogResolver(catalogFeatures, catalogFiles);
+
+        // Return null if new catalog API is not available on JDK9+ runtime
+        if (catalogResolverMethod == null)
+            return null;
 
         // Prepare array of catalog urls
         String[] paths = new String[urls.size()];
@@ -404,16 +395,49 @@ public class XmlUtil {
         for (URL u : urls) {
             paths[processed++] = u.toExternalForm();
         }
-        // Invoke static method CatalogFeatures.builder()
-        Object m = builderMethod.invoke( null );
-        // Invoke .with on Builder instance
-        m = withMethod.invoke( m, RESOLVE, "continue" );
-        // Invoke .build on Builder instance
-        m = buildMethod.invoke(m);
-        // Invoke CatalogManager.catalogResolver
-        Object catalogResolver = catalogResolverMethod.invoke(null, m, paths);
+
+        // Invoke CatalogManager.catalogResolver with cached catalogFeatures and
+        // provided catalog URLs
+        Object catalogResolver = catalogResolverMethod.invoke(null, catalogFeatures, paths);
 
         return (EntityResolver) catalogResolver;
+    }
+
+    // CatalogManager.catalogResolver method
+    private static Method catalogResolverMethod;
+
+    // CatalogFeatures object
+    private static Object catalogFeatures;
+
+    // Cache CatalogFeatures instance method for future usages.
+    // The catalog features settings is never changed and can be reused too.
+    // Resolve feature is set to "continue" value for backward compatibility.
+    // CatalogFeatures instantiation code without use of reflection:
+    //   CatalogFeatures cf = CatalogFeatures.builder()
+    //        .with(Feature.RESOLVE, "continue")
+    //        .build();
+    static {
+        try {
+            Class<?> catalogManagerCls = Class.forName("javax.xml.catalog.CatalogManager");
+            Class<?> catalogFeaturesCls = Class.forName("javax.xml.catalog.CatalogFeatures");
+            Class<?> featureCls = Class.forName("javax.xml.catalog.CatalogFeatures$Feature");
+            Enum RESOLVE = Enum.valueOf((Class<Enum>) featureCls, "RESOLVE");
+            Class<?> builderCls = Class.forName("javax.xml.catalog.CatalogFeatures$Builder");
+            Method builderMethod = catalogFeaturesCls.getMethod("builder");
+            Method withMethod = builderCls.getMethod("with", featureCls, String.class);
+            Method buildMethod = builderCls.getMethod("build");
+            // Invoke static method CatalogFeatures.builder()
+            Object f = builderMethod.invoke(null);
+            // Invoke .with on Builder instance
+            f = withMethod.invoke(f, RESOLVE, "continue");
+            // Invoke .build on Builder instance
+            catalogResolverMethod = catalogManagerCls.getMethod("catalogResolver", catalogFeaturesCls, String[].class);
+            // Cache catalogResolver method
+            catalogFeatures = buildMethod.invoke(f);
+        } catch (Exception e) {
+            catalogResolverMethod = null;
+            catalogFeatures = null;
+        }
     }
 
     /*
