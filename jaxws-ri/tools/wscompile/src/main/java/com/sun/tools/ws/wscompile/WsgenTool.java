@@ -46,7 +46,6 @@ import com.sun.tools.ws.ToolVersion;
 import com.sun.tools.ws.processor.modeler.annotation.WebServiceAp;
 import com.sun.tools.ws.processor.modeler.wsdl.ConsoleErrorReporter;
 import com.sun.tools.ws.resources.WscompileMessages;
-import com.sun.tools.ws.util.ModuleHelper;
 import com.sun.tools.xjc.util.NullStream;
 import com.sun.xml.txw2.TXW;
 import com.sun.xml.txw2.TypedXmlWriter;
@@ -62,6 +61,7 @@ import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.model.ExternalMetadataReader;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
+import com.sun.xml.ws.util.ModuleHelper;
 import com.sun.xml.ws.util.ServiceFinder;
 import org.xml.sax.SAXParseException;
 

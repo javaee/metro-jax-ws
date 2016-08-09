@@ -66,10 +66,9 @@ goto PREPARE_OPTS
 rem Extend wsimport options with options specific to modular JDK
 :PREPARE_OPTS
 set RUN_OPTS=%WSIMPORT_OPTS%
-%JAVA% -cp "%JAXWS_HOME%\lib\jaxws-tools.jar" com.sun.tools.ws.util.ModuleHelper
+%JAVA% -cp "%JAXWS_HOME%\lib\jaxws-rt.jar" com.sun.xml.ws.util.ModuleHelper
 if %ERRORLEVEL% == 0 goto LAUNCH
 set RUN_OPTS=-addmods java.xml.ws %RUN_OPTS%
-set RUN_OPTS=-XaddExports:java.xml/com.sun.org.apache.xml.internal.resolver=ALL-UNNAMED %RUN_OPTS%
 
 :LAUNCH
 %JAVA% %RUN_OPTS% -jar "%JAXWS_HOME%\lib\jaxws-tools.jar" %*

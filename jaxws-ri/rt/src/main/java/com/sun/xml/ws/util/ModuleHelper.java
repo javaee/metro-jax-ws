@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.tools.ws.util;
+package com.sun.xml.ws.util;
 
 public class ModuleHelper {
     public static void main(String [] args) {
