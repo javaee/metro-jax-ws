@@ -167,7 +167,7 @@ public class WsgenTool {
                 + (options.encoding != null ? 2 : 0));
 
         if (ModuleHelper.isModularJDK()) {
-            args.add("-addmods");
+            args.add("--add-modules");
             args.add("java.xml.ws");
         }
 

@@ -88,7 +88,7 @@ RUN_OPTS="$WSIMPORT_OPTS"
 "$JAVA" -cp "$JAXWS_HOME/lib/jaxws-rt.jar" com.sun.xml.ws.util.ModuleHelper
 if [ $? -ne 0 ]
 then
-    RUN_OPTS="-addmods java.xml.ws $RUN_OPTS"
+    RUN_OPTS="--add-modules java.xml.ws $RUN_OPTS"
 fi
 
 exec "$JAVA" $RUN_OPTS -jar "$JAXWS_HOME/lib/jaxws-tools.jar" "$@"

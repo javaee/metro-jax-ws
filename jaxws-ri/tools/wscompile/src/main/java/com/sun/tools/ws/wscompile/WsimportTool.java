@@ -543,7 +543,7 @@ public class WsimportTool {
             List<String> args = new ArrayList<String>();
 
             if (ModuleHelper.isModularJDK()) {
-                args.add("-addmods");
+                args.add("--add-modules");
                 args.add("java.xml.ws");
             }
 
