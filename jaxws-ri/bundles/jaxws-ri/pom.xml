@@ -48,12 +48,12 @@
     <parent>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>bundles</artifactId>
-        <version>2.2.8-SNAPSHOT</version>
+        <version>2.2.8-b160817.1231</version>
     </parent>
 
     <groupId>com.sun.xml.ws</groupId>
     <artifactId>jaxws-ri</artifactId>
-    <version>2.2.8-SNAPSHOT</version>
+    <version>2.2.8-b160817.1231</version>
     <packaging>pom</packaging>
     <name>JAX-WS RI Standalone Zipped Bundle</name>
     <description>Open source Reference Implementation of JSR-224: Java API for XML Web Services Distribution Bundle</description>
