@@ -103,10 +103,9 @@
     </scm>
 
     <properties>
-        <!--todo: remove when we fix inheritance/import of plugin versions-->
-        <istack.version>3.0.1</istack.version>
         <!--************************************************************-->
 
+        <istack.version>3.0.1</istack.version>
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
         <ha-api.version>3.1.9</ha-api.version>
         <jaxb.version>2.3.0-SNAPSHOT</jaxb.version>

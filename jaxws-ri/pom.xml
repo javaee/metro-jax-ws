@@ -277,7 +277,10 @@
                 <plugin>
                     <groupId>com.sun.istack</groupId>
                     <artifactId>istack-commons-maven-plugin</artifactId>
-                    <version>${istack.version}</version>
+                    <!--todo: remove 2.20 when we fix inheritance/import of plugin versions-->
+                    <!--todo: after update of istack to 3.1.0 rs-gen goal suddenly disappears, need prior fix-->
+                    <!--<version>${istack.version}</version>-->
+                    <version>2.20</version>
                     <executions>
                         <execution>
                             <id>rs-gen</id>
