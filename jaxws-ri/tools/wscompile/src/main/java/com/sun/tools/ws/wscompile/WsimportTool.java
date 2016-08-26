@@ -524,18 +524,6 @@ public class WsimportTool {
         this.options.entityResolver = resolver;
     }
 
-    /*
-     * To take care of JDK6-JDK6u3, where 2.1 API classes are not there
-     */
-    private static boolean useBootClasspath(Class clazz) {
-        try {
-            ParallelWorldClassLoader.toJarUrl(clazz.getResource('/'+clazz.getName().replace('.','/')+".class"));
-            return true;
-        } catch(Exception e) {
-            return false;
-        }
-    }
-
     protected boolean compileGeneratedClasses(ErrorReceiver receiver, WsimportListener listener){
         List<String> sourceFiles = new ArrayList<String>();
 
@@ -548,7 +536,6 @@ public class WsimportTool {
         if (sourceFiles.size() > 0) {
             String classDir = options.destDir.getAbsolutePath();
             String classpathString = createClasspathString();
-            boolean bootCP = useBootClasspath(EndpointContext.class) || useBootClasspath(JAXBPermission.class);
             List<String> args = new ArrayList<String>();
 
             if (ModuleHelper.isModularJDK()) {
@@ -560,14 +547,7 @@ public class WsimportTool {
             args.add(classDir);
             args.add("-classpath");
             args.add(classpathString);
-            //javac is not working in osgi as the url starts with a bundle
-            if (bootCP) {
-                args.add("-Xbootclasspath/p:"
-                        + JavaCompilerHelper.getJarFile(EndpointContext.class)
-                        + File.pathSeparator
-                        + JavaCompilerHelper.getJarFile(JAXBPermission.class));
-            }
-            
+
             if (options.debug) {
                 args.add("-g");
             }

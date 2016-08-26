@@ -110,11 +110,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -129,6 +124,7 @@
                         <goals>
                             <goal>unpack-dependencies</goal>
                         </goals>
+                        <phase>generate-sources</phase>
                         <configuration>
                             <classifier>sources</classifier>
                             <excludeScope>provided</excludeScope>
@@ -222,6 +218,7 @@
                     </execution>
                     <execution>
                         <id>unpack-sources-non-standard-packaging</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>unpack-dependencies</goal>
                         </goals>
@@ -234,42 +231,110 @@
                 </executions>
             </plugin>
 
+            <!-- replace default versions of classes with JDK9 -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>copy-jdk9-classes</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy todir="${project.build.directory}/unpacked-sources" overwrite="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/META-INF/versions/9">
+                                        <include name="**/*.java"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>move-jaxws-tubes-default.xml</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <move todir="${project.build.directory}/unpacked-sources/com/sun/xml/ws/assembler">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/META-INF">
+                                        <include name="jaxws-tubes-default.xml"/>
+                                    </fileset>
+                                </move>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!--repackaging sources to internal packages-->
             <plugin>
                 <groupId>com.sun.wts.tools.ant</groupId>
                 <artifactId>package-rename-task</artifactId>
+                <version>1.5-SNAPSHOT</version>
                 <executions>
                     <execution>
-                        <phase>process-sources</phase>
-                        <id>repackage-to-internal</id>
+                        <phase>generate-sources</phase>
+                        <id>repackage-sources</id>
                         <goals>
                             <goal>rename</goal>
                         </goals>
                         <configuration>
                             <srcDir>${project.basedir}/target/unpacked-sources</srcDir>
-                            <rootDir>${project.basedir}/target/generated-sources/</rootDir>
+                            <rootDir>${project.basedir}/target/generated-sources</rootDir>
                             <excludes>com.sun.xml.internal</excludes>
                             <patterns>
-                                <com.sun.codemodel>com.sun.codemodel.internal</com.sun.codemodel>
-                                <com.sun.xml>com.sun.xml.internal</com.sun.xml>
-                                <com.sun.istack>com.sun.istack.internal</com.sun.istack>
-                                <org.jvnet.fastinfoset>com.sun.xml.internal.org.jvnet.fastinfoset</org.jvnet.fastinfoset>
-                                <org.jvnet.staxex>com.sun.xml.internal.org.jvnet.staxex</org.jvnet.staxex>
-                                <org.jvnet.mimepull>com.sun.xml.internal.org.jvnet.mimepull</org.jvnet.mimepull>
-                                <org.relaxng.datatype>com.sun.xml.internal.org.relaxng.datatype</org.relaxng.datatype>
-                                <org.kohsuke.rngom>com.sun.xml.internal.rngom</org.kohsuke.rngom>
-                                <com.sun.tools.ws>com.sun.tools.internal.ws</com.sun.tools.ws>
-                                <com.sun.tools.xjc>com.sun.tools.internal.xjc</com.sun.tools.xjc>
-                                <com.sun.tools.jxc>com.sun.tools.internal.jxc</com.sun.tools.jxc>
-                                <org.glassfish>com.sun.org.glassfish</org.glassfish>
-                                <org.jvnet.ws>com.sun.xml.internal.org.jvnet.ws</org.jvnet.ws>
-                                <com.oracle.webservices>com.oracle.webservices.internal</com.oracle.webservices>
-                                <com.oracle.xmlns>com.oracle.xmlns.internal</com.oracle.xmlns>
+                                <!--java.annotations.common-->
+                                <javax.annotation>java.annotations.common/javax.annotation</javax.annotation>
+
+                                <!--java.xml.ws-->
+                                <com.oracle.webservices>java.xml.ws/com.oracle.webservices.internal</com.oracle.webservices>
+                                <com.oracle.xmlns>java.xml.ws/com.oracle.xmlns.internal</com.oracle.xmlns>
+                                <org.glassfish>java.xml.ws/com.sun.org.glassfish</org.glassfish>
+                                <com.sun.xml.messaging>java.xml.ws/com.sun.xml.internal.messaging</com.sun.xml.messaging>
+                                <com.sun.xml.stream>java.xml.ws/com.sun.xml.internal.stream</com.sun.xml.stream>
+                                <com.sun.xml.ws>java.xml.ws/com.sun.xml.internal.ws</com.sun.xml.ws>
+                                <javax.jws>java.xml.ws/javax.jws</javax.jws>
+                                <javax.xml.soap>java.xml.ws/javax.xml.soap</javax.xml.soap>
+                                <javax.xml.ws>java.xml.ws/javax.xml.ws</javax.xml.ws>
+
+                                <!--java.xml.bind-->
+                                <com.sun.istack>java.xml.bind/com.sun.istack.internal</com.sun.istack>
+                                <com.sun.istack.localization>java.xml.bind/com.sun.istack.internal.localization</com.sun.istack.localization>
+                                <com.sun.istack.logging>java.xml.bind/com.sun.istack.internal.logging</com.sun.istack.logging>
+                                <com.sun.xml.bind>java.xml.bind/com.sun.xml.internal.bind</com.sun.xml.bind>
+                                <javax.xml.bind>java.xml.bind/javax.xml.bind</javax.xml.bind>
+                                <com.sun.xml.fastinfoset>java.xml.bind/com.sun.xml.internal.fastinfoset</com.sun.xml.fastinfoset>
+                                <org.jvnet.fastinfoset>java.xml.bind/com.sun.xml.internal.org.jvnet.fastinfoset</org.jvnet.fastinfoset>
+                                <org.jvnet.staxex>java.xml.bind/com.sun.xml.internal.org.jvnet.staxex</org.jvnet.staxex>
+                                <org.jvnet.mimepull>java.xml.bind/com.sun.xml.internal.org.jvnet.mimepull</org.jvnet.mimepull>
+                                <com.sun.xml.txw2>java.xml.bind/com.sun.xml.internal.txw2</com.sun.xml.txw2>
+
+                                <!--jdk.xml.ws-->
+                                <com.sun.tools.ws>jdk.xml.ws/com.sun.tools.internal.ws</com.sun.tools.ws>
+
+                                <!--jdk.xml.bind-->
+                                <org.relaxng.datatype>jdk.xml.bind/com.sun.xml.internal.org.relaxng.datatype</org.relaxng.datatype>
+                                <com.sun.codemodel>jdk.xml.bind/com.sun.codemodel.internal</com.sun.codemodel>
+                                <com.sun.istack.tools>jdk.xml.bind/com.sun.istack.internal.tools</com.sun.istack.tools>
+                                <com.sun.tools.jxc>jdk.xml.bind/com.sun.tools.internal.jxc</com.sun.tools.jxc>
+                                <com.sun.tools.xjc>jdk.xml.bind/com.sun.tools.internal.xjc</com.sun.tools.xjc>
+                                <com.sun.xml.dtdparser>jdk.xml.bind/com.sun.xml.internal.dtdparser</com.sun.xml.dtdparser>
+                                <org.kohsuke.rngom>jdk.xml.bind/com.sun.xml.internal.rngom</org.kohsuke.rngom>
+                                <com.sun.xml.xsom>jdk.xml.bind/com.sun.xml.internal.xsom</com.sun.xml.xsom>
+
                             </patterns>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!--
+            TODO JDK9 miran had some metainf services groovy patching, but now they are in module-info.java. Recheck if anything else is needed for it.
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>groovy-maven-plugin</artifactId>
@@ -286,7 +351,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
 
             <!--licences update, ant so far; TODO: find non-ant solution-->
             <plugin>
@@ -351,75 +416,76 @@
                                     </sequential>
                                 </macrodef>
 
-                                <correct copyright="${lic}" includes="javax/xml/soap/" excludes=""/>
-                                <correct copyright="${lic}" includes="javax/jws/" excludes=""/>
-                                <correct copyright="${lic}" includes="javax/xml/ws/" excludes=""/>
-                                <correct copyright="${lic}" includes="javax/xml/bind/" excludes=""/>
-                                <correct copyright="${lic}" includes="javax/annotation/"
-                                         excludes="javax/annotation/processing"/>
-                                <correct copyright="${lic}" includes="com/sun/xml/internal/ws/"
-                                         excludes="com/sun/xml/internal/ws/org/objectweb/asm/"/>
-                                <correct copyright="${lic}" includes="com/sun/xml/internal/bind/" excludes=""/>
-                                <correct copyright="${lic}" includes="com/sun/xml/internal/dtdparser/" excludes=""/>
-                                <correct copyright="${lic}" includes="com/sun/xml/internal/txw2/" excludes=""/>
-                                <correct copyright="${lic}" includes="com/sun/xml/internal/messaging/" excludes=""/>
-                                <correct copyright="${lic}" includes="com/sun/xml/internal/rngom/" excludes=""/>
-                                <correct copyright="${lic}" includes="com/sun/xml/internal/xsom/"
-                                         excludes="com/sun/xml/internal/xsom/impl/util/Uri.java"/>
-                                <correct copyright="${lic}" includes="com/sun/xml/internal/org/jvnet/staxex/"
+                                <correct copyright="${lic}" includes="java.xml.ws/javax/xml/soap/" excludes=""/>
+                                <correct copyright="${lic}" includes="java.xml.ws/javax/jws/" excludes=""/>
+                                <correct copyright="${lic}" includes="java.xml.ws/javax/xml/ws/" excludes=""/>
+                                <correct copyright="${lic}" includes="java.xml.bind/javax/xml/bind/" excludes=""/>
+                                <correct copyright="${lic}" includes="java.annotations.common/javax/annotation/"
+                                         excludes="java.annotations.common/javax/annotation/processing"/>
+                                <correct copyright="${lic}" includes="java.xml.ws/com/sun/xml/internal/ws/"
+                                         excludes="java.xml.ws/com/sun/xml/internal/ws/org/objectweb/asm/"/>
+                                <correct copyright="${lic}" includes="java.xml.bind/com/sun/xml/internal/bind/" excludes=""/>
+                                <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/xml/internal/dtdparser/" excludes=""/>
+                                <correct copyright="${lic}" includes="java.xml.bind/com/sun/xml/internal/txw2/" excludes=""/>
+                                <correct copyright="${lic}" includes="java.xml.ws/com/sun/xml/internal/messaging/" excludes=""/>
+                                <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/xml/internal/rngom/" excludes=""/>
+                                <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/xml/internal/xsom/"
+                                         excludes="jdk.xml.bind/com/sun/xml/internal/xsom/impl/util/Uri.java"/>
+                                <correct copyright="${lic}" includes="java.xml.bind/com/sun/xml/internal/org/jvnet/staxex/"
                                          excludes=""/>
-                                <correct copyright="${lic}" includes="com/sun/xml/internal/org/jvnet/mimepull/"
+                                <correct copyright="${lic}" includes="java.xml.bind/com/sun/xml/internal/org/jvnet/mimepull/"
                                          excludes=""/>
-                                <correct copyright="${lic}" includes="com/sun/org/glassfish/" excludes=""/>
+                                <correct copyright="${lic}" includes="java.xml.ws/com/sun/org/glassfish/" excludes=""/>
                                 <!-- IMP variation -->
-                                <correct copyright="${antdir}/relaxng.txt" includes="com/sun/xml/internal/org/relaxng/"
-                                         excludes="com/sun/xml/internal/org/relaxng/datatype/helpers/DatatypeLibraryLoader.java"/>
+                                <correct copyright="${antdir}/relaxng.txt" includes="jdk.xml.bind/com/sun/xml/internal/org/relaxng/"
+                                         excludes="jdk.xml.bind/com/sun/xml/internal/org/relaxng/datatype/helpers/DatatypeLibraryLoader.java"/>
 
                                 <!-- variation --> <!-- com/sun/xml/internal/fastinfoset/AbstractResourceBundle.java has freebxml.org license -->
                                 <correct copyright="${antdir}/oracle_gpl_mod.txt"
-                                         includes="com/sun/xml/internal/fastinfoset/"
-                                         excludes="com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java"/>
+                                         includes="java.xml.bind/com/sun/xml/internal/fastinfoset/"
+                                         excludes="java.xml.bind/com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java"/>
 
                                 <correct copyright="${antdir}/oracle_gpl_mod.txt"
-                                         includes="com/sun/xml/internal/org/jvnet/fastinfoset/" excludes=""/>
-                                <correct copyright="${lic}" includes="com/sun/xml/internal/stream/buffer/" excludes=""/>
-                                <correct copyright="${lic}" includes="com/sun/codemodel/internal/" excludes=""/>
-                                <correct copyright="${lic}" includes="com/sun/istack/internal/" excludes=""/>
-                                <correct copyright="${lic}" includes="com/sun/tools/internal/ws/"
-                                         excludes="com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"/>
-                                <correct copyright="${lic}" includes="com/sun/tools/internal/xjc/"
-                                         excludes="com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"/>
-                                <correct copyright="${lic}" includes="com/sun/tools/internal/jxc/" excludes=""/>
+                                         includes="java.xml.bind/com/sun/xml/internal/org/jvnet/fastinfoset/" excludes=""/>
+                                <correct copyright="${lic}" includes="java.xml.ws/com/sun/xml/internal/stream/buffer/" excludes=""/>
+                                <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/codemodel/internal/" excludes=""/>
+                                <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/istack/internal/" excludes=""/>
+                                <correct copyright="${lic}" includes="java.xml.bind/com/sun/istack/internal/" excludes=""/>
+                                <correct copyright="${lic}" includes="jdk.xml.ws/com/sun/tools/internal/ws/"
+                                         excludes="jdk.xml.ws/com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"/>
+                                <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/tools/internal/xjc/"
+                                         excludes="jdk.xml.bind/com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"/>
+                                <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/tools/internal/jxc/" excludes=""/>
 
                                 <!-- handle anamalies -->
                                 <correct copyright="${antdir}/oracle_gpl_portions_2005-2011.txt"
-                                         includes="com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java"
+                                         includes="java.xml.bind/com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java"
                                          excludes=""/>
                                 <correct copyright="${antdir}/oracle_gpl_portions_2005-2011.txt"
-                                         includes="com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"
+                                         includes="jdk.xml.ws/com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"
                                          excludes=""/>
                                 <correct copyright="${antdir}/oracle_gpl_portions_2005-2011.txt"
-                                         includes="com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"
+                                         includes="jdk.xml.bind/com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"
                                          excludes=""/>
 
-                                <correct copyright="${lic}" includes="com/oracle/webservices/internal/**/*"
+                                <correct copyright="${lic}" includes="java.xml.ws/com/oracle/webservices/internal/**/*"
                                          excludes=""/>
-                                <correct copyright="${lic}" includes="com/oracle/xmlns/internal/**/*" excludes=""/>
+                                <correct copyright="${lic}" includes="java.xml.ws/com/oracle/xmlns/internal/**/*" excludes=""/>
 
                                 <!-- add reserve block for the above three files -->
-                                <prepend destfile="com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java"
+                                <prepend destfile="java.xml.bind/com/sun/xml/internal/fastinfoset/org/apache/xerces/util/XMLChar.java"
                                          srcfile="${antdir}/reserve-block.txt"/>
-                                <prepend destfile="com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"
+                                <prepend destfile="jdk.xml.ws/com/sun/tools/internal/ws/wsdl/parser/NamespaceContextImpl.java"
                                          srcfile="${antdir}/reserve-block.txt"/>
                                 <prepend
-                                        destfile="com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"
+                                        destfile="jdk.xml.bind/com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"
                                         srcfile="${antdir}/reserve-block.txt"/>
 
                                 <!-- See http://openjdk.sfbay.sun.com/space/start/openjdk-legal-notice-howto.html -->
                                 <loadfile property="jaxws-asm" srcFile="${antdir}/jaxws-asm.txt"/>
                                 <loadfile property="openjdk-asm" srcFile="${antdir}/oracle_openjdk-asm.txt"/>
-                                <replace dir="target/generated-sources/com/sun/xml/internal/ws/org/objectweb/asm"
-                                        token="${jaxws-asm}" value="${openjdk-asm}"/>
+                                <replace dir="target/generated-sources/java.xml.ws/com/sun/xml/internal/ws/org/objectweb/asm"
+                                         token="${jaxws-asm}" value="${openjdk-asm}"/>
 
 
                                 <echo message="Rebranding done ..."/>
@@ -457,25 +523,28 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
+                <version>3.5.1</version>
+                <configuration combine.self="override">
+                    <skipMain>true</skipMain>
+                    <source>1.9</source>
+                    <target>1.9</target>
                     <fork>true</fork>
                     <!--redirecting to different place not to be contained in the result bundle-->
-                    <generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+                    <!--<generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>-->
+                    <!--<forceJavacCompilerUse>true</forceJavacCompilerUse>-->
                     <compilerArgs>
-                        <arg>-XDignore.symbol.file</arg>
+                        <arg>--add-modules</arg>
+                        <arg>java.activation,java.xml</arg>
+                        <!--<arg>-Xmodule:java.xml.ws</arg>-->
+                        <!--<arg>&#45;&#45;add-exports</arg>
+                        <arg>java.xml/com.sun.org.apache.xerces.internal.dom=ALL-UNNAMED</arg>-->
+                        <!--<arg>&#45;&#45;add-exports</arg>
+                        <arg>java.xml/com.sun.org.apache.xerces.internal.jaxp=ALL-UNNAMED</arg>-->
+                        <!--<arg>&#45;&#45;add-exports</arg>
+                        <arg>java.xml/com.sun.org.apache.xerces.internal.util=ALL-UNNAMED</arg>-->
+                        <!--<arg>-XDignore.symbol.file</arg>-->
                     </compilerArgs>
                 </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
         </plugins>

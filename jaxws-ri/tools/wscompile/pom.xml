@@ -87,10 +87,6 @@
             <artifactId>policy</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
             <scope>provided</scope>
@@ -264,6 +260,8 @@
                                     <jvmarg line="-Dnet.sourceforge.cobertura.datafile=${net.sourceforge.cobertura.datafile}"/>
                                 </wsimport>
                             </target>
+                            <!-- TODO JDK9 endorse for -->
+                            <skip>true</skip>
                         </configuration>
                     </execution>
                 </executions>

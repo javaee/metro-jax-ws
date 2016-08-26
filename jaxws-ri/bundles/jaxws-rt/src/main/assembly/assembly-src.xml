@@ -54,6 +54,13 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <moduleSets>
         <moduleSet>
+            <includes>
+                <include>com.sun.xml.ws:rt</include>
+                <include>com.sun.xml.ws:rt-fi</include>
+                <include>com.sun.xml.ws:rt-ha</include>
+                <include>com.sun.xml.ws:httpspi-servlet</include>
+                <include>com.sun.xml.ws:servlet</include>
+            </includes>
             <sources>
                 <includeModuleDirectory>false</includeModuleDirectory>
                 <fileSets>
@@ -74,6 +81,27 @@
                         <includes>
                             <include>com/sun/xml/ws/util/version.properties</include>
                         </includes>
+                    </fileSet>
+                </fileSets>
+            </sources>
+        </moduleSet>
+        <moduleSet>
+            <!-- JDK9 modular jar sources -->
+            <includes>
+                <include>com.sun.xml.ws:rt-jdk9</include>
+            </includes>
+            <sources>
+                <includeModuleDirectory>false</includeModuleDirectory>
+                <fileSets>
+                    <fileSet>
+                        <directory>src/main/java/</directory>
+                        <outputDirectory>META-INF/versions/9</outputDirectory>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                        <excludes>
+                            <exclude>**/*.class</exclude>
+                        </excludes>
                     </fileSet>
                 </fileSets>
             </sources>

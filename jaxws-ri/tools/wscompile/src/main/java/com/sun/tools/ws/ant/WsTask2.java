@@ -472,9 +472,10 @@ abstract class WsTask2 extends MatchingTask {
             getCommandline().createArgument().setValue("-extension");
         }
         //-Xendorsed option
+        /* TODO JDK9
         if (isXendorsed()) {
             getCommandline().createArgument().setValue("-Xendorsed");
-        }
+        }*/
         // keep option
         if (getKeep()) {
             getCommandline().createArgument().setValue("-keep");
@@ -529,13 +530,15 @@ abstract class WsTask2 extends MatchingTask {
             antcp += File.pathSeparatorChar + toolsJar.getAbsolutePath();
         }
         getCommandline().createClasspath(getProject()).append(new Path(getProject(), antcp));
+        /*
+        * TODO JDK9
         String apiCp = getApiClassPath(this.getClass().getClassLoader());
         if (apiCp != null) {
             //TODO: jigsaw - Xbootclaspath may get deprecated/removed
             //and replaced with '-L' or '-m' options
             //see also: http://mail.openjdk.java.net/pipermail/jigsaw-dev/2010-April/000778.html
             getCommandline().createVmArgument().setLine("-Xbootclasspath/p:" + apiCp);
-        }
+        }*/
         getCommandline().setClassname(className);
     }
 

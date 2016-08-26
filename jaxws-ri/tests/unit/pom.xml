@@ -178,6 +178,10 @@
                         </configuration>
                     </execution>
                 </executions>
+                <!-- TODO JDK9 add to upgrade module path instead after modularization -->
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.glassfish.metro</groupId>

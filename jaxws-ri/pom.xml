@@ -277,10 +277,7 @@
                 <plugin>
                     <groupId>com.sun.istack</groupId>
                     <artifactId>istack-commons-maven-plugin</artifactId>
-                    <!--todo: remove 2.20 when we fix inheritance/import of plugin versions-->
-                    <!--todo: after update of istack to 3.1.0 rs-gen goal suddenly disappears, need prior fix-->
-                    <!--<version>${istack.version}</version>-->
-                    <version>2.20</version>
+                    <version>${istack.version}</version>
                     <executions>
                         <execution>
                             <id>rs-gen</id>
@@ -303,7 +300,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.5.1</version>
+                    <version>3.5.1</version>
                     <configuration>
                         <source>1.8</source>
                         <target>1.8</target>
@@ -319,7 +316,8 @@
                     <version>2.12.2</version>
                     <configuration>
                         <forkMode>once</forkMode>
-                        <argLine>-Djava.endorsed.dirs="${endorsed.dir}"</argLine>
+                        <!-- TODO JDK9 -->
+                        <!--<argLine>-Djava.endorsed.dirs="${endorsed.dir}"</argLine>-->
                     </configuration>
                 </plugin>
                 <plugin>
@@ -517,6 +515,20 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/rsrc-gen</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -914,15 +926,6 @@
     <dependencyManagement>
         <dependencies>
 
-            <!-- JDK dependencies -->
-            <dependency>
-                <groupId>com.sun</groupId>
-                <artifactId>tools</artifactId>
-                <version>1.6</version>
-                <scope>system</scope>
-                <systemPath>${tools.jar}</systemPath>
-            </dependency>
-            
             <!-- Test Dependencies -->
             <dependency>
                 <groupId>junit</groupId>
