@@ -41,6 +41,8 @@
 package com.sun.tools.ws.wscompile;
 
 import com.sun.codemodel.CodeWriter;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JPackage;
 import com.sun.codemodel.writer.ProgressCodeWriter;
 import com.sun.istack.tools.DefaultAuthenticator;
 import com.sun.tools.ws.ToolVersion;
@@ -82,6 +84,9 @@ import org.xml.sax.SAXException;
  * @author Vivek Pandey
  */
 public class WsimportTool {
+    /** JAXB module name. JAXB dependency is mandatory in generated Java module. */
+    private static final String JAXWS_PACKAGE = "java.xml.ws";
+
     private static final String WSIMPORT = "wsimport";
     private final PrintStream out;
     private final Container container;
@@ -492,6 +497,8 @@ public class WsimportTool {
             }
         }
 
+        generateModuleInfo(options.getCodeModel(), options);
+
         CodeWriter cw;
         if (options.filer != null) {
             cw = new FilerCodeWriter(options);
@@ -509,6 +516,27 @@ public class WsimportTool {
        }
        
        return true;
+    }
+
+    /**
+     * Generates Java Module from model packages.
+     * Packages must already contain classes.
+     * @param codeModel Generated Java code model.
+     * @param options Command line options.
+     */
+    private static void generateModuleInfo(
+            final JCodeModel codeModel, final WsimportOptions options) {
+        final String moduleName = options.getModuleName();
+        if (moduleName != null) {
+            codeModel._moduleInfo(moduleName);
+            for (Iterator<JPackage> i = codeModel.packages(); i.hasNext();) {
+                final JPackage pkg = i.next();
+                if (pkg.hasClasses()) {
+                    codeModel._getModuleInfo()._exports(pkg);
+                }
+                codeModel._getModuleInfo()._requires(JAXWS_PACKAGE);
+            }
+        }
     }
 
     public void setEntityResolver(EntityResolver resolver){
