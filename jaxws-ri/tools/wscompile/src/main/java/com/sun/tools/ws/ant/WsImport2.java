@@ -496,7 +496,7 @@ public class WsImport2 extends WsTask2 {
             cmd.createArgument().setValue(module);
         }
 
-        //cl ientjar
+        //clientjar
         if(getClientjar() != null){
             cmd.createArgument().setValue("-clientjar");
             cmd.createArgument().setValue(getClientjar());
