@@ -497,7 +497,9 @@ public class WsimportTool {
             }
         }
 
-        generateModuleInfo(options.getCodeModel(), options);
+        if (options.getModuleName() != null) {
+            options.getCodeModel()._prepareModuleInfo(options.getModuleName(), JAXWS_PACKAGE);
+        }
 
         CodeWriter cw;
         if (options.filer != null) {
@@ -516,27 +518,6 @@ public class WsimportTool {
        }
        
        return true;
-    }
-
-    /**
-     * Generates Java Module from model packages.
-     * Packages must already contain classes.
-     * @param codeModel Generated Java code model.
-     * @param options Command line options.
-     */
-    private static void generateModuleInfo(
-            final JCodeModel codeModel, final WsimportOptions options) {
-        final String moduleName = options.getModuleName();
-        if (moduleName != null) {
-            codeModel._moduleInfo(moduleName);
-            for (Iterator<JPackage> i = codeModel.packages(); i.hasNext();) {
-                final JPackage pkg = i.next();
-                if (pkg.hasClasses()) {
-                    codeModel._getModuleInfo()._exports(pkg);
-                }
-                codeModel._getModuleInfo()._requires(JAXWS_PACKAGE);
-            }
-        }
     }
 
     public void setEntityResolver(EntityResolver resolver){
