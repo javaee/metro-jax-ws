@@ -97,6 +97,19 @@
         </wsimport>
     </target>
 
+    <target name="wsimport-client-module" depends="wsimport-init">
+        <wsimport
+            sourcedestdir="${build.dir}"
+            destdir="${build.dir}"
+            wsdl="${wsdl}"
+            module="my.module"
+            extension="true"
+            verbose="true"
+            xendorsed="true"
+            xnocompile="false">
+        </wsimport>
+    </target>
+
     <target name="wsimport-client-jarurl" depends="wsimport-init">
         <property name="wsdl.jar" location="${lib.dir}/wsdl.jar"/>
         <condition property="jar.url.prefix" value="jar:file:/" else="jar:file:">

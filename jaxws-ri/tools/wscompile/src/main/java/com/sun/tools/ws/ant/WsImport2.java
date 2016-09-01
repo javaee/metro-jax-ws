@@ -215,6 +215,25 @@ public class WsImport2 extends WsTask2 {
         return pkg;
     }
 
+    /** -m <name> option. */
+    private String module;
+
+    /**
+     * Sets Java module name.
+     * @param module Java module name to set. {@code null} turns (@code module-info.java} generation off.
+     */
+    public void setModule(String module){
+        this.module = module;
+    }
+
+    /**
+     * Gets Java module name.
+     * @return Java module name or {@code null} if (@code module-info.java} generation is turned off.
+     */
+    public String getModule(){
+        return module;
+    }
+
     /**
      * Adds XJC argument.
      *
@@ -469,6 +488,12 @@ public class WsImport2 extends WsTask2 {
         if((getPackage() != null) && (getPackage().length() > 0)){
             cmd.createArgument().setValue("-p");
             cmd.createArgument().setValue(getPackage());
+        }
+
+        //module
+        if (module != null && !module.isEmpty()) {
+            cmd.createArgument().setValue("-m");
+            cmd.createArgument().setValue(module);
         }
 
         //clientjar

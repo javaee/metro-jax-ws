@@ -148,6 +148,11 @@ public class WsimportOptions extends Options {
     public boolean useBaseResourceAndURLToLoadWSDL = false;
 
     /**
+     * Java module name in {@code module-info.java}.
+     */
+    private String javaModule = null;
+
+    /**
      * JAXB's {@link SchemaCompiler} to be used for handling the schema portion.
      * This object is also configured through options.
      */
@@ -234,6 +239,14 @@ public class WsimportOptions extends Options {
     }
 
     /**
+     * Gets Java module name option.
+     * @return Java module name option or {@code null} if this option was not set.
+     */
+    public String getModuleName() {
+        return javaModule;
+    }
+
+     /**
      * Parses arguments and fill fields of this object.
      *
      * @exception BadCommandLineException
@@ -308,6 +321,9 @@ public class WsimportOptions extends Options {
             return 1;
         } else if (args[i].equals("-p")) {
             defaultPackage = requireArgument("-p", args, ++i);
+            return 2;
+        } else if (args[i].equals("-m")) {
+            javaModule = requireArgument("-m", args, ++i);
             return 2;
         } else if (args[i].equals("-catalog")) {
             String catalog = requireArgument("-catalog", args, ++i);

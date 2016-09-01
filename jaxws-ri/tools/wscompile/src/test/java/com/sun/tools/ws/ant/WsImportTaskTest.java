@@ -40,6 +40,7 @@
 
 package com.sun.tools.ws.ant;
 
+import com.sun.xml.ws.util.ModuleHelper;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -86,6 +87,16 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-client", "clean"));
         List<String> files = listDirs(apiDir, libDir);
         assertTrue("Locked jars: " + files, files.isEmpty());
+    }
+
+    /**
+     * Verify (@code module-info.java} generation with JDK9.
+     */
+    public void testWsImportModuleGeneration() throws IOException, URISyntaxException {
+        // TODO: JDK 9
+        if (ModuleHelper.isModularJDK()) {
+            assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-client-module", "clean"));
+        }
     }
 
     public void testWsImportLockJarURLs() throws IOException, URISyntaxException {

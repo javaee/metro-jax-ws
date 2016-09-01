@@ -41,6 +41,8 @@
 package com.sun.tools.ws.wscompile;
 
 import com.sun.codemodel.CodeWriter;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JPackage;
 import com.sun.codemodel.writer.ProgressCodeWriter;
 import com.sun.istack.tools.DefaultAuthenticator;
 import com.sun.tools.ws.ToolVersion;
@@ -82,6 +84,9 @@ import org.xml.sax.SAXException;
  * @author Vivek Pandey
  */
 public class WsimportTool {
+    /** JAXB module name. JAXB dependency is mandatory in generated Java module. */
+    private static final String JAXWS_PACKAGE = "java.xml.ws";
+
     private static final String WSIMPORT = "wsimport";
     private final PrintStream out;
     private final Container container;
@@ -490,6 +495,10 @@ public class WsimportTool {
                 // fatal error. error should have been reported
                 return false;
             }
+        }
+
+        if (options.getModuleName() != null) {
+            options.getCodeModel()._prepareModuleInfo(options.getModuleName(), JAXWS_PACKAGE);
         }
 
         CodeWriter cw;
