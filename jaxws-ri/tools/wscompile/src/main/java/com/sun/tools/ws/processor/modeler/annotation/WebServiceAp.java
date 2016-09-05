@@ -66,8 +66,6 @@ import javax.xml.ws.WebServiceProvider;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -116,8 +114,6 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
     private File sourceDir;
     private boolean doNotOverWrite;
     private boolean ignoreNoWebServiceFoundWarning = false;
-    private TypeElement remoteElement;
-    private TypeMirror remoteExceptionElement;
     private TypeMirror exceptionElement;
     private TypeMirror runtimeExceptionElement;
     private TypeElement defHolderElement;
@@ -140,8 +136,6 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        remoteElement = processingEnv.getElementUtils().getTypeElement(Remote.class.getName());
-        remoteExceptionElement = processingEnv.getElementUtils().getTypeElement(RemoteException.class.getName()).asType();
         exceptionElement = processingEnv.getElementUtils().getTypeElement(Exception.class.getName()).asType();
         runtimeExceptionElement = processingEnv.getElementUtils().getTypeElement(RuntimeException.class.getName()).asType();
         defHolderElement = processingEnv.getElementUtils().getTypeElement(Holder.class.getName());
@@ -266,14 +260,14 @@ public class WebServiceAp extends AbstractProcessor implements ModelBuilder {
 
     @Override
     public boolean isRemote(TypeElement typeElement) {
-        return processingEnv.getTypeUtils().isSubtype(typeElement.asType(), remoteElement.asType());
+        return TypeModeler.isRemote(typeElement);
     }
 
     @Override
     public boolean isServiceException(TypeMirror typeMirror) {
         return processingEnv.getTypeUtils().isSubtype(typeMirror, exceptionElement)
                 && !processingEnv.getTypeUtils().isSubtype(typeMirror, runtimeExceptionElement)
-                && !processingEnv.getTypeUtils().isSubtype(typeMirror, remoteExceptionElement);
+                && !TypeModeler.isRemoteException(processingEnv, typeMirror);
     }
 
     @Override
