@@ -97,7 +97,8 @@ public class WebServiceApTest extends TestCase {
         WsgenOptions wsgenOptions = new WsgenOptions();
         wsgenOptions.verbose = true;
 
-        JavaCompiler.CompilationTask task = getCompilationTask("com.sun.tools.ws.processor.modeler.annotation.RemoteArgTestWS", options, wsgenOptions, diagnostics);
+        JavaCompiler.CompilationTask task = getCompilationTask("com.sun.tools.ws.processor.modeler.annotation.RemoteArgTestWS",
+                options, wsgenOptions, diagnostics);
         try {
             task.call();
         } catch (RuntimeException re) {
@@ -113,7 +114,8 @@ public class WebServiceApTest extends TestCase {
         WsgenOptions wsgenOptions = new WsgenOptions();
         wsgenOptions.verbose = true;
 
-        JavaCompiler.CompilationTask task = getCompilationTask("com.sun.tools.ws.processor.modeler.annotation.RemoteReturnTestWS", options, wsgenOptions, diagnostics);
+        JavaCompiler.CompilationTask task = getCompilationTask("com.sun.tools.ws.processor.modeler.annotation.RemoteReturnTestWS",
+                options, wsgenOptions, diagnostics);
         try {
             task.call();
         } catch (RuntimeException re) {
@@ -127,7 +129,7 @@ public class WebServiceApTest extends TestCase {
             WsgenOptions wsgenOptions, DiagnosticCollector<JavaFileObject> diagnostics) {
         Iterable<? extends JavaFileObject> compilationUnits = new HashSet<JavaFileObject>() {
             {
-                add(new JavaSourceFromString(compilationUnit));//new JavaSourceFromString("com.sun.tools.ws.processor.modeler.annotation.RemoteArgTestWS"));
+                add(new JavaSourceFromString(compilationUnit));
             }
         };
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -166,7 +168,8 @@ public class WebServiceApTest extends TestCase {
             Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File(destDir, "RMITestWsService.wsdl"));
             NodeList faults = doc.getElementsByTagName("fault");
             Assert.assertEquals("CustomEx", faults.item(1).getAttributes().getNamedItem("name").getTextContent());
-            Assert.assertEquals(faults.item(0).getAttributes().getNamedItem("name").getTextContent(), faults.item(1).getAttributes().getNamedItem("name").getTextContent());
+            Assert.assertEquals(faults.item(0).getAttributes().getNamedItem("name").getTextContent(),
+                    faults.item(1).getAttributes().getNamedItem("name").getTextContent());
             Assert.assertEquals(2, faults.getLength());
         } catch (ParserConfigurationException | SAXException | IOException ex) {
            throw new RuntimeException(ex);
