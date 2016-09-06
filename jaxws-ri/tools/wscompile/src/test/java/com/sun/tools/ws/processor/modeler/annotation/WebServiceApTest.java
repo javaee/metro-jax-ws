@@ -48,6 +48,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -125,26 +126,6 @@ public class WebServiceApTest extends TestCase {
         }
     }
 
-    private JavaCompiler.CompilationTask getCompilationTask(String compilationUnit, List<String> javacOptions,
-            WsgenOptions wsgenOptions, DiagnosticCollector<JavaFileObject> diagnostics) {
-        Iterable<? extends JavaFileObject> compilationUnits = new HashSet<JavaFileObject>() {
-            {
-                add(new JavaSourceFromString(compilationUnit));
-            }
-        };
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        JavaCompiler.CompilationTask task = compiler.getTask(
-                null,
-                null,
-                diagnostics,
-                javacOptions,
-                null,
-                compilationUnits);
-        WebServiceAp wsap = new WebServiceAp(wsgenOptions, System.out);
-        task.setProcessors(Collections.singleton(wsap));
-        return task;
-    }
-
     public void testRemoteException() {
         options.add("-r");
         options.add(destDir.getAbsolutePath());
@@ -175,6 +156,78 @@ public class WebServiceApTest extends TestCase {
            throw new RuntimeException(ex);
         }
 
+    }
+
+    /**
+     * Test if -Averbose=true is propagated from javac to processor.
+     */
+    public void testVerboseArg() {
+        options.add("-Averbose=true");
+
+        final WebServiceAp ap = new WebServiceAp();
+        final boolean result = runCompiler(options, ap);
+
+        Assert.assertTrue(ap.getOptions().verbose);
+        Assert.assertTrue(result);
+    }
+
+    /**
+     * Tests -s is used by annotation processor code generation.
+     */
+    public void testOutputDirectory() {
+        final WebServiceAp ap = new WebServiceAp();
+        final boolean result = runCompiler(options, ap);
+
+        Assert.assertTrue(result);
+        File generatedSourceDirFiles = new File(destDir, "com/sun/tools/ws/processor/modeler/annotation/jaxws");
+        final File[] contents = generatedSourceDirFiles.listFiles();
+        Assert.assertTrue(4 == contents.length);
+
+        final List<String> expectedSourceNames = Arrays.asList("SayHello.java", "SayHello.class", "SayHelloResponse.java", "SayHelloResponse.class");
+        for (File generated : contents) {
+            Assert.assertTrue(expectedSourceNames.contains(generated.getName()));
+        }
+    }
+
+    private JavaCompiler.CompilationTask getCompilationTask(String compilationUnit, List<String> javacOptions,
+            WsgenOptions wsgenOptions, DiagnosticCollector<JavaFileObject> diagnostics) {
+        Iterable<? extends JavaFileObject> compilationUnits = new HashSet<JavaFileObject>() {
+            {
+                add(new JavaSourceFromString(compilationUnit));
+            }
+        };
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        JavaCompiler.CompilationTask task = compiler.getTask(
+                null,
+                null,
+                diagnostics,
+                javacOptions,
+                null,
+                compilationUnits);
+        WebServiceAp wsap = new WebServiceAp(wsgenOptions, System.out);
+        task.setProcessors(Collections.singleton(wsap));
+        return task;
+    }
+
+    private boolean runCompiler(List<String> args, WebServiceAp ap) {
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        Iterable<? extends JavaFileObject> compilationUnits = new HashSet<JavaFileObject>() {
+            {
+                add(new JavaSourceFromString("com.sun.tools.ws.processor.modeler.annotation.EndpointJavaSource"));
+            }
+        };
+        JavaCompiler.CompilationTask task = compiler.getTask(
+                null,
+                null,
+                diagnostics,
+                args,
+                null,
+                compilationUnits);
+
+        task.setProcessors(Collections.singleton(ap));
+
+        return task.call();
     }
 
     private static WsgenOptions getOptions(WsgenTool tool) {
