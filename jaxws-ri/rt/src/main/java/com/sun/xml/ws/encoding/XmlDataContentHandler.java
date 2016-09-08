@@ -154,8 +154,9 @@ public class XmlDataContentHandler implements DataContentHandler {
     }
 
     private boolean isXml(ContentType ct) {
-        return ct.getSubType().equals("xml") &&
-                    (ct.getPrimaryType().equals("text") || ct.getPrimaryType().equals("application"));
+        final String primaryType = ct.getPrimaryType();
+        return ct.getSubType().equalsIgnoreCase("xml") &&
+                    (primaryType.equalsIgnoreCase("text") || primaryType.equalsIgnoreCase("application"));
     }
 
 }
