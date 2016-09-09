@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE` COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,22 +40,11 @@
 
 package com.sun.tools.ws.ant;
 
-import com.sun.tools.ws.processor.modeler.annotation.WebServiceAp;
-import junit.framework.Assert;
-
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -146,64 +135,5 @@ public class WsGenTaskTest extends WsAntTaskTestBase {
         assertEquals(0xcafebabe, in.readInt());
         in.readUnsignedShort();
         assertTrue(49 != in.readUnsignedShort());
-    }
-
-    /**
-     * Test if -Averbose=true is propagated from javac to processor.
-     */
-    public void testVerboseArg() throws IOException {
-        copy(generated, "EndpointJavaSource.java", WsGenTaskTest.class.getResourceAsStream("resources/EndpointJavaSource.java_"));
-
-        final List<String> args = new ArrayList<>();
-        args.add("-Averbose=true");
-
-        final WebServiceAp ap = new WebServiceAp();
-        final boolean result = runCompiler(args, ap);
-
-        Assert.assertTrue(ap.getOptions().verbose);
-        Assert.assertTrue(result);
-    }
-
-    /**
-     * Tests -s is used by annotation processor code generation.
-     */
-    public void testOutputDirectory() throws IOException {
-        copy(generated, "EndpointJavaSource.java", WsGenTaskTest.class.getResourceAsStream("resources/EndpointJavaSource.java_"));
-
-        final List<String> args = new ArrayList<>();
-
-        args.add("-s");
-        args.add(generated.getAbsolutePath());
-
-        final WebServiceAp ap = new WebServiceAp();
-        final boolean result = runCompiler(args, ap);
-
-        Assert.assertTrue(result);
-        File generatedSourceDirFiles = new File(generated.toURI().toURL().getPath() + "com/sun/tools/ws/processor/modeler/annotation/jaxws");
-        final File[] contents = generatedSourceDirFiles.listFiles();
-        Assert.assertTrue(4 == contents.length);
-
-        final List<String> expectedSourceNames = Arrays.asList("SayHello.java", "SayHello.class", "SayHelloResponse.java", "SayHelloResponse.class");
-        for (File generated : contents) {
-            Assert.assertTrue(expectedSourceNames.contains(generated.getName()));
-        }
-    }
-
-    private boolean runCompiler(List<String> args, WebServiceAp ap) {
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
-        File endpointJavaFile = new File(generated.getPath() + "/EndpointJavaSource.java");
-        JavaCompiler.CompilationTask task = compiler.getTask(
-                null,
-                fileManager,
-                diagnostics,
-                args,
-                null,
-                fileManager.getJavaFileObjects(endpointJavaFile));
-
-        task.setProcessors(Collections.singleton(ap));
-
-        return task.call();
     }
 }
