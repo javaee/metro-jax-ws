@@ -213,7 +213,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <argLine>-Djava.endorsed.dirs="${endorsed.dir}"</argLine>
                 </configuration>
             </plugin>
 <!--
