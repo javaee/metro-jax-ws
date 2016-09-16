@@ -253,6 +253,8 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <!-- move jaxws-tubes-default.xml to com/sun/xml/ws/assembler -->
+                        <!-- also see MetroConfigLoader.java patching below -->
                         <id>move-jaxws-tubes-default.xml</id>
                         <phase>generate-sources</phase>
                         <goals>
@@ -333,25 +335,30 @@
                 </executions>
             </plugin>
 
-            <!--
-            TODO JDK9 miran had some metainf services groovy patching, but now they are in module-info.java. Recheck if anything else is needed for it.
+            <!-- Replaces MetroConfigLoader jaxws-tubes-default.xml file location-->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>groovy-maven-plugin</artifactId>
-                <version>1.5</version>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.3</version>
                 <executions>
                     <execution>
+                        <id>update-jaxws-tubes-default-xml-location-in-metro-config-loader-java</id>
                         <phase>process-sources</phase>
-                        <id>manual-patch</id>
                         <goals>
-                            <goal>execute</goal>
+                            <goal>replace</goal>
                         </goals>
-                        <configuration>
-                            <source>${project.basedir}/src/main/script/manualPatch.groovy</source>
-                        </configuration>
                     </execution>
                 </executions>
-            </plugin>-->
+                <configuration>
+                    <file>${project.build.directory}/generated-sources/java.xml.ws/com/sun/xml/internal/ws/assembler/MetroConfigLoader.java</file>
+                    <replacements>
+                        <replacement>
+                            <token>META-INF/</token>
+                            <value>com/sun/xml/internal/ws/assembler/</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
 
             <!--licences update, ant so far; TODO: find non-ant solution-->
             <plugin>
