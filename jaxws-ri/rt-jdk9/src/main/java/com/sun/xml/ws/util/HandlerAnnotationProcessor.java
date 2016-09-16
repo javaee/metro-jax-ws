@@ -40,7 +40,6 @@
 
 package com.sun.xml.ws.util;
 
-import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.databinding.MetadataReader;
 import com.sun.xml.ws.api.server.AsyncProvider;
@@ -49,6 +48,7 @@ import com.sun.xml.ws.handler.HandlerChainsModel;
 import com.sun.xml.ws.model.ReflectAnnotationReader;
 import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.istack.NotNull;
 
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
@@ -80,14 +80,14 @@ import java.util.logging.Logger;
  * <p>The methods in the class are static so that it may called
  * from the runtime statically.
  *
- * @see HandlerAnnotationInfo
+ * @see com.sun.xml.ws.util.HandlerAnnotationInfo
  *
  * @author JAX-WS Development Team
  */
 public class HandlerAnnotationProcessor {
 
     private static final Logger logger = Logger.getLogger(
-        Constants.LoggingDomain + ".util");
+        com.sun.xml.ws.util.Constants.LoggingDomain + ".util");
 
     /**
      * <p>This method is called by

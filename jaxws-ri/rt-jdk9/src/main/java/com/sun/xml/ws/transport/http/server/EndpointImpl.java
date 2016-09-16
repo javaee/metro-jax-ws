@@ -40,47 +40,33 @@
 
 package com.sun.xml.ws.transport.http.server;
 
-import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.XMLStreamBufferResult;
-import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.Component;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.databinding.MetadataReader;
 import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.server.InstanceResolver;
-import com.sun.xml.ws.api.server.Invoker;
-import com.sun.xml.ws.api.server.SDDocumentSource;
-import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.api.server.WSWebServiceContext;
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.api.server.*;
 import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.server.ServerRtException;
-import com.sun.xml.ws.transport.http.HttpAdapter;
-import com.sun.xml.ws.transport.http.HttpAdapterList;
 import com.sun.xml.ws.util.xml.XmlUtil;
-import org.w3c.dom.Element;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.SAXException;
+import com.sun.xml.ws.transport.http.HttpAdapterList;
+import com.sun.xml.ws.transport.http.HttpAdapter;
+import com.sun.istack.NotNull;
+
+import java.net.MalformedURLException;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
-import javax.xml.ws.Binding;
-import javax.xml.ws.Endpoint;
-import javax.xml.ws.EndpointContext;
-import javax.xml.ws.EndpointReference;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
-import javax.xml.ws.WebServicePermission;
+import javax.xml.ws.*;
 import javax.xml.ws.spi.http.HttpContext;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,6 +74,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.xml.sax.EntityResolver;
+import org.xml.sax.SAXException;
+import org.w3c.dom.Element;
 
 
 /**
@@ -144,7 +136,7 @@ public class EndpointImpl extends Endpoint {
     }
 
     private EndpointImpl(@NotNull BindingID bindingId, Object impl, @NotNull Class implClass,
-                         Invoker invoker, WebServiceFeature ... features) {
+                        Invoker invoker, WebServiceFeature ... features) {
         binding = BindingImpl.create(bindingId, features);
         this.implClass = implClass;
         this.invoker = invoker;
@@ -286,7 +278,7 @@ public class EndpointImpl extends Endpoint {
         return metadata;
     }
 
-    public void setMetadata(List<Source> metadata) {
+    public void setMetadata(java.util.List<Source> metadata) {
         if (isPublished()) {
             throw new IllegalStateException("Cannot set Metadata. Endpoint is already published");
         }
