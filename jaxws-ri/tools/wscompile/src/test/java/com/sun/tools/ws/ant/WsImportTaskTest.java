@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,6 @@
 
 package com.sun.tools.ws.ant;
 
-import com.sun.xml.ws.util.ModuleHelper;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -92,12 +91,12 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
     /**
      * Verify (@code module-info.java} generation with JDK9.
      */
-    public void testWsImportModuleGeneration() throws IOException, URISyntaxException {
+    /*public void testWsImportModuleGeneration() throws IOException, URISyntaxException {
         // TODO: JDK 9
         if (ModuleHelper.isModularJDK()) {
             assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-client-module", "clean"));
         }
-    }
+    }*/
 
     public void testWsImportLockJarURLs() throws IOException, URISyntaxException {
         if (isAntPre18()) {
@@ -133,7 +132,7 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
         //UTF-74
         assertFalse(new File(buildDir, "client/invalid").exists());
     }
-    
+
     public void testPlugin() throws IOException {
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-plugin"));
         File f = new File(buildDir, "test/Hello_Service.java");

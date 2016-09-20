@@ -57,21 +57,14 @@ goto END
 if not "%JAVA_HOME%" == "" goto USE_JAVA_HOME
 
 set JAVA=java
-goto PREPARE_OPTS
+goto LAUNCH
 
 :USE_JAVA_HOME
 set JAVA="%JAVA_HOME%\bin\java"
-goto PREPARE_OPTS
-
-rem Extend wsimport options with options specific to modular JDK
-:PREPARE_OPTS
-set RUN_OPTS=%WSIMPORT_OPTS%
-%JAVA% -cp "%JAXWS_HOME%\lib\jaxws-rt.jar" com.sun.xml.ws.util.ModuleHelper
-if %ERRORLEVEL% == 0 goto LAUNCH
-set RUN_OPTS=--add-modules java.xml.ws %RUN_OPTS%
+goto LAUNCH
 
 :LAUNCH
-%JAVA% %RUN_OPTS% -jar "%JAXWS_HOME%\lib\jaxws-tools.jar" %*
+%JAVA% %WSIMPORT_OPTS% -jar "%JAXWS_HOME%\lib\jaxws-tools.jar" %*
 
 :END
 %COMSPEC% /C exit %ERRORLEVEL%

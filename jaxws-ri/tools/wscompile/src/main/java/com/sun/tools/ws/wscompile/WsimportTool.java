@@ -41,8 +41,6 @@
 package com.sun.tools.ws.wscompile;
 
 import com.sun.codemodel.CodeWriter;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JPackage;
 import com.sun.codemodel.writer.ProgressCodeWriter;
 import com.sun.istack.tools.DefaultAuthenticator;
 import com.sun.tools.ws.ToolVersion;
@@ -63,15 +61,11 @@ import com.sun.tools.ws.wsdl.parser.MetadataFinder;
 import com.sun.tools.ws.wsdl.parser.WSDLInternalizationLogic;
 import com.sun.tools.xjc.util.NullStream;
 import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.util.ModuleHelper;
 import com.sun.xml.ws.util.ServiceFinder;
-import com.sun.istack.tools.ParallelWorldClassLoader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXParseException;
 
-import javax.xml.bind.JAXBPermission;
 import javax.xml.stream.*;
-import javax.xml.ws.EndpointContext;
 import java.io.*;
 import java.util.*;
 import java.text.MessageFormat;
@@ -147,16 +141,16 @@ public class WsimportTool {
             cer.enableDebugging();
         }
     }
-    
+
     protected class Receiver extends ErrorReceiverFilter {
-        
+
         private Listener listener;
-        
+
         public Receiver(Listener listener) {
             super(listener);
             this.listener = listener;
         }
-        
+
         @Override
         public void info(SAXParseException exception) {
             if (options.verbose)
@@ -203,7 +197,7 @@ public class WsimportTool {
                 return true;
             }
         }
-        
+
         try {
             parseArguments(args, listener, receiver);
 
@@ -214,11 +208,11 @@ public class WsimportTool {
 
                 if (!generateCode(listener, receiver, wsdlModel, true))
                    return false;
-                                
+
                 /* Not so fast!
             } catch(AbortException e){
                 //error might have been reported
-                 * 
+                 *
                  */
             }catch (IOException e) {
                 receiver.error(e);
@@ -226,7 +220,7 @@ public class WsimportTool {
             }catch (XMLStreamException e) {
                 receiver.error(e);
                 return false;
-            }            
+            }
             if (!options.nocompile){
                 if(!compileGeneratedClasses(receiver, listener)){
                     listener.message(WscompileMessages.WSCOMPILE_COMPILATION_FAILED());
@@ -283,7 +277,7 @@ public class WsimportTool {
                     }
                 }
             }
-            //remove empty package dirs 
+            //remove empty package dirs
             for(File pkg:trackedRootPackages) {
 
                 while(pkg.list() != null && pkg.list().length ==0 && !pkg.equals(options.destDir)) {
@@ -351,7 +345,7 @@ public class WsimportTool {
                     continue;
                 }
                 if(options.verbose) {
-                    listener.message(WscompileMessages.WSIMPORT_ARCHIVE_ARTIFACT(f, options.clientjar));    
+                    listener.message(WscompileMessages.WSIMPORT_ARCHIVE_ARTIFACT(f, options.clientjar));
                 }
                 String entry = f.getCanonicalPath().substring(base.length()+1).replace(File.separatorChar, '/');
                 fi = new FileInputStream(f);
@@ -467,7 +461,7 @@ public class WsimportTool {
         //generated code
         if( !options.quiet )
             listener.message(WscompileMessages.WSIMPORT_GENERATING_CODE());
-        
+
         TJavaGeneratorExtension[] genExtn = ServiceFinder.find(TJavaGeneratorExtension.class).toArray();
         CustomExceptionGenerator.generate(wsdlModel,  options, receiver);
             SeiGenerator.generate(wsdlModel, options, receiver, genExtn);
@@ -477,12 +471,12 @@ public class WsimportTool {
         if (generateService)
         {
             ServiceGenerator.generate(wsdlModel, options, receiver);
-        } 
+        }
         for (GeneratorBase g : ServiceFinder.find(GeneratorBase.class)) {
             g.init(wsdlModel, options, receiver);
             g.doGeneration();
         }
-       
+
         List<String> implFiles = null;
        if (options.isGenerateJWS) {
 	        implFiles = JwsImplGenerator.generate(wsdlModel, options, receiver);
@@ -511,12 +505,12 @@ public class WsimportTool {
         if (options.verbose)
             cw = new ProgressCodeWriter(cw, out);
         options.getCodeModel().build(cw);
-	   
+
         if (options.isGenerateJWS) {
 	        //move Impl files to implDestDir
 	        return JwsImplGenerator.moveToImplDestDir(implFiles, options, receiver);
        }
-       
+
        return true;
     }
 
@@ -538,11 +532,6 @@ public class WsimportTool {
             String classpathString = createClasspathString();
             List<String> args = new ArrayList<String>();
 
-            if (ModuleHelper.isModularJDK()) {
-                args.add("--add-modules");
-                args.add("java.xml.ws");
-            }
-
             args.add("-d");
             args.add(classDir);
             args.add("-classpath");
@@ -560,17 +549,17 @@ public class WsimportTool {
             if (options.javacOptions != null) {
                 args.addAll(options.getJavacOptions(args, listener));
             }
-            
+
             for (int i = 0; i < sourceFiles.size(); ++i) {
                 args.add(sourceFiles.get(i));
             }
-            
+
             if (!options.quiet) listener.message(WscompileMessages.WSIMPORT_COMPILING_CODE());
 
             if(options.verbose){
                 StringBuilder argstr = new StringBuilder();
                 for(String arg:args){
-                    argstr.append(arg).append(" ");                    
+                    argstr.append(arg).append(" ");
                 }
                 listener.message("javac "+ argstr.toString());
             }

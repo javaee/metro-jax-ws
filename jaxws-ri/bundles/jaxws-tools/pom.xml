@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -83,6 +83,7 @@
 
     <modules>
         <module>../../tools/wscompile</module>
+        <module>../../tools-jdk9/wscompile</module>
     </modules>
 
     <build>
@@ -109,6 +110,7 @@
                                 <manifestEntries>
                                     <Class-Path>jaxws-rt.jar jaxb-xjc.jar jaxb-core.jar</Class-Path>
                                     <Extension-Name>com.sun.tools.ws</Extension-Name>
+                                    <Multi-Release>true</Multi-Release>
                                 </manifestEntries>
                             </archive>
                         </configuration>

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -41,39 +41,47 @@
 
 -->
 
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <id>jar</id>
+    <parent>
+        <groupId>com.sun.xml.ws</groupId>
+        <artifactId>project</artifactId>
+        <version>2.3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-    <formats>
-        <format>jar</format>
-    </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
-    <moduleSets>
-        <moduleSet>
-            <binaries>
-                <unpack>true</unpack>
-                <outputDirectory>/</outputDirectory>
-                <includeDependencies>false</includeDependencies>
-            </binaries>
-        </moduleSet>
-        <moduleSet>
-            <!-- Unpack JDK9 sources only to multi-release jar folder-->
-            <includes>
-                <include>com.sun.xml.ws:wscompile-jdk9</include>
-            </includes>
-            <binaries>
-                <unpack>true</unpack>
-                <outputDirectory>META-INF/versions/9</outputDirectory>
-                <includeDependencies>false</includeDependencies>
-                <unpackOptions>
-                    <excludes>
-                        <exclude>/META-INF/**</exclude>
-                    </excludes>
-                </unpackOptions>
-            </binaries>
-        </moduleSet>
-    </moduleSets>
-</assembly>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.sun.xml.ws</groupId>
+    <artifactId>wscompile-jdk9</artifactId>
+    <version>2.3.0-SNAPSHOT</version>
+
+    <name>JAX-WS RI Tools 9 sources (wscompile-jdk9)</name>
+    <description>JAX-WS integration project, requires JDK9</description>
+
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wscompile</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration combine.self="override">
+                    <source>1.9</source>
+                    <target>1.9</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
