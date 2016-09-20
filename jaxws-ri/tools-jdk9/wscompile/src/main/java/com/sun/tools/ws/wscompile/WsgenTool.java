@@ -162,6 +162,9 @@ public class WsgenTool {
         List<String> args = new ArrayList<String>(6 + (options.nocompile ? 1 : 0)
                 + (options.encoding != null ? 2 : 0));
 
+        args.add("--add-modules");
+        args.add("java.xml.ws");
+
         args.add("-d");
         args.add(options.destDir.getAbsolutePath());
         args.add("-classpath");
