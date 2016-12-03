@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,15 +44,24 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.SOAPVersion;
@@ -61,12 +70,13 @@ import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.saaj.SAAJFactory;
 import com.sun.xml.ws.api.pipe.Codec;
-import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.encoding.SOAPBindingCodec;
 import com.sun.xml.ws.message.stream.StreamMessage;
 
+import com.sun.xml.ws.util.ByteArrayBuffer;
 import junit.framework.TestCase;
+import org.w3c.dom.Node;
 
 public class SAAJFactoryTest extends TestCase {
     private static final String CUSTOM_MIME_HEADER_NAME = "custom-header";
@@ -135,6 +145,114 @@ public class SAAJFactoryTest extends TestCase {
 		}
     }
 
+    /**
+     * Test whether SAAJFactory.readAsSOAPMessage can handle default namespace reset correctly.
+     *
+     * <p>
+     * This test emulates JDK-8159058 issue. The issue is that the default namespace reset was not respected
+     * with built-in JDK XML input factory (it worked well with woodstax).
+     * </p>
+     *
+     * <p>
+     * This test operates against JDK XMLInputFactory.
+     * </p>
+     *
+     * @throws Exception
+     */
+    public void testResetDefaultNamespaceToGlobalWithJDK() throws Exception {
+        XMLInputFactory inputFactory = getBuiltInJdkXmlInputFactory();
+        XMLStreamReader envelope = inputFactory.createXMLStreamReader(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                "<s:Body>" +
+                "<SampleServiceRequest xmlns=\"http://sample.ex.org/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                "<RequestParams xmlns=\"\">" +
+                "<Param1>hogehoge</Param1>" +
+                "<Param2>fugafuga</Param2>" +
+                "</RequestParams>" +
+                "</SampleServiceRequest>" +
+                "</s:Body>" +
+                "</s:Envelope>"));
+        StreamMessage streamMessage = new StreamMessage(SOAPVersion.SOAP_11,
+                envelope, null);
+        SAAJFactory saajFac = new SAAJFactory();
+        SOAPMessage soapMessage = saajFac.readAsSOAPMessage(SOAPVersion.SOAP_11, streamMessage);
+        // check object model
+        SOAPElement request = (SOAPElement)soapMessage.getSOAPBody().getFirstChild();
+        assertEquals("SampleServiceRequest", request.getLocalName());
+        assertEquals("http://sample.ex.org/", request.getNamespaceURI());
+        SOAPElement params = (SOAPElement)request.getFirstChild();
+        assertEquals("RequestParams", params.getLocalName());
+        assertNull(params.getNamespaceURI());
+        SOAPElement param1 = (SOAPElement)params.getFirstChild();
+        assertEquals("Param1", param1.getLocalName());
+        assertNull(param1.getNamespaceURI());
+        SOAPElement param2 = (SOAPElement)params.getChildNodes().item(1);
+        assertEquals("Param2", param2.getLocalName());
+        assertNull(param2.getNamespaceURI());
+        // check the message as string
+        assertEquals("<SampleServiceRequest xmlns=\"http://sample.ex.org/\">" +
+                        "<RequestParams xmlns=\"\">" +
+                        "<Param1>hogehoge</Param1>" +
+                        "<Param2>fugafuga</Param2>" +
+                        "</RequestParams>" +
+                        "</SampleServiceRequest>",
+                nodeToText(request));
+    }
+
+    /**
+     * Test whether SAAJFactory.readAsSOAPMessage can handle default namespace reset correctly.
+     *
+     * <p>
+     * This test emulates JDK-8159058 issue. The issue is that the default namespace reset was not respected
+     * with built-in JDK XML input factory (it worked well with woodstax).
+     * </p>
+     *
+     * <p>
+     * This test operates against woodstax.
+     * </p>
+     *
+     * @throws Exception
+     */
+    public void testResetDefaultNamespaceToGlobalWithWoodstax() throws Exception {
+        XMLInputFactory inputFactory = XMLInputFactory.newFactory();
+        XMLStreamReader envelope = inputFactory.createXMLStreamReader(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                "<s:Body>" +
+                "<SampleServiceRequest xmlns=\"http://sample.ex.org/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                "<RequestParams xmlns=\"\">" +
+                "<Param1>hogehoge</Param1>" +
+                "<Param2>fugafuga</Param2>" +
+                "</RequestParams>" +
+                "</SampleServiceRequest>" +
+                "</s:Body>" +
+                "</s:Envelope>"));
+        StreamMessage streamMessage = new StreamMessage(SOAPVersion.SOAP_11,
+                envelope, null);
+        SAAJFactory saajFac = new SAAJFactory();
+        SOAPMessage soapMessage = saajFac.readAsSOAPMessage(SOAPVersion.SOAP_11, streamMessage);
+        // check object model
+        SOAPElement request = (SOAPElement)soapMessage.getSOAPBody().getFirstChild();
+        assertEquals("SampleServiceRequest", request.getLocalName());
+        assertEquals("http://sample.ex.org/", request.getNamespaceURI());
+        SOAPElement params = (SOAPElement)request.getFirstChild();
+        assertEquals("RequestParams", params.getLocalName());
+        assertNull(params.getNamespaceURI());
+        SOAPElement param1 = (SOAPElement)params.getFirstChild();
+        assertEquals("Param1", param1.getLocalName());
+        assertNull(param1.getNamespaceURI());
+        SOAPElement param2 = (SOAPElement)params.getChildNodes().item(1);
+        assertEquals("Param2", param2.getLocalName());
+        assertNull(param2.getNamespaceURI());
+        // check the message as string
+        assertEquals("<SampleServiceRequest xmlns=\"http://sample.ex.org/\">" +
+                        "<RequestParams xmlns=\"\">" +
+                        "<Param1>hogehoge</Param1>" +
+                        "<Param2>fugafuga</Param2>" +
+                        "</RequestParams>" +
+                        "</SampleServiceRequest>",
+                nodeToText(request));
+    }
+
     private AttachmentPart addAttachmentPart(SOAPMessage msg, String value) {
         AttachmentPart att = msg.createAttachmentPart(value, "text/html");
         att.addMimeHeader(CUSTOM_MIME_HEADER_NAME, CUSTOM_MIME_HEADER_VALUE);
@@ -172,5 +290,25 @@ public class SAAJFactoryTest extends TestCase {
             assertNull("Unexpected header found",
                     part.getMimeHeader("not found header"));
         }
+    }
+
+    private XMLInputFactory getBuiltInJdkXmlInputFactory() {
+        final String factoryId = "test.only.xml.input.factory.class.name";
+        final String className = "com.sun.xml.internal.stream.XMLInputFactoryImpl";
+        System.setProperty(factoryId, className);
+        XMLInputFactory infact = XMLInputFactory.newFactory(factoryId, null);
+        if (!className.equals(infact.getClass().getName())) {
+            throw new IllegalStateException("Can not obtain requested XMLInputFactory. Desired: " + className + ", actual: " + infact.getClass().getName());
+        }
+        return infact;
+    }
+
+    private String nodeToText(Node node) throws TransformerException {
+        Transformer trans = TransformerFactory.newInstance().newTransformer();
+        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        StringWriter writer = new StringWriter();
+        StreamResult result = new StreamResult(writer);
+        trans.transform(new DOMSource(node), result);
+        return writer.toString();
     }
 }
