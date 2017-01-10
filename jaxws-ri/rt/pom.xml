@@ -125,7 +125,7 @@
             <groupId>com.sun.xml.messaging.saaj</groupId>
             <artifactId>saaj-impl</artifactId>
             <scope>test</scope>
-	</dependency>
+        </dependency>
     </dependencies>
 
     <build>
@@ -382,4 +382,58 @@
 -->
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>jdk9-setup</id>
+            <activation>
+                <jdk>9</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-compile</id>
+                                <configuration>
+                                    <compilerArgs>
+                                        <arg>--add-modules</arg>
+                                        <arg>java.activation</arg>
+                                    </compilerArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>
+                                --add-exports java.xml/com.sun.org.apache.xerces.internal.dom=ALL-UNNAMED
+                                --add-exports java.xml/com.sun.org.apache.xerces.internal.jaxp=ALL-UNNAMED
+                                --add-exports java.xml/com.sun.org.apache.xerces.internal.util=ALL-UNNAMED
+                                --add-exports java.xml/com.sun.org.apache.xml.internal.resolver=ALL-UNNAMED
+                                --add-exports java.xml/com.sun.org.apache.xml.internal.resolver.tools=ALL-UNNAMED
+                                --add-modules java.activation
+                            </argLine>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>package-test-jar</id>
+                                <goals>
+                                    <goal>test-jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

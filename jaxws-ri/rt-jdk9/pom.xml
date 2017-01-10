@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -56,11 +56,12 @@
     <artifactId>rt-jdk9</artifactId>
     <version>2.3.0-SNAPSHOT</version>
 
-    <name>JAX-WS RI Runtime 9 sources (rt-jdk9)</name>
+    <name>JAX-WS RI Runtime 9 (rt-jdk9)</name>
     <description>JAX-WS integration project, requires JDK9</description>
 
     <properties>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+        <netbeans.hint.jdkPlatform>JDK_9</netbeans.hint.jdkPlatform>
     </properties>
 
     <dependencies>
@@ -69,6 +70,37 @@
             <artifactId>rt</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>rt</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${mail.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <!-- part of JDK 6+ -->
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -76,12 +108,40 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
-                <configuration combine.self="override">
-                    <source>1.9</source>
-                    <target>1.9</target>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>--add-modules</arg>
+                                <arg>java.activation</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>base-compile</id>
+                        <configuration>
+                            <skipMain>true</skipMain>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <dependenciesToScan>
+                        <dependency>${project.groupId}:rt</dependency>
+                    </dependenciesToScan>
+                    <argLine>
+                        --add-exports java.xml/com.sun.org.apache.xerces.internal.dom=ALL-UNNAMED
+                        --add-exports java.xml/com.sun.org.apache.xerces.internal.jaxp=ALL-UNNAMED
+                        --add-exports java.xml/com.sun.org.apache.xerces.internal.util=ALL-UNNAMED
+                        --add-modules java.activation
+                    </argLine>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
 </project>

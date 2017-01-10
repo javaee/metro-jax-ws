@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -83,9 +83,7 @@ final class ThreadHelper {
                             Class<?> cls = Class.forName(SAFE_THREAD_NAME);
                             Constructor<?> ctr = cls.getConstructor(Runnable.class);
                             return new SunMiscThreadFactory(ctr);
-                        } catch (ClassNotFoundException ignored) {
-                        } catch (NoSuchMethodException ignored) {
-                        }
+                        } catch (ClassNotFoundException | NoSuchMethodException ignored) {}
                         return new LegacyThreadFactory();
                     }
                 }
@@ -105,7 +103,9 @@ final class ThreadHelper {
             try {
                 return ctr.newInstance(null, r, "toBeReplaced", 0, false);
             } catch (ReflectiveOperationException x) {
-                throw new InternalError(x);
+                InternalError ie = new InternalError(x.getMessage());
+                ie.initCause(ie);
+                throw ie;
             }
         }
     }
@@ -114,7 +114,7 @@ final class ThreadHelper {
     private static class SunMiscThreadFactory implements ThreadFactory {
         final Constructor<?> ctr;
         SunMiscThreadFactory(Constructor<?> ctr) { this.ctr = ctr; }
-        @Override public Thread newThread(Runnable r) {
+        @Override public Thread newThread(final Runnable r) {
             return AccessController.doPrivileged(
                     new PrivilegedAction<Thread>() {
                         @Override

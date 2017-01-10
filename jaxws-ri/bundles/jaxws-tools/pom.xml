@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -83,7 +83,6 @@
 
     <modules>
         <module>../../tools/wscompile</module>
-        <module>../../tools-jdk9/wscompile</module>
     </modules>
 
     <build>
@@ -143,6 +142,15 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>jdk9-setup</id>
+            <activation>
+                <jdk>9</jdk>
+            </activation>
+            <modules>
+                <module>../../tools-jdk9/wscompile</module>
+            </modules>
+        </profile>
         <profile>
             <id>generate-javadoc-profile</id>
             <activation>
