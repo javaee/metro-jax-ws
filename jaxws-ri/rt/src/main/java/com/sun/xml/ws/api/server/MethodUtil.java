@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,43 +54,17 @@ import java.util.logging.Logger;
 class MethodUtil {
 
     private static final Logger LOGGER = Logger.getLogger(MethodUtil.class.getName());
-    private static final Method INVOKE_METHOD;
-
-    static {
-        Method method;
-        try {
-            Class<?> clazz = Class.forName("sun.reflect.misc.MethodUtil");
-            method = clazz.getMethod("invoke", Method.class, Object.class, Object[].class);
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Class sun.reflect.misc.MethodUtil found; it will be used to invoke methods.");
-            }
-        } catch (Throwable t) {
-            method = null;
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Class sun.reflect.misc.MethodUtil not found, probably non-Oracle JVM");
-            }
-        }
-        INVOKE_METHOD = method;
-    }
 
     static Object invoke(Object target, Method method, Object[] args) throws IllegalAccessException, InvocationTargetException {
-        if (INVOKE_METHOD != null) {
-            // sun.reflect.misc.MethodUtil.invoke(method, owner, args)
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Invoking method using sun.reflect.misc.MethodUtil");
-            }
-            try {
-                return INVOKE_METHOD.invoke(null, method, target, args);
-            } catch (InvocationTargetException ite) {
-                // unwrap invocation exception added by reflection code ...
-                throw unwrapException(ite);
-            }
-        } else {
-            // other then Oracle JDK ...
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Invoking method directly, probably non-Oracle JVM");
-            }
-            return method.invoke(target, args);
+        // com.sun.xml.ws.util.MethodUtil.invoke(method, owner, args)
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "Invoking method using com.sun.xml.internal.ws.util.MethodUtil");
+        }
+        try {
+            return com.sun.xml.ws.util.MethodUtil.invoke(method, target, args);
+        } catch (InvocationTargetException ite) {
+            // unwrap invocation exception added by reflection code ...
+            throw unwrapException(ite);
         }
     }
 
