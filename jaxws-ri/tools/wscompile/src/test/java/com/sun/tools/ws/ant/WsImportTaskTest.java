@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,8 +52,8 @@ import java.util.logging.Logger;
 public class WsImportTaskTest extends WsAntTaskTestBase {
 
     private File wsdl;
-    private static final File pkg = new File(srcDir, "test");
-    private static final File metainf = new File(buildDir, "META-INF");
+    private File pkg;
+    private File metainf;
 
     @Override
     public String getBuildScript() {
@@ -63,6 +63,8 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        pkg = new File(srcDir, "test");
+        metainf = new File(buildDir, "META-INF");
         wsdl = copy(projectDir, "hello.wsdl", WsImportTaskTest.class.getResourceAsStream("resources/hello.wsdl"));
         assertTrue(pkg.mkdirs());
         assertTrue(metainf.mkdirs());
@@ -70,7 +72,9 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
 
     @Override
     protected void tearDown() throws Exception {
-        wsdl.delete();
+        if (tryDelete) {
+            wsdl.delete();
+        }
         super.tearDown();
     }
 
@@ -79,10 +83,15 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
             Logger.getLogger(WsImportTaskTest.class.getName()).warning("Old JDK - 6+ is required - skipping jar locking test");
             return;
         }
+        if (is9()) {
+            Logger.getLogger(WsGenTaskTest.class.getName()).warning("New JDK - <9 is required - skipping jar locking test");
+            return;
+        }
         if (isAntPre18()) {
             Logger.getLogger(WsImportTaskTest.class.getName()).warning("Old Ant - 1.8+ is required - skipping jar locking test");
             return;
         }
+        tryDelete = true;
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-client", "clean"));
         List<String> files = listDirs(apiDir, libDir);
         assertTrue("Locked jars: " + files, files.isEmpty());
@@ -99,10 +108,15 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
     }*/
 
     public void testWsImportLockJarURLs() throws IOException, URISyntaxException {
+        if (is9()) {
+            Logger.getLogger(WsGenTaskTest.class.getName()).warning("New JDK - <9 is required - skipping jar locking test");
+            return;
+        }
         if (isAntPre18()) {
             Logger.getLogger(WsImportTaskTest.class.getName()).warning("Old Ant - 1.8+ is required - skipping jar locking test");
             return;
         }
+        tryDelete = true;
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-client-jarurl", "clean"));
         List<String> files = listDirs(apiDir, libDir);
         assertTrue("Locked jars: " + files, files.isEmpty());

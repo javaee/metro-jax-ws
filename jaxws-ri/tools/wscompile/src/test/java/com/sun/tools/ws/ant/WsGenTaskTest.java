@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE` COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,9 +54,8 @@ import java.util.logging.Logger;
  */
 public class WsGenTaskTest extends WsAntTaskTestBase {
 
-    private static final File pkg = new File(srcDir, "test");
-
-    private static final File generated = new File(projectDir, "generated");
+    private File pkg;
+    private File generated;
 
     @Override
     public String getBuildScript() {
@@ -66,13 +65,17 @@ public class WsGenTaskTest extends WsAntTaskTestBase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        pkg = new File(srcDir, "test");
+        generated = new File(projectDir, "generated");
         assertTrue(pkg.mkdirs());
         assertTrue(generated.mkdirs());
     }
 
     @Override
     protected void tearDown() throws Exception {
-        delDirs(generated);
+        if (tryDelete) {
+            delDirs(generated);
+        }
         super.tearDown();
     }
 
@@ -81,10 +84,15 @@ public class WsGenTaskTest extends WsAntTaskTestBase {
             Logger.getLogger(WsGenTaskTest.class.getName()).warning("Old JDK - 6+ is required - skipping jar locking test");
             return;
         }
+        if (is9()) {
+            Logger.getLogger(WsGenTaskTest.class.getName()).warning("New JDK - <9 is required - skipping jar locking test");
+            return;
+        }
         if (isAntPre18()) {
             Logger.getLogger(WsGenTaskTest.class.getName()).warning("Old Ant - 1.8+ is required - skipping jar locking test");
             return;
         }
+        tryDelete = true;
         copy(pkg, "TestWs.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs.java_"));
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-server", "clean"));
         List<String> files = listDirs(apiDir, libDir);

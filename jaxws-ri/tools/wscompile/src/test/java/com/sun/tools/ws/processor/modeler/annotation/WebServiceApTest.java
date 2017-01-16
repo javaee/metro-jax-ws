@@ -121,6 +121,7 @@ public class WebServiceApTest extends TestCase {
             task.call();
         } catch (RuntimeException re) {
             if (!(re.getCause() instanceof ModelerException)) {
+                re.printStackTrace(System.out);
                 fail(ModelerException.class.getName() + " should have been thrown - spec requirement");
             }
         }

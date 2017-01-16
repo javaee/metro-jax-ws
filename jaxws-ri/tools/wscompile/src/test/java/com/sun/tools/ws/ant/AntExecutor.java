@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,6 +62,10 @@ public class AntExecutor {
         File heapDump = null;
         List<String> cmd = new ArrayList<String>();
         cmd.add("java");
+        if (WsAntTaskTestBase.is9()) {
+            cmd.add("--add-modules");
+            cmd.add("java.xml.ws");
+        }
         if (DEBUG) {
             cmd.add("-Xdebug");
             cmd.add("-Xnoagent");
@@ -70,7 +74,9 @@ public class AntExecutor {
             heapDump = File.createTempFile(script.getName(), ".hprof", new File(System.getProperty("user.home")));
             cmd.add("-agentlib:hprof=heap=dump,file=" + heapDump.getAbsolutePath() + ",format=b");
         }
-        cmd.add("-Djava.endorsed.dirs=" + endorsedDir.getAbsolutePath());
+        if (!WsAntTaskTestBase.is9()) {
+            cmd.add("-Djava.endorsed.dirs=" + endorsedDir.getAbsolutePath());
+        }
         cmd.add("-Dbin.folder=" + System.getProperty("bin.folder"));
 //        cmd.add("-Djaxp.debug=true");
         //dump coverage data:

@@ -59,7 +59,7 @@
     <description>JAX-WS RI Tools</description>
 
     <properties>
-        <tools.jar>/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/lib/tools.jar</tools.jar>
+        <tools.jar>/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/lib/tools.jar</tools.jar>
         <ant.version>1.9.8</ant.version>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
     </properties>
@@ -107,7 +107,7 @@
             <groupId>com.sun</groupId>
             <artifactId>tools</artifactId>
             <scope>system</scope>
-            <version>1.7</version>
+            <version>1.8</version>
             <systemPath>${tools.jar}</systemPath>
         </dependency>
     </dependencies>
@@ -436,6 +436,18 @@
                                 --add-modules java.activation
                             </argLine>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>package-test-jar</id>
+                                <goals>
+                                    <goal>test-jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

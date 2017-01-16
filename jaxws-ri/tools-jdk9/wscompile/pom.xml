@@ -71,6 +71,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wscompile</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
             <version>1.10.0</version>
@@ -207,6 +214,12 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <testFailureIgnore>${ignore.failing.tests}</testFailureIgnore>
+                    <dependenciesToScan>
+                        <dependency>${project.groupId}:wscompile</dependency>
+                    </dependenciesToScan>
+                    <excludes>
+                        <exclude>com.sun.tools.ws.ant.AptTaskTest</exclude>
+                    </excludes>
                     <systemPropertyVariables>
                         <java.io.tmpdir>${project.build.directory}/test-antprojects</java.io.tmpdir>
                         <bin.folder>${project.build.directory}</bin.folder>
@@ -214,7 +227,7 @@
                         <jsr181-api.version>${jsr181-api.version}</jsr181-api.version>
                         <javax.annotation-api.version>${javax.annotation-api.version}</javax.annotation-api.version>
                         <jaxws-api.version>${jaxws-api.version}</jaxws-api.version>
-                        <!--<net.sourceforge.cobertura.datafile>${net.sourceforge.cobertura.datafile}</net.sourceforge.cobertura.datafile>-->
+                        <net.sourceforge.cobertura.datafile>${net.sourceforge.cobertura.datafile}</net.sourceforge.cobertura.datafile>
                     </systemPropertyVariables>
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>

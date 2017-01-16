@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,18 +62,24 @@ import junit.framework.TestCase;
  */
 public abstract class WsAntTaskTestBase extends TestCase {
 
-    protected static final File projectDir = new File(System.getProperty("java.io.tmpdir"), "test-lockedjars" + System.currentTimeMillis());
-    protected static final File apiDir = new File(projectDir, "api");
-    protected static final File libDir = new File(projectDir, "lib");
-    protected static final File srcDir = new File(projectDir, "src");
-    protected static final File buildDir = new File(projectDir, "build");
+    protected File projectDir;
+    protected File apiDir;
+    protected File libDir;
+    protected File srcDir;
+    protected File buildDir;
     protected File script;
+    protected boolean tryDelete = false;
 
     public abstract String getBuildScript();
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        projectDir = new File(System.getProperty("java.io.tmpdir"), getClass().getSimpleName() + "-" + getName());
+        apiDir = new File(projectDir, "api");
+        libDir = new File(projectDir, "lib");
+        srcDir = new File(projectDir, "src");
+        buildDir = new File(projectDir, "build");
         assertFalse("project dir exists", projectDir.exists() && projectDir.isDirectory());
         assertTrue("project dir created", projectDir.mkdirs());
         script = copy(projectDir, getBuildScript(), WsAntTaskTestBase.class.getResourceAsStream("resources/" + getBuildScript()));
@@ -83,9 +89,11 @@ public abstract class WsAntTaskTestBase extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        delDirs(apiDir, srcDir, buildDir, libDir);
-        script.delete();
-        assertTrue("project dir exists", projectDir.delete());
+        if (tryDelete) {
+            delDirs(apiDir, srcDir, buildDir, libDir);
+            script.delete();
+            assertTrue("project dir exists", projectDir.delete());
+        }
     }
 
     protected static File copy(File dest, String name, InputStream is) throws FileNotFoundException, IOException {
@@ -110,7 +118,7 @@ public abstract class WsAntTaskTestBase extends TestCase {
     }
 
     protected static List<String> listDirs(File... dirs) {
-        List<String> existingFiles = new ArrayList<String>();
+        List<String> existingFiles = new ArrayList<>();
         for (File dir : dirs) {
             if (!dir.exists() || dir.isFile()) {
                 continue;
@@ -149,11 +157,16 @@ public abstract class WsAntTaskTestBase extends TestCase {
         try {
             Properties p = new Properties();
             p.load(WsAntTaskTestBase.class.getResourceAsStream("/org/apache/tools/ant/version.txt"));
-            int version = Integer.parseInt(p.getProperty("VERSION").substring(2, 3));
+            String vString = p.getProperty("VERSION");
+            int version = Integer.parseInt(vString.substring(2, vString.indexOf('.', 2)));
             return version < 8;
         } catch (Exception e) {
             Logger.getLogger(WsAntTaskTestBase.class.getName()).warning("Cannot detect Ant version.");
             return true;
         }
+    }
+
+    static boolean is9() {
+        return System.getProperty("java.version").startsWith("9");
     }
 }
