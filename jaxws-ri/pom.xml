@@ -144,7 +144,7 @@
         <findbugs.exclude/>
         <findbugs.version>3.0.1</findbugs.version>
         <glassfish.findbugs.version>1.7</glassfish.findbugs.version>
-        <netbeans.hint.jdkPlatform>JDK_1.7</netbeans.hint.jdkPlatform>
+        <netbeans.hint.jdkPlatform>JDK_1.8</netbeans.hint.jdkPlatform>
     </properties>
 
     <build>
@@ -701,28 +701,6 @@
                 <module>docs</module>
                 <module>bundles</module>
             </modules>
-        </profile>
-        <profile>
-            <id>default-tools.jar</id>
-            <activation>
-                <file>
-                    <exists>${java.home}/../lib/tools.jar</exists>
-                </file>
-            </activation>
-            <properties>
-                <tools.jar>${java.home}/../lib/tools.jar</tools.jar>
-            </properties>
-        </profile>
-        <profile>
-            <id>default-tools.jar-mac</id>
-            <activation>
-                <file>
-                    <exists>${java.home}/../Classes/classes.jar</exists>
-                </file>
-            </activation>
-            <properties>
-                <tools.jar>${java.home}/../Classes/classes.jar</tools.jar>
-            </properties>
         </profile>
         <profile>
             <id>dev-impl</id>

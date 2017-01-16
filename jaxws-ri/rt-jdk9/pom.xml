@@ -134,6 +134,8 @@
                     <dependenciesToScan>
                         <dependency>${project.groupId}:rt</dependency>
                     </dependenciesToScan>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
                     <argLine>
                         --add-exports java.xml/com.sun.org.apache.xerces.internal.dom=ALL-UNNAMED
                         --add-exports java.xml/com.sun.org.apache.xerces.internal.jaxp=ALL-UNNAMED
