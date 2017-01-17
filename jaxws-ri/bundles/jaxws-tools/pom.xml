@@ -148,7 +148,7 @@
                 <jdk>9</jdk>
             </activation>
             <modules>
-                <module>../../tools-jdk9/wscompile</module>
+                <module>../../tools/wscompile-jdk9</module>
             </modules>
         </profile>
         <profile>
