@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -85,12 +85,15 @@
 
     </dependencies>
 
+    <properties>
+        <netbeans.hint.jdkPlatform>JDK_9</netbeans.hint.jdkPlatform>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.7</version>
                 <executions>
                     <!--unpack sources subset neccessary for ant-tasks jar-->
                     <execution>
@@ -131,15 +134,15 @@
                             </artifactItems>
                             <outputDirectory>target/unpacked-sources</outputDirectory>
                             <includes>
-                                com/sun/**/*Task.java,
-                                com/sun/tools/ws/ant/*,
-                                com/sun/tools/xjc/Messages.java,
-                                com/sun/tools/xjc/SecureLoader.java,
-                                com/sun/tools/xjc/ClassLoaderBuilder.java,
-                                com/sun/tools/xjc/XJCFacade.java,
-                                com/sun/tools/jxc/SchemaGeneratorFacade.java,
-                                com/sun/tools/jxc/SecureLoader.java,
-                                com/sun/istack/tools/*.java
+                                **/com/sun/**/*Task.java,
+                                **/com/sun/tools/ws/ant/*,
+                                **/com/sun/tools/xjc/Messages.java,
+                                **/com/sun/tools/xjc/SecureLoader.java,
+                                **/com/sun/tools/xjc/ClassLoaderBuilder.java,
+                                **/com/sun/tools/xjc/XJCFacade.java,
+                                **/com/sun/tools/jxc/SchemaGeneratorFacade.java,
+                                **/com/sun/tools/jxc/SecureLoader.java,
+                                **/com/sun/istack/tools/*.java
                             </includes>
                         </configuration>
                     </execution>
@@ -219,6 +222,23 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>copy-jdk9-classes</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <move todir="${project.build.directory}/generated-sources" overwrite="true">
+                                    <fileset dir="${project.build.directory}/generated-sources/META-INF/versions/9">
+                                        <include name="**/*.java"/>
+                                    </fileset>
+                                </move>
+                                <delete dir="${project.build.directory}/generated-sources/META-INF/versions" verbose="true"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>prepare-endorsed-for-final-compilation</id>
                         <phase>process-sources</phase>
                         <goals>
@@ -242,7 +262,6 @@
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
                 <artifactId>replacer</artifactId>
-                <version>1.5.2</version>
                 <executions>
                     <execution>
                         <phase>process-sources</phase>
@@ -284,19 +303,28 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <fork>true</fork>
-                    <!--redirecting to different place not to be contained in the result bundle-->
-                    <generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                    <compilerArgs>
-                        <arg>-XDignore.symbol.file</arg>
-                        <arg>-Djava.endorsed.dirs=${basedir}/target/endorsed</arg>
-                    </compilerArgs>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <fork>true</fork>
+                            <!--redirecting to different place not to be contained in the result bundle-->
+                            <generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>
+                            <forceJavacCompilerUse>true</forceJavacCompilerUse>
+                            <compilerArgs>
+                                <arg>--add-modules</arg>
+                                <arg>java.compiler</arg>
+                                <!--<arg>-Xmodule:java.xml.ws</arg>-->
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>base-compile</id>
+                        <configuration>
+                            <skipMain>true</skipMain>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             
             <plugin>

@@ -227,12 +227,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>2.4.1</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.5</version>
+                    <version>3.0.2</version>
                     <configuration>
                         <escapeString>\</escapeString>
                     </configuration>
@@ -240,7 +240,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>1.1</version>
+                    <version>1.4</version>
                     <configuration>
                         <locale>en-US</locale>
                     </configuration>
@@ -253,7 +253,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.0.0</version>
                     <executions>
                         <execution>
                             <id>prepare-endorsed</id>
@@ -273,7 +273,7 @@
                 <plugin>
                     <groupId>com.sun.wts.tools.ant</groupId>
                     <artifactId>package-rename-task</artifactId>
-                    <version>1.4</version>
+                    <version>1.5</version>
                 </plugin>
                 <plugin>
                     <groupId>com.sun.istack</groupId>
@@ -320,15 +320,14 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.19.1</version>
                     <configuration>
-                        <forkMode>once</forkMode>
-                        <!-- TODO JDK9 -->
-                        <!--<argLine>-Djava.endorsed.dirs="${endorsed.dir}"</argLine>-->
+                        <forkCount>1</forkCount>
+                        <reuseForks>true</reuseForks>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>3.0.2</version>
                     <configuration>
                         <archive>
                             <manifestEntries>
@@ -350,7 +349,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.1.2</version>
+                    <version>3.0.1</version>
                     <configuration>
                         <archive>
                             <manifestEntries>
@@ -372,7 +371,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.3</version>
+                    <version>3.0.0</version>
                     <configuration>
                         <archive>
                             <manifestEntries>
@@ -400,7 +399,6 @@
                         <dependencySourceExcludes>
                             <dependencySourceExclude>com.sun.xml.ws:*</dependencySourceExclude>
                         </dependencySourceExcludes>
-                        <additionalJOption>-J-Djava.endorsed.dirs=${endorsed.dir}</additionalJOption>
                         <offlineLinks>
                             <offlineLink>
                                 <url>http://docs.oracle.com/javase/6/docs/api/</url>
@@ -553,7 +551,7 @@
                             <version>[1.7,)</version>
                         </requireJavaVersion>
                         <requireMavenVersion>
-                            <version>[3.0.3,)</version>
+                            <version>[3.3.9,)</version>
                         </requireMavenVersion>
                     </rules>
                 </configuration>
@@ -631,6 +629,20 @@
                             <compilerArgs>
                                 <arg>-Djava.endorsed.dirs=${endorsed.dir}</arg>
                             </compilerArgs>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>-Djava.endorsed.dirs="${endorsed.dir}"</argLine>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <additionalJOption>-J-Djava.endorsed.dirs=${endorsed.dir}</additionalJOption>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -773,23 +785,23 @@
                         <artifactId>maven-enforcer-plugin</artifactId>
                         <version>1.4</version>
                         <executions>
-                          <execution>
-                            <id>enforce-no-snapshots</id>
-                            <goals>
-                                <goal>enforce</goal>
-                            </goals>
-                            <configuration>
-                                <rules>
-                                    <requireReleaseDeps>
-                                        <message>No SNAPSHOT dependency allowed!</message>
-                                    </requireReleaseDeps>
-                                    <requireReleaseVersion>
-                                        <message>release version no SNAPSHOT Allowed!</message>
-                                    </requireReleaseVersion>
-                                </rules>
-                                <fail>true</fail>
-                            </configuration>
-                          </execution>
+                            <execution>
+                                <id>enforce-no-snapshots</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireReleaseDeps>
+                                            <message>No SNAPSHOT dependency allowed!</message>
+                                        </requireReleaseDeps>
+                                        <requireReleaseVersion>
+                                            <message>release version no SNAPSHOT Allowed!</message>
+                                        </requireReleaseVersion>
+                                    </rules>
+                                    <fail>true</fail>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
 <!--
@@ -905,7 +917,7 @@
                     </exclusions>
                 </dependency>
                 <!-- needed for cobertura-instrument ant task to work (in *-rt, *-tools)
-                     and to not be included in assemblies/shaded jars -->
+                and to not be included in assemblies/shaded jars -->
                 <dependency>
                     <groupId>oro</groupId>
                     <artifactId>oro</artifactId>
@@ -993,32 +1005,32 @@
     </dependencyManagement>
     
     <dependencies>
-            <!-- Make sure new apis are used across the project -->
-            <dependency>
-                <groupId>javax.xml.ws</groupId>
-                <artifactId>jaxws-api</artifactId>
-            </dependency>
+        <!-- Make sure new apis are used across the project -->
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+        </dependency>
 
-            <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
 
-            <dependency>
-                <groupId>javax.xml.soap</groupId>
-                <artifactId>javax.xml.soap-api</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>javax.xml.soap</groupId>
+            <artifactId>javax.xml.soap-api</artifactId>
+        </dependency>
 
-            <dependency>
-                <groupId>javax.jws</groupId>
-                <artifactId>jsr181-api</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>javax.jws</groupId>
+            <artifactId>jsr181-api</artifactId>
+        </dependency>
 
-            <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
-                <scope>provided</scope>
-            </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
             
 </project>

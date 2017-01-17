@@ -107,7 +107,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.0.1</version>
                 <executions>
                     <execution>
                         <id>enforce-property</id>
@@ -217,7 +216,7 @@
                                 <id>osgi-bundle</id>
                                 <phase>prepare-package</phase>
                                 <goals>
-                                    <goal>bundle</goal>
+                                    <goal>manifest</goal>
                                 </goals>
                                 <configuration>
                                     <instructions>
@@ -255,6 +254,14 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <archive>
+                                <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

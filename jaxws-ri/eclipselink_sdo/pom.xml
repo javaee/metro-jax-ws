@@ -176,7 +176,7 @@
                                 <id>osgi-bundle</id>
                                 <phase>prepare-package</phase>
                                 <goals>
-                                    <goal>bundle</goal>
+                                    <goal>manifest</goal>
                                 </goals>
                                 <configuration>
                                     <instructions>
@@ -215,6 +215,14 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <archive>
+                                <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

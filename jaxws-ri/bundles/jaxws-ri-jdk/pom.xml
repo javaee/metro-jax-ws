@@ -50,6 +50,7 @@
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>bundles</artifactId>
         <version>2.3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>jaxws-ri-jdk</artifactId>
@@ -112,12 +113,15 @@
 
     </dependencies>
 
+    <properties>
+        <netbeans.hint.jdkPlatform>JDK_9</netbeans.hint.jdkPlatform>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.7</version>
                 <executions>
                     <execution>
                         <id>unpack-sources</id>
@@ -151,7 +155,7 @@
                                 com/sun/xml/ws/developer/StatefulWebServiceManager.java,
                                 com/sun/xml/ws/server/StatefulInstanceResolver.java,
                                 org/glassfish/ha/,
-                                com/sun/tools/ws/ant/,
+                                **/com/sun/tools/ws/ant/,
                                 com/sun/tools/ws/local/,
                                 META-INF/services/com.sun.xml.ws.api.pipe.TransportTubeFactory,
                                 META-INF/services/javax.xml.ws.spi.Provider,
@@ -234,7 +238,6 @@
             <!-- replace default versions of classes with JDK9 -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
                 <executions>
                     <execution>
                         <id>copy-jdk9-classes</id>
@@ -244,11 +247,12 @@
                         </goals>
                         <configuration>
                             <target>
-                                <copy todir="${project.build.directory}/unpacked-sources" overwrite="true">
+                                <move todir="${project.build.directory}/unpacked-sources" overwrite="true">
                                     <fileset dir="${project.build.directory}/unpacked-sources/META-INF/versions/9">
                                         <include name="**/*.java"/>
                                     </fileset>
-                                </copy>
+                                </move>
+                                <delete dir="${project.build.directory}/unpacked-sources/META-INF/versions" verbose="true"/>
                             </target>
                         </configuration>
                     </execution>
@@ -341,8 +345,6 @@
                                 <correct copyright="${lic}" includes="java.xml.bind/com/sun/xml/internal/txw2/" excludes=""/>
                                 <correct copyright="${lic}" includes="java.xml.ws/com/sun/xml/internal/messaging/" excludes=""/>
                                 <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/xml/internal/rngom/" excludes=""/>
-                                <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/xml/internal/xsom/"
-                                         excludes="jdk.xml.bind/com/sun/xml/internal/xsom/impl/util/Uri.java"/>
                                 <correct copyright="${lic}" includes="java.xml.bind/com/sun/xml/internal/org/jvnet/staxex/"
                                          excludes=""/>
                                 <correct copyright="${lic}" includes="java.xml.bind/com/sun/xml/internal/org/jvnet/mimepull/"
@@ -492,7 +494,6 @@
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
                 <artifactId>replacer</artifactId>
-                <version>1.5.3</version>
                 <executions>
                     <execution>
                         <id>update-jaxws-tubes-default-xml-location-in-metro-config-loader-java</id>
@@ -517,7 +518,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
                 <executions>
                     <execution>
                         <id>normalize-spaces</id>
@@ -541,28 +541,35 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration combine.self="override">
-                    <skipMain>true</skipMain>
-                    <source>1.9</source>
-                    <target>1.9</target>
-                    <fork>true</fork>
-                    <!--redirecting to different place not to be contained in the result bundle-->
-                    <!--<generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>-->
-                    <!--<forceJavacCompilerUse>true</forceJavacCompilerUse>-->
-                    <compilerArgs>
-                        <arg>--add-modules</arg>
-                        <arg>java.activation,java.xml</arg>
-                        <!--<arg>-Xmodule:java.xml.ws</arg>-->
-                        <!--<arg>&#45;&#45;add-exports</arg>
-                        <arg>java.xml/com.sun.org.apache.xerces.internal.dom=ALL-UNNAMED</arg>-->
-                        <!--<arg>&#45;&#45;add-exports</arg>
-                        <arg>java.xml/com.sun.org.apache.xerces.internal.jaxp=ALL-UNNAMED</arg>-->
-                        <!--<arg>&#45;&#45;add-exports</arg>
-                        <arg>java.xml/com.sun.org.apache.xerces.internal.util=ALL-UNNAMED</arg>-->
-                        <!--<arg>-XDignore.symbol.file</arg>-->
-                    </compilerArgs>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <fork>true</fork>
+                            <!--redirecting to different place not to be contained in the result bundle-->
+                            <generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>
+                            <forceJavacCompilerUse>true</forceJavacCompilerUse>
+                            <compilerArgs>
+                                <arg>--add-modules</arg>
+                                <arg>java.activation,java.xml</arg>
+                                <!--<arg>-Xmodule:java.xml.ws</arg>-->
+                                <arg>--add-exports</arg>
+                                <arg>java.xml/com.sun.org.apache.xerces.internal.dom=ALL-UNNAMED</arg>
+                                <arg>--add-exports</arg>
+                                <arg>java.xml/com.sun.org.apache.xerces.internal.jaxp=ALL-UNNAMED</arg>
+                                <arg>--add-exports</arg>
+                                <arg>java.xml/com.sun.org.apache.xerces.internal.util=ALL-UNNAMED</arg>
+                                <!--<arg>-XDignore.symbol.file</arg>-->
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>base-compile</id>
+                        <configuration>
+                            <skipMain>true</skipMain>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
