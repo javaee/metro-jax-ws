@@ -87,24 +87,24 @@
         <snapshotRepository>
             <id>jvnet-nexus-snapshots</id>
             <uniqueVersion>false</uniqueVersion>
-            <url>https://maven.java.net/content/repositories/snapshots/</url>
+            <url>http://maven.java.net/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>jvnet-nexus-staging</id>
             <name>Java.net Nexus Staging Repository</name>
-            <url>https://maven.java.net/service/local/staging/deploy/maven2/</url>
+            <url>http://maven.java.net/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
     <repositories>
         <repository>
             <id>releases.java.net</id>
-            <url>https://maven.java.net/content/repositories/releases/</url>
+            <url>http://maven.java.net/content/repositories/releases/</url>
             <layout>default</layout>
         </repository>
         <repository>
             <id>jvnet-nexus-staging</id>
-            <url>https://maven.java.net/content/repositories/staging/</url>
+            <url>http://maven.java.net/content/repositories/staging/</url>
             <layout>default</layout>
         </repository>
         <repository>
@@ -114,7 +114,7 @@
         </repository>
         <repository>
             <id>jvnet-nexus-snapshots</id>
-            <url>https://maven.java.net/content/repositories/snapshots/</url>
+            <url>http://maven.java.net/content/repositories/snapshots/</url>
             <layout>default</layout>
         </repository>
     </repositories>
