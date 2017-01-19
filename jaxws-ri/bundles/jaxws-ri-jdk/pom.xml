@@ -247,12 +247,12 @@
                         </goals>
                         <configuration>
                             <target>
-                                <move todir="${project.build.directory}/unpacked-sources" overwrite="true">
+                                <move todir="${project.build.directory}/unpacked-sources" overwrite="true" failonerror="false">
                                     <fileset dir="${project.build.directory}/unpacked-sources/META-INF/versions/9">
                                         <include name="**/*.java"/>
                                     </fileset>
                                 </move>
-                                <delete dir="${project.build.directory}/unpacked-sources/META-INF/versions" verbose="true"/>
+                                <delete dir="${project.build.directory}/unpacked-sources/META-INF/versions" verbose="true" failonerror="false"/>
                             </target>
                         </configuration>
                     </execution>

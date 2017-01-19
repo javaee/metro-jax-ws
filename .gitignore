@@ -34,3 +34,4 @@ java_pid*
 # gradle
 .gradle/
 /build
+/jaxws-ri/bundles/jaxws-ri-jdk/filelist
