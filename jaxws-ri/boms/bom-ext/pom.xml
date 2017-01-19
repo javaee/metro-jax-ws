@@ -56,7 +56,11 @@
     
     <version>2.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-        
+
+    <name>JAX-WS RI Bill-of-Materials (BOM) Extensions</name>
+    <description>JAX-WS Reference Implementation Bill-of-Materials (BOM) Extensions</description>
+    <url>http://jax-ws.java.net/</url>
+
     <properties>
         <ant.version>1.9.8</ant.version>
         <asm.version>3.1</asm.version>

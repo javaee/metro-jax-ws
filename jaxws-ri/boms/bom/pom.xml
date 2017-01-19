@@ -56,8 +56,8 @@
     <version>2.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>JAX-WS RI Dependency POM</name>
-    <description>JAX-WS Reference Implementation Dependency POM</description>
+    <name>JAX-WS RI Bill-of-Materials (BOM)</name>
+    <description>JAX-WS Reference Implementation Bill-of-Materials (BOM)</description>
     <url>http://jax-ws.java.net/</url>
 
     <organization>
