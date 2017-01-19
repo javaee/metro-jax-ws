@@ -41,6 +41,7 @@ package com.sun.xml.ws.util.xml;
 
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.server.ServerRtException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,13 +115,13 @@ public class XmlCatalogUtil {
      * (com.sun.org.apache.xml.internal) for modular runtime.
      */
     private static EntityResolver createCatalogResolver(ArrayList<URL> urls) throws Exception {
-        // Prepare array of catalog paths
-        String[] paths = urls.stream()
-                .map(u -> u.toExternalForm())
-                .toArray(c -> new String[c]);
+        // Prepare array of catalog URIs
+        URI[] uris = urls.stream()
+                             .map(u -> URI.create(u.toExternalForm()))
+                             .toArray(URI[]::new);
 
         //Create CatalogResolver with new JDK9+ API
-        return (EntityResolver) CatalogManager.catalogResolver(CATALOG_FEATURES, paths);
+        return (EntityResolver) CatalogManager.catalogResolver(CATALOG_FEATURES, uris);
     }
 
 }
