@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,7 +67,7 @@ abstract class WsTask2 extends MatchingTask {
 
     private final CommandlineJava cmd = new CommandlineJava();
 
-    private CommandlineJava getCommandline() {
+    CommandlineJava getCommandline() {
         return cmd;
     }
 
@@ -472,10 +472,10 @@ abstract class WsTask2 extends MatchingTask {
             getCommandline().createArgument().setValue("-extension");
         }
         //-Xendorsed option
-        /* TODO JDK9
+        /* TODO JDK9 */
         if (isXendorsed()) {
             getCommandline().createArgument().setValue("-Xendorsed");
-        }*/
+        }
         // keep option
         if (getKeep()) {
             getCommandline().createArgument().setValue("-keep");
@@ -510,7 +510,7 @@ abstract class WsTask2 extends MatchingTask {
      */
     protected abstract boolean runInVm(String[] arguments, OutputStream out);
 
-    private void setupForkCommand(String className) {
+    void setupForkCommand(String className) {
         ClassLoader loader = this.getClass().getClassLoader();
         while (loader != null && !(loader instanceof AntClassLoader)) {
             loader = loader.getParent();
@@ -531,14 +531,14 @@ abstract class WsTask2 extends MatchingTask {
         }
         getCommandline().createClasspath(getProject()).append(new Path(getProject(), antcp));
         /*
-        * TODO JDK9
+        * TODO JDK9 */
         String apiCp = getApiClassPath(this.getClass().getClassLoader());
         if (apiCp != null) {
             //TODO: jigsaw - Xbootclaspath may get deprecated/removed
             //and replaced with '-L' or '-m' options
             //see also: http://mail.openjdk.java.net/pipermail/jigsaw-dev/2010-April/000778.html
             getCommandline().createVmArgument().setLine("-Xbootclasspath/p:" + apiCp);
-        }*/
+        }
         getCommandline().setClassname(className);
     }
 
