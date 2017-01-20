@@ -59,7 +59,6 @@
     <description>JAX-WS RI Tools</description>
 
     <properties>
-        <tools.jar>/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/lib/tools.jar</tools.jar>
         <ant.version>1.9.8</ant.version>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
     </properties>
@@ -102,13 +101,6 @@
             <artifactId>ant-launcher</artifactId>
             <version>${ant.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <scope>system</scope>
-            <version>1.8</version>
-            <systemPath>${tools.jar}</systemPath>
         </dependency>
     </dependencies>
 
