@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,16 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.tools.ws.ant;
 
 import org.apache.tools.ant.BuildException;
 
 /**
- * wscompile task for use with the JAXWS project.
  *
+ * @author lukas
  */
-public class WsImport2 extends WsImportBase {
+public class WsImport2 extends WsImport {
 
     @Override
     public void execute() throws BuildException {

@@ -50,7 +50,7 @@ import org.apache.tools.ant.types.Path;
  *
  * @author Kohsuke Kawaguchi
  */
-public class WsImport extends WsImport2 {
+public class WsImport extends WsImportBase {
 
     @Override
     protected void setupForkCommand(String className) {
@@ -68,8 +68,17 @@ public class WsImport extends WsImport2 {
         getCommandline().createClasspath(getProject()).append(new Path(getProject(), antcp));
 
         boolean addModules = true;
-        for (String s : getJavacargs().getArguments()) {
-            if (s.contains("source") || s.contains("target") || s.contains("release")) {
+        String[] args = getJavacargs().getArguments();
+        for (int i = 0; i < args.length; i++) {
+            if ("-source".equals(args[i]) && 9 >= getVersion(args[i++])) {
+                addModules = false;
+                break;
+            }
+            if ("-target".equals(args[i]) && 9 >= getVersion(args[i++])) {
+                addModules = false;
+                break;
+            }
+            if ("-release".equals(args[i]) && 9 >= getVersion(args[i++])) {
                 addModules = false;
                 break;
             }
@@ -90,5 +99,9 @@ public class WsImport extends WsImport2 {
     public void execute() throws BuildException {
         super.execute();
     }
-   
+
+    private float getVersion(String s) {
+        return Float.parseFloat(s);
+    }
+
 }

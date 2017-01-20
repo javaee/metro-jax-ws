@@ -43,8 +43,6 @@ package com.sun.tools.ws.ant;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.apache.tools.ant.types.CommandlineJava;
@@ -147,33 +145,44 @@ public class WsAntToolsTest extends TestCase {
 
     private void runVoidMethod(Class<?> c, Object i, String name, String arg) {
         Method m = null;
-        try {
-            m = c.getSuperclass().getDeclaredMethod(name, String.class);
-            m.setAccessible(true);
-            m.invoke(i, arg);
-        } catch (Throwable t) {
-            Logger.getLogger(WsAntToolsTest.class.getName()).log(Level.SEVERE, null, t);
-            Assert.fail(t.getMessage());
-        } finally {
-            if (m != null) {
-                m.setAccessible(false);
+        Class parent = c;
+        do {
+            try {
+                m = parent.getDeclaredMethod(name, String.class);
+                m.setAccessible(true);
+                m.invoke(i, arg);
+                return;
+            } catch (Throwable t) {
+                parent = parent.getSuperclass();
+            } finally {
+                if (m != null) {
+                    m.setAccessible(false);
+                }
             }
+        } while (m == null && parent.getSuperclass() != null);
+        if (m == null) {
+            Assert.fail("cannot find method: '" + name + "'");
         }
     }
 
     private Object getField(Class<?> c, Object i, String name) {
         Field f = null;
-        try {
-            f = c.getSuperclass().getDeclaredField(name);
-            f.setAccessible(true);
-            return f.get(i);
-        } catch (Throwable t) {
-            Logger.getLogger(WsAntToolsTest.class.getName()).log(Level.SEVERE, null, t);
-            Assert.fail(t.getMessage());
-        } finally {
-            if (f != null) {
-                f.setAccessible(false);
+        Class parent = c.getSuperclass();
+        do {
+            try {
+                f = parent.getDeclaredField(name);
+                f.setAccessible(true);
+                return f.get(i);
+            } catch (Throwable t) {
+                parent = parent.getSuperclass();
+            } finally {
+                if (f != null) {
+                    f.setAccessible(false);
+                }
             }
+        } while (f == null && parent.getSuperclass() != null);
+        if (f == null) {
+            Assert.fail("cannot find field: '" + name + "'");
         }
         return null;
     }
