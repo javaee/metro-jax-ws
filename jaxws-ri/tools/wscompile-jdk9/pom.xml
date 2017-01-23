@@ -213,7 +213,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <testFailureIgnore>${ignore.failing.tests}</testFailureIgnore>
                     <dependenciesToScan>
                         <dependency>${project.groupId}:wscompile</dependency>
                     </dependenciesToScan>

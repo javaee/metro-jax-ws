@@ -71,7 +71,6 @@ import org.xml.sax.SAXException;
  *
  * @author lukas
  */
-
 public class WebServiceApTest extends TestCase {
 
     private File destDir;
@@ -115,13 +114,12 @@ public class WebServiceApTest extends TestCase {
         WsgenOptions wsgenOptions = new WsgenOptions();
         wsgenOptions.verbose = true;
 
-        JavaCompiler.CompilationTask task = getCompilationTask("com.sun.tools.ws.processor.modeler.annotation.RemoteReturnTestWS",
+        JavaCompiler.CompilationTask task = getCompilationTask("com.sun.tools.ws.processor.modeler.annotation.RemoteReturnTestWs",
                 options, wsgenOptions, diagnostics);
         try {
             task.call();
         } catch (RuntimeException re) {
             if (!(re.getCause() instanceof ModelerException)) {
-                re.printStackTrace(System.out);
                 fail(ModelerException.class.getName() + " should have been thrown - spec requirement");
             }
         }
@@ -254,7 +252,6 @@ public class WebServiceApTest extends TestCase {
             super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension),
                     Kind.SOURCE);
             resource = '/' + name.replace('.', '/') + ".java";
-
         }
 
         @Override
