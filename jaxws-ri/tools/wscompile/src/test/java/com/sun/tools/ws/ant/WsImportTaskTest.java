@@ -186,13 +186,13 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
         DataInputStream in = new DataInputStream(new FileInputStream(f));
         assertEquals(0xcafebabe, in.readInt());
         assertEquals(0, in.readUnsignedShort());
-        assertEquals(49, in.readUnsignedShort());
+        assertEquals(50, in.readUnsignedShort());
 
         f = new File(buildDir, "test/Hello.class");
         in = new DataInputStream(new FileInputStream(f));
         assertEquals(0xcafebabe, in.readInt());
         assertEquals(0, in.readUnsignedShort());
-        assertEquals(49, in.readUnsignedShort());
+        assertEquals(50, in.readUnsignedShort());
     }
 
 }

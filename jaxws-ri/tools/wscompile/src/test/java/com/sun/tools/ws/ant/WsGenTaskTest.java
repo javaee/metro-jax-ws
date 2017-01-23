@@ -135,13 +135,13 @@ public class WsGenTaskTest extends WsAntTaskTestBase {
         DataInputStream in = new DataInputStream(new FileInputStream(f));
         assertEquals(0xcafebabe, in.readInt());
         assertEquals(0, in.readUnsignedShort());
-        assertEquals(49, in.readUnsignedShort());
+        assertEquals(50, in.readUnsignedShort());
 
         //ws class is compiled by default javac (6+)
         f = new File(srcDir, "test/TestWs.class");
         in = new DataInputStream(new FileInputStream(f));
         assertEquals(0xcafebabe, in.readInt());
         in.readUnsignedShort();
-        assertTrue(49 != in.readUnsignedShort());
+        assertTrue(50 != in.readUnsignedShort());
     }
 }

@@ -218,8 +218,8 @@
                 <pathelement location="${src.dir}"/>
             </classpath>
             <jvmarg line="${coverage}"/>
-            <javacarg value="-source=1.7"/>
-            <javacarg value="-target=1.7"/>
+            <javacarg value="-source=1.6"/>
+            <javacarg value="-target=1.6"/>
         </wsgen>
     </target>
 
