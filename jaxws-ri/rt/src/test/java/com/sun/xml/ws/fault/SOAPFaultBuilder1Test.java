@@ -148,8 +148,9 @@ public class SOAPFaultBuilder1Test extends TestCase {
         Iterator iter = detail.getDetailEntries();
         assertTrue(iter.hasNext());
         DetailEntry n = (DetailEntry) iter.next();
-        assertTrue(n.getNamespaceURI().equals(detailMsg.getNamespaceURI())&&
-        n.getLocalName().equals(detailMsg.getLocalPart()));
+        assertTrue((n.getNamespaceURI() != null ? n.getNamespaceURI() : "")
+                .equals(detailMsg.getNamespaceURI())
+                && n.getLocalName().equals(detailMsg.getLocalPart()));
         assertEquals(n.getTextContent(), detailValue);
 
         //compare code and subcodes

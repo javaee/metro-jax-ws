@@ -191,7 +191,6 @@
                         <configuration>
                             <testFailureIgnore>${ignore.failing.tests}</testFailureIgnore>
                             <argLine>
-                                --add-exports java.xml/com.sun.org.apache.xerces.internal.dom=ALL-UNNAMED
                                 --add-modules java.activation
                             </argLine>
                         </configuration>

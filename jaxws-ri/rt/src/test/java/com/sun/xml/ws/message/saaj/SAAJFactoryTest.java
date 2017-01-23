@@ -76,6 +76,7 @@ import com.sun.xml.ws.message.stream.StreamMessage;
 
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import junit.framework.TestCase;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class SAAJFactoryTest extends TestCase {
@@ -186,7 +187,7 @@ public class SAAJFactoryTest extends TestCase {
         SOAPElement param1 = (SOAPElement)params.getFirstChild();
         assertEquals("Param1", param1.getLocalName());
         assertNull(param1.getNamespaceURI());
-        SOAPElement param2 = (SOAPElement)params.getChildNodes().item(1);
+        Element param2 = (Element) params.getChildNodes().item(1);
         assertEquals("Param2", param2.getLocalName());
         assertNull(param2.getNamespaceURI());
         // check the message as string
@@ -240,7 +241,7 @@ public class SAAJFactoryTest extends TestCase {
         SOAPElement param1 = (SOAPElement)params.getFirstChild();
         assertEquals("Param1", param1.getLocalName());
         assertNull(param1.getNamespaceURI());
-        SOAPElement param2 = (SOAPElement)params.getChildNodes().item(1);
+        Element param2 = (Element) params.getChildNodes().item(1);
         assertEquals("Param2", param2.getLocalName());
         assertNull(param2.getNamespaceURI());
         // check the message as string

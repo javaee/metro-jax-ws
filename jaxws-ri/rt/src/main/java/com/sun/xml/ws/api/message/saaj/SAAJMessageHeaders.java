@@ -55,6 +55,8 @@ import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 
+import com.sun.xml.messaging.saaj.soap.SOAPDocumentImpl;
+import com.sun.xml.messaging.saaj.soap.impl.HeaderImpl;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Header;
@@ -249,11 +251,12 @@ public class SAAJMessageHeaders implements MessageHeaders {
         if (soapHeader == null) {
             return null;
         }
+        SOAPDocumentImpl soapDocument = ((HeaderImpl)soapHeader).getSoapDocument();
         SOAPHeaderElement headerElem = find(nsUri, localName);
         if (headerElem == null) {
             return null;
         }
-        headerElem = (SOAPHeaderElement) soapHeader.removeChild(headerElem);
+        headerElem = (SOAPHeaderElement) soapDocument.find(soapHeader.removeChild(headerElem));
 
         //it might have been a nonSAAJHeader - remove from that map
         removeNonSAAJHeader(headerElem);
@@ -345,7 +348,7 @@ public class SAAJMessageHeaders implements MessageHeaders {
     
     private void addNonSAAJHeader(SOAPHeaderElement headerElem, Header header) {
         if (nonSAAJHeaders == null) {
-            nonSAAJHeaders = new HashMap<SOAPHeaderElement, Header>();
+            nonSAAJHeaders = new HashMap<>();
         }
         nonSAAJHeaders.put(headerElem, header);
     }
