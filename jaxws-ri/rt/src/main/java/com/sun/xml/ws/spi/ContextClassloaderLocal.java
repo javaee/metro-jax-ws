@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,10 +40,10 @@
 
 package com.sun.xml.ws.spi;
 
+import com.sun.xml.ws.resources.ContextClassloaderLocalMessages;
+
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.text.MessageFormat;
-import java.util.ResourceBundle;
 import java.util.WeakHashMap;
 
 /**
@@ -51,9 +51,7 @@ import java.util.WeakHashMap;
  */
 abstract class ContextClassloaderLocal<V> {
 
-    private static final String FAILED_TO_CREATE_NEW_INSTANCE = "FAILED_TO_CREATE_NEW_INSTANCE";
-
-    private WeakHashMap<ClassLoader, V> CACHE = new WeakHashMap<ClassLoader, V>();
+    private WeakHashMap<ClassLoader, V> CACHE = new WeakHashMap<>();
 
     public V get() throws Error {
         ClassLoader tccl = getContextClassLoader();
@@ -75,27 +73,21 @@ abstract class ContextClassloaderLocal<V> {
         try {
             return initialValue();
         } catch (Exception e) {
-            throw new Error(format(FAILED_TO_CREATE_NEW_INSTANCE, getClass().getName()), e);
+            throw new Error(ContextClassloaderLocalMessages.FAILED_TO_CREATE_NEW_INSTANCE(getClass().getName()), e);
         }
     }
 
-    private static String format(String property, Object... args) {
-        String text = ResourceBundle.getBundle(ContextClassloaderLocal.class.getName()).getString(property);
-        return MessageFormat.format(text, args);
-    }
-
     private static ClassLoader getContextClassLoader() {
-        return (ClassLoader)
-                AccessController.doPrivileged(new PrivilegedAction() {
-                    public Object run() {
-                        ClassLoader cl = null;
-                        try {
-                            cl = Thread.currentThread().getContextClassLoader();
-                        } catch (SecurityException ex) {
-                        }
-                        return cl;
-                    }
-                });
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                ClassLoader cl = null;
+                try {
+                    cl = Thread.currentThread().getContextClassLoader();
+                } catch (SecurityException ex) {
+                }
+                return cl;
+            }
+        });
     }
 }
-
