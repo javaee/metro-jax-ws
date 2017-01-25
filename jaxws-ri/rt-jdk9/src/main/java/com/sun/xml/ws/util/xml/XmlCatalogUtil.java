@@ -41,6 +41,7 @@ package com.sun.xml.ws.util.xml;
 
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.server.ServerRtException;
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -118,6 +119,8 @@ public class XmlCatalogUtil {
         // Prepare array of catalog URIs
         URI[] uris = urls.stream()
                              .map(u -> URI.create(u.toExternalForm()))
+                             // TODO: REMOVE FOLLOWING LINE - workaround for https://bugs.openjdk.java.net/browse/JDK-8173260
+                             .filter(u -> ("file".equals(u.getScheme()) && new File(u.toString()).exists()) || !"file".equals(u.getScheme()))
                              .toArray(URI[]::new);
 
         //Create CatalogResolver with new JDK9+ API
