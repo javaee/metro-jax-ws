@@ -301,28 +301,7 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <property name="api.dest.dir" value="${project.build.directory}/apidocs" />
-                                        <property name="javadoc.jar" value="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar" />
-                                        <property name="links.dir" value="${javadoc.links.dir}" />
-                                        <property name="links.offline" value="${javadoc.links.offline}" />
-                                        <mkdir dir="${api.dest.dir}" />
-                                        <javadoc packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*" sourcepath="${project.build.directory}/bundlesources" destdir="${api.dest.dir}" author="false" version="false" use="true" windowtitle="JAX-WS RI Runtime Documentation" doctitle="JAX-WS RI" bottom="Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.">
-                                            <bootclasspath>
-                                                <pathelement path="${maven.dependency.javax.annotation.javax.annotation-api.jar.path}" />
-                                                <pathelement path="${maven.dependency.javax.xml.bind.jaxb-api.jar.path}" />
-                                                <pathelement path="${maven.dependency.javax.xml.soap.javax.xml.soap-api.jar.path}" />
-                                                <pathelement path="${maven.dependency.javax.xml.ws.jaxws-api.jar.path}" />
-                                                <pathelement path="${sun.boot.class.path}" />
-                                            </bootclasspath>
-                                            <classpath refid="maven.compile.classpath" />
-                                            <link href="http://docs.oracle.com/javase/6/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/javase6/" />
-                                            <link href="http://jaxb.java.net/nonav/${jaxb-impl.version}/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/jaxb-api/" />
-                                            <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/" offline="${links.offline}" packagelistloc="${links.dir}/jaxws-api/" />
-                                        </javadoc>
-                                        <jar jarfile="${javadoc.jar}">
-                                            <fileset dir="${api.dest.dir}" />
-                                        </jar>
-                                        <attachartifact file="${javadoc.jar}" classifier="javadoc" type="jar" />
+                                        <ant antfile="${basedir}/src/main/ant/javadoc.xml" target="build-javadocs" inheritRefs="true"/>
                                     </target>
                                 </configuration>
                             </execution>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jaxws-rt-javadocs" default="build-javadocs" basedir=".">
+    <description>Builds javadocs for JAX-WS RI Runtime Bundle.</description>
+    
+    <target name="build-javadocs" depends="attach"/>
+    
+    <target name="init">
+        <property name="api.dest.dir" value="${project.build.directory}/apidocs" />
+        <property name="javadoc.jar" value="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar" />
+        <property name="links.dir" value="${javadoc.links.dir}" />
+        <property name="links.offline" value="${javadoc.links.offline}" />
+        <mkdir dir="${api.dest.dir}" />
+        <condition property="jdk9" value="false" else="true">
+            <or>
+                <equals arg1="${ant.java.version}" arg2="1.5"/>
+                <equals arg1="${ant.java.version}" arg2="1.6"/>
+                <equals arg1="${ant.java.version}" arg2="1.7"/>
+                <equals arg1="${ant.java.version}" arg2="1.8"/>
+            </or>
+        </condition>
+    </target>
+
+    <target name="javadoc-old" unless="${jdk9}" depends="init">
+        <javadoc packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
+                 sourcepath="${project.build.directory}/bundlesources"
+                 destdir="${api.dest.dir}"
+                 author="false"
+                 version="false"
+                 use="true"
+                 windowtitle="JAX-WS RI Runtime Documentation"
+                 doctitle="JAX-WS RI"
+                 bottom="Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.">
+            <bootclasspath>
+                <pathelement path="${maven.dependency.javax.annotation.javax.annotation-api.jar.path}" />
+                <pathelement path="${maven.dependency.javax.xml.bind.jaxb-api.jar.path}" />
+                <pathelement path="${maven.dependency.javax.xml.soap.javax.xml.soap-api.jar.path}" />
+                <pathelement path="${maven.dependency.javax.xml.ws.jaxws-api.jar.path}" />
+                <pathelement path="${sun.boot.class.path}" />
+            </bootclasspath>
+            <classpath refid="maven.compile.classpath" />
+            <link href="http://docs.oracle.com/javase/8/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/javase8/" />
+            <link href="http://jaxb.java.net/nonav/${jaxb-impl.version}/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/jaxb-api/" />
+            <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/" offline="${links.offline}" packagelistloc="${links.dir}/jaxws-api/" />
+        </javadoc>
+    </target>
+
+    <target name="javadoc" if="${jdk9}" depends="init">
+        <javadoc packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
+                 sourcepath="${project.build.directory}/bundlesources"
+                 destdir="${api.dest.dir}"
+                 failonerror="true"
+                 author="false"
+                 version="false"
+                 use="true"
+                 windowtitle="JAX-WS RI Runtime Documentation"
+                 doctitle="JAX-WS RI"
+                 bottom="Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.">
+            <classpath refid="maven.compile.classpath" />
+            <arg line="--add-modules java.activation -Xdoclint:none"/>
+            <link href="http://docs.oracle.com/javase/8/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/javase8/" />
+            <link href="http://jaxb.java.net/nonav/${jaxb-impl.version}/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/jaxb-api/" />
+            <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/" offline="${links.offline}" packagelistloc="${links.dir}/jaxws-api/" />
+        </javadoc>
+    </target>
+
+    <target name="jar" depends="javadoc-old,javadoc">
+        <jar jarfile="${javadoc.jar}">
+            <fileset dir="${api.dest.dir}" />
+        </jar>
+    </target>
+
+    <target name="attach" depends="jar">
+        <attachartifact file="${javadoc.jar}" classifier="javadoc" type="jar" />
+    </target>
+</project>

@@ -116,6 +116,12 @@
             <id>jvnet-nexus-snapshots</id>
             <url>http://maven.java.net/content/repositories/snapshots/</url>
             <layout>default</layout>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -401,8 +407,8 @@
                         </dependencySourceExcludes>
                         <offlineLinks>
                             <offlineLink>
-                                <url>http://docs.oracle.com/javase/6/docs/api/</url>
-                                <location>${javadoc.links.dir}/javase6/</location>
+                                <url>http://docs.oracle.com/javase/8/docs/api/</url>
+                                <location>${javadoc.links.dir}/javase8/</location>
                             </offlineLink>
                             <offlineLink>
                                 <url>http://jaxb.java.net/nonav/${jaxb-impl.version}/docs/api/</url>
