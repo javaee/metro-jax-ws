@@ -61,7 +61,7 @@
     <properties>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
@@ -211,7 +211,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>        
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -393,27 +393,13 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>default-compile</id>
-                                <configuration>
-                                    <compilerArgs>
-                                        <arg>--add-modules</arg>
-                                        <arg>java.activation</arg>
-                                    </compilerArgs>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <argLine>
                                 --add-exports java.xml/com.sun.org.apache.xml.internal.resolver=ALL-UNNAMED
                                 --add-exports java.xml/com.sun.org.apache.xml.internal.resolver.tools=ALL-UNNAMED
-                                --add-modules java.activation
+                                --add-modules java.xml.bind
+                                --upgrade-module-path ${endorsed.dir}
                             </argLine>
                         </configuration>
                     </plugin>

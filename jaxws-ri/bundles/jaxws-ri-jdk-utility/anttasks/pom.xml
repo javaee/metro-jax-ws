@@ -66,7 +66,7 @@
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-ri-jdk</artifactId>
@@ -311,7 +311,7 @@
                             <!--redirecting to different place not to be contained in the result bundle-->
                             <generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>
                             <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                            <compilerArgs>
+                            <compilerArgs combine.self="override">
                                 <arg>--add-modules</arg>
                                 <arg>java.compiler</arg>
                                 <!--<arg>-Xmodule:java.xml.ws</arg>-->
@@ -326,7 +326,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
         </plugins>
     </build>
 

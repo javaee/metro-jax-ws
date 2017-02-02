@@ -105,26 +105,12 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>default-compile</id>
-                                <configuration>
-                                    <compilerArgs>
-                                        <arg>--add-modules</arg>
-                                        <arg>java.activation</arg>
-                                    </compilerArgs>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <testFailureIgnore>${ignore.failing.tests}</testFailureIgnore>
                             <argLine>
-                                --add-modules java.activation
+                                --add-modules java.xml.bind
+                                --upgrade-module-path ${endorsed.dir}
                             </argLine>
                         </configuration>
                     </plugin>
@@ -176,7 +162,7 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>        
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.felix</groupId>
                         <artifactId>maven-bundle-plugin</artifactId>

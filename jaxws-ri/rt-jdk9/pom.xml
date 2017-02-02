@@ -110,15 +110,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>default-compile</id>
-                        <configuration>
-                            <compilerArgs>
-                                <arg>--add-modules</arg>
-                                <arg>java.activation</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>base-compile</id>
                         <configuration>
                             <skipMain>true</skipMain>
@@ -136,7 +127,8 @@
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
                     <argLine>
-                        --add-modules java.activation
+                        --add-modules java.xml.bind
+                        --upgrade-module-path ${endorsed.dir}
                     </argLine>
                 </configuration>
             </plugin>

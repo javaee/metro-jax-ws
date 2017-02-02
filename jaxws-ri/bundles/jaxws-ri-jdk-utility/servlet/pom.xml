@@ -70,18 +70,6 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>jaxws-rt</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>jaxws-tools</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>jaxws-ri-jdk-anttasks</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -115,7 +103,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                    
+
                     <execution>
                         <id>prepare-endorsed</id>
                         <phase>validate</phase>
@@ -129,7 +117,7 @@
                             <includeArtifactIds>jaxws-ri-jdk</includeArtifactIds>
                         </configuration>
                     </execution>
-                    
+
                     <execution>
                         <id>unpack-sources</id>
                         <goals>
@@ -211,17 +199,30 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <!--redirecting to different place not to be contained in the result bundle-->
-                    <generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                    <fork>true</fork>
-                    <!--<compilerArgument>-XDignore.symbol.file</compilerArgument>-->
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <verbose>true</verbose>
+                            <source>1.6</source>
+                            <target>1.6</target>
+                            <!--redirecting to different place not to be contained in the result bundle-->
+                            <generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>
+                            <forceJavacCompilerUse>true</forceJavacCompilerUse>
+                            <fork>true</fork>
+                            <compilerArgs combine.self="override"/>
+                            <!--<compilerArgument>-XDignore.symbol.file</compilerArgument>-->
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>base-compile</id>
+                        <configuration>
+                            <skipMain>true</skipMain>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>

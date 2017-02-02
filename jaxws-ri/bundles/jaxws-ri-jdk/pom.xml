@@ -59,7 +59,7 @@
     <packaging>jar</packaging>
     <name>JAX-WS RI JDK Sources Bundle</name>
     <description>Open source Reference Implementation of JSR-224: Java API for XML Web Services Distribution Bundle</description>
-    
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -134,7 +134,7 @@
                             <excludeScope>provided</excludeScope>
                             <outputDirectory>target/unpacked-sources</outputDirectory>
 
-                            <excludes>
+                            <excludes>module-info.java,
                                 //added after mavenization:,
                                 com/sun/xml/ws/transport/httpspi/servlet/,
 
@@ -229,7 +229,7 @@
                         <configuration>
                             <outputDirectory>target/unpacked-sources</outputDirectory>
                             <includeGroupIds>org.glassfish.gmbal,org.glassfish.external</includeGroupIds>
-                            <excludes>**/**/*.class,**/**/*.swp,META-INF/*</excludes>
+                            <excludes>**/**/*.class,**/**/*.swp,META-INF/*,module-info.*</excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -549,7 +549,7 @@
                             <!--redirecting to different place not to be contained in the result bundle-->
                             <generatedSourcesDirectory>${project.build.directory}/annotations</generatedSourcesDirectory>
                             <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                            <compilerArgs>
+                            <compilerArgs combine.self="override">
                                 <arg>--add-modules</arg>
                                 <arg>java.activation,java.xml</arg>
                                 <!--<arg>-Xmodule:java.xml.ws</arg>-->
