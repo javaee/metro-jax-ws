@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -51,29 +51,49 @@
         <format>jar</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
-    <moduleSets>
-        <moduleSet>
-            <binaries>
-                <unpack>true</unpack>
-                <outputDirectory>/</outputDirectory>
-                <includeDependencies>false</includeDependencies>
-            </binaries>
-        </moduleSet>
-        <moduleSet>
-            <!-- Unpack JDK9 sources only to multi-release jar folder-->
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <excludes>
+                <exclude>*:sources:*</exclude>
+            </excludes>
+            <includes>
+                <include>com.sun.xml.ws:wscompile</include>
+            </includes>
+            <unpack>true</unpack>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>META-INF/versions/9</outputDirectory>
+            <excludes>
+                <exclude>*:sources:*</exclude>
+            </excludes>
             <includes>
                 <include>com.sun.xml.ws:wscompile-jdk9</include>
             </includes>
-            <binaries>
-                <unpack>true</unpack>
-                <outputDirectory>META-INF/versions/9</outputDirectory>
-                <includeDependencies>false</includeDependencies>
-                <unpackOptions>
-                    <excludes>
-                        <exclude>/META-INF/**</exclude>
-                    </excludes>
-                </unpackOptions>
-            </binaries>
-        </moduleSet>
-    </moduleSets>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <excludes>
+                    <exclude>/META-INF/**</exclude>
+                </excludes>
+            </unpackOptions>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <excludes>
+                <exclude>*:sources:*</exclude>
+            </excludes>
+            <includes>
+                <include>com.sun.xml.ws:wscompile-jdk9</include>
+            </includes>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <includes>
+                    <include>/META-INF/**</include>
+                </includes>
+            </unpackOptions>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
+    </dependencySets>
 </assembly>

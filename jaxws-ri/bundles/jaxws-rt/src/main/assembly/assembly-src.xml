@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -50,61 +50,45 @@
     <formats>
         <format>jar</format>
     </formats>
-    
     <includeBaseDirectory>false</includeBaseDirectory>
-    <moduleSets>
-        <moduleSet>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
             <includes>
-                <include>com.sun.xml.ws:rt</include>
-                <include>com.sun.xml.ws:rt-fi</include>
-                <include>com.sun.xml.ws:rt-ha</include>
-                <include>com.sun.xml.ws:httpspi-servlet</include>
-                <include>com.sun.xml.ws:servlet</include>
+                <include>com.sun.xml.ws:rt:jar:sources</include>
+                <include>com.sun.xml.ws:rt-fi:jar:sources</include>
+                <include>com.sun.xml.ws:rt-ha:jar:sources</include>
+                <include>com.sun.xml.ws:httpspi-servlet:jar:sources</include>
+                <include>com.sun.xml.ws:servlet:jar:sources</include>
             </includes>
-            <sources>
-                <includeModuleDirectory>false</includeModuleDirectory>
-                <fileSets>
-                    <fileSet>
-                        <directory>src/main/java/</directory>
-                    </fileSet>
-                    <fileSet>
-                        <directory>src/main/resources/</directory>
-                    </fileSet>
-                    <fileSet>
-                        <directory>target/generated-sources/rsrc-gen</directory>
-                    </fileSet>
-                    <fileSet>
-                        <directory>target/generated-sources/renamed-sources</directory>
-                    </fileSet>
-                    <fileSet>
-                        <directory>target/classes</directory>
-                        <includes>
-                            <include>com/sun/xml/ws/util/version.properties</include>
-                        </includes>
-                    </fileSet>
-                </fileSets>
-            </sources>
-        </moduleSet>
-        <moduleSet>
-            <!-- JDK9 modular jar sources -->
+            <unpack>true</unpack>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>META-INF/versions/9</outputDirectory>
             <includes>
-                <include>com.sun.xml.ws:rt-jdk9</include>
+                <include>com.sun.xml.ws:rt-jdk9:jar:sources</include>
             </includes>
-            <sources>
-                <includeModuleDirectory>false</includeModuleDirectory>
-                <fileSets>
-                    <fileSet>
-                        <directory>src/main/java/</directory>
-                        <outputDirectory>META-INF/versions/9</outputDirectory>
-                        <includes>
-                            <include>**/*.java</include>
-                        </includes>
-                        <excludes>
-                            <exclude>**/*.class</exclude>
-                        </excludes>
-                    </fileSet>
-                </fileSets>
-            </sources>
-        </moduleSet>
-    </moduleSets>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <excludes>
+                    <exclude>/META-INF/**</exclude>
+                </excludes>
+            </unpackOptions>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>com.sun.xml.ws:rt-jdk9:jar:sources</include>
+            </includes>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <includes>
+                    <include>/META-INF/**</include>
+                </includes>
+            </unpackOptions>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
+    </dependencySets>
 </assembly>

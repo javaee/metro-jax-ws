@@ -173,6 +173,43 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- module dependencies -->
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>rt</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>rt-fi</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>rt-ha</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>httpspi-servlet</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>servlet</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -247,6 +284,23 @@
             <activation>
                 <jdk>9</jdk>
             </activation>
+            <dependencies>
+                <!-- module dependencies -->
+                <dependency>
+                    <groupId>com.sun.xml.ws</groupId>
+                    <artifactId>rt-jdk9</artifactId>
+                    <version>${project.version}</version>
+                    <optional>true</optional>
+                </dependency>
+                <!-- module dependencies -->
+                <dependency>
+                    <groupId>com.sun.xml.ws</groupId>
+                    <artifactId>rt-jdk9</artifactId>
+                    <version>${project.version}</version>
+                    <classifier>sources</classifier>
+                    <optional>true</optional>
+                </dependency>
+            </dependencies>
             <modules>
                 <module>../../rt-jdk9</module>
             </modules>
