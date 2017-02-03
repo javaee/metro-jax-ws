@@ -90,7 +90,7 @@ public abstract class BindingImpl implements WSBinding {
     //This is reset when ever Binding.setHandlerChain() or SOAPBinding.setRoles() is called.
     private HandlerConfiguration handlerConfig;
     private final Set<QName> addedHeaders = new HashSet<QName>();
-    private final Set<QName> knownHeaders = new HashSet<QName>();
+    private final Set<QName> knownHeaders = Collections.synchronizedSet(new HashSet<QName>());
     private final Set<QName> unmodKnownHeaders = Collections.unmodifiableSet(knownHeaders);
     private final BindingID bindingId;
     // Features that are set(enabled/disabled) on the binding

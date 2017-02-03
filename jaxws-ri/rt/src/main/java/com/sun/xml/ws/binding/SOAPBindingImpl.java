@@ -57,6 +57,8 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author WS Development Team
@@ -110,7 +112,13 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
      * @param headers SOAP header names
      */
     public void setPortKnownHeaders(@NotNull Set<QName> headers) {
-        this.portKnownHeaders = headers;
+		Lock lock = new ReentrantLock();
+    	try{
+    	  lock.lock();
+          this.portKnownHeaders = headers;
+		} finally {
+    		lock.unlock();
+    	}
     }
 
     /**

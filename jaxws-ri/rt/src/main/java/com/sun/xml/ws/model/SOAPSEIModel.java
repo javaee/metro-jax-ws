@@ -48,6 +48,8 @@ import javax.xml.namespace.QName;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Creates SOAP specific RuntimeModel
@@ -87,15 +89,22 @@ public class SOAPSEIModel extends AbstractSEIModelImpl {
 
     public Set<QName> getKnownHeaders() {
         Set<QName> headers = new HashSet<QName>();
-        for (JavaMethodImpl method : getJavaMethods()) {
-            // fill in request headers
-            Iterator<ParameterImpl> params = method.getRequestParameters().iterator();
-            fillHeaders(params, headers, Mode.IN);
+		Lock lock = new ReentrantLock();
+        try{
+        	lock.lock();
+            for (JavaMethodImpl method : getJavaMethods()) {
+             // fill in request headers
+             Iterator<ParameterImpl> params = method.getRequestParameters().iterator();
+             fillHeaders(params, headers, Mode.IN);
 
-            // fill in response headers
-            params = method.getResponseParameters().iterator();
-            fillHeaders(params, headers, Mode.OUT);
-        }
+             // fill in response headers
+             params = method.getResponseParameters().iterator();
+             fillHeaders(params, headers, Mode.OUT);
+			  }
+        }finally
+        {
+        	lock.unlock();
+         }
         return headers;
     }
 
