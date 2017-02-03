@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,7 +57,7 @@ import java.net.URL;
  * SPI that provides the source of {@link SDDocument}.
  *
  * <p>
- * This abstract class could be implemented by appliations, or one of the
+ * This abstract class could be implemented by applications, or one of the
  * {@link #create} methods can be used.
  *
  * @author Kohsuke Kawaguchi
@@ -100,28 +100,38 @@ public abstract class SDDocumentSource {
 
     /**
      * System ID of this document.
+     * @return
      */
     public abstract URL getSystemId();
 
+    public static SDDocumentSource create(final Class<?> implClass, final String url) {
+        return create(url, implClass);
+    }
+
     /**
      * Creates {@link SDDocumentSource} from an URL.
+     * @param url
+     * @return
      */
     public static SDDocumentSource create(final URL url) {
         return new SDDocumentSource() {
             private final URL systemId = url;
 
+            @Override
             public XMLStreamReader read(XMLInputFactory xif) throws IOException, XMLStreamException {
                 InputStream is = url.openStream();
                 return new TidyXMLStreamReader(
                     xif.createXMLStreamReader(systemId.toExternalForm(),is), is);
             }
 
+            @Override
             public XMLStreamReader read() throws IOException, XMLStreamException {
                 InputStream is = url.openStream();
                 return new TidyXMLStreamReader(
                    XMLStreamReaderFactory.create(systemId.toExternalForm(),is,false), is);
             }
 
+            @Override
             public URL getSystemId() {
                 return systemId;
             }
@@ -135,19 +145,22 @@ public abstract class SDDocumentSource {
      * @param resolvingClass class used to read resource
      * @param path resource path
      */
-    public static SDDocumentSource create(final Class resolvingClass, final String path) {
+    private static SDDocumentSource create(final String path, final Class<?> resolvingClass) {
         return new SDDocumentSource() {
 
+            @Override
             public XMLStreamReader read(XMLInputFactory xif) throws IOException, XMLStreamException {
                 InputStream is = inputStream();
                 return new TidyXMLStreamReader(xif.createXMLStreamReader(path,is), is);
             }
 
+            @Override
             public XMLStreamReader read() throws IOException, XMLStreamException {
                 InputStream is = inputStream();
                 return new TidyXMLStreamReader(XMLStreamReaderFactory.create(path,is,false), is);
             }
 
+            @Override
             public URL getSystemId() {
                 try {
                     return new URL("file://" + path);
@@ -172,17 +185,23 @@ public abstract class SDDocumentSource {
 
     /**
      * Creates a {@link SDDocumentSource} from {@link XMLStreamBuffer}.
+     * @param systemId
+     * @param xsb
+     * @return
      */
     public static SDDocumentSource create(final URL systemId, final XMLStreamBuffer xsb) {
         return new SDDocumentSource() {
+            @Override
             public XMLStreamReader read(XMLInputFactory xif) throws XMLStreamException {
                 return xsb.readAsXMLStreamReader();
             }
 
+            @Override
             public XMLStreamReader read() throws XMLStreamException {
                 return xsb.readAsXMLStreamReader();
             }
 
+            @Override
             public URL getSystemId() {
                 return systemId;
             }

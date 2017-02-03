@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -84,13 +84,11 @@ import org.w3c.dom.Element;
 
 /**
  * Implements {@link Endpoint}.
- * <p/>
- * <p/>
+ *
  * This class accumulates the information necessary to create
  * {@link WSEndpoint}, and then when {@link #publish} method
  * is called it will be created.
- * <p/>
- * <p/>
+ *
  * This object also allows accumulated information to be retrieved.
  *
  * @author Jitendra Kotamraju
@@ -155,7 +153,7 @@ public class EndpointImpl extends Endpoint {
     public EndpointImpl(WSEndpoint wse, Object serverContext) {
     	this(wse, serverContext, null);
     }
-    
+
     /**
      * Wraps an already created {@link WSEndpoint} into an {@link EndpointImpl},
      * and immediately publishes it with the given context.
@@ -186,8 +184,8 @@ public class EndpointImpl extends Endpoint {
     public EndpointImpl(WSEndpoint wse, String address) {
     	this(wse, address, null);
     }
-    
-    
+
+
     /**
      * Wraps an already created {@link WSEndpoint} into an {@link EndpointImpl},
      * and immediately publishes it with the given context.
@@ -220,14 +218,17 @@ public class EndpointImpl extends Endpoint {
         invoker = null;
     }
 
+    @Override
     public Binding getBinding() {
         return binding;
     }
 
+    @Override
     public Object getImplementor() {
         return implementor;
     }
 
+    @Override
     public void publish(String address) {
         canPublish();
         URL url;
@@ -247,6 +248,7 @@ public class EndpointImpl extends Endpoint {
         ((HttpEndpoint) actualEndpoint).publish(address);
     }
 
+    @Override
     public void publish(Object serverContext) {
         canPublish();
         if (!com.sun.net.httpserver.HttpContext.class.isAssignableFrom(serverContext.getClass())) {
@@ -256,12 +258,14 @@ public class EndpointImpl extends Endpoint {
         ((HttpEndpoint) actualEndpoint).publish(serverContext);
     }
 
+    @Override
     public void publish(HttpContext serverContext) {
         canPublish();
         createEndpoint(serverContext.getPath());
         ((HttpEndpoint) actualEndpoint).publish(serverContext);
     }
 
+    @Override
     public void stop() {
         if (isPublished()) {
             ((HttpEndpoint) actualEndpoint).stop();
@@ -270,14 +274,17 @@ public class EndpointImpl extends Endpoint {
         }
     }
 
+    @Override
     public boolean isPublished() {
         return actualEndpoint != null;
     }
 
+    @Override
     public List<Source> getMetadata() {
         return metadata;
     }
 
+    @Override
     public void setMetadata(java.util.List<Source> metadata) {
         if (isPublished()) {
             throw new IllegalStateException("Cannot set Metadata. Endpoint is already published");
@@ -285,20 +292,24 @@ public class EndpointImpl extends Endpoint {
         this.metadata = metadata;
     }
 
+    @Override
     public Executor getExecutor() {
         return executor;
     }
 
+    @Override
     public void setExecutor(Executor executor) {
         this.executor = executor;
     }
 
+    @Override
     public Map<String, Object> getProperties() {
-        return new HashMap<String, Object>(properties);
+        return new HashMap<>(properties);
     }
 
+    @Override
     public void setProperties(Map<String, Object> map) {
-        this.properties = new HashMap<String, Object>(map);
+        this.properties = new HashMap<>(map);
     }
 
     /*
@@ -350,7 +361,7 @@ public class EndpointImpl extends Endpoint {
      * reuse the Source object multiple times.
      */
     private List<SDDocumentSource> buildDocList() {
-        List<SDDocumentSource> r = new ArrayList<SDDocumentSource>();
+        List<SDDocumentSource> r = new ArrayList<>();
 
         if (metadata != null) {
             for (Source source : metadata) {
@@ -359,14 +370,8 @@ public class EndpointImpl extends Endpoint {
                     String systemId = source.getSystemId();
 
                     r.add(SDDocumentSource.create(new URL(systemId), xsbr.getXMLStreamBuffer()));
-                } catch (TransformerException te) {
+                } catch (TransformerException | IOException | SAXException | ParserConfigurationException te) {
                     throw new ServerRtException("server.rt.err", te);
-                } catch (IOException te) {
-                    throw new ServerRtException("server.rt.err", te);
-                } catch (SAXException e) {
-                    throw new ServerRtException("server.rt.err", e);
-                } catch (ParserConfigurationException e) {
-                    throw new ServerRtException("server.rt.err", e);
                 }
             }
         }
@@ -382,12 +387,7 @@ public class EndpointImpl extends Endpoint {
         EndpointFactory.verifyImplementorClass(implClass, metadataReader);
         String wsdlLocation = EndpointFactory.getWsdlLocation(implClass, metadataReader);
         if (wsdlLocation != null) {
-            ClassLoader cl = implClass.getClassLoader();
-            URL url = cl.getResource(wsdlLocation);
-            if (url != null) {
-                return SDDocumentSource.create(url);
-            }
-            throw new ServerRtException("cannot.load.wsdl", wsdlLocation);
+            return SDDocumentSource.create(implClass, wsdlLocation);
         }
         return null;
     }
@@ -403,10 +403,12 @@ public class EndpointImpl extends Endpoint {
         }
     }
 
+    @Override
     public EndpointReference getEndpointReference(Element...referenceParameters) {
         return getEndpointReference(W3CEndpointReference.class, referenceParameters);
     }
 
+    @Override
     public <T extends EndpointReference> T getEndpointReference(Class<T> clazz, Element...referenceParameters) {
         if (!isPublished()) {
             throw new WebServiceException("Endpoint is not published yet");
@@ -425,7 +427,7 @@ public class EndpointImpl extends Endpoint {
         	if (endpointContext instanceof Component) {
         		adapterList = ((Component) endpointContext).getSPI(HttpAdapterList.class);
         	}
-        	
+
         	if (adapterList == null) {
 	            for(Endpoint e : endpointContext.getEndpoints()) {
 	                if (e.isPublished() && e != this) {
@@ -473,13 +475,12 @@ public class EndpointImpl extends Endpoint {
         public void start(@NotNull WSWebServiceContext wsc, @NotNull WSEndpoint endpoint) {
             try {
                 spiInvoker.inject(wsc);
-            } catch (IllegalAccessException e) {
-                throw new WebServiceException(e);
-            } catch (InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new WebServiceException(e);
             }
         }
 
+        @Override
         public Object invoke(@NotNull Packet p, @NotNull Method m, @NotNull Object... args) throws InvocationTargetException, IllegalAccessException {
             return spiInvoker.invoke(m, args);
         }
