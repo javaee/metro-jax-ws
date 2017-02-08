@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,6 +57,8 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author WS Development Team
@@ -72,6 +74,7 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
 
     private Set<QName> portKnownHeaders = Collections.emptySet();
     private Set<QName> bindingUnderstoodHeaders = new HashSet<QName>();
+    private final Lock lock = new ReentrantLock();
 
     /**
      * Use {@link BindingImpl#create(BindingID)} to create this.
@@ -110,7 +113,13 @@ public final class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
      * @param headers SOAP header names
      */
     public void setPortKnownHeaders(@NotNull Set<QName> headers) {
-        this.portKnownHeaders = headers;
+     
+    	try{
+    	  lock.lock();
+          this.portKnownHeaders = headers;
+		} finally {
+    		lock.unlock();
+    	}
     }
 
     /**
