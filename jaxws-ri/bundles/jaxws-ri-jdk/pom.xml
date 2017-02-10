@@ -336,8 +336,8 @@
                                 <correct copyright="${lic}" includes="java.xml.ws/javax/jws/" excludes=""/>
                                 <correct copyright="${lic}" includes="java.xml.ws/javax/xml/ws/" excludes=""/>
                                 <correct copyright="${lic}" includes="java.xml.bind/javax/xml/bind/" excludes=""/>
-                                <correct copyright="${lic}" includes="java.annotations.common/javax/annotation/"
-                                         excludes="java.annotations.common/javax/annotation/processing"/>
+                                <correct copyright="${lic}" includes="java.xml.ws.annotation/javax/annotation/"
+                                         excludes="java.xml.ws.annotation/javax/annotation/processing"/>
                                 <correct copyright="${lic}" includes="java.xml.ws/com/sun/xml/internal/ws/"
                                          excludes="java.xml.ws/com/sun/xml/internal/ws/org/objectweb/asm/"/>
                                 <correct copyright="${lic}" includes="java.xml.bind/com/sun/xml/internal/bind/" excludes=""/>
@@ -425,8 +425,8 @@
                             <rootDir>${project.basedir}/target/generated-sources</rootDir>
                             <excludes>com.sun.xml.internal</excludes>
                             <patterns>
-                                <!--java.annotations.common-->
-                                <javax.annotation>java.annotations.common/javax.annotation</javax.annotation>
+                                <!-- java.xml.ws.annotation -->
+                                <javax.annotation>java.xml.ws.annotation/javax.annotation</javax.annotation>
 
                                 <!-- ================== MODULE java.xml.ws ================== -->
 
