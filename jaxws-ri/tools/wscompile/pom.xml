@@ -119,6 +119,9 @@
             <plugin>
                 <groupId>com.sun.istack</groupId>
                 <artifactId>istack-commons-maven-plugin</artifactId>
+                <configuration>
+                    <atGenerated>false</atGenerated>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
