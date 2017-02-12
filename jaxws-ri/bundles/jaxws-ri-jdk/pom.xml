@@ -257,6 +257,22 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>update-jaxb-rbs</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!-- jaxb properties contain ${version} string which has to be updated to appropriate version -->
+                                <replaceregexp match="\$\{version\}" replace="${jaxb.version}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/tools/jxc" includes="*.properties" />
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/tools/xjc" includes="*.properties" />
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <!-- move jaxws-tubes-default.xml to com/sun/xml/ws/assembler -->
                         <!-- also see MetroConfigLoader.java patching below -->
                         <id>move-jaxws-tubes-default.xml</id>
