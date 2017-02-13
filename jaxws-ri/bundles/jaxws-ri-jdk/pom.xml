@@ -386,6 +386,7 @@
                                 <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/tools/internal/xjc/"
                                          excludes="jdk.xml.bind/com/sun/tools/internal/xjc/reader/internalizer/NamespaceContextImpl.java"/>
                                 <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/tools/internal/jxc/" excludes=""/>
+                                <correct copyright="${lic}" includes="jdk.xml.bind/com/sun/xml/internal/xsom/" excludes=""/>
 
                                 <!-- handle anamalies -->
                                 <correct copyright="${antdir}/oracle_gpl_portions_2005-2011.txt"
