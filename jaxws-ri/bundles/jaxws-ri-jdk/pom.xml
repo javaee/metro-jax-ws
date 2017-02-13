@@ -257,7 +257,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>update-jaxb-rbs</id>
+                        <id>update-version-strings</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>run</goal>
@@ -268,6 +268,22 @@
                                 <replaceregexp match="\$\{version\}" replace="${jaxb.version}" flags="gs" byline="true">
                                     <fileset dir="${project.build.directory}/unpacked-sources/com/sun/tools/jxc" includes="*.properties" />
                                     <fileset dir="${project.build.directory}/unpacked-sources/com/sun/tools/xjc" includes="*.properties" />
+                                </replaceregexp>
+                                <!-- jaxws properties contain various ${version} strings which has to be updated to appropriate string -->
+                                <replaceregexp match="\$\{project.version\}" replace="${project.version}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/xml/ws/util" includes="version.properties" />
+                                </replaceregexp>
+                                <replaceregexp match="\$\{jaxws.majorVersion\}" replace="${jaxws.majorVersion}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/xml/ws/util" includes="version.properties" />
+                                </replaceregexp>
+                                <replaceregexp match="\$\{jaxws.minorVersion\}" replace="${jaxws.minorVersion}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/xml/ws/util" includes="version.properties" />
+                                </replaceregexp>
+                                <replaceregexp match="\$\{jaxws.incrementalVersion\}" replace="${jaxws.incrementalVersion}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/xml/ws/util" includes="version.properties" />
+                                </replaceregexp>
+                                <replaceregexp match="\$\{buildNumber\}" replace="${buildNumber}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/xml/ws/util" includes="version.properties" />
                                 </replaceregexp>
                             </target>
                         </configuration>
