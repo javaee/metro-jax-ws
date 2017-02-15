@@ -113,7 +113,7 @@
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <management-api.version>3.2.1-b001</management-api.version>
         <mimepull.version>1.9.7</mimepull.version>
-        <policy.version>2.7</policy.version>
+        <policy.version>2.7.1</policy.version>
         <resolver.version>20050927</resolver.version>
         <saaj-api.version>1.4.0-b01</saaj-api.version>
         <saaj-impl.version>1.4.0-b03</saaj-impl.version>
