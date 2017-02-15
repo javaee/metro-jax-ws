@@ -67,8 +67,7 @@ class Trampoline {
     }
 
     private static void ensureInvocableMethod(Method m)
-            throws InvocationTargetException
-    {
+            throws InvocationTargetException {
         Class<?> clazz = m.getDeclaringClass();
         if (clazz.equals(AccessController.class) ||
                 clazz.equals(Method.class) ||
@@ -78,8 +77,7 @@ class Trampoline {
     }
 
     private static Object invoke(Method m, Object obj, Object[] params)
-            throws InvocationTargetException, IllegalAccessException
-    {
+            throws InvocationTargetException, IllegalAccessException {
         ensureInvocableMethod(m);
         return m.invoke(obj, params);
     }
@@ -111,13 +109,13 @@ public final class MethodUtil extends SecureClassLoader {
             Throwable t = ie.getCause();
 
             if (t instanceof InvocationTargetException) {
-                throw (InvocationTargetException)t;
+                throw (InvocationTargetException) t;
             } else if (t instanceof IllegalAccessException) {
-                throw (IllegalAccessException)t;
+                throw (IllegalAccessException) t;
             } else if (t instanceof RuntimeException) {
-                throw (RuntimeException)t;
+                throw (RuntimeException) t;
             } else if (t instanceof Error) {
-                throw (Error)t;
+                throw (Error) t;
             } else {
                 throw new Error("Unexpected invocation error", t);
             }
@@ -146,8 +144,7 @@ public final class MethodUtil extends SecureClassLoader {
 
 
     protected synchronized Class<?> loadClass(String name, boolean resolve)
-            throws ClassNotFoundException
-    {
+            throws ClassNotFoundException {
         // First, check if the class has already been loaded
         checkPackageAccess(name);
         Class<?> c = findLoadedClass(name);
@@ -169,8 +166,7 @@ public final class MethodUtil extends SecureClassLoader {
 
 
     protected Class<?> findClass(final String name)
-            throws ClassNotFoundException
-    {
+            throws ClassNotFoundException {
         if (!name.startsWith(WS_UTIL_PKG)) {
             throw new ClassNotFoundException(name);
         }
@@ -191,7 +187,7 @@ public final class MethodUtil extends SecureClassLoader {
         int capacity = buf.length;
         int nread = 0;
         int n;
-        for (;;) {
+        for (; ; ) {
             // read to EOF which may read more or less than initial buffer size
             while ((n = in.read(buf, nread, capacity - nread)) > 0)
                 nread += n;
@@ -214,20 +210,18 @@ public final class MethodUtil extends SecureClassLoader {
     }
 
 
-
     /*
      * Define the proxy classes
      */
     private Class<?> defineClass(String name, byte[] b) throws IOException {
-        CodeSource cs = new CodeSource(null, (java.security.cert.Certificate[])null);
+        CodeSource cs = new CodeSource(null, (java.security.cert.Certificate[]) null);
         if (!name.equals(TRAMPOLINE)) {
             throw new IOException("MethodUtil: bad name " + name);
         }
         return defineClass(name, b, 0, b.length, cs);
     }
 
-    protected PermissionCollection getPermissions(CodeSource codesource)
-    {
+    protected PermissionCollection getPermissions(CodeSource codesource) {
         PermissionCollection perms = super.getPermissions(codesource);
         perms.add(new AllPermission());
         return perms;
@@ -266,7 +260,7 @@ public final class MethodUtil extends SecureClassLoader {
 
     /**
      * Checks package access on the given class.
-     *
+     * <p>
      * If it is a {@link Proxy#isProxyClass(Class)} that implements
      * a non-public interface (i.e. may be in a non-restricted package),
      * also check the package access on the proxy interfaces.
