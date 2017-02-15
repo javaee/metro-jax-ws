@@ -187,7 +187,7 @@ public class WsgenTool {
                 if ("-target".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
                     addModules = false;
                 }
-                if ("-release".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
+                if ("--release".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
                     addModules = false;
                 }
                 args.add(opt);
