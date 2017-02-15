@@ -492,7 +492,7 @@ public class WsimportTool {
         }
 
         if (options.getModuleName() != null) {
-            options.getCodeModel()._prepareModuleInfo(options.getModuleName(), JAXWS_PACKAGE);
+            options.getCodeModel()._prepareModuleInfo(options.getModuleName(), JAXWS_MODULE);
         }
 
         CodeWriter cw;
