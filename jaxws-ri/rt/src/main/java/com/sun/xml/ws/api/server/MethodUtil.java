@@ -46,7 +46,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Utility class to invoke sun.reflect.misc.MethodUtil.invoke() if available. If not (other then Oracle JDK) fallbacks
+ * Utility class to invoke com.sun.xml.ws.util.MethodUtil.invoke() if available. If not (other then Oracle JDK) fallbacks
  * to java.lang,reflect.Method.invoke()
  *
  * Be careful, copy of this class exists in several packages, iny modification must be done to other copies too!
@@ -58,7 +58,7 @@ class MethodUtil {
     static Object invoke(Object target, Method method, Object[] args) throws IllegalAccessException, InvocationTargetException {
         // com.sun.xml.ws.util.MethodUtil.invoke(method, owner, args)
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "Invoking method using com.sun.xml.internal.ws.util.MethodUtil");
+            LOGGER.log(Level.FINE, "Invoking method using com.sun.xml.ws.util.MethodUtil");
         }
         try {
             return com.sun.xml.ws.util.MethodUtil.invoke(method, target, args);

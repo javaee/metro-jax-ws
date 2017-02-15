@@ -78,8 +78,8 @@ import org.xml.sax.SAXException;
  * @author Vivek Pandey
  */
 public class WsimportTool {
-    /** JAXB module name. JAXB dependency is mandatory in generated Java module. */
-    private static final String JAXWS_PACKAGE = "java.xml.ws";
+    /** JAXWS module name. JAXWS dependency is mandatory in generated Java module. */
+    private static final String JAXWS_MODULE = "java.xml.ws";
 
     private static final String WSIMPORT = "wsimport";
     private final PrintStream out;
