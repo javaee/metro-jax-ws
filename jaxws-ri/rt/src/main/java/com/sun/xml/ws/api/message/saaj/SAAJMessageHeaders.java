@@ -40,6 +40,18 @@
 
 package com.sun.xml.ws.api.message.saaj;
 
+import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.message.Header;
+import com.sun.xml.ws.api.message.MessageHeaders;
+import com.sun.xml.ws.binding.SOAPBindingImpl;
+import com.sun.xml.ws.message.saaj.SAAJHeader;
+
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPHeaderElement;
+import javax.xml.soap.SOAPMessage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,21 +60,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPHeaderElement;
-import javax.xml.soap.SOAPMessage;
-
-import com.sun.xml.messaging.saaj.soap.SOAPDocumentImpl;
-import com.sun.xml.messaging.saaj.soap.impl.HeaderImpl;
-import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.message.Header;
-import com.sun.xml.ws.api.message.MessageHeaders;
-import com.sun.xml.ws.binding.SOAPBindingImpl;
-import com.sun.xml.ws.message.saaj.SAAJHeader;
 
 public class SAAJMessageHeaders implements MessageHeaders {
     SOAPMessage sm;
@@ -251,12 +248,11 @@ public class SAAJMessageHeaders implements MessageHeaders {
         if (soapHeader == null) {
             return null;
         }
-        SOAPDocumentImpl soapDocument = ((HeaderImpl)soapHeader).getSoapDocument();
         SOAPHeaderElement headerElem = find(nsUri, localName);
         if (headerElem == null) {
             return null;
         }
-        headerElem = (SOAPHeaderElement) soapDocument.find(soapHeader.removeChild(headerElem));
+        headerElem = (SOAPHeaderElement) soapHeader.removeChild(headerElem);
 
         //it might have been a nonSAAJHeader - remove from that map
         removeNonSAAJHeader(headerElem);
