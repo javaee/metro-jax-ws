@@ -48,8 +48,10 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
@@ -75,6 +77,26 @@ public class AbstractSchemaValidationTubeTest extends TestCase {
 	}
 	
 	public void testCreateSameTnsPseudoSchema() throws InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException, TransformerException {
+    StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?><xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n");
+		sb.append("<xsd:include schemaLocation=\"a.xsd\"/>\n");
+		sb.append("<xsd:include schemaLocation=\"b.xsd\"/>\n");
+		sb.append("</xsd:schema>");
+		
+		String strResult_null = runCreateSameTnsPseudoSchema(null);
+		assertEquals(sb.toString(), strResult_null);
+		assertEquals(-1, strResult_null.indexOf("targetNamespace"));
+		
+		String tns="null";
+		String strResult_nullText = runCreateSameTnsPseudoSchema(tns);
+		assertEquals(sb.toString(), strResult_nullText);
+		assertEquals(-1, strResult_nullText.indexOf("targetNamespace"));
+		
+	}
+
+	private String runCreateSameTnsPseudoSchema(String tns)
+	    throws NoSuchMethodException, IllegalAccessException,
+	    InvocationTargetException, TransformerFactoryConfigurationError,
+	    TransformerConfigurationException, TransformerException {
 		BindingID bindingId = BindingID.SOAP11_HTTP;
 		WSBinding binding = bindingId.createBinding();
 		
@@ -83,7 +105,6 @@ public class AbstractSchemaValidationTubeTest extends TestCase {
 		Method method = clazz.getDeclaredMethod("createSameTnsPseudoSchema", new Class[]{String.class,Collection.class,String.class});
 		method.setAccessible(true);  
 		
-		String tns="null";
 		List<String> docs = new ArrayList<>();
 		docs.add("a.xsd");
 		docs.add("b.xsd");
@@ -97,14 +118,7 @@ public class AbstractSchemaValidationTubeTest extends TestCase {
     Transformer transformer = tFactory.newTransformer();
     transformer.transform(schemaStream,StreamResult);
     String strResult = writer.toString();
-    
-    StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?><xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n");
-		sb.append("<xsd:include schemaLocation=\"a.xsd\"/>\n");
-		sb.append("<xsd:include schemaLocation=\"b.xsd\"/>\n");
-		sb.append("</xsd:schema>");
-		
-		assertEquals(sb.toString(), strResult);
-		assertEquals(-1, strResult.indexOf("targetNamespace"));
+		return strResult;
 	}
 	
 	class StractSchemaValidationTubeMock extends AbstractSchemaValidationTube {
