@@ -498,7 +498,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
         assert docs.size() > 1;
         
         final StringBuilder sb = new StringBuilder("<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'");
-        if (!("".equals(tns)) && !("null".equals(tns))) {
+        if (tns != null && !("".equals(tns)) && !("null".equals(tns))) {
             sb.append(" targetNamespace='").append(tns).append("'");
         }
         sb.append(">\n");
