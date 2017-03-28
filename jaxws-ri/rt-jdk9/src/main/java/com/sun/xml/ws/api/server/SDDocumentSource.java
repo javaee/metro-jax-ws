@@ -104,8 +104,14 @@ public abstract class SDDocumentSource {
      */
     public abstract URL getSystemId();
 
-    public static SDDocumentSource create(final Class<?> implClass, final String url) {
-        return create(url, implClass);
+    public static SDDocumentSource create(final Class<?> implClass, final String wsdlLocation) {
+        ClassLoader cl = implClass.getClassLoader();
+        URL url = cl.getResource(wsdlLocation);
+        if (url != null) {
+            return create(url);
+        } else {
+            return create(wsdlLocation, implClass);
+        }
     }
 
     /**
