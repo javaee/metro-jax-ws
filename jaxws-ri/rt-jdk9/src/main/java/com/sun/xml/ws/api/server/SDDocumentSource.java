@@ -50,6 +50,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -176,11 +177,38 @@ public abstract class SDDocumentSource {
             }
 
             private InputStream inputStream() throws IOException {
-                java.lang.reflect.Module module = resolvingClass.getModule();
+                /* enable this once java.lang.reflect.Module is moved to java.lang.Module in JDK9
+
+                java.lang.Module module = resolvingClass.getModule();
                 if (module != null) {
                     InputStream stream = module.getResourceAsStream(path);
                     if (stream != null) {
                         return stream;
+                    }
+                }
+                throw new ServerRtException("cannot.load.wsdl", path);
+                */
+                Object module = resolvingClass.getModule();
+                if (module != null) {
+                    Class c = null;
+                    try {
+                        c = Class.forName("java.lang.Module");
+                    } catch (Exception ignore) {
+                        try {
+                            c = Class.forName("java.lang.reflect.Module");
+                        } catch (Exception ignore2) {
+                        }
+                    }
+                    if (c == null) {
+                        throw new IOException("Can't find Module class");
+                    }
+                    try {
+                        Method m = c.getMethod("getResourceAsStream", String.class);
+                        InputStream stream = (InputStream) m.invoke(module, path);
+                        if (stream != null) {
+                            return stream;
+                        }
+                    } catch (Exception e) {
                     }
                 }
                 throw new ServerRtException("cannot.load.wsdl", path);
