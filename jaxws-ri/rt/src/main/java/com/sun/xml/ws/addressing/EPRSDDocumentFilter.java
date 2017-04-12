@@ -41,6 +41,7 @@
 package com.sun.xml.ws.addressing;
 
 import com.sun.xml.ws.api.server.*;
+import com.sun.xml.ws.api.server.Module;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;

@@ -250,47 +250,15 @@ public class HandlerAnnotationProcessor {
     }
 
     private static InputStream moduleResource(Class resolvingClass, String name) {
-        /* enable this once java.lang.reflect.Module is moved to java.lang.Module in JDK9
-
-        java.lang.Module module = resolvingClass.getModule();
-        if (module != null) {
-            try {
-                InputStream stream = module.getResourceAsStream(name);
-                if (stream != null) {
-                    return stream;
-                }
-            } catch(IOException e) {
-                throw new UtilException("util.failed.to.find.handlerchain.file",
-                        resolvingClass.getName(), name);
+        Module module = resolvingClass.getModule();
+        try {
+            InputStream stream = module.getResourceAsStream(name);
+            if (stream != null) {
+                return stream;
             }
-        }
-        return null;
-        */
-        Object module = resolvingClass.getModule();
-        if (module != null) {
-            Class c = null;
-            try {
-                c = Class.forName("java.lang.Module");
-            } catch (ClassNotFoundException ignore) {
-                try {
-                    c = Class.forName("java.lang.reflect.Module");
-                } catch (ClassNotFoundException ignore2) {
-                    //should not happen
-                }
-            }
-            if (c == null) {
-                throw new RuntimeException("Can't find Module class");
-            }
-            try {
-                Method m = c.getMethod("getResourceAsStream", String.class);
-                InputStream stream = (InputStream) m.invoke(module, name);
-                if (stream != null) {
-                    return stream;
-                }
-            } catch (Throwable e) {
-                throw new UtilException("util.failed.to.find.handlerchain.file",
-                        resolvingClass.getName(), name);
-            }
+        } catch(IOException e) {
+            throw new UtilException("util.failed.to.find.handlerchain.file",
+                    resolvingClass.getName(), name);
         }
         return null;
     }
