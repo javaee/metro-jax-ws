@@ -168,6 +168,8 @@
                                 com/sun/tools/jxc/ApBasedTask.java,
                                 com/sun/tools/jxc/SchemaGenTask.java,
                                 com/sun/tools/xjc/XJCTask.java,
+                                com/sun/tools/xjc/XJC2Task.java,
+                                com/sun/tools/xjc/XJCBase.java,
                                 javax/xml/namespace/QName.java,
                                 javax/xml/ws/wsaddressing/package.html,
                                 META-INF/services/javax.xml.bind.JAXBContext,
