@@ -167,6 +167,7 @@
                                 com/sun/istack/tools/ProtectedTask.java,
                                 com/sun/tools/jxc/ApBasedTask.java,
                                 com/sun/tools/jxc/SchemaGenTask.java,
+                                com/sun/tools/internal/jxc/SchemaGenBase.java
                                 com/sun/tools/xjc/XJCTask.java,
                                 com/sun/tools/xjc/XJC2Task.java,
                                 com/sun/tools/xjc/XJCBase.java,
@@ -253,6 +254,8 @@
                                     <fileset dir="${project.build.directory}/unpacked-sources/META-INF/versions/9">
                                         <include name="**/*.java"/>
                                         <exclude name="com/sun/tools/jxc/SchemaGenTask.java" />
+                                        <exclude name="com/sun/tools/xjc/XJC2Task.java" />
+                                        <exclude name="" />
                                     </fileset>
                                 </move>
                                 <delete dir="${project.build.directory}/unpacked-sources/META-INF/versions" verbose="true" failonerror="false"/>
