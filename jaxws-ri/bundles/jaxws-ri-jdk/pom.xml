@@ -163,11 +163,10 @@
                                 jaxws-databinding-translate-namespaces.xml,
 
                                 //JAXB Patch,
-                                com/sun/tools/xjc/XJC2Task.java,
                                 com/sun/istack/tools/ProtectedTask.java,
                                 com/sun/tools/jxc/ApBasedTask.java,
                                 com/sun/tools/jxc/SchemaGenTask.java,
-                                com/sun/tools/jxc/SchemaGenBase.java
+                                com/sun/tools/jxc/SchemaGenBase.java,
                                 com/sun/tools/xjc/XJCTask.java,
                                 com/sun/tools/xjc/XJC2Task.java,
                                 com/sun/tools/xjc/XJCBase.java,
