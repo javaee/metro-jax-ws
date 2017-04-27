@@ -67,7 +67,7 @@ import java.lang.ref.SoftReference;
 public abstract class Pool<T> {
 
     // volatile since multiple threads may access queue reference
-    private volatile  SoftReference<ConcurrentLinkedQueue<T>> queue;
+    private volatile SoftReference<ConcurrentLinkedQueue<T>> queue;
 
     /**
      * Gets a new object from the pool.
@@ -86,7 +86,7 @@ public abstract class Pool<T> {
     }
 
     private ConcurrentLinkedQueue<T> getQueue() {
-    	 SoftReference<ConcurrentLinkedQueue<T>> q = queue;
+    	SoftReference<ConcurrentLinkedQueue<T>> q = queue;
         if (q != null) {
             ConcurrentLinkedQueue<T> d = q.get();
             if (d != null)
@@ -95,7 +95,7 @@ public abstract class Pool<T> {
 
         // overwrite the queue
         ConcurrentLinkedQueue<T> d = new ConcurrentLinkedQueue<T>();
-        queue = new   SoftReference<ConcurrentLinkedQueue<T>>(d);
+        queue = new SoftReference<ConcurrentLinkedQueue<T>>(d);
 
         return d;
     }
