@@ -130,12 +130,26 @@ public class DOMForest {
         try {
             // secure xml processing can be switched off if input requires it
             boolean secureProcessingEnabled = options == null || !options.disableXmlSecurity;
-            DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory(secureProcessingEnabled);
+            DocumentBuilderFactory dbf = XmlUtil.newDocumentBuilderFactory(!secureProcessingEnabled);
             dbf.setNamespaceAware(true);
             this.documentBuilder = dbf.newDocumentBuilder();
 
             this.parserFactory = XmlUtil.newSAXParserFactory(secureProcessingEnabled);
             this.parserFactory.setNamespaceAware(true);
+            
+            if(secureProcessingEnabled){
+            	dbf.setExpandEntityReferences(false);
+            	try {
+                parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl_test", true);
+                parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+              } catch (SAXNotRecognizedException e){
+                throw new ParserConfigurationException(e.getMessage());
+              } catch (SAXNotSupportedException e) {
+                throw new ParserConfigurationException(e.getMessage());
+              }
+            }
+            
         } catch (ParserConfigurationException e) {
             throw new AssertionError(e);
         }
