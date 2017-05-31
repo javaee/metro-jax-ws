@@ -312,8 +312,11 @@
                                 <replaceregexp match="\$\{buildNumber\}" replace="${buildNumber}" flags="gs" byline="true">
                                     <fileset dir="${project.build.directory}/unpacked-sources/com/sun/xml/ws/util" includes="version.properties" />
                                 </replaceregexp>
-                                <replaceregexp match="Copyright \(c\) 2012\-[0-9]{4}" replace="Copyright (c) 1997-${current.year}" flags="gs" byline="true">
+                                <replaceregexp match="Copyright \(c\) 2012\-[0-9]{4}" replace="Copyright (c) 2012-${current.year}" flags="gs" byline="true">
                                     <fileset dir="${project.build.directory}/unpacked-sources/com/sun/xml/ws/util" includes="version.properties" />
+                                </replaceregexp>
+                                <replaceregexp match="Copyright \(c\) 2012\-[0-9]{4}" replace="Copyright (c) 2012-${current.year}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/tools/ws" includes="version.properties" />
                                 </replaceregexp>
 
                                 <replaceregexp match="@@JAXB_JDK_VERSION@@" replace="${jaxb.version}" flags="gs" byline="true">
