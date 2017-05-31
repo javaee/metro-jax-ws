@@ -315,6 +315,22 @@
                                 <replaceregexp match="Copyright \(c\) 2012\-[0-9]{4}" replace="Copyright (c) 2012-${current.year}" flags="gs" byline="true">
                                     <fileset dir="${project.build.directory}/unpacked-sources/com/sun/xml/ws/util" includes="version.properties" />
                                 </replaceregexp>
+
+                                <replaceregexp match="\$\{project.version\}" replace="${project.version}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/tools/ws" includes="version.properties" />
+                                </replaceregexp>
+                                <replaceregexp match="\$\{jaxws.majorVersion\}" replace="${jaxws.majorVersion}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/tools/ws" includes="version.properties" />
+                                </replaceregexp>
+                                <replaceregexp match="\$\{jaxws.minorVersion\}" replace="${jaxws.minorVersion}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/tools/ws" includes="version.properties" />
+                                </replaceregexp>
+                                <replaceregexp match="\$\{jaxws.incrementalVersion\}" replace="${jaxws.incrementalVersion}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/tools/ws" includes="version.properties" />
+                                </replaceregexp>
+                                <replaceregexp match="\$\{buildNumber\}" replace="${buildNumber}" flags="gs" byline="true">
+                                    <fileset dir="${project.build.directory}/unpacked-sources/com/sun/tools/ws" includes="version.properties" />
+                                </replaceregexp>
                                 <replaceregexp match="Copyright \(c\) 2012\-[0-9]{4}" replace="Copyright (c) 2012-${current.year}" flags="gs" byline="true">
                                     <fileset dir="${project.build.directory}/unpacked-sources/com/sun/tools/ws" includes="version.properties" />
                                 </replaceregexp>
