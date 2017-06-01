@@ -43,9 +43,9 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 /**
- * Utility class used as a multi release jar versioned class.
+ * Utility class used as a JEP 238 multi release jar versioned class.
  *
- * Version for {@code runtime < 9}.
+ * Version for {@code runtime >= 9}.
  */
 public class MrJarUtil {
 
@@ -60,7 +60,8 @@ public class MrJarUtil {
         return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
             @Override
             public Boolean run() {
-                return Boolean.getBoolean(baseName + ".noPool");
+                String noPool = System.getProperty(baseName + ".noPool");
+                return noPool == null || Boolean.parseBoolean(noPool);
             }
         });
     }
