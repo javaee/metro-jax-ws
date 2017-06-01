@@ -95,7 +95,7 @@ public abstract class XMLStreamReaderFactory {
 
                     // this system property can be used to disable the pooling altogether,
                     // in case someone hits an issue with pooling in the production system.
-                    if(!MrJarUtil.getNoPoolProperty(XMLStreamWriterFactory.class.getName())) {
+                    if(!MrJarUtil.getNoPoolProperty(XMLStreamReaderFactory.class.getName())) {
                         f = Zephyr.newInstance(xif);
                     }
 
