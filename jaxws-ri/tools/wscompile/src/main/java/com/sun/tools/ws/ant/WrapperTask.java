@@ -98,7 +98,7 @@ public abstract class WrapperTask extends ProtectedTask {
                 return cl;
             } else {
                 if (Service.class.getClassLoader() == null)
-                    throw new BuildException(WscompileMessages.WRAPPER_TASK_NEED_ENDORSED(loadedVersion.getVersion(), targetVersion.getVersion(), getTaskName()));
+                    throw new BuildException(WscompileMessages.WRAPPER_TASK_NEED_ENDORSED(loadedVersion.getVersion(), targetVersion.getVersion()));
                 else {
                     throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API(loadedVersion.getVersion(), Which.which(Service.class), targetVersion.getVersion()));
                 }
