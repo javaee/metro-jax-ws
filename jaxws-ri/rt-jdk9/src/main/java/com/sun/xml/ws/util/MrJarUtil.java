@@ -54,7 +54,8 @@ public class MrJarUtil {
      *
      * @param baseName Name of a {@linkplain com.sun.xml.ws.api.streaming.XMLStreamReaderFactory} class or
      *                 {@linkplain com.sun.xml.ws.api.streaming.XMLStreamWriterFactory} class.
-     * @return true if *.noPool system property is set to true.
+     *
+     * @return true if *.noPool system property is not set or is set to true.
      */
     public static boolean getNoPoolProperty(String baseName) {
         return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
