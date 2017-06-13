@@ -108,14 +108,14 @@
         <istack.version>3.0.5</istack.version>
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
         <ha-api.version>3.1.9</ha-api.version>
-        <jaxb.version>2.3.0-b170531.0717</jaxb.version>
-        <jaxws-api.version>2.3.0-b170529.1642</jaxws-api.version>
+        <jaxb.version>2.3.0-b170613.1828</jaxb.version>
+        <jaxws-api.version>2.3.0</jaxws-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <management-api.version>3.2.1-b001</management-api.version>
         <mimepull.version>1.9.7</mimepull.version>
         <policy.version>2.7.2</policy.version>
         <resolver.version>20050927</resolver.version>
-        <saaj-api.version>1.4.0-b03</saaj-api.version>
+        <saaj-api.version>1.4.0</saaj-api.version>
         <saaj-impl.version>1.4.0-b10</saaj-impl.version>
         <streambuffer.version>1.5.4</streambuffer.version>
         <woodstox-core-asl.version>4.2.0</woodstox-core-asl.version>
