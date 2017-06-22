@@ -58,7 +58,7 @@
 
     <name>JAX-WS RI Bill-of-Materials (BOM)</name>
     <description>JAX-WS Reference Implementation Bill-of-Materials (BOM)</description>
-    <url>http://jax-ws.java.net/</url>
+    <url>https://javaee.github.io/metro-jax-ws</url>
 
     <organization>
         <name>Oracle Corporation</name>
@@ -67,9 +67,10 @@
 
     <licenses>
         <license>
-            <name>CDDL+GPL License</name>
-            <url>http://glassfish.java.net/public/CDDL+GPL_1_1.html</url>
+            <name>CDDL + GPLv2 with classpath exception</name>
+            <url>https://oss.oracle.com/licenses/CDDL+GPL-1.1</url>
             <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
 
@@ -97,9 +98,10 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</connection>
-        <developerConnection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</developerConnection>
-        <url>http://java.net/projects/jax-ws/sources/sources/show/branches/jaxws22/jaxws-ri/boms/bom</url>
+        <connection>scm:git:git@github.com:javaee/metro-jax-ws.git</connection>
+        <developerConnection>scm:git:git@github.com:javaee/metro-jax-ws.git</developerConnection>
+        <url>https://github.com/javaee/metro-jax-ws</url>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>

@@ -60,26 +60,23 @@
     <description>Open source Reference Implementation of JSR-224: Java API for XML Web Services</description>
 
     <issueManagement>
-        <system>jira</system>
-        <url>http://java.net/jira/browse/JAX_WS</url>
+        <system>IssueTracker</system>
+        <url>https://github.com/javaee/metro-jax-ws/issues</url>
     </issueManagement>
 
     <scm>
-        <connection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</connection>
-        <developerConnection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</developerConnection>
-        <url>http://java.net/projects/jax-ws/sources/sources/show/branches/jaxws22/jaxws-ri/boms/bom</url>
+        <connection>scm:git:git@github.com:javaee/metro-jax-ws.git</connection>
+        <developerConnection>scm:git:git@github.com:javaee/metro-jax-ws.git</developerConnection>
+        <url>https://github.com/javaee/metro-jax-ws</url>
+        <tag>HEAD</tag>
     </scm>
 
     <mailingLists>
         <mailingList>
-            <name>JAX-WS RI Users List</name>
-            <post>users@jax-ws.java.net</post>
-            <archive>http://java.net/projects/jax-ws/lists/users/archive</archive>
-        </mailingList>
-        <mailingList>
-            <name>JAX-WS Implementation Dev List</name>
-            <post>dev@jax-ws.java.net</post>
-            <archive>http://java.net/projects/jax-ws/lists/dev/archive</archive>
+            <name>Metro mailing list</name>
+            <subscribe>metro+subscribe@javaee.groups.io</subscribe>
+            <post>metro@javaee.groups.io</post>
+            <archive>https://javaee.groups.io/g/metro/topics</archive>
         </mailingList>
     </mailingLists>
 
