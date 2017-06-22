@@ -1,19 +1,19 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * http://glassfish.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
+ * file and include the License file at LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -71,7 +71,7 @@ import junit.framework.TestCase;
 
 public class MtomTest extends TestCase {
 
-    static MessageFactory messageFactory;    
+    static MessageFactory messageFactory;
     MessageContextFactory packetFactory = (MessageContextFactory) com.oracle.webservices.api.message.MessageContextFactory.createFactory();
     DatabindingFactory dbf = DatabindingFactory.newInstance();
     String ns = "http://example.com/test";
@@ -79,8 +79,8 @@ public class MtomTest extends TestCase {
     Class<MtomSEI> sei = MtomSEI.class;
     Databinding dbE = dbf.createBuilder(sei, null).feature(new DatabindingModeFeature("eclipselink.jaxb")).serviceName(new QName(ns, "srv")).build();
     Databinding dbG = dbf.createBuilder(sei, null).feature(new DatabindingModeFeature("glassfish.jaxb")).serviceName(new QName(ns, "srv")).build();
-    
-    static MtomBean b = new MtomBean(); 
+
+    static MtomBean b = new MtomBean();
     static {
         b.setBinary1("fkldhafkdahfkdhfkhasdkfhldashfi9pweqryiweqyriqelhfklasdhfkldashflksdah".getBytes());
         b.setBinary2("epriepireroerupequreopruopweuqrowequrpoweqrupweqrweqrweuqrweqrwerwerer".getBytes());
@@ -98,7 +98,7 @@ public class MtomTest extends TestCase {
 //        System.out.println("\r\n----------------- glassfish.jaxb");
         testOutboundJAXBMessageToOutput(dbG);
     }
-    
+
     private void testOutboundJAXBMessageToOutput(Databinding db) throws Exception {
         JavaCallInfo jci = db.createJavaCallInfo(findMethod(sei, "header"), args);
         {
@@ -133,24 +133,24 @@ public class MtomTest extends TestCase {
             assertEquals(4, count);
         }
         {
-            MessageContext mc = db.serializeRequest(jci);     
-//            mc.writeTo(System.out);   
+            MessageContext mc = db.serializeRequest(jci);
+//            mc.writeTo(System.out);
         }
 //        System.out.println("\r\n----------------- saaj");
 //        {
-//            MessageContext mc = db.serializeRequest(jci);     
+//            MessageContext mc = db.serializeRequest(jci);
 //            mc.getAsSOAPMessage().writeTo(System.out);
 //        }
-        
+
     }
 
     public void XtestNamespaceAsLastItem1() throws Exception {
         MutableXMLStreamBuffer xsb = new MutableXMLStreamBuffer();
         XMLStreamWriter w = xsb.createFromXMLStreamWriter();//new StreamWriterBufferCreator(xsb);
-        w.writeStartElement("p1","tag","ns1"); 
+        w.writeStartElement("p1","tag","ns1");
         w.writeAttribute("a","x");
-        w.writeNamespace("p","ns");  
-        w.writeEndElement();         
+        w.writeNamespace("p","ns");
+        w.writeEndElement();
         XMLStreamReader xr = xsb.readAsXMLStreamReader();
         boolean tested = false;
         while(xr.hasNext()) {
@@ -166,17 +166,17 @@ public class MtomTest extends TestCase {
 
 
 //    public void xtestInboundStreamMessageToJAXB() throws Exception {
-//        MessageContext mc = db.serializeRequest(jci);  
+//        MessageContext mc = db.serializeRequest(jci);
 //        ByteArrayOutputStream bao = new ByteArrayOutputStream();
 //        ContentType ct = mc.writeTo(bao);
 //        String contentType = ct.getContentType();
-//        byte[] bytes = bao.toByteArray();  
-//        System.out.println("testInboundStreamMessageToJAXB message\r\n " + new String(bytes));   
+//        byte[] bytes = bao.toByteArray();
+//        System.out.println("testInboundStreamMessageToJAXB message\r\n " + new String(bytes));
 //        MessageContext mc_ = packetFactory.createContext(new ByteArrayInputStream(bytes), contentType);
 //        JavaCallInfo reqCall = db.deserializeRequest(mc_);
 //        MtomBean b = (MtomBean)reqCall.getParameters()[0];
-//        System.out.println("testInboundStreamMessageToJAXB message result " + b.getBinary1().length); 
-//        System.out.println("testInboundStreamMessageToJAXB message result " + b.getBinary2().length); 
+//        System.out.println("testInboundStreamMessageToJAXB message result " + b.getBinary1().length);
+//        System.out.println("testInboundStreamMessageToJAXB message result " + b.getBinary2().length);
 //    }
 
     static public Method findMethod(Class<?> c, String n) {
