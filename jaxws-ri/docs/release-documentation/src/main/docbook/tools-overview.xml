@@ -175,7 +175,7 @@
     <section xml:id="jaxws-maven">
         <title>Maven plugins</title>
         <para>You can use all jaxws tools within your maven build. Information about maven plugin and its usage is located at 
-            <link xlink:href="http://jax-ws-commons.java.net/jaxws-maven-plugin/">the plugin homepage.</link>
+            <link xlink:href="https://github.com/javaee/metro-jaxws-commons/tree/master/jaxws-maven-plugin">the plugin homepage.</link>
         </para>
     </section>    
 </section>

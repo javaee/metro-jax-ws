@@ -60,7 +60,7 @@
     &jax-ws.product.name;.</para>
 
     <para>The samples included with &jax-ws.product.name.short; that is
-    distributed on Java.net documents how to use &jax-ws.product.name.short;
+    distributed on GitHub documents how to use &jax-ws.product.name.short;
     in a non-Java EE 5 servlet container using a proprietary deployment
     descriptor <literal>sun-jaxws.xml</literal> and servlet
     <literal>com.sun.xml.ws.transport.http.servlet.WSServlet</literal>. This
@@ -73,12 +73,11 @@
     modify them to use the standard Java EE 5 deployment descriptor; please
     refer to the <link xlink:href="http://java.sun.com/javaee/index.jsp">Java
     EE 5</link> or <link
-    xlink:href="http://glassfish.java.net/">Glassfish</link>
+    xlink:href="https://javaee.github.io/glassfish/">Glassfish</link>
     documentation/samples.</para>
 
-    <para>All these samples are tested to run on <link
-    xlink:href="http://glassfish.java.net/downloads/v2.1-b60e.html">Glassfish
-    V2.1</link> build and on Apache Tomcat 5.x.</para>
+    <para>All these samples are tested to run on Glassfish
+    V2.1 build and on Apache Tomcat 5.x.</para>
 
     <section xml:id="a-1-0">
         <title>Directory Structure</title>
@@ -587,7 +586,7 @@
         service endpoint correctly before building the client.</para>
 
         <para>We appreciate your feedback, please send it to <link
-        xlink:href="mailto:users@jax-ws.java.net">users@jax-ws.java.net</link>.</para>
+        xlink:href="https://javaee.groups.io/g/metro">https://javaee.groups.io/g/metro</link>.</para>
     </section>
 
 </chapter>

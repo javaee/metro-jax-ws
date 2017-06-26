@@ -54,7 +54,7 @@
          xmlns:m="http://www.w3.org/1998/Math/MathML">
     <title>Interoperability</title>
 
-    <para>Please refer to <link xlink:href="http://metro.java.net/guide">Metro User's Guide</link> 
+    <para>Please refer to <link xlink:href="https://javaee.github.io/metro-jax-ws/doc/user-guide/">Metro User's Guide</link> 
     for interoperability capabilities.
     </para>
 

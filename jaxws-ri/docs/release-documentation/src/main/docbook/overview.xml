@@ -88,7 +88,7 @@
         </itemizedlist>
 
         <para>The documentation/samples included with JAX-WS that is
-        distributed on Java.net describes how to use JAX-WS to develop and
+        distributed on GitHub describes how to use JAX-WS to develop and
         deploy your webservices endpoints in a servlet container. The samples
         discussed in this document and available as part of JAX-WS
         distribution are tested to work on Glassfish and on Apache Tomcat. The
@@ -99,7 +99,7 @@
         manner (using JSR 109 deployment descriptors), please refer to the
         <link xlink:href="http://java.sun.com/javaee/index.jsp">Java EE
         6</link> or <link
-        xlink:href="http://glassfish.java.net/">Glassfish</link>
+        xlink:href="https://javaee.github.io/glassfish/">Glassfish</link>
         documentation/samples. The majority of the documentation included with
         JAX-WS is valid with Java EE 6 as well.</para>
     </section>
@@ -115,7 +115,7 @@
 
             <listitem>
                 <para>JAX-WS &jax-ws.release.impl.version; is covered by <link
-                xlink:href="http://glassfish.java.net/public/CDDL+GPL.html">CDDL
+                xlink:href=" https://oss.oracle.com/licenses/CDDL+GPL-1.1">CDDL
                 v1.1 and GPL v2</link></para>
             </listitem>
 
@@ -132,23 +132,23 @@
         <itemizedlist>
             <listitem>
                 <para>Please use the <link
-                xlink:href="http://www.java.net/forums/glassfish/metro-and-jaxb">Metro
+                xlink:href="https://javaee.groups.io/g/metro">Metro
                 and JAXB</link> forum for feedback.</para>
             </listitem>
 
             <listitem>
-                <para>JAX-WS has a project page on Java.net: 
-                    <link xlink:href="http://jax-ws.java.net">http://jax-ws.java.net</link>.
+                <para>JAX-WS has a project page on GitHub: 
+                    <link xlink:href="https://github.com/javaee/metro-jax-ws">https://github.com/javaee/metro-jax-ws</link>.
                 </para>
             </listitem>
 
             <listitem>
-                <para><link xlink:href="http://java.net/projects/jax-ws/lists">JAX-WS Mailing Lists</link></para>
+                <para><link xlink:href="https://javaee.groups.io/g/metro">JAX-WS Group on groups.io</link></para>
             </listitem>
 
             <listitem>
                 <para>
-                    <link xlink:href="http://java.net/jira/browse/JAX_WS">Issue Tracker</link>
+                    <link xlink:href="https://github.com/javaee/metro-jax-ws/issues">Issue Tracker</link>
                 </para>
             </listitem>
         </itemizedlist>

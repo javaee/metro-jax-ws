@@ -89,7 +89,7 @@
                 <para>To use with GlassFish<itemizedlist>
                         <listitem>
                             <para>Glassfish contains JAX-WS within Metro package so no installation required.
-                            For updating JAX-WS installation in Glassfish please refer to <link xlink:href="http://metro.java.net">Metro</link> project.</para>
+                            For updating JAX-WS installation in Glassfish please refer to <link xlink:href="http://javaee.github.io/metro">Metro</link> project.</para>
                         </listitem>
                     </itemizedlist></para>
             </listitem>

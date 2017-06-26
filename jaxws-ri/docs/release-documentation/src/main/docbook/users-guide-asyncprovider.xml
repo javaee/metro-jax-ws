@@ -105,9 +105,6 @@ public class AsyncProviderImpl implements AsyncProvider<Source> {
         <para>See another <literal>samples/asyncservice/Readme.txt"</literal> sample that
         illustrates <literal>AsyncProvider</literal> endpoint that uses
         asynchronous servlet as the transport to bring true asynchronity on
-        the server-side. See <link
-        xlink:href="http://weblogs.java.net/blog/ramapulavarthi/archive/2010/08/18/new-asynchronous-servlet-transport-jax-ws-ri">New
-        Asynchronous Servlet Transport in JAX-WS RI</link> for mroe details on
-        this feature.</para>
+        the server-side.</para>
     </section>
 </section>
