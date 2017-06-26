@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!DOCTYPE book [
+<!ENTITY % ents SYSTEM "docbook.ent">
+%ents;
+]>
+<section version="5.0" xml:id="tools-wsimport" xml:lang="en"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/2000/svg"
+         xmlns:ns3="http://www.w3.org/1999/xhtml"
+         xmlns:ns="http://docbook.org/ns/docbook"
+         xmlns:m="http://www.w3.org/1998/Math/MathML">
+    <title><command>wsimport</command></title>
+
+    <section xml:id="wsimport-overview">
+        <title><command>wsimport</command> Overview</title>
+
+        <para>The <command>wsimport</command> tool generates JAX-WS portable
+        artifacts, such as:</para>
+
+        <itemizedlist>
+            <listitem>
+                <para>Service Endpoint Interface (SEI)</para>
+            </listitem>
+
+            <listitem>
+                <para>Service</para>
+            </listitem>
+
+            <listitem>
+                <para>Exception class mapped from
+                <literal>wsdl:fault</literal> (if any)</para>
+            </listitem>
+
+            <listitem>
+                <para>Async Reponse Bean derived from response
+                <literal>wsdl:message</literal> (if any)</para>
+            </listitem>
+
+            <listitem>
+                <para>JAXB generated value types (mapped java classes from
+                schema types)</para>
+            </listitem>
+        </itemizedlist>
+
+        <para>These artifacts can be packaged in a WAR file with the WSDL and
+        schema documents along with the endpoint implementation to be
+        deployed. &jax-ws.product.name; also provides a <xref
+        linkend="tools-wsimport-ant-task" xrefstyle="select:title" />.</para>
+    </section>
+
+    <section xml:id="launching-wsimport">
+        <title>Launching <command>wsimport</command></title>
+
+        <itemizedlist>
+            <listitem>
+                <para><emphasis role="bold">Solaris/Linux</emphasis>
+                <itemizedlist>
+                        <listitem>
+                            <programlisting><![CDATA[JAXWS_HOME/bin/wsimport.sh -help]]></programlisting>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+
+            <listitem>
+                <para><emphasis role="bold">Windows</emphasis> <itemizedlist>
+                        <listitem>
+                            <programlisting><![CDATA[JAXWS_HOME\bin\wsimport.bat -help]]></programlisting>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="wsimport-syntax">
+        <title><command>wsimport</command> Syntax</title>
+
+        <cmdsynopsis>
+            <command>wsimport</command>
+
+            <group choice="plain" rep="repeat">
+                <arg choice="opt">OPTION</arg>
+            </group>
+
+            <arg choice="req" rep="norepeat">WSDL</arg>
+        </cmdsynopsis>
+
+        <para>The following table lists the <command>wsimport</command>
+        options:</para>
+
+        <informaltable frame="all">
+            <tgroup cols="2" colsep="1" rowsep="1">
+                <thead>
+                    <row>
+                        <entry>Option</entry>
+
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+
+                <tbody>
+                    <row>
+                        <entry><literal>-d &lt;directory&gt;</literal></entry>
+
+                        <entry>Specify where to place generated output
+                        files.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-classpath &lt;path&gt;</literal></entry>
+
+                        <entry>Specify where to find user class files
+                        and wsimport extensions.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-cp &lt;path&gt;</literal></entry>
+
+                        <entry>Specify where to find user class files
+                        and wsimport extensions.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-b &lt;path&gt;</literal></entry>
+
+                        <entry>Specify external JAX-WS or JAXB binding files
+                        or additional schema files (Each
+                        <literal>&lt;file&gt;</literal> must have its own
+                        <option>-b</option>).</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-B
+                        &lt;jaxbOption&gt;</literal></entry>
+
+                        <entry>Pass this option to JAXB schema
+                        compiler.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-catalog</literal></entry>
+
+                        <entry>Specify catalog file to resolve external entity
+                        references, it supports TR9401, XCatalog, and OASIS
+                        XML Catalog format. Please read the documentation of
+                        <xref linkend="users-guide-catalog"
+                        xrefstyle="select:title" /> and see catalog
+                        sample.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-extension</literal></entry>
+
+                        <entry>Allow vendor extensions (functionality not
+                        specified by the specification). Use of extensions may
+                        result in applications that are not portable or may
+                        not interoperate with other implementations.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-help</literal></entry>
+
+                        <entry>Display help.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-httpproxy:&lt;host&gt;:&lt;port&gt;</literal></entry>
+
+                        <entry>Specify an HTTP proxy server (port defaults to
+                        8080).</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-J&lt;javacOption&gt;</literal></entry>
+
+                        <entry>Pass this option to Javac compiler. Note: use '='
+                        instead of space as a delimiter between option name and
+                        its value.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-keep</literal></entry>
+
+                        <entry>Keep generated source code files. It is enabled
+                        when <option>-s</option> option.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-p &lt;pkg&gt;</literal></entry>
+
+                        <entry>Specifying a target package via this
+                        command-line option, overrides any wsdl and schema
+                        binding customization for package name and the default
+                        package name algorithm defined in the
+                        specification.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-s &lt;directory&gt;</literal></entry>
+
+                        <entry>Specify where to place generated source code
+                        files. keep is turned on with this option.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-encoding
+                        &lt;encoding&gt;</literal></entry>
+
+                        <entry>Set the encoding name for generated sources,
+                        such as EUC-JP or UTF-8. If
+                        <literal>-encoding</literal> is not specified, the
+                        platform default encoding is used.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-verbose</literal></entry>
+
+                        <entry>Output messages about what the compiler is
+                        doing.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-version</literal></entry>
+
+                        <entry>Print version information.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-fullversion</literal></entry>
+
+                        <entry>Print full version information.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-clientjar
+                        &lt;jarfile&gt;</literal></entry>
+
+                        <entry>Creates the jar file of the generated artifacts
+                        along with the WSDL metadata required for invoking the
+                        web service.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-wsdllocation
+                        &lt;location&gt;</literal></entry>
+
+                        <entry><literal>@WebServiceClient.wsdlLocation</literal>
+                        value.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-target
+                        &lt;version&gt;</literal></entry>
+
+                        <entry>Generate code as per the given JAX-WS
+                        specification version. For example, "<literal>-target
+                        2.0</literal>" generates compliant code for JAX-WS 2.0
+                        spec. Default value is 2.2.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-quiet</literal></entry>
+
+                        <entry>Suppress <command>wsimport</command>
+                        output.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-XadditionalHeaders</literal></entry>
+
+                        <entry>Map the headers not bound to request or
+                        response message to Java method parameters.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-Xauthfile</literal></entry>
+
+                        <entry>File to carry authorization information in the
+                        format
+                        <uri>http://username:password@example.org/stock?wsdl</uri>.
+                        The asterisk character ("*") can be used to match
+                        multiple URL patterns.
+                        Default value is
+                        <filename>$HOME/.metro/auth</filename></entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-Xdebug</literal></entry>
+
+                        <entry>Print debug information.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-XdisableAuthenticator</literal></entry>
+
+                        <entry>Disables Authenticator used by JAX-WS RI, <literal>-Xauthfile</literal> option will be ignored if <literal>-XdisableAuthenticator</literal> is set.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-Xno-addressing-databinding</literal></entry>
+
+                        <entry>Enable binding of W3C
+                        <literal>EndpointReferenceType</literal> to
+                        Java.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-Xnocompile</literal></entry>
+
+                        <entry>Do not compile generated Java files.</entry>
+                    </row>
+
+                    <row>
+                        <entry><literal>-XdisableSSLHostnameVerification</literal></entry>
+
+                        <entry>Disbales the SSL Hostname verification while
+                        fetching the wsdls.</entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </informaltable>
+
+        <para>Multiple JAX-WS and JAXB binding files can be specified using
+        <option>-b</option> option and they can be used to customize various
+        things like package names, bean names, etc. More information on JAX-WS
+        and JAXB binding files can be found in the <xref
+        linkend="users-guide-wsdl-customization"
+        xrefstyle="select:title" />.</para>
+    </section>
+
+    <section xml:id="wsimport-example">
+        <title><command>wsimport</command> Example</title>
+
+        <informalexample>
+            <programlisting language="cli"><![CDATA[wsimport -p stockquote http://stockquote.xyz/quote?wsdl]]></programlisting>
+        </informalexample>
+
+        <para>This will generate the Java artifacts and compile them by
+        importing the <link
+        xlink:href="http://stockquote.org/quote?wsdl">http://stockquote.xyz/quote?wsdl</link>.</para>
+    </section>
+</section>

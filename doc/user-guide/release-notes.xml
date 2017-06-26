@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!DOCTYPE book [
+<!ENTITY % ents SYSTEM "docbook.ent">
+%ents;
+]>
+<chapter version="5.0" xml:id="jax-ws-ri-release-notes" xml:lang="en"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns5="http://www.w3.org/2000/svg"
+         xmlns:ns3="http://www.w3.org/1999/xhtml"
+         xmlns:ns="http://docbook.org/ns/docbook"
+         xmlns:m="http://www.w3.org/1998/Math/MathML">
+    <title>Release Notes</title>
+
+    <section xml:id="required-software">
+        <title>Required Software</title>
+
+        <itemizedlist>
+            <listitem>
+                <para>Requires JDK 6 or later</para>
+            </listitem>
+
+            <listitem>
+                <para>Requires <link
+                xlink:href="http://ant.apache.org/bindownload.cgi">Ant
+                1.7.1</link> or later</para>
+            </listitem>
+
+            <listitem>
+                <para>Tested with GlassFish v4.x and Apache Tomcat 5.5.20</para>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section xml:id="installation-instructions">
+        <title>Installation Instructions</title>
+
+        <para>The following applies to the JAX-WS standalone bundles.</para>
+
+        <itemizedlist>
+            <listitem>
+                <para>Extract &jax-ws.product.name; bundle</para>
+            </listitem>
+
+            <listitem>
+                <para>To use with GlassFish<itemizedlist>
+                        <listitem>
+                            <para>Glassfish contains JAX-WS within Metro package so no installation required.
+                            For updating JAX-WS installation in Glassfish please refer to <link xlink:href="http://javaee.github.io/metro">Metro</link> project.</para>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+
+            <listitem>
+                <para>To install on Tomcat <itemizedlist>
+                        <listitem>
+                            <para>Set <literal>CATALINA_HOME</literal> to your
+                            Tomcat installation.</para>
+                        </listitem>
+
+                        <listitem>
+                            <para>Run <programlisting language="cli"><![CDATA[ant install]]></programlisting>This
+                            essentially copies <filename>lib/*.jar</filename>
+                            from the root of &jax-ws.product.name.short;
+                            extracted bundle to
+                            <literal>$CATALINA_HOME/shared/lib</literal></para>
+                        </listitem>
+
+                        <listitem>
+                            <para>If you are running on top of JDK6, run
+                            <programlisting language="cli"><![CDATA[ant install-api]]></programlisting>or
+                            use <programlisting language="cli"><![CDATA[ant -help]]></programlisting>
+                            for detailed information.</para>
+                        </listitem>
+                    </itemizedlist>
+                </para>
+            </listitem>
+        </itemizedlist>
+
+        <para>If you intend to only invoke an already existing Web service,
+        then alternatively you can use the <command>wsimport</command> and
+        <command>wsgen</command> scripts in the <literal>bin</literal>
+        directory of the &jax-ws.product.name; bundle.</para>
+    </section>
+
+    <section xml:id="running-on-top-of-jdk-6">
+        <title>Running on top of JDK 6</title>
+
+        <para>JDK includes JAX-WS and JAXB API and RI.
+        &jax-ws.product.name; includes RI of JAX-WS/JAXB 2.2. In order to run
+        &jax-ws.product.name; you would need to specify ONLY
+        <filename>jaxws-api.jar</filename>, and
+        <filename>jaxb-api.jar</filename> jars using the <link
+        xlink:href="http://docs.oracle.com/javase/6/docs/technotes/guides/standards/">Java
+        Endorsed Standards Override Mechanism</link></para>
+    </section>
+
+    <section xml:id="jar-dependency">
+        <title>Jar dependency</title>
+
+        <table frame="all">
+            <title>Jar dependencies summary</title>
+
+            <tgroup cols="2" colsep="1" rowsep="1">
+                <colspec />
+
+                <colspec colwidth="4*" />
+
+                <tbody>
+                    <row>
+                        <entry><para>Runtime Jars</para></entry>
+
+                        <entry><para><filename>FastInfoset.jar</filename>,
+                        <filename>jaxb-api.jar</filename>,
+                        <filename>jaxb-core.jar</filename>,
+                        <filename>jaxb-impl.jar</filename>,
+                        <filename>jaxws-api.jar</filename>,
+                        <filename>javax.annotation-api.jar</filename>,
+                        <filename>jaxws-rt.jar</filename>,
+                        <filename>jsr181-api.jar</filename>,
+                        <filename>mimepull.jar</filename>,
+                        <filename>javax.xml.soap-api.jar</filename>,
+                        <filename>saaj-impl.jar *</filename>,
+                        <filename>stax2-api.jar</filename>,
+                        <filename>woodstox-core-asl.jar</filename>,
+                        <filename>stax-ex.jar</filename>,
+                        <filename>streambuffer.jar</filename>,
+                        <filename>policy.jar</filename>,
+                        <filename>gmbal-api-only.jar</filename>,
+                        <filename>management-api.jar</filename>,
+                        <filename>ha-api.jar</filename></para></entry>
+                        <filename>resolver.jar</filename>,
+                    </row>
+
+                    <row>
+                        <entry><para>Tooltime Jars</para></entry>
+
+                        <entry><para>All the runtime jars +
+                        <filename>jaxb-xjc.jar</filename>,
+                        <filename>jaxb-jxc.jar</filename>,
+                        <filename>jaxws-tools.jar</filename></para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <para>If you run &jax-ws.product.name; with IBM JDK, there are two options:
+            <itemizedlist>
+                <listitem><para>to add Oracles's JAXP implementation jars along</para></listitem>
+                <listitem><para>to remove the saaj-impl.jar from the libraries in order IBM SAAJ implementation to be used</para></listitem>
+            </itemizedlist>
+            JAXWS also depends on resolver implementation form JDK, which is not found on AIX. The repackaged resolver.jar can be found in the distribution, or <link
+        xlink:href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.sun.org.apache.xml.internal%22">Maven</link> though.
+            
+            First approach is recommended.
+        </para>
+
+    </section>
+
+    <section xml:id="current-limitations">
+        <title>Current Limitations / Bugs / Issues</title>
+
+        <itemizedlist>
+            <listitem>
+                <para>The <literal>java.util.Collection</literal> classes
+                cannot be used with rpc/literal or document/literal
+                <literal>BARE</literal> style due to a limitation in JAXB.
+                However, they do work in the default document/literal
+                <literal>WRAPPED</literal> style.</para>
+            </listitem>
+
+            <listitem>
+                <para>Although JAX-WS customizations are portable across
+                implementations, the names of WSDL and schema files generated
+                are not specified. Therefore each vendor may and most likely
+                will generate different names. Therefore, when switching
+                between implementations of JAX-WS, it may be necessary to
+                modify your customization files to reflect different WSDL and
+                schema file names.</para>
+            </listitem>
+
+            <listitem>
+                <para>This holds true for different releases of the
+                &jax-ws.product.name.short;. The &jax-ws.product.name.short;
+                may in each release change these file names to resolve bugs.
+                If and when this does occur, a developer would need to change
+                the filenames in their customization files to match the new
+                file names.</para>
+            </listitem>
+        </itemizedlist>
+
+    </section>
+
+    <xi:include href="changelog.xml" />
+
+</chapter>

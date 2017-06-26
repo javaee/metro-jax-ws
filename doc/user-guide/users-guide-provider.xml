@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
+
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
+
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
+
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
+
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
+
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
+
+-->
+
+<!DOCTYPE book [
+<!ENTITY % ents SYSTEM "docbook.ent">
+%ents;
+]>
+<section version="5.0" xml:id="users-guide-provider" xml:lang="en"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/2000/svg"
+         xmlns:ns3="http://www.w3.org/1999/xhtml"
+         xmlns:ns="http://docbook.org/ns/docbook"
+         xmlns:m="http://www.w3.org/1998/Math/MathML">
+    <title>Provider</title>
+
+    <para>Web Service endpoints may choose to work at the XML message level by
+    implementing the <literal>Provider</literal> interface. This is achieved
+    by implementing either <literal>Provider&lt;Source&gt;</literal> or
+    <literal>Provider&lt;SOAPMessage&gt;</literal> or
+    <literal>Provider&lt;DataSource&gt;</literal>. The endpoint accesses the
+    message or message payload using this low-level, generic API. All the
+    Provider endpoints must have <literal>@WebServiceProvider</literal>
+    annotation. The <literal>@ServiceMode</literal> annotation is used to
+    convey whether the endpoint wants to access the message (
+    <literal>Service.Mode.MESSAGE</literal>) or payload (
+    <literal>Service.Mode.PAYLOAD</literal>). If there is no
+    <literal>@ServiceMode</literal> annotation on the endpoint, payload is the
+    default value. The endpoint communicates with handlers using
+    <literal>WebServiceContext resource like any other normal
+    endpoint</literal>. Provider endpoints can start from java or WSDL. When
+    the provider endpoints start from a WSDL file,
+    <literal>&lt;provider&gt;</literal> WSDL customization can be used to mark
+    a port as a provider.</para>
+
+    <section xml:id="section-3091238697838234">
+        <title><literal>Provider&lt;Source&gt;</literal> and
+        <literal>PAYLOAD</literal></title>
+
+        <para>An endpoint can access only the payload of a request using
+        <literal>Service.Mode.PAYLOAD</literal> in the
+        <literal>@ServiceMode</literal> annotation. This is the default
+        behaviour, if the annotation is missing.</para>
+
+        <para>For example:</para>
+
+        <informalexample>
+            <programlisting language="java"><![CDATA[@WebServiceProvider
+public class ProviderImpl implements Provider<Source> {
+    public Source invoke(Source source) { // do request processing Source
+        response = ...;
+        return response;
+    }
+}]]></programlisting>
+        </informalexample>
+    </section>
+
+    <section xml:id="section-8519606736474974">
+        <title><literal>Provider&lt;SOAPMessage&gt;</literal> and
+        <literal>MESSAGE</literal></title>
+
+        <para>An endpoint can access an entire SOAP request as a
+        <literal>SOAPMessage</literal>.
+        <literal>Service.Mode.MESSAGE</literal> in the
+        <literal>@ServiceMode</literal> annotation is used to convey the
+        intent.</para>
+
+        <para>For example:</para>
+
+        <informalexample>
+            <programlisting language="java"><![CDATA[@WebServiceProvider
+@ServiceMode(value = Service.Mode.MESSAGE)
+public class ProviderImpl implements Provider<SOAPMessage> {
+    public SOAPMessage invoke(SOAPMessage msg) { // do request processing
+        SOAPMessage response =...;
+        return response;
+    }
+}]]></programlisting>
+        </informalexample>
+    </section>
+
+    <section xml:id="section-7319353703410434">
+        <title><literal>Provider&lt;Source&gt;</literal> and
+        <literal>MESSAGE</literal></title>
+
+        <para>An endpoint can access a request as a <literal>Source</literal>.
+        If the request is a <literal>SOAPMessage</literal>, only the
+        <literal>SOAPPart</literal> (no attachments) of the message is passed
+        as <literal>Source</literal> to the <literal>invoke</literal> method.
+        If the returned response is null, it is considered a one way
+        MEP.</para>
+
+        <para>For example:</para>
+
+        <informalexample>
+            <programlisting language="java"><![CDATA[@ServiceMode(value = Service.Mode.MESSAGE)
+public class ProviderImpl implements Provider<Source> {
+    public Source invoke(Source source) { // do request processing
+        using source // return null to indicate oneway return null;
+    }
+}]]></programlisting>
+        </informalexample>
+    </section>
+
+    <section xml:id="section-674124516240791">
+        <title>WSDL Customization</title>
+
+        <para>If the provider endpoint starts with a WSDL file, a port can be
+        customized to a provider endpoint using the
+        <literal>&lt;provider&gt;</literal> customization.
+        <command>wsimport</command> won't generate any artifacts for that
+        port.</para>
+
+        <para>For example:</para>
+
+        <informalexample>
+            <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings
+        ...
+        wsdlLocaption="AddNumbers.wsdl"xmlns="http://java.sun.com/xml/ns/jaxws">
+    <bindings node="wsdl:definitions">
+        <package name="provider.server"/>
+        <provider>true</provider>
+    </bindings>
+</bindings>]]></programlisting>
+        </informalexample>
+    </section>
+
+    <section xml:id="section-648626808421419">
+        <title>The <literal>sun-jaxws.xml</literal> file</title>
+
+        <para>The attributes of provider endpoint in sun-jaxws.xml: name,
+        implementation, wsdl, service, port override the attributes provided
+        through <literal>@WebServiceProvider</literal> annotation. For SOAP1.2
+        binding, one needs to specify binding attribute.</para>
+
+        <para>For example:</para>
+
+        <informalexample>
+            <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime'
+        version='2.0'>
+    <endpoint name='AddNumbers'
+            implementation='provider.server.AddNumbersImpl'
+            wsdl='WEB-INF/wsdl/AddNumbers.wsdl'
+            service='{http://duke.example.org}AddNumbersService'
+            port='{http://duke.example.org}AddNumbersPort'
+            url-pattern='/addnumbers'/>
+</endpoints>]]></programlisting>
+        </informalexample>
+
+        <para>If the wsdl, service, port are not specified in sun-jaxws.xml,
+        then should be declared in the <literal>@WebServiceProvider</literal>
+        annotation in implementation class.</para>
+    </section>
+
+    <section xml:id="section-343591403757231">
+        <title>Provider and Binding</title>
+
+        <para>Provider endpoint can be configured for different bindings using
+        binding ids. These binding ids are defined in JAX-WS API and endpoint
+        can be configured by specifying <literal>@BindingType</literal>
+        annotation or using binding attribute in sun-jaxws.xml. sun-jaxws.xml
+        overwrites binding defined by <literal>@BindingType</literal>
+        annotation. If the binding is not specified using
+        <literal>@BindingType</literal> or in
+        <filename>sun-jaxws.xml</filename>, the default binding is
+        SOAP1.1/HTTP.</para>
+
+        <para>For example: To specify <literal>XML/HTTP</literal> binding
+        using <literal>@BindingType</literal> annotation</para>
+
+        <informalexample>
+            <programlisting language="java"><![CDATA[@ServiceMode(value = Service.Mode.MESSAGE)
+@BindingType(value = HTTPBinding.HTTP_BINDING)
+public class ProviderImpl implements Provider<Source> {
+    public Source invoke(Source source) {
+        // ...
+    }
+}]]></programlisting>
+        </informalexample>
+
+        <para>For example: To specify <literal>XML/HTTP</literal> binding in
+        <filename>sun-jaxws.xml</filename></para>
+
+        <informalexample>
+            <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime'
+        version='2.0'>
+    <endpoint
+            ...
+            binding="http://www.w3.org/2004/08/wsdl/http"/>
+</endpoints>]]></programlisting>
+        </informalexample>
+    </section>
+
+    <section xml:id="section-330867941262645">
+        <title>RESTful Provider endpoints</title>
+
+        <para>RESTful Web Services can be built using
+        <literal>XML/HTTP</literal> binding based <literal>Provider</literal>
+        endpoints. In this case, even HTTP GET requests are passed to the
+        endpoint. <literal>Endpoint</literal> can get necessary HTTP request
+        query string and path information using standard
+        <literal>MessageContext.QUERY_STRING</literal> and
+        <literal>MessageContext.PATH_INFO</literal>. For more details on
+        endpoint implementation, see the <literal>samples/restful/src/restful/server/AddNumbersImpl.java</literal>
+        sample. If the endpoint expects GET requests to contain extra path
+        after the endpoint address, then <literal>url-pattern</literal> should
+        have "<literal>/*</literal>" at the end in both
+        <filename>sun-jaxws.xml</filename> and
+        <filename>web.xml</filename>.</para>
+
+        <para>For example: <filename>sun-jaxws.xml</filename></para>
+
+        <informalexample>
+            <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime'
+        version='2.0'>
+    <endpoint
+            ...
+            binding="http://www.w3.org/2004/08/wsdl/http"
+            url-pattern="/addnumbers/*"/>
+</endpoints>]]></programlisting>
+        </informalexample>
+
+        <para>For example: <filename>web.xml</filename></para>
+
+        <informalexample>
+            <programlisting language="xml"><![CDATA[<web-app>
+    
+    ...
+    
+    <servlet-mapping>
+        <servlet-name>provider</servlet-name>
+        <url-pattern>/addnumbers/*</url-pattern>
+    </servlet-mapping>
+    
+    ...
+    
+</web-app>]]></programlisting>
+        </informalexample>
+    </section>
+
+    <section xml:id="section-017933327977469">
+        <title>Provider and Handlers</title>
+
+        <para>Handlers can be configured with Provider endpoints in
+        <filename>sun-jaxws.xml</filename> descriptor or by putting
+        <literal>@HandlerChain</literal> on the <literal>Provider</literal>
+        implementation.</para>
+
+        <para>For example:</para>
+
+        <informalexample>
+            <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime'
+        xmlns:javaee="http://java.sun.com/xml/ns/javaee" version='2.0'>
+    <endpoint name='AddNumbers'
+            implementation='provider.server.AddNumbersImpl'
+            wsdl='WEB-INF/wsdl/AddNumbers.wsdl'
+            service='{http://duke.example.org}AddNumbersService'
+            port='{http://duke.example.org}AddNumbersPort'
+            url-pattern='/addnumbers'/>
+    <javaee:handler-chain>
+        <javaee:handler-chain-name>my handler</javaee:handler-chain-name>
+        <javaee:handler>
+            <javaee:handler-name>MyHandler</javaee:handler-name>
+            <javaee:handler-class>provider.server.MyHandler
+            </javaee:handler-class>
+        </javaee:handler>
+    </javaee:handler-chain>
+</endpoints>]]></programlisting>
+        </informalexample>
+    </section>
+</section>
