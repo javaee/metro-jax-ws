@@ -1,0 +1,44 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>FAQ</title><link rel="stylesheet" href="style/documentation.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.75.2"><link rel="home" href="index.html" title="JAX-WS Release Documentation"><link rel="up" href="index.html" title="JAX-WS Release Documentation"><link rel="prev" href="ch04.html" title="Tools"><link rel="next" href="ch06.html" title="Extensions"><script xmlns:fo="http://www.w3.org/1999/XSL/Format" type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-2105126-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">FAQ</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch04.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch06.html">Next</a></td></tr></table><hr></div><small xmlns:fo="http://www.w3.org/1999/XSL/Format" class="small">Links: <a href="index.html">Table of Contents</a> | <a href="release-documentation.html">Single HTML</a> | <a href="release-documentation.pdf">Single PDF</a></small><div lang="en" class="chapter" title="FAQ" id="jax-ws-faq"><div class="titlepage"><div><div><h2 class="title">FAQ</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="section"><a href="ch05.html#section-jaxws-faq1">1. Does JAX-WS 2.0 support JAX-RPC 1.X?</a></span></dt><dt><span class="section"><a href="ch05.html#section-jaxws-faq2">2. What is the difference between JAX-RPC and JAX-WS ?</a></span></dt><dt><span class="section"><a href="ch05.html#section-jaxws-faq3">3.  Can a JAX-WS and a JAX-RPC based service co-exist?</a></span></dt><dt><span class="section"><a href="ch05.html#section-jaxws-faq4">4.  Is it downloadable from maven repository ?</a></span></dt><dt><span class="section"><a href="ch05.html#section-jaxws-faq5">5. How do I find out which version of the JAX-WS RI I'm using?</a></span></dt><dt><span class="section"><a href="ch05.html#section-jaxws-faq6">6. How can I change the Web Service address dynamically for a request ?</a></span></dt><dt><span class="section"><a href="ch05.html#section-jaxws-faq8">7. How do I do basic authentication in JAX-WS ?</a></span></dt><dt><span class="section"><a href="ch05.html#section-jaxws-faq9">8. Which standards are supported by JAXWS?</a></span></dt></dl></div><div class="section" title="1.&nbsp;Does JAX-WS 2.0 support JAX-RPC 1.X?"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="section-jaxws-faq1">1.&nbsp;Does JAX-WS 2.0 support JAX-RPC 1.X?</h2></div></div></div><p>No. Although, JAX-WS's roots come from JAX-RPC, JAX-WS is a 
+                completely different component than JAX-RPC.</p></div><div class="section" title="2.&nbsp;What is the difference between JAX-RPC and JAX-WS ?"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="section-jaxws-faq2">2.&nbsp;What is the difference between JAX-RPC and JAX-WS ?</h2></div></div></div><p>One of the main difference between JAX-RPC and JAX-WS is the 
+            programming model. A JAX-WS based service uses annotations (such @WebService) 
+            to declare webservice endpoints. Use of these annotations obviates the need 
+            for deployment descriptors. With JAX-WS, you can have a webservice deployed 
+            on a Java EE compliant application server without a single deployment descriptor. 
+            Apart from these, other additional features (such asynchronous callbacks etc) 
+            are also present.
+        </p></div><div class="section" title="3.&nbsp; Can a JAX-WS and a JAX-RPC based service co-exist?"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="section-jaxws-faq3">3.&nbsp; Can a JAX-WS and a JAX-RPC based service co-exist?</h2></div></div></div><p>Yes.</p></div><div class="section" title="4.&nbsp; Is it downloadable from maven repository ?"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="section-jaxws-faq4">4.&nbsp; Is it downloadable from maven repository ?</h2></div></div></div><p>Yes from <a class="link" href="https://maven.java.net/content/repositories/releases/com/sun/xml/ws" target="_top">https://maven.java.net/content/repositories/releases/com/sun/xml/ws</a>.</p></div><div class="section" title="5.&nbsp;How do I find out which version of the JAX-WS RI I'm using?"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="section-jaxws-faq5">5.&nbsp;How do I find out which version of the JAX-WS RI I'm using?</h2></div></div></div><p>Run the following command
+</p><pre class="programlisting">$ wsgen or wsimport -version</pre><p>
+Alternatively, each JAX-WS jar has version information in its META-INF/MANIFEST.MF.
+        </p></div><div class="section" title="6.&nbsp;How can I change the Web Service address dynamically for a request ?"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="section-jaxws-faq6">6.&nbsp;How can I change the Web Service address dynamically for a request ?</h2></div></div></div><p>
+            </p><pre class="programlisting">
+((BindingProvider)proxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, <span class="String">"..."</span>); 
+            </pre><p>
+        </p></div><div class="section" title="7.&nbsp;How do I do basic authentication in JAX-WS ?"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="section-jaxws-faq8">7.&nbsp;How do I do basic authentication in JAX-WS ?</h2></div></div></div><p>
+            You can do the following:
+            </p><pre class="programlisting">
+HelloService service = <span class="ReservedWord">new</span> HelloService();
+Hello proxy = (service.getHelloPort());
+((BindingProvider)proxy).getRequestContext().put(BindingProvider.USERNAME_PROPERTY, <span class="String">"userfoo"</span>);
+((BindingProvider)proxy).getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, <span class="String">"passbar"</span>); 
+            </pre><p>
+            USERNAME_PROPERTY, PASSWORD_PROPERTY are used primarily for service requests. 
+            I think when you instantiate Service, it fetches WSDL and the server is returning 401. 
+            You could try any one of the following solutions.
+            </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Use java.net.Authenticator class in your client application.</li><li class="listitem">Provide a local access to the WSDL using catalog. There is a catalog sample in the jax-ws distribution.</li><li class="listitem">Configure web.xml to allow GET requests without authentication</li></ul></div><p>
+        </p></div><div class="section" title="8.&nbsp;Which standards are supported by JAXWS?"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="section-jaxws-faq9">8.&nbsp;Which standards are supported by JAXWS?</h2></div></div></div><p>
+            </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Web Services Addressing 1.0 - Core</p></li><li class="listitem"><p>Web Services Addressing 1.0 - SOAP
+                    Binding</p></li><li class="listitem"><p>Web Services Addressing 1.0 - Metadata</p></li><li class="listitem"><p>Web Services Addressing 1.0 - WSDL Binding (RI
+                    specific support)</p></li><li class="listitem"><p>WS-Addressing&nbsp; - Member Submission</p></li><li class="listitem"><p>SOAP 1.1 and 1.2</p></li><li class="listitem"><p>REST and XML/HTTP</p></li><li class="listitem"><p>WS-I Basic Profile 1.2 and 2.0</p></li><li class="listitem"><p>WS-I Simple SOAP Binding Profile 1.0</p></li><li class="listitem"><p>WS-I Attachment Profile 1.0</p></li><li class="listitem"><p>MTOM</p></li></ul></div><p>
+        </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch04.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch06.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Tools&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Extensions</td></tr></table></div></body></html>

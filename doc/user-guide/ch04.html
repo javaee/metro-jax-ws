@@ -1,0 +1,490 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Tools</title><link rel="stylesheet" href="style/documentation.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.75.2"><link rel="home" href="index.html" title="JAX-WS Release Documentation"><link rel="up" href="index.html" title="JAX-WS Release Documentation"><link rel="prev" href="ch03.html" title="Users Guide"><link rel="next" href="ch05.html" title="FAQ"><script xmlns:fo="http://www.w3.org/1999/XSL/Format" type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-2105126-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Tools</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch03.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch05.html">Next</a></td></tr></table><hr></div><small xmlns:fo="http://www.w3.org/1999/XSL/Format" class="small">Links: <a href="index.html">Table of Contents</a> | <a href="release-documentation.html">Single HTML</a> | <a href="release-documentation.pdf">Single PDF</a></small><div lang="en" class="chapter" title="Tools" id="tools"><div class="titlepage"><div><div><h2 class="title">Tools</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="section"><a href="ch04.html#tools-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="ch04.html#how">1.1. How do I pick a tool?</a></span></dt><dt><span class="section"><a href="ch04.html#running-on-jdk6">1.2. Running tools on JDK6</a></span></dt><dt><span class="section"><a href="ch04.html#jaxws-maven">1.3. Maven plugins</a></span></dt></dl></dd><dt><span class="section"><a href="ch04.html#tools-wsimport">2. <span class="command"><strong>wsimport</strong></span></a></span></dt><dd><dl><dt><span class="section"><a href="ch04.html#wsimport-overview">2.1. <span class="command"><strong>wsimport</strong></span> Overview</a></span></dt><dt><span class="section"><a href="ch04.html#launching-wsimport">2.2. Launching <span class="command"><strong>wsimport</strong></span></a></span></dt><dt><span class="section"><a href="ch04.html#wsimport-syntax">2.3. <span class="command"><strong>wsimport</strong></span> Syntax</a></span></dt><dt><span class="section"><a href="ch04.html#wsimport-example">2.4. <span class="command"><strong>wsimport</strong></span> Example</a></span></dt></dl></dd><dt><span class="section"><a href="ch04.html#tools-wsimport-ant-task">3. <span class="command"><strong>wsimport</strong></span> Ant Task</a></span></dt><dd><dl><dt><span class="section"><a href="ch04.html#wsimport-task-overview">3.1. <span class="command"><strong>wsimport</strong></span> Task Overview</a></span></dt><dt><span class="section"><a href="ch04.html#using-wsimport-task">3.2. Using <span class="command"><strong>wsimport</strong></span> Task</a></span></dt><dt><span class="section"><a href="ch04.html#examples">3.3. <span class="command"><strong>wsimport</strong></span> Examples</a></span></dt></dl></dd><dt><span class="section"><a href="ch04.html#tools-wsgen">4. <span class="command"><strong>wsgen</strong></span></a></span></dt><dd><dl><dt><span class="section"><a href="ch04.html#wsgen-overview">4.1. <span class="command"><strong>wsgen</strong></span> Overview</a></span></dt><dt><span class="section"><a href="ch04.html#launching-wsgen">4.2. Launching <span class="command"><strong>wsgen</strong></span></a></span></dt><dt><span class="section"><a href="ch04.html#wsgen-syntax">4.3. <span class="command"><strong>wsgen</strong></span> Syntax</a></span></dt><dt><span class="section"><a href="ch04.html#wsgen-example">4.4. <span class="command"><strong>wsgen</strong></span> Example</a></span></dt></dl></dd><dt><span class="section"><a href="ch04.html#tools-wsgen-ant-task">5. <span class="command"><strong>wsgen</strong></span> Ant Task</a></span></dt><dd><dl><dt><span class="section"><a href="ch04.html#wsgen-task-overview">5.1. <span class="command"><strong>wsgen</strong></span> Task Overview</a></span></dt><dt><span class="section"><a href="ch04.html#using-wsgen-task">5.2. Using <span class="command"><strong>wsgen</strong></span> Task</a></span></dt><dt><span class="section"><a href="ch04.html#wsgen-task-example">5.3. <span class="command"><strong>wsgen</strong></span> Task Examples</a></span></dt></dl></dd><dt><span class="section"><a href="ch04.html#tools-annotation-processing">6. <span class="command"><strong>Annotation Processing</strong></span></a></span></dt><dd><dl><dt><span class="section"><a href="ch04.html#javac-annotation-processing">6.1. <span class="command"><strong>javac</strong></span> annotation processing</a></span></dt><dt><span class="section"><a href="ch04.html#javac-annotation-processing-syntax">6.2. <span class="command"><strong>javac</strong></span> Annotation Processing Syntax</a></span></dt></dl></dd><dt><span class="section"><a href="ch04.html#tools-annotation-processing-ant-task">7. <span class="command"><strong>annotationProcessing</strong></span> Ant Task</a></span></dt><dd><dl><dt><span class="section"><a href="ch04.html#d0e9740">7.1. <span class="command"><strong>annotationProcessing</strong></span> Task Overview</a></span></dt><dt><span class="section"><a href="ch04.html#d0e9750">7.2. <span class="command"><strong>annotationProcessing</strong></span> Task Attributes</a></span></dt><dt><span class="section"><a href="ch04.html#section-26459256796099617">7.3. <span class="command"><strong>annotationProcessing</strong></span> Task Examples</a></span></dt><dt><span class="section"><a href="ch04.html#deprecated-apt">7.4. <span class="command"><strong>Apt</strong></span> Ant task</a></span></dt></dl></dd><dt><span class="section"><a href="ch04.html#tools-apt">8. <span class="command"><strong>apt</strong></span></a></span></dt></dl></div><div lang="en" class="section" title="1.&nbsp;Overview"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="tools-overview">1.&nbsp;Overview</h2></div></div></div><div class="section" title="1.1.&nbsp;How do I pick a tool?"><div class="titlepage"><div><div><h3 class="title" id="how">1.1.&nbsp;How do I pick a tool?</h3></div></div></div><p>The following lists the process to create a web service starting
+        from Java sources, classes, and a WSDL file (server side):</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Starting from Java sources: </p><div class="orderedlist"><ol class="orderedlist" type="a"><li class="listitem"><p>Use <span class="command"><strong>annotationProcessing</strong></span> Ant task
+                            to generate the artifacts required by the JAX-WS
+                            specification.</p></li><li class="listitem"><p>Package the <code class="literal">web.xml</code>,
+                            <code class="literal">sun-jaxws.xml</code>, service endpoint
+                            interface and implementation class, value types, and
+                            generated classes, if any, into a WAR file,</p></li><li class="listitem"><p>Deploy the WAR to a web container.</p></li></ol></div></li><li class="listitem"><p>Starting from Java classes: </p><div class="orderedlist"><ol class="orderedlist" type="a"><li class="listitem"><p>Use <span class="command"><strong>wsgen</strong></span> to generate
+                            portable artifacts.</p></li><li class="listitem"><p>Package the <code class="literal">web.xml</code>,
+                            <code class="literal">sun-jaxws.xml</code>, service endpoint
+                            interface and implementation class, value types, and
+                            generated classes, if any, into a WAR file,</p></li><li class="listitem"><p>Deploy the WAR to a web container.</p></li></ol></div></li><li class="listitem"><p>Starting from a WSDL file: </p><div class="orderedlist"><ol class="orderedlist" type="a"><li class="listitem"><p>Use <span class="command"><strong>wsimport</strong></span> to generate
+                            portable artifacts.</p></li><li class="listitem"><p>Implement the service endpoint.</p></li><li class="listitem"><p>Package the WSDL file, schema documents,
+                            <code class="literal">web.xml</code>,
+                            <code class="literal">sun-jaxws.xml</code>, service endpoint
+                            interface and implementation class, value types, and
+                            generated classes, if any, into a WAR file.</p></li><li class="listitem"><p>Deploy the WAR to a web container.</p></li></ol></div></li></ol></div><p>The following lists the process to invoke a web service (client
+        side):</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Starting from deployed web service's WSDL </p><div class="orderedlist"><ol class="orderedlist" type="a"><li class="listitem"><p>Use <span class="command"><strong>wsimport</strong></span> to generate
+                            the client-side artifacts.</p></li><li class="listitem"><p>Implement the client to invoke the web
+                            service.</p></li></ol></div></li></ol></div></div><div class="section" title="1.2.&nbsp;Running tools on JDK6"><div class="titlepage"><div><div><h3 class="title" id="running-on-jdk6">1.2.&nbsp;Running tools on JDK6</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Copy
+                <code class="filename">JAXWS_HOME/lib/javax.annotation-api.jar</code>
+                <code class="filename">JAXWS_HOME/lib/jsr181-api.jar</code>
+                <code class="filename">JAXWS_HOME/lib/jaxws-api.jar</code> 
+                <code class="filename">JAXWS_HOME/lib/jaxb-api.jar</code> to
+                <code class="filename">$JDK6_HOME/jre/lib/endorsed</code>
+                directory</p></li></ul></div><p>For details see <a class="link" href="http://docs.oracle.com/javase/6/docs/technotes/guides/standards/" target="_top">Endorsed
+        Directory Mechanism</a>. Above,
+        <code class="filename">JAXWS_HOME</code> points to the root directory of
+        the extracted JAX-WS RI bundle.
+        <code class="filename">JDK6_HOME</code> points to JDK 6 installation
+        directory.</p></div><div class="section" title="1.3.&nbsp;Maven plugins"><div class="titlepage"><div><div><h3 class="title" id="jaxws-maven">1.3.&nbsp;Maven plugins</h3></div></div></div><p>You can use all jaxws tools within your maven build. Information about maven plugin and its usage is located at 
+            <a class="link" href="https://github.com/javaee/metro-jaxws-commons/tree/master/jaxws-maven-plugin" target="_top">the plugin homepage.</a>
+        </p></div></div><div lang="en" class="section" title="2.&nbsp;wsimport"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="tools-wsimport">2.&nbsp;<span class="command"><strong>wsimport</strong></span></h2></div></div></div><div class="section" title="2.1.&nbsp;wsimport Overview"><div class="titlepage"><div><div><h3 class="title" id="wsimport-overview">2.1.&nbsp;<span class="command"><strong>wsimport</strong></span> Overview</h3></div></div></div><p>The <span class="command"><strong>wsimport</strong></span> tool generates JAX-WS portable
+        artifacts, such as:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Service Endpoint Interface (SEI)</p></li><li class="listitem"><p>Service</p></li><li class="listitem"><p>Exception class mapped from
+                <code class="literal">wsdl:fault</code> (if any)</p></li><li class="listitem"><p>Async Reponse Bean derived from response
+                <code class="literal">wsdl:message</code> (if any)</p></li><li class="listitem"><p>JAXB generated value types (mapped java classes from
+                schema types)</p></li></ul></div><p>These artifacts can be packaged in a WAR file with the WSDL and
+        schema documents along with the endpoint implementation to be
+        deployed. JAX-WS RI 2.3.0-SNAPSHOT also provides a <a class="xref" href="ch04.html#tools-wsimport-ant-task" title="3.&nbsp;wsimport Ant Task"><span class="command"><strong>wsimport</strong></span> Ant Task</a>.</p></div><div class="section" title="2.2.&nbsp;Launching wsimport"><div class="titlepage"><div><div><h3 class="title" id="launching-wsimport">2.2.&nbsp;Launching <span class="command"><strong>wsimport</strong></span></h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p><span class="bold"><strong>Solaris/Linux</strong></span>
+                </p><div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem"><pre class="programlisting">JAXWS_HOME/bin/wsimport.sh -help</pre></li></ul></div></li><li class="listitem"><p><span class="bold"><strong>Windows</strong></span> </p><div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem"><pre class="programlisting">JAXWS_HOME\bin\wsimport.bat -help</pre></li></ul></div></li></ul></div></div><div class="section" title="2.3.&nbsp;wsimport Syntax"><div class="titlepage"><div><div><h3 class="title" id="wsimport-syntax">2.3.&nbsp;<span class="command"><strong>wsimport</strong></span> Syntax</h3></div></div></div><div class="cmdsynopsis"><p><code class="command">wsimport</code>   [OPTION]...  &lt;WSDL&gt;</p></div><p>The following table lists the <span class="command"><strong>wsimport</strong></span>
+        options:</p><div class="informaltable"><table border="1"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th>Option</th><th>Description</th></tr></thead><tbody><tr><td><code class="literal">-d &lt;directory&gt;</code></td><td>Specify where to place generated output
+                        files.</td></tr><tr><td><code class="literal">-classpath &lt;path&gt;</code></td><td>Specify where to find user class files
+                        and wsimport extensions.</td></tr><tr><td><code class="literal">-cp &lt;path&gt;</code></td><td>Specify where to find user class files
+                        and wsimport extensions.</td></tr><tr><td><code class="literal">-b &lt;path&gt;</code></td><td>Specify external JAX-WS or JAXB binding files
+                        or additional schema files (Each
+                        <code class="literal">&lt;file&gt;</code> must have its own
+                        <code class="option">-b</code>).</td></tr><tr><td><code class="literal">-B
+                        &lt;jaxbOption&gt;</code></td><td>Pass this option to JAXB schema
+                        compiler.</td></tr><tr><td><code class="literal">-catalog</code></td><td>Specify catalog file to resolve external entity
+                        references, it supports TR9401, XCatalog, and OASIS
+                        XML Catalog format. Please read the documentation of
+                        <a class="xref" href="ch03.html#users-guide-catalog" title="13.&nbsp;Catalog">Catalog</a> and see catalog
+                        sample.</td></tr><tr><td><code class="literal">-extension</code></td><td>Allow vendor extensions (functionality not
+                        specified by the specification). Use of extensions may
+                        result in applications that are not portable or may
+                        not interoperate with other implementations.</td></tr><tr><td><code class="literal">-help</code></td><td>Display help.</td></tr><tr><td><code class="literal">-httpproxy:&lt;host&gt;:&lt;port&gt;</code></td><td>Specify an HTTP proxy server (port defaults to
+                        8080).</td></tr><tr><td><code class="literal">-J&lt;javacOption&gt;</code></td><td>Pass this option to Javac compiler. Note: use '='
+                        instead of space as a delimiter between option name and
+                        its value.</td></tr><tr><td><code class="literal">-keep</code></td><td>Keep generated source code files. It is enabled
+                        when <code class="option">-s</code> option.</td></tr><tr><td><code class="literal">-p &lt;pkg&gt;</code></td><td>Specifying a target package via this
+                        command-line option, overrides any wsdl and schema
+                        binding customization for package name and the default
+                        package name algorithm defined in the
+                        specification.</td></tr><tr><td><code class="literal">-s &lt;directory&gt;</code></td><td>Specify where to place generated source code
+                        files. keep is turned on with this option.</td></tr><tr><td><code class="literal">-encoding
+                        &lt;encoding&gt;</code></td><td>Set the encoding name for generated sources,
+                        such as EUC-JP or UTF-8. If
+                        <code class="literal">-encoding</code> is not specified, the
+                        platform default encoding is used.</td></tr><tr><td><code class="literal">-verbose</code></td><td>Output messages about what the compiler is
+                        doing.</td></tr><tr><td><code class="literal">-version</code></td><td>Print version information.</td></tr><tr><td><code class="literal">-fullversion</code></td><td>Print full version information.</td></tr><tr><td><code class="literal">-clientjar
+                        &lt;jarfile&gt;</code></td><td>Creates the jar file of the generated artifacts
+                        along with the WSDL metadata required for invoking the
+                        web service.</td></tr><tr><td><code class="literal">-wsdllocation
+                        &lt;location&gt;</code></td><td><code class="literal">@WebServiceClient.wsdlLocation</code>
+                        value.</td></tr><tr><td><code class="literal">-target
+                        &lt;version&gt;</code></td><td>Generate code as per the given JAX-WS
+                        specification version. For example, "<code class="literal">-target
+                        2.0</code>" generates compliant code for JAX-WS 2.0
+                        spec. Default value is 2.2.</td></tr><tr><td><code class="literal">-quiet</code></td><td>Suppress <span class="command"><strong>wsimport</strong></span>
+                        output.</td></tr><tr><td><code class="literal">-XadditionalHeaders</code></td><td>Map the headers not bound to request or
+                        response message to Java method parameters.</td></tr><tr><td><code class="literal">-Xauthfile</code></td><td>File to carry authorization information in the
+                        format
+                        <code class="uri">http://username:password@example.org/stock?wsdl</code>.
+                        The asterisk character ("*") can be used to match
+                        multiple URL patterns.
+                        Default value is
+                        <code class="filename">$HOME/.metro/auth</code></td></tr><tr><td><code class="literal">-Xdebug</code></td><td>Print debug information.</td></tr><tr><td><code class="literal">-XdisableAuthenticator</code></td><td>Disables Authenticator used by JAX-WS RI, <code class="literal">-Xauthfile</code> option will be ignored if <code class="literal">-XdisableAuthenticator</code> is set.</td></tr><tr><td><code class="literal">-Xno-addressing-databinding</code></td><td>Enable binding of W3C
+                        <code class="literal">EndpointReferenceType</code> to
+                        Java.</td></tr><tr><td><code class="literal">-Xnocompile</code></td><td>Do not compile generated Java files.</td></tr><tr><td><code class="literal">-XdisableSSLHostnameVerification</code></td><td>Disbales the SSL Hostname verification while
+                        fetching the wsdls.</td></tr></tbody></table></div><p>Multiple JAX-WS and JAXB binding files can be specified using
+        <code class="option">-b</code> option and they can be used to customize various
+        things like package names, bean names, etc. More information on JAX-WS
+        and JAXB binding files can be found in the <a class="xref" href="ch03.html#users-guide-wsdl-customization" title="9.&nbsp;WSDL Customization">WSDL Customization</a>.</p></div><div class="section" title="2.4.&nbsp;wsimport Example"><div class="titlepage"><div><div><h3 class="title" id="wsimport-example">2.4.&nbsp;<span class="command"><strong>wsimport</strong></span> Example</h3></div></div></div><div class="informalexample"><pre class="programlisting">wsimport -p stockquote http://stockquote.xyz/quote?wsdl</pre></div><p>This will generate the Java artifacts and compile them by
+        importing the <a class="link" href="http://stockquote.org/quote?wsdl" target="_top">http://stockquote.xyz/quote?wsdl</a>.</p></div></div><div lang="en" class="section" title="3.&nbsp;wsimport Ant Task"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="tools-wsimport-ant-task">3.&nbsp;<span class="command"><strong>wsimport</strong></span> Ant Task</h2></div></div></div><div class="section" title="3.1.&nbsp;wsimport Task Overview"><div class="titlepage"><div><div><h3 class="title" id="wsimport-task-overview">3.1.&nbsp;<span class="command"><strong>wsimport</strong></span> Task Overview</h3></div></div></div><p>The <span class="command"><strong>wsimport</strong></span> generates JAX-WS portable
+        artifacts, such as:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Service Endpoint Interface (SEI)</p></li><li class="listitem"><p>Service</p></li><li class="listitem"><p>Exception class mapped from
+                <code class="literal">wsdl:fault</code> (if any)</p></li><li class="listitem"><p>Async Reponse Bean derived from response
+                <code class="literal">wsdl:message</code> (if any)</p></li><li class="listitem"><p>JAXB generated value types (mapped java classes from
+                schema types)</p></li></ul></div></div><div class="section" title="3.2.&nbsp;Using wsimport Task"><div class="titlepage"><div><div><h3 class="title" id="using-wsimport-task">3.2.&nbsp;Using <span class="command"><strong>wsimport</strong></span> Task</h3></div></div></div><p>To use this <span class="command"><strong>wsimport</strong></span> task, a
+        <code class="literal">&lt;taskdef&gt;</code> element needs to be added to the
+        project as given below:</p><div class="informalexample"><pre class="programlisting"><span class="ReservedWord">&lt;taskdef</span> <span class="Identifier">name</span>=<span class="String">"wsimport"</span> <span class="Identifier">classname</span>=<span class="String">"com.sun.tools.ws.ant.WsImport"</span><span class="ReservedWord">&gt;</span>
+    <span class="ReservedWord">&lt;classpath</span> <span class="Identifier">path</span>=<span class="String">"jaxws.classpath"</span><span class="ReservedWord">/&gt;</span>
+<span class="ReservedWord">&lt;/taskdef&gt;</span></pre></div><p>where <code class="literal">jaxws.classpath</code> is a reference to a
+        <a class="link" href="http://ant.apache.org/manual/using.html#path" target="_top">path-like
+        structure</a>, defined elsewhere in the build environment, and
+        contains the list of classes required by the JAX-WS tools.</p><div class="section" title="3.2.1.&nbsp;Environment Variables"><div class="titlepage"><div><div><h4 class="title" id="section-8164488302388055">3.2.1.&nbsp;Environment Variables</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p><a class="link" href="http://wiki.apache.org/ant/TheElementsOfAntStyle" target="_top">ANT_OPTS</a>
+                    - command-line arguments that should be passed to the JVM.
+                    For example, you can define system properties or set the
+                    maximum Java heap size here.</p></li></ul></div></div><div class="section" title="3.2.2.&nbsp;wsimport Task Attributes"><div class="titlepage"><div><div><h4 class="title" id="section-925990378001543">3.2.2.&nbsp;wsimport Task Attributes</h4></div></div></div><p><span class="command"><strong>wsimport</strong></span> supports the following parameter
+            attributes:</p><div class="informalexample"><pre class="programlisting"><span class="ReservedWord">&lt;wsimport</span>
+        <span class="Identifier">wsdl</span>=<span class="String">"..."</span>
+        <span class="Identifier">destdir</span>=<span class="String">"directory for generated class files"</span>
+        <span class="Identifier">sourcedestdir</span>=<span class="String">"directory for generated source files"</span>
+        <span class="Identifier">keep</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">encoding</span>=<span class="String">"..."</span>
+        <span class="Identifier">extension</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">verbose</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">wsdlLocation</span>=<span class="String">"..."</span>
+        <span class="Identifier">clientJar</span>=<span class="String">"jar file"</span>
+        <span class="Identifier">catalog</span>=<span class="String">"catalog file"</span>
+        <span class="Identifier">package</span>=<span class="String">"package name"</span>
+        <span class="Identifier">target</span>=<span class="String">"target release"</span>
+        <span class="Identifier">binding</span>=<span class="String">"..."</span>
+        <span class="Identifier">quiet</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">fork</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">failonerror</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">xadditionalHeaders</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">xauthfile</span>=<span class="String">"authorization file"</span>
+        <span class="Identifier">xdisableAuthenticator</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">xdebug</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">xNoAddressingDatabinding</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">xnocompile</span>=<span class="String">"true|false"</span><span class="ReservedWord">&gt;</span>
+    <span class="ReservedWord">&lt;binding</span> <span class="Identifier">dir</span>=<span class="String">"..."</span> <span class="Identifier">includes</span>=<span class="String">"..."</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;arg</span> <span class="Identifier">value</span>=<span class="String">"..."</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;xjcarg</span> <span class="Identifier">value</span>=<span class="String">"..."</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;javacarg</span> <span class="Identifier">value</span>=<span class="String">"..."</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;jvmarg</span> <span class="Identifier">value</span>=<span class="String">"..."</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;xmlcatalog</span> <span class="Identifier">refid</span>=<span class="String">"another catalog file"</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;depends</span> <span class="Identifier">file</span>=<span class="String">"..."</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;produces</span> <span class="Identifier">dir</span>=<span class="String">"..."</span><span class="ReservedWord">/&gt;</span>
+<span class="ReservedWord">&lt;/wsimport&gt;</span></pre></div><div class="informaltable"><table border="1"><colgroup><col width="25%"><col width="25%"><col width="25%"><col width="25%"></colgroup><thead><tr><th><span class="bold"><strong>Attribute</strong></span></th><th><span class="bold"><strong>Description</strong></span></th><th><span class="bold"><strong>Required</strong></span></th><th><span class="bold"><strong>Command
+                            line</strong></span></th></tr></thead><tbody><tr><td><code class="literal">wsdl</code></td><td>WSDL file.</td><td>Yes.</td><td>WSDL location</td></tr><tr><td><code class="literal">destdir</code></td><td>Specify where to place output generated
+                            classes.</td><td>No. Defaults to current working
+                            directory.</td><td><code class="literal">-d</code></td></tr><tr><td><code class="literal">sourcedestdir</code></td><td>Specify where to place generated source code
+                            files, keep is turned on with this option.</td><td>No. Defaults to current working
+                            directory.</td><td><code class="literal">-s</code></td></tr><tr><td><code class="literal">encoding</code></td><td>Set the encoding name for generated sources,
+                            such as UTF-8.</td><td>No. Defaults to platform default.</td><td><code class="literal">-encoding</code></td></tr><tr><td><code class="literal">keep</code></td><td>Keep generated source code files, turned on
+                            with <code class="literal">sourcedestdir</code>
+                            option.</td><td>No. Defaults to false.</td><td><code class="literal">-keep</code></td></tr><tr><td><code class="literal">verbose</code></td><td>Output JAX-WS RI version and messages about what the compiler is
+                            doing</td><td>No. Defaults to false.</td><td><code class="literal">-verbose.</code></td></tr><tr><td><code class="literal">binding</code></td><td>Specify external JAX-WS or JAXB binding files
+                            or additional schema files (Each
+                            <code class="literal">&lt;file&gt;</code> must have its own
+                            <code class="option">-b</code>).</td><td>No. No defaults.</td><td><code class="literal">-b</code></td></tr><tr><td><code class="literal">extension</code></td><td>allow vendor extensions (functionality not
+                            specified by the specification). Use of extensions
+                            may result in applications that are not portable or
+                            may not interoperate with other
+                            implementations.</td><td>No. Defaults to false.</td><td><code class="literal">-extension</code></td></tr><tr><td><code class="literal">wsdllocation</code></td><td>The wsdl URI passed thru this option will be
+                            used to set the value of
+                            <code class="literal">@WebService.wsdlLocation</code> and
+                            <code class="literal">@WebServiceClient.wsdlLocation</code>
+                            annotation elements on the generated SEI and Service
+                            interface.</td><td>No. Defaults to the wsdl URL passed to wsdl
+                            attribute.</td><td><code class="literal">-wsdllocation</code></td></tr><tr><td><code class="literal">clientJar</code></td><td>Creates the jar file of the generated
+                            artifacts along with the WSDL metadata required for
+                            invoking the web service.</td><td>No.</td><td><code class="literal">-clientJar</code></td></tr><tr><td><code class="literal">catalog</code></td><td>Specify catalog file to resolve external
+                            entity references, it supports TR9401, XCatalog, and
+                            OASIS XML Catalog format. Additionally, ant
+                            xmlcatalog type can be used to resolve entities, see
+                            <span class="bold"><strong>catalog</strong></span> sample and
+                            <a class="xref" href="ch03.html#users-guide-catalog" title="13.&nbsp;Catalog">Catalog</a>.</td><td>No. No defaults.</td><td><code class="literal">-catalog</code></td></tr><tr><td><code class="literal">package</code></td><td>Specifies the target package.</td><td>No. It default to the WSDL/Schema
+                            targetNamespace to package mapping as defined by the
+                            JAXB 2.1 spec.</td><td><code class="literal">-p</code></td></tr><tr><td><code class="literal">target</code></td><td>Generate code as per the given JAXWS
+                            specification version. For example, 2.0 value
+                            generates compliant code for JAXWS 2.0 spec.</td><td>No. Defaults to 2.2.</td><td><code class="literal">-target</code></td></tr><tr><td><code class="literal">quiet</code></td><td>Suppress <span class="command"><strong>wsimport</strong></span>
+                            output.</td><td>No. Defaults to false.</td><td><code class="literal">-quiet</code></td></tr><tr><td><code class="literal">fork</code></td><td>Used to execute wsgen using forked VM.</td><td>No. Defaults to false.</td><td>None.</td></tr><tr><td><code class="literal">failonerror</code></td><td>Indicates whether errors will fail the build.</td><td>No. Defaults to true.</td><td>None.</td></tr><tr><td><code class="literal">xadditionalHeaders</code></td><td>Map headers not bound to request or response
+                            message to Java method parameters.</td><td>No. Defaults to false.</td><td><code class="literal">-XadditionalHeaders</code></td></tr><tr><td><code class="literal">xauthfile</code></td><td>File to carry authorization information in
+                            the format
+                            <code class="uri">http://username:password@example.org/stock?wsdl</code>.
+                            The asterisk character ("*") can be used to match
+                            multiple URL patterns.</td><td>No. Defaults to
+                            <code class="filename">$HOME/.metro/auth</code>.</td><td><code class="literal">-Xauthfile</code></td></tr><tr><td><code class="literal">xdebug</code></td><td>Print debug information.</td><td>No. Defaults to false.</td><td><code class="literal">-Xdebug</code></td></tr><tr><td><code class="literal">xdisableAuthenticator</code></td><td>Disables Authenticator used by JAX-WS RI, <code class="literal">-Xauthfile</code> option will be ignored if <code class="literal">-XdisableAuthenticator</code> is set.</td><td>No. Defaults to false.</td><td><code class="literal">-XdisableAuthenticator</code></td></tr><tr><td><code class="literal">xNoAddressingDatabinding</code></td><td>Enable binding of W3C EndpointReferenceType
+                            to Java.</td><td>No. Defaults to false.</td><td><code class="literal">-Xno-addressing-databinding</code></td></tr><tr><td><code class="literal">xnocompile</code></td><td>Do not compile generated Java files.</td><td>No. Defaults to false.</td><td><code class="literal">-Xnocompile</code></td></tr></tbody></table></div></div><div class="section" title="3.2.3.&nbsp;Nested Elements"><div class="titlepage"><div><div><h4 class="title" id="section-5178368839933347">3.2.3.&nbsp;Nested Elements</h4></div></div></div><p><span class="command"><strong>wsimport</strong></span> supports the following nested
+            element parameters.</p><div class="section" title="3.2.3.1.&nbsp;binding"><div class="titlepage"><div><div><h5 class="title" id="section-507914090467712">3.2.3.1.&nbsp;<code class="literal">binding</code></h5></div></div></div><p>To specify more than one external binding file at the
+                same time, use a nested <code class="literal">&lt;binding&gt;</code>
+                element, which has the same syntax as <a class="link" href="http://ant.apache.org/manual/Types/fileset.html" target="_top"><code class="literal">&lt;fileset&gt;</code></a>.</p></div><div class="section" title="3.2.3.2.&nbsp;arg"><div class="titlepage"><div><div><h5 class="title" id="section-147957817602781">3.2.3.2.&nbsp;<code class="literal">arg</code></h5></div></div></div><p>Additional command line arguments passed to the
+                <span class="command"><strong>wsimport</strong></span>. For details about the syntax, see
+                <a class="link" href="http://ant.apache.org/manual/using.html#arg" target="_top">the
+                relevant section</a> in the Ant manual. This nested element
+                can be used to specify various options not natively supported
+                in the <span class="command"><strong>wsimport</strong></span> Ant task. For example,
+                currently there is no native support for the following
+                <span class="command"><strong>wsimport</strong></span> command-line options:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p><code class="code">-XdisableSSLHostnameVerification</code></p></li></ul></div><p>This nested element can be used to pass the
+                <code class="option">-X</code> command-line options directly like
+                "-XadditionalHeaders". To use any of these features from the
+                <span class="command"><strong>wsimport</strong></span> Ant task, you must specify the
+                appropriate nested <code class="literal">&lt;arg&gt;</code>
+                elements.</p></div><div class="section" title="3.2.3.3.&nbsp;xjcarg"><div class="titlepage"><div><div><h5 class="title" id="section-459991967418923">3.2.3.3.&nbsp;<code class="literal">xjcarg</code></h5></div></div></div><p>The usage is similar to <code class="literal">&lt;arg&gt;</code>
+                nested element, except that these arguments are directly
+                passed to the XJC tool (JAXB Schema Compiler), which will be
+                used for compiling the schema referenced in the wsdl. For
+                details about the syntax, see <a class="link" href="http://ant.apache.org/manual/using.html#arg" target="_top">the
+                relevant section</a> in the Ant manual.</p></div><div class="section" title="3.2.3.4.&nbsp;javacarg"><div class="titlepage"><div><div><h5 class="title" id="section-wsimport-ant-javacarg">3.2.3.4.&nbsp;<code class="literal">javacarg</code></h5></div></div></div><p>The usage is similar to <code class="literal">&lt;arg&gt;</code>
+                nested element, except that these arguments are directly passed
+                to the Javac Compiler, which will be used for compiling sources
+                generated during processing the referenced wsdl. For details
+                about the syntax, see <a class="link" href="http://ant.apache.org/manual/using.html#arg" target="_top">the
+                relevant section</a> in the Ant manual.Note: use '=' instead of
+                space as a delimiter between option name and its value.</p></div><div class="section" title="3.2.3.5.&nbsp;jvmarg"><div class="titlepage"><div><div><h5 class="title" id="section-wsimport-ant-jvmarg">3.2.3.5.&nbsp;<code class="literal">jvmarg</code></h5></div></div></div><p>Use nested <code class="literal">&lt;jvmarg&gt;</code> elements to
+                specify arguments for the the forked VM (ignored if fork is
+                disabled), see <a class="link" href="http://ant.apache.org/manual/using.html#arg" target="_top">the
+                relevant section</a> in the Ant manual.</p></div><div class="section" title="3.2.3.6.&nbsp;xmlcatalog"><div class="titlepage"><div><div><h5 class="title" id="section-804917954967609">3.2.3.6.&nbsp;xmlcatalog</h5></div></div></div><p>The <a class="link" href="http://ant.apache.org/manual/Types/xmlcatalog.html" target="_top">xmlcatalog</a>
+                element is used to resolve entities when parsing schema
+                documents.</p></div><div class="section" title="3.2.3.7.&nbsp;depends/produces"><div class="titlepage"><div><div><h5 class="title" id="section-wsimport-ant-depprod">3.2.3.7.&nbsp;<code class="literal">depends</code>/<code class="literal">produces</code></h5></div></div></div><p>Files specified with this nested element are taken into
+                account when the task does a modification date check. For proper
+                syntax, see <a class="link" href="http://ant.apache.org/manual/Types/fileset.html" target="_top"><code class="literal">&lt;fileset&gt;</code></a>.</p></div></div></div><div class="section" title="3.3.&nbsp;wsimport Examples"><div class="titlepage"><div><div><h3 class="title" id="examples">3.3.&nbsp;<span class="command"><strong>wsimport</strong></span> Examples</h3></div></div></div><div class="informalexample"><pre class="programlisting"><span class="ReservedWord">&lt;wsimport</span>
+        <span class="Identifier">destdir</span>=<span class="String">"${build.classes.home}"</span>
+        <span class="Identifier">debug</span>=<span class="String">"true"</span>
+        <span class="Identifier">wsdl</span>=<span class="String">"AddNumbers.wsdl"</span>
+        <span class="Identifier">binding</span>=<span class="String">"custom.xml"</span><span class="ReservedWord">/&gt;</span></pre></div><p>The above example generates client-side artifacts for
+        <code class="filename">AddNumbers.wsdl</code>, stores <code class="literal">.class</code>
+        files in the <code class="literal">${build.classes.home}</code> directory using
+        the <code class="filename">custom.xml</code> customization file. The classpath
+        used is <code class="filename">xyz.jar</code> and compiles with debug
+        information on.</p><div class="informalexample"><pre class="programlisting"><span class="ReservedWord">&lt;wsimport</span>
+        <span class="Identifier">keep</span>=<span class="String">"true"</span>
+        <span class="Identifier">sourcedestdir</span>=<span class="String">"${source.dir}"</span>
+        <span class="Identifier">destdir</span>=<span class="String">"${build.classes.home}"</span>
+        <span class="Identifier">extension</span>=<span class="String">"true"</span>
+        <span class="Identifier">wsdl</span>=<span class="String">"AddNumbers.wsdl"</span><span class="ReservedWord">&gt;</span>
+    <span class="ReservedWord">&lt;xjcarg</span> <span class="Identifier">value</span>=<span class="String">"-cp"</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;xjcarg</span> <span class="Identifier">file</span>=<span class="String">"path/to/fluent-api.jar"</span><span class="ReservedWord"> /&gt;</span>
+    <span class="ReservedWord">&lt;xjcarg</span> <span class="Identifier">value</span>=<span class="String">"-Xfluent-api"</span><span class="ReservedWord">/&gt;</span>
+<span class="ReservedWord">&lt;/wsimport&gt;</span></pre></div><p>The above example shows how to generates artifacts for
+        <code class="literal">AddNumbers.wsdl</code> while passing options to JAXB
+        <span class="command"><strong>xjc</strong></span> tool for XML Schema to Java compilation using
+        your JAXB plugin. Note extension attribute which is set to
+        <code class="literal">true</code>. You need to set this to use JAXB
+        plugins.</p><p>Multiple JAX-WS and JAXB binding files can be specified using
+        <code class="option">-b</code> option and they can be used to customize various
+        things like package names, bean names, etc. More information on JAX-WS
+        and JAXB binding files can be found in the <a class="xref" href="ch03.html#users-guide-wsdl-customization" title="9.&nbsp;WSDL Customization">WSDL Customization</a>.</p></div></div><div lang="en" class="section" title="4.&nbsp;wsgen"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="tools-wsgen">4.&nbsp;<span class="command"><strong>wsgen</strong></span></h2></div></div></div><div class="section" title="4.1.&nbsp;wsgen Overview"><div class="titlepage"><div><div><h3 class="title" id="wsgen-overview">4.1.&nbsp;<span class="command"><strong>wsgen</strong></span> Overview</h3></div></div></div><p>The <span class="command"><strong>wsgen</strong></span> tool generates JAX-WS portable
+        artifacts used in JAX-WS web services. The tool reads a web service
+        endpoint class and generates all the required artifacts for web
+        service deployment, and invocation. JAX-WS RI 2.3.0-SNAPSHOT also
+        provides a <a class="xref" href="ch04.html#tools-wsgen-ant-task" title="5.&nbsp;wsgen Ant Task"><span class="command"><strong>wsgen</strong></span> Ant Task</a>.</p></div><div class="section" title="4.2.&nbsp;Launching wsgen"><div class="titlepage"><div><div><h3 class="title" id="launching-wsgen">4.2.&nbsp;Launching <span class="command"><strong>wsgen</strong></span></h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p><span class="bold"><strong>Solaris/Linux</strong></span>
+                </p><div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem"><pre class="programlisting">JAXWS_HOME/bin/wsgen.sh -help</pre></li></ul></div></li><li class="listitem"><p><span class="bold"><strong>Windows</strong></span> </p><div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem"><pre class="programlisting">JAXWS_HOME\bin\wsgen.bat -help</pre></li></ul></div></li></ul></div></div><div class="section" title="4.3.&nbsp;wsgen Syntax"><div class="titlepage"><div><div><h3 class="title" id="wsgen-syntax">4.3.&nbsp;<span class="command"><strong>wsgen</strong></span> Syntax</h3></div></div></div><div class="cmdsynopsis"><p><code class="command">wsgen</code>   [OPTION]...  &lt;SEI&gt;</p></div><p>The following table lists the <span class="command"><strong>wsgen</strong></span>
+        options:</p><div class="informaltable"><table border="1"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th>Option</th><th>Description</th></tr></thead><tbody><tr><td><code class="literal">-classpath
+                        &lt;path&gt;</code></td><td>Specify where to find input class
+                        files.</td></tr><tr><td><code class="literal">-cp &lt;path&gt;</code></td><td>Same as <code class="literal">-classpath
+                        &lt;path&gt;</code>.</td></tr><tr><td><code class="literal">-d &lt;directory&gt;</code></td><td>Specify where to place generated output
+                        files.</td></tr><tr><td><code class="literal">-extension</code></td><td>Allow vendor extensions (functionality not
+                        specified by the specification). Use of extensions may
+                        result in applications that are not portable or may
+                        not interoperate with other implementations.</td></tr><tr><td><code class="literal">-help</code></td><td>Display help.</td></tr><tr><td><code class="literal">-J&lt;javacOption&gt;</code></td><td>Pass this option to Javac compiler. Note: use '='
+                        instead of space as a delimiter between option name
+                        and its value.</td></tr><tr><td><code class="literal">-keep</code></td><td>Keep generated files.</td></tr><tr><td><code class="literal">-r &lt;directory&gt;</code></td><td>Used only in conjunction with the
+                        -<code class="option">wsdl</code> option. Specify where to place
+                        generated resource files such as WSDLs.</td></tr><tr><td><code class="literal">-s &lt;directory&gt;</code></td><td>Specify where to place generated source
+                        files.</td></tr><tr><td><code class="literal">-encoding
+                        &lt;encoding&gt;</code></td><td>Set the encoding name for generated sources,
+                        such as EUC-JP or UTF-8. If <code class="option">-encoding</code>
+                        is not specified, the platform default encoding is
+                        used.</td></tr><tr><td><code class="literal">-verbose</code></td><td>Output messages about what the compiler is
+                        doing.</td></tr><tr><td><code class="literal">-version</code></td><td>Print version information. Use of this option
+                        will ONLY print version information. Normal processing
+                        will not occur.</td></tr><tr><td><code class="literal">-fullversion</code></td><td>Print full version information. Use of this option
+                            will ONLY print version information. Normal processing
+                            will not occur.</td></tr><tr><td><code class="literal">-wsdl[:protocol]</code></td><td>By default <span class="command"><strong>wsgen</strong></span> does not
+                        generate a WSDL file. This flag is optional and will
+                        cause <span class="command"><strong>wsgen</strong></span> to generate a WSDL file
+                        and is usually only used so that the developer can
+                        look at the WSDL before the endpoint is deploy. The
+                        <code class="literal">protocol</code> is optional and is used to
+                        specify what protocol should be used in the
+                        <code class="literal">wsdl:binding</code>. Valid protocols
+                        include: <code class="literal">soap1.1</code> and
+                        <code class="literal">Xsoap1.2</code>. The default is
+                        <code class="literal">soap1.1</code>.
+                        <code class="literal">Xsoap1.2</code> is not standard and can
+                        only be used in conjunction with the
+                        <code class="option">-extension</code> option.</td></tr><tr><td><code class="literal">-servicename
+                        &lt;name&gt;</code></td><td><p>Used only in conjunction with the
+                        <code class="option">-wsdl</code> option. Used to specify a
+                        particular <code class="literal">wsdl:service</code> name to be
+                        generated in the WSDL. Example:</p><pre class="programlisting">-servicename "{http://mynamespace/}MyService"</pre></td></tr><tr><td><code class="literal">-portname
+                        &lt;name&gt;</code></td><td><p>Used only in conjunction with the
+                        <code class="option">-wsdl</code> option. Used to specify a
+                        particular <code class="literal">wsdl:port</code> name to be
+                        generated in the WSDL. Example:</p><pre class="programlisting">-portname "{http://mynamespace/}MyPort"</pre></td></tr><tr><td><code class="literal">-inlineSchemas</code></td><td>Used to inline schemas in a generated wsdl.
+                        Must be used in conjunction with the
+                        <code class="option">-wsdl</code> option.</td></tr><tr><td><code class="literal">-x &lt;path&gt;</code></td><td>Used to specify <a class="xref" href="ch03.html#users-guide-external-metadata" title="18.&nbsp;External Web Service Metadata">External Web Service Metadata</a>
+                            xml descriptor to be used. If there are more such files,
+                            the option must be used before each of those.
+                        </td></tr><tr><td><code class="literal">-Xnocompile</code></td><td>Do not compile generated Java files.</td></tr></tbody></table></div></div><div class="section" title="4.4.&nbsp;wsgen Example"><div class="titlepage"><div><div><h3 class="title" id="wsgen-example">4.4.&nbsp;<span class="command"><strong>wsgen</strong></span> Example</h3></div></div></div><pre class="programlisting">wsgen -d stock -cp myclasspath stock.StockService</pre><p>This will generate the wrapper classes needed for
+        <code class="literal">StockService</code> annotated with
+        <code class="literal">@WebService</code> annotation inside the <code class="filename">stock</code> directory.</p><pre class="programlisting">wsgen -wsdl -d stock -cp myclasspath stock.StockService</pre><p>This will generate a SOAP 1.1 WSDL and schema for your Java
+        class <code class="literal">stock.StockService</code> annotated with
+        <code class="literal">@WebService</code> annotation.</p><pre class="programlisting">wsgen -wsdl:Xsoap1.2 -d stock -cp myclasspath stock.StockService</pre><p>Will generate a SOAP 1.2 WSDL.</p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>You don't have to generate WSDL at the development time as
+            JAX-WS runtime will automatically generate a WSDL for you when you
+            deploy your service.</p></div></div></div><div lang="en" class="section" title="5.&nbsp;wsgen Ant Task"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="tools-wsgen-ant-task">5.&nbsp;<span class="command"><strong>wsgen</strong></span> Ant Task</h2></div></div></div><div class="section" title="5.1.&nbsp;wsgen Task Overview"><div class="titlepage"><div><div><h3 class="title" id="wsgen-task-overview">5.1.&nbsp;<span class="command"><strong>wsgen</strong></span> Task Overview</h3></div></div></div><p><code class="literal">wsgen</code> generates JAX-WS portable artifacts
+        used in JAX-WS web services. The tool reads a web service endpoint
+        class and generates all the required artifacts for web service
+        deployment, and invocation.</p></div><div class="section" title="5.2.&nbsp;Using wsgen Task"><div class="titlepage"><div><div><h3 class="title" id="using-wsgen-task">5.2.&nbsp;Using <span class="command"><strong>wsgen</strong></span> Task</h3></div></div></div><p>Before this task can be used, a <code class="literal">&lt;taskdef&gt;</code>
+        element needs to be added to the project as given below:</p><div class="informalexample"><pre class="programlisting"><span class="ReservedWord">&lt;taskdef</span> <span class="Identifier">name</span>=<span class="String">"wsgen"</span> <span class="Identifier">classname</span>=<span class="String">"com.sun.tools.ws.ant.WsGen"</span><span class="ReservedWord">&gt;</span>
+    <span class="ReservedWord">&lt;classpath</span> <span class="Identifier">path</span>=<span class="String">"jaxws.classpath"</span><span class="ReservedWord">/&gt;</span>
+<span class="ReservedWord">&lt;/taskdef&gt;</span></pre></div><p>where <code class="literal">jaxws.classpath</code> is a reference to a
+        <a class="link" href="http://ant.apache.org/manual/using.html#path" target="_top">path-like
+        structure</a>, defined elsewhere in the build environment, and
+        contains the list of classes required by the JAX-WS tools.</p><div class="section" title="5.2.1.&nbsp;Environment Variables"><div class="titlepage"><div><div><h4 class="title" id="wsgen-task-envvar">5.2.1.&nbsp;Environment Variables</h4></div></div></div><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p><a class="link" href="http://wiki.apache.org/ant/TheElementsOfAntStyle" target="_top">ANT_OPTS</a>
+                    - command-line arguments that should be passed to the JVM.
+                    For example, you can define system properties or set the
+                    maximum Java heap size here.</p></li></ul></div></div><div class="section" title="5.2.2.&nbsp;wsgen Task Attributes"><div class="titlepage"><div><div><h4 class="title" id="wsgen-task-attributes">5.2.2.&nbsp;<span class="command"><strong>wsgen</strong></span> Task Attributes</h4></div></div></div><p>The attributes and elements supported by the Ant task are listed
+        below:</p><div class="informalexample"><pre class="programlisting"><span class="ReservedWord">&lt;wsgen</span>
+        <span class="Identifier">sei</span>=<span class="String">"..."</span>
+        <span class="Identifier">destdir</span>=<span class="String">"directory for generated class files"</span>
+        <span class="Identifier">classpath</span>=<span class="String">"classpath"</span> <span class="Identifier">|</span> <span class="Identifier">cp</span>=<span class="String">"classpath"</span>
+        <span class="Identifier">resourcedestdir</span>=<span class="String">"directory for generated resource files such as WSDLs"</span>
+        <span class="Identifier">sourcedestdir</span>=<span class="String">"directory for generated source files"</span>
+        <span class="Identifier">keep</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">encoding</span>=<span class="String">"..."</span>
+        <span class="Identifier">verbose</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">genwsdl</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">protocol</span>=<span class="String">"soap1.1|Xsoap1.2"</span>
+        <span class="Identifier">servicename</span>=<span class="String">"..."</span>
+        <span class="Identifier">portname</span>=<span class="String">"..."</span>
+        <span class="Identifier">extension</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">inlineSchemas</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">fork</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">failonerror</span>=<span class="String">"true|false"</span>
+        <span class="Identifier">xnocompile</span>=<span class="String">"true|false"</span><span class="ReservedWord">&gt;</span>
+    <span class="ReservedWord">&lt;classpath</span> <span class="Identifier">refid</span>=<span class="String">"..."</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;externalmetadata</span> <span class="Identifier">file</span>=<span class="String">"..."</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;javacarg</span> <span class="Identifier">value</span>=<span class="String">"..."</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;jvmarg</span> <span class="Identifier">value</span>=<span class="String">"..."</span><span class="ReservedWord">/&gt;</span>
+<span class="ReservedWord">&lt;/wsgen&gt;</span></pre></div><div class="informaltable"><table border="1"><colgroup><col width="25%"><col width="25%"><col width="25%"><col width="25%"></colgroup><thead><tr><th><span class="bold"><strong>Attribute</strong></span></th><th><span class="bold"><strong>Description</strong></span></th><th><span class="bold"><strong>Required</strong></span></th><th><span class="bold"><strong>Command
+                        line</strong></span></th></tr></thead><tbody><tr><td><code class="literal">sei</code></td><td>Name of the service endpoint implementation
+                        class.</td><td>Yes.</td><td>SEI</td></tr><tr><td><code class="literal">destdir</code></td><td>Specify where to place output generated
+                        classes.</td><td>No. Defaults to current working
+                        directory.</td><td><code class="literal">-d</code></td></tr><tr><td><code class="literal">classpath</code></td><td>Specify where to find input class
+                        files.</td><td rowspan="2">One of these or nested
+                        <code class="literal">classpath</code> element.
+                        </td><td><code class="literal">-classpath</code></td></tr><tr><td><code class="literal">cp</code></td><td>Same as <code class="literal">-classpath</code>.</td><td><code class="literal">-cp</code></td></tr><tr><td><code class="literal">resourcedestdir</code></td><td>Used only in conjunction with the -wsdl option.
+                        Specify where to place generated resource files such
+                        as WSDLs.</td><td>No. Defaults to <code class="literal">destDir</code>.</td><td><code class="literal">-r</code></td></tr><tr><td><code class="literal">sourcedestdir</code></td><td>Specify where to place generated source
+                        files.</td><td>No. Defaults to current working
+                            directory.</td><td><code class="literal">-s</code></td></tr><tr><td><code class="literal">encoding</code></td><td>Set the encoding name for generated sources,
+                        such as UTF-8.</td><td>No. Defaults to platform default.</td><td><code class="literal">-encoding</code></td></tr><tr><td><code class="literal">keep</code></td><td>Keep generated files.</td><td>No. Defaults to false.</td><td><code class="literal">-keep</code></td></tr><tr><td><code class="literal">verbose</code></td><td>Output JAX_WS RI version and messages about what the compiler is
+                        doing.</td><td>No. Defaults to false.</td><td><code class="literal">-verbose</code></td></tr><tr><td><code class="literal">genwsdl</code></td><td>Specify that a WSDL file should be
+                        generated.</td><td>No. Defaults to false.</td><td><code class="literal">-wsdl</code></td></tr><tr><td><code class="literal">protocol</code></td><td>Used in conjunction with
+                        <code class="literal">genwsdl</code> to specify the protocol to
+                        use in the <code class="literal">wsdl:binding</code>. Value
+                        values are <code class="literal">"soap1.1"</code> or
+                        <code class="literal">"Xsoap1.2"</code>, default is
+                        <code class="literal">"soap1.1".</code>
+                        <code class="literal">"Xsoap1.2"</code> is not standard and can
+                        only be used in conjunction with the -extensions
+                        option.</td><td>No. Defaults to <code class="literal">-wsdl:soap11</code>.</td><td><code class="literal">-wsdl[:protocol]</code></td></tr><tr><td><code class="literal">servicename</code></td><td><p>Used in conjunction with the genwsdl
+                        option. Used to specify a particular
+                        <code class="literal">wsdl:service</code> name for the generated
+                        WSDL. Example:</p><pre class="programlisting">servicename="{http://mynamespace/}MyService"</pre></td><td>No. No defaults.</td><td><code class="literal">-servicename</code></td></tr><tr><td><code class="literal">portname</code></td><td><p>Used in conjunction with the genwsdl
+                        option. Used to specify a particular
+                        <code class="literal">wsdl:portname</code> name for the
+                        generated WSDL. Example:</p><pre class="programlisting">portname="{http://mynamespace/}MyPort"</pre></td><td>No. No defaults.</td><td><code class="literal">-portname</code></td></tr><tr><td><code class="literal">extension</code></td><td>Allow vendor extensions (functionality not
+                        specified by the specification). Use of extensions may
+                        result in applications that are not portable or may
+                        not interoperate with other implementations.</td><td>No. Defaults to false.</td><td><code class="literal">-extension</code></td></tr><tr><td><code class="literal">inlineSchemas</code></td><td>Used to inline schemas in a generated wsdl.
+                        Must be used in conjunction with the
+                        <code class="literal">wsdl</code> option.</td><td>No. Defaults to false.</td><td><code class="literal">-inlineSchemas</code></td></tr><tr><td><code class="literal">fork</code></td><td>Used to execute wsgen using forked VM.</td><td>No. Defaults to false.</td><td>None.</td></tr><tr><td><code class="literal">failonerror</code></td><td>Indicates whether errors will fail the build.</td><td>No. Defaults to true.</td><td>None.</td></tr><tr><td><code class="literal">xnocompile</code></td><td>Do not compile generated Java files.</td><td>No. Defaults to false.</td><td><code class="literal">-Xnocompile</code></td></tr></tbody></table></div><p>The <code class="literal">classpath</code>/<code class="literal">cp</code> attribute is
+        a <a class="link" href="http://ant.apache.org/manual/using.html#path" target="_top">path-like
+        structure</a> and can also be set via nested
+        <code class="literal">&lt;classpath&gt;</code> elements. </p></div><div class="section" title="5.2.3.&nbsp;Nested Elements"><div class="titlepage"><div><div><h4 class="title" id="section-wsgen-ant-nestedelements">5.2.3.&nbsp;Nested Elements</h4></div></div></div><p><span class="command"><strong>wsgen</strong></span> supports the following nested
+            element parameters.</p><div class="section" title="5.2.3.1.&nbsp;external-metadata"><div class="titlepage"><div><div><h5 class="title" id="section-wsgen-ant-extmetadata">5.2.3.1.&nbsp;<code class="literal">external-metadata</code></h5></div></div></div><p>An optional element <code class="literal">external-metadata</code>
+                can be used if there are any web service metadata to be
+                specified in xml file instead of java annotations: </p><div class="informalexample"><pre class="programlisting"><span class="ReservedWord">&lt;wsgen</span>
+        <span class="Identifier">resourcedestdir</span>=<span class="String">"${wsdl.dir}"</span>
+        <span class="Identifier">sei</span>=<span class="String">"fromjava.server.AddNumbersImpl"</span><span class="ReservedWord">&gt;</span>
+    <span class="ReservedWord">&lt;classpath</span> <span class="Identifier">refid</span>=<span class="String">"compile.classpath"</span><span class="ReservedWord">/&gt;</span>
+    <span class="ReservedWord">&lt;external-metadata</span> <span class="Identifier">file</span>=<span class="String">"metadata-AddNumbersImpl.xml"</span><span class="ReservedWord">/&gt;</span>
+<span class="ReservedWord">&lt;/wsgen&gt;</span></pre></div><p>For details see
+                <a class="xref" href="ch03.html#users-guide-external-metadata" title="18.&nbsp;External Web Service Metadata">External Web Service Metadata</a>.</p></div><div class="section" title="5.2.3.2.&nbsp;javacarg"><div class="titlepage"><div><div><h5 class="title" id="section-wsgen-ant-javacarg">5.2.3.2.&nbsp;<code class="literal">javacarg</code></h5></div></div></div><p>The usage is similar to <code class="literal">&lt;arg&gt;</code>
+                nested element, except that these arguments are directly passed
+                to the Javac Compiler, which will be used for compiling sources
+                generated during processing the referenced wsdl. For details
+                about the syntax, see <a class="link" href="http://ant.apache.org/manual/using.html#arg" target="_top">the
+                relevant section</a> in the Ant manual.
+                Note: use '=' instead of space as a delimiter between
+                option name and its value.</p></div><div class="section" title="5.2.3.3.&nbsp;jvmarg"><div class="titlepage"><div><div><h5 class="title" id="section-wsgen-ant-jvmarg">5.2.3.3.&nbsp;<code class="literal">jvmarg</code></h5></div></div></div><p>Use nested <code class="literal">&lt;jvmarg&gt;</code> elements to
+                specify arguments for the the forked VM (ignored if fork is
+                disabled), see <a class="link" href="http://ant.apache.org/manual/using.html#arg" target="_top">the
+                relevant section</a> in the Ant manual.</p></div></div></div><div class="section" title="5.3.&nbsp;wsgen Task Examples"><div class="titlepage"><div><div><h3 class="title" id="wsgen-task-example">5.3.&nbsp;<span class="command"><strong>wsgen</strong></span> Task Examples</h3></div></div></div><div class="informalexample"><pre class="programlisting"><span class="ReservedWord">&lt;wsgen</span>
+        <span class="Identifier">resourcedestdir</span>=<span class="String">"${wsdl.dir}"</span>
+        <span class="Identifier">sei</span>=<span class="String">"fromjava.server.AddNumbersImpl"</span><span class="ReservedWord">&gt;</span>
+    <span class="ReservedWord">&lt;classpath</span> <span class="Identifier">refid</span>=<span class="String">"compile.classpath"</span><span class="ReservedWord">/&gt;</span>
+<span class="ReservedWord">&lt;/wsgen&gt;</span></pre></div></div></div><div lang="en" class="section" title="6.&nbsp;Annotation Processing"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="tools-annotation-processing">6.&nbsp;<span class="command"><strong>Annotation Processing</strong></span></h2></div></div></div><div class="section" title="6.1.&nbsp;javac annotation processing"><div class="titlepage"><div><div><h3 class="title" id="javac-annotation-processing">6.1.&nbsp;<span class="command"><strong>javac</strong></span> annotation processing</h3></div></div></div><p>As an improvement for the <span class="command"><strong>apt</strong></span> <a class="link" href="http://www.jcp.org/en/jsr/detail?id=269" target="_top">Pluggable Annotation Processing API</a>
+            was introduced in Java SE 6. It provides an API to allow the processing of <a class="link" href="http://www.jcp.org/en/jsr/detail?id=175" target="_top">JSR 175</a> annotations
+            (metadata); this will require modeling elements of the <span class="emphasis"><em>Java</em></span> TM
+            <span class="emphasis"><em>programming language</em></span> as well as processing-specific functionality.
+        </p><p>The <span class="command"><strong>javac</strong></span> generates the portable artifacts
+        used in JAX-WS services.</p></div><div class="section" title="6.2.&nbsp;javac Annotation Processing Syntax"><div class="titlepage"><div><div><h3 class="title" id="javac-annotation-processing-syntax">6.2.&nbsp;<span class="command"><strong>javac</strong></span> Annotation Processing Syntax</h3></div></div></div><div class="cmdsynopsis"><p><code class="command">javac</code>   [JAVAC_OPTION]...   &lt;SOURCE_FILE&gt;... </p></div><p>The following table lists the <span class="command"><strong>javac</strong></span>
+        options useful for annotation processing:</p><div class="informaltable"><table border="1"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th>Option</th><th>Description</th></tr></thead><tbody><tr><td><code class="literal">-classpath &lt;path&gt;</code> </td><td>Specifies where to find user class files and
+                        annotation processor factories.</td></tr><tr><td><code class="literal">-d &lt;path&gt;</code></td><td>Specifies where to place processor generated class files.</td></tr><tr><td><code class="literal">-s &lt;path&gt;</code></td><td>Specifies where to place processor generated source files.</td></tr><tr><td><code class="literal">-source &lt;release&gt;</code></td><td>Provide source compatibility with the specified release.</td></tr><tr><td><code class="literal">-Xprint</code></td><td>Print out textual representation of specified types for debugging purposes; perform neither annotation
+                            processing nor compilation. The format of the output may change.</td></tr><tr><td><code class="literal">-XprintProcessorInfo</code></td><td>Print information about which annotations a processor is asked to process.</td></tr><tr><td><code class="literal">-XprintRounds</code></td><td>Print information about initial and subsequent annotation processing rounds.</td></tr><tr><td><code class="literal">-A[key[=value]]</code></td><td>Options to pass to annotation processors.</td></tr><tr><td><code class="literal">-proc:{none,only}</code></td><td>Control whether annotation processing and/or compilation is done.</td></tr><tr><td><code class="literal">-sourcepath &lt;path&gt;</code> </td><td>Specify where to find input source files.</td></tr><tr><td><code class="literal">-endorseddirs &lt;dirs&gt;</code> </td><td>Override location of endorsed standards path.</td></tr><tr><td><code class="literal">-processor &lt;class1&gt;[,&lt;class2&gt;...]</code></td><td>Names of the annotation processors to run; bypasses default discovery process</td></tr><tr><td><code class="literal">-processorpath &lt;path&gt;</code></td><td>Specify where to find annotation processors</td></tr></tbody></table></div><p>
+            More options and detailed information on <span class="command"><strong>javac</strong></span> can be found <a class="link" href="http://docs.oracle.com/javase/6/docs/technotes/tools/windows/javac.html" target="_top">here</a>.
+        </p><p>It is important when using <span class="command"><strong>javac</strong></span> with JAX-WS to
+        specify all of the JAR files in the distributed JAX-WS bundle in the
+        classpath passed to <span class="command"><strong>javac</strong></span>. As JAX-WS annotation processor you have to specify
+        <code class="literal">com.sun.tools.ws.processor.modeler.annotation.WebServiceAp</code>. The
+        <code class="literal">-sourcepath &lt;path&gt;</code> option must also be provided so that
+        <span class="command"><strong>javac</strong></span> and the JAX-WS annotation processor can find
+        all types referenced by a web service endpoint implementation
+        class. In case you don't have additional annotation processors it's recommended to use
+        <a class="xref" href="ch04.html#tools-annotation-processing-ant-task" title="7.&nbsp;annotationProcessing Ant Task"><span class="command"><strong>annotationProcessing</strong></span> Ant Task</a>.
+        </p></div></div><div lang="en" class="section" title="7.&nbsp;annotationProcessing Ant Task"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="tools-annotation-processing-ant-task">7.&nbsp;<span class="command"><strong>annotationProcessing</strong></span> Ant Task</h2></div></div></div><div class="section" title="7.1.&nbsp;annotationProcessing Task Overview"><div class="titlepage"><div><div><h3 class="title" id="d0e9740">7.1.&nbsp;<span class="command"><strong>annotationProcessing</strong></span> Task Overview</h3></div></div></div><p>An Ant task for the <span class="command"><strong>annotationProcessing</strong></span> is provided with
+        JAX-WS RI 2.3.0-SNAPSHOT.</p></div><div class="section" title="7.2.&nbsp;annotationProcessing Task Attributes"><div class="titlepage"><div><div><h3 class="title" id="d0e9750">7.2.&nbsp;<span class="command"><strong>annotationProcessing</strong></span> Task Attributes</h3></div></div></div><p>The attributes and elements supported by the Ant task almost the same as for the javac ant task.
+            With only one restriction: by default jax-ws annotation processor will be used. There several additional
+            attributes for usability improvement:</p><div class="informaltable"><table border="1"><colgroup><col width="33%"><col width="33%"><col width="34%"></colgroup><thead><tr><th>Attribute</th><th>Description</th><th>Required</th></tr></thead><tbody><tr><td><code class="literal">procOnly</code></td><td>Control whether annotation processing and compilation is done.
+                            Can be <code class="literal">true</code> or <code class="literal">false</code>. Default is <code class="literal">false</code>.</td><td><code class="literal">false</code></td></tr><tr><td><code class="literal">sourcedestdir</code></td><td>Specify where to place processor generated
+                        source files. <code class="literal">-s &lt;path&gt;</code></td><td><code class="literal">true</code></td></tr></tbody></table></div><p>The list of source files to be processed are specified via a
+        nested <code class="literal">&lt;srcdir&gt;</code> element. That is, a <a class="link" href="http://ant.apache.org/manual/using.html#path" target="_top">path-like
+        structure</a>. The classpath attribute is a <a class="link" href="http://ant.apache.org/manual/using.html#path" target="_top">path-like
+        structure</a> and can also be set via nested
+        <code class="literal">&lt;classpath&gt;</code> elements. Before this task can be
+        used, a <code class="literal">&lt;taskdef&gt;</code> element needs to be added
+        to the project as given below:</p><div class="informalexample"><pre class="programlisting"><span class="ReservedWord">&lt;taskdef</span> <span class="Identifier">name</span>=<span class="String">"annotationProcessing"</span>
+        <span class="Identifier">classname</span>=<span class="String">"com.sun.tools.ws.ant.AnnotationProcessingTask"</span><span class="ReservedWord">&gt;</span>
+    <span class="ReservedWord">&lt;classpath</span> <span class="Identifier">refid</span>=<span class="String">"jaxws.classpath"</span><span class="ReservedWord">/&gt;</span>
+<span class="ReservedWord">&lt;/taskdef&gt;</span></pre></div><p>where <code class="literal">jaxws.classpath</code> is a reference to a
+        <a class="link" href="http://ant.apache.org/manual/using.html#path" target="_top">path-like
+        structure</a>, defined elsewhere in the build environment, and
+        contains the list of classes required by the JAX-WS tools.</p></div><div class="section" title="7.3.&nbsp;annotationProcessing Task Examples"><div class="titlepage"><div><div><h3 class="title" id="section-26459256796099617">7.3.&nbsp;<span class="command"><strong>annotationProcessing</strong></span> Task Examples</h3></div></div></div><div class="informalexample"><pre class="programlisting"><span class="ReservedWord">&lt;annotationProcessing</span>
+        <span class="Identifier">destdir</span>=<span class="String">"${build.classes.home}"</span>
+        <span class="Identifier">sourceDestDir</span>=<span class="String">"${build.classes.home}"</span>
+        <span class="Identifier">srcdir</span>=<span class="String">"${basedir}/src"</span>
+        <span class="Identifier">includes</span>=<span class="String">"*.java"</span>
+        <span class="Identifier">sourcepath</span>=<span class="String">"${basedir}/src"</span><span class="ReservedWord">&gt;</span>
+    <span class="ReservedWord">&lt;classpath</span> <span class="Identifier">refid</span>=<span class="String">"jaxws.classpath"</span><span class="ReservedWord">/&gt;</span>
+<span class="ReservedWord">&lt;/annotationProcessing&gt;</span></pre></div><p>The above example processes the Java source files in the
+        <code class="literal">${basedir}/src</code> directory and generates the source
+        and class files in <code class="literal">${build.classes.home}</code>.
+        <code class="literal">${basedir}/src</code> is directory used to search for
+        source files for multiple <span class="command"><strong>annotationProcessing</strong></span> rounds. The classpath
+        is a reference to a <a class="link" href="http://ant.apache.org/manual/using.html#path" target="_top">path-like
+        structure</a> <code class="literal">jaxws.classpath</code>, defined elsewhere
+        in the build environment.</p><div class="informalexample"><pre class="programlisting"><span class="ReservedWord">&lt;annotationProcessing</span>
+        <span class="Identifier">debug</span>=<span class="String">"true"</span>
+        <span class="Identifier">verbose</span>=<span class="String">"true"</span>
+        <span class="Identifier">destdir</span>=<span class="String">"${build.classes.home}"</span>
+        <span class="Identifier">srcdir</span>=<span class="String">"${basedir}/src"</span><span class="Identifier">"</span>
+        <span class="Identifier">includes</span>=<span class="String">"**/server/*.java"</span>
+        <span class="Identifier">sourceDestDir</span>=<span class="String">"${build.classes.home}"</span>
+        <span class="Identifier">sourcepath</span>=<span class="String">"${basedir}/src"</span><span class="ReservedWord">&gt;</span>
+    <span class="ReservedWord">&lt;classpath</span> <span class="Identifier">refid</span>=<span class="String">"jaxws.classpath"</span><span class="ReservedWord">/&gt;</span>
+<span class="ReservedWord">&lt;/annotationProcessing&gt;</span></pre></div><p>The above example processes the Java source files in
+        <code class="literal">${basedir}/src/**/server</code>, generates the source and
+        class files in <code class="literal">${build.classes.home}</code>, compiles with
+        debug information on, prints a message about what the compiler is
+        doing. <code class="literal">${basedir}/src</code> is the
+        directory used to search for source files for multiple
+        <span class="command"><strong>annotationProcessing</strong></span> rounds. The classpath is a reference to a <a class="link" href="http://ant.apache.org/manual/using.html#path" target="_top">path-like
+        structure</a> <code class="literal">jaxws.classpath</code>, defined elsewhere
+        in the build environment. This will also fork off the
+        <span class="command"><strong>annotationProcessing</strong></span> process using the default
+        <code class="literal">java</code> executable.</p></div><div class="section" title="7.4.&nbsp;Apt Ant task"><div class="titlepage"><div><div><h3 class="title" id="deprecated-apt">7.4.&nbsp;<span class="command"><strong>Apt</strong></span> Ant task</h3></div></div></div><p>
+            For backwards compatibility <span class="command"><strong>Apt</strong></span> Ant task still exists, but is marked as deprecated,
+            and can be used with certain restrictions.
+        </p></div></div><div lang="en" class="section" title="8.&nbsp;apt"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="tools-apt">8.&nbsp;<span class="command"><strong>apt</strong></span></h2></div></div></div><p>The <span class="command"><strong>apt</strong></span> tool provided a facility for
+        programmatically processing the annotations added to Java by <a class="link" href="http://www.jcp.org/en/jsr/detail?id=175" target="_top">JSR 175</a>,
+        <span class="emphasis"><em>Metadata Facility for the Java</em></span> TM
+        <span class="emphasis"><em>Programming Language</em></span>. In brief, JSR 175 allows
+        programmers to declare new kinds of structured modifiers that can be
+        associated with program elements, fields, methods, classes,
+        etc.</p><p>The <span class="command"><strong>javac</strong></span> completely replaced functionality
+        provided by <span class="command"><strong>apt</strong></span>. It was done within implementation of <a class="link" href="http://www.jcp.org/en/jsr/detail?id=269" target="_top">JSR 269</a>,
+        <span class="emphasis"><em>Pluggable Annotation Processing API</em></span>.
+        So it's expected programmers to use <span class="command"><strong>javac</strong></span> instead of
+        <span class="command"><strong>apt</strong></span>.</p><p>Using <span class="command"><strong>javac</strong></span> with JAX-WS annotation processor
+        will generate portable artifacts used in JAX-WS services.</p><p>
+            Be aware that the <span class="command"><strong>apt</strong></span> tool and its associated API,
+            <span class="command"><strong>com.sun.mirror.\*</strong></span>, are being deprecated in JDK 7.
+        </p><p>For more information on this compiler please see <a class="xref" href="ch04.html#tools-annotation-processing" title="6.&nbsp;Annotation Processing"><span class="command"><strong>Annotation Processing</strong></span></a>.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch03.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Users Guide&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;FAQ</td></tr></table></div></body></html>

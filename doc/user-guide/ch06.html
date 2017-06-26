@@ -1,0 +1,46 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Extensions</title><link rel="stylesheet" href="style/documentation.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.75.2"><link rel="home" href="index.html" title="JAX-WS Release Documentation"><link rel="up" href="index.html" title="JAX-WS Release Documentation"><link rel="prev" href="ch05.html" title="FAQ"><link rel="next" href="ch07.html" title="Samples"><script xmlns:fo="http://www.w3.org/1999/XSL/Format" type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-2105126-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Extensions</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch05.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch07.html">Next</a></td></tr></table><hr></div><small xmlns:fo="http://www.w3.org/1999/XSL/Format" class="small">Links: <a href="index.html">Table of Contents</a> | <a href="release-documentation.html">Single HTML</a> | <a href="release-documentation.pdf">Single PDF</a></small><div lang="en" class="chapter" title="Extensions" id="jax-ws-ri-extensions"><div class="titlepage"><div><div><h2 class="title">Extensions</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="section"><a href="ch06.html#sending-and-receiving-soap-headers">1. Sending and Receiving SOAP Headers</a></span></dt><dd><dl><dt><span class="section"><a href="ch06.html#sending-soap-headers">1.1. Sending SOAP Headers</a></span></dt><dt><span class="section"><a href="ch06.html#receiving-soap-headers">1.2. Receiving SOAP Headers</a></span></dt></dl></dd><dt><span class="section"><a href="ch06.html#message-logging">2. Message logging</a></span></dt><dd><dl><dt><span class="section"><a href="ch06.html#on-the-client">2.1. On the client</a></span></dt><dt><span class="section"><a href="ch06.html#on-the-server-side">2.2. On the server side</a></span></dt></dl></dd><dt><span class="section"><a href="ch06.html#propagation-of-server-side-stacktrace">3. Propagation of Server-side Stacktrace</a></span></dt><dd><dl><dt><span class="section"><a href="ch06.html#enabling-propagation-of-server-side-stacktrace">3.1. Enabling propagation of Server-side stacktrace</a></span></dt></dl></dd></dl></div><p>This page contains information about JAX-WS RI 2.3.0-SNAPSHOT specific
+    features and extensions:</p><div class="section" title="1.&nbsp;Sending and Receiving SOAP Headers"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="sending-and-receiving-soap-headers">1.&nbsp;Sending and Receiving SOAP Headers</h2></div></div></div><p>At times you need a way to send and receive SOAP headers in your
+        message - these headers may not be defined in the WSDL binding but
+        your application needs to do it anyway. One approach has been to write
+        a <code class="literal">SOAPHandler</code> to do it, but its more work and is
+        expensive as <code class="literal">SOAPHandlers</code> work on
+        <code class="literal">SOAPMesssage</code> which is DOM based and JAX-WS runtime
+        would need to do conversion from its abstract
+        <code class="literal">Message</code> representation to
+        <code class="literal">SOAPMessage</code> and vice versa.</p><p>There is a way to do it on the client side by downcasting the
+        proxy to <code class="literal">WSBindingProvider</code> and use methods on
+        it.</p><div class="section" title="1.1.&nbsp;Sending SOAP Headers"><div class="titlepage"><div><div><h3 class="title" id="sending-soap-headers">1.1.&nbsp;Sending SOAP Headers</h3></div></div></div><p>You would downcasting the proxy to
+            <code class="literal">WSBindingProvider</code> and set the
+            <code class="literal">Outbound</code> headers.</p><div class="informalexample"><pre class="programlisting">HelloService helloService = <span class="ReservedWord">new</span> HelloService();
+HelloPort port = helloService.getHelloPort();
+WSBindingProvider bp = (WSBindingProvider) port;
+
+bp.setOutboundHeaders(
+        <span class="Comment">// simple string value as a header, like stringValue</span>
+        Headers.create(<span class="ReservedWord">new</span> QName(<span class="String">"simpleHeader"</span>), <span class="String">"stringValue"</span>),
+        <span class="Comment">// create a header from JAXB object</span>
+        Headers.create(jaxbContext, myJaxbObject));</pre></div></div><div class="section" title="1.2.&nbsp;Receiving SOAP Headers"><div class="titlepage"><div><div><h3 class="title" id="receiving-soap-headers">1.2.&nbsp;Receiving SOAP Headers</h3></div></div></div><div class="informalexample"><pre class="programlisting">List&lt;Header&gt; inboundHeaders = bp.getInboundHeaders();</pre></div></div></div><div class="section" title="2.&nbsp;Message logging"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="message-logging">2.&nbsp;Message logging</h2></div></div></div><p>Web Services developers generally need to see SOAP Messages that
+        are transferred between client and service for debugging. There are
+        SOAP Monitors for this job, but you need modify the client or server
+        code to use those tools. JAX-WS RI provides logging
+        of SOAP messages</p><div class="section" title="2.1.&nbsp;On the client"><div class="titlepage"><div><div><h3 class="title" id="on-the-client">2.1.&nbsp;On the client</h3></div></div></div><p>Set system property</p><div class="informalexample"><pre class="programlisting">com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=true</pre></div></div><div class="section" title="2.2.&nbsp;On the server side"><div class="titlepage"><div><div><h3 class="title" id="on-the-server-side">2.2.&nbsp;On the server side</h3></div></div></div><p>Set system property</p><div class="informalexample"><pre class="programlisting">com.sun.xml.ws.transport.http.HttpAdapter.dump=true</pre></div></div></div><div class="section" title="3.&nbsp;Propagation of Server-side Stacktrace"><div class="titlepage"><div><div><h2 class="title" style="clear: both" id="propagation-of-server-side-stacktrace">3.&nbsp;Propagation of Server-side Stacktrace</h2></div></div></div><p>This is a very useful feature while developing Web Services.
+        Often the soap fault messages for not user defined faults does not
+        convey enough information about the problem. JAX-WS RI
+        relieves you from digging out the server logs to find out the stacktrace.
+        Whole stacktrace (including nested exceptions) can be propagated in the
+        SOAP Fault and the complete exception stacktrace can be made visible to
+        the client as cause of <code class="literal">SOAPFaultException</code>.</p><div class="section" title="3.1.&nbsp;Enabling propagation of Server-side stacktrace"><div class="titlepage"><div><div><h3 class="title" id="enabling-propagation-of-server-side-stacktrace">3.1.&nbsp;Enabling propagation of Server-side stacktrace</h3></div></div></div><p>Propagation of Stack trace is off by default. To turn it on
+            for your Web Service Application to send the complete stack trace,
+            set the system property</p><div class="informalexample"><pre class="programlisting">com.sun.xml.ws.fault.SOAPFaultBuilder.captureStackTrace=true</pre></div></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch05.html">Prev</a>&nbsp;</td><td width="20%" align="center">&nbsp;</td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">FAQ&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Samples</td></tr></table></div></body></html>
