@@ -87,14 +87,15 @@ public class ServerMUTube extends MUTube {
      */
     @Override
     public NextAction processRequest(Packet request) {
-         Set<QName> misUnderstoodHeaders=null;
-     	 lock.lock();
-         try{
-             misUnderstoodHeaders = getMisUnderstoodHeaders(request.getMessage().getHeaders(),roles, handlerKnownHeaders);
- 		 }finally{
-         	 lock.unlock();
-          }
-         if((misUnderstoodHeaders == null)  || misUnderstoodHeaders.isEmpty()) {
+        Set<QName> misUnderstoodHeaders=null;
+     	lock.lock();
+        try{
+            misUnderstoodHeaders = getMisUnderstoodHeaders(request.getMessage().getHeaders(),roles, handlerKnownHeaders);
+ 	}
+        finally{
+            lock.unlock();
+        }
+        if((misUnderstoodHeaders == null)  || misUnderstoodHeaders.isEmpty()) {
             return doInvoke(super.next, request);
         }
         return doReturnWith(request.createServerResponse(createMUSOAPFaultMessage(misUnderstoodHeaders),
