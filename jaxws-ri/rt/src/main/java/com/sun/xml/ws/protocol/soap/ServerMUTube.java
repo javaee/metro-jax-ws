@@ -45,6 +45,8 @@ import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.client.HandlerConfiguration;
 import javax.xml.namespace.QName;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Rama Pulavarthi
@@ -55,6 +57,7 @@ public class ServerMUTube extends MUTube {
     private ServerTubeAssemblerContext tubeContext;
     private final Set<String> roles;
     private final Set<QName> handlerKnownHeaders;
+    private final Lock lock = new ReentrantLock();
 
     public ServerMUTube(ServerTubeAssemblerContext tubeContext, Tube next) {
         super(tubeContext.getEndpoint().getBinding(), next);
@@ -84,7 +87,14 @@ public class ServerMUTube extends MUTube {
      */
     @Override
     public NextAction processRequest(Packet request) {
-        Set<QName> misUnderstoodHeaders = getMisUnderstoodHeaders(request.getMessage().getHeaders(),roles, handlerKnownHeaders);
+        Set<QName> misUnderstoodHeaders=null;
+     	lock.lock();
+        try{
+            misUnderstoodHeaders = getMisUnderstoodHeaders(request.getMessage().getHeaders(),roles, handlerKnownHeaders);
+ 	}
+        finally{
+            lock.unlock();
+        }
         if((misUnderstoodHeaders == null)  || misUnderstoodHeaders.isEmpty()) {
             return doInvoke(super.next, request);
         }
