@@ -91,8 +91,7 @@ public class ServerMUTube extends MUTube {
      	lock.lock();
         try{
             misUnderstoodHeaders = getMisUnderstoodHeaders(request.getMessage().getHeaders(),roles, handlerKnownHeaders);
- 	}
-        finally{
+ 	} finally {
             lock.unlock();
         }
         if((misUnderstoodHeaders == null)  || misUnderstoodHeaders.isEmpty()) {
@@ -107,3 +106,4 @@ public class ServerMUTube extends MUTube {
     }
 
 }
+
