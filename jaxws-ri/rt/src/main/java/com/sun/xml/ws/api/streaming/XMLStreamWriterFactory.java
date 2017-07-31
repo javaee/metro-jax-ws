@@ -1,19 +1,19 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * http://glassfish.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * https://oss.oracle.com/licenses/CDDL+GPL-1.1
+ * or LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
+ * file and include the License file at LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -45,6 +45,7 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.encoding.HasEncoding;
 import com.sun.xml.ws.encoding.SOAPBindingCodec;
 import com.sun.xml.ws.streaming.XMLReaderException;
+import com.sun.xml.ws.util.MrJarUtil;
 import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -100,7 +101,7 @@ public abstract class XMLStreamWriterFactory {
 
             // this system property can be used to disable the pooling altogether,
             // in case someone hits an issue with pooling in the production system.
-            if (!Boolean.getBoolean(XMLStreamWriterFactory.class.getName()+".noPool")) {
+            if (!MrJarUtil.getNoPoolProperty(XMLStreamWriterFactory.class.getName())) {
                 try {
                     Class<?> clazz = xof.createXMLStreamWriter(new StringWriter()).getClass();
                     if (clazz.getName().startsWith("com.sun.xml.stream.")) {

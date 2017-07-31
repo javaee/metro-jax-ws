@@ -1,45 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
 
-The contents of this file are subject to the terms of either the GNU
-General Public License Version 2 only ("GPL") or the Common Development
-and Distribution License("CDDL") (collectively, the "License").  You
-may not use this file except in compliance with the License.  You can
-obtain a copy of the License at
-http://glassfish.java.net/public/CDDL+GPL_1_1.html
-or packager/legal/LICENSE.txt.  See the License for the specific
-language governing permissions and limitations under the License.
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
 
-When distributing the software, include this License Header Notice in each
-file and include the License file at packager/legal/LICENSE.txt.
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
 
-GPL Classpath Exception:
-Oracle designates this particular file as subject to the "Classpath"
-exception as provided by Oracle in the GPL Version 2 section of the License
-file that accompanied this code.
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
 
-Modifications:
-If applicable, add the following below the License Header, with the fields
-enclosed by brackets [] replaced by your own identifying information:
-"Portions Copyright [year] [name of copyright owner]"
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
 
-Contributor(s):
-If you wish your version of this file to be governed by only the CDDL or
-only the GPL Version 2, indicate your decision by adding "[Contributor]
-elects to include this software in this distribution under the [CDDL or GPL
-Version 2] license."  If you don't indicate a single choice of license, a
-recipient has the option to distribute your version of this file under
-either the CDDL, the GPL Version 2 or to extend the choice of license to
-its licensees as provided above.  However, if you add GPL Version 2 code
-and therefore, elected the GPL Version 2 license, then the option applies
-only if the new code is made subject to such option by the copyright
-holder.
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
 
-        -->
+-->
+
 <!DOCTYPE book [
 <!ENTITY % ents SYSTEM "docbook.ent">
 %ents;
@@ -61,7 +62,7 @@ holder.
                     <para>See <xref linkend="users-guide-external-metadata"/> for more information on External metadata support.</para>
                 </listitem>
                 <listitem>
-                    <para>JAXB version updated to 2.2.7, for changes see <link xlink:href="https://jaxb.java.net/2.2.7/docs/ch02.html#a-2-2-7">JAXB Changelog</link></para>
+                    <para>JAXB version updated to 2.2.7, for changes see <link xlink:href="https://javaee.github.io/jaxb-v2/doc/user-guide/ch02.html#a-2-2-7">JAXB Changelog</link></para>
                 </listitem>
                 <programlisting language="xml">
 ** Bug
@@ -103,20 +104,20 @@ holder.
             <itemizedlist>
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-871">Add
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/871">Add
                     -clientjar option for <command>wsimport</command></link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-872">Add
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/872">Add
                     support for Async Servlet Transport using Servlet 3.0
                     api</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10113">Bug
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues?q=is%3Aissue+milestone%3A2.2.2+is%3Aclosed">Bug
                     fixes</link></para>
                 </listitem>           
            </itemizedlist>
@@ -128,20 +129,20 @@ holder.
             <itemizedlist>
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-85">wsgen
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/85">wsgen
                     can inline schemas in a generated wsdl using a
                     switch</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-777">Schema
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/777">Schema
                     Validation support is enhanced</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10129">Bug
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.2">Bug
                     fixes</link></para>
                 </listitem>
             </itemizedlist>
@@ -176,21 +177,21 @@ holder.
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-818">Generate
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/818">Generate
                     new constructors in the generated Service class(service level
                     features, wsdllocation)</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-726">Add
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/726">Add
                     support for customizing wrapper <literal>wsdl:part</literal>
                     names as defined in 2.2</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-727">Add
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/727">Add
                     support for customizing <literal>wsdl:message</literal> name
                     using <literal>@WebFault</literal> as defined in
                     2.2</link></para>
@@ -198,54 +199,54 @@ holder.
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-728">Fault
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/728">Fault
                     customization should accept fully qualified name of the
                     exception class to be generated</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-729">Customization
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/729">Customization
                     of Service should accept fully qualified class
                     name</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-360">Add
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/360">Add
                     Xnocompile option for <command>wsgen</command> similar to <command>wsimport</command></link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-576">XPath
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/576">XPath
                     expressions in jax-ws customization can now select multiple
                     nodes</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-761">Disable
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/761">Disable
                     server-side exception stacktrace for service specific
                     exceptions</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-648">Optimzation
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/648">Optimzation
                     of LogicalMessage implementation</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="http://java.net/jira/browse/JAX_WS-305">wsimport
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues/305">wsimport
                     now handles URL redirection of imported wsdls
                     correctly</link></para>
                 </listitem>
 
                 <listitem>
                     <para><link
-                    xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10111">Bug
+                    xlink:href="https://github.com/javaee/metro-jax-ws/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.1.7">Bug
                     fixes</link></para>
                 </listitem>
             </itemizedlist>
@@ -257,7 +258,7 @@ holder.
         <itemizedlist>
             <listitem>
                 <para><link
-                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10109">Bug
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.1.6">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -269,14 +270,14 @@ holder.
         <itemizedlist>
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-741">Supportfor
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/741">Supportfor
                 transport attribute for bindings like SOAP/JMS
                 binding</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10108">Bug
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.1.5">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -288,35 +289,35 @@ holder.
         <itemizedlist>
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-607">Allowing
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/607">Allowing
                 HTTP response code to be set via MessageContext
                 property</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-2822">New
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/2822">New
                 feature: UsesJAXBContextFeature, to control JAXBContext
                 creation</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-289">New
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/289">New
                 <command>wsimport</command> option: -XdisableSSLHostnameVerfication, to disable
                 SSL Hostname verification</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-490">Wsimport
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/490">Wsimport
                 ant task accepts nested args for specifying additional
                 options</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10107">Bug
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.1.4">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -327,10 +328,9 @@ holder.
 
         <itemizedlist>
             <listitem>
-                <para><link
-                xlink:href="https://www.java.net/blog/jitu/archive/2008/03/alternative_to.html">Simplified
+                <para>Simplified
                 "Starting from Java Programming model" through dynamic
-                generation of request and response wrappers</link></para>
+                generation of request and response wrappers</para>
             </listitem>
 
             <listitem>
@@ -340,7 +340,7 @@ holder.
 
             <listitem>
                 <para><link
-                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10106">Bug
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.1.3">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -352,25 +352,25 @@ holder.
         <itemizedlist>
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-231">Authentication
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/231">Authentication
                 support in <command>wsimport</command></link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-263">Additional
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/263">Additional
                 header support</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-29">Large
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/29">Large
                 and Streaming attachment support</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-239">XML
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/239">XML
                 Schema validation support for SOAP message</link></para>
             </listitem>
 
@@ -382,38 +382,38 @@ holder.
 
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-437">Additional
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/437">Additional
                 WSDL object methods for policy</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-456">Wsimport
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/456">Wsimport
                 should be able to handle redirects and see
                 Others</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-54">Remove
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/54">Remove
                 SJSXP and SAAJ RI dependency</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-387">Wsimport
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/387">Wsimport
                 should write to passed OutputStream</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="http://java.net/jira/browse/JAX_WS-482">Efficient
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues/482">Efficient
                 Handler using Handler&lt;Message&gt; support</link></para>
             </listitem>
 
             <listitem>
                 <para><link
-                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10127">Bug
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.1.2">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -433,7 +433,7 @@ holder.
 
             <listitem>
                 <para><link
-                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10105">Bug
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.1.1">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>
@@ -488,7 +488,7 @@ holder.
 
             <listitem>
                 <para><link
-                xlink:href="https://java.net/jira/browse/JAX_WS/fixforversion/10125">Bug
+                xlink:href="https://github.com/javaee/metro-jax-ws/issues?q=is%3Aissue+is%3Aclosed+milestone%3A2.1">Bug
                 fixes</link></para>
             </listitem>
         </itemizedlist>

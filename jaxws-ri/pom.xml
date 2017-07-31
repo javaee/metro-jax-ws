@@ -10,12 +10,12 @@
     and Distribution License("CDDL") (collectively, the "License").  You
     may not use this file except in compliance with the License.  You can
     obtain a copy of the License at
-    http://glassfish.java.net/public/CDDL+GPL_1_1.html
-    or packager/legal/LICENSE.txt.  See the License for the specific
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
     language governing permissions and limitations under the License.
 
     When distributing the software, include this License Header Notice in each
-    file and include the License file at packager/legal/LICENSE.txt.
+    file and include the License file at LICENSE.txt.
 
     GPL Classpath Exception:
     Oracle designates this particular file as subject to the "Classpath"
@@ -60,26 +60,23 @@
     <description>Open source Reference Implementation of JSR-224: Java API for XML Web Services</description>
 
     <issueManagement>
-        <system>jira</system>
-        <url>http://java.net/jira/browse/JAX_WS</url>
+        <system>IssueTracker</system>
+        <url>https://github.com/javaee/metro-jax-ws/issues</url>
     </issueManagement>
 
     <scm>
-        <connection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</connection>
-        <developerConnection>scm:git:git@orahub.oraclecorp.com:fmw-infra-metro/jaxws-ri.git/</developerConnection>
-        <url>http://java.net/projects/jax-ws/sources/sources/show/branches/jaxws22/jaxws-ri/boms/bom</url>
+        <connection>scm:git:git@github.com:javaee/metro-jax-ws.git</connection>
+        <developerConnection>scm:git:git@github.com:javaee/metro-jax-ws.git</developerConnection>
+        <url>https://github.com/javaee/metro-jax-ws</url>
+        <tag>HEAD</tag>
     </scm>
 
     <mailingLists>
         <mailingList>
-            <name>JAX-WS RI Users List</name>
-            <post>users@jax-ws.java.net</post>
-            <archive>http://java.net/projects/jax-ws/lists/users/archive</archive>
-        </mailingList>
-        <mailingList>
-            <name>JAX-WS Implementation Dev List</name>
-            <post>dev@jax-ws.java.net</post>
-            <archive>http://java.net/projects/jax-ws/lists/dev/archive</archive>
+            <name>Metro mailing list</name>
+            <subscribe>metro+subscribe@javaee.groups.io</subscribe>
+            <post>metro@javaee.groups.io</post>
+            <archive>https://javaee.groups.io/g/metro/topics</archive>
         </mailingList>
     </mailingLists>
 
@@ -475,10 +472,11 @@
                 <plugin>
                     <groupId>org.glassfish.copyright</groupId>
                     <artifactId>glassfish-copyright-maven-plugin</artifactId>
-                    <version>1.29</version>
+                    <version>1.42</version>
                     <configuration>
                         <templateFile>src/main/resources/copyright.txt</templateFile>
                         <excludeFile>src/main/resources/copyright-exclude</excludeFile>
+                        <scm>git</scm>
                         <!-- skip files not under SCM-->
                         <scmOnly>true</scmOnly>
                         <!-- turn off warnings -->

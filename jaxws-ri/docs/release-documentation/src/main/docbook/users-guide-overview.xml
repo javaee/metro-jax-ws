@@ -1,45 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
 
-The contents of this file are subject to the terms of either the GNU
-General Public License Version 2 only ("GPL") or the Common Development
-and Distribution License("CDDL") (collectively, the "License").  You
-may not use this file except in compliance with the License.  You can
-obtain a copy of the License at
-http://glassfish.java.net/public/CDDL+GPL_1_1.html
-or packager/legal/LICENSE.txt.  See the License for the specific
-language governing permissions and limitations under the License.
+    The contents of this file are subject to the terms of either the GNU
+    General Public License Version 2 only ("GPL") or the Common Development
+    and Distribution License("CDDL") (collectively, the "License").  You
+    may not use this file except in compliance with the License.  You can
+    obtain a copy of the License at
+    https://oss.oracle.com/licenses/CDDL+GPL-1.1
+    or LICENSE.txt.  See the License for the specific
+    language governing permissions and limitations under the License.
 
-When distributing the software, include this License Header Notice in each
-file and include the License file at packager/legal/LICENSE.txt.
+    When distributing the software, include this License Header Notice in each
+    file and include the License file at LICENSE.txt.
 
-GPL Classpath Exception:
-Oracle designates this particular file as subject to the "Classpath"
-exception as provided by Oracle in the GPL Version 2 section of the License
-file that accompanied this code.
+    GPL Classpath Exception:
+    Oracle designates this particular file as subject to the "Classpath"
+    exception as provided by Oracle in the GPL Version 2 section of the License
+    file that accompanied this code.
 
-Modifications:
-If applicable, add the following below the License Header, with the fields
-enclosed by brackets [] replaced by your own identifying information:
-"Portions Copyright [year] [name of copyright owner]"
+    Modifications:
+    If applicable, add the following below the License Header, with the fields
+    enclosed by brackets [] replaced by your own identifying information:
+    "Portions Copyright [year] [name of copyright owner]"
 
-Contributor(s):
-If you wish your version of this file to be governed by only the CDDL or
-only the GPL Version 2, indicate your decision by adding "[Contributor]
-elects to include this software in this distribution under the [CDDL or GPL
-Version 2] license."  If you don't indicate a single choice of license, a
-recipient has the option to distribute your version of this file under
-either the CDDL, the GPL Version 2 or to extend the choice of license to
-its licensees as provided above.  However, if you add GPL Version 2 code
-and therefore, elected the GPL Version 2 license, then the option applies
-only if the new code is made subject to such option by the copyright
-holder.
+    Contributor(s):
+    If you wish your version of this file to be governed by only the CDDL or
+    only the GPL Version 2, indicate your decision by adding "[Contributor]
+    elects to include this software in this distribution under the [CDDL or GPL
+    Version 2] license."  If you don't indicate a single choice of license, a
+    recipient has the option to distribute your version of this file under
+    either the CDDL, the GPL Version 2 or to extend the choice of license to
+    its licensees as provided above.  However, if you add GPL Version 2 code
+    and therefore, elected the GPL Version 2 license, then the option applies
+    only if the new code is made subject to such option by the copyright
+    holder.
 
-        -->
+-->
+
 <!DOCTYPE book [
 <!ENTITY % ents SYSTEM "docbook.ent">
 %ents;
@@ -83,7 +84,7 @@ holder.
         use the standard Java EE 5 deployment descriptor; please refer to the
         <link xlink:href="http://java.sun.com/javaee/index.jsp">Java EE
         5</link> or <link
-        xlink:href="http://glassfish.java.net/">Glassfish</link>
+        xlink:href="https://javaee.github.io/glassfish/">Glassfish</link>
         documentation/samples. The majority of the documentation included with
         JAX-WS is valid with Java EE 5 as well.</para>
     </section>
@@ -1111,10 +1112,9 @@ int result = port.addNumbers(10, 20);]]></programlisting>
         http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html.</para>
 
         <para>Please use the <link
-        xlink:href="http://forums.java.net/jive/forum.jspa?forumID=46&amp;start=0">JAXB
-        and JAX-WS</link> forum for feedback.</para>
+        xlink:href="https://javaee.groups.io/g/metro">METRO</link> forum for feedback.</para>
 
-        <para>The JAX-WS project on Java.net is: <link
-        xlink:href="http://jax-ws.java.net/">http://jax-ws.java.net</link>.</para>
+        <para>The JAX-WS project on GitHub is: <link
+        xlink:href="https://github.com/javaee/metro-jax-ws">https://github.com/javaee/metro-jax-ws</link>.</para>
     </section>
 </section>
