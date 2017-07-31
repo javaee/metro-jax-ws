@@ -1,0 +1,25 @@
+<?xml version="1.0"  encoding="ISO-8859-1" ?>
+<!DOCTYPE definitions [
+        <!ELEMENT definitions ANY>
+        <!ENTITY ha "HA!">
+        <!ENTITY ha1 "&ha; &ha;">
+        <!ENTITY ha2 "&ha1; &ha1;">
+        <!ENTITY ha3 "&ha2; &ha2;">
+        <!ENTITY ha4 "&ha3; &ha3;">
+        <!ENTITY ha5 "&ha4; &ha4;">
+        <!ENTITY ha6 "&ha5; &ha5;">
+        <!ENTITY ha7 "&ha6; &ha6;">
+        <!ENTITY ha8 "&ha7; &ha7;">
+        <!ENTITY ha9 "&ha8; &ha8;">
+        <!ENTITY ha10 "&ha9; &ha9;">
+        <!ENTITY ha11 "&ha10; &ha10;">
+        <!ENTITY ha12 "&ha11; &ha11;">
+        <!ENTITY ha13 "&ha12; &ha12;">
+        <!ENTITY ha14 "&ha13; &ha13;">
+        <!ENTITY ha15 "&ha14; &ha14;">
+        <!ENTITY ha16 "&ha15; &ha15;">
+        ]>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/">
+    &ha16;
+</definitions>
+

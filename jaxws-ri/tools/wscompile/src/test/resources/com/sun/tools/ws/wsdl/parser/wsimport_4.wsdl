@@ -1,0 +1,9 @@
+<?xml version="1.0"  encoding="ISO-8859-1" ?>
+<!DOCTYPE definitions[
+  <!ELEMENT definitions ANY >
+  <!ENTITY foo "&bar;">
+  <!ENTITY bar "&foo;">
+  ]>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/">
+  &foo;
+</definitions>
