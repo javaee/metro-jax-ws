@@ -133,15 +133,10 @@ public class WsGenTaskTest extends WsAntTaskTestBase {
             return;
         }
         copy(srcDir, "module-info.java", WsGenTaskTest.class.getResourceAsStream("resources/module-info-ws.java_"));
-        File ws = createFile(pkg, "ws");
+        File ws = new File(pkg, "ws");
+        ws.mkdirs();
         copy(ws, "TestWs2.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs2.java_"));
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-addmodules"));
-    }
-
-    private File createFile(File file, String path){
-        File subFile = new File(file, path);
-        subFile.mkdirs();
-        return subFile;
     }
 
     public void testJavac() throws IOException, URISyntaxException {
