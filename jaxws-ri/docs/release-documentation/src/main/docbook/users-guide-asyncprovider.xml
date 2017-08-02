@@ -105,6 +105,10 @@ public class AsyncProviderImpl implements AsyncProvider<Source> {
         <para>See another <literal>samples/asyncservice/Readme.txt"</literal> sample that
         illustrates <literal>AsyncProvider</literal> endpoint that uses
         asynchronous servlet as the transport to bring true asynchronity on
-        the server-side.</para>
+        the server-side. See <link
+        xlink:href="https://community.oracle.com/blogs/ramapulavarthi/2010/08/18/new-asynchronous-servlet-transport-jax-ws-ri">New
+        Asynchronous Servlet Transport in JAX-WS RI</link> for more details on
+        this feature.</para>
+
     </section>
 </section>
