@@ -64,6 +64,69 @@ import org.apache.tools.ant.types.Path;
  * @author lukas
  */
 abstract class WsTask2 extends MatchingTask {
+    private Path modulepath = null;
+    public void setModulepath(Path mp) {
+        this.modulepath = mp;
+    }
+    public Path getModulepath() {
+        return this.modulepath;
+    }
+
+    private Path upgrademodulepath = null;
+    public void setUpgrademodulepath(Path ump) {
+        this.upgrademodulepath = ump;
+    }
+    public Path getUpgrademodulepath() {
+        return this.upgrademodulepath;
+    }
+
+    private String addmodules = null;
+    public void setAddmodules(String ams) {
+        this.addmodules = ams;
+    }
+    public String getAddmodules() {
+        return this.addmodules;
+    }
+
+    private String limitmodules = null;
+    public void setLimitmodules(String lms) {
+        this.limitmodules = lms;
+    }
+    public String getLimitmodules() {
+        return this.limitmodules;
+    }
+
+    private String addreads = null;
+    public void setAddreads(String ars) {
+        this.addreads = ars;
+    }
+    public String getAddreads() {
+        return this.addreads;
+    }
+
+    private String addexports = null;
+    public void setAddexports(String aes) {
+        this.addexports = aes;
+    }
+    public String getAddexports() {
+        return this.addexports;
+    }
+
+    private String patchmodule = null;
+    public void setPatchmodule(String pms) {
+        this.patchmodule = pms;
+    }
+    public String getPatchmodule() {
+        return this.patchmodule;
+    }
+
+    private String addopens = null;
+    public void setAddopens(String aos) {
+        this.addopens = aos;
+    }
+    public String getAddopens() {
+        return this.addopens;
+    }
 
     private final CommandlineJava cmd = new CommandlineJava();
 

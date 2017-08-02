@@ -127,6 +127,23 @@ public class WsGenTaskTest extends WsAntTaskTestBase {
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-fork"));
     }
 
+    public void testAddmodules() throws IOException, URISyntaxException {
+        if (!WsAntTaskTestBase.is9()) {
+            Logger.getLogger(WsGenTaskTest.class.getName()).warning("Old JDK - >=9 is required - skipping jar test");
+            return;
+        }
+        copy(srcDir, "module-info.java", WsGenTaskTest.class.getResourceAsStream("resources/module-info-ws.java_"));
+        File ws = createFile(pkg, "ws");
+        copy(ws, "TestWs2.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs2.java_"));
+        assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-addmodules"));
+    }
+
+    private File createFile(File file, String path){
+        File subFile = new File(file, path);
+        subFile.mkdirs();
+        return subFile;
+    }
+
     public void testJavac() throws IOException, URISyntaxException {
         copy(pkg, "TestWs.java", WsGenTaskTest.class.getResourceAsStream("resources/TestWs.java_"));
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsgen-javac"));
