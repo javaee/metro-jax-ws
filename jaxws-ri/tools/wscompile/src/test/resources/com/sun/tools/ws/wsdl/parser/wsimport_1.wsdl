@@ -1,0 +1,12 @@
+<?xml version="1.0"  encoding="ISO-8859-1" ?>
+ <!DOCTYPE definitions
+  [
+  <!ELEMENT foo ANY >
+ <!ELEMENT foo2 ANY >
+ <!ENTITY p1 SYSTEM "file:///shihguo/xxxxxxxxxxxxxx">
+ <!ENTITY p2 SYSTEM "<!ENTITY e1 SYSTEM &p1; >">
+  ]>
+ <definitions xmlns="http://schemas.xmlsoap.org/wsdl/">
+ <foo2> sample1 </foo2>
+ <foo>&p1;</foo>
+ </definitions>
