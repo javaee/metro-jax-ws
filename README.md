@@ -24,6 +24,6 @@ terms of [OCA](http://oracle.com/technetwork/goto/oca).
 
 ## Links
 - Please use [Metro and JAXB](https://javaee.groups.io/g/metro) forum for feedback
-- JAX-WS has a project page on GitHub: https://github.com/javaee/metro-jax-ws
+- JAX-WS has a project page on GitHub: [https://github.com/javaee/metro-jax-ws](https://github.com/javaee/metro-jax-ws)
 - [METRO project](https://javaee.github.io/metro)
 - [JSR 224](https://jcp.org/en/jsr/detail?id=224)
