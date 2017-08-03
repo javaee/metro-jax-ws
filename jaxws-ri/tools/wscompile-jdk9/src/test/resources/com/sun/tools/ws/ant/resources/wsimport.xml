@@ -208,6 +208,21 @@
         </wsimport>
     </target>
 
+    <target name="wsimport-addmodules" depends="wsimport-init">
+        <wsimport
+            fork=" true"
+            addmodules="java.activation"
+            sourcedestdir="${build.dir}"
+            destdir="${build.dir}"
+            wsdl="${wsdl}"
+            extension="true"
+            verbose="true"
+            xendorsed="true"
+            xnocompile="false">
+            <jvmArg line="${coverage}"/>
+        </wsimport>
+    </target>
+
     <target name="wsimport-javac" depends="setup">
         <javac srcdir="${src.dir}" destdir="${build.dir}" fork="true">
             <classpath refid="task.cp"/>

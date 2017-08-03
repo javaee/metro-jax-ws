@@ -54,7 +54,7 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
     private File wsdl;
     private File pkg;
     private File metainf;
-
+   
     @Override
     public String getBuildScript() {
         return "wsimport.xml";
@@ -177,6 +177,14 @@ public class WsImportTaskTest extends WsAntTaskTestBase {
         copy(pkg,  "MyExtension.java", WsImportTaskTest.class.getResourceAsStream("resources/MyExtension.java_"));
         copy(buildDir,  "META-INF/com.sun.tools.ws.api.wsdl.TWSDLExtensionHandler", WsImportTaskTest.class.getResourceAsStream("resources/TWSDLExtensionHandler"));
         assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-fork"));
+    }
+
+    public void testAddmodules() throws IOException {
+        if (!WsAntTaskTestBase.is9()) {
+           Logger.getLogger(WsGenTaskTest.class.getName()).warning("Old JDK - >=9 is required - skipping jar test");
+           return;
+        }
+        assertEquals(0, AntExecutor.exec(script, apiDir, "wsimport-addmodules"));
     }
 
     public void testJavac() throws IOException {

@@ -176,6 +176,27 @@
         </wsgen>
     </target>
 
+    <target name="wsgen-addmodules" depends="wsgen-init">
+        <javac srcdir="${src.dir}" destdir="${src.dir}" fork="true" />
+        <wsgen
+            sei="test.ws.TestWs2"
+            addmodules="test.ws"
+            modulepath="${src.dir}"
+            fork="true"
+            resourcedestdir="${build.dir}"
+            destdir="${build.dir}"
+            sourcedestdir="${src.dir}"
+            genwsdl="true"
+            keep="true"
+            verbose="true"
+            xendorsed="true"
+            inlineSchemas="true">
+            <classpath>
+                <pathelement location="${src.dir}"/>
+            </classpath>
+        </wsgen>
+    </target>
+
     <target name="wsgen-fork" depends="setup">
         <javac srcdir="${src.dir}" destdir="${src.dir}" fork="true">
             <classpath refid="task.cp"/>

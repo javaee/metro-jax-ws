@@ -86,6 +86,32 @@ public class WsImport extends WsImportBase {
         if (addModules) {
             getCommandline().createVmArgument().setLine("--add-modules java.xml.ws");
         }
+
+        if (getModulepath() != null && getModulepath().size() > 0) {
+            getCommandline().createModulepath(getProject()).add(getModulepath());
+        }
+        if (getUpgrademodulepath() != null && getUpgrademodulepath().size() > 0) {
+            getCommandline().createUpgrademodulepath(getProject()).add(getUpgrademodulepath());
+        }
+        if (getAddmodules() != null && getAddmodules().length() > 0) {
+            getCommandline().createVmArgument().setLine("--add-modules " + getAddmodules());
+        }
+        if (getAddreads() != null && getAddreads().length() > 0) {
+            getCommandline().createVmArgument().setLine("--add-reads " + getAddreads());
+        }
+        if (getAddexports() != null && getAddexports().length() > 0) {
+            getCommandline().createVmArgument().setLine("--add-exports " + getAddexports());
+        }
+        if (getAddopens() != null && getAddopens().length() > 0) {
+            getCommandline().createVmArgument().setLine("--add-opens " + getAddopens());
+        }
+        if (getPatchmodule() != null && getPatchmodule().length() > 0) {
+            getCommandline().createVmArgument().setLine("--patch-module " + getPatchmodule());
+        }
+        if (getLimitmodules() != null && getLimitmodules().length() > 0) {
+            getCommandline().createVmArgument().setLine("--limit-modules " + getLimitmodules());
+        }
+
         getCommandline().setClassname(className);
     }
 
