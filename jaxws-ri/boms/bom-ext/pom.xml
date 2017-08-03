@@ -65,7 +65,7 @@
         <ant.version>1.9.8</ant.version>
         <asm.version>3.1</asm.version>
         <commonj.sdo.version>2.1.1.v201112051852</commonj.sdo.version>
-        <eclipselink.version>2.4.0</eclipselink.version>
+        <eclipselink.version>2.6.4</eclipselink.version>
         <junit.version>3.8.1</junit.version>
         <mail.version>1.4.7</mail.version>
         <servlet-api.version>4.0.0-b07</servlet-api.version>
