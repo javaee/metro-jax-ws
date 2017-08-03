@@ -86,8 +86,8 @@
                 <pathelement location="${ant.core.lib}" />
             </classpath>
             <link href="http://docs.oracle.com/javase/8/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/javase8/" />
-            <link href="http://jaxb.java.net/nonav/${jaxb-impl.version}/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/jaxb-api/" />
-            <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/" offline="${links.offline}" packagelistloc="${links.dir}/jaxws-api/" />
+            <link href="https://javadoc.io/doc/javax.xml.bind/jaxb-api/${jaxb-api.version}/" offline="${links.offline}" packagelistloc="${links.dir}/jaxb-api/" />
+            <link href="https://javadoc.io/doc/javax.xml.ws/jaxws-api/${jaxws-api.version}/" offline="${links.offline}" packagelistloc="${links.dir}/jaxws-api/" />
         </javadoc>
     </target>
 
@@ -109,8 +109,8 @@
             </classpath>
             <arg line="--add-modules java.activation -Xdoclint:none"/>
             <link href="http://docs.oracle.com/javase/8/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/javase8/" />
-            <link href="http://jaxb.java.net/nonav/${jaxb-impl.version}/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/jaxb-api/" />
-            <link href="http://jax-ws.java.net/nonav/jaxws-api/2.2/" offline="${links.offline}" packagelistloc="${links.dir}/jaxws-api/" />
+            <link href="https://javadoc.io/doc/javax.xml.bind/jaxb-api/${jaxb-api.version}/" offline="${links.offline}" packagelistloc="${links.dir}/jaxb-api/" />
+            <link href="https://javadoc.io/doc/javax.xml.ws/jaxws-api/${jaxws-api.version}/" offline="${links.offline}" packagelistloc="${links.dir}/jaxws-api/" />
         </javadoc>
     </target>
 

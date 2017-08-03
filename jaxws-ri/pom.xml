@@ -398,11 +398,11 @@
                                 <location>${javadoc.links.dir}/javase8/</location>
                             </offlineLink>
                             <offlineLink>
-                                <url>http://jaxb.java.net/nonav/${jaxb-impl.version}/docs/api/</url>
+                                <url>https://javadoc.io/doc/javax.xml.bind/jaxb-api/${jaxb-api.version}/</url>
                                 <location>${javadoc.links.dir}/jaxb-api/</location>
                             </offlineLink>
                             <offlineLink>
-                                <url>http://jax-ws.java.net/nonav/jaxws-api/2.2/</url>
+                                <url>https://javadoc.io/doc/javax.xml.ws/jaxws-api/${jaxws-api.version}/</url>
                                 <location>${javadoc.links.dir}/jaxws-api/</location>
                             </offlineLink>
                         </offlineLinks>
