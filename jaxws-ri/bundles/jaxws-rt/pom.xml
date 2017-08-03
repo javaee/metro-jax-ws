@@ -234,7 +234,7 @@
                 <executions>
                     <execution>
                         <id>make-bin-assembly</id>
-                        <phase>package</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -255,7 +255,7 @@
                     </execution>
                     <execution>
                         <id>make-src-assembly</id>
-                        <phase>package</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
