@@ -29,4 +29,4 @@ This sample will build, deploy and invoke a simple Web service.
       then executes it.
 
 
-We appreciate your feedback, please send it to users@jax-ws.dev.java.net.
+We appreciate your feedback, please send it to metro@javaee.groups.io.

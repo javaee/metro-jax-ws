@@ -5,4 +5,4 @@ Consider having just binaries of class externalmetadata.fromjava.client.Blackbox
 We would just skip compilation of that class but everything else in this example would remain same.
 
 Refer to the Prerequisites defined in samples/docs/index.html.
-We appreciate your feedback, please send it to users@jax-ws.dev.java.net.
+We appreciate your feedback, please send it to metro@javaee.groups.io.
