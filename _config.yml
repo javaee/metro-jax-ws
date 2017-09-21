@@ -6,12 +6,14 @@ description: [Java API for XML Web Services]
 # sidebar links url
 links:
   source: https://github.com/javaee/metro-jax-ws
-  #download: download
+  download: https://repo1.maven.org/maven2/com/sun/xml/ws/jaxws-ri/2.3.0/jaxws-ri-2.3.0.zip
   mailinglist: https://javaee.groups.io/g/metro
-  #javadocs:
+  javadocs: https://javadoc.io/doc/com.sun.xml.ws/jaxws-rt/2.3.0
   userguide: doc/user-guide/index.html
+  specification: https://www.jcp.org/en/jsr/detail?id=224
+  jaxwsapi: https://github.com/javaee/jax-ws-spec
+  metro: https://javaee.github.io/metro
   
   #faq:
   #mailinglist:
   #hide_issuetracker: true #set explicitly to 'true' if you don't want to have the issue tracker link displayed
-

@@ -1,0 +1,6 @@
+*.iml
+*.ipr
+.idea
+.DS_Store
+_site/
+Gemfile.lock

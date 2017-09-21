@@ -45,13 +45,12 @@
                <h2><a href="{{ site.links.source }}"><p>Sources</p></a></h2>
             {% endif %}
             
-            {% if site.links.javadocs %}
-              <h2><a href="{{ site.links.javadocs }}"><p>APIs</p></a></h2>
-            {% endif %}
-
-            {% if site.links.userguide %}
-              <h2><a href="{{ site.links.userguide }}"><p>User Guide</p></a></h2>
-            {% endif %}
+            <h2>Documentation</h2>
+            <ul>
+                <li><h3><a href="{{ site.links.specification }}"><p>Specification</p></a></h3></li>
+                <li><h3><a href="{{ site.links.javadocs }}"><p>APIs</p></a></h3></li>
+                <li><h3><a href="{{ site.links.userguide }}"><p>User Guide</p></a></h3></li>
+            </ul>
 
             {% if site.links.faq %}
               <h2><a href="{{ site.links.faq }}"><p>FAQ</p></a></h2>
@@ -72,6 +71,12 @@
             <h2><a href="CONTRIBUTING"><p>Contribute</p></a></h2>
 
             <h2><a href="LICENSE"><p>License</p></a></h2>
+
+            <h2>Related projects</h2>
+            <ul>
+                <li><h3><a href="{{ site.links.jaxwsapi }}"><p>JAX-WS API</p></a></h3></li>
+                <li><h3><a href="{{ site.links.metro }}"><p>Metro</p></a></h3></li>
+            </ul>
           </div>
           
           <hr/>
