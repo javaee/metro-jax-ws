@@ -966,7 +966,7 @@ public final class WSEndpointReference  implements WSDLExtension {
      */
     public void addReferenceParametersToList(MessageHeaders outbound) {
         for (Header header : referenceParameters) {
-            outbound.add(header);
+            outbound.addOrReplace(header);
         }
     }
     /**
