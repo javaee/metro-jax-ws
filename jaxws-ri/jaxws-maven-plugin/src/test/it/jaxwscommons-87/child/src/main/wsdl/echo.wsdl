@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+
+    Oracle licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<definitions targetNamespace="http://test.jaxws.jax_ws_commons.jvnet.org/" name="EchoService" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:tns="http://test.jaxws.jax_ws_commons.jvnet.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsp1_2="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+    <types>
+        <xs:schema version="1.0" targetNamespace="http://test.jaxws.jax_ws_commons.jvnet.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element name="echo" type="tns:echo"/>
+            <xs:element name="echoResponse" type="tns:echoResponse"/>
+            <xs:complexType name="echo">
+                <xs:sequence>
+                    <xs:element name="echo_arg" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="echoResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </types>
+    <message name="echo">
+        <part name="parameters" element="tns:echo"/>
+    </message>
+    <message name="echoResponse">
+        <part name="parameters" element="tns:echoResponse"/>
+    </message>
+    <portType name="EchoService">
+        <operation name="echo">
+            <input wsam:Action="http://test.jaxws.jax_ws_commons.jvnet.org/EchoService/echoRequest" message="tns:echo"/>
+            <output wsam:Action="http://test.jaxws.jax_ws_commons.jvnet.org/EchoService/echoResponse" message="tns:echoResponse"/>
+        </operation>
+    </portType>
+    <binding name="EchoServicePortBinding" type="tns:EchoService">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <operation name="echo">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="EchoService">
+        <port name="EchoServicePort" binding="tns:EchoServicePortBinding">
+            <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
+        </port>
+    </service>
+</definitions>

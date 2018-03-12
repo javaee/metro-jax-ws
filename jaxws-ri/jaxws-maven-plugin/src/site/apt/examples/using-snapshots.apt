@@ -1,0 +1,43 @@
+~~
+~~ Copyright 2013 Oracle
+~~
+~~ Licensed under the Apache License, Version 2.0 (the "License");
+~~ you may not use this file except in compliance with the License.
+~~ You may obtain a copy of the License at
+~~
+~~      http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing, software
+~~ distributed under the License is distributed on an "AS IS" BASIS,
+~~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~~ See the License for the specific language governing permissions and
+~~ limitations under the License.
+~~
+
+Snapshot builds of current development version are regularly pushed to
+maven.java.net snapshots repository. In order to be able to use SNAPSHOT
+version in your project, you need to add following pluginRepository
+definition to your pom.xml:
+
++------------------------------------------+
+<project>
+  ...
+  <pluginRepositories>
+    <pluginRepository>
+      <!-- temporary definition for harness plugin to be found-->
+      <id>temp</id>
+      <url>https://maven.java.net/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+      <layout>default</layout>
+    </pluginRepository>
+  </pluginRepositories>
+  ...
+</project>
++------------------------------------------+

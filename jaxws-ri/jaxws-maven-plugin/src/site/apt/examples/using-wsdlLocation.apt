@@ -1,0 +1,63 @@
+~~
+~~ Copyright 2011-2013 Oracle
+~~
+~~ Licensed under the Apache License, Version 2.0 (the "License");
+~~ you may not use this file except in compliance with the License.
+~~ You may obtain a copy of the License at
+~~
+~~      http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing, software
+~~ distributed under the License is distributed on an "AS IS" BASIS,
+~~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~~ See the License for the specific language governing permissions and
+~~ limitations under the License.
+~~
+
+Use wsdlLocation as a path prefix for multiple WSDL URLs
+
++------------------------------------------+
+<project>
+  ...
+  <dependencies>
+      ...
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <version>2.2.8</version>
+    </dependency>
+    ...
+  </dependencies>
+  ...
+  <build>
+    ...
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.jax-ws-commons</groupId>
+        <artifactId>jaxws-maven-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+            <!-- Following configuration will invoke wsimport once for each wsdl. -->
+            <configuration>
+              <wsdlLocation>http://example.com/mywebservices/*</wsdlLocation>
+              <wsdlDirectory>src/mywsdls</wsdlDirectory>
+              <wsdlFiles>
+                <wsdlFile>a.wsdl</wsdlFile>                         <!-- produces wsdlLocation = http://example.com/mywebservices/a.wsdl -->
+                <wsdlFile>b/b.wsdl</wsdlFile>                       <!-- produces wsdlLocation = http://example.com/mywebservices/b/b.wsdl -->
+                <wsdlFile>${basedir}/src/mywsdls/c.wsdl</wsdlFile>  <!-- produces wsdlLocation = /path/to/basedir/src/mywsdls/c.wsdl -->
+              </wsdlFiles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      ...
+    </plugins>
+    ...
+  <build>
+  ...
+</project>
++------------------------------------------+

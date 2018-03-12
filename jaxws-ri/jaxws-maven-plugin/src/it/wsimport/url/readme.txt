@@ -1,0 +1,1 @@
+Simple example to invokde wsimport to process wsdl via a url
