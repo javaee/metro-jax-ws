@@ -534,6 +534,8 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
         final StringBuilder sb = new StringBuilder("<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:x-jax-ws-master'>\n");
         for(Map.Entry<String, String> e : docs.entrySet()) {
             String systemId = e.getValue();
+            if(systemId.indexOf('&') != -1)
+                systemId = systemId.replace("&","&amp;");
             String ns = e.getKey();
             sb.append("<xsd:import schemaLocation='").append(systemId).append("'");
             if (ns != null && !("".equals(ns))) {
