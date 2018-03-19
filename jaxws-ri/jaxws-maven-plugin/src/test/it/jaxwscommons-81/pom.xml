@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
+
+    Oracle licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.jvnet.jax-ws-commons.test</groupId>
+        <artifactId>parent</artifactId>
+        <version>2.3.1-SNAPSHOT</version>
+    </parent>
+    
+    <artifactId>jaxwscommons81</artifactId>
+    <version>2.2.6</version>
+
+    <name>JAX_WS_COMMONS-81</name>
+    <description>wsgen, wsimport - support tools from JDK</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jvnet.jax-ws-commons</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>id1</id>
+                        <goals>
+                            <goal>wsgen</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${tool.wsgen}</executable>
+                            <sei>org.jvnet.jax_ws_commons.jaxws.test.EchoService</sei>
+                            <destDir>${project.build.directory}/custom/classes</destDir>
+                            <extension>true</extension>
+                            <genWsdl>true</genWsdl>
+                            <xnocompile>false</xnocompile>
+                            <!-- implied by <resourceDestDir>...
+                            <keep>true</keep>
+                            -->
+                            <protocol>Xsoap1.2</protocol>
+                            <!--<inlineSchemas>true</inlineSchemas>-->
+                            <resourceDestDir>${project.build.directory}/wsdl</resourceDestDir>
+                            <sourceDestDir>${project.build.directory}/custom/sources</sourceDestDir>
+                            <verbose>true</verbose>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>id2</id>
+                        <goals>
+                            <goal>wsgen</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${tool.wsgen}</executable>
+                            <sei>org.jvnet.jax_ws_commons.jaxws.test.AddService</sei>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>id3-test</id>
+                        <goals>
+                            <goal>wsgen-test</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${tool.wsgen}</executable>
+                            <sei>org.jvnet.jax_ws_commons.jaxws.test.TService</sei>
+                            <genWsdl>true</genWsdl>
+                            <portname>{http://example.org/TestService}ExPort</portname>
+                            <servicename>{http://example.org/TestService}ExService</servicename>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>id4</id>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${tool.wsimport}</executable>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>id5</id>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${tool.wsimport}</executable>
+                            <wsdlUrls>
+                                <wsdlUrl>http://java.net/projects/jax-ws/sources/sources/content/trunk/jaxws-unit/testcases/fromwsdl/additional_header/doclit/server/sample.wsdl</wsdlUrl>
+                            </wsdlUrls>
+                            <packageName>org.jvnet.jaxwsri.sample</packageName>
+                            <wsdlLocation>http://example.com:43210/my?wsdl</wsdlLocation>
+                            <xadditionalHeaders>true</xadditionalHeaders>
+                            <destDir>${project.build.directory}/custom/classes</destDir>
+                            <sourceDestDir>${project.build.directory}/custom/sources</sourceDestDir>
+                            <target>2.0</target>
+                            <xnocompile>false</xnocompile>
+                            <xdebug>true</xdebug>
+                            <bindingFiles>
+                                <bindingFile>${basedir}/src/remote-xjc/bindings.xjc</bindingFile>
+                                <bindingFile>bindings-default.xjc</bindingFile>
+                            </bindingFiles>
+                            <wsdlDirectory>${project.build.directory}</wsdlDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>id6-test</id>
+                        <goals>
+                            <goal>wsimport-test</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${tool.wsimport}</executable>
+                            <wsdlDirectory>${basedir}/src/test-wsdl</wsdlDirectory>
+                            <extension>true</extension>
+                            <verbose>true</verbose>
+                            <bindingDirectory>${basedir}/src/test-wsdl/xjc</bindingDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>win</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <tool.wsgen>${java.home}/../bin/wsgen.exe</tool.wsgen>
+                <tool.wsimport>${java.home}/../bin/wsimport.exe</tool.wsimport>
+            </properties>
+        </profile>
+        <profile>
+            <id>nix</id>
+            <activation>
+                <os>
+                    <family>!windows</family>
+                </os>
+            </activation>
+            <properties>
+                <tool.wsgen>${java.home}/../bin/wsgen</tool.wsgen>
+                <tool.wsimport>${java.home}/../bin/wsimport</tool.wsimport>
+            </properties>
+        </profile>
+    </profiles>
+</project>

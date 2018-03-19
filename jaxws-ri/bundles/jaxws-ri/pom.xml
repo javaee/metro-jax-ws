@@ -90,6 +90,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>jaxws-maven-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>release-documentation</artifactId>
             <version>${project.version}</version>
             <type>zip</type>

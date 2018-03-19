@@ -356,6 +356,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>jaxws-ri</artifactId>
                 <version>${project.version}</version>
                 <type>zip</type>

@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+    Copyright (c) 2006-2014 Oracle and/or its affiliates. All rights reserved.
+
+    Oracle licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.sun.xml.ws</groupId>
+        <artifactId>project</artifactId>
+        <version>2.3.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.sun.xml.ws</groupId>
+    <artifactId>jaxws-maven-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
+    <name>Maven JAXWS 2.x Plugin</name>
+    <description>Maven plugin for JAX-WS RI</description>
+    <version>2.3.1-SNAPSHOT</version>
+    <url>http://jax-ws-commons.java.net/jaxws-maven-plugin/</url>
+
+    <developers>
+        <developer>
+            <id>jungicz</id>
+            <name>Lukas Jungmann</name>
+            <email>lukas.jungmann@oracle.com</email>
+            <roles>
+                <role>Lead</role>
+                <role>Maintainer</role>
+            </roles>
+            <organization>Oracle</organization>
+            <organizationUrl>http://www.oracle.com</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>ramapulavarthi</id>
+            <name>Rama Pulavarthi</name>
+            <email>rama.pulavarthi@sun.com</email>
+            <roles>
+                <role>Maintainer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>kohsuke</id>
+            <name>Kohsuke Kawaguchi</name>
+            <email>kohsuke.kawaguchi@sun.com</email>
+            <roles>
+                <role>Maintainer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>gnt</id>
+            <name>Guillaume Nodet</name>
+            <email>gnodet@apache.org</email>
+            <organization>LogicBlaze, Inc</organization>
+            <organizationUrl>http://www.logicblaze.com</organizationUrl>
+            <roles>
+                <role>Previous maintainer</role>
+                <role>Original author</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>dantran</id>
+            <name>Dan Tran</name>
+            <email>dtran@gmail.com</email>
+            <roles>
+                <role>Previous maintainer</role>
+                <role>Original author</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-tools</artifactId>
+                <version>${jaxws-tools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jvnet.jaxb2_commons</groupId>
+                <artifactId>jaxb2-basics</artifactId>
+                <version>0.6.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-project</artifactId>
+                <version>3.0-alpha-2</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>maven-model</artifactId>
+                        <groupId>org.apache.maven</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>plexus-interpolation</artifactId>
+                        <groupId>org.codehaus.plexus</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>3.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-core</artifactId>
+                <version>3.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>3.0.17</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugin-tools</groupId>
+                <artifactId>maven-plugin-annotations</artifactId>
+                <version>3.3</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>6.8.5</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-settings</artifactId>
+                <version>3.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-api</artifactId>
+                <version>1.0.0.v20140518</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-util</artifactId>
+                <version>1.0.0.v20140518</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-tools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.jaxb2_commons</groupId>
+            <artifactId>jaxb2-basics</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-settings</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.aether</groupId>
+            <artifactId>aether-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.aether</groupId>
+            <artifactId>aether-util</artifactId>
+        </dependency>
+    </dependencies>
+
+    <scm>
+        <connection>scm:svn:https://svn.java.net/svn/jax-ws-commons~svn/trunk/jaxws-maven-plugin</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/jax-ws-commons~svn/trunk/jaxws-maven-plugin</developerConnection>
+        <url>http://java.net/projects/jax-ws-commons/sources/svn/show/trunk/jaxws-maven-plugin</url>
+    </scm>
+
+    <distributionManagement>
+        <site>
+            <id>jaxws-mvn-plugin-www</id>
+            <url>file://${basedir}/../www/${project.artifactId}</url>
+        </site>
+    </distributionManagement>
+
+    <properties>
+        <jaxws-tools.version>2.2.9-b14002</jaxws-tools.version>
+        <netbeans.hint.jdkPlatform>JDK_1.6</netbeans.hint.jdkPlatform>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-plugin-plugin</artifactId>
+                    <version>3.3</version>
+                    <configuration>
+                        <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                        <extractors>
+                            <extractor>java-annotations</extractor>
+                        </extractors>
+                    </configuration>
+                </plugin>
+                <!-- inherited plugins -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <forkMode>once</forkMode>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.glassfish.copyright</groupId>
+                    <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                    <configuration>
+                        <templateFile>${project.basedir}/copyright.txt</templateFile>
+                        <excludeFile>${project.basedir}/copyright-exclude</excludeFile>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <debug>true</debug>
+                        <proc>none</proc>
+                        <compilerArgs>
+                            <arg>-Xlint:all</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>mojo-descriptor</id>
+                        <goals>
+                            <goal>descriptor</goal>
+                            <goal>helpmojo</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>license</report>
+                            <report>scm</report>
+                            <report>dependencies</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <linkJavadoc>false</linkJavadoc>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <id>jxr</id>
+                        <reports>
+                            <report>jxr</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <profiles>
+        <profile>
+            <!-- This is only for non MAC OS X builds, hence the property below -->
+            <id>default-tools.jar</id>
+            <activation>
+                <file>
+                    <exists>${java.home}/../lib/tools.jar</exists>
+                </file>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                    <version>1.6.0</version>
+                    <scope>system</scope>
+                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>coverage</id>
+            <activation>
+                <property>
+                    <name>cvg</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.sonatype.maven.plugin</groupId>
+                            <artifactId>emma-maven-plugin</artifactId>
+                            <version>1.2</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.sonatype.maven.plugin</groupId>
+                            <artifactId>emma4it-maven-plugin</artifactId>
+                            <version>1.3</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-antrun-plugin</artifactId>
+                            <version>1.6</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.maven.plugin</groupId>
+                        <artifactId>emma-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>instrument</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <classesDirectory>${project.build.directory}/generated-classes/emma/classes</classesDirectory>
+                            <forkMode>once</forkMode>
+                            <systemPropertyVariables>
+                                <emma.coverage.out.file>${project.build.directory}/coverage.ec</emma.coverage.out.file>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.maven.plugin</groupId>
+                        <artifactId>emma4it-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>instrument-project-artifact</goal>
+                                </goals>
+                                <configuration>
+                                    <appendEmma>true</appendEmma>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>merge</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>merge</goal>
+                                    <goal>emma4it-report</goal>
+                                </goals>
+                                <configuration>
+                                    <searchPath>${basedir}</searchPath>
+                                    <sourceFolders>
+                                        <sourceFolder>${project.build.sourceDirectory}</sourceFolder>
+                                        <sourceFolder>${project.build.directory}/generated-sources/plugin</sourceFolder>
+                                    </sourceFolders>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-instr</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy file="${project.build.directory}/${project.build.finalName}.jar" toFile="${project.build.directory}/${project.build.finalName}.jar.bkp" verbose="true" />
+                                        <copy file="${project.build.directory}/emma/${project.build.finalName}.jar" toDir="${project.build.directory}" overwrite="true" verbose="true" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-noninstr</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy file="${project.build.directory}/${project.build.finalName}.jar.bkp" toFile="${project.build.directory}/${project.build.finalName}.jar" overwrite="true" verbose="true" />
+                                        <delete file="${project.build.directory}/${project.build.finalName}.jar.bkp" verbose="true" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>ittest</id>
+            <activation>
+                <property>
+                    <name>ittest</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <ittest.debug>false</ittest.debug>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.codehaus.gmaven</groupId>
+                            <artifactId>gmaven-plugin</artifactId>
+                            <version>1.3</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-invoker-plugin</artifactId>
+                            <version>1.8</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-failsafe-plugin</artifactId>
+                            <version>2.10</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.gmaven</groupId>
+                        <artifactId>gmaven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>set-proxy</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <source>${project.basedir}/src/test/script/setproxy.groovy</source>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-invoker-plugin</artifactId>
+                        <configuration>
+                            <debug>${ittest.debug}</debug>
+                            <localRepositoryPath>${project.build.directory}/it-repo</localRepositoryPath>
+                            <!--                            <streamLogs>true</streamLogs>-->
+                            <addTestClassPath>true</addTestClassPath>
+                            <settingsFile>${project.build.directory}/it-settings.xml</settingsFile>
+                            <mavenOpts>${ittest-proxy} -Djavax.xml.accessExternalSchema=all</mavenOpts>
+                            <properties>
+                                <jaxws.plugin.version>${project.version}</jaxws.plugin.version>
+                                <jaxws-ri.version>${jaxws-tools.version}</jaxws-ri.version>
+                                <javax.xml.accessExternalSchema>all</javax.xml.accessExternalSchema>
+                            </properties>
+                            <setupIncludes>
+                                <setupInclude>parent/pom.xml</setupInclude>
+                                <setupInclude>wsdl-lib/pom.xml</setupInclude>
+                            </setupIncludes>
+                            <pomExcludes>
+                                <pomExclude>wsimport217/pom.xml</pomExclude>
+                                <pomExclude>wsgen217/pom.xml</pomExclude>
+                            </pomExcludes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>integration-test-installdeps</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>install</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <projectsDirectory>src/test/it</projectsDirectory>
+                                    <cloneProjectsTo>${project.build.directory}/it tests</cloneProjectsTo>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>integration-test-samples</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <cloneProjectsTo>${project.build.directory}/it-samples</cloneProjectsTo>
+                                    <pomIncludes>
+                                        <pomInclude>*/pom.xml</pomInclude>
+                                        <pomInclude>*/*/pom.xml</pomInclude>
+                                    </pomIncludes>
+                                    <pomExcludes>
+                                        <pomExclude>jaxws-ri-samples/*/pom.xml</pomExclude>
+                                    </pomExcludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>integration-test-verify</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <systemPropertyVariables>
+                                        <it.projects.dir>${project.build.directory}/it tests</it.projects.dir>
+                                        <jaxws-ri.version>${jaxws-tools.version}</jaxws-ri.version>
+                                    </systemPropertyVariables>
+                                    <encoding>${project.build.sourceEncoding}</encoding>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

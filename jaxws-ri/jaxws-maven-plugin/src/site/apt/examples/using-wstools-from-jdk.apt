@@ -1,0 +1,93 @@
+~~
+~~ Copyright 2013 Oracle
+~~
+~~ Licensed under the Apache License, Version 2.0 (the "License");
+~~ you may not use this file except in compliance with the License.
+~~ You may obtain a copy of the License at
+~~
+~~      http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing, software
+~~ distributed under the License is distributed on an "AS IS" BASIS,
+~~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~~ See the License for the specific language governing permissions and
+~~ limitations under the License.
+~~
+
+Using {{{http://docs.oracle.com/javase/7/docs/technotes/tools/index.html#webservices}Web Services Tools}}
+from JDK
+
++------------------------------------------+
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.jax-ws-commons</groupId>
+        <artifactId>jaxws-maven-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <id>wsgen-from-jdk</id>
+            <goals>
+              <goal>wsgen</goal>
+            </goals>
+            <configuration>
+              <executable>${tool.wsgen}</executable>
+              <sei>com.mycompany.MyService</sei>
+              ...
+            </configuration>
+          </execution>
+          <execution>
+            <id>wsimport-from-jdk</id>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+            <configuration>
+              <executable>${tool.wsimport}</executable>
+              <wsdlUrls>
+                <wsdlUrl>http://example.org/sample.wsdl</wsdlUrl>
+              </wsdlUrls>
+              ...
+            </configuration>
+          </execution>
+          ...
+        </executions>
+      </plugin>
+      ...
+    </plugins>
+    ...
+  <build>
+  ...
+
+  <!-- setup corresponding executables on win/*nix -->
+  <profiles>
+    <profile>
+      <id>win</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <tool.wsgen>${java.home}/../bin/wsgen.exe</tool.wsgen>
+        <tool.wsimport>${java.home}/../bin/wsimport.exe</tool.wsimport>
+      </properties>
+    </profile>
+    <profile>
+      <id>nix</id>
+      <activation>
+        <os>
+          <family>!windows</family>
+        </os>
+      </activation>
+      <properties>
+        <tool.wsgen>${java.home}/../bin/wsgen</tool.wsgen>
+        <tool.wsimport>${java.home}/../bin/wsimport</tool.wsimport>
+      </properties>
+    </profile>
+    ...
+  </profiles>
+</project>
++------------------------------------------+
