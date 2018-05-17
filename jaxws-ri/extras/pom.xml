@@ -62,5 +62,6 @@
         <module>../eclipselink_sdo</module>
         <module>../transports/local</module>
         <module>../transports/async-client-transport</module>
+        <module>../jaxws-maven-plugin</module>
     </modules>
 </project>

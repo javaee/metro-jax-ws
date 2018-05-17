@@ -36,7 +36,6 @@
     <name>Maven JAXWS 2.x Plugin</name>
     <description>Maven plugin for JAX-WS RI</description>
     <version>2.3.1-SNAPSHOT</version>
-    <url>http://jax-ws-commons.java.net/jaxws-maven-plugin/</url>
 
     <developers>
         <developer>
@@ -105,11 +104,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.sun.xml.ws</groupId>
-                <artifactId>jaxws-tools</artifactId>
-                <version>${jaxws-tools.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jvnet.jaxb2_commons</groupId>
                 <artifactId>jaxb2-basics</artifactId>
                 <version>0.6.4</version>
@@ -147,7 +141,7 @@
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
                 <artifactId>maven-plugin-annotations</artifactId>
-                <version>3.3</version>
+                <version>3.5.1</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -176,8 +170,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.sun.xml.ws</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jaxws-tools</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
@@ -222,31 +217,13 @@
         </dependency>
     </dependencies>
 
-    <scm>
-        <connection>scm:svn:https://svn.java.net/svn/jax-ws-commons~svn/trunk/jaxws-maven-plugin</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/jax-ws-commons~svn/trunk/jaxws-maven-plugin</developerConnection>
-        <url>http://java.net/projects/jax-ws-commons/sources/svn/show/trunk/jaxws-maven-plugin</url>
-    </scm>
-
-    <distributionManagement>
-        <site>
-            <id>jaxws-mvn-plugin-www</id>
-            <url>file://${basedir}/../www/${project.artifactId}</url>
-        </site>
-    </distributionManagement>
-
-    <properties>
-        <jaxws-tools.version>2.2.9-b14002</jaxws-tools.version>
-        <netbeans.hint.jdkPlatform>JDK_1.6</netbeans.hint.jdkPlatform>
-    </properties>
-
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.3</version>
+                    <version>3.5.1</version>
                     <configuration>
                         <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
                         <extractors>
@@ -260,25 +237,6 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
                         <forkMode>once</forkMode>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.glassfish.copyright</groupId>
-                    <artifactId>glassfish-copyright-maven-plugin</artifactId>
-                    <configuration>
-                        <templateFile>${project.basedir}/copyright.txt</templateFile>
-                        <excludeFile>${project.basedir}/copyright-exclude</excludeFile>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <debug>true</debug>
-                        <proc>none</proc>
-                        <compilerArgs>
-                            <arg>-Xlint:all</arg>
-                        </compilerArgs>
                     </configuration>
                 </plugin>
             </plugins>
