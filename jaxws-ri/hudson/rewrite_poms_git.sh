@@ -16,14 +16,7 @@ while getopts ":n" opt; do
 done
 echo "Script will commit changes: [$COMMIT] (pass option -n not to commit)"
 
-if [ "$#" -eq 1 ]; then
-    CURRENT_VERSION=$1
-fi
-
-if [ "$#" -eq 0 ]; then
-    echo "No version specified, reading release version from pom file"
-    CURRENT_VERSION=`cat pom.xml | grep '<version' -m 1 | cut -d ">" -f 2 | cut -d "<" -f 1 | cut -d "-" -f 1`
-fi
+CURRENT_VERSION=`cat pom.xml | grep '<version' -m 1 | cut -d ">" -f 2 | cut -d "<" -f 1 | cut -d "-" -f 1`
 
 echo "Major release version found: $CURRENT_VERSION"  
 
@@ -47,7 +40,14 @@ DATESTAMP=`date +%y%m%d.%H%M`
 BUILD_NUMBER=b${DATESTAMP}
 DEVELOPER_VERSION=${CURRENT_VERSION}-SNAPSHOT
 RELEASE_QUALIFIER=${BUILD_NUMBER}
-RELEASE_VERSION=${CURRENT_VERSION}-${RELEASE_QUALIFIER}
+
+if [ "$#" -eq 1 ]; then
+  RELEASE_VERSION=$1
+else
+  echo "No version specified, reading release version from pom file"
+  RELEASE_VERSION=${CURRENT_VERSION}-${RELEASE_QUALIFIER}
+fi;
+
 RELEASE_TAG=${RELEASE_VERSION}
 
 cleanup()
