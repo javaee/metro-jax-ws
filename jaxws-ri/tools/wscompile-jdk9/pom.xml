@@ -182,7 +182,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <excludeArtifactIds>javax.annotation-api,jsr181-api,jaxb-api,javax.xml.soap-api,jaxws-api,ant,ant-launcher,ant-nodeps,istack-commons-runtime,cobertura,cobertura-runtime</excludeArtifactIds>
+                            <excludeArtifactIds>javax.annotation-api,jsr181-api,jaxb-api,javax.xml.soap-api,jaxws-api,ant,ant-launcher,ant-nodeps,cobertura,cobertura-runtime</excludeArtifactIds>
                             <excludeScope>system</excludeScope>
                         </configuration>
                     </execution>
