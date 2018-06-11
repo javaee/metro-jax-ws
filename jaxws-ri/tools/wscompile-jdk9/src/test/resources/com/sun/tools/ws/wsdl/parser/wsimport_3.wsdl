@@ -1,8 +1,0 @@
-<?xml version="1.0"  encoding="ISO-8859-1" ?>
-<!DOCTYPE definitions [
-        <!ELEMENT definitions ANY>
-        <!ENTITY xxe SYSTEM "ftp://example.com/pub/xx">
-        ]>
-<definitions xmlns="http://schemas.xmlsoap.org/wsdl/">
-    &xxe;
-</definitions>
