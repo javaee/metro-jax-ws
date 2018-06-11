@@ -223,6 +223,100 @@
                 <configuration>
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
+                    <argLine>
+                        --add-exports java.xml/com.sun.org.apache.xml.internal.resolver=ALL-UNNAMED
+                        --add-exports java.xml/com.sun.org.apache.xml.internal.resolver.tools=ALL-UNNAMED
+                        --add-modules java.xml.bind
+                        --upgrade-module-path ${endorsed.dir}
+                    </argLine>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>compile-java9</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="${project.build.outputDirectory}/META-INF/versions/${upper.java.level}" />
+                                <echo>${project.build.directory}/lib</echo>
+                                <javac srcdir="${mrjar.sourceDirectory}"
+                                       destdir="${project.build.outputDirectory}/META-INF/versions/${upper.java.level}"
+                                       includeantruntime="false"
+                                       release="${upper.java.level}">
+                                    <classpath>
+                                        <fileset dir="${project.build.directory}/lib">
+                                            <include name="**/*.jar"/>
+                                        </fileset>
+                                        <pathelement location="${project.build.directory}/classes" />
+                                    </classpath>
+                                </javac>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>update-source-jar</id>
+                        <phase>verify</phase>
+                        <configuration>
+                            <tasks>
+                                <jar destfile="${project.build.directory}/jaxb-xjc-${project.version}-sources.jar" update="true">
+                                    <zipfileset prefix="META-INF/versions" dir="${mrjar.sourceDirectory}"/>
+                                </jar>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Multi-Release>true</Multi-Release>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>package-test-jar</id>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalJOptions>
+                        <additionalJOption>--add-modules</additionalJOption>
+                        <additionalJOption>java.activation</additionalJOption>
+                    </additionalJOptions>
                 </configuration>
             </plugin>
 <!--
@@ -387,116 +481,4 @@
 -->
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>jdk9-setup</id>
-            <activation>
-                <jdk>9</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.8</version>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.apache.ant</groupId>
-                                <artifactId>ant</artifactId>
-                                <version>${ant.version}</version>
-                            </dependency>
-                        </dependencies>
-                        <executions>
-                            <execution>
-                                <id>compile-java9</id>
-                                <phase>compile</phase>
-                                <configuration>
-                                    <tasks>
-                                        <mkdir dir="${project.build.outputDirectory}/META-INF/versions/${upper.java.level}" />
-                                        <echo>${project.build.directory}/lib</echo>
-                                        <javac srcdir="${mrjar.sourceDirectory}"
-                                               destdir="${project.build.outputDirectory}/META-INF/versions/${upper.java.level}"
-                                               includeantruntime="false"
-                                               release="${upper.java.level}">
-                                            <classpath>
-                                                <fileset dir="${project.build.directory}/lib">
-                                                    <include name="**/*.jar"/>
-                                                </fileset>
-                                                <pathelement location="${project.build.directory}/classes" />
-                                            </classpath>
-                                        </javac>
-                                    </tasks>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>update-source-jar</id>
-                                <phase>verify</phase>
-                                <configuration>
-                                    <tasks>
-                                        <jar destfile="${project.build.directory}/jaxb-xjc-${project.version}-sources.jar" update="true">
-                                            <zipfileset prefix="META-INF/versions" dir="${mrjar.sourceDirectory}"/>
-                                        </jar>
-                                    </tasks>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <argLine>
-                                --add-exports java.xml/com.sun.org.apache.xml.internal.resolver=ALL-UNNAMED
-                                --add-exports java.xml/com.sun.org.apache.xml.internal.resolver.tools=ALL-UNNAMED
-                                --add-modules java.xml.bind
-                                --upgrade-module-path ${endorsed.dir}
-                            </argLine>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>default-jar</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                                <configuration>
-                                    <archive>
-                                        <manifestEntries>
-                                            <Multi-Release>true</Multi-Release>
-                                        </manifestEntries>
-                                    </archive>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>package-test-jar</id>
-                                <goals>
-                                    <goal>test-jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <additionalJOptions>
-                                <additionalJOption>--add-modules</additionalJOption>
-                                <additionalJOption>java.activation</additionalJOption>
-                            </additionalJOptions>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
