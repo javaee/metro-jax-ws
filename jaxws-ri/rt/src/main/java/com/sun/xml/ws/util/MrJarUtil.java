@@ -58,7 +58,7 @@ public class MrJarUtil {
      *
      * @return true if *.noPool system property is set to true.
      */
-    public static boolean getNoPoolProperty(String baseName) {
+    public static boolean getNoPoolProperty(final String baseName) {
         return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
             @Override
             public Boolean run() {
