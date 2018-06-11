@@ -150,31 +150,6 @@
 
     <profiles>
         <profile>
-            <id>jdk9-setup</id>
-            <activation>
-                <jdk>9</jdk>
-            </activation>
-            <dependencies>
-                <!-- module dependencies -->
-                <dependency>
-                    <groupId>com.sun.xml.ws</groupId>
-                    <artifactId>wscompile-jdk9</artifactId>
-                    <version>${project.version}</version>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
-                    <groupId>com.sun.xml.ws</groupId>
-                    <artifactId>wscompile-jdk9</artifactId>
-                    <version>${project.version}</version>
-                    <classifier>sources</classifier>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
-            <modules>
-                <module>../../tools/wscompile-jdk9</module>
-            </modules>
-        </profile>
-        <profile>
             <id>generate-javadoc-profile</id>
             <activation>
                 <property>

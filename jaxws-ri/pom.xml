@@ -148,6 +148,9 @@
         <findbugs.version>3.0.1</findbugs.version>
         <glassfish.findbugs.version>1.7</glassfish.findbugs.version>
         <netbeans.hint.jdkPlatform>JDK_1.8</netbeans.hint.jdkPlatform>
+        <mrjar.sourceDirectory>${project.basedir}/src/main/java-mr</mrjar.sourceDirectory>
+        <base.java.level>7</base.java.level>
+        <upper.java.level>9</upper.java.level>
     </properties>
 
     <build>
@@ -509,6 +512,11 @@
                         <message>JAX-WS_${project.version}</message>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -776,7 +784,7 @@
             </activation>
             <modules>
                 <module>docs</module>
-                <module>bundles</module>
+                <!--<module>bundles</module>-->
             </modules>
         </profile>
         <profile>
