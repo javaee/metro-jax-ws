@@ -67,11 +67,18 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
@@ -80,6 +87,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -531,26 +539,52 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
      * @return Source of pseudo schema that can be used multiple times
      */
     private Source createMasterPseudoSchema(Map<String, String> docs) {
-        final StringBuilder sb = new StringBuilder("<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema' targetNamespace='urn:x-jax-ws-master'>\n");
+        Document document = null;
+        try {
+            DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            document = db.newDocument();
+        } catch(ParserConfigurationException pce) {
+            throw new FactoryConfigurationError(pce);
+        }
+        Element root = document.createElementNS("http://www.w3.org/2001/XMLSchema", "xsd:schema");
+        root.setAttribute("targetNamespace", "urn:x-jax-ws-master");
+        document.appendChild(root);
         for(Map.Entry<String, String> e : docs.entrySet()) {
             String systemId = e.getValue();
             String ns = e.getKey();
-            sb.append("<xsd:import schemaLocation='").append(systemId).append("'");
+            Element child = document.createElement("xsd:import");
+            child.setAttribute("schemaLocation", systemId);
             if (ns != null && !("".equals(ns))) {
-                sb.append(" namespace='").append(ns).append("'");
+                child.setAttribute("namespace", ns);
             }
-            sb.append("/>\n");
+            root.appendChild(child);
         }
-        sb.append("</xsd:schema>");
+        Source domSource = new DOMSource(document);                                                                     
+        ByteArrayBuffer bos = new ByteArrayBuffer();
+        StreamResult sr = new StreamResult(bos );
+        Transformer trans = XmlUtil.newTransformer();
+        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        trans.setOutputProperty(OutputKeys.INDENT, "yes");
+        try {
+            trans.transform(domSource, sr);
+        } catch(TransformerException te) {
+            throw new WebServiceException(te);
+        }
+        final String schema =  bos.toString();
+        try {
+            bos.close();
+        } catch(IOException io) {
+            throw new WebServiceException(io);
+        }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "Master Pseudo Schema = {0}", sb);
+            LOGGER.log(Level.FINE, "Master Pseudo Schema = {0}", schema);
         }
 
         // override getReader() so that the same source can be used multiple times
         return new StreamSource("file:x-jax-ws-master-doc") {
             @Override
             public Reader getReader() {
-                return new StringReader(sb.toString());
+                return new StringReader(schema);
             }
         };
     }
