@@ -76,7 +76,7 @@
         </dependency>
         <dependency>
             <groupId>javax.jws</groupId>
-            <artifactId>jsr181-api</artifactId>
+            <artifactId>javax.jws-api</artifactId>
         </dependency>
         <!-- Provided dependencies -->
         <dependency>
@@ -205,6 +205,10 @@
             <classifier>sources</classifier>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>javax.activation</artifactId>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
@@ -242,7 +246,7 @@
                             <archive>
                                 <manifestEntries>
                                     <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
-                                    <Class-Path>javax.annotation-api.jar jsr181-api.jar jaxb-api.jar jaxws-api.jar javax.xml.soap-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
+                                    <Class-Path>javax.annotation-api.jar javax.jws-api.jar jaxb-api.jar jaxws-api.jar javax.xml.soap-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
                                     <Extension-Name>com.sun.xml.ws</Extension-Name>
                                     <Multi-Release>true</Multi-Release>
                                 </manifestEntries>
@@ -263,7 +267,7 @@
                             <archive>
                                 <manifestEntries>
                                     <probe-provider-class-names>com.sun.xml.ws.transport.http.servlet.JAXWSRIDeploymentProbeProvider</probe-provider-class-names>
-                                    <Class-Path>javax.annotation-api.jar jsr181-api.jar jaxb-api.jar jaxws-api.jar javax.xml.soap-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
+                                    <Class-Path>javax.annotation-api.jar javax.jws-api.jar jaxb-api.jar jaxws-api.jar javax.xml.soap-api.jar FastInfoset.jar gmbal-api-only.jar ha-api.jar jaxb-impl.jar management-api.jar mimepull.jar policy.jar saaj-impl.jar stax-ex.jar stax2-api.jar streambuffer.jar woodstox-core-asl.jar</Class-Path>
                                     <Extension-Name>com.sun.xml.ws</Extension-Name>
                                 </manifestEntries>
                             </archive>
@@ -299,6 +303,7 @@
                                 </goals>
                                 <phase>package</phase>
                                 <configuration>
+                                    <excludes>**/module-info.java</excludes>
                                     <artifactItems>
                                         <artifactItem>
                                             <groupId>${project.groupId}</groupId>

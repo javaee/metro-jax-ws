@@ -161,6 +161,7 @@
                             <goal>unpack</goal>
                         </goals>
                         <configuration>
+                            <excludes>**/module-info.java</excludes>
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
