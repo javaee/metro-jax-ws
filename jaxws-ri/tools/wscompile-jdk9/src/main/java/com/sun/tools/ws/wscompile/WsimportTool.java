@@ -67,6 +67,7 @@ import org.xml.sax.SAXParseException;
 
 import javax.xml.stream.*;
 import java.io.*;
+import java.lang.module.ModuleFinder;
 import java.util.*;
 import java.text.MessageFormat;
 import java.util.jar.JarEntry;
@@ -546,7 +547,7 @@ public class WsimportTool {
                 args.add(options.encoding);
             }
 
-            boolean addModules = true;
+            boolean addModules = ModuleFinder.ofSystem().find("java.xml.ws").isPresent();
             if (options.javacOptions != null) {
                 List<String> javacOptions = options.getJavacOptions(args, listener);
                 for (int i = 0; i < javacOptions.size(); i++) {

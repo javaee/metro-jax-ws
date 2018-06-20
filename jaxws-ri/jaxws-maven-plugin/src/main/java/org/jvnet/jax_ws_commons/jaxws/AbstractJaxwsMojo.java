@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2018 Oracle and/or its affiliates. All rights reserved.
  *
  * Oracle licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -349,7 +349,9 @@ abstract class AbstractJaxwsMojo extends AbstractMojo {
                     }
                 }
                 String[] classpath = getCP();
-                cmd.createArg().setValue("-Xbootclasspath/p:" + classpath[0]);
+                if (!isModular()) {
+                    cmd.createArg().setValue("-Xbootclasspath/p:" + classpath[0]);
+                }
                 cmd.createArg().setValue("-cp");
                 cmd.createArg().setValue(classpath[2]);
                 cmd.createArg().setLine("org.jvnet.jax_ws_commons.jaxws.Invoker");
@@ -385,6 +387,15 @@ abstract class AbstractJaxwsMojo extends AbstractMojo {
             throw new MojoExecutionException(dre.getMessage(), dre);
         } catch (CommandLineException t) {
             throw new MojoExecutionException(t.getMessage(), t);
+        }
+    }
+
+    private boolean isModular() {
+        try {
+            Class<?> moduleClass = Class.forName("java.lang.Module");
+            return moduleClass != null;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 
