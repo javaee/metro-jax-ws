@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2018 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,27 +65,6 @@ public class WsGen extends WsGenBase {
                 : System.getProperty("java.class.path");
 
         getCommandline().createClasspath(getProject()).append(new Path(getProject(), antcp));
-
-        boolean addModules = true;
-        String[] args = getJavacargs().getArguments();
-        for (int i = 0; i < args.length; i++) {
-            if ("-source".equals(args[i]) && 9 >= getVersion(args[i++])) {
-                addModules = false;
-                break;
-            }
-            if ("-target".equals(args[i]) && 9 >= getVersion(args[i++])) {
-                addModules = false;
-                break;
-            }
-            if ("-release".equals(args[i]) && 9 >= getVersion(args[i++])) {
-                addModules = false;
-                break;
-            }
-        }
-
-        if (addModules) {
-            getCommandline().createVmArgument().setLine("--add-modules java.xml.ws");
-        }
 
         if (getModulepath() != null && getModulepath().size() > 0) {
             getCommandline().createModulepath(getProject()).add(getModulepath());

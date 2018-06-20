@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2018 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -594,16 +594,21 @@ abstract class WsTask2 extends MatchingTask {
             antcp += File.pathSeparatorChar + toolsJar.getAbsolutePath();
         }
         getCommandline().createClasspath(getProject()).append(new Path(getProject(), antcp));
-        /*
-        * TODO JDK9 */
+
         String apiCp = getApiClassPath(this.getClass().getClassLoader());
-        if (apiCp != null) {
-            //TODO: jigsaw - Xbootclaspath may get deprecated/removed
-            //and replaced with '-L' or '-m' options
-            //see also: http://mail.openjdk.java.net/pipermail/jigsaw-dev/2010-April/000778.html
+        if (apiCp != null && !isModular()) {
             getCommandline().createVmArgument().setLine("-Xbootclasspath/p:" + apiCp);
         }
         getCommandline().setClassname(className);
+    }
+
+    private boolean isModular() {
+        try {
+            Class<?> moduleClass = Class.forName("java.lang.Module");
+            return moduleClass != null;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     /**

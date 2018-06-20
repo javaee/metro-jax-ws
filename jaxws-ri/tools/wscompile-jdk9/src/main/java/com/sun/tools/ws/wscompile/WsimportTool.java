@@ -546,26 +546,9 @@ public class WsimportTool {
                 args.add(options.encoding);
             }
 
-            boolean addModules = true;
             if (options.javacOptions != null) {
                 List<String> javacOptions = options.getJavacOptions(args, listener);
-                for (int i = 0; i < javacOptions.size(); i++) {
-                    String opt = javacOptions.get(i);
-                    if ("-source".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
-                        addModules = false;
-                    }
-                    if ("-target".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
-                        addModules = false;
-                    }
-                    if ("--release".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
-                        addModules = false;
-                    }
-                    args.add(opt);
-                }
-            }
-            if (addModules) {
-                args.add("--add-modules");
-                args.add("java.xml.ws");
+                args.addAll(javacOptions);
             }
 
             for (int i = 0; i < sourceFiles.size(); ++i) {
