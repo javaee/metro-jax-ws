@@ -60,6 +60,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>javax.activation</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.ha</groupId>
             <artifactId>ha-api</artifactId>
         </dependency>
@@ -108,8 +112,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <additionalJOptions>
-                        <additionalJOption>--add-modules</additionalJOption>
-                        <additionalJOption>java.activation</additionalJOption>
+                        <additionalJOption>-Xdoclint:none</additionalJOption>
                     </additionalJOptions>
                 </configuration>
             </plugin>

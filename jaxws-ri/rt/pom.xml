@@ -64,6 +64,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>javax.activation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>policy</artifactId>
         </dependency>
@@ -82,6 +90,8 @@
         <dependency>
             <groupId>com.sun.xml.stream.buffer</groupId>
             <artifactId>streambuffer</artifactId>
+            <!--todo update in jaxb-->
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.mimepull</groupId>
@@ -166,6 +176,41 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <excludeArtifactIds>provider,resolver</excludeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <includes>
+                                <include>**/module-info.java</include>
+                            </includes>
+                            <compilerArgs>
+                                <arg>--upgrade-module-path</arg>
+                                <arg>${project.build.directory}/lib/jaxws-api-${jaxws-api.version}.jar</arg>
+                                <arg>--module-path</arg>
+                                <arg>${project.build.directory}/lib:${project.build.directory}/classes</arg>
+
+                                <!--TODO automatic module names based on jar filename -->
+                                <arg>--add-modules</arg>
+                                <arg>gmbal.api.only</arg>
+                                <arg>--add-reads</arg>
+                                <arg>com.sun.xml.ws=gmbal.api.only</arg>
+
+                                <!--Need this to compile with 9 api (all classes are recompiled with 8 by base-compile execution)-->
+                                <!--resolver specific code for 9 is put in mr-jar/9 to avoid this on 9-->
+                                <arg>--add-exports</arg>
+                                <arg>java.xml/com.sun.org.apache.xml.internal.resolver=com.sun.xml.ws</arg>
+                                <arg>--add-exports</arg>
+                                <arg>java.xml/com.sun.org.apache.xml.internal.resolver.tools=com.sun.xml.ws</arg>
+                                <!--<arg>&#45;&#45;limit-modules</arg>
+                                <arg>java.activation,java.xml,java.xml.bind,com.sun.xml.ws,java.xml.ws,com.sun.xml.bind,com.sun.xml.messaging.saaj,com.sun.xml.ws.policy,com.sun.istack.runtime,com.sun.xml.txw2,org.jvnet.staxex,org.jvnet.mimepull,com.sun.xml.streambuffer,javax.jws,java.annotation,java.desktop,java.logging,java.management,jdk.httpserver</arg>-->
+                            </compilerArgs>
                         </configuration>
                     </execution>
                 </executions>
@@ -313,10 +358,20 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
+                    <debug>true</debug>
                     <additionalJOptions>
-                        <additionalJOption>--add-modules</additionalJOption>
-                        <additionalJOption>java.activation</additionalJOption>
+                        <additionalJOption>--upgrade-module-path</additionalJOption>
+                        <additionalJOption>${project.build.directory}/lib/jaxws-api-${jaxws-api.version}.jar</additionalJOption>
+                        <additionalJOption>--module-path</additionalJOption>
+                        <additionalJOption>${project.build.directory}/lib:${project.build.directory}/classes</additionalJOption>
+                        <additionalJOption>--add-reads</additionalJOption>
+                        <additionalJOption>com.sun.xml.ws=ALL-UNNAMED</additionalJOption>
+                        <additionalparam>-Xdoclint:none</additionalparam>
                     </additionalJOptions>
+                    <excludes>
+                        **/module-info.java
+                    </excludes>
+                    <debug>true</debug>
                 </configuration>
             </plugin>
 <!--

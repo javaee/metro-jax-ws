@@ -173,6 +173,7 @@
                                 </goals>
                                 <phase>package</phase>
                                 <configuration>
+                                    <excludes>**/module-info.java</excludes>
                                     <artifactItems>
                                         <artifactItem>
                                             <groupId>${project.groupId}</groupId>
