@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2018 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,6 +49,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.module.ModuleFinder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -167,6 +168,6 @@ public abstract class WsAntTaskTestBase extends TestCase {
     }
 
     static boolean is9() {
-        return System.getProperty("java.version").startsWith("9");
+        return ModuleFinder.ofSystem().find("java.xml.ws").isPresent();
     }
 }

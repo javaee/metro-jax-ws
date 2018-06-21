@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2018 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -176,26 +176,9 @@ public class WsgenTool {
             args.add(options.encoding);
         }
 
-        boolean addModules = true;
         if (options.javacOptions != null) {
             List<String> javacOptions = options.getJavacOptions(args, listener);
-            for (int i = 0; i < javacOptions.size(); i++) {
-                String opt = javacOptions.get(i);
-                if ("-source".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
-                    addModules = false;
-                }
-                if ("-target".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
-                    addModules = false;
-                }
-                if ("--release".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
-                    addModules = false;
-                }
-                args.add(opt);
-            }
-        }
-        if (addModules) {
-            args.add("--add-modules");
-            args.add("java.xml.ws");
+            args.addAll(javacOptions);
         }
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
