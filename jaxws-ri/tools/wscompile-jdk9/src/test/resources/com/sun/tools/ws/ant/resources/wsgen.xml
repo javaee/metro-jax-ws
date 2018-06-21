@@ -127,7 +127,7 @@
             <classpath>
                 <pathelement location="${src.dir}"/>
             </classpath>
-            <jvmarg line="${coverage}"/>
+            <jvmarg line="${coverage} --add-modules java.xml.ws"/>
         </wsgen>
     </target>
 
@@ -172,7 +172,7 @@
             <classpath>
                 <pathelement location="${src.dir}"/>
             </classpath>
-            <jvmarg line="-Xmx256m ${coverage}"/>
+            <jvmarg line="-Xmx256m ${coverage} --add-modules java.xml.ws"/>
         </wsgen>
     </target>
 
@@ -218,7 +218,7 @@
             <classpath>
                 <pathelement location="${src.dir}"/>
             </classpath>
-            <jvmarg line="${coverage}"/>
+            <jvmarg line="${coverage} --add-modules java.xml.ws"/>
         </wsgen>
     </target>
 

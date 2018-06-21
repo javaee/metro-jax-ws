@@ -204,7 +204,7 @@
             wsdl="${wsdl}"
             extension="true"
             fork="true">
-            <jvmArg line="${coverage}"/>
+            <jvmArg line="${coverage} --add-modules java.xml.ws"/>
         </wsimport>
     </target>
 
@@ -241,7 +241,7 @@
             wsdl="${wsdl}"
             extension="true"
             fork="true">
-            <jvmArg line="${coverage}"/>
+            <jvmArg line="${coverage} --add-modules java.xml.ws"/>
             <javacarg value="-source=1.6"/>
             <javacarg value="-target=1.6"/>
         </wsimport>
