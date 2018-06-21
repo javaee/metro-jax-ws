@@ -79,7 +79,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.lang.module.ModuleFinder;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -177,26 +176,9 @@ public class WsgenTool {
             args.add(options.encoding);
         }
 
-        boolean addModules = ModuleFinder.ofSystem().find("java.xml.ws").isPresent();
         if (options.javacOptions != null) {
             List<String> javacOptions = options.getJavacOptions(args, listener);
-            for (int i = 0; i < javacOptions.size(); i++) {
-                String opt = javacOptions.get(i);
-                if ("-source".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
-                    addModules = false;
-                }
-                if ("-target".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
-                    addModules = false;
-                }
-                if ("--release".equals(opt) && 9 >= getVersion(javacOptions.get(i + 1))) {
-                    addModules = false;
-                }
-                args.add(opt);
-            }
-        }
-        if (addModules) {
-            args.add("--add-modules");
-            args.add("java.xml.ws");
+            args.addAll(javacOptions);
         }
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();

@@ -45,8 +45,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 
-import java.lang.module.ModuleFinder;
-
 /**
  * Wrapper task to launch {@link WsImport2}.
  *
@@ -68,29 +66,6 @@ public class WsImport extends WsImportBase {
                 : System.getProperty("java.class.path");
 
         getCommandline().createClasspath(getProject()).append(new Path(getProject(), antcp));
-
-        boolean addModules = ModuleFinder.ofSystem().find("java.xml.ws").isPresent();
-        String[] args = getJavacargs().getArguments();
-        if (addModules) {
-            for (int i = 0; i < args.length; i++) {
-                if ("-source".equals(args[i]) && 9 >= getVersion(args[i++])) {
-                    addModules = false;
-                    break;
-                }
-                if ("-target".equals(args[i]) && 9 >= getVersion(args[i++])) {
-                    addModules = false;
-                    break;
-                }
-                if ("-release".equals(args[i]) && 9 >= getVersion(args[i++])) {
-                    addModules = false;
-                    break;
-                }
-            }
-        }
-
-        if (addModules) {
-            getCommandline().createVmArgument().setLine("--add-modules java.xml.ws");
-        }
 
         if (getModulepath() != null && getModulepath().size() > 0) {
             getCommandline().createModulepath(getProject()).add(getModulepath());
