@@ -195,7 +195,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <excludeArtifactIds>resolver,ant-launcher,ant-nodeps,cobertura,cobertura-runtime</excludeArtifactIds>
+                            <excludeArtifactIds>resolver,ant-launcher,ant-nodeps,cobertura,cobertura-runtime,javax.activation</excludeArtifactIds>
                             <excludeScope>system</excludeScope>
                         </configuration>
                     </execution>
@@ -256,6 +256,7 @@
                     <argLine>
                         --add-modules java.xml.bind
                         --upgrade-module-path ${endorsed.dir}
+                        --module-path ${project.build.directory}/lib
                     </argLine>
                 </configuration>
             </plugin>

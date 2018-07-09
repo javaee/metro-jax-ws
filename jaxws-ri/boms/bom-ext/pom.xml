@@ -65,7 +65,8 @@
         <ant.version>1.9.8</ant.version>
         <asm.version>3.1</asm.version>
         <commonj.sdo.version>2.1.1.v201112051852</commonj.sdo.version>
-        <eclipselink.version>2.6.4</eclipselink.version>
+        <eclipselink.version>2.7.2</eclipselink.version>
+        <javax.persistance.version>2.2</javax.persistance.version>
         <junit.version>3.8.1</junit.version>
         <mail.version>1.4.7</mail.version>
         <servlet-api.version>4.0.0-b07</servlet-api.version>
@@ -97,6 +98,16 @@
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink</artifactId>
+                <version>${eclipselink.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.persistence</groupId>
+                <artifactId>javax.persistence-api</artifactId>
+                <version>${javax.persistance.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.moxy</artifactId>
                 <version>${eclipselink.version}</version>
             </dependency>
             <dependency>

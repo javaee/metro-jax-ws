@@ -68,8 +68,12 @@
             <artifactId>mail</artifactId>
         </dependency>
         <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>eclipselink</artifactId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jvnet.staxex</groupId>
@@ -86,8 +90,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -141,6 +145,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <excludeArtifactIds>javax.activation</excludeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -160,18 +177,10 @@
                     <argLine>
                         --add-modules java.xml.bind
                         --upgrade-module-path ${endorsed.dir}
+                        --module-path ${project.build.directory}/lib
                     </argLine>
                 </configuration>
-            </plugin><plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <configuration>
-                <additionalJOptions>
-                    <additionalJOption>--add-modules</additionalJOption>
-                    <additionalJOption>java.activation</additionalJOption>
-                </additionalJOptions>
-            </configuration>
-        </plugin>
+            </plugin>
         </plugins>
     </build>
 

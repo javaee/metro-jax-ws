@@ -64,8 +64,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>javax.activation</artifactId>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.annotation</groupId>
@@ -176,7 +180,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <excludeArtifactIds>provider,resolver</excludeArtifactIds>
+                            <excludeArtifactIds>provider,resolver,javax.activation</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -273,6 +277,7 @@
                         --add-exports java.xml/com.sun.org.apache.xml.internal.resolver.tools=ALL-UNNAMED
                         --add-modules java.xml.bind
                         --upgrade-module-path ${endorsed.dir}
+                        --module-path ${project.build.directory}/lib
                     </argLine>
                 </configuration>
             </plugin>
