@@ -65,11 +65,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>rt-ha</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
@@ -77,6 +72,78 @@
     </dependencies>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-asm</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>asm</groupId>
+                                    <artifactId>asm</artifactId>
+                                    <type>jar</type>
+                                    <classifier>sources</classifier>
+                                    <version>${asm.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <includes>org/objectweb/asm/*.java</includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <excludeArtifactIds>javax.activation</excludeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>--module-path</arg>
+                                <arg>${project.build.directory}/lib:${project.build.directory}/classes</arg>
+
+                                <!--TODO automatic module names based on jar filename -->
+                                <arg>--add-modules</arg>
+                                <arg>javax.servlet.api</arg>
+                                <arg>--add-reads</arg>
+                                <arg>com.sun.xml.ws.servlet=javax.servlet.api</arg>
+
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalJOptions>
+                        <additionalJOption>--add-reads</additionalJOption>
+                        <!--reads for javax.servlet-api -->
+                        <additionalJOption>com.sun.xml.ws.servlet=ALL-UNNAMED</additionalJOption>
+                        <additionalparam>-Xdoclint:none</additionalparam>
+                    </additionalJOptions>
+                    <debug>true</debug>
+                </configuration>
+            </plugin>
+        </plugins>
 <!--
         <plugins>
             <plugin>

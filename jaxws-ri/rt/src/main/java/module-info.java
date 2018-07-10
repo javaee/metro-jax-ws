@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2018-2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -79,18 +79,28 @@ module com.sun.xml.ws {
     exports com.sun.xml.ws.api;
     exports com.sun.xml.ws.api.addressing;
     exports com.sun.xml.ws.api.databinding;
+    exports com.sun.xml.ws.api.ha;
+    exports com.sun.xml.ws.api.message;
     exports com.sun.xml.ws.api.model;
+    exports com.sun.xml.ws.api.model.wsdl;
     exports com.sun.xml.ws.api.server;
     exports com.sun.xml.ws.api.streaming;
     exports com.sun.xml.ws.api.wsdl.parser;
     exports com.sun.xml.ws.api.wsdl.writer;
+    exports com.sun.xml.ws.api.pipe;
+    exports com.sun.xml.ws.developer;
+    exports com.sun.xml.ws.resources;
+    exports com.sun.xml.ws.message.stream;
     exports com.sun.xml.ws.addressing;
     exports com.sun.xml.ws.addressing.v200408;
     exports com.sun.xml.ws.binding;
     exports com.sun.xml.ws.db;
     exports com.sun.xml.ws.model;
+    exports com.sun.xml.ws.server;
     exports com.sun.xml.ws.spi.db;
     exports com.sun.xml.ws.streaming;
+    exports com.sun.xml.ws.transport;
+    exports com.sun.xml.ws.transport.http;
     exports com.sun.xml.ws.util;
     exports com.sun.xml.ws.util.exception;
     exports com.sun.xml.ws.util.xml;

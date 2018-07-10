@@ -114,6 +114,10 @@
             <artifactId>resolver</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.ha</groupId>
+            <artifactId>ha-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -208,10 +212,11 @@
 
                                 <!--Need this to compile with 9 api (all classes are recompiled with 8 by base-compile execution)-->
                                 <!--resolver specific code for 9 is put in mr-jar/9 to avoid this on 9-->
-                                <arg>--add-exports</arg>
+                                <!--<arg>&#45;&#45;add-exports</arg>
                                 <arg>java.xml/com.sun.org.apache.xml.internal.resolver=com.sun.xml.ws</arg>
-                                <arg>--add-exports</arg>
-                                <arg>java.xml/com.sun.org.apache.xml.internal.resolver.tools=com.sun.xml.ws</arg>
+                                <arg>&#45;&#45;add-exports</arg>
+                                <arg>java.xml/com.sun.org.apache.xml.internal.resolver.tools=com.sun.xml.ws</arg>-->
+
                                 <!--<arg>&#45;&#45;limit-modules</arg>
                                 <arg>java.activation,java.xml,java.xml.bind,com.sun.xml.ws,java.xml.ws,com.sun.xml.bind,com.sun.xml.messaging.saaj,com.sun.xml.ws.policy,com.sun.istack.runtime,com.sun.xml.txw2,org.jvnet.staxex,org.jvnet.mimepull,com.sun.xml.streambuffer,javax.jws,java.annotation,java.desktop,java.logging,java.management,jdk.httpserver</arg>-->
                             </compilerArgs>

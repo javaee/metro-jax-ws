@@ -167,14 +167,6 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>rt-ha</artifactId>
-                    <version>${project.version}</version>
-                    <classifier>cobertura</classifier>
-                    <type>ser</type>
-                    <scope>compile</scope>
-                </dependency>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
                     <artifactId>rt-fi</artifactId>
                     <version>${project.version}</version>
                     <classifier>cobertura</classifier>
