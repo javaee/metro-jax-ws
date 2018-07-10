@@ -152,12 +152,6 @@
         </dependency>
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
-            <artifactId>rt-ha</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.ws</groupId>
             <artifactId>httpspi-servlet</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
@@ -180,13 +174,6 @@
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>rt-fi</artifactId>
-            <version>${project.version}</version>
-            <classifier>sources</classifier>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.ws</groupId>
-            <artifactId>rt-ha</artifactId>
             <version>${project.version}</version>
             <classifier>sources</classifier>
             <optional>true</optional>
@@ -221,7 +208,6 @@
     <modules>
         <module>../../rt</module>
         <module>../../rt-fi</module>
-        <module>../../rt-ha</module>
         <module>../../httpspi-servlet</module>
         <module>../../servlet</module>
     </modules>
