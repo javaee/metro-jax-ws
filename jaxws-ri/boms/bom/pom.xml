@@ -228,10 +228,6 @@
                 <exclusions>
                     <!-- part of JDK 6+ -->
                     <exclusion>
-                        <groupId>javax.activation</groupId>
-                        <artifactId>activation</artifactId>
-                    </exclusion>
-                    <exclusion>
                         <artifactId>stax-api</artifactId>
                         <groupId>javax.xml.stream</groupId>
                     </exclusion>

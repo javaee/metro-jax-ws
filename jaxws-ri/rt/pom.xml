@@ -94,8 +94,6 @@
         <dependency>
             <groupId>com.sun.xml.stream.buffer</groupId>
             <artifactId>streambuffer</artifactId>
-            <!--todo update in jaxb-->
-            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.mimepull</groupId>
