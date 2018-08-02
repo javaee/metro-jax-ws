@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2018-2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,7 @@
  *
  * @since 2.4.0
  */
-module com.sun.tools.ws {
+module com.sun.tools.jaxws {
     requires com.sun.xml.ws;
     requires javax.jws;
     requires com.sun.istack.runtime;

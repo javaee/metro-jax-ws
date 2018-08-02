@@ -52,41 +52,9 @@
         <property name="links.dir" value="${javadoc.links.dir}" />
         <property name="links.offline" value="${javadoc.links.offline}" />
         <mkdir dir="${api.dest.dir}" />
-        <condition property="jdk9" value="false" else="true">
-            <or>
-                <equals arg1="${ant.java.version}" arg2="1.5"/>
-                <equals arg1="${ant.java.version}" arg2="1.6"/>
-                <equals arg1="${ant.java.version}" arg2="1.7"/>
-                <equals arg1="${ant.java.version}" arg2="1.8"/>
-            </or>
-        </condition>
     </target>
 
-    <target name="javadoc-old" unless="${jdk9}" depends="init">
-        <javadoc packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
-                 sourcepath="${project.build.directory}/bundlesources"
-                 destdir="${api.dest.dir}"
-                 author="false"
-                 version="false"
-                 use="true"
-                 windowtitle="JAX-WS RI Runtime Documentation"
-                 doctitle="JAX-WS RI"
-                 bottom="Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.">
-            <bootclasspath>
-                <pathelement path="${maven.dependency.javax.annotation.javax.annotation-api.jar.path}" />
-                <pathelement path="${maven.dependency.javax.xml.bind.jaxb-api.jar.path}" />
-                <pathelement path="${maven.dependency.javax.xml.soap.javax.xml.soap-api.jar.path}" />
-                <pathelement path="${maven.dependency.javax.xml.ws.jaxws-api.jar.path}" />
-                <pathelement path="${sun.boot.class.path}" />
-            </bootclasspath>
-            <classpath refid="maven.compile.classpath" />
-            <link href="http://docs.oracle.com/javase/8/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/javase8/" />
-            <link href="https://javadoc.io/doc/javax.xml.bind/jaxb-api/${jaxb-api.version}/" offline="${links.offline}" packagelistloc="${links.dir}/jaxb-api/" />
-            <link href="https://javadoc.io/doc/javax.xml.ws/jaxws-api/${jaxws-api.version}/" offline="${links.offline}" packagelistloc="${links.dir}/jaxws-api/" />
-        </javadoc>
-    </target>
-
-    <target name="javadoc" if="${jdk9}" depends="init">
+    <target name="javadoc" depends="init">
         <javadoc packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
                  sourcepath="${project.build.directory}/bundlesources"
                  destdir="${api.dest.dir}"
@@ -96,7 +64,7 @@
                  use="true"
                  windowtitle="JAX-WS RI Runtime Documentation"
                  doctitle="JAX-WS RI"
-                 bottom="Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.">
+                 bottom="Copyright (c) 1997-2018 Oracle and/or its affiliates. All rights reserved.">
             <classpath refid="maven.compile.classpath" />
             <arg line="-Xdoclint:none"/>
             <link href="http://docs.oracle.com/javase/8/docs/api/" offline="${links.offline}" packagelistloc="${links.dir}/javase8/" />
@@ -105,7 +73,7 @@
         </javadoc>
     </target>
 
-    <target name="jar" depends="javadoc-old,javadoc">
+    <target name="jar" depends="javadoc">
         <jar jarfile="${javadoc.jar}">
             <fileset dir="${api.dest.dir}" />
         </jar>

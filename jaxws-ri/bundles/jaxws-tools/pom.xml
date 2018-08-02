@@ -86,10 +86,24 @@
             <classifier>sources</classifier>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-tools-bundle</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-tools-bundle</artifactId>
+            <classifier>sources</classifier>
+            <optional>true</optional>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <modules>
         <module>../../tools/wscompile</module>
+        <module>jaxws-tools-bundle</module>
     </modules>
 
     <build>
@@ -115,7 +129,7 @@
                                 </manifest>
                                 <manifestEntries>
                                     <Class-Path>jaxws-rt.jar jaxb-xjc.jar</Class-Path>
-                                    <Extension-Name>com.sun.tools.ws</Extension-Name>
+                                    <Extension-Name>com.sun.tools.jaxws</Extension-Name>
                                     <Multi-Release>true</Multi-Release>
                                 </manifestEntries>
                             </archive>

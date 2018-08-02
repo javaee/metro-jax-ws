@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2018 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,5 +49,7 @@ module com.sun.xml.ws.servlet {
     requires java.logging;
     requires javax.jws;
 
-
+    exports com.sun.xml.ws.developer.servlet;
+    exports com.sun.xml.ws.server.servlet;
+    exports com.sun.xml.ws.transport.http.servlet;
 }
