@@ -47,7 +47,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.activation.CommandMap;
 import javax.activation.DataHandler;
+import javax.activation.MailcapCommandMap;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -258,6 +260,9 @@ public class SwaMimeAttachmentTest extends WsDatabindingTestBase  {
         cliConfig.setContractClass(proxySEIClass);
         cliConfig.setFeatures(f);
         cliConfig.setWsdlPort(wsdlPort);
+
+        CommandMap map = CommandMap.getDefaultCommandMap();
+        ((MailcapCommandMap)map).addMailcap("image/*;;x-java-content-handler=com.sun.xml.messaging.saaj.soap.ImageDataContentHandler");
 
         SwaTest1 port = createProxy(SwaTest1.class, srvConfig, cliConfig, false);        
         {
