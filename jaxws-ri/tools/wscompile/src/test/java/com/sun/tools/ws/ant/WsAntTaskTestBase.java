@@ -168,6 +168,7 @@ public abstract class WsAntTaskTestBase extends TestCase {
     }
 
     static boolean is9() {
-        return ModuleFinder.ofSystem().find("java.xml.ws").isPresent();
+        String version = System.getProperty("java.version");
+        return !version.startsWith("1.");
     }
 }

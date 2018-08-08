@@ -136,6 +136,10 @@
             <groupId>com.sun.org.apache.xml.internal</groupId>
             <artifactId>resolver</artifactId>
         </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
+        </dependency>
         
         <!-- module dependencies -->
         <dependency>
@@ -162,6 +166,12 @@
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt-bundle</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
 
         <!-- module dependencies -->
         <dependency>
@@ -193,9 +203,13 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt-bundle</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+            <optional>true</optional>
         </dependency>
+
 
         <!-- Test dependencies -->
         <dependency>
@@ -210,6 +224,7 @@
         <module>../../rt-fi</module>
         <module>../../httpspi-servlet</module>
         <module>../../servlet</module>
+        <module>jaxws-rt-bundle</module>
     </modules>
 
     <build>
