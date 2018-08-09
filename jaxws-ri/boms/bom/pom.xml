@@ -111,7 +111,7 @@
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
         <ha-api.version>3.1.9</ha-api.version>
         <jaxb.version>2.4.0-b180725.0644</jaxb.version>
-        <jaxws-api.version>2.4.0-b180731</jaxws-api.version>
+        <jaxws-api.version>2.4.0</jaxws-api.version>
         <javax.jws-api.version>1.1</javax.jws-api.version>
         <management-api.version>3.2.1-b001</management-api.version>
         <mimepull.version>1.9.9</mimepull.version>
