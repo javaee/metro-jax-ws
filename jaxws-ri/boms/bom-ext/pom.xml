@@ -62,7 +62,7 @@
     <url>https://javaee.github.io/metro-jax-ws</url>
 
     <properties>
-        <ant.version>1.9.8</ant.version>
+        <ant.version>1.10.2</ant.version>
         <asm.version>3.1</asm.version>
         <commonj.sdo.version>2.1.1.v201112051852</commonj.sdo.version>
         <eclipselink.version>2.7.2</eclipselink.version>
