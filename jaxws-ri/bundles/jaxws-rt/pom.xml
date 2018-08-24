@@ -117,8 +117,8 @@
         </dependency>
 
         <dependency>
-            <artifactId>woodstox-core-asl</artifactId>
-            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core</artifactId>
+            <groupId>com.fasterxml.woodstox</groupId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
