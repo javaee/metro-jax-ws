@@ -298,6 +298,7 @@
             <dependency>
                 <groupId>com.sun.org.apache.xml.internal</groupId>
                 <artifactId>resolver</artifactId>
+                <scope>provided</scope>
                 <version>${resolver.version}</version>
             </dependency>
 

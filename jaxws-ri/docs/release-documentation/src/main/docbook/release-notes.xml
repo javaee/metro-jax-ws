@@ -155,7 +155,6 @@
 
                         <entry><para><filename>FastInfoset.jar</filename>,
                         <filename>jaxb-api.jar</filename>,
-                        <filename>jaxb-core.jar</filename>,
                         <filename>jaxb-impl.jar</filename>,
                         <filename>jaxws-api.jar</filename>,
                         <filename>javax.annotation-api.jar</filename>,

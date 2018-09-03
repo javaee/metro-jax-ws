@@ -50,6 +50,7 @@
     <dependency>
       <groupId>com.sun.xml.ws</groupId>
       <artifactId>resolver</artifactId>
+      <scope>provided</scope>
       <version>2.1</version>
     </dependency>
     
