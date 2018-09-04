@@ -107,10 +107,10 @@
     <properties>
         <!--************************************************************-->
 
-        <istack.version>3.0.5</istack.version>
+        <istack.version>3.0.7</istack.version>
         <gmbal-api.version>3.1.0-b001</gmbal-api.version>
         <ha-api.version>3.1.9</ha-api.version>
-        <jaxb.version>2.3.0.1</jaxb.version>
+        <jaxb.version>2.4.0</jaxb.version>
         <jaxws-api.version>2.3.0</jaxws-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <management-api.version>3.2.1-b001</management-api.version>

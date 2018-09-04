@@ -545,7 +545,6 @@
                                 <com.sun.istack.localization>java.xml.bind/com.sun.istack.internal.localization</com.sun.istack.localization>
                                 <com.sun.istack.logging>java.xml.bind/com.sun.istack.internal.logging</com.sun.istack.logging>
 
-                                <!--org.glassfish.jaxb:jaxb-core-->
                                 <!--org.glassfish.jaxb:jaxb-runtime-->
                                 <com.sun.xml.bind>java.xml.bind/com.sun.xml.internal.bind</com.sun.xml.bind>
 
