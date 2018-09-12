@@ -164,7 +164,7 @@
                         <filename>javax.xml.soap-api.jar</filename>,
                         <filename>saaj-impl.jar *</filename>,
                         <filename>stax2-api.jar</filename>,
-                        <filename>woodstox-core-asl.jar</filename>,
+                        <filename>woodstox-core.jar</filename>,
                         <filename>stax-ex.jar</filename>,
                         <filename>streambuffer.jar</filename>,
                         <filename>policy.jar</filename>,
