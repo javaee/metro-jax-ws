@@ -257,8 +257,7 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
         String ns = (elemAnn != null && !elemAnn.namespace().equals("##default"))
                 ? elemAnn.namespace() : elemNS;
 
-        boolean nillable = nav.isArray(type)
-                || (elemAnn != null && elemAnn.nillable());
+        boolean nillable = (elemAnn != null && elemAnn.nillable());
 
         boolean required = elemAnn != null && elemAnn.required();
         XmlElementHandler handler = new XmlElementHandler(name, ns, nillable, required);
