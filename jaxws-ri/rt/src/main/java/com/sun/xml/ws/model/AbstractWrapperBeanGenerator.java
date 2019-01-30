@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2018 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -257,8 +257,7 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
         String ns = (elemAnn != null && !elemAnn.namespace().equals("##default"))
                 ? elemAnn.namespace() : elemNS;
 
-        boolean nillable = nav.isArray(type)
-                || (elemAnn != null && elemAnn.nillable());
+        boolean nillable = (elemAnn != null && elemAnn.nillable());
 
         boolean required = elemAnn != null && elemAnn.required();
         XmlElementHandler handler = new XmlElementHandler(name, ns, nillable, required);
