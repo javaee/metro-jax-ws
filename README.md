@@ -1,3 +1,5 @@
+⚠️ This project is now part of the EE4J initiative. This repository has been archived as all activities are now happening in the corresponding [Eclipse repository](https://github.com/eclipse-ee4j/metro-jax-ws).
+
 # JAX-WS
 
 The Java API for XML Web Services (JAX-WS) is a Java programming language API for creating web services, particularly SOAP services. JAX-WS is one of the Java XML programming APIs. It's a part of the Java SE and Java EE platforms.
