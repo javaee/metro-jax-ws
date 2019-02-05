@@ -1,8 +1,8 @@
 # JAX-WS
 
-JAX-WS RI 2.3.0  is a Web Services framework that provides tools and infrastructure to develop Web Services solutions for the end users and middleware developers.
+JAX-WS RI 2.3.1 is a Web Services framework that provides tools and infrastructure to develop Web Services solutions for the end users and middleware developers.
 
-With JAX-WS RI 2.3.0, clients and web services have a big advantage: the platform independence of the Java programming language.
+With JAX-WS RI 2.3.1, clients and web services have a big advantage: the platform independence of the Java programming language.
 
 ## Documentation
 This release includes the following documentation:
