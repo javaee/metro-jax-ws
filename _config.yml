@@ -6,7 +6,7 @@ description: [Java API for XML Web Services]
 # sidebar links url
 links:
   source: https://github.com/javaee/metro-jax-ws
-  download: https://repo1.maven.org/maven2/com/sun/xml/ws/jaxws-ri/2.3.0/jaxws-ri-2.3.0.zip
+  download: https://repo1.maven.org/maven2/com/sun/xml/ws/jaxws-ri/2.3.1/jaxws-ri-2.3.1.zip
   mailinglist: https://javaee.groups.io/g/metro
   javadocs: https://javadoc.io/doc/com.sun.xml.ws/jaxws-rt/2.3.0
   userguide: doc/user-guide/index.html
